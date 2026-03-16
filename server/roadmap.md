@@ -506,6 +506,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-10 Evolution)
+*   **[P0] Discovery Sandbox Middleware**: Ephemeral, zero-trust execution environment for MCP discovery commands to prevent "Ghost-Execution" exploits. (Added: 2026-05-10)
+*   **[P0] Session-Persistent DAP Provider**: Hardware-attested manifest of non-existent files to neutralize "Shadow-Sandbox" escapes (CVE-2026-25725). (Added: 2026-05-10)
+*   **[P1] Async RL Telemetry Orchestrator**: High-speed, non-blocking telemetry bridge for OpenClaw-RL rollout collection and policy optimization. (Added: 2026-05-10)
+
 #### Upcoming (2026-05-09 Evolution)
 *   **[P0] Cryptographic Lineage Validator**: Mandatory parent-child token binding for all subagent spawns to neutralize shadow context contamination. (Added: 2026-05-09)
 *   **[P0] Continuous CPCP Enforcer**: High-frequency hardware-attested validation of project-local configurations during every tool call. (Added: 2026-05-09)

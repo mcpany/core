@@ -353,6 +353,11 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-10 Evolution)
+- [ ] **[P0] Discovery Sandbox Monitor**: Real-time visualization of sandboxed discovery command execution and safety attestation status. (Added: 2026-05-10)
+- [ ] **[P0] DAP Continuous Audit Viewer**: UI for monitoring hardware-attested non-existence proofs across the session lifecycle. (Added: 2026-05-10)
+- [ ] **[P1] RL Policy Drift Dashboard**: Visualizer for asynchronous RL telemetry, showing rollout evaluations and policy optimization progress. (Added: 2026-05-10)
+
 #### Upcoming (2026-05-09 Evolution)
 - [ ] **[P0] Subagent Lineage Explorer**: Interactive visualization of parent-child subagent lineages and cryptographic spawn tokens. (Added: 2026-05-09)
 - [ ] **[P0] Continuous CPCP Status Widget**: Real-time indicator of hardware-attested configuration integrity and per-call validation status. (Added: 2026-05-09)

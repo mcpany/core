@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-10] Updates
+
+### Proposed Additions
+- **Discovery Sandbox Middleware**: (P0) A secure, ephemeral execution environment for MCP discovery commands (e.g., Gemini's `discoveryCommand`), preventing host-level "Ghost-Execution" exploits.
+- **Session-Persistent DAP Provider**: (P0) Advanced extension of the DAP generator that maintains a hardware-attested manifest of non-existent files throughout the mission lifecycle, neutralizing "Shadow-Sandbox" escapes.
+- **Async RL Telemetry Orchestrator**: (P1) High-speed, non-blocking telemetry bridge for OpenClaw-RL v1.0, facilitating the export of reasoning traces and PRM evaluations for background policy optimization.
+
+### Priority Shifts
+- **Deterministic Absence Proof (DAP) Generator**: (Promoted to P0) Critical for neutralizing CVE-2026-25725 style sandbox escapes in multi-agent environments.
+- **RL Telemetry Provider**: (Re-affirmed P0) Evolved with the requirement for "Asynchronous Rollout Collection" to support the OpenClaw-RL v1.0 standard.
+
 ## Evolution: [2026-05-09] Updates
 
 ### Proposed Additions
