@@ -47,3 +47,9 @@ The emergence of programmatic agent control via SDKs (like the OpenCode SDK v202
 
 ## 7. Evolutionary Changelog
 * **2026-05-07:** Initial Document Creation.
+### Update: 2026-05-08 - Addressing SDK-Driven Context Poisoning
+**Context:** Today's market sync revealed a new exploit pattern where SDK scripts are used to inject "Silent Poison" into an agent's context fragments.
+**Architecture Adjustment:**
+*   Implementing mandatory semantic sanitization for all `context_injection` calls via the SDK Enforcer.
+*   Introducing "Intent-Locked Context Shards" for SDK sessions, preventing scripts from modifying context outside their authorized mission branch.
+**Security Impact:** Prevents malicious SDK scripts from using legitimate agents to exfiltrate data via poisoned context.

@@ -353,6 +353,11 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-08 Evolution)
+- [ ] **[P0] Context Sealing Auditor**: Visualization of cryptographically sealed context shards and exfiltration attempt alerts. (Added: 2026-05-08)
+- [ ] **[P0] Permission Enforcement Monitor**: Real-time tracker for DPG-blocked tool calls and project-local policy violations. (Added: 2026-05-08)
+- [ ] **[P1] RL Rollout Streamer**: Live feed of asynchronous RL feedback tokens and policy drift metrics. (Added: 2026-05-08)
+
 #### Upcoming (2026-04-22 Evolution)
 - [ ] **[P0] A2A Replay Security Dashboard**: Visualize nonce status and replay attempt alerts in the A2A hub. (Added: 2026-04-22)
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)

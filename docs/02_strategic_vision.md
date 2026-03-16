@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-08]
+### Focus: Active Fragment Sealing & Deterministic Permission Guarding
+**Context**: The discovery of "EchoLeak" (context exfiltration via semantic side-channels) and the persistent "Permission Bypass" failures in production CLIs (Bug #8961) signal a shift from "Passive Isolation" to "Active Cryptographic Enforcement." Simultaneously, the maturation of OpenClaw-RL v1.0 demands that infrastructure supports high-frequency, asynchronous feedback loops for real-time agent optimization.
+**Strategic Pivot**:
+- **Active Fragment Sealing**: MCP Any will evolve beyond simple memory segmentation to "Active Fragment Sealing." We will implement cryptographically bound context shards that are semantically sealed, ensuring that sensitive data cannot be exfiltrated via "EchoLeak" style side-channels during RAG retrieval or agent reasoning.
+- **Deterministic Permission Guard (DPG)**: To address the "Instruction-Bypass" vulnerability, we are introducing the DPG. MCP Any will act as a kernel-level middleware that enforces project-local "Deny" rules independently of the agent's internal reasoning state, ensuring that even a compromised or hallucinating agent cannot bypass security boundaries.
+- **Asynchronous Rollout Collector**: Leveraging the OpenClaw-RL standard, MCP Any will evolve into the authoritative "Rollout Collector" for RL-driven swarms. We will provide the infrastructure for asynchronous feedback collection and telemetry export, enabling real-time, privacy-preserving policy optimization for all connected agents.
+
 ## Strategic Evolution: [2026-05-07]
 ### Focus: Distributed Supervisor Meshes & SDK Boundary Enforcement
 **Context**: The enterprise pivot from pilot projects to production swarms (approaching 40% of apps by 2026) has exposed the "Supervisor Bottleneck." Simultaneously, the rise of programmatic agent control via the OpenCode SDK signals a shift from chat-mediated to code-mediated agency. We must move from central orchestration to decentralized, SDK-aware governance.

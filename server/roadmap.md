@@ -506,6 +506,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-08 Evolution)
+*   **[P0] Context Sealed-Fragment Hub**: Implementation of "Active Fragment Sealing" to protect context shards from semantic side-channel exfiltration (EchoLeak defense). (Added: 2026-05-08)
+*   **[P0] Deterministic Permission Guard (DPG)**: Kernel-level security middleware for non-bypassable enforcement of project-local "Deny" rules. (Added: 2026-05-08)
+*   **[P1] Asynchronous RL Rollout Collector**: Telemetry bridge for OpenClaw-RL v1.0, enabling high-frequency feedback collection for policy optimization. (Added: 2026-05-08)
+
 #### Upcoming (2026-04-22 Evolution)
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
