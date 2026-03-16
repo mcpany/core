@@ -55,3 +55,7 @@ The **De-biometricization Sanitizer** acts as a local-first security boundary, s
 
 ## 7. Evolutionary Changelog
 * **2026-04-29:** Initial Document Creation.
+* **2026-04-30:** Update: Multi-Modal Biometric Redaction.
+    * **Context**: Today's market sync revealed a surge in "Multi-Modal Sovereignty" requirements as agents move from text-only to video/audio task execution.
+    * **Architecture Adjustment**: Expanded the `scrub_context` interface to support binary streams and multimedia metadata.
+    * **Security Impact**: Prevents the exfiltration of facial geometry and voice-print metadata found in high-resolution multi-modal context buffers.

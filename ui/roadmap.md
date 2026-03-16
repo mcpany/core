@@ -283,6 +283,11 @@
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
 
+#### Upcoming (2026-04-30 Evolution)
+- [ ] **[P0] Mesh-Aware Intent Visualizer**: Interactive graph UI for visualizing and reconciling multi-agent intent meshes. (Added: 2026-04-30)
+- [ ] **[P0] KLIP Integrity Monitor**: Real-time indicator for hardware-pinned Inodes and SIR violation alerts. (Added: 2026-04-30)
+- [ ] **[P0] S2S Negotiation Hub**: UI for managing multi-signature swarm identities and inter-swarm task handoffs. (Added: 2026-04-30)
+
 #### Upcoming (2026-04-29 Evolution)
 - [ ] **[P0] Sovereignty Audit Dashboard**: Comprehensive UI for monitoring de-biometricization events and scrubbing logs. (Added: 2026-04-29)
 - [ ] **[P0] Lifecycle Security Monitor**: Visualizer for session-bound capabilities and active privilege leases. (Added: 2026-04-29)

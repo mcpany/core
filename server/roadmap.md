@@ -434,6 +434,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
 *   **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-generated UI fragments (Added: 2026-04-23).
 
+#### Upcoming (2026-04-30 Evolution)
+*   **[P0] Mesh-Aware Blackboard Adaptor**: Graph-based intent mesh for multi-agent swarm reconciliation. (Added: 2026-04-30)
+*   **[P0] Kernel-Level Inode Pinning (KLIP)**: Hardware-bound file handle protection against SIR (Symlink-to-Inode Racing) exploits. (Added: 2026-04-30)
+*   **[P0] UACO v3.0 S2S Trust Broker**: Multi-signature identity management for Swarm-to-Swarm task negotiation. (Added: 2026-04-30)
+
 #### Upcoming (2026-04-29 Evolution)
 *   **[P0] ContextEngine Security Bridge**: Core integration mapping OpenClaw lifecycle signals (spawning/ended) to MCP Any security policies. (Added: 2026-04-29)
 *   **[P0] PII-Sovereign Context Scrubber**: Mandatory sanitization layer for hybrid-cloud deployments (Promoted to P0). (Added: 2026-04-29)
