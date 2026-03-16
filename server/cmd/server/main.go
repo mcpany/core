@@ -597,6 +597,46 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 	rootCmd.AddCommand(lintCmd)
 	rootCmd.AddCommand(configCmd)
 
+	initCmd := &cobra.Command{
+		Use:   "init",
+		Short: "Initialize a new MCP Any configuration file interactively",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			fmt.Println("MCP Any CLI: Initialization Wizard")
+			fmt.Println("Generating a minimal config.yaml...")
+
+			minimalConfig := `global_settings:
+  mcp_listen_address: ":50050"
+  metrics_listen_address: ":9090"
+  log_level: "info"
+upstream_services:
+  - name: "example-service"
+    http_service:
+      address: "https://httpbin.org"
+      tools:
+        - name: "get_example"
+          description: "Get example data"
+          call_id: "get-example-call"
+          input_schema:
+            type: "object"
+            properties: {}
+      calls:
+        get-example-call:
+          method: "HTTP_METHOD_GET"
+          endpoint_path: "/get"
+`
+			fs := afero.NewOsFs()
+			err := afero.WriteFile(fs, "config.yaml", []byte(minimalConfig), 0600)
+			if err != nil {
+				return fmt.Errorf("failed to write config.yaml: %w", err)
+			}
+			fmt.Println("Successfully created config.yaml in the current directory.")
+			fmt.Println("Run 'mcpany run' to start the server.")
+			return nil
+		},
+	}
+	rootCmd.AddCommand(initCmd)
+
+
 	config.BindRootFlags(rootCmd)
 
 	return rootCmd
