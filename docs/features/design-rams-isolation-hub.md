@@ -49,4 +49,8 @@ As AI agent swarms become more complex and autonomous, the "Blackboard" (Shared 
 * **Observability**: The RAMS Isolation Monitor in the UI will provide real-time visualization of shard mounts, memory usage, and handoff events.
 
 ## 7. Evolutionary Changelog
+* **2026-05-07:** Update: Intent-Sealed Shard Leak Mitigation.
+    * **Context**: Research into enterprise production swarms revealed a potential "State Bleeding" vector where shard metadata could be leaked during rapid handoffs.
+    * **Adjustment**: Implemented "Metadata Scrubbing" during the `CommitShard` lifecycle.
+    * **Security Impact**: Neutralizes "Subdomain Hijacking" on localhost where shards could be identified via metadata side-channels.
 * **2026-05-06:** Initial Document Creation.

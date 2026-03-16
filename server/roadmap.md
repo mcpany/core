@@ -440,6 +440,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Inter-Swarm Deadlock Detector**: UACO monitoring service for detecting and breaking circular attestation dependencies. (Added: 2026-05-02)
 *   **[P0] Deterministic Recovery Bridge (DSR)**: Standardized mapping of subagent exit codes to automated PLSS rollbacks. (Added: 2026-05-02)
 
+#### Upcoming (2026-05-07 Evolution)
+*   **[P0] Programmatic SDK Boundary Enforcer**: Mandatory security gating for SDK-driven agent interactions (e.g., OpenCode SDK). (Added: 2026-05-07)
+*   **[P1] Distributed Supervisor Mesh (DSM) Orchestrator**: Infrastructure for decentralized delegation and mission-root anchored oversight. (Added: 2026-05-07)
+*   **[P1] Autonomous Escalation Resolvers**: Mission-aligned fairness policies for breaking autonomous negotiation deadlocks. (Added: 2026-05-07)
+
 #### Upcoming (2026-05-06 Evolution)
 *   **[P0] Origin-Locked Agent Gateway**: Mandatory security layer for local listeners enforcing browser-origin and session-token binding (CVE-2026-25253 defense). (Added: 2026-05-06)
 *   **[P0] Intent-Sealed Blackboard Shards**: Advanced RAMS implementation for default memory isolation in the Shared KV Store. (Added: 2026-05-06)
