@@ -74,21 +74,21 @@ func NewServer(
 	}
 }
 
-// ClearCache clears the cache. ctx is the context for the request. _ is an unused parameter. Returns the response. Returns an error if the operation fails.
+// ClearCache flushes the semantic cache, removing all stored responses.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - _ (*pb.ClearCacheRequest): The _ parameter.
+//   - ctx (context.Context): The request context used for execution timeout and tracing.
+//   - _ (*pb.ClearCacheRequest): The empty request message.
 //
 // Returns:
-//   - *pb.ClearCacheResponse: The resulting *pb.ClearCacheResponse.
-//   - error: An error if the operation fails.
+//   - *pb.ClearCacheResponse: An empty response message indicating success.
+//   - error: Returns a gRPC status error if the cache operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an "Unavailable" error if the cache middleware is not initialized or unreachable.
 //
 // Side Effects:
-//   - None
+//   - Modifies global state by removing all entries from the semantic cache.
 func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.ClearCacheResponse, error) {
 	if s.cache == nil {
 		return nil, status.Error(codes.FailedPrecondition, "caching is not enabled")
@@ -99,18 +99,18 @@ func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.C
 	return &pb.ClearCacheResponse{}, nil
 }
 
-// ListServices returns all registered services. _ is an unused parameter. _ is an unused parameter. Returns the response. Returns an error if the operation fails.
+// ListServices retrieves a list of all upstream services currently managed by the Service Registry.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - _ (*pb.ListServicesRequest): The _ parameter.
+//   - _ (context.Context): The unused request context.
+//   - _ (*pb.ListServicesRequest): The empty request message.
 //
 // Returns:
-//   - *pb.ListServicesResponse: The resulting *pb.ListServicesResponse.
-//   - error: An error if the operation fails.
+//   - *pb.ListServicesResponse: A message containing an array of registered services and their current status.
+//   - error: Returns an error if the registry cannot be queried.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if internal components fail to retrieve service definitions.
 //
 // Side Effects:
 //   - None
@@ -160,18 +160,18 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 	}.Build(), nil
 }
 
-// GetService returns a specific service by ID. _ is an unused parameter. req is the request object. Returns the response. Returns an error if the operation fails.
+// GetService retrieves a specific upstream service's configuration and runtime details by its unique identifier.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - req (*pb.GetServiceRequest): The request object.
+//   - _ (context.Context): The unused request context.
+//   - req (*pb.GetServiceRequest): The request message containing the target service ID.
 //
 // Returns:
-//   - *pb.GetServiceResponse: The resulting *pb.GetServiceResponse.
-//   - error: An error if the operation fails.
+//   - *pb.GetServiceResponse: A message containing the service's details.
+//   - error: Returns an error if the requested service does not exist.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns a "NotFound" error if the service ID is not registered in the system.
 //
 // Side Effects:
 //   - None
@@ -217,18 +217,18 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 	}.Build(), nil
 }
 
-// ListTools returns all registered tools. _ is an unused parameter. _ is an unused parameter. Returns the response. Returns an error if the operation fails.
+// ListTools retrieves a comprehensive catalog of all executable tools available across all registered services.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - _ (*pb.ListToolsRequest): The _ parameter.
+//   - _ (context.Context): The unused request context.
+//   - _ (*pb.ListToolsRequest): The empty request message.
 //
 // Returns:
-//   - *pb.ListToolsResponse: The resulting *pb.ListToolsResponse.
-//   - error: An error if the operation fails.
+//   - *pb.ListToolsResponse: A message containing a list of all accessible tools.
+//   - error: Returns an error if the tool catalog cannot be accessed.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if internal components fail to aggregate tool definitions.
 //
 // Side Effects:
 //   - None
@@ -241,18 +241,18 @@ func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListT
 	return pb.ListToolsResponse_builder{Tools: responseTools}.Build(), nil
 }
 
-// GetTool returns a specific tool by name. _ is an unused parameter. req is the request object. Returns the response. Returns an error if the operation fails.
+// GetTool fetches the schema and execution definition for a specific tool by its registered name.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - req (*pb.GetToolRequest): The request object.
+//   - _ (context.Context): The unused request context.
+//   - req (*pb.GetToolRequest): The request message containing the tool's name.
 //
 // Returns:
-//   - *pb.GetToolResponse: The resulting *pb.GetToolResponse.
-//   - error: An error if the operation fails.
+//   - *pb.GetToolResponse: A message containing the detailed tool definition.
+//   - error: Returns an error if the tool is not found.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns a "NotFound" error if the tool name does not exist in the active catalog.
 //
 // Side Effects:
 //   - None
@@ -264,21 +264,23 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 	return pb.GetToolResponse_builder{Tool: t.Tool()}.Build(), nil
 }
 
-// CreateUser creates a new user. ctx is the context for the request. req is the request object. Returns the response. Returns an error if the operation fails.
+// CreateUser provisions a new user account in the system database and handles secure password hashing.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*pb.CreateUserRequest): The request object.
+//   - ctx (context.Context): The request context used for database timeouts.
+//   - req (*pb.CreateUserRequest): The request object containing the new user's profile and authentication details.
 //
 // Returns:
-//   - *pb.CreateUserResponse: The resulting *pb.CreateUserResponse.
-//   - error: An error if the operation fails.
+//   - *pb.CreateUserResponse: A message containing the created user record (with secrets stripped).
+//   - error: Returns a gRPC status error on validation or storage failures.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an "InvalidArgument" error if the user object is missing.
+//   - Returns an "Internal" error if password hashing fails or the database write encounters an issue.
 //
 // Side Effects:
-//   - None
+//   - Writes a new user record to the persistent database.
+//   - Modifies the request's password hash in memory during processing.
 func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	if !req.HasUser() {
 		return nil, status.Error(codes.InvalidArgument, "user is required")
@@ -304,18 +306,19 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 	return pb.CreateUserResponse_builder{User: safeUser}.Build(), nil
 }
 
-// GetUser retrieves a user by ID. ctx is the context for the request. req is the request object. Returns the response. Returns an error if the operation fails.
+// GetUser retrieves an existing user's profile information by their unique ID, ensuring secrets are not exposed.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*pb.GetUserRequest): The request object.
+//   - ctx (context.Context): The request context used for database timeouts.
+//   - req (*pb.GetUserRequest): The request object containing the target user ID.
 //
 // Returns:
-//   - *pb.GetUserResponse: The resulting *pb.GetUserResponse.
-//   - error: An error if the operation fails.
+//   - *pb.GetUserResponse: A message containing the sanitized user details.
+//   - error: Returns a gRPC status error if the user is missing or the database fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns a "NotFound" error if the user ID does not match any existing records.
+//   - Returns an "Internal" error if the database read operation fails.
 //
 // Side Effects:
 //   - None
@@ -333,18 +336,18 @@ func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUs
 	return pb.GetUserResponse_builder{User: safeUser}.Build(), nil
 }
 
-// ListUsers lists all users. ctx is the context for the request. _ is an unused parameter. Returns the response. Returns an error if the operation fails.
+// ListUsers retrieves all registered user accounts from the database and strips sensitive authentication data before returning.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - _ (*pb.ListUsersRequest): The _ parameter.
+//   - ctx (context.Context): The request context used for database timeouts.
+//   - _ (*pb.ListUsersRequest): The empty request message.
 //
 // Returns:
-//   - *pb.ListUsersResponse: The resulting *pb.ListUsersResponse.
-//   - error: An error if the operation fails.
+//   - *pb.ListUsersResponse: A message containing an array of sanitized user profiles.
+//   - error: Returns a gRPC status error if the database query fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an "Internal" error if the system cannot retrieve the users list from storage.
 //
 // Side Effects:
 //   - None
@@ -364,21 +367,23 @@ func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.Lis
 	return pb.ListUsersResponse_builder{Users: safeUsers}.Build(), nil
 }
 
-// UpdateUser updates an existing user. ctx is the context for the request. req is the request object. Returns the response. Returns an error if the operation fails.
+// UpdateUser modifies an existing user's profile and securely updates their password hash if provided.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*pb.UpdateUserRequest): The request object.
+//   - ctx (context.Context): The request context used for database timeouts.
+//   - req (*pb.UpdateUserRequest): The request object containing the updated user details.
 //
 // Returns:
-//   - *pb.UpdateUserResponse: The resulting *pb.UpdateUserResponse.
-//   - error: An error if the operation fails.
+//   - *pb.UpdateUserResponse: A message containing the updated, sanitized user profile.
+//   - error: Returns a gRPC status error if validation, hashing, or storage fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an "InvalidArgument" error if the user object is missing.
+//   - Returns an "Internal" error if password hashing or the database update fails.
 //
 // Side Effects:
-//   - None
+//   - Modifies an existing user record in the persistent database.
+//   - Modifies the request's password hash in memory during processing.
 func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
 	if !req.HasUser() {
 		return nil, status.Error(codes.InvalidArgument, "user is required")
@@ -404,21 +409,21 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 	return pb.UpdateUserResponse_builder{User: safeUser}.Build(), nil
 }
 
-// DeleteUser deletes a user by ID. ctx is the context for the request. req is the request object. Returns the response. Returns an error if the operation fails.
+// DeleteUser permanently removes a user account from the system database by their ID.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*pb.DeleteUserRequest): The request object.
+//   - ctx (context.Context): The request context used for database timeouts.
+//   - req (*pb.DeleteUserRequest): The request message containing the ID of the user to delete.
 //
 // Returns:
-//   - *pb.DeleteUserResponse: The resulting *pb.DeleteUserResponse.
-//   - error: An error if the operation fails.
+//   - *pb.DeleteUserResponse: An empty message indicating successful deletion.
+//   - error: Returns a gRPC status error if the deletion fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an "Internal" error if the database encounters an issue while attempting to delete the record.
 //
 // Side Effects:
-//   - None
+//   - Permanently deletes a user record from the persistent database.
 func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
 	if err := s.storage.DeleteUser(ctx, req.GetUserId()); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete user: %v", err)

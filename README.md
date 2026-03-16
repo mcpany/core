@@ -24,13 +24,13 @@ MCP Any utilizes a modular, adapter-based architecture to decouple the MCP proto
 **Core Components:**
 
 1.  **Core Server**: A high-performance Go runtime that handles the MCP protocol (JSON-RPC) and manages client sessions.
-2.  **Service Registry**: The central nervous system of MCP Any. It implements the `ServiceRegistryInterface` to manage the lifecycle of upstream services. It handles dynamic loading, hot-reloading, and health checking of services defined in configuration.
+2.  **Service Registry**: The central nervous system of MCP Any. It implements the `ServiceRegistryInterface` to manage the lifecycle of upstream services. It handles dynamic loading, hot-reloading, and health checking of services defined in configuration. The registry watches specified config files and updates active services automatically without requiring a server restart.
 3.  **Upstream Adapters**: Specialized implementations of the `Upstream` interface that translate MCP requests into protocol-specific calls:
     *   **HTTP**: Proxies requests to REST/JSON APIs with powerful parameter mapping and transformation templates.
     *   **gRPC**: Uses reflection to dynamically discover and invoke methods on gRPC services without generating code.
     *   **Command**: Safely executes local CLI tools or scripts in a controlled environment.
     *   **Filesystem**: Provides secure access to local or remote (S3, GCS) filesystems.
-4.  **Policy Engine & Middleware**: A security layer that enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging.
+4.  **Policy Engine & Middleware**: A security layer that enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging. The policy engine uses a Profile-based system to map incoming requests to allowed capabilities and connection configurations.
 
 ```mermaid
 graph TD
@@ -73,6 +73,22 @@ graph TD
 *   **Adapter Pattern**: The `Upstream` interface abstracts away the complexity of different backend protocols, providing a uniform interface for the Core Server.
 *   **Configuration as Code**: Services and capabilities are defined declaratively in YAML/JSON, enabling version control and CI/CD for your agent capabilities.
 *   **Gateway/Sidecar**: Deployable as a central gateway or a Kubernetes sidecar for maximum flexibility.
+
+## Configuration Example
+
+Here is a simple example of how to expose a local command as an MCP tool:
+
+```yaml
+version: "1"
+services:
+  system_tools:
+    type: "command"
+    command:
+      tools:
+        - name: "get_date"
+          description: "Gets the current date and time from the system"
+          command: ["date"]
+```
 
 ## Getting Started
 
@@ -141,9 +157,14 @@ make lint
 ```
 
 ### Building
-Compile the server binary and UI assets.
+Compile the server binary and UI assets. This uses Bazel under the hood to create hermetic, reproducible builds.
 ```bash
 make build
+```
+
+You can also build Docker images via Bazel:
+```bash
+make docker-build-all
 ```
 
 ### Code Generation
@@ -206,6 +227,9 @@ Common issues and solutions:
 If you see this error, port 50050 is occupied.
 *   Kill existing process: `lsof -ti:50050 | xargs kill`
 *   Or change port: `export MCPANY_MCP_LISTEN_ADDRESS=:50051`
+
+**"missing doc for exported symbol" during Linting**
+If `make lint` fails with "missing doc" errors, ensure that all public functions, constants, types, and variables have full docstrings matching our standard (Summary, Parameters, Returns, Errors, Side Effects).
 
 **"protoc not found" or build errors**
 Run `make prepare` to install all necessary toolchain dependencies into `build/env/bin`.
