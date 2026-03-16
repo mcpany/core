@@ -8,6 +8,7 @@ load("@npm//ui:ts-proto/package_json.bzl", ts_proto_bin = "bin")
 load("@npm//ui:typescript/package_json.bzl", tsc_bin = "bin")
 load("@npm//ui:vite/package_json.bzl", vite_bin = "bin")
 load("@npm//ui:vitest/package_json.bzl", vitest_bin = "bin")
+load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer")
 load("//ui:playwright_tests.bzl", "define_playwright_tests")
 load("//ui:vitest_tests.bzl", "define_vitest_tests")
 
@@ -160,10 +161,16 @@ pkg_tar(
 # Package the minimal node_modules needed by vite preview (vite itself + proxy deps).
 # We conservatively include the full node_modules; a future optimisation can
 # prune dev-only packages.
-pkg_tar(
-    name = "ui_node_modules_tar",
-    srcs = [":node_modules"],
-    package_dir = "/app/node_modules",
+js_binary(
+    name = "vite_preview_bin",
+    data = [":node_modules"],
+    entry_point = "node_modules/vite/bin/vite.js",
+)
+
+js_image_layer(
+    name = "ui_node_modules_layer",
+    binary = ":vite_preview_bin",
+    root = "/app",
 )
 
 # Static config files required by `vite preview` at runtime.
@@ -182,22 +189,13 @@ pkg_tar(
     deps = [
         ":ui_dist_tar",
         ":ui_config_tar",
-        ":ui_node_modules_tar",
     ],
 )
 
 oci_image(
     name = "ui_image",
     base = "@distroless_nodejs24",
-    entrypoint = [
-        "node",
-        "/app/node_modules/vite/bin/vite.js",
-        "preview",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "3000",
-    ],
+    entrypoint = ["/app/ui/vite_preview_bin", "preview", "--host", "0.0.0.0", "--port", "3000"],
     env = {
         # Override at deploy-time (k8s env, docker run --env, Helm values).
         "BACKEND_URL": "http://localhost:50050",
