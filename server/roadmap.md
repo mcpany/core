@@ -434,6 +434,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
 *   **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-generated UI fragments (Added: 2026-04-23).
 
+#### Upcoming (2026-04-30 Evolution)
+*   **[P0] Anti-Pinning Context Guard**: Security reset verifier ensuring no unauthorized context survives session transitions. (Added: 2026-04-30)
+*   **[P1] Monologue Alignment Protocol (MAP)**: Reasoning-sync middleware reconciling subagent state against signed Intent Chains. (Added: 2026-04-30)
+*   **[P1] SHT-Native BSH Extension**: Binary State Handoff upgrade to support OpenClaw Stateful Handoff Tokens. (Added: 2026-04-30)
+*   **[P0] Cross-Tenant Tool Attestation Bridge**: Gateway for validating external organization tool safety claims (LFTA v2.6). (Added: 2026-04-30)
+
 #### Upcoming (2026-04-29 Evolution)
 *   **[P0] ContextEngine Security Bridge**: Core integration mapping OpenClaw lifecycle signals (spawning/ended) to MCP Any security policies. (Added: 2026-04-29)
 *   **[P0] PII-Sovereign Context Scrubber**: Mandatory sanitization layer for hybrid-cloud deployments (Promoted to P0). (Added: 2026-04-29)

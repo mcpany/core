@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-04-30] Updates
+
+### Proposed Additions
+- **Anti-Pinning Context Guard**: (P0) A security-critical reset verifier that ensures no unauthorized context survives mission transitions, neutralizing CVE-2026-51002.
+- **Monologue Alignment Protocol (MAP)**: (P1) A reasoning-sync middleware that periodically reconciles subagent internal monologues against the parent's signed Intent Chain to prevent "Monologue Divergence."
+- **SHT-Native BSH Extension**: (P1) An upgrade to the Binary State Handoff gateway to support OpenClaw's Stateful Handoff Tokens (SHT) for low-latency reasoning momentum transfer.
+
+### Priority Shifts
+- **Anti-Pinning Context Guard**: (P0) Fast-tracked to address the persistent "Context Pinning" exploit pattern.
+- **ContextEngine Security Bridge**: (Re-affirmed P0) Expanded to support the new Ephemeral Reasoner lifecycle.
+
 ## Evolution: [2026-04-29] Updates
 
 ### Proposed Additions
