@@ -47,3 +47,10 @@ Hardware-Attested Boot (TPM) ensures an agent starts in a clean environment, but
 * **2026-04-17:** Initial Document Creation.
 * **2026-04-18:** Optimization for "Resident Persistence Proofs" inspired by Claude Code's latest stability updates. Introducing a "Unified Persistence Broker" pattern to allow swarm-wide sharing of hardware-bound integrity signals, reducing the per-agent attestation tax.
 * **2026-04-19:** Integration with Distributed Trust Leases (LFTA). RIM now acts as the authoritative "Lease Guard," providing the continuous hardware-attestation signals required to maintain LFTA token validity. Detection of any integrity drift (e.g., config hook modification) now triggers an immediate global revocation of all active trust leases.
+
+### Update: 2026-05-02 - Kernel-Bound Intent Attestation (KBIA)
+**Context:** Today's research revealed Claude Code's "Kernel-Bound Intent Attestation" (KBIA), which cryptographically binds agent reasoning to OS-level process management.
+**Architecture Adjustment:**
+* **KBI Broker Integration:** RIM is evolving into the authoritative "KBI Broker." It will generate the cryptographic intent manifests required by KBIA-compliant kernels.
+* **Process-to-Intent Binding:** In Section 4, RIM will now map subagent process IDs (PIDs) directly to their signed "Reasoning Intent" in the kernel's security context.
+**Security Impact:** Enables the OS kernel to forcefully terminate any agent process that deviates from its attested reasoning path, providing absolute execution-to-reasoning parity.

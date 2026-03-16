@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-02] Updates
+
+### Proposed Additions
+- **Kernel-Bound Intent (KBI) Broker**: (P0) Authoritative intent-manifest provider for KBIA kernels, binding agent sub-processes to cryptographically signed reasoning intents.
+- **Shared Responsibility (SACH) Gateway**: (P0) A2A messaging extension for co-signed capabilities, ensuring high-privilege tool calls require synchronized attestation from parent and child agents.
+- **Intent-Scoped Resource Isolation (ISRI)**: (P0) Resource management middleware for ISRQ-compliant environments, enforcing CPU/memory/token limits on a per-intent basis.
+
+### Priority Shifts
+- **Adaptive Intent Budgeting (AIB)**: (Re-affirmed P0) Now elevated to include mandatory ISRI enforcement for all deep swarms.
+- **Resident Integrity Monitor (RIM)**: (Re-affirmed P0) Evolving into the KBI Broker to provide OS-level reasoning attestation.
+
 ## Evolution: [2026-05-01] Updates
 
 ### Proposed Additions

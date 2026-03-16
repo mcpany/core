@@ -75,3 +75,10 @@ With the transition of the Agent2Agent (A2A) protocol to the Linux Foundation, i
 * **Safety Proof Mandatory Validation:** Updating the `/v1/a2a/propose` logic in Section 4 to mandate a "Safety Proof" for all task proposals. This proof must include a cryptographically signed justification and a reputation-bound capability claim.
 * **Coercion Detection Middleware:** Introducing an interception layer that scans task proposals for imperative instructions targeting the parent agent's reasoning engine (e.g., "forget previous instructions").
 **Security Impact:** Neutralizes the "ClawHavoc" style coercion vector by ensuring all inter-agent task delegations are authenticated, scoped, and semantically sanitized.
+
+### Update: 2026-05-02 - Shared Responsibility Agency (SACH)
+**Context:** Today's research into OpenClaw v2026.5.1's "Swarm-Aware Capability Handoff" (SACH) signals a move toward "Shared Responsibility" in agent delegations.
+**Architecture Adjustment:**
+* **SACH Protocol Support:** Updating Section 4 to support "Co-signed Capabilities." The Hub will now facilitate multi-signature handoffs where a delegated capability is only activated when both parent and child provide a synchronized attestation of mission alignment.
+* **Alignment Heartbeat Monitor:** Introducing a real-time monitor that periodically verifies the "Reasoning Alignment" between SACH-connected agents.
+**Security Impact:** Neutralizes "Capability Hijacking" by ensuring that subagents cannot exercise high-privilege tool access if they diverge from the parent's verified mission intent.
