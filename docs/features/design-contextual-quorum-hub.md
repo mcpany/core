@@ -52,3 +52,9 @@ As AI agent swarms move from simple automation to autonomous high-stakes operati
         * Introducing "Wait-Graph Analysis" into the UACO-MAQ token collection flow.
         * Implementing a "Deadlock Resolver" service that performs cycle-detection on the quorum participants.
         * Adding mission-aligned "Attestation Timeouts" to prevent infinite resource consumption in deadlocked swarms.
+* **2026-05-04:** [Update] - Semantic Integrity Bridge.
+    * **Context**: Today's market sync revealed the emergence of "Recursive Intent Poisoning" (RIP), where subagents introduce subtle semantic drifts.
+    * **Architecture Adjustment**:
+        * Introducing "Semantic Integrity Bridge" as a middleware for the CQ Hub.
+        * Implementing "Intent Drift Detection" that compares real-time subagent outputs against the "Mission Root" using OpenClaw-compatible SGC logic.
+        * High-drift events will trigger a "Quorum Re-Attestation" requirement, escalating the AQT threshold dynamically.

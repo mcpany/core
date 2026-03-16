@@ -440,6 +440,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Inter-Swarm Deadlock Detector**: UACO monitoring service for detecting and breaking circular attestation dependencies. (Added: 2026-05-02)
 *   **[P0] Deterministic Recovery Bridge (DSR)**: Standardized mapping of subagent exit codes to automated PLSS rollbacks. (Added: 2026-05-02)
 
+#### Upcoming (2026-05-04 Evolution)
+*   **[P0] Semantic Integrity Bridge**: Intent Drift Detection middleware to prevent Recursive Intent Poisoning (RIP). (Added: 2026-05-04)
+*   **[P0] Kernel-Bound FD Persistence Middleware**: FD-passing and pinning for absolute configuration immutability. (Added: 2026-05-04)
+*   **[P1] Bi-directional A2UI State Bridge**: Two-way state synchronization for corrective user intent injection. (Added: 2026-05-04)
+
 #### Upcoming (2026-05-03 Evolution)
 *   **[P0] Deadlock-Resilient CQ Controller**: Advanced cycle-detection and wait-graph analysis for the CQ Hub. (Added: 2026-05-03)
 *   **[P0] Hierarchical Intent Lease (HIL) Broker**: Task-bound, hierarchical capability management based on UACO v3.2. (Added: 2026-05-03)
