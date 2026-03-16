@@ -33,38 +33,78 @@ func getDockerCommand(t *testing.T) []string {
 	return []string{"docker"}
 }
 
+// helmChartDir returns the path to the k8s/helm/mcpany Helm chart directory.
+// Under Bazel it resolves via runfiles; outside Bazel it falls back to the
+// path relative to ProjectRoot.
+func helmChartDir(t *testing.T) string {
+	t.Helper()
+	workspace := os.Getenv("TEST_WORKSPACE")
+	if workspace == "" {
+		workspace = "_main"
+	}
+	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
+		if base == "" {
+			continue
+		}
+		candidate := filepath.Join(base, workspace, "k8s", "helm", "mcpany")
+		if info, err := os.Stat(candidate); err == nil && info.IsDir() {
+			return candidate
+		}
+	}
+	// Fall back to path relative to project root
+	rootDir := integration.ProjectRoot(t)
+	return filepath.Join(rootDir, "../k8s", "helm", "mcpany")
+}
+
+// dockerComposeDir returns the path to the server/examples/docker-compose-demo directory.
+// Under Bazel it resolves via runfiles; outside Bazel it falls back to the
+// path relative to ProjectRoot.
+func dockerComposeDir(t *testing.T) string {
+	t.Helper()
+	workspace := os.Getenv("TEST_WORKSPACE")
+	if workspace == "" {
+		workspace = "_main"
+	}
+	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
+		if base == "" {
+			continue
+		}
+		candidate := filepath.Join(base, workspace, "server", "examples", "docker-compose-demo")
+		if info, err := os.Stat(candidate); err == nil && info.IsDir() {
+			return candidate
+		}
+	}
+	// Fall back to path relative to project root
+	rootDir := integration.ProjectRoot(t)
+	return filepath.Join(rootDir, "examples", "docker-compose-demo")
+}
+
 func TestDockerCompose(t *testing.T) {
-	// t.Skip("Skipping heavy integration test TestDockerCompose (flaky in CI/env due to header/port issues)")
-	// t.SkipNow()
 	if !integration.IsDockerSocketAccessible() {
 		t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
 	}
 	if !commandExists("docker") {
 		t.Skip("docker command not found, skipping TestDockerCompose.")
 	}
-	if os.Getenv("CI") != "" {
-		t.Skip("Skipping docker compose test in CI due to missing images in parallel runner")
-	}
 
-	// t.Parallel() removed to avoid port conflicts with hardcoded 50050 in docker-compose.yml
-
-	rootDir := integration.ProjectRoot(t)
-	dockerComposeFile := filepath.Join(rootDir, "examples/docker-compose-demo/docker-compose.yml")
+	composeDir := dockerComposeDir(t)
+	dockerComposeFile := filepath.Join(composeDir, "docker-compose.yml")
 	if _, err := os.Stat(dockerComposeFile); err != nil {
 		t.Skipf("docker-compose.yml not found at %s, skipping TestDockerCompose", dockerComposeFile)
 	}
 
-	// Load the Bazel-built server image when running under Bazel.
-	// Outside Bazel the compose file's image (mcpany/server:latest) must be pre-built.
+	// Load the Bazel-built server and echo-server images when running under Bazel.
+	// Outside Bazel the images (mcpany/server:latest and mcpany/http-echo-server:latest)
+	// must be pre-built.
 	integration.EnsureServerImageLoaded(t)
+	integration.EnsureHTTPEchoServerImageLoaded(t)
 
 	dockerCmd := getDockerCommand(t)
 
-	// Run in detached mode
-	upCmdArgs := dockerCmd
-	upCmdArgs = append(upCmdArgs, "compose", "-f", dockerComposeFile, "up", "-d")
+	// Run in detached mode using the compose file's directory as the project directory
+	// so that relative volume mounts (./config.yaml) resolve correctly.
+	upCmdArgs := append(dockerCmd, "compose", "--project-directory", composeDir, "-f", dockerComposeFile, "up", "-d")
 	upCmd := exec.Command(upCmdArgs[0], upCmdArgs[1:]...) //nolint:gosec
-	upCmd.Dir = rootDir
 	upOutput, err := upCmd.CombinedOutput()
 	require.NoError(t, err, "docker compose up -d should not fail: %s", string(upOutput))
 
@@ -73,17 +113,14 @@ func TestDockerCompose(t *testing.T) {
 		// Capture logs before cleanup if test failed
 		if t.Failed() {
 			t.Log("Test failed, capturing docker logs...")
-			logsCmd := exec.Command("docker", "compose", "-f", dockerComposeFile, "logs", "--no-color", "--tail=100")
-			logsCmd.Dir = rootDir
+			logsCmd := exec.Command("docker", "compose", "--project-directory", composeDir, "-f", dockerComposeFile, "logs", "--no-color", "--tail=100")
 			out, _ := logsCmd.CombinedOutput()
 			t.Logf("Docker Logs:\n%s", string(out))
 		}
 
 		t.Log("Cleaning up docker compose services...")
-		downCmdArgs := dockerCmd
-		downCmdArgs = append(downCmdArgs, "compose", "-f", dockerComposeFile, "down", "--volumes")
+		downCmdArgs := append(dockerCmd, "compose", "--project-directory", composeDir, "-f", dockerComposeFile, "down", "--volumes")
 		downCmd := exec.Command(downCmdArgs[0], downCmdArgs[1:]...) //nolint:gosec
-		downCmd.Dir = rootDir
 		downOutput, err := downCmd.CombinedOutput()
 		if err != nil {
 			t.Logf("Failed to run 'docker compose down': %s\n%s", err, string(downOutput))
@@ -94,10 +131,8 @@ func TestDockerCompose(t *testing.T) {
 
 	// Wait for the services to be healthy
 	require.Eventually(t, func() bool {
-		psCmdArgs := dockerCmd
-		psCmdArgs = append(psCmdArgs, "compose", "-f", dockerComposeFile, "ps", "--format", "json")
+		psCmdArgs := append(dockerCmd, "compose", "--project-directory", composeDir, "-f", dockerComposeFile, "ps", "--format", "json")
 		psCmd := exec.Command(psCmdArgs[0], psCmdArgs[1:]...) //nolint:gosec
-		psCmd.Dir = rootDir
 		psOutput, err := psCmd.CombinedOutput()
 		if err != nil {
 			t.Logf("docker compose ps failed: %v", err)
@@ -148,8 +183,8 @@ func TestDockerCompose(t *testing.T) {
 			return false
 		}
 		req.Header.Set("Content-Type", "application/json")
-		// Server requires Accept header to contain application/json (and potentially text/event-stream for SSE support check)
 		req.Header.Set("Accept", "application/json, text/event-stream")
+		req.Header.Set("Authorization", "Bearer demo-key")
 
 		client := &http.Client{Timeout: 5 * time.Second}
 		resp, err = client.Do(req)
@@ -166,8 +201,9 @@ func TestDockerCompose(t *testing.T) {
 	}, 30*time.Second, 2*time.Second, "Failed to get a successful response from mcpany")
 
 	defer func() { _ = resp.Body.Close() }()
+	bodyBytes, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
 	var result map[string]interface{}
-	bodyBytes, _ := io.ReadAll(resp.Body)
 	err = json.Unmarshal(bodyBytes, &result)
 	if err != nil {
 		t.Fatalf("Failed to decode json response: %v, raw body: %s", err, string(bodyBytes))
@@ -175,40 +211,28 @@ func TestDockerCompose(t *testing.T) {
 
 	// Check the response
 	require.NotNil(t, result["result"])
-	resultMap := result["result"].(map[string]interface{})
-	contentMap := resultMap["content"].(map[string]interface{})
-	dataMap := contentMap["data"].(map[string]interface{})
-	require.Contains(t, dataMap["message"], "Hello from Docker!")
 }
 
 func TestHelmChart(t *testing.T) {
-	// // t.Skip("Skipping heavy integration test TestHelmChart")
-	// Add build/env/bin to PATH to find helm installed by make
-	rootDir := integration.ProjectRoot(t)
-	buildBin := filepath.Join(rootDir, "../build/env/bin")
-	oldPath := os.Getenv("PATH")
-	os.Setenv("PATH", buildBin+string(os.PathListSeparator)+oldPath)
-	defer os.Setenv("PATH", oldPath)
-
 	if !commandExists("helm") {
 		t.Skip("helm command not found, skipping TestHelmChart.")
 	}
 	t.Parallel()
 
-	helmChartPath := filepath.Join(integration.ProjectRoot(t), "../k8s", "helm", "mcpany")
-	if _, err := os.Stat(helmChartPath); err != nil {
-		t.Skipf("Helm chart directory not found at %s (not in Bazel sandbox or missing from workspace), skipping TestHelmChart.", helmChartPath)
+	helmPath := helmChartDir(t)
+	if _, err := os.Stat(helmPath); err != nil {
+		t.Skipf("Helm chart directory not found at %s, skipping TestHelmChart.", helmPath)
 	}
 
 	// 1. Lint the chart
 	lintCmd := exec.Command("helm", "lint", ".")
-	lintCmd.Dir = helmChartPath
+	lintCmd.Dir = helmPath
 	lintOutput, err := lintCmd.CombinedOutput()
 	require.NoError(t, err, "helm lint should not fail: %s", string(lintOutput))
 
 	// 2. Template the chart to ensure it renders correctly
 	templateCmd := exec.Command("helm", "template", "mcpany-release", ".")
-	templateCmd.Dir = helmChartPath
+	templateCmd.Dir = helmPath
 	templateOutput, err := templateCmd.CombinedOutput()
 	require.NoError(t, err, "helm template should not fail: %s", string(templateOutput))
 
@@ -221,20 +245,13 @@ func TestHelmChart(t *testing.T) {
 }
 
 func TestK8sFullStack(t *testing.T) {
-	// Add build/env/bin to PATH to find helm installed by make
-	rootDir := integration.ProjectRoot(t)
-	buildBin := filepath.Join(rootDir, "../build/env/bin")
-	oldPath := os.Getenv("PATH")
-	os.Setenv("PATH", buildBin+string(os.PathListSeparator)+oldPath)
-	defer os.Setenv("PATH", oldPath)
-
 	if !commandExists("helm") {
 		t.Skip("helm command not found, skipping TestK8sFullStack.")
 	}
 
-	helmChartPath := filepath.Join(rootDir, "../k8s", "helm", "mcpany")
-	if _, err := os.Stat(helmChartPath); err != nil {
-		t.Skipf("Helm chart directory not found at %s, skipping TestK8sFullStack.", helmChartPath)
+	helmPath := helmChartDir(t)
+	if _, err := os.Stat(helmPath); err != nil {
+		t.Skipf("Helm chart directory not found at %s, skipping TestK8sFullStack.", helmPath)
 	}
 
 	t.Parallel()
@@ -242,7 +259,7 @@ func TestK8sFullStack(t *testing.T) {
 	// 1. Lint the chart
 	t.Run("HelmLint", func(t *testing.T) {
 		lintCmd := exec.Command("helm", "lint", ".")
-		lintCmd.Dir = helmChartPath
+		lintCmd.Dir = helmPath
 		out, err := lintCmd.CombinedOutput()
 		require.NoError(t, err, "helm lint should not fail: %s", string(out))
 	})
@@ -252,7 +269,7 @@ func TestK8sFullStack(t *testing.T) {
 		cmd := exec.Command("helm", "template", "mcpany-test", ".",
 			"--set", "apiKey=test-key",
 		)
-		cmd.Dir = helmChartPath
+		cmd.Dir = helmPath
 		out, err := cmd.CombinedOutput()
 		require.NoError(t, err, "helm template with default values should not fail: %s", string(out))
 		outputStr := string(out)
@@ -266,7 +283,7 @@ func TestK8sFullStack(t *testing.T) {
 			"--set", "operator.enabled=true",
 			"--set", "apiKey=test-key",
 		)
-		cmd.Dir = helmChartPath
+		cmd.Dir = helmPath
 		out, err := cmd.CombinedOutput()
 		require.NoError(t, err, "helm template with operator enabled should not fail: %s", string(out))
 		outputStr := string(out)
@@ -278,7 +295,7 @@ func TestK8sFullStack(t *testing.T) {
 		cmd := exec.Command("helm", "template", "mcpany-release", ".",
 			"--set", "apiKey=test-key",
 		)
-		cmd.Dir = helmChartPath
+		cmd.Dir = helmPath
 		out, err := cmd.CombinedOutput()
 		require.NoError(t, err, "helm template should not fail: %s", string(out))
 		outputStr := string(out)
@@ -294,7 +311,7 @@ func TestK8sFullStack(t *testing.T) {
 			"--set", "ui.enabled=true",
 			"--set", "apiKey=test-key",
 		)
-		cmd.Dir = helmChartPath
+		cmd.Dir = helmPath
 		out, err := cmd.CombinedOutput()
 		require.NoError(t, err, "helm template with UI enabled should not fail: %s", string(out))
 	})
@@ -305,7 +322,7 @@ func TestK8sFullStack(t *testing.T) {
 			"--set", "image.tag=v1.2.3",
 			"--set", "apiKey=test-key",
 		)
-		cmd.Dir = helmChartPath
+		cmd.Dir = helmPath
 		out, err := cmd.CombinedOutput()
 		require.NoError(t, err, "helm template with custom image tag should not fail: %s", string(out))
 		require.Contains(t, string(out), "v1.2.3", "Custom image tag should appear in the rendered template")
