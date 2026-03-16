@@ -15,11 +15,11 @@ import (
 //   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to strip secrets from.
 //
 // Returns:
-//   - outcome: The resulting data or value.
+//   - results based on execution outcome.
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 // Side Effects:
-//   - changes: Any state modifications.
+//   - none.
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	if svc == nil {
 		return
@@ -76,11 +76,11 @@ func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 //   - profile (*configv1.ProfileDefinition): The profile definition to strip secrets from.
 //
 // Returns:
-//   - outcome: The resulting data or value.
+//   - results based on execution outcome.
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 // Side Effects:
-//   - changes: Any state modifications.
+//   - none.
 func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	if profile == nil {
 		return
@@ -98,11 +98,11 @@ func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 //   - collection (*configv1.Collection): The service collection to strip secrets from.
 //
 // Returns:
-//   - outcome: The resulting data or value.
+//   - results based on execution outcome.
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 // Side Effects:
-//   - changes: Any state modifications.
+//   - none.
 func StripSecretsFromCollection(collection *configv1.Collection) {
 	if collection == nil {
 		return
@@ -120,11 +120,11 @@ func StripSecretsFromCollection(collection *configv1.Collection) {
 //   - auth (*configv1.Authentication): The authentication configuration to strip secrets from.
 //
 // Returns:
-//   - outcome: The resulting data or value.
+//   - results based on execution outcome.
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 // Side Effects:
-//   - changes: Any state modifications.
+//   - none.
 func StripSecretsFromAuth(auth *configv1.Authentication) {
 	if auth == nil {
 		return
@@ -345,11 +345,11 @@ func scrubSecretValue(sv *configv1.SecretValue) {
 //   - secrets (map[string]*configv1.SecretValue): A map of resolved secret values.
 //
 // Returns:
-//   - outcome: The resulting data or value.
+//   - results based on execution outcome.
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 // Side Effects:
-//   - changes: Any state modifications.
+//   - none.
 func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[string]*configv1.SecretValue) {
 	if svc == nil || len(secrets) == 0 {
 		return

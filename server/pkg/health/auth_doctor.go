@@ -18,9 +18,9 @@ import (
 //   - Reads environment variables.
 //
 // Parameters:
-//   - params: Inputs expected by the function.
+//   - specific inputs depending on signature.
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func CheckAuth() map[string]CheckResult {
 	results := make(map[string]CheckResult)
 

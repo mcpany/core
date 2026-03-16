@@ -56,7 +56,7 @@ import (
 //   - None.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, reqHashLength int) (string, error) {
 	if len(ids) == 0 {
 		return "", nil
@@ -227,7 +227,7 @@ func isValidChar(c byte) bool {
 //   - None.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func SanitizeServiceName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
@@ -250,7 +250,7 @@ func SanitizeServiceName(name string) (string, error) {
 //   - None.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func SanitizeToolName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
@@ -309,7 +309,7 @@ const TrueStr = "true"
 //   - Generates random data.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func GenerateUUID() string {
 	return uuid.New().String()
 }
@@ -332,7 +332,7 @@ func GenerateUUID() string {
 //   - None.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func ParseToolName(toolName string) (service, bareToolName string, err error) {
 	parts := strings.SplitN(toolName, consts.ToolNameServiceSeparator, 2)
 	if len(parts) == 2 {
@@ -358,7 +358,7 @@ func ParseToolName(toolName string) (service, bareToolName string, err error) {
 //   - None.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func SanitizeOperationID(input string) string {
 	// Fast path: check if valid without allocating
 	isClean := true
@@ -439,7 +439,7 @@ func stringToBytes(s string) []byte {
 //   - None.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func BytesToString(b []byte) string {
 	return unsafe.String(unsafe.SliceData(b), len(b))
 }
@@ -461,7 +461,7 @@ func BytesToString(b []byte) string {
 //   - Reads environment variable USE_SUDO_FOR_DOCKER.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func GetDockerCommand() (string, []string) {
 	const dockerCmd = "docker"
 	if os.Getenv("USE_SUDO_FOR_DOCKER") == TrueStr {
@@ -487,7 +487,7 @@ func GetDockerCommand() (string, []string) {
 //   - None.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParams map[string]bool) string {
 	return replacePlaceholders(urlPath, params, noEscapeParams, url.PathEscape)
 }
@@ -509,7 +509,7 @@ func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParam
 //   - None.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func ReplaceURLQuery(urlQuery string, params map[string]interface{}, noEscapeParams map[string]bool) string {
 	return replacePlaceholders(urlQuery, params, noEscapeParams, url.QueryEscape)
 }
@@ -566,7 +566,7 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 //   - None.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func IsNil(i any) bool {
 	if i == nil {
 		return true
@@ -599,7 +599,7 @@ func IsNil(i any) bool {
 //   - None.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func ToString(v any) string {
 	return toStringRecursive(v, 0)
 }
@@ -710,7 +710,7 @@ func toStringRecursive(v any, depth int) string {
 //   - Generates random data.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func RandomFloat64() float64 {
 	return rand.Float64() //nolint:gosec // Weak random is sufficient for jitter
 }
@@ -731,7 +731,7 @@ func RandomFloat64() float64 {
 //   - None.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func SanitizeFilename(filename string) string {
 	// 1. Base name only
 	filename = filepath.Base(filename)

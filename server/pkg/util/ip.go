@@ -29,9 +29,9 @@ const remoteIPContextKey = contextKey("remote_ip")
 //   - context.Context: A new context with the remote IP attached.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 // Side Effects:
-//   - changes: Any state modifications.
+//   - none.
 func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 	return context.WithValue(ctx, remoteIPContextKey, ip)
 }
@@ -49,9 +49,9 @@ func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 //   - string: The cleaned IP address string, or an empty string if the address is invalid.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 // Side Effects:
-//   - changes: Any state modifications.
+//   - none.
 func ExtractIP(addr string) string {
 	ipStr, _, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -85,9 +85,9 @@ func ExtractIP(addr string) string {
 //   - string: The best-effort client IP address.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 // Side Effects:
-//   - changes: Any state modifications.
+//   - none.
 func GetClientIP(r *http.Request, trustProxy bool) string {
 	if trustProxy {
 		// Prefer X-Real-IP as it is usually a single IP set by the trusted proxy.
@@ -126,9 +126,9 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 //   - bool: True if the IP was found, false otherwise.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 // Side Effects:
-//   - changes: Any state modifications.
+//   - none.
 func RemoteIPFromContext(ctx context.Context) (string, bool) {
 	ip, ok := ctx.Value(remoteIPContextKey).(string)
 	return ip, ok
@@ -148,9 +148,9 @@ func RemoteIPFromContext(ctx context.Context) (string, bool) {
 //   - bool: True if the IP is a private network address.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 // Side Effects:
-//   - changes: Any state modifications.
+//   - none.
 func IsPrivateNetworkIP(ip net.IP) bool {
 	return validation.IsPrivateNetworkIP(ip)
 }
@@ -168,9 +168,9 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 //   - bool: True if the IP is private, link-local, or loopback.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 // Side Effects:
-//   - changes: Any state modifications.
+//   - none.
 func IsPrivateIP(ip net.IP) bool {
 	return validation.IsPrivateIP(ip)
 }

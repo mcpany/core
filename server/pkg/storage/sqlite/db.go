@@ -35,7 +35,7 @@ type DB struct {
 //   - Initializes the database schema.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func NewDB(path string) (*DB, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0750); err != nil {
 		return nil, fmt.Errorf("failed to create db directory: %w", err)

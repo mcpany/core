@@ -61,7 +61,7 @@ type Debugger struct {
 //   - Starts a background goroutine to process debug entries.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func NewDebugger(size int) *Debugger {
 	d := &Debugger{
 		ring:        ring.New(size),

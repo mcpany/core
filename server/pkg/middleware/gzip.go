@@ -73,7 +73,7 @@ var byteBufferPool = sync.Pool{
 //   - Modifies the Content-Encoding header.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func GzipCompressionMiddleware(next http.Handler) http.Handler {
 	pool := sync.Pool{
 		New: func() interface{} {

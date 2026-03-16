@@ -39,7 +39,7 @@ type OpenAIEmbeddingProvider struct {
 //   - Initializes an HTTP client with a timeout.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func NewOpenAIEmbeddingProvider(apiKey, model string) *OpenAIEmbeddingProvider {
 	if model == "" {
 		model = "text-embedding-3-small"

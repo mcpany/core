@@ -72,7 +72,7 @@ func (e *ActionableError) Unwrap() error {
 //   - None.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func WrapActionableError(context string, err error) error {
 	if err == nil {
 		return nil

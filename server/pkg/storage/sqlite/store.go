@@ -36,7 +36,7 @@ type Store struct {
 //   - None.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func NewStore(db *DB) *Store {
 	return &Store{db: db}
 }

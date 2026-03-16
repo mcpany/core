@@ -77,7 +77,7 @@ type Executor interface {
 //   - May initialize a Docker client.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 	if containerEnv != nil && containerEnv.GetImage() != "" {
 		return newDockerExecutor(containerEnv)
@@ -99,7 +99,7 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 //   - None.
 //
 // Errors:
-//   - err: Any error that occurs during execution.
+//   - may return an error on failure.
 func NewLocalExecutor() Executor {
 	return &localExecutor{}
 }
