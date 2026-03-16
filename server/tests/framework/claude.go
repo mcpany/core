@@ -28,15 +28,6 @@ type ClaudeCLI struct {
 // t is the t.
 //
 // Returns the result.
-//
-// Parameters:
-//   - None.
-// Returns:
-//   - None.
-// Errors:
-//   - None.
-// Side Effects:
-//   - None.
 func NewClaudeCLI(t *testing.T) *ClaudeCLI {
 	return &ClaudeCLI{t: t}
 }
