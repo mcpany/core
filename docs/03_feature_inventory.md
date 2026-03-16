@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-06] Updates
+
+### Proposed Additions
+- **Origin-Locked Agent Gateway**: (P0) A mandatory security layer for all local listeners that enforces `Origin`, `Sec-Fetch-Site`, and session-token binding to neutralize "ClawJacked" style hijacking.
+- **Intent-Sealed Blackboard Shards**: (P0) Implementation of Reason-Aware Memory Segmentation (RAMS) providing cryptographically isolated memory regions for subagents within the Shared KV Store.
+- **Fast-Path Trust Lease Broker**: (P1) A performance-optimizing security middleware that manages time-bound hardware-attested trust leases to reduce per-call attestation latency.
+
+### Priority Shifts
+- **Reasoning-Aware Memory Segmentation (RAMS) Hub**: (Re-affirmed P0) Evolved into the "Intent-Sealed Shards" model for default isolation.
+- **Same-Origin Policy (SOP) Enforcer**: (Promoted to P0) Designated as a mandatory prerequisite for all local tool connectivity.
+
 ## Evolution: [2026-05-05] Updates
 
 ### Proposed Additions

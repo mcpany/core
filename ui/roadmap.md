@@ -283,6 +283,11 @@
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
 
+#### Upcoming (2026-05-06 Evolution)
+- [ ] **[P0] Origin Violation Security Hub**: Re-affirmed P0 for real-time monitoring of blocked cross-site attempts (CVE-2026-25253 defense). (Added: 2026-05-06)
+- [ ] **[P0] RAMS Isolation Monitor**: Enhanced visualization for intent-sealed Blackboard shards and memory boundary violations. (Added: 2026-05-06)
+- [ ] **[P1] Fast-Path Attestation Visualizer**: Real-time monitor of hardware-attested trust leases and validation latency. (Added: 2026-05-06)
+
 #### Upcoming (2026-05-05 Evolution)
 - [ ] **[P0] RAMS Shard Inspector**: Visual debugger for reasoning-aware memory segments and intent-sealed shards. (Added: 2026-05-05)
 - [ ] **[P0] HEPA Security Widget**: Real-time status for hardware-enclave path attestation and TPM-locked configs. (Added: 2026-05-05)

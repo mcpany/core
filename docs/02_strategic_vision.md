@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-06]
+### Focus: Origin-Locked Agency & Intent-Sealed Memory
+**Context**: The "ClawJacked" (CVE-2026-25253) exploit proves that implicit local trust is a catastrophic failure point when browser-based attackers can bridge to agent control planes. Simultaneously, the persistent "Memory Smearing" pain point confirms that shared state without reasoning-aware isolation leads to swarm divergence and knowledge loss.
+**Strategic Pivot**:
+- **Mandatory Origin-Locked Connectivity**: MCP Any will transition from optional to mandatory browser-origin and session-token binding for all local listeners. This ensures that only verified local applications—not malicious websites—can command the Universal Agent Bus.
+- **Intent-Sealed Reasoning Shards**: We are evolving RAMS into a default "Sealed Shard" model for the Blackboard. MCP Any will provide cryptographically isolated memory regions for every subagent, ensuring that "Intent Drift" or a compromised agent cannot pollute or exfiltrate state from siblings.
+- **Leased Fast-Path Attestation**: To address hardware overhead, we are introducing "Trust Leases." MCP Any will broker time-bound, hardware-attested capabilities, allowing agents to perform high-frequency tool calls without the per-call latency of full hardware signatures.
+
 ## Strategic Evolution: [2026-05-05]
 ### Focus: Reasoning-Aware Memory Segmentation (RAMS)
 **Context**: OpenClaw's prototyping of "Intent-Bound Memory Isolation" and the emergence of "Recursive Context Splicing" (RCS) exploits reveal that shared state is the new primary attack surface. As swarms become more complex, "Memory Smearing" and "Ghost Fragment" injection demand a move from simple isolation to "Active Reasoning Segmentation."
