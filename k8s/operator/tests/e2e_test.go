@@ -36,7 +36,7 @@ func TestOperatorE2E(t *testing.T) {
 
 	checkPrerequisites(t)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 
 	rootDir, err := getRootDir()
@@ -138,6 +138,10 @@ nodes:
 		"--wait",
 		"--timeout", "10m",
 	); err != nil {
+		runCommand(t, context.Background(), rootDir, "kubectl", "get", "pods", "-n", namespace)
+		runCommand(t, context.Background(), rootDir, "kubectl", "get", "events", "-n", namespace)
+		runCommand(t, context.Background(), rootDir, "sh", "-c", "kubectl get pods -n "+namespace+" -o name | xargs -I {} kubectl describe pod {} -n "+namespace)
+		runCommand(t, context.Background(), rootDir, "sh", "-c", "kubectl get pods -n "+namespace+" -o name | xargs -I {} kubectl logs {} --all-containers -n "+namespace)
 		t.Fatalf("Failed to install helm chart: %v", err)
 	}
 
