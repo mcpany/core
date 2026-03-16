@@ -123,7 +123,7 @@ type yamlEngine struct {
 // Summary: SetSkipValidation sets whether to skip schema validation.
 //
 // Parameters:
-//   - skip (bool): The skip parameter.
+//   - skip (bool): A flag indicating whether skip is enabled.
 //
 // Returns:
 //   - None.
@@ -132,17 +132,17 @@ type yamlEngine struct {
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (e *yamlEngine) SetSkipValidation(skip bool) {
-	e.skipValidation = skip
-}
-
+//   - May modify internal state or perform external network calls.
+// Errors:
+//   - None.
+//
+// Side Effects:
 // SetIgnoreEnv sets whether to ignore environment variables.
 //
 // Summary: SetIgnoreEnv sets whether to ignore environment variables.
 //
 // Parameters:
-//   - ignore (bool): The ignore parameter.
+//   - ignore (bool): A flag indicating whether ignore is enabled.
 //
 // Returns:
 //   - None.
@@ -151,62 +151,76 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
-	e.ignoreEnv = ignore
-}
-
+//   - May modify internal state or perform external network calls.
+//   - ignore (bool): A flag indicating whether ignore is enabled.
+//
+// Returns:
+//   - None.
 // Unmarshal parses a YAML byte slice into a `proto.Message`.
 //
 // Summary: Unmarshal parses a YAML byte slice into a `proto.Message`.
 //
 // Parameters:
-//   - b ([]byte): The b parameter.
-//   - v (proto.Message): The v parameter.
+//   - b ([]byte): The provided b data.
+//   - v (proto.Message): The provided v data.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Parameters:
+//   - b ([]byte): The provided b data.
+//   - v (proto.Message): The provided v data.
+//
+// Returns:
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// First, unmarshal YAML into a generic map.
 	var yamlMap map[string]interface{}
 	if err := yaml.Unmarshal(b, &yamlMap); err != nil {
 		// Enhance error message for common YAML mistakes
 		if strings.Contains(err.Error(), "found character that cannot start any token") {
-			if bytes.Contains(b, []byte("\t")) {
-				// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
-
-				return fmt.Errorf("failed to unmarshal YAML: %w\n\nHint: YAML files cannot contain tabs. Please use spaces for indentation.", err) //nolint:revive // Long user-facing error message
-			}
-		}
-		return fmt.Errorf("failed to unmarshal YAML: %w", err)
-	}
-
-	return e.unmarshalInternal(yamlMap, v, b)
-}
-
 // UnmarshalFromMap populates the provided proto.Message from a raw map.
 //
 // Summary: UnmarshalFromMap populates the provided proto.Message from a raw map.
 //
 // Parameters:
-//   - yamlMap (map[string]interface{}): The yamlMap parameter.
-//   - v (proto.Message): The v parameter.
-//   - originalBytes ([]byte): The originalBytes parameter.
+//   - yamlMap (map[string]interface{}): The textual representation of yamlmap.
+//   - v (proto.Message): The provided v data.
+//   - originalBytes ([]byte): The provided originalbytes data.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Parameters:
+//   - yamlMap (map[string]interface{}): The textual representation of yamlmap.
+//   - v (proto.Message): The provided v data.
+//   - originalBytes ([]byte): The provided originalbytes data.
+//
+// Returns:
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (e *yamlEngine) UnmarshalFromMap(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
 	return e.unmarshalInternal(yamlMap, v, originalBytes)
 }
@@ -297,41 +311,45 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 	var canonicalMap map[string]interface{}
 	if err := json.Unmarshal(canonicalJSON, &canonicalMap); err != nil {
 		return fmt.Errorf("failed to unmarshal canonical json: %w", err)
-	}
-
-	if !e.skipValidation {
-		if err := ValidateConfigAgainstSchema(canonicalMap); err != nil {
-			return fmt.Errorf("schema validation failed: %w", err)
-		}
-	}
-
-	return nil
-}
-
-// textprotoEngine implements the Engine interface for textproto configuration files.
-type textprotoEngine struct{}
-
 // Unmarshal parses a textproto byte slice into a `proto.Message`.
 //
 // Summary: Unmarshal parses a textproto byte slice into a `proto.Message`.
 //
 // Parameters:
-//   - b ([]byte): The b parameter.
-//   - v (proto.Message): The v parameter.
+//   - b ([]byte): The provided b data.
+//   - v (proto.Message): The provided v data.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
-	return prototext.Unmarshal(b, v)
-}
-
-// jsonEngine implements the Engine interface for JSON configuration files.
+//   - May modify internal state or perform external network calls.
+// Unmarshal parses a textproto byte slice into a `proto.Message`.
+//
+// Summary: Unmarshal parses a textproto byte slice into a `proto.Message`.
+//
+// Parameters:
+//   - b ([]byte): The provided b data.
+//   - v (proto.Message): The provided v data.
+// Unmarshal parses a JSON byte slice into a `proto.Message`.
+//
+// Summary: Unmarshal parses a JSON byte slice into a `proto.Message`.
+//
+// Parameters:
+//   - b ([]byte): The provided b data.
+//   - v (proto.Message): The provided v data.
+//
+// Returns:
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 type jsonEngine struct{}
 
 // Unmarshal parses a JSON byte slice into a `proto.Message`.
@@ -339,17 +357,17 @@ type jsonEngine struct{}
 // Summary: Unmarshal parses a JSON byte slice into a `proto.Message`.
 //
 // Parameters:
-//   - b ([]byte): The b parameter.
-//   - v (proto.Message): The v parameter.
+//   - b ([]byte): The provided b data.
+//   - v (proto.Message): The provided v data.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format
@@ -656,30 +674,12 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is missing", lineNum, varName)
 		// Write the original string to preserve structure
 		buf.Write(b[startIdx:j])
-		return j - startIdx
-	}
-
-	buf.WriteString(val)
-	return j - startIdx
-}
-
-// FileStore implements the `Store` interface for loading configurations from files.
-//
-// Summary: Loads configurations from the filesystem.
-type FileStore struct {
-	fs               afero.Fs
-	paths            []string
-	skipErrors       bool
-	IgnoreMissingEnv bool
-	skipValidation   bool
-}
-
 // SetSkipValidation configures whether to skip schema validation during loading.
 //
 // Summary: SetSkipValidation configures whether to skip schema validation during loading.
 //
 // Parameters:
-//   - skip (bool): The skip parameter.
+//   - skip (bool): A flag indicating whether skip is enabled.
 //
 // Returns:
 //   - None.
@@ -688,7 +688,41 @@ type FileStore struct {
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// FileStore implements the `Store` interface for loading configurations from files.
+//
+// Summary: Loads configurations from the filesystem.
+type FileStore struct {
+// SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
+//
+// Summary: SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
+//
+// Parameters:
+//   - ignore (bool): A flag indicating whether ignore is enabled.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
+// SetSkipValidation configures whether to skip schema validation during loading.
+//
+// Summary: SetSkipValidation configures whether to skip schema validation during loading.
+//
+// Parameters:
+//   - skip (bool): A flag indicating whether skip is enabled.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (s *FileStore) SetSkipValidation(skip bool) {
 	s.skipValidation = skip
 }
@@ -698,7 +732,7 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 // Summary: SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
 //
 // Parameters:
-//   - ignore (bool): The ignore parameter.
+//   - ignore (bool): A flag indicating whether ignore is enabled.
 //
 // Returns:
 //   - None.
@@ -706,19 +740,21 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - May modify internal state or perform external calls.
-func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
-	s.IgnoreMissingEnv = ignore
-}
-
-// NewFileStore creates a new FileStore with the given filesystem and paths.
+// HasConfigSources returns true if the store has configuration paths configured. Side Effects: - None.
 //
-// Summary: Initializes a new FileStore.
+// Summary: HasConfigSources returns true if the store has configuration paths configured. Side Effects: - None.
 //
 // Parameters:
-//   - fs (afero.Fs): The filesystem to use.
-//   - paths ([]string): The list of paths to scan.
+//   - None.
+//
+// Returns:
+//   - bool: True if successful or valid, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 //
 // Returns:
 //   - (*FileStore): A new instance of FileStore.
@@ -748,13 +784,13 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 //   - None.
 //
 // Returns:
-//   - bool: The bool result.
+//   - bool: True if successful or valid, false otherwise.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (s *FileStore) HasConfigSources() bool {
 	return len(s.paths) > 0
 }
@@ -1333,19 +1369,21 @@ func suggestFix(unknownField string, root proto.Message) string {
 	}
 
 	bestMatch := ""
-	minDist := 100
-
-	for name := range candidates {
-		// ⚡ BOLT: Replaced inefficient local Levenshtein implementation with optimized utility function.
-		// Randomized Selection from Top 5 High-Impact Targets
-		dist := util.LevenshteinDistance(unknownField, name)
-		if dist < minDist {
-			minDist = dist
-			bestMatch = name
-		}
-	}
-
-	// Only suggest if it's reasonably close.
+// HasConfigSources returns true if any of the underlying stores have configuration sources. Side Effects: - None.
+//
+// Summary: HasConfigSources returns true if any of the underlying stores have configuration sources. Side Effects: - None.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if successful or valid, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 	limit := len(unknownField) / 2
 
 	// For short strings, be strict to avoid garbage suggestions (e.g. xyz -> env)
@@ -1377,13 +1415,13 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 //   - None.
 //
 // Returns:
-//   - bool: The bool result.
+//   - bool: True if successful or valid, false otherwise.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (ms *MultiStore) HasConfigSources() bool {
 	for _, s := range ms.stores {
 		if s.HasConfigSources() {

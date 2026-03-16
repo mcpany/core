@@ -44,7 +44,7 @@ var (
 // Summary: SetGlobalAlertConfig sets the global alert configuration.
 //
 // Parameters:
-//   - cfg (*configv1.AlertConfig): The cfg parameter.
+//   - cfg (*configv1.AlertConfig): The configuration settings.
 //
 // Returns:
 //   - None.
@@ -53,12 +53,16 @@ var (
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 	globalAlertConfigMu.Lock()
 	defer globalAlertConfigMu.Unlock()
 	globalAlertConfig = cfg
-}
+// HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
+//
+// Summary: HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
 
 // HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
 //
@@ -72,25 +76,27 @@ type HTTPServiceWithHealthCheck interface {
 	// GetHealthCheck returns the HTTP health check configuration for the service.
 	//
 	// Returns:
-	//   - *configv1.HttpHealthCheck: The health check configuration.
-	GetHealthCheck() *configv1.HttpHealthCheck
-}
-
 // NewChecker creates a new health checker for the given upstream service.
 //
 // Summary: NewChecker creates a new health checker for the given upstream service.
 //
 // Parameters:
-//   - uc (*configv1.UpstreamServiceConfig): The uc parameter.
+//   - uc (*configv1.UpstreamServiceConfig): The provided uc data.
 //
 // Returns:
-//   - health.Checker: The health.Checker result.
+//   - health.Checker: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	if uc == nil {
 		return nil

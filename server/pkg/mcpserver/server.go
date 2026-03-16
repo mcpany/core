@@ -48,16 +48,11 @@ var fastJSON = jsoniter.Config{
 // AddReceivingMiddlewareHook is a testing hook that allows inspection of the middleware chain.
 //
 // Summary: AddReceivingMiddlewareHook is a testing hook that allows inspection of the middleware chain.
-var AddReceivingMiddlewareHook func(name string)
-
+//
+// Summary: Server is the core of the MCP Any application.
 // Server is the core of the MCP Any application.
 //
 // Summary: Server is the core of the MCP Any application.
-type Server struct {
-	server          *mcp.Server
-	router          *Router
-	toolManager     tool.ManagerInterface
-	promptManager   prompt.ManagerInterface
 	resourceManager resource.ManagerInterface
 	authManager     *auth.Manager
 	serviceRegistry *serviceregistry.ServiceRegistry
@@ -72,16 +67,21 @@ type Server struct {
 // Summary: Server returns the underlying *mcp.Server instance.
 //
 // Parameters:
+// Server returns the underlying *mcp.Server instance.
+//
+// Summary: Server returns the underlying *mcp.Server instance.
+//
+// Parameters:
 //   - None.
 //
 // Returns:
-//   - *mcp.Server: The *mcp.Server result.
+//   - *mcp.Server: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (s *Server) Server() *mcp.Server {
 	if AddReceivingMiddlewareHook != nil {
 		// This is a test hook to allow inspection of the middleware chain.
@@ -96,26 +96,25 @@ func (s *Server) Server() *mcp.Server {
 // Summary: NewServer creates and initializes a new MCP Any Server.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - toolManager (tool.ManagerInterface): The toolManager parameter.
-//   - promptManager (prompt.ManagerInterface): The promptManager parameter.
-//   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
-//   - authManager (*auth.Manager): The authManager parameter.
-//   - serviceRegistry (*serviceregistry.ServiceRegistry): The serviceRegistry parameter.
-//   - catalogManager (*catalog.Manager): The catalogManager parameter.
-//   - bus (*bus.Provider): The bus parameter.
-//   - debug (bool): The debug parameter.
+//   - _ (context.Context): The provided _ data.
+//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
+//   - promptManager (prompt.ManagerInterface): The provided promptmanager data.
+//   - resourceManager (resource.ManagerInterface): The provided resourcemanager data.
+//   - authManager (*auth.Manager): The provided authmanager data.
+//   - serviceRegistry (*serviceregistry.ServiceRegistry): The provided serviceregistry data.
+//   - catalogManager (*catalog.Manager): The provided catalogmanager data.
+//   - bus (*bus.Provider): The provided bus data.
+//   - debug (bool): A flag indicating whether debug is enabled.
 //
 // Returns:
-//   - *Server: The *Server result.
-//   - error: An error if the operation fails.
+//   - *Server: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func NewServer(
+//   - May modify internal state or perform external network calls.
 	_ context.Context,
 	toolManager tool.ManagerInterface,
 	promptManager prompt.ManagerInterface,
@@ -408,22 +407,24 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 }
 
 // ListPrompts handles the "prompts/list" MCP request.
+// ListPrompts handles the "prompts/list" MCP request.
 //
 // Summary: ListPrompts handles the "prompts/list" MCP request.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - _ (*mcp.ListPromptsRequest): The _ parameter.
+//   - _ (context.Context): The provided _ data.
+//   - _ (*mcp.ListPromptsRequest): The provided _ data.
 //
 // Returns:
-//   - *mcp.ListPromptsResult: The *mcp.ListPromptsResult result.
-//   - error: An error if the operation fails.
+//   - *mcp.ListPromptsResult: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - May modify internal state or perform external network calls.
 func (s *Server) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,
@@ -439,49 +440,51 @@ func (s *Server) ListPrompts(
 		Prompts: mcpPrompts,
 	}, nil
 }
-
 // CreateMessage requests a message creation from the client (sampling).
 //
 // Summary: CreateMessage requests a message creation from the client (sampling).
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - params (*mcp.CreateMessageParams): The params parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - params (*mcp.CreateMessageParams): The provided params data.
 //
 // Returns:
-//   - *mcp.CreateMessageResult: The *mcp.CreateMessageResult result.
-//   - error: An error if the operation fails.
+//   - *mcp.CreateMessageResult: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	// Attempt to retrieve session from context, which is populated during request handling
 	if session, ok := tool.GetSession(ctx); ok {
 		return session.CreateMessage(ctx, params)
-	}
-	return nil, fmt.Errorf("no active session found in context")
-}
-
 // GetPrompt handles the "prompts/get" MCP request.
 //
 // Summary: GetPrompt handles the "prompts/get" MCP request.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - req (*mcp.GetPromptRequest): The req parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - req (*mcp.GetPromptRequest): The incoming request payload.
 //
 // Returns:
-//   - *mcp.GetPromptResult: The *mcp.GetPromptResult result.
-//   - error: An error if the operation fails.
+//   - *mcp.GetPromptResult: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (s *Server) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,
@@ -506,26 +509,28 @@ func (s *Server) GetPrompt(
 		return nil, fmt.Errorf("failed to marshal prompt arguments: %w", err)
 	}
 
-	return p.Get(ctx, argsBytes)
-}
-
 // ListResources handles the "resources/list" MCP request.
 //
 // Summary: ListResources handles the "resources/list" MCP request.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - _ (*mcp.ListResourcesRequest): The _ parameter.
+//   - _ (context.Context): The provided _ data.
+//   - _ (*mcp.ListResourcesRequest): The provided _ data.
 //
 // Returns:
-//   - *mcp.ListResourcesResult: The *mcp.ListResourcesResult result.
-//   - error: An error if the operation fails.
+//   - *mcp.ListResourcesResult: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (s *Server) ListResources(
 	_ context.Context,
 	_ *mcp.ListResourcesRequest,
@@ -537,28 +542,28 @@ func (s *Server) ListResources(
 			mcpResources = append(mcpResources, resource)
 		}
 	}
-	return &mcp.ListResourcesResult{
-		Resources: mcpResources,
-	}, nil
-}
-
 // ReadResource handles the "resources/read" MCP request.
 //
 // Summary: ReadResource handles the "resources/read" MCP request.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - req (*mcp.ReadResourceRequest): The req parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - req (*mcp.ReadResourceRequest): The incoming request payload.
 //
 // Returns:
-//   - *mcp.ReadResourceResult: The *mcp.ReadResourceResult result.
-//   - error: An error if the operation fails.
+//   - *mcp.ReadResourceResult: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (s *Server) ReadResource(
 	ctx context.Context,
 	req *mcp.ReadResourceRequest,
@@ -575,11 +580,6 @@ func (s *Server) ReadResource(
 			logging.GetLogger().Warn("Access denied to resource by profile", "resourceURI", req.Params.URI, "profileID", profileID)
 			return nil, fmt.Errorf("access denied to resource %q", req.Params.URI)
 		}
-	}
-
-	return r.Read(ctx)
-}
-
 // AuthManager returns the server's authentication manager.
 //
 // Summary: AuthManager returns the server's authentication manager.
@@ -588,17 +588,17 @@ func (s *Server) ReadResource(
 //   - None.
 //
 // Returns:
-//   - *auth.Manager: The *auth.Manager result.
+//   - *auth.Manager: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (s *Server) AuthManager() *auth.Manager {
-	return s.authManager
-}
-
+//   - May modify internal state or perform external network calls.
+//   - None.
+//
+// Returns:
+//   - *auth.Manager: The resulting object or data structure.
 // ToolManager returns the server's tool manager.
 //
 // Summary: ToolManager returns the server's tool manager.
@@ -607,17 +607,17 @@ func (s *Server) AuthManager() *auth.Manager {
 //   - None.
 //
 // Returns:
-//   - tool.ManagerInterface: The tool.ManagerInterface result.
+//   - tool.ManagerInterface: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (s *Server) ToolManager() tool.ManagerInterface {
-	return s.toolManager
-}
-
+//   - May modify internal state or perform external network calls.
+// ToolManager returns the server's tool manager.
+//
+// Summary: ToolManager returns the server's tool manager.
+//
 // PromptManager returns the server's prompt manager.
 //
 // Summary: PromptManager returns the server's prompt manager.
@@ -626,17 +626,17 @@ func (s *Server) ToolManager() tool.ManagerInterface {
 //   - None.
 //
 // Returns:
-//   - prompt.ManagerInterface: The prompt.ManagerInterface result.
+//   - prompt.ManagerInterface: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (s *Server) PromptManager() prompt.ManagerInterface {
-	return s.promptManager
+//   - May modify internal state or perform external network calls.
+//   - May modify internal state or perform external network calls.
+func (s *Server) ToolManager() tool.ManagerInterface {
+	return s.toolManager
 }
-
 // ResourceManager returns the server's resource manager.
 //
 // Summary: ResourceManager returns the server's resource manager.
@@ -645,17 +645,17 @@ func (s *Server) PromptManager() prompt.ManagerInterface {
 //   - None.
 //
 // Returns:
-//   - resource.ManagerInterface: The resource.ManagerInterface result.
+//   - resource.ManagerInterface: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (s *Server) ResourceManager() resource.ManagerInterface {
-	return s.resourceManager
-}
-
+//   - May modify internal state or perform external network calls.
+//
+// Errors:
+//   - None.
+//
 // ServiceRegistry returns the server's service registry.
 //
 // Summary: ServiceRegistry returns the server's service registry.
@@ -664,24 +664,24 @@ func (s *Server) ResourceManager() resource.ManagerInterface {
 //   - None.
 //
 // Returns:
-//   - *serviceregistry.ServiceRegistry: The *serviceregistry.ServiceRegistry result.
+//   - *serviceregistry.ServiceRegistry: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
-	return s.serviceRegistry
-}
-
+//   - May modify internal state or perform external network calls.
+//
+// Parameters:
+//   - None.
+//
 // AddServiceInfo adds information about a service to the tool manager.
 //
 // Summary: AddServiceInfo adds information about a service to the tool manager.
 //
 // Parameters:
-//   - serviceID (string): The serviceID parameter.
-//   - info (*tool.ServiceInfo): The info parameter.
+//   - serviceID (string): The textual representation of serviceid.
+//   - info (*tool.ServiceInfo): The provided info data.
 //
 // Returns:
 //   - None.
@@ -690,9 +690,9 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
-	s.toolManager.AddServiceInfo(serviceID, info)
+//   - May modify internal state or perform external network calls.
+func (s *Server) ResourceManager() resource.ManagerInterface {
+	return s.resourceManager
 }
 
 // GetTool retrieves a tool by its name.
@@ -700,17 +700,68 @@ func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 // Summary: GetTool retrieves a tool by its name.
 //
 // Parameters:
-//   - toolName (string): The toolName parameter.
+//   - toolName (string): The human-readable or system name.
 //
 // Returns:
-//   - tool.Tool: The tool.Tool result.
-//   - bool: The bool result.
+//   - tool.Tool: The resulting object or data structure.
+//   - bool: True if successful or valid, false otherwise.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
+// ListTools returns a list of all available tools.
+//
+// Summary: ListTools returns a list of all available tools.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []tool.Tool: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
+// Parameters:
+//   - serviceID (string): The textual representation of serviceid.
+//   - info (*tool.ServiceInfo): The provided info data.
+//
+// Returns:
+//   - None.
+// CallTool executes a tool with the provided request.
+//
+// Summary: CallTool executes a tool with the provided request.
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - req (*tool.ExecutionRequest): The incoming request payload.
+//
+// Returns:
+//   - any: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
+// Returns:
+//   - tool.Tool: The resulting object or data structure.
+//   - bool: True if successful or valid, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 	return s.toolManager.GetTool(toolName)
 }
@@ -723,13 +774,13 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 //   - None.
 //
 // Returns:
-//   - []tool.Tool: The []tool.Tool result.
+//   - []tool.Tool: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (s *Server) ListTools() []tool.Tool {
 	logging.GetLogger().Info("Listing tools...")
 	metrics.IncrCounter(metricToolsListTotal, 1)
@@ -741,18 +792,18 @@ func (s *Server) ListTools() []tool.Tool {
 // Summary: CallTool executes a tool with the provided request.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - req (*tool.ExecutionRequest): The req parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - req (*tool.ExecutionRequest): The incoming request payload.
 //
 // Returns:
-//   - any: The any result.
-//   - error: An error if the operation fails.
+//   - any: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.
@@ -841,42 +892,60 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 						isError = val
 					}
 					finalResult = &mcp.CallToolResult{
-						Content: []mcp.Content{
-							&mcp.TextContent{Text: content},
-						},
-						IsError: isError,
-					}
-					isStructured = true
-				}
+// SetMCPServer sets the MCP server provider for the tool manager.
+//
+// Summary: SetMCPServer sets the MCP server provider for the tool manager.
+//
+// Parameters:
+//   - mcpServer (tool.MCPServerProvider): The provided mcpserver data.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 			}
 		}
 	}
 
-	// 3. Fallback: If no structured result identified, treat as raw data
-	if finalResult == nil {
-		if jsonBytes == nil {
-			jsonBytes, marshalErr = fastJSON.Marshal(result)
-		}
-
-		var text string
-		// ⚡ Bolt Optimization: Use Zero-copy conversion for large JSON payloads
-		if marshalErr == nil {
-			text = util.BytesToString(jsonBytes)
+// AddTool registers a new tool with the tool manager.
+//
+// Summary: AddTool registers a new tool with the tool manager.
+//
+// Parameters:
+//   - t (tool.Tool): The provided t data.
+//
+// Returns:
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 		} else {
 			text = util.ToString(result)
 		}
 
-		finalResult = &mcp.CallToolResult{
-			Content: []mcp.Content{
-				&mcp.TextContent{Text: text},
-			},
-		}
-	}
-
-	// Log the result
-	if logger.Enabled(ctx, slog.LevelInfo) {
-		var logValue slog.Value
-		// If we have a structured result (either directly or converted), use the summarizer.
+// GetServiceInfo retrieves information about a service by its ID.
+//
+// Summary: GetServiceInfo retrieves information about a service by its ID.
+//
+// Parameters:
+//   - serviceID (string): The textual representation of serviceid.
+//
+// Returns:
+//   - *tool.ServiceInfo: The resulting object or data structure.
+//   - bool: True if successful or valid, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 		// If we fell back to raw JSON (isStructured=false), reuse the jsonBytes for redacted logging.
 		if !isStructured && jsonBytes != nil && marshalErr == nil {
 			// ⚡ Bolt Optimization: Reuse marshaled bytes for logging (redacted)
@@ -885,19 +954,31 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		} else {
 			logValue = summarizeCallToolResult(finalResult)
 		}
-
-		logger.Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", logValue)
-	}
-
-	return finalResult, nil
-}
-
+// ClearToolsForService removes all tools associated with a specific service.
+//
+// Summary: ClearToolsForService removes all tools associated with a specific service.
+//
+// Parameters:
+//   - serviceKey (string): The textual representation of servicekey.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 // SetMCPServer sets the MCP server provider for the tool manager.
 //
 // Summary: SetMCPServer sets the MCP server provider for the tool manager.
 //
+// SetReloadFunc sets the function to be called when a configuration reload is triggered.
+//
+// Summary: SetReloadFunc sets the function to be called when a configuration reload is triggered.
+//
 // Parameters:
-//   - mcpServer (tool.MCPServerProvider): The mcpServer parameter.
+//   - f (func(context.Context) error): The provided f data.
 //
 // Returns:
 //   - None.
@@ -906,26 +987,35 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
-	s.toolManager.SetMCPServer(mcpServer)
-}
-
-// AddTool registers a new tool with the tool manager.
-//
-// Summary: AddTool registers a new tool with the tool manager.
-//
-// Parameters:
-//   - t (tool.Tool): The t parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - May modify internal state or perform external network calls.
+//   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Reload reloads the server's configuration and updates its state.
+//
+// Summary: Reload reloads the server's configuration and updates its state.
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//
+// Returns:
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
+//
+// Returns:
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (s *Server) AddTool(t tool.Tool) error {
 	return s.toolManager.AddTool(t)
 }
@@ -935,17 +1025,17 @@ func (s *Server) AddTool(t tool.Tool) error {
 // Summary: GetServiceInfo retrieves information about a service by its ID.
 //
 // Parameters:
-//   - serviceID (string): The serviceID parameter.
+//   - serviceID (string): The textual representation of serviceid.
 //
 // Returns:
-//   - *tool.ServiceInfo: The *tool.ServiceInfo result.
-//   - bool: The bool result.
+//   - *tool.ServiceInfo: The resulting object or data structure.
+//   - bool: True if successful or valid, false otherwise.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	return s.toolManager.GetServiceInfo(serviceID)
 }
@@ -959,7 +1049,7 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 // Summary: ClearToolsForService removes all tools associated with a specific service.
 //
 // Parameters:
-//   - serviceKey (string): The serviceKey parameter.
+//   - serviceKey (string): The textual representation of servicekey.
 //
 // Returns:
 //   - None.
@@ -968,7 +1058,7 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
 }
@@ -978,7 +1068,7 @@ func (s *Server) ClearToolsForService(serviceKey string) {
 // Summary: SetReloadFunc sets the function to be called when a configuration reload is triggered.
 //
 // Parameters:
-//   - f (func(context.Context) error): The f parameter.
+//   - f (func(context.Context) error): The provided f data.
 //
 // Returns:
 //   - None.
@@ -987,7 +1077,7 @@ func (s *Server) ClearToolsForService(serviceKey string) {
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (s *Server) SetReloadFunc(f func(context.Context) error) {
 	s.reloadFunc = f
 }
@@ -997,16 +1087,16 @@ func (s *Server) SetReloadFunc(f func(context.Context) error) {
 // Summary: Reload reloads the server's configuration and updates its state.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (s *Server) Reload(ctx context.Context) error {
 	if s.reloadFunc != nil {
 		return s.reloadFunc(ctx)
@@ -1025,40 +1115,52 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 			return nil, fmt.Errorf("neither content nor isError present")
 		}
 		// Maybe it's just error?
-		isError, _ := m["isError"].(bool)
-		return &mcp.CallToolResult{IsError: isError}, nil
+// LazyRedact is a byte slice that implements slog.LogValuer to lazily redact
+//
+// Summary: LazyRedact is a byte slice that implements slog.LogValuer to lazily redact
 	}
 
-	contentList, ok := contentRaw.([]any)
-	if !ok {
-		return nil, fmt.Errorf("content is not a list")
-	}
-
-	contents := make([]mcp.Content, 0, len(contentList))
-	for _, c := range contentList {
-		cMap, ok := c.(map[string]any)
-		if !ok {
+// LogValue implements slog.LogValuer.
+//
+// Summary: LogValue implements slog.LogValuer.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - slog.Value: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 			return nil, fmt.Errorf("content item is not a map")
 		}
 
 		typeStr, ok := cMap["type"].(string)
-		if !ok {
-			return nil, fmt.Errorf("content type is not a string")
-		}
-
+// LazyLogResult wraps a tool execution result for efficient logging.
+//
+// Summary: LazyLogResult wraps a tool execution result for efficient logging.
 		switch typeStr {
 		case "text":
 			text, ok := cMap["text"].(string)
 			if !ok {
-				return nil, fmt.Errorf("text content text is not a string")
-			}
-			contents = append(contents, &mcp.TextContent{
-				Text: text,
-			})
-		case "image":
-			dataStr, ok := cMap["data"].(string)
-			if !ok {
-				return nil, fmt.Errorf("image content data is not a string")
+// LogValue implements slog.LogValuer.
+//
+// Summary: LogValue implements slog.LogValuer.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - slog.Value: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 			}
 			data, err := base64.StdEncoding.DecodeString(dataStr)
 			if err != nil {
@@ -1128,13 +1230,13 @@ type LazyRedact []byte
 //   - None.
 //
 // Returns:
-//   - slog.Value: The slog.Value result.
+//   - slog.Value: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (l LazyRedact) LogValue() slog.Value {
 	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
 }
@@ -1154,13 +1256,13 @@ type LazyLogResult struct {
 //   - None.
 //
 // Returns:
-//   - slog.Value: The slog.Value result.
+//   - slog.Value: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (r LazyLogResult) LogValue() slog.Value {
 	if r.Value == nil {
 		return slog.StringValue("<nil>")

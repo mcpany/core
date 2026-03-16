@@ -15,11 +15,15 @@ import (
 // JSONRPCError represents a JSON-RPC 2.0 error object.
 //
 // Summary: JSONRPCError represents a JSON-RPC 2.0 error object.
+//
+// Summary: JSONRPCError represents a JSON-RPC 2.0 error object.
 type JSONRPCError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 	Data    any    `json:"data,omitempty"`
-}
+// JSONRPCResponse represents a JSON-RPC 2.0 response object.
+//
+// Summary: JSONRPCResponse represents a JSON-RPC 2.0 response object.
 
 // JSONRPCResponse represents a JSON-RPC 2.0 response object.
 //
@@ -107,19 +111,10 @@ func (w *smartResponseWriter) Header() http.Header {
 
 // WriteHeader sends an HTTP response header with the provided status code.
 //
-// Summary: WriteHeader sends an HTTP response header with the provided status code.
+// Summary: Writes the status code to the response.
 //
 // Parameters:
-//   - code (int): The code parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external calls.
+//   - code: int. The HTTP status code.
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
 		return

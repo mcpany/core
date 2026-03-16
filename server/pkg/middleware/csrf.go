@@ -43,19 +43,13 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 
 // Update updates the allowed origins.
 //
-// Summary: Update updates the allowed origins.
+// Summary: Updates the list of allowed origins at runtime.
 //
 // Parameters:
-//   - origins ([]string): The origins parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - origins: []string. The new list of allowed origins.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Replaces the existing allowed origins map in a thread-safe manner.
 func (m *CSRFMiddleware) Update(origins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

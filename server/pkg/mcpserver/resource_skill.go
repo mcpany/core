@@ -23,7 +23,6 @@ import (
 // SkillResource adapts a Skill (or its asset) to the Resource interface.
 //
 // Summary: SkillResource adapts a Skill (or its asset) to the Resource interface.
-type SkillResource struct {
 	skill     *skill.Skill
 	assetPath string // Relative path to asset. If empty, represents the main SKILL.md
 
@@ -36,49 +35,50 @@ type SkillResource struct {
 var _ resource.Resource = &SkillResource{}
 
 // NewSkillResource creates a new resource for the main SKILL.md.
+// NewSkillResource creates a new resource for the main SKILL.md.
 //
 // Summary: NewSkillResource creates a new resource for the main SKILL.md.
 //
 // Parameters:
-//   - s (*skill.Skill): The s parameter.
+//   - s (*skill.Skill): The provided s data.
 //
 // Returns:
-//   - *SkillResource: The *SkillResource result.
+//   - *SkillResource: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - May modify internal state or perform external network calls.
 func NewSkillResource(s *skill.Skill) *SkillResource {
 	return &SkillResource{
 		skill: s,
 	}
 }
-
 // NewSkillAssetResource creates a new resource for a skill asset.
 //
 // Summary: NewSkillAssetResource creates a new resource for a skill asset.
 //
 // Parameters:
-//   - s (*skill.Skill): The s parameter.
-//   - assetPath (string): The assetPath parameter.
+//   - s (*skill.Skill): The provided s data.
+//   - assetPath (string): The textual representation of assetpath.
 //
 // Returns:
-//   - *SkillResource: The *SkillResource result.
+//   - *SkillResource: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 	return &SkillResource{
 		skill:     s,
-		assetPath: assetPath,
-	}
-}
-
 // URI returns the URI of the resource.
 //
 // Summary: URI returns the URI of the resource.
@@ -87,20 +87,20 @@ func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 //   - None.
 //
 // Returns:
-//   - string: The string result.
+//   - string: The resulting text.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (r *SkillResource) URI() string {
-	if r.assetPath == "" {
-		return fmt.Sprintf("skills://%s/SKILL.md", r.skill.Name)
-	}
-	return fmt.Sprintf("skills://%s/%s", r.skill.Name, r.assetPath)
-}
-
+//   - May modify internal state or perform external network calls.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The resulting text.
+//
 // Name returns the human-readable name of the resource.
 //
 // Summary: Name returns the human-readable name of the resource.
@@ -109,18 +109,54 @@ func (r *SkillResource) URI() string {
 //   - None.
 //
 // Returns:
-//   - string: The string result.
+//   - string: The resulting text.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (r *SkillResource) Name() string {
-	if r.assetPath == "" {
-		return fmt.Sprintf("Skill: %s", r.skill.Name)
+//   - May modify internal state or perform external network calls.
+		return fmt.Sprintf("skills://%s/SKILL.md", r.skill.Name)
 	}
-	return fmt.Sprintf("Skill Asset: %s (%s)", r.assetPath, r.skill.Name)
+	return fmt.Sprintf("skills://%s/%s", r.skill.Name, r.assetPath)
+}
+
+// Name returns the human-readable name of the resource.
+//
+// Service returns the service identifier associated with the resource.
+//
+// Summary: Service returns the service identifier associated with the resource.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The resulting text.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
+//
+// Errors:
+//   - None.
+//
+// Resource returns the underlying MCP resource definition.
+//
+// Summary: Resource returns the underlying MCP resource definition.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Resource: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 }
 
 // Service returns the service identifier associated with the resource.
@@ -131,13 +167,13 @@ func (r *SkillResource) Name() string {
 //   - None.
 //
 // Returns:
-//   - string: The string result.
+//   - string: The resulting text.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (r *SkillResource) Service() string {
 	return "skills"
 }
@@ -150,13 +186,13 @@ func (r *SkillResource) Service() string {
 //   - None.
 //
 // Returns:
-//   - *mcp.Resource: The *mcp.Resource result.
+//   - *mcp.Resource: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (r *SkillResource) Resource() *mcp.Resource {
 	mimeType := "text/markdown"
 	if r.assetPath != "" {
@@ -187,21 +223,22 @@ func (r *SkillResource) resolvePath() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to resolve absolute skill path: %w", err)
 	}
-	skillPath, err = filepath.EvalSymlinks(skillPath)
-	if err != nil {
-		return "", fmt.Errorf("failed to resolve symlinks for skill path: %w", err)
-	}
-
-	path := filepath.Join(skillPath, r.assetPath)
-
-	// Security check: Path Traversal
-	if err = validation.IsSecurePath(r.assetPath); err != nil {
-		return "", fmt.Errorf("invalid asset path: %w", err)
-	}
-
-	// Resolve Symlinks in target path
-	realPath, err := filepath.EvalSymlinks(path)
-	if err != nil {
+// Read returns the contents of the resource.
+//
+// Summary: Read returns the contents of the resource.
+//
+// Parameters:
+//   - _ (context.Context): The provided _ data.
+//
+// Returns:
+//   - *mcp.ReadResourceResult: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 		if os.IsNotExist(err) {
 			return "", fmt.Errorf("asset does not exist: %w", os.ErrNotExist)
 		}
@@ -228,17 +265,17 @@ func (r *SkillResource) resolvePath() (string, error) {
 // Summary: Read returns the contents of the resource.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
+//   - _ (context.Context): The provided _ data.
 //
 // Returns:
-//   - *mcp.ReadResourceResult: The *mcp.ReadResourceResult result.
-//   - error: An error if the operation fails.
+//   - *mcp.ReadResourceResult: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
 	realPath, err := r.resolvePath()
 	if err != nil {
@@ -284,38 +321,42 @@ func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error)
 func (r *SkillResource) createResult(content []byte) (*mcp.ReadResourceResult, error) {
 	mimeType := r.Resource().MIMEType
 	resourceContent := &mcp.ResourceContents{
-		URI:      r.URI(),
-		MIMEType: mimeType,
-	}
-
-	if isTextMime(mimeType) {
-		resourceContent.Text = string(content)
-	} else {
-		resourceContent.Blob = content
-	}
-
-	return &mcp.ReadResourceResult{
-		Contents: []*mcp.ResourceContents{
-			resourceContent,
+// Subscribe subscribes to changes on the resource.
+//
+// Summary: Subscribe subscribes to changes on the resource.
+//
+// Parameters:
+//   - _ (context.Context): The provided _ data.
+//
+// Returns:
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 		},
 	}, nil
 }
 
 func isTextMime(mimeType string) bool {
-	baseMime, _, _ := strings.Cut(mimeType, ";")
-	baseMime = strings.TrimSpace(baseMime)
-
-	if strings.HasPrefix(baseMime, "text/") {
-		return true
-	}
-	// Common text-based application types
-	switch baseMime {
-	case "application/json",
-		"application/xml",
-		"application/yaml",
-		"application/x-yaml",
-		"application/javascript",
-		"application/ecmascript":
+// RegisterSkillResources registers all skills from the manager into the resource manager.
+//
+// Summary: RegisterSkillResources registers all skills from the manager into the resource manager.
+//
+// Parameters:
+//   - rm (resource.ManagerInterface): The provided rm data.
+//   - sm (*skill.Manager): The provided sm data.
+//
+// Returns:
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 		return true
 	}
 	return false
@@ -326,16 +367,16 @@ func isTextMime(mimeType string) bool {
 // Summary: Subscribe subscribes to changes on the resource.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
+//   - _ (context.Context): The provided _ data.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (r *SkillResource) Subscribe(_ context.Context) error {
 	// No-op for now
 	return nil
@@ -346,17 +387,17 @@ func (r *SkillResource) Subscribe(_ context.Context) error {
 // Summary: RegisterSkillResources registers all skills from the manager into the resource manager.
 //
 // Parameters:
-//   - rm (resource.ManagerInterface): The rm parameter.
-//   - sm (*skill.Manager): The sm parameter.
+//   - rm (resource.ManagerInterface): The provided rm data.
+//   - sm (*skill.Manager): The provided sm data.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func RegisterSkillResources(rm resource.ManagerInterface, sm *skill.Manager) error {
 	skills, err := sm.ListSkills()
 	if err != nil {

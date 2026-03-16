@@ -40,14 +40,16 @@ type Watcher struct {
 //   - None.
 //
 // Returns:
-//   - *Watcher: The *Watcher result.
-//   - error: An error if the operation fails.
+//   - *Watcher: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -187,8 +189,6 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 
 	<-w.done
 	return nil
-}
-
 // Close stops the file watcher and releases resources.
 //
 // Summary: Close stops the file watcher and releases resources.
@@ -203,7 +203,20 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Summary: Close stops the file watcher and releases resources.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (w *Watcher) Close() {
 	close(w.done)
 	_ = w.watcher.Close()

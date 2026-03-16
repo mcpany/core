@@ -29,26 +29,29 @@ import (
 // Upstream implements the upstream.Upstream interface for services that
 //
 // Summary: Upstream implements the upstream.Upstream interface for services that
-type Upstream struct {
-	mu      sync.Mutex
 	checker health.Checker
 }
 
 // Shutdown implements the upstream.Upstream interface.
 //
+// Shutdown implements the upstream.Upstream interface.
+//
 // Summary: Shutdown implements the upstream.Upstream interface.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
+//   - _ (context.Context): The provided _ data.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -56,9 +59,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	if u.checker != nil {
 		u.checker.Stop()
 	}
-	return nil
-}
-
 // NewUpstream creates a new instance of CommandUpstream.
 //
 // Summary: NewUpstream creates a new instance of CommandUpstream.
@@ -67,40 +67,54 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - None.
 //
 // Returns:
-//   - upstream.Upstream: The upstream.Upstream result.
+//   - upstream.Upstream: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func NewUpstream() upstream.Upstream {
-	return &Upstream{}
-}
-
+//   - May modify internal state or perform external network calls.
+// Parameters:
+//   - None.
+//
+// Returns:
 // Register processes the configuration for a command-line service, creates a
 //
 // Summary: Register processes the configuration for a command-line service, creates a
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
-//   - toolManager (tool.ManagerInterface): The toolManager parameter.
-//   - promptManager (prompt.ManagerInterface): The promptManager parameter.
-//   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
-//   - isReload (bool): The isReload parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The provided serviceconfig data.
+//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
+//   - promptManager (prompt.ManagerInterface): The provided promptmanager data.
+//   - resourceManager (resource.ManagerInterface): The provided resourcemanager data.
+//   - isReload (bool): A flag indicating whether isreload is enabled.
 //
 // Returns:
-//   - string: The string result.
-//   - []*configv1.ToolDefinition: The []*configv1.ToolDefinition result.
-//   - []*configv1.ResourceDefinition: The []*configv1.ResourceDefinition result.
-//   - error: An error if the operation fails.
+//   - string: The resulting text.
+//   - []*configv1.ToolDefinition: The resulting object or data structure.
+//   - []*configv1.ResourceDefinition: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - resourceManager (resource.ManagerInterface): The provided resourcemanager data.
+//   - isReload (bool): A flag indicating whether isreload is enabled.
+//
+// Returns:
+//   - string: The resulting text.
+//   - []*configv1.ToolDefinition: The resulting object or data structure.
+//   - []*configv1.ResourceDefinition: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

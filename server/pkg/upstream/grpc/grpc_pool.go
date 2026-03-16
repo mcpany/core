@@ -39,42 +39,47 @@ type poolWithChecker[T pool.ClosableClient] struct {
 //   - None.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (p *poolWithChecker[T]) Close() error {
-	if p.checker != nil {
-		p.checker.Stop()
-	}
-	return p.Pool.Close()
-}
-
+//   - May modify internal state or perform external network calls.
+// Returns:
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
 // NewGrpcPool creates a new connection pool for gRPC clients.
 //
 // Summary: NewGrpcPool creates a new connection pool for gRPC clients.
 //
 // Parameters:
-//   - minSize (int): The minSize parameter.
-//   - maxSize (int): The maxSize parameter.
-//   - idleTimeout (time.Duration): The idleTimeout parameter.
-//   - dialer (func(context.Context, string) (net.Conn, error)): The dialer parameter.
-//   - creds (credentials.PerRPCCredentials): The creds parameter.
-//   - config (*configv1.UpstreamServiceConfig): The config parameter.
-//   - disableHealthCheck (bool): The disableHealthCheck parameter.
+//   - minSize (int): The numeric value for minsize.
+//   - maxSize (int): The numeric value for maxsize.
+//   - idleTimeout (time.Duration): The provided idletimeout data.
+//   - dialer (func(context.Context, string) (net.Conn, error)): The textual representation of dialer.
+//   - creds (credentials.PerRPCCredentials): The provided creds data.
+//   - config (*configv1.UpstreamServiceConfig): The configuration settings.
+//   - disableHealthCheck (bool): A flag indicating whether disablehealthcheck is enabled.
 //
 // Returns:
-//   - pool.Pool[*client.GrpcClientWrapper]: The pool.Pool[*client.GrpcClientWrapper] result.
-//   - error: An error if the operation fails.
+//   - pool.Pool[*client.GrpcClientWrapper]: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func NewGrpcPool(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

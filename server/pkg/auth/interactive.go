@@ -22,22 +22,24 @@ import (
 // Summary: InitiateOAuth starts the OAuth2 flow for a given service or credential. It returns the authorization URL and the state parameter.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - userID (string): The userID parameter.
-//   - serviceID (string): The serviceID parameter.
-//   - credentialID (string): The credentialID parameter.
-//   - redirectURL (string): The redirectURL parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - userID (string): The textual representation of userid.
+//   - serviceID (string): The textual representation of serviceid.
+//   - credentialID (string): The textual representation of credentialid.
+//   - redirectURL (string): The endpoint address.
 //
 // Returns:
-//   - string: The string result.
-//   - string: The string result.
-//   - error: An error if the operation fails.
+//   - string: The resulting text.
+//   - string: The resulting text.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credentialID, redirectURL string) (string, string, error) {
 	// Fix for unused userID:
 	_ = userID
@@ -134,28 +136,30 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 
 	url := conf.AuthCodeURL(state, oauth2.AccessTypeOffline)
 	return url, state, nil
-}
-
 // HandleOAuthCallback handles the OAuth2 callback code exchange.
 //
 // Summary: HandleOAuthCallback handles the OAuth2 callback code exchange.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - userID (string): The userID parameter.
-//   - serviceID (string): The serviceID parameter.
-//   - credentialID (string): The credentialID parameter.
-//   - code (string): The code parameter.
-//   - redirectURL (string): The redirectURL parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - userID (string): The textual representation of userid.
+//   - serviceID (string): The textual representation of serviceid.
+//   - credentialID (string): The textual representation of credentialid.
+//   - code (string): The textual representation of code.
+//   - redirectURL (string): The endpoint address.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, credentialID, code, redirectURL string) error {
 	am.mu.RLock()
 	storage := am.storage

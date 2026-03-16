@@ -20,54 +20,60 @@ import (
 // SmartRecoveryMiddleware handles automatic error recovery using LLM.
 //
 // Summary: SmartRecoveryMiddleware handles automatic error recovery using LLM.
+//
+// Summary: SmartRecoveryMiddleware handles automatic error recovery using LLM.
 type SmartRecoveryMiddleware struct {
 	config      *configv1.SmartRecoveryConfig
 	llmClient   llm.Client
 	toolManager tool.ManagerInterface
 	mu          sync.RWMutex
-}
-
 // NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
 //
 // Summary: NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
 //
 // Parameters:
-//   - config (*configv1.SmartRecoveryConfig): The config parameter.
-//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - config (*configv1.SmartRecoveryConfig): The configuration settings.
+//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
 //
 // Returns:
-//   - *SmartRecoveryMiddleware: The *SmartRecoveryMiddleware result.
+//   - *SmartRecoveryMiddleware: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManager tool.ManagerInterface) *SmartRecoveryMiddleware {
 	return &SmartRecoveryMiddleware{
 		config:      config,
-		toolManager: toolManager,
-	}
-}
-
 // Execute executes the middleware logic.
 //
 // Summary: Execute executes the middleware logic.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - req (*tool.ExecutionRequest): The req parameter.
-//   - next (tool.ExecutionFunc): The next parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - req (*tool.ExecutionRequest): The incoming request payload.
+//   - next (tool.ExecutionFunc): The provided next data.
 //
 // Returns:
-//   - any: The any result.
-//   - error: An error if the operation fails.
+//   - any: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if m.config == nil || !m.config.GetEnabled() {
 		return next(ctx, req)

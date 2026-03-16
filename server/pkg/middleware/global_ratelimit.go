@@ -57,19 +57,14 @@ func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateL
 
 // UpdateConfig updates the rate limit configuration safely.
 //
-// Summary: UpdateConfig updates the rate limit configuration safely.
+// Summary: Updates the rate limit configuration at runtime.
 //
 // Parameters:
-//   - config (*configv1.RateLimitConfig): The config parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - config: *configv1.RateLimitConfig. The new configuration settings.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Acquires a lock to safely update the configuration.
+//   - Effectively changes rate limiting behavior for subsequent requests.
 func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

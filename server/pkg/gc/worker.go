@@ -17,53 +17,53 @@ import (
 // Config defines the configuration for the GC Worker.
 //
 // Summary: Config defines the configuration for the GC Worker.
+//
+// Summary: Config defines the configuration for the GC Worker.
 type Config struct {
 	Enabled  bool
 	Interval time.Duration
 	TTL      time.Duration
 	Paths    []string
-}
+// Worker implements a background worker for garbage collection.
+//
+// Summary: Worker implements a background worker for garbage collection.
 
 // Worker implements a background worker for garbage collection.
 //
 // Summary: Worker implements a background worker for garbage collection.
-type Worker struct {
-	config Config
-}
-
 // New creates a new GC Worker. config holds the configuration settings. Returns the result.
 //
 // Summary: New creates a new GC Worker. config holds the configuration settings. Returns the result.
 //
 // Parameters:
-//   - config (Config): The config parameter.
+//   - config (Config): The configuration settings.
 //
 // Returns:
-//   - *Worker: The *Worker result.
+//   - *Worker: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func New(config Config) *Worker {
 	if config.Interval <= 0 {
 		config.Interval = 1 * time.Hour // Default 1 hour
 	}
 	if config.TTL <= 0 {
 		config.TTL = 24 * time.Hour // Default 24 hours
-	}
-	return &Worker{
-		config: config,
-	}
-}
-
 // Start runs the GC worker in the background. It returns immediately and runs cleanup periodically until the context is canceled.
 //
 // Summary: Start runs the GC worker in the background. It returns immediately and runs cleanup periodically until the context is canceled.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
 //
 // Returns:
 //   - None.
@@ -72,7 +72,15 @@ func New(config Config) *Worker {
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (w *Worker) Start(ctx context.Context) {
 	if !w.config.Enabled {
 		logging.GetLogger().Info("Global GC worker is disabled")

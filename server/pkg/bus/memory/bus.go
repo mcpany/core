@@ -36,37 +36,44 @@ type DefaultBus[T any] struct {
 //   - None.
 //
 // Returns:
-//   - *DefaultBus[T]: The *DefaultBus[T] result.
+//   - *DefaultBus[T]: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func New[T any]() *DefaultBus[T] {
 	return &DefaultBus[T]{
 		subscribers:    make(map[string]map[uintptr]chan T),
 		publishTimeout: defaultPublishTimeout,
 	}
-}
-
 // Publish sends a message to all handlers subscribed to the specified topic.
 //
 // Summary: Publish sends a message to all handlers subscribed to the specified topic.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - topic (string): The topic parameter.
-//   - msg (T): The msg parameter.
+//   - _ (context.Context): The provided _ data.
+//   - topic (string): The textual representation of topic.
+//   - msg (T): The provided msg data.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
@@ -91,30 +98,32 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 					log := logging.GetLogger()
 					log.Warn("Message dropped on topic", "topic", topic, "subscriber_id", id, "timeout", b.publishTimeout)
 				}
-			}(id, ch)
-		}
-		wg.Wait()
-	}
-	return nil
-}
-
 // Subscribe registers a handler function for a given topic. It starts a new
 //
 // Summary: Subscribe registers a handler function for a given topic. It starts a new
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - topic (string): The topic parameter.
-//   - handler (func(T)): The handler parameter.
+//   - _ (context.Context): The provided _ data.
+//   - topic (string): The textual representation of topic.
+//   - handler (func(T)): The provided handler data.
 //
 // Returns:
-//   - unsubscribe (func()): The func() result.
+//   - unsubscribe (func()): The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Returns:
+//   - unsubscribe (func()): The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -148,32 +157,36 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 				// Remove the subscriber from the map.
 				delete(subs, id)
 				if len(subs) == 0 {
-					delete(b.subscribers, topic)
-				}
-				// Close the channel to terminate the subscriber's goroutine.
-				close(subCh)
-			}
-		}
-	}
-}
-
 // SubscribeOnce registers a handler for a topic that will be executed only
 //
 // Summary: SubscribeOnce registers a handler for a topic that will be executed only
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - topic (string): The topic parameter.
-//   - handler (func(T)): The handler parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - topic (string): The textual representation of topic.
+//   - handler (func(T)): The provided handler data.
 //
 // Returns:
-//   - unsubscribe (func()): The func() result.
+//   - unsubscribe (func()): The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - topic (string): The textual representation of topic.
+//   - handler (func(T)): The provided handler data.
+//
+// Returns:
+//   - unsubscribe (func()): The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (b *DefaultBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	var once sync.Once
 	var unsub func()

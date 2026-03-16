@@ -18,27 +18,31 @@ import (
 // ZipProvider provides access to files within a zip archive.
 //
 // Summary: ZipProvider provides access to files within a zip archive.
+//
+// Summary: ZipProvider provides access to files within a zip archive.
 type ZipProvider struct {
 	fs     afero.Fs
 	closer *os.File
-}
-
 // NewZipProvider creates a new ZipProvider from the given configuration.
 //
 // Summary: NewZipProvider creates a new ZipProvider from the given configuration.
 //
 // Parameters:
-//   - config (*configv1.ZipFs): The config parameter.
+//   - config (*configv1.ZipFs): The configuration settings.
 //
 // Returns:
-//   - *ZipProvider: The *ZipProvider result.
-//   - error: An error if the operation fails.
+//   - *ZipProvider: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 	if err := validation.IsAllowedPath(config.GetFilePath()); err != nil {
 		return nil, fmt.Errorf("zip file path not allowed: %w", err)
@@ -65,10 +69,6 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 
 	return &ZipProvider{
 		fs:     fs,
-		closer: f,
-	}, nil
-}
-
 // GetFs returns the underlying filesystem.
 //
 // Summary: GetFs returns the underlying filesystem.
@@ -77,34 +77,53 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 //   - None.
 //
 // Returns:
-//   - afero.Fs: The afero.Fs result.
+//   - afero.Fs: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (p *ZipProvider) GetFs() afero.Fs {
-	return p.fs
-}
-
+//   - May modify internal state or perform external network calls.
+//
+// Parameters:
+//   - None.
+//
 // ResolvePath resolves the virtual path to a real path in the zip.
 //
 // Summary: ResolvePath resolves the virtual path to a real path in the zip.
 //
 // Parameters:
-//   - virtualPath (string): The virtualPath parameter.
+//   - virtualPath (string): The textual representation of virtualpath.
 //
 // Returns:
-//   - string: The string result.
-//   - error: An error if the operation fails.
+//   - string: The resulting text.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
+//   - May modify internal state or perform external network calls.
+// Summary: ResolvePath resolves the virtual path to a real path in the zip.
+//
+// Parameters:
+//   - virtualPath (string): The textual representation of virtualpath.
+//
+// Close closes the underlying zip file.
+//
+// Summary: Close closes the underlying zip file.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 	// For ZipFs, just clean the path. It's virtual (based on zip contents).
 	return filepath.Clean(virtualPath), nil
 }
@@ -117,13 +136,13 @@ func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 //   - None.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (p *ZipProvider) Close() error {
 	if p.closer != nil {
 		return p.closer.Close()

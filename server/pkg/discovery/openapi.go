@@ -13,10 +13,10 @@ import (
 // OpenAPIProvider discovers services via OpenAPI specifications.
 //
 // Summary: OpenAPIProvider discovers services via OpenAPI specifications.
+//
+// Summary: OpenAPIProvider discovers services via OpenAPI specifications.
 type OpenAPIProvider struct {
 	Endpoint string // e.g., "http://localhost:8080/openapi.json"
-}
-
 // Name returns the name of the provider.
 //
 // Summary: Name returns the name of the provider.
@@ -25,13 +25,44 @@ type OpenAPIProvider struct {
 //   - None.
 //
 // Returns:
-//   - string: The string result.
+//   - string: The resulting text.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+
+// Name returns the name of the provider.
+//
+// Summary: Name returns the name of the provider.
+// Discover attempts to find services and return their configurations.
+//
+// Summary: Discover attempts to find services and return their configurations.
+//
+// Parameters:
+//   - _ (context.Context): The provided _ data.
+//
+// Returns:
+//   - []*configv1.UpstreamServiceConfig: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The resulting text.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (p *OpenAPIProvider) Name() string {
 	return "openapi"
 }
@@ -41,17 +72,17 @@ func (p *OpenAPIProvider) Name() string {
 // Summary: Discover attempts to find services and return their configurations.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
+//   - _ (context.Context): The provided _ data.
 //
 // Returns:
-//   - []*configv1.UpstreamServiceConfig: The []*configv1.UpstreamServiceConfig result.
-//   - error: An error if the operation fails.
+//   - []*configv1.UpstreamServiceConfig: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (p *OpenAPIProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {
 		return nil, nil

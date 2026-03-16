@@ -29,23 +29,23 @@ type ConnectionFactory struct {
 //   - None.
 //
 // Returns:
-//   - *ConnectionFactory: The *ConnectionFactory result.
+//   - *ConnectionFactory: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func NewConnectionFactory() *ConnectionFactory {
-	return &ConnectionFactory{}
-}
-
+//   - May modify internal state or perform external network calls.
+//   - *ConnectionFactory: The resulting object or data structure.
+//
+// Errors:
+//   - None.
 // WithDialer sets a custom dialer function for the ConnectionFactory. This is
 //
 // Summary: WithDialer sets a custom dialer function for the ConnectionFactory. This is
 //
 // Parameters:
-//   - dialer (func(context.Context, string) (net.Conn, error)): The dialer parameter.
+//   - dialer (func(context.Context, string) (net.Conn, error)): The textual representation of dialer.
 //
 // Returns:
 //   - None.
@@ -54,28 +54,37 @@ func NewConnectionFactory() *ConnectionFactory {
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net.Conn, error)) {
-	f.dialer = dialer
-}
-
+//   - May modify internal state or perform external network calls.
+//
+// Returns:
+//   - None.
+//
 // NewConnection establishes a new gRPC client connection to the specified
 //
 // Summary: NewConnection establishes a new gRPC client connection to the specified
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - targetAddress (string): The targetAddress parameter.
+//   - _ (context.Context): The provided _ data.
+//   - targetAddress (string): The textual representation of targetaddress.
 //
 // Returns:
-//   - *grpc.ClientConn: The *grpc.ClientConn result.
-//   - error: An error if the operation fails.
+//   - *grpc.ClientConn: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Returns:
+//   - *grpc.ClientConn: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (f *ConnectionFactory) NewConnection(_ context.Context, targetAddress string) (*grpc.ClientConn, error) {
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),

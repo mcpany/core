@@ -145,19 +145,14 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 
 // WriteHeader sends an HTTP response header with the provided status code.
 //
-// Summary: WriteHeader sends an HTTP response header with the provided status code.
+// Summary: Captures the status code and writes headers.
 //
 // Parameters:
-//   - statusCode (int): The statusCode parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - statusCode: int. The HTTP status code.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Sets the status code on the writer.
+//   - Writes the header to the underlying http.ResponseWriter.
 func (w *bodyLogWriter) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return

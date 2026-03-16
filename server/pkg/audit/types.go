@@ -12,6 +12,8 @@ import (
 // Entry represents a single audit log entry.
 //
 // Summary: Entry represents a single audit log entry.
+//
+// Summary: Entry represents a single audit log entry.
 type Entry struct {
 	Timestamp  time.Time       `json:"timestamp"`
 	ToolName   string          `json:"tool_name"`
@@ -25,7 +27,9 @@ type Entry struct {
 	Error      string          `json:"error,omitempty"`
 	Duration   string          `json:"duration"`
 	DurationMs int64           `json:"duration_ms"`
-}
+// Filter defines the filters for reading audit logs.
+//
+// Summary: Filter defines the filters for reading audit logs.
 
 // Filter defines the filters for reading audit logs.
 //
@@ -36,7 +40,9 @@ type Filter struct {
 	ToolName  string     `json:"tool_name,omitempty"`
 	UserID    string     `json:"user_id,omitempty"`
 	ProfileID string     `json:"profile_id,omitempty"`
-	Limit     int        `json:"limit,omitempty"`
+// Store defines the interface for audit log storage.
+//
+// Summary: Store defines the interface for audit log storage.
 	Offset    int        `json:"offset,omitempty"`
 }
 

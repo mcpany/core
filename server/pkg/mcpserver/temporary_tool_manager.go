@@ -14,13 +14,13 @@ import (
 // TemporaryToolManager is a tool manager that stores service info and tools temporarily.
 //
 // Summary: TemporaryToolManager is a tool manager that stores service info and tools temporarily.
-type TemporaryToolManager struct {
 	NoOpToolManager
 	mu          sync.RWMutex
 	serviceInfo map[string]*tool.ServiceInfo
 	tools       map[string]tool.Tool
 }
 
+// NewTemporaryToolManager creates a new TemporaryToolManager.
 // NewTemporaryToolManager creates a new TemporaryToolManager.
 //
 // Summary: NewTemporaryToolManager creates a new TemporaryToolManager.
@@ -29,27 +29,27 @@ type TemporaryToolManager struct {
 //   - None.
 //
 // Returns:
-//   - *TemporaryToolManager: The *TemporaryToolManager result.
+//   - *TemporaryToolManager: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func NewTemporaryToolManager() *TemporaryToolManager {
-	return &TemporaryToolManager{
-		serviceInfo: make(map[string]*tool.ServiceInfo),
-		tools:       make(map[string]tool.Tool),
-	}
-}
-
+//   - May modify internal state or perform external network calls.
+//   - *TemporaryToolManager: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 // AddServiceInfo implements tool.ManagerInterface.
 //
 // Summary: AddServiceInfo implements tool.ManagerInterface.
 //
 // Parameters:
-//   - serviceID (string): The serviceID parameter.
-//   - info (*tool.ServiceInfo): The info parameter.
+//   - serviceID (string): The textual representation of serviceid.
+//   - info (*tool.ServiceInfo): The provided info data.
 //
 // Returns:
 //   - None.
@@ -58,12 +58,32 @@ func NewTemporaryToolManager() *TemporaryToolManager {
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	if m.serviceInfo == nil {
-		m.serviceInfo = make(map[string]*tool.ServiceInfo)
+//   - May modify internal state or perform external network calls.
+//
+// Summary: AddServiceInfo implements tool.ManagerInterface.
+//
+// Parameters:
+//   - serviceID (string): The textual representation of serviceid.
+//   - info (*tool.ServiceInfo): The provided info data.
+//
+// Returns:
+//   - None.
+// GetServiceInfo implements tool.ManagerInterface.
+//
+// Summary: GetServiceInfo implements tool.ManagerInterface.
+//
+// Parameters:
+//   - serviceID (string): The textual representation of serviceid.
+//
+// Returns:
+//   - *tool.ServiceInfo: The resulting object or data structure.
+//   - bool: True if successful or valid, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 	}
 	m.serviceInfo[serviceID] = info
 }
@@ -73,17 +93,22 @@ func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.Servi
 // Summary: GetServiceInfo implements tool.ManagerInterface.
 //
 // Parameters:
-//   - serviceID (string): The serviceID parameter.
+//   - serviceID (string): The textual representation of serviceid.
+// AddTool implements tool.ManagerInterface.
+//
+// Summary: AddTool implements tool.ManagerInterface.
+//
+// Parameters:
+//   - t (tool.Tool): The provided t data.
 //
 // Returns:
-//   - *tool.ServiceInfo: The *tool.ServiceInfo result.
-//   - bool: The bool result.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -99,24 +124,29 @@ func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceIn
 // Summary: AddTool implements tool.ManagerInterface.
 //
 // Parameters:
-//   - t (tool.Tool): The t parameter.
+//   - t (tool.Tool): The provided t data.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+// GetTool implements tool.ManagerInterface.
+//
+// Summary: GetTool implements tool.ManagerInterface.
+//
+// Parameters:
+//   - toolName (string): The human-readable or system name.
+//
+// Returns:
+//   - tool.Tool: The resulting object or data structure.
+//   - bool: True if successful or valid, false otherwise.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (m *TemporaryToolManager) AddTool(t tool.Tool) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	if m.tools == nil {
-		m.tools = make(map[string]tool.Tool)
-	}
-
+//   - May modify internal state or perform external network calls.
 	if t.Tool().GetServiceId() == "" {
 		return fmt.Errorf("tool service ID cannot be empty")
 	}
@@ -127,36 +157,6 @@ func (m *TemporaryToolManager) AddTool(t tool.Tool) error {
 	}
 
 	toolID := t.Tool().GetServiceId() + "." + sanitizedToolName
-	m.tools[toolID] = t
-	return nil
-}
-
-// GetTool implements tool.ManagerInterface.
-//
-// Summary: GetTool implements tool.ManagerInterface.
-//
-// Parameters:
-//   - toolName (string): The toolName parameter.
-//
-// Returns:
-//   - tool.Tool: The tool.Tool result.
-//   - bool: The bool result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external calls.
-func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-	if m.tools == nil {
-		return nil, false
-	}
-	t, ok := m.tools[toolName]
-	return t, ok
-}
-
 // ListTools implements tool.ManagerInterface.
 //
 // Summary: ListTools implements tool.ManagerInterface.
@@ -165,13 +165,56 @@ func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 //   - None.
 //
 // Returns:
-//   - []tool.Tool: The []tool.Tool result.
+//   - []tool.Tool: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Parameters:
+//   - toolName (string): The human-readable or system name.
+//
+// Returns:
+//   - tool.Tool: The resulting object or data structure.
+//   - bool: True if successful or valid, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
+// GetToolCountForService implements tool.ManagerInterface.
+//
+// Summary: GetToolCountForService implements tool.ManagerInterface.
+//
+// Parameters:
+//   - serviceID (string): The textual representation of serviceid.
+//
+// Returns:
+//   - int: The calculated numeric value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
+// ListTools implements tool.ManagerInterface.
+//
+// Summary: ListTools implements tool.ManagerInterface.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []tool.Tool: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (m *TemporaryToolManager) ListTools() []tool.Tool {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -190,16 +233,16 @@ func (m *TemporaryToolManager) ListTools() []tool.Tool {
 // Summary: GetToolCountForService implements tool.ManagerInterface.
 //
 // Parameters:
-//   - serviceID (string): The serviceID parameter.
+//   - serviceID (string): The textual representation of serviceid.
 //
 // Returns:
-//   - int: The int result.
+//   - int: The calculated numeric value.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (m *TemporaryToolManager) GetToolCountForService(serviceID string) int {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

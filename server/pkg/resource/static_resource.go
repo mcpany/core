@@ -18,6 +18,7 @@ import (
 // StaticResource implements the Resource interface for resources that are
 //
 // Summary: StaticResource implements the Resource interface for resources that are
+// Summary: StaticResource implements the Resource interface for resources that are
 type StaticResource struct {
 	resource      *mcp.Resource
 	serviceID     string

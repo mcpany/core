@@ -45,16 +45,18 @@ type Upstream struct {
 // Summary: CheckHealth performs a health check on the upstream service.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -68,81 +70,102 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 		return nil
 	}
 	return nil
-}
-
 // Shutdown gracefully terminates the WebSocket upstream service by shutting down
 //
 // Summary: Shutdown gracefully terminates the WebSocket upstream service by shutting down
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
+//   - _ (context.Context): The provided _ data.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Returns:
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
 		if c, ok := u.checker.(interface{ Stop() }); ok {
 			c.Stop()
-		}
-	}
-	serviceID := u.serviceID
-	u.mu.Unlock()
-
-	u.poolManager.Deregister(serviceID)
-	return nil
+// NewUpstream creates a new instance of WebsocketUpstream.
+//
+// Summary: NewUpstream creates a new instance of WebsocketUpstream.
+//
+// Parameters:
+//   - poolManager (*pool.Manager): The provided poolmanager data.
+//
+// Returns:
+//   - upstream.Upstream: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 }
 
 // NewUpstream creates a new instance of WebsocketUpstream.
 //
 // Summary: NewUpstream creates a new instance of WebsocketUpstream.
 //
-// Parameters:
-//   - poolManager (*pool.Manager): The poolManager parameter.
-//
-// Returns:
-//   - upstream.Upstream: The upstream.Upstream result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external calls.
-func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
-	return &Upstream{
-		poolManager: poolManager,
-	}
-}
-
 // Register processes the configuration for a WebSocket service. It creates a
 //
 // Summary: Register processes the configuration for a WebSocket service. It creates a
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
-//   - toolManager (tool.ManagerInterface): The toolManager parameter.
-//   - promptManager (prompt.ManagerInterface): The promptManager parameter.
-//   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
-//   - isReload (bool): The isReload parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The provided serviceconfig data.
+//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
+//   - promptManager (prompt.ManagerInterface): The provided promptmanager data.
+//   - resourceManager (resource.ManagerInterface): The provided resourcemanager data.
+//   - isReload (bool): A flag indicating whether isreload is enabled.
 //
 // Returns:
-//   - string: The string result.
-//   - []*configv1.ToolDefinition: The []*configv1.ToolDefinition result.
-//   - []*configv1.ResourceDefinition: The []*configv1.ResourceDefinition result.
-//   - error: An error if the operation fails.
+//   - string: The resulting text.
+//   - []*configv1.ToolDefinition: The resulting object or data structure.
+//   - []*configv1.ResourceDefinition: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Register processes the configuration for a WebSocket service. It creates a
+//
+// Summary: Register processes the configuration for a WebSocket service. It creates a
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The provided serviceconfig data.
+//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
+//   - promptManager (prompt.ManagerInterface): The provided promptmanager data.
+//   - resourceManager (resource.ManagerInterface): The provided resourcemanager data.
+//   - isReload (bool): A flag indicating whether isreload is enabled.
+//
+// Returns:
+//   - string: The resulting text.
+//   - []*configv1.ToolDefinition: The resulting object or data structure.
+//   - []*configv1.ResourceDefinition: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

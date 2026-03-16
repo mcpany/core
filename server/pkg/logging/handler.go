@@ -16,6 +16,7 @@ import (
 // LogEntry is the structure for logs sent over WebSocket.
 //
 // Summary: LogEntry is the structure for logs sent over WebSocket.
+// Summary: LogEntry is the structure for logs sent over WebSocket.
 type LogEntry struct {
 	ID        string         `json:"id"`
 	Timestamp string         `json:"timestamp"`
@@ -24,7 +25,9 @@ type LogEntry struct {
 	Source    string         `json:"source,omitempty"`
 	Metadata  map[string]any `json:"metadata,omitempty"`
 }
-
+// BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
+//
+// Summary: BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
 // BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
 //
 // Summary: BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
@@ -33,68 +36,74 @@ type BroadcastHandler struct {
 	attrs       []slog.Attr
 	groups      []string
 	mu          sync.Mutex
-	level       slog.Leveler
-}
-
 // NewBroadcastHandler creates a new BroadcastHandler. broadcaster is the broadcaster. level is the minimum log level to broadcast. Returns the result.
 //
 // Summary: NewBroadcastHandler creates a new BroadcastHandler. broadcaster is the broadcaster. level is the minimum log level to broadcast. Returns the result.
 //
 // Parameters:
-//   - broadcaster (*Broadcaster): The broadcaster parameter.
-//   - level (slog.Leveler): The level parameter.
+//   - broadcaster (*Broadcaster): The provided broadcaster data.
+//   - level (slog.Leveler): The provided level data.
 //
 // Returns:
-//   - *BroadcastHandler: The *BroadcastHandler result.
+//   - *BroadcastHandler: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Leveler) *BroadcastHandler {
 	return &BroadcastHandler{
-		broadcaster: broadcaster,
-		level:       level,
-	}
-}
-
 // Enabled returns true if the level is greater than or equal to the handler's level. _ is an unused parameter. level is the log level. Returns true if successful.
 //
 // Summary: Enabled returns true if the level is greater than or equal to the handler's level. _ is an unused parameter. level is the log level. Returns true if successful.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - level (slog.Level): The level parameter.
+//   - _ (context.Context): The provided _ data.
+//   - level (slog.Level): The provided level data.
 //
 // Returns:
-//   - bool: The bool result.
+//   - bool: True if successful or valid, false otherwise.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
-	return level >= h.level.Level()
-}
-
+//   - May modify internal state or perform external network calls.
+//   - bool: True if successful or valid, false otherwise.
+//
+// Errors:
+//   - None.
 // Handle handles the log record by converting it to LogEntry and broadcasting it. _ is an unused parameter. r is the r. Returns an error if the operation fails.
 //
 // Summary: Handle handles the log record by converting it to LogEntry and broadcasting it. _ is an unused parameter. r is the r. Returns an error if the operation fails.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - r (slog.Record): The r parameter.
+//   - _ (context.Context): The provided _ data.
+//   - r (slog.Record): The provided r data.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Returns:
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 	entry := LogEntry{
 		ID:        uuid.New().String(),
@@ -159,100 +168,110 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 		f, _ := fs.Next()
 		entry.Source = f.Function
 	}
-
-	// ⚡ BOLT: Avoid unnecessary JSON marshaling.
-	// Randomized Selection from Top 5 High-Impact Targets
-	// We pass the struct directly. The Broadcaster stores it efficiently,
-	// and subscribers (WebSocket handler) will marshal it when writing to the wire.
-	h.broadcaster.Broadcast(entry)
-	return nil
-}
-
 // WithAttrs returns a new handler with the given attributes. attrs is the attrs. Returns the result.
 //
 // Summary: WithAttrs returns a new handler with the given attributes. attrs is the attrs. Returns the result.
 //
 // Parameters:
-//   - attrs ([]slog.Attr): The attrs parameter.
+//   - attrs ([]slog.Attr): The provided attrs data.
 //
 // Returns:
-//   - slog.Handler: The slog.Handler result.
+//   - slog.Handler: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Parameters:
+//   - attrs ([]slog.Attr): The provided attrs data.
+//
+// Returns:
+//   - slog.Handler: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
 	newAttrs := make([]slog.Attr, len(h.attrs)+len(attrs))
-	copy(newAttrs, h.attrs)
-	copy(newAttrs[len(h.attrs):], attrs)
-
-	return &BroadcastHandler{
-		broadcaster: h.broadcaster,
-		attrs:       newAttrs,
-		groups:      h.groups,
-		level:       h.level,
-	}
-}
-
 // WithGroup returns a new handler with the given group. name is the name of the resource. Returns the result.
 //
 // Summary: WithGroup returns a new handler with the given group. name is the name of the resource. Returns the result.
 //
 // Parameters:
-//   - name (string): The name parameter.
+//   - name (string): The human-readable or system name.
 //
 // Returns:
-//   - slog.Handler: The slog.Handler result.
+//   - slog.Handler: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Summary: WithGroup returns a new handler with the given group. name is the name of the resource. Returns the result.
+//
+// Parameters:
+//   - name (string): The human-readable or system name.
+//
+// Returns:
+//   - slog.Handler: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
 	h.mu.Lock()
 	defer h.mu.Unlock()
-
-	newGroups := make([]string, len(h.groups)+1)
-	copy(newGroups, h.groups)
-	newGroups[len(h.groups)] = name
-
-	return &BroadcastHandler{
-		broadcaster: h.broadcaster,
-		attrs:       h.attrs,
-		groups:      newGroups,
-		level:       h.level,
-	}
-}
-
 // TeeHandler is a slog.Handler that writes to multiple handlers.
 //
 // Summary: TeeHandler is a slog.Handler that writes to multiple handlers.
-type TeeHandler struct {
-	handlers []slog.Handler
-}
+	newGroups := make([]string, len(h.groups)+1)
+	copy(newGroups, h.groups)
+	newGroups[len(h.groups)] = name
 
 // NewTeeHandler creates a new TeeHandler. handlers is the handlers. Returns the result.
 //
 // Summary: NewTeeHandler creates a new TeeHandler. handlers is the handlers. Returns the result.
 //
 // Parameters:
-//   - handlers (...slog.Handler): The handlers parameter.
+//   - handlers (...slog.Handler): The provided handlers data.
 //
 // Returns:
-//   - *TeeHandler: The *TeeHandler result.
+//   - *TeeHandler: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func NewTeeHandler(handlers ...slog.Handler) *TeeHandler {
+//   - May modify internal state or perform external network calls.
+}
+
+// NewTeeHandler creates a new TeeHandler. handlers is the handlers. Returns the result.
+//
+// Enabled returns true if any of the handlers are enabled. ctx is the context for the request. level is the level. Returns true if successful.
+//
+// Summary: Enabled returns true if any of the handlers are enabled. ctx is the context for the request. level is the level. Returns true if successful.
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - level (slog.Level): The provided level data.
+//
+// Returns:
+//   - bool: True if successful or valid, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 	return &TeeHandler{handlers: handlers}
 }
 
@@ -261,21 +280,23 @@ func NewTeeHandler(handlers ...slog.Handler) *TeeHandler {
 // Summary: Enabled returns true if any of the handlers are enabled. ctx is the context for the request. level is the level. Returns true if successful.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - level (slog.Level): The level parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+// Handle forwards the record to all enabled handlers. ctx is the context for the request. r is the r. Returns an error if the operation fails.
+//
+// Summary: Handle forwards the record to all enabled handlers. ctx is the context for the request. r is the r. Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - r (slog.Record): The provided r data.
 //
 // Returns:
-//   - bool: The bool result.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
-	for _, handler := range h.handlers {
-		if handler.Enabled(ctx, level) {
-			return true
+//   - May modify internal state or perform external network calls.
 		}
 	}
 	return false
@@ -286,21 +307,23 @@ func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
 // Summary: Handle forwards the record to all enabled handlers. ctx is the context for the request. r is the r. Returns an error if the operation fails.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - r (slog.Record): The r parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - r (slog.Record): The provided r data.
+// WithAttrs returns a new TeeHandler with the attributes applied to all handlers. attrs is the attrs. Returns the result.
+//
+// Summary: WithAttrs returns a new TeeHandler with the attributes applied to all handlers. attrs is the attrs. Returns the result.
+//
+// Parameters:
+//   - attrs ([]slog.Attr): The provided attrs data.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - slog.Handler: The resulting object or data structure.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
-	var err error
-	for _, handler := range h.handlers {
-		if handler.Enabled(ctx, r.Level) {
+//   - May modify internal state or perform external network calls.
 			if e := handler.Handle(ctx, r); e != nil {
 				err = e
 			}
@@ -309,21 +332,23 @@ func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
 	return err
 }
 
-// WithAttrs returns a new TeeHandler with the attributes applied to all handlers. attrs is the attrs. Returns the result.
+// WithGroup returns a new TeeHandler with the group applied to all handlers. name is the name of the resource. Returns the result.
 //
-// Summary: WithAttrs returns a new TeeHandler with the attributes applied to all handlers. attrs is the attrs. Returns the result.
+// Summary: WithGroup returns a new TeeHandler with the group applied to all handlers. name is the name of the resource. Returns the result.
 //
 // Parameters:
-//   - attrs ([]slog.Attr): The attrs parameter.
+//   - name (string): The human-readable or system name.
 //
 // Returns:
-//   - slog.Handler: The slog.Handler result.
+//   - slog.Handler: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	handlers := make([]slog.Handler, len(h.handlers))
 	for i, handler := range h.handlers {
@@ -337,16 +362,16 @@ func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 // Summary: WithGroup returns a new TeeHandler with the group applied to all handlers. name is the name of the resource. Returns the result.
 //
 // Parameters:
-//   - name (string): The name parameter.
+//   - name (string): The human-readable or system name.
 //
 // Returns:
-//   - slog.Handler: The slog.Handler result.
+//   - slog.Handler: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (h *TeeHandler) WithGroup(name string) slog.Handler {
 	handlers := make([]slog.Handler, len(h.handlers))
 	for i, handler := range h.handlers {

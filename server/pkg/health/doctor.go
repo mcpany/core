@@ -62,20 +62,14 @@ func NewDoctor() *Doctor {
 
 // AddCheck adds a named health check.
 //
-// Summary: AddCheck adds a named health check.
+// Summary: Registers a custom health check function.
 //
 // Parameters:
-//   - name (string): The name parameter.
-//   - check (CheckFunc): The check parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - name: string. The unique name of the check.
+//   - check: CheckFunc. The function to execute.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Updates the internal checks map.
 func (d *Doctor) AddCheck(name string, check CheckFunc) {
 	d.mu.Lock()
 	defer d.mu.Unlock()

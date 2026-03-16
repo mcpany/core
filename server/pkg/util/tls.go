@@ -19,17 +19,20 @@ import (
 // Summary: NewHTTPClientWithTLS creates a new *http.Client configured with the specified
 //
 // Parameters:
-//   - tlsConfig (*configv1.TLSConfig): The tlsConfig parameter.
+//   - tlsConfig (*configv1.TLSConfig): The provided tlsconfig data.
 //
 // Returns:
-//   - *http.Client: The *http.Client result.
-//   - error: An error if the operation fails.
+//   - *http.Client: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func NewHTTPClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
 	var tlsClientConfig *tls.Config
 

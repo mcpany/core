@@ -34,34 +34,24 @@ type httpPool struct {
 //   - None.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (p *httpPool) Close() error {
-	if err := p.Pool.Close(); err != nil {
-		return err
-	}
-	p.transport.CloseIdleConnections()
-	return nil
-}
-
+//   - May modify internal state or perform external network calls.
+// Returns:
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 // NewHTTPPool creates a new connection pool for HTTP clients.
 //
 // Summary: NewHTTPPool creates a new connection pool for HTTP clients.
-var NewHTTPPool = func(
-	minSize, maxSize int,
-	idleTimeout time.Duration,
-	config *configv1.UpstreamServiceConfig,
-) (pool.Pool[*client.HTTPClientWrapper], error) {
-	tlsConfig := &tls.Config{
-		MinVersion:         tls.VersionTLS12,
-		InsecureSkipVerify: config.GetHttpService().GetTlsConfig().GetInsecureSkipVerify(), //nolint:gosec
-	}
-
 	if mtlsConfig := config.GetUpstreamAuth().GetMtls(); mtlsConfig != nil {
 		if err := validation.IsSecurePath(mtlsConfig.GetClientCertPath()); err != nil {
 			return nil, fmt.Errorf("invalid client certificate path: %w", err)

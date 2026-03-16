@@ -30,20 +30,15 @@ var (
 
 // AddHealthStatus adds a status point to the history.
 //
-// Summary: AddHealthStatus adds a status point to the history.
+// Summary: Records a new health status point for a service.
 //
 // Parameters:
-//   - serviceName (string): The serviceName parameter.
-//   - status (string): The status parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - serviceName: string. The name of the service.
+//   - status: string. The health status (e.g., "healthy", "unhealthy").
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Updates the global historyStore.
+//   - Prunes history if it exceeds 1000 points.
 func AddHealthStatus(serviceName string, status string) {
 	historyMu.Lock()
 	defer historyMu.Unlock()

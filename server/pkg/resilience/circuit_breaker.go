@@ -16,17 +16,26 @@ import (
 // State represents the current state of the circuit breaker.
 //
 // Summary: State represents the current state of the circuit breaker.
+//
+// Summary: State represents the current state of the circuit breaker.
 type State int32
-
-const (
 // StateClosed represents the state where the circuit breaker allows requests to pass through.
 //
 // Summary: StateClosed represents the state where the circuit breaker allows requests to pass through.
-	StateClosed State = iota
+const (
 // StateOpen represents the state where the circuit breaker blocks requests immediately.
 //
 // Summary: StateOpen represents the state where the circuit breaker blocks requests immediately.
-	StateOpen
+//
+// StateHalfOpen represents the state where the circuit breaker allows a limited number of requests to test if the service has recovered.
+//
+// Summary: StateHalfOpen represents the state where the circuit breaker allows a limited number of requests to test if the service has recovered.
+	StateClosed State = iota
+// StateOpen represents the state where the circuit breaker blocks requests immediately.
+//
+// CircuitBreaker implements the circuit breaker pattern. It prevents the
+//
+// Summary: CircuitBreaker implements the circuit breaker pattern. It prevents the
 // StateHalfOpen represents the state where the circuit breaker allows a limited number of requests to test if the service has recovered.
 //
 // Summary: StateHalfOpen represents the state where the circuit breaker allows a limited number of requests to test if the service has recovered.
@@ -224,7 +233,9 @@ func (cb *CircuitBreaker) onFailure(originState State) {
 		cb.setState(StateOpen)
 		cb.openTime = time.Now()
 		return
-	}
+// CircuitBreakerOpenError is returned when the circuit breaker is in the Open state.
+//
+// Summary: CircuitBreakerOpenError is returned when the circuit breaker is in the Open state.
 
 	newFailures := atomic.AddInt32(&cb.failures, 1)
 	if newFailures >= cb.config.GetConsecutiveFailures() {

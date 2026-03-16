@@ -16,6 +16,8 @@ import (
 // Retry implements a retry policy for failed operations.
 //
 // Summary: Retry implements a retry policy for failed operations.
+//
+// Summary: Retry implements a retry policy for failed operations.
 type Retry struct {
 	config *configv1.RetryConfig
 }

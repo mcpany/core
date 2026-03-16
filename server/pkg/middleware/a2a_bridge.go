@@ -16,50 +16,55 @@ import (
 // A2ABridgeMiddleware represents the Agent-to-Agent (A2A) Bridge middleware.
 //
 // Summary: A2ABridgeMiddleware represents the Agent-to-Agent (A2A) Bridge middleware.
+// Summary: A2ABridgeMiddleware represents the Agent-to-Agent (A2A) Bridge middleware.
 type A2ABridgeMiddleware struct {
 	contextManager *RecursiveContextManager
 }
-
 // NewA2ABridgeMiddleware creates a new A2ABridgeMiddleware.
 //
 // Summary: NewA2ABridgeMiddleware creates a new A2ABridgeMiddleware.
 //
 // Parameters:
-//   - contextManager (*RecursiveContextManager): The contextManager parameter.
+//   - contextManager (*RecursiveContextManager): The provided contextmanager data.
 //
 // Returns:
-//   - *A2ABridgeMiddleware: The *A2ABridgeMiddleware result.
+//   - *A2ABridgeMiddleware: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeMiddleware {
 	return &A2ABridgeMiddleware{
 		contextManager: contextManager,
-	}
-}
-
 // Execute processes the MCP request and intercepts A2A agent calls.
 //
 // Summary: Execute processes the MCP request and intercepts A2A agent calls.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - method (string): The method parameter.
-//   - req (mcp.Request): The req parameter.
-//   - next (mcp.MethodHandler): The next parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - method (string): The textual representation of method.
+//   - req (mcp.Request): The incoming request payload.
+//   - next (mcp.MethodHandler): The provided next data.
 //
 // Returns:
-//   - mcp.Result: The mcp.Result result.
-//   - error: An error if the operation fails.
+//   - mcp.Result: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (m *A2ABridgeMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	if method != "tools/call" {
 		return next(ctx, method, req)

@@ -21,17 +21,23 @@ import (
 // Summary: ConvertMCPToolToProto transforms an *mcp.Tool, which uses a flexible schema
 //
 // Parameters:
-//   - tool (*mcp.Tool): The tool parameter.
+//   - tool (*mcp.Tool): The provided tool data.
 //
 // Returns:
-//   - *pb.Tool: The *pb.Tool result.
-//   - error: An error if the operation fails.
+//   - *pb.Tool: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 	if tool == nil {
 		return nil, fmt.Errorf("cannot convert nil mcp tool to proto")
@@ -105,28 +111,34 @@ func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 	if !ok {
 		return nil, fmt.Errorf("schema is not a valid JSON object")
 	}
-
-	// Optimization: Use structpb.NewStruct directly instead of round-tripping through JSON.
-	// This is significantly faster (~10x) and avoids unnecessary memory allocations.
-	return structpb.NewStruct(schemaMap)
-}
-
 // ConvertMcpFieldsToInputSchemaProperties converts a slice of McpField, which
 //
 // Summary: ConvertMcpFieldsToInputSchemaProperties converts a slice of McpField, which
 //
 // Parameters:
-//   - fields ([]*protobufparser.McpField): The fields parameter.
+//   - fields ([]*protobufparser.McpField): The provided fields data.
 //
 // Returns:
-//   - *structpb.Struct: The *structpb.Struct result.
-//   - error: An error if the operation fails.
+//   - *structpb.Struct: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Parameters:
+//   - fields ([]*protobufparser.McpField): The provided fields data.
+//
+// Returns:
+//   - *structpb.Struct: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) (*structpb.Struct, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 	for _, field := range fields {
@@ -139,36 +151,43 @@ func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 			"type":        schema.Type,
 			"description": schema.Description,
 		}
-
-		value, err := structpb.NewValue(fieldsMap)
-		if err != nil {
-			return nil, fmt.Errorf("failed to create structpb value: %w", err)
-		}
-
-		properties.Fields[field.Name] = value
-	}
-	return properties, nil
-}
-
+// ConvertToolDefinitionToProto transforms a *configv1.ToolDefinition into a
+//
+// Summary: ConvertToolDefinitionToProto transforms a *configv1.ToolDefinition into a
+//
+// Parameters:
+//   - toolDef (*configv1.ToolDefinition): The provided tooldef data.
+//   - inputSchema (*structpb.Struct): The provided inputschema data.
+//   - outputSchema (*structpb.Struct): The provided outputschema data.
+//
+// Returns:
+//   - *pb.Tool: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 
 // ConvertToolDefinitionToProto transforms a *configv1.ToolDefinition into a
 //
 // Summary: ConvertToolDefinitionToProto transforms a *configv1.ToolDefinition into a
 //
 // Parameters:
-//   - toolDef (*configv1.ToolDefinition): The toolDef parameter.
-//   - inputSchema (*structpb.Struct): The inputSchema parameter.
-//   - outputSchema (*structpb.Struct): The outputSchema parameter.
+//   - toolDef (*configv1.ToolDefinition): The provided tooldef data.
+//   - inputSchema (*structpb.Struct): The provided inputschema data.
+//   - outputSchema (*structpb.Struct): The provided outputschema data.
 //
 // Returns:
-//   - *pb.Tool: The *pb.Tool result.
-//   - error: An error if the operation fails.
+//   - *pb.Tool: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema, outputSchema *structpb.Struct) (*pb.Tool, error) {
 	if toolDef == nil {
 		return nil, fmt.Errorf("cannot convert nil tool definition to proto")
@@ -189,17 +208,23 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 	}
 
 	builder := pb.Tool_builder{
-		Name:        proto.String(toolDef.GetName()),
-		Description: proto.String(toolDef.GetDescription()),
-		DisplayName: proto.String(toolDef.GetTitle()),
-		ServiceId:   proto.String(toolDef.GetServiceId()),
-		Annotations: annotationsBuilder.Build(),
-		Tags:        toolDef.GetTags(),
-		Profiles:    profiles,
-	}
-
-	if toolDef.GetIntegrity() != nil {
-		builder.Integrity = pb.ToolIntegrity_builder{
+// GetJSONSchemaForScalarType maps a protobuf scalar type (e.g., "TYPE_STRING",
+//
+// Summary: GetJSONSchemaForScalarType maps a protobuf scalar type (e.g., "TYPE_STRING",
+//
+// Parameters:
+//   - scalarType (string): The textual representation of scalartype.
+//   - description (string): The textual representation of description.
+//
+// Returns:
+//   - *jsonschema.Schema: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 			Hash:      proto.String(toolDef.GetIntegrity().GetHash()),
 			Algorithm: proto.String(toolDef.GetIntegrity().GetAlgorithm()),
 		}.Build()
@@ -213,28 +238,34 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 // Summary: GetJSONSchemaForScalarType maps a protobuf scalar type (e.g., "TYPE_STRING",
 //
 // Parameters:
-//   - scalarType (string): The scalarType parameter.
-//   - description (string): The description parameter.
+//   - scalarType (string): The textual representation of scalartype.
+//   - description (string): The textual representation of description.
 //
 // Returns:
-//   - *jsonschema.Schema: The *jsonschema.Schema result.
-//   - error: An error if the operation fails.
+//   - *jsonschema.Schema: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Schema, error) {
-	s := &jsonschema.Schema{
-		Description: description,
-	}
-
-	scalarType = strings.TrimPrefix(scalarType, "TYPE_")
-	scalarType = strings.ToLower(scalarType)
-
-	switch scalarType {
-	case "double", "float":
+//   - May modify internal state or perform external network calls.
+// ConvertProtoToMCPTool transforms a protobuf-defined *pb.Tool into an
+//
+// Summary: ConvertProtoToMCPTool transforms a protobuf-defined *pb.Tool into an
+//
+// Parameters:
+//   - pbTool (*pb.Tool): The provided pbtool data.
+//
+// Returns:
+//   - *mcp.Tool: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 		s.Type = "number"
 	case "int32", "int64", "sint32", "sint64", "uint32", "uint64", "fixed32", "fixed64", "sfixed32", "sfixed64":
 		s.Type = "integer"
@@ -255,17 +286,17 @@ func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 // Summary: ConvertProtoToMCPTool transforms a protobuf-defined *pb.Tool into an
 //
 // Parameters:
-//   - pbTool (*pb.Tool): The pbTool parameter.
+//   - pbTool (*pb.Tool): The provided pbtool data.
 //
 // Returns:
-//   - *mcp.Tool: The *mcp.Tool result.
-//   - error: An error if the operation fails.
+//   - *mcp.Tool: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
 	if pbTool == nil {
 		return nil, fmt.Errorf("cannot convert nil pb tool to mcp tool")

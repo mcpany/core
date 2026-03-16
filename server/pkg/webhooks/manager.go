@@ -75,19 +75,14 @@ func (m *Manager) ListWebhooks() []*WebhookConfig {
 
 // AddWebhook adds or updates a webhook.
 //
-// Summary: AddWebhook adds or updates a webhook.
+// Summary: Adds or updates a webhook.
 //
 // Parameters:
-//   - w (*WebhookConfig): The w parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - w (*WebhookConfig): The webhook configuration to add.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Updates the internal webhook map.
+//   - Generates an ID if one is not provided.
 func (m *Manager) AddWebhook(w *WebhookConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -117,19 +112,13 @@ func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
 
 // DeleteWebhook removes a webhook by ID.
 //
-// Summary: DeleteWebhook removes a webhook by ID.
+// Summary: Deletes a webhook.
 //
 // Parameters:
-//   - id (string): The id parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - id (string): The webhook ID to delete.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Removes the webhook from the internal map.
 func (m *Manager) DeleteWebhook(id string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

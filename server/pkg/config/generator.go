@@ -33,19 +33,19 @@ type Generator struct {
 //   - None.
 //
 // Returns:
-//   - *Generator: The *Generator result.
+//   - *Generator: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func NewGenerator() *Generator {
 	return &Generator{
 		Reader: bufio.NewReader(os.Stdin),
 	}
-}
-
 // Generate prompts the user for service details and returns the generated configuration as a byte slice.
 //
 // Summary: Generate prompts the user for service details and returns the generated configuration as a byte slice.
@@ -54,14 +54,18 @@ func NewGenerator() *Generator {
 //   - None.
 //
 // Returns:
-//   - []byte: The []byte result.
-//   - error: An error if the operation fails.
+//   - []byte: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (g *Generator) Generate() ([]byte, error) {
 	serviceType, err := g.prompt("🤖 Enter service type (http, grpc, openapi, graphql): ")
 	if err != nil {

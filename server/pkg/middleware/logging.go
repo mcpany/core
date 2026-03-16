@@ -18,17 +18,16 @@ import (
 // Summary: LoggingMiddleware creates an MCP middleware that logs information about each
 //
 // Parameters:
-//   - log (*slog.Logger): The log parameter.
+//   - log (*slog.Logger): The provided log data.
 //
 // Returns:
-//   - mcp.Middleware: The mcp.Middleware result.
+//   - mcp.Middleware: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
+//   - May modify internal state or perform external network calls.
 	if log == nil {
 		log = logging.GetLogger()
 	}

@@ -64,32 +64,36 @@ type Bus[T any] interface {
 // Provider is a thread-safe container for managing multiple, type-safe bus
 //
 // Summary: Provider is a thread-safe container for managing multiple, type-safe bus
-type Provider struct {
-	buses  *xsync.Map[string, any]
-	config *bus.MessageBus
-}
-
 // NewProviderHook is a test hook for overriding the NewProvider logic.
 //
 // Summary: NewProviderHook is a test hook for overriding the NewProvider logic.
 var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
+// NewProviderHook is a test hook for overriding the NewProvider logic.
+//
+// Summary: NewProviderHook is a test hook for overriding the NewProvider logic.
+//
+// Summary: NewProvider creates and returns a new Provider, which is used to manage
 // NewProvider creates and returns a new Provider, which is used to manage
 //
 // Summary: NewProvider creates and returns a new Provider, which is used to manage
 //
 // Parameters:
-//   - messageBus (*bus.MessageBus): The messageBus parameter.
+//   - messageBus (*bus.MessageBus): The provided messagebus data.
 //
 // Returns:
-//   - *Provider: The *Provider result.
-//   - error: An error if the operation fails.
+//   - *Provider: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
 		return NewProviderHook(messageBus)
@@ -119,32 +123,37 @@ func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	default:
 		return nil, fmt.Errorf("unknown bus type")
 	}
-
-	return provider, nil
-}
-
 // GetBusHook is a test hook for overriding the bus retrieval logic.
 //
 // Summary: GetBusHook is a test hook for overriding the bus retrieval logic.
-var GetBusHook func(p *Provider, topic string) (any, error)
-
+	return provider, nil
+}
 // GetBus retrieves a bus for the given topic. If a bus for the given topic
 //
 // Summary: GetBus retrieves a bus for the given topic. If a bus for the given topic
 //
 // Parameters:
-//   - p (*Provider): The p parameter.
-//   - topic (string): The topic parameter.
+//   - p (*Provider): The provided p data.
+//   - topic (string): The textual representation of topic.
 //
 // Returns:
-//   - Bus[T]: The Bus[T] result.
-//   - error: An error if the operation fails.
+//   - Bus[T]: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Returns:
+//   - Bus[T]: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func GetBus[T any](p *Provider, topic string) (Bus[T], error) {
 	if GetBusHook != nil {
 		bus, err := GetBusHook(p, topic)

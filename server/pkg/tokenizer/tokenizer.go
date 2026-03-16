@@ -16,6 +16,8 @@ import (
 // Tokenizer defines the interface for counting tokens in a given text.
 //
 // Summary: Tokenizer defines the interface for counting tokens in a given text.
+//
+// Summary: Tokenizer defines the interface for counting tokens in a given text.
 type Tokenizer interface {
 	// CountTokens estimates or calculates the number of tokens in the input text.
 	//
@@ -24,13 +26,11 @@ type Tokenizer interface {
 	// Returns the result.
 	// Returns an error if the operation fails.
 	CountTokens(text string) (int, error)
-}
-
 // SimpleTokenizer implements a character-based heuristic.
 //
 // Summary: SimpleTokenizer implements a character-based heuristic.
-type SimpleTokenizer struct{}
-
+// SimpleTokenizer implements a character-based heuristic.
+//
 // NewSimpleTokenizer creates a new SimpleTokenizer. Returns the result.
 //
 // Summary: NewSimpleTokenizer creates a new SimpleTokenizer. Returns the result.
@@ -39,51 +39,51 @@ type SimpleTokenizer struct{}
 //   - None.
 //
 // Returns:
-//   - *SimpleTokenizer: The *SimpleTokenizer result.
+//   - *SimpleTokenizer: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func NewSimpleTokenizer() *SimpleTokenizer {
-	return &SimpleTokenizer{}
-}
-
+//   - May modify internal state or perform external network calls.
+// Errors:
+//   - None.
+//
+// Side Effects:
 // CountTokens counts tokens in text using the simple heuristic. text is the text. Returns the result. Returns an error if the operation fails.
 //
 // Summary: CountTokens counts tokens in text using the simple heuristic. text is the text. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
-//   - text (string): The text parameter.
+//   - text (string): The textual representation of text.
 //
 // Returns:
-//   - int: The int result.
-//   - error: An error if the operation fails.
+//   - int: The calculated numeric value.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (t *SimpleTokenizer) CountTokens(text string) (int, error) {
 	if len(text) == 0 {
 		return 0, nil
 	}
-	count := len(text) / 4
-	if count < 1 {
+// WordTokenizer implements a word-based heuristic.
+//
+// Summary: WordTokenizer implements a word-based heuristic.
 		count = 1
 	}
 	return count, nil
 }
-
-// WordTokenizer implements a word-based heuristic.
-//
-// Summary: WordTokenizer implements a word-based heuristic.
-type WordTokenizer struct {
-	Factor float64
-}
-
 // NewWordTokenizer creates a new WordTokenizer with a default factor of 1.3. Returns the result.
 //
 // Summary: NewWordTokenizer creates a new WordTokenizer with a default factor of 1.3. Returns the result.
@@ -92,33 +92,45 @@ type WordTokenizer struct {
 //   - None.
 //
 // Returns:
-//   - *WordTokenizer: The *WordTokenizer result.
+//   - *WordTokenizer: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func NewWordTokenizer() *WordTokenizer {
-	return &WordTokenizer{Factor: 1.3}
-}
-
+//   - May modify internal state or perform external network calls.
+//   - None.
+//
+// Returns:
+//   - *WordTokenizer: The resulting object or data structure.
 // CountTokens counts tokens in text using the word-based heuristic. text is the text. Returns the result. Returns an error if the operation fails.
 //
 // Summary: CountTokens counts tokens in text using the word-based heuristic. text is the text. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
-//   - text (string): The text parameter.
+//   - text (string): The textual representation of text.
 //
 // Returns:
-//   - int: The int result.
-//   - error: An error if the operation fails.
+//   - int: The calculated numeric value.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Parameters:
+//   - text (string): The textual representation of text.
+//
+// Returns:
+//   - int: The calculated numeric value.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (t *WordTokenizer) CountTokens(text string) (int, error) {
 	if len(text) == 0 {
 		return 0, nil
@@ -185,35 +197,39 @@ func countWords(text string) int {
 		} else {
 			// Multibyte character, decode rune
 			r, w := utf8.DecodeRuneInString(text[i:])
-			if unicode.IsSpace(r) {
-				inWord = false
-			} else if !inWord {
-				inWord = true
-				wordCount++
-			}
-			i += w
-		}
-	}
-	return wordCount
-}
-
 // CountTokensInValue recursively counts tokens in arbitrary structures. t is the t. v is the v. Returns the result. Returns an error if the operation fails.
 //
 // Summary: CountTokensInValue recursively counts tokens in arbitrary structures. t is the t. v is the v. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
-//   - t (Tokenizer): The t parameter.
-//   - v (interface{}): The v parameter.
+//   - t (Tokenizer): The provided t data.
+//   - v (interface{}): The numeric value for v.
 //
 // Returns:
-//   - int: The int result.
-//   - error: An error if the operation fails.
+//   - int: The calculated numeric value.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Summary: CountTokensInValue recursively counts tokens in arbitrary structures. t is the t. v is the v. Returns the result. Returns an error if the operation fails.
+//
+// Parameters:
+//   - t (Tokenizer): The provided t data.
+//   - v (interface{}): The numeric value for v.
+//
+// Returns:
+//   - int: The calculated numeric value.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 	// OPTIMIZATION: Handle common primitive types and simple collections
 	// without allocating the 'visited' map. This significantly improves performance
@@ -232,14 +248,22 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 		// We can still handle string safely
 		if str, ok := v.(string); ok {
 			return t.CountTokens(str)
-		}
-	}
-
-	visited := visitedPool.Get().(map[uintptr]bool)
-	c, err := countTokensInValueRecursive(t, v, visited)
-
-	// Ensure map is cleared before putting back
-	clear(visited)
+// CountTokens counts the number of words in the text.
+//
+// Summary: CountTokens counts the number of words in the text.
+//
+// Parameters:
+//   - text (string): The textual representation of text.
+//
+// Returns:
+//   - int: The calculated numeric value.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 	visitedPool.Put(visited)
 
 	return c, err
@@ -253,17 +277,17 @@ type rawWordCounter struct{}
 // Summary: CountTokens counts the number of words in the text.
 //
 // Parameters:
-//   - text (string): The text parameter.
+//   - text (string): The textual representation of text.
 //
 // Returns:
-//   - int: The int result.
-//   - error: An error if the operation fails.
+//   - int: The calculated numeric value.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (r *rawWordCounter) CountTokens(text string) (int, error) {
 	return countWords(text), nil
 }

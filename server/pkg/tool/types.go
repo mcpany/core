@@ -50,6 +50,8 @@ const (
 // HealthStatusUnhealthy indicates that a service is in an unhealthy state.
 //
 // Summary: HealthStatusUnhealthy indicates that a service is in an unhealthy state.
+//
+// Summary: HealthStatusUnhealthy indicates that a service is in an unhealthy state.
 	HealthStatusUnhealthy = "unhealthy"
 
 	gitCommand = "git"
@@ -381,8 +383,6 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 		cache:             callDefinition.GetCache(),
 		resilienceManager: resilience.NewManager(resilienceConfig),
 	}
-}
-
 // Tool returns the protobuf definition of the gRPC tool.
 //
 // Summary: Tool returns the protobuf definition of the gRPC tool.
@@ -391,17 +391,17 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 //   - None.
 //
 // Returns:
-//   - *v1.Tool: The *v1.Tool result.
+//   - *v1.Tool: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (t *GRPCTool) Tool() *v1.Tool {
-	return t.tool
-}
-
+//   - May modify internal state or perform external network calls.
+// Summary: Tool returns the protobuf definition of the gRPC tool.
+//
+// Parameters:
+//   - None.
 // MCPTool returns the MCP-compliant tool definition.
 //
 // Summary: MCPTool returns the MCP-compliant tool definition.
@@ -410,13 +410,46 @@ func (t *GRPCTool) Tool() *v1.Tool {
 //   - None.
 //
 // Returns:
-//   - *mcp.Tool: The *mcp.Tool result.
+//   - *mcp.Tool: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
+func (t *GRPCTool) Tool() *v1.Tool {
+	return t.tool
+}
+
+// MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: MCPTool returns the MCP-compliant tool definition.
+//
+// GetCacheConfig returns the cache configuration for the gRPC tool.
+//
+// Summary: GetCacheConfig returns the cache configuration for the gRPC tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
+//   - *mcp.Tool: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (t *GRPCTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -436,13 +469,13 @@ func (t *GRPCTool) MCPTool() *mcp.Tool {
 //   - None.
 //
 // Returns:
-//   - *configv1.CacheConfig: The *configv1.CacheConfig result.
+//   - *configv1.CacheConfig: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -654,20 +687,40 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		return t
 	}
 	t.cachedURL = u
-
-	pathStr := u.EscapedPath()
-	pathStr = strings.ReplaceAll(pathStr, "%7B", "{")
-	pathStr = strings.ReplaceAll(pathStr, "%7D", "}")
+// Tool returns the protobuf definition of the HTTP tool.
+//
+// Summary: Tool returns the protobuf definition of the HTTP tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *v1.Tool: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 
 	queryStr := u.RawQuery
 	queryStr = strings.ReplaceAll(queryStr, "%7B", "{")
 	queryStr = strings.ReplaceAll(queryStr, "%7D", "}")
-
-	t.pathSegments = parseURLSegments(pathStr)
-	t.querySegments = parseURLSegments(queryStr)
-
-	t.paramInPath = make([]bool, len(callDefinition.GetParameters()))
-	t.paramInQuery = make([]bool, len(callDefinition.GetParameters()))
+// MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: MCPTool returns the MCP-compliant tool definition.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Tool: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 
 	for i, param := range callDefinition.GetParameters() {
 		if schema := param.GetSchema(); schema != nil {
@@ -679,10 +732,21 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 				t.paramInPath[i] = true
 			}
 			if strings.Contains(queryStr, placeholder) {
-				t.paramInQuery[i] = true
-			}
-		}
-	}
+// GetCacheConfig returns the cache configuration for the HTTP tool.
+//
+// Summary: GetCacheConfig returns the cache configuration for the HTTP tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 
 	return t
 }
@@ -695,13 +759,13 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 //   - None.
 //
 // Returns:
-//   - *v1.Tool: The *v1.Tool result.
+//   - *v1.Tool: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (t *HTTPTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -714,13 +778,13 @@ func (t *HTTPTool) Tool() *v1.Tool {
 //   - None.
 //
 // Returns:
-//   - *mcp.Tool: The *mcp.Tool result.
+//   - *mcp.Tool: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (t *HTTPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -740,13 +804,13 @@ func (t *HTTPTool) MCPTool() *mcp.Tool {
 //   - None.
 //
 // Returns:
-//   - *configv1.CacheConfig: The *configv1.CacheConfig result.
+//   - *configv1.CacheConfig: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1361,20 +1425,40 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 
 // MCPTool implements the Tool interface for a tool that is exposed via another
 // MCP-compliant service.
+// Tool returns the protobuf definition of the MCP tool.
 //
-// Summary: Tool implementation for proxying to MCP services.
+// Summary: Tool returns the protobuf definition of the MCP tool.
 //
-// It acts as a proxy, forwarding the tool call to the
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *v1.Tool: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 // downstream MCP service.
 type MCPTool struct {
 	tool                 *v1.Tool
 	mcpTool              *mcp.Tool
-	mcpToolOnce          sync.Once
-	client               client.MCPClient
-	inputTransformer     *configv1.InputTransformer
-	outputTransformer    *configv1.OutputTransformer
-	webhookClient        *WebhookClient
-	cache                *configv1.CacheConfig
+// MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: MCPTool returns the MCP-compliant tool definition.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Tool: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 	cachedInputTemplate  *transformer.TextTemplate
 	cachedOutputTemplate *transformer.TextTemplate
 	initError            error
@@ -1386,10 +1470,21 @@ type MCPTool struct {
 //
 // Parameters:
 //   - tool: *v1.Tool. The protobuf definition of the tool.
-//   - client: client.MCPClient. The MCP client for downstream communication.
-//   - callDefinition: *configv1.MCPCallDefinition. The configuration for the MCP call.
+// GetCacheConfig returns the cache configuration for the MCP tool.
+//
+// Summary: GetCacheConfig returns the cache configuration for the MCP tool.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
+//   - *configv1.CacheConfig: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 //   - *MCPTool: The initialized MCPTool.
 func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
 	var webhookClient *WebhookClient
@@ -1433,13 +1528,13 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 //   - None.
 //
 // Returns:
-//   - *v1.Tool: The *v1.Tool result.
+//   - *v1.Tool: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (t *MCPTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -1452,13 +1547,13 @@ func (t *MCPTool) Tool() *v1.Tool {
 //   - None.
 //
 // Returns:
-//   - *mcp.Tool: The *mcp.Tool result.
+//   - *mcp.Tool: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (t *MCPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1478,13 +1573,13 @@ func (t *MCPTool) MCPTool() *mcp.Tool {
 //   - None.
 //
 // Returns:
-//   - *configv1.CacheConfig: The *configv1.CacheConfig result.
+//   - *configv1.CacheConfig: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1603,20 +1698,40 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 				return nil, fmt.Errorf("output must be a map to be used with a template, got %T", parsedResult)
 			}
 			renderedOutput, err := t.cachedOutputTemplate.Render(resultMap)
-			if err != nil {
-				return nil, fmt.Errorf("failed to render output template: %w", err)
-			}
-			return map[string]any{"result": renderedOutput}, nil
+// Tool returns the protobuf definition of the OpenAPI tool.
+//
+// Summary: Tool returns the protobuf definition of the OpenAPI tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *v1.Tool: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 		}
 		return parsedResult, nil
 	}
 
-	var resultMap map[string]any
-	if err := fastJSON.Unmarshal(responseBytes, &resultMap); err != nil {
-		// If unmarshalling to a map fails, return the raw string content
-		return string(responseBytes), nil //nolint:nilerr // intentional fallback for non-JSON responses
-	}
-
+// MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: MCPTool returns the MCP-compliant tool definition.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Tool: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 	return resultMap, nil
 }
 
@@ -1628,10 +1743,21 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 // It constructs and sends an HTTP request based on the OpenAPI
 // operation definition.
 type OpenAPITool struct {
-	tool                 *v1.Tool
-	mcpTool              *mcp.Tool
-	mcpToolOnce          sync.Once
-	client               client.HTTPClient
+// GetCacheConfig returns the cache configuration for the OpenAPI tool.
+//
+// Summary: GetCacheConfig returns the cache configuration for the OpenAPI tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 	parameterDefs        map[string]string
 	method               string
 	url                  string
@@ -1706,13 +1832,13 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 //   - None.
 //
 // Returns:
-//   - *v1.Tool: The *v1.Tool result.
+//   - *v1.Tool: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (t *OpenAPITool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -1725,13 +1851,13 @@ func (t *OpenAPITool) Tool() *v1.Tool {
 //   - None.
 //
 // Returns:
-//   - *mcp.Tool: The *mcp.Tool result.
+//   - *mcp.Tool: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (t *OpenAPITool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1751,13 +1877,13 @@ func (t *OpenAPITool) MCPTool() *mcp.Tool {
 //   - None.
 //
 // Returns:
-//   - *configv1.CacheConfig: The *configv1.CacheConfig result.
+//   - *configv1.CacheConfig: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1962,20 +2088,40 @@ type CommandTool struct {
 // Summary: Initializes a new CommandTool.
 //
 // Parameters:
-//   - tool: *v1.Tool. The protobuf definition of the tool.
-//   - service: *configv1.CommandLineUpstreamService. The service configuration.
-//   - callDefinition: *configv1.CommandLineCallDefinition. The call configuration.
-//   - policies: []*configv1.CallPolicy. The security policies.
+// Tool returns the protobuf definition of the command-line tool.
+//
+// Summary: Tool returns the protobuf definition of the command-line tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *v1.Tool: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 //   - callID: string. The unique identifier for the call.
 //
 // Returns:
 //   - Tool: The created CommandTool.
-func NewCommandTool(
-	tool *v1.Tool,
-	service *configv1.CommandLineUpstreamService,
-	callDefinition *configv1.CommandLineCallDefinition,
-	policies []*configv1.CallPolicy,
-	callID string,
+// MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: MCPTool returns the MCP-compliant tool definition.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Tool: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 ) Tool {
 	compiled, err := CompileCallPolicies(policies)
 
@@ -1987,10 +2133,21 @@ func NewCommandTool(
 			}
 		}
 	}
-
-	t := &CommandTool{
-		tool:           tool,
-		service:        service,
+// GetCacheConfig returns the cache configuration for the command-line tool.
+//
+// Summary: GetCacheConfig returns the cache configuration for the command-line tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 		callDefinition: callDefinition,
 		policies:       compiled,
 		callID:         callID,
@@ -2096,13 +2253,13 @@ func NewLocalCommandTool(
 //   - None.
 //
 // Returns:
-//   - *v1.Tool: The *v1.Tool result.
+//   - *v1.Tool: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (t *LocalCommandTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -2115,13 +2272,13 @@ func (t *LocalCommandTool) Tool() *v1.Tool {
 //   - None.
 //
 // Returns:
-//   - *mcp.Tool: The *mcp.Tool result.
+//   - *mcp.Tool: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -2141,13 +2298,13 @@ func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 //   - None.
 //
 // Returns:
-//   - *configv1.CacheConfig: The *configv1.CacheConfig result.
+//   - *configv1.CacheConfig: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil
@@ -2332,20 +2489,40 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 
 	for k, v := range resolvedServiceEnv {
-		env = append(env, fmt.Sprintf("%s=%s", k, v))
-	}
-
-	for _, param := range t.callDefinition.GetParameters() {
+// Tool returns the protobuf definition of the command-line tool.
+//
+// Summary: Tool returns the protobuf definition of the command-line tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *v1.Tool: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 		name := param.GetSchema().GetName()
 		if secret := param.GetSecret(); secret != nil {
 			secretValue, err := util.ResolveSecret(ctx, secret)
 			if err != nil {
-				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
-			}
-			secrets = append(secrets, secretValue)
-			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
-		} else if val, ok := inputs[name]; ok {
-			valStr := util.ToString(val)
+// MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: MCPTool returns the MCP-compliant tool definition.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Tool: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
@@ -2357,10 +2534,21 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				if err := checkEnvInjection(valStr); err != nil {
 					logging.GetLogger().Warn("Skipping environment variable due to potential shell injection risk", "parameter", name, "error", err)
 					safeForEnv = false
-				}
-			}
-			// Sentinel Security Update: Block known dangerous environment variables
-			if isDangerousEnvVar(name) {
+// GetCacheConfig returns the cache configuration for the command-line tool.
+//
+// Summary: GetCacheConfig returns the cache configuration for the command-line tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 				logging.GetLogger().Warn("Skipping dangerous environment variable", "parameter", name)
 				safeForEnv = false
 			}
@@ -2497,13 +2685,13 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 //   - None.
 //
 // Returns:
-//   - *v1.Tool: The *v1.Tool result.
+//   - *v1.Tool: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (t *CommandTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -2516,13 +2704,13 @@ func (t *CommandTool) Tool() *v1.Tool {
 //   - None.
 //
 // Returns:
-//   - *mcp.Tool: The *mcp.Tool result.
+//   - *mcp.Tool: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (t *CommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -2542,13 +2730,13 @@ func (t *CommandTool) MCPTool() *mcp.Tool {
 //   - None.
 //
 // Returns:
-//   - *configv1.CacheConfig: The *configv1.CacheConfig result.
+//   - *configv1.CacheConfig: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil
@@ -2721,24 +2909,43 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve service env: %w", err)
 	}
-
-	// Collect secrets for redaction
-	secrets := make([]string, 0, len(resolvedServiceEnv))
-	for _, v := range resolvedServiceEnv {
-		secrets = append(secrets, v)
-	}
-
-	for k, v := range resolvedServiceEnv {
+// Write writes bytes to the buffer in a thread-safe manner.
+//
+// Summary: Write writes bytes to the buffer in a thread-safe manner.
+//
+// Parameters:
+//   - p ([]byte): The provided p data.
+//
+// Returns:
+//   - n (int): The calculated numeric value.
+//   - err (error): An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 		env = append(env, fmt.Sprintf("%s=%s", k, v))
 	}
 
 	if ce := t.service.GetContainerEnvironment(); ce != nil {
 		resolvedContainerEnv, err := util.ResolveSecretMap(ctx, ce.GetEnv(), nil)
 		if err != nil {
-			return nil, fmt.Errorf("failed to resolve container env: %w", err)
-		}
-		for _, v := range resolvedContainerEnv {
-			secrets = append(secrets, v)
+// String returns the contents of the buffer as a string in a thread-safe manner.
+//
+// Summary: String returns the contents of the buffer as a string in a thread-safe manner.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The resulting text.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 		}
 		for k, v := range resolvedContainerEnv {
 			env = append(env, fmt.Sprintf("%s=%s", k, v))
@@ -2914,17 +3121,17 @@ type threadSafeBuffer struct {
 // Summary: Write writes bytes to the buffer in a thread-safe manner.
 //
 // Parameters:
-//   - p ([]byte): The p parameter.
+//   - p ([]byte): The provided p data.
 //
 // Returns:
-//   - n (int): The int result.
-//   - err (error): An error if the operation fails.
+//   - n (int): The calculated numeric value.
+//   - err (error): An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()
@@ -2939,13 +3146,13 @@ func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 //   - None.
 //
 // Returns:
-//   - string: The string result.
+//   - string: The resulting text.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (tsb *threadSafeBuffer) String() string {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()

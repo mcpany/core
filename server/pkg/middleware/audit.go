@@ -99,20 +99,15 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 }
 
 // SetStore sets the audit store.
+// This is primarily used for testing.
 //
-// Summary: SetStore sets the audit store.
+// Summary: Sets the audit store implementation.
 //
 // Parameters:
-//   - store (audit.Store): The store parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - store (audit.Store): The audit store to use.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Replaces the current audit store.
 func (m *AuditMiddleware) SetStore(store audit.Store) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -335,19 +330,13 @@ func (m *AuditMiddleware) GetHistory() []any {
 
 // Unsubscribe removes a subscriber channel.
 //
-// Summary: Unsubscribe removes a subscriber channel.
+// Summary: Unsubscribes from audit events.
 //
 // Parameters:
-//   - ch (chan any): The ch parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - ch (chan any): The channel to unsubscribe.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Removes the subscriber from the broadcaster.
 func (m *AuditMiddleware) Unsubscribe(ch chan any) {
 	m.broadcaster.Unsubscribe(ch)
 }
@@ -403,17 +392,22 @@ func (m *AuditMiddleware) Close() error {
 // Summary: Write writes an audit entry directly to the store.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - entry (audit.Entry): The entry parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - entry (audit.Entry): The provided entry data.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
 	m.mu.RLock()
 	store := m.store

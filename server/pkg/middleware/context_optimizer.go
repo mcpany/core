@@ -218,19 +218,14 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 
 // WriteHeader captures the status code and decides whether to buffer based on headers.
 //
-// Summary: WriteHeader captures the status code and decides whether to buffer based on headers.
+// Summary: Writes the HTTP status code.
 //
 // Parameters:
-//   - statusCode (int): The statusCode parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - statusCode: int. The HTTP status code.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Sets the internal status code.
+//   - Checks content-type headers to determine if buffering is needed.
 func (w *responseBuffer) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return

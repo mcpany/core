@@ -91,8 +91,8 @@ const introspectionQuery = `
 // Upstream implements the upstream.Upstream interface for GraphQL services.
 //
 // Summary: Upstream implements the upstream.Upstream interface for GraphQL services.
-type Upstream struct{}
-
+//
+// Summary: Upstream implements the upstream.Upstream interface for GraphQL services.
 // NewGraphQLUpstream creates a new GraphQL upstream.
 //
 // Summary: NewGraphQLUpstream creates a new GraphQL upstream.
@@ -101,32 +101,44 @@ type Upstream struct{}
 //   - None.
 //
 // Returns:
-//   - upstream.Upstream: The upstream.Upstream result.
+//   - upstream.Upstream: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func NewGraphQLUpstream() upstream.Upstream {
-	return &Upstream{}
-}
-
+//   - May modify internal state or perform external network calls.
+//   - None.
+//
+// Returns:
+//   - upstream.Upstream: The resulting object or data structure.
 // Shutdown shuts down the upstream.
 //
 // Summary: Shutdown shuts down the upstream.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
+//   - _ (context.Context): The provided _ data.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Parameters:
+//   - _ (context.Context): The provided _ data.
+//
+// Returns:
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (g *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -196,7 +208,9 @@ func convertGraphQLTypeToJSONSchema(t *graphQLType) *structpb.Value {
 			typeName = *t.Name
 		}
 		jsonType := mapGraphQLTypeToJSONSchemaType(typeName)
-		return &structpb.Value{
+// Callable implements the Callable interface for GraphQL queries.
+//
+// Summary: Callable implements the Callable interface for GraphQL queries.
 			Kind: &structpb.Value_StructValue{
 				StructValue: &structpb.Struct{
 					Fields: map[string]*structpb.Value{
@@ -204,82 +218,86 @@ func convertGraphQLTypeToJSONSchema(t *graphQLType) *structpb.Value {
 					},
 				},
 			},
-		}
-	}
-}
-
-// Callable implements the Callable interface for GraphQL queries.
-//
-// Summary: Callable implements the Callable interface for GraphQL queries.
-type Callable struct {
-	client        *graphql.Client
-	query         string
-	authenticator auth.UpstreamAuthenticator
-	address       string
-}
-
 // Call executes the GraphQL query.
 //
 // Summary: Call executes the GraphQL query.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - req (*tool.ExecutionRequest): The req parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - req (*tool.ExecutionRequest): The incoming request payload.
 //
 // Returns:
-//   - any: The any result.
-//   - error: An error if the operation fails.
+//   - any: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Summary: Call executes the GraphQL query.
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - req (*tool.ExecutionRequest): The incoming request payload.
+//
+// Returns:
+//   - any: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {
 		graphqlReq.Var(key, value)
 	}
 	if c.authenticator != nil {
-		dummyReq, err := http.NewRequestWithContext(ctx, "POST", c.address, nil)
-		if err != nil {
-			return nil, fmt.Errorf("failed to create dummy request: %w", err)
-		}
-		if err := c.authenticator.Authenticate(dummyReq); err != nil {
-			return nil, fmt.Errorf("failed to authenticate graphql query: %w", err)
-		}
-		graphqlReq.Header = dummyReq.Header
-	}
-	var respData any
-	if err := c.client.Run(ctx, graphqlReq, &respData); err != nil {
-		return nil, fmt.Errorf("failed to run graphql query: %w", err)
-	}
-	return respData, nil
-}
-
 // Register inspects the GraphQL upstream service and registers its capabilities. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
 // Summary: Register inspects the GraphQL upstream service and registers its capabilities. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
-//   - toolManager (tool.ManagerInterface): The toolManager parameter.
-//   - _ (prompt.ManagerInterface): The _ parameter.
-//   - _ (resource.ManagerInterface): The _ parameter.
-//   - _ (bool): The _ parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The provided serviceconfig data.
+//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
+//   - _ (prompt.ManagerInterface): The provided _ data.
+//   - _ (resource.ManagerInterface): The provided _ data.
+//   - _ (bool): A flag indicating whether _ is enabled.
 //
 // Returns:
-//   - string: The string result.
-//   - []*configv1.ToolDefinition: The []*configv1.ToolDefinition result.
-//   - []*configv1.ResourceDefinition: The []*configv1.ResourceDefinition result.
-//   - error: An error if the operation fails.
+//   - string: The resulting text.
+//   - []*configv1.ToolDefinition: The resulting object or data structure.
+//   - []*configv1.ResourceDefinition: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The provided serviceconfig data.
+//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
+//   - _ (prompt.ManagerInterface): The provided _ data.
+//   - _ (resource.ManagerInterface): The provided _ data.
+//   - _ (bool): A flag indicating whether _ is enabled.
+//
+// Returns:
+//   - string: The resulting text.
+//   - []*configv1.ToolDefinition: The resulting object or data structure.
+//   - []*configv1.ResourceDefinition: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (g *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

@@ -28,6 +28,8 @@ type activityEvent struct {
 // Manager handles topology state tracking.
 //
 // Summary: Manager handles topology state tracking.
+//
+// Summary: Manager handles topology state tracking.
 type Manager struct {
 	mu              sync.RWMutex
 	sessions        map[string]*SessionStats
@@ -37,7 +39,9 @@ type Manager struct {
 
 	activityCh chan activityEvent
 	shutdownCh chan struct{}
-}
+// SessionStats contains statistics about a topology session.
+//
+// Summary: SessionStats contains statistics about a topology session.
 
 // SessionStats contains statistics about a topology session.
 //
@@ -51,14 +55,18 @@ type SessionStats struct {
 	ErrorCount     int64
 	TotalBytes     int64
 	ServiceCounts  map[string]int64         // Per service request count
-	ServiceErrors  map[string]int64         // Per service error count
+// Stats aggregated metrics.
+//
+// Summary: Stats aggregated metrics.
 	ServiceLatency map[string]time.Duration // Per service latency
 }
 
 // Stats aggregated metrics.
 //
 // Summary: Stats aggregated metrics.
-type Stats struct {
+// MinuteStats tracks stats for a single minute.
+//
+// Summary: MinuteStats tracks stats for a single minute.
 	TotalRequests int64
 	AvgLatency    time.Duration
 	ErrorRate     float64
@@ -67,7 +75,9 @@ type Stats struct {
 // MinuteStats tracks stats for a single minute.
 //
 // Summary: MinuteStats tracks stats for a single minute.
-type MinuteStats struct {
+// ServiceTrafficStats tracks stats for a single service in a minute.
+//
+// Summary: ServiceTrafficStats tracks stats for a single service in a minute.
 	Requests     int64
 	Errors       int64
 	Latency      int64 // Total latency in ms
@@ -75,7 +85,9 @@ type MinuteStats struct {
 	ServiceStats map[string]*ServiceTrafficStats
 }
 
-// ServiceTrafficStats tracks stats for a single service in a minute.
+// TrafficPoint represents a data point for the traffic chart.
+//
+// Summary: TrafficPoint represents a data point for the traffic chart.
 //
 // Summary: ServiceTrafficStats tracks stats for a single service in a minute.
 type ServiceTrafficStats struct {
@@ -248,25 +260,21 @@ func (m *Manager) handleActivity(event activityEvent) {
 }
 
 // RecordActivity updates the session activity.
+// ⚡ BOLT: Offloaded to asynchronous channel to prevent blocking the request path.
+// Randomized Selection from Top 5 High-Impact Targets
 //
-// Summary: RecordActivity updates the session activity.
+// Summary: Records a new activity event for a session.
 //
 // Parameters:
-//   - sessionID (string): The sessionID parameter.
-//   - meta (map[string]interface{}): The meta parameter.
-//   - latency (time.Duration): The latency parameter.
-//   - isError (bool): The isError parameter.
-//   - serviceID (string): The serviceID parameter.
-//   - responseLen (int64): The responseLen parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - sessionID (string): The unique identifier of the session.
+//   - meta (map[string]interface{}): Metadata associated with the activity.
+//   - latency (time.Duration): The duration of the operation.
+//   - isError (bool): Whether the operation resulted in an error.
+//   - serviceID (string): The identifier of the service involved (optional).
+//   - responseLen (int64): The length of the response in bytes.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Sends an activity event to the processing channel (non-blocking).
 func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, latency time.Duration, isError bool, serviceID string, responseLen int64) {
 	// ⚡ BOLT: Shallow copy meta to prevent race conditions as map is passed by reference
 	metaCopy := make(map[string]interface{}, len(meta))
@@ -292,19 +300,13 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 
 // Close stops the background worker.
 //
-// Summary: Close stops the background worker.
+// Summary: gracefully shuts down the Topology Manager.
 //
 // Parameters:
 //   - None.
 //
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Closes the shutdown channel, stopping the background loop.
 func (m *Manager) Close() {
 	close(m.shutdownCh)
 }
@@ -480,20 +482,16 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 }
 
 // SeedTrafficHistory allows seeding the traffic history with external data.
+// This is primarily for testing and debugging purposes.
 //
-// Summary: SeedTrafficHistory allows seeding the traffic history with external data.
+// Summary: Seeds the traffic history with provided data points.
 //
 // Parameters:
-//   - points ([]TrafficPoint): The points parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - points ([]TrafficPoint): The traffic data points to seed.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Modifies the internal traffic history state.
+//   - Updates the "seed-data" session stats.
 func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

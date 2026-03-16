@@ -7,18 +7,34 @@ const (
 // ServiceRegistrationRequestTopic defines the NATS subject for publishing service registration requests.
 //
 // Summary: ServiceRegistrationRequestTopic defines the NATS subject for publishing service registration requests.
-	ServiceRegistrationRequestTopic = "service_registration_requests"
+//
 // ServiceRegistrationResultTopic defines the NATS subject for receiving service registration outcomes.
 //
 // Summary: ServiceRegistrationResultTopic defines the NATS subject for receiving service registration outcomes.
-	ServiceRegistrationResultTopic = "service_registration_results"
+	ServiceRegistrationRequestTopic = "service_registration_requests"
 // ServiceListRequestTopic defines the NATS subject for requesting a list of registered services.
 //
 // Summary: ServiceListRequestTopic defines the NATS subject for requesting a list of registered services.
-	ServiceListRequestTopic = "service_list_requests"
+//
 // ServiceListResultTopic defines the NATS subject for receiving the list of services.
 //
 // Summary: ServiceListResultTopic defines the NATS subject for receiving the list of services.
+	ServiceRegistrationResultTopic = "service_registration_results"
+// ServiceGetRequestTopic defines the NATS subject for requesting details of a specific service.
+//
+// Summary: ServiceGetRequestTopic defines the NATS subject for requesting details of a specific service.
+//
+// ServiceGetResultTopic defines the NATS subject for receiving service details.
+//
+// Summary: ServiceGetResultTopic defines the NATS subject for receiving service details.
+	ServiceListRequestTopic = "service_list_requests"
+// ToolExecutionRequestTopic defines the NATS subject for submitting tool execution requests.
+//
+// Summary: ToolExecutionRequestTopic defines the NATS subject for submitting tool execution requests.
+//
+// ToolExecutionResultTopic defines the NATS subject for receiving tool execution results.
+//
+// Summary: ToolExecutionResultTopic defines the NATS subject for receiving tool execution results.
 	ServiceListResultTopic = "service_list_results"
 // ServiceGetRequestTopic defines the NATS subject for requesting details of a specific service.
 //

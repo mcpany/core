@@ -23,17 +23,17 @@ const (
 // Error indicates a critical issue that must be fixed for the system to function correctly or securely.
 //
 // Summary: Error indicates a critical issue that must be fixed for the system to function correctly or securely.
-	Error Severity = iota
+//
 // Warning indicates a potential issue or best practice violation that should be addressed.
 //
 // Summary: Warning indicates a potential issue or best practice violation that should be addressed.
-	Warning
+	Error Severity = iota
 // Info indicates a suggestion or informational message for optimization or clarity.
 //
 // Summary: Info indicates a suggestion or informational message for optimization or clarity.
-	Info
-)
-
+//
+// Summary: Warning indicates a potential issue or best practice violation that should be addressed.
+	Warning
 // String returns the string representation of the severity.
 //
 // Summary: String returns the string representation of the severity.
@@ -42,14 +42,29 @@ const (
 //   - None.
 //
 // Returns:
-//   - string: The string result.
+//   - string: The resulting text.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (s Severity) String() string {
+//   - May modify internal state or perform external network calls.
+// String returns the string representation of the severity.
+//
+// Summary: String returns the string representation of the severity.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The resulting text.
+//
+// Errors:
+//   - None.
+//
+// Result represents a single linting finding.
+//
+// Summary: Result represents a single linting finding.
 	switch s {
 	case Error:
 		return "ERROR"
@@ -61,12 +76,21 @@ func (s Severity) String() string {
 		return "UNKNOWN"
 	}
 }
-
-// Result represents a single linting finding.
+// String returns the string representation of the result.
 //
-// Summary: Result represents a single linting finding.
-type Result struct {
-	// Severity indicates how critical the finding is (Error, Warning, Info).
+// Summary: String returns the string representation of the result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The resulting text.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 	Severity Severity
 	// ServiceName is the name of the service associated with the finding, if any.
 	ServiceName string
@@ -79,35 +103,48 @@ type Result struct {
 // String returns the string representation of the result.
 //
 // Summary: String returns the string representation of the result.
+// Linter performs static analysis on the configuration.
 //
-// Parameters:
-//   - None.
+// Summary: Linter performs static analysis on the configuration.
 //
 // Returns:
-//   - string: The string result.
+//   - string: The resulting text.
+//
+// NewLinter creates a new Linter instance.
+//
+// Summary: NewLinter creates a new Linter instance.
+//
+// Parameters:
+//   - cfg (*configv1.McpAnyServerConfig): The configuration settings.
+//
+// Returns:
+//   - *Linter: The calculated numeric value.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (r Result) String() string {
-	pathStr := ""
+//   - May modify internal state or perform external network calls.
 	if r.Path != "" {
 		pathStr = fmt.Sprintf(" at %s", r.Path)
 	}
 	serviceStr := ""
-	if r.ServiceName != "" {
-		serviceStr = fmt.Sprintf(" (service: %s)", r.ServiceName)
-	}
-	return fmt.Sprintf("[%s]%s%s: %s", r.Severity, serviceStr, pathStr, r.Message)
-}
-
-// Linter performs static analysis on the configuration.
+// Run executes all linting checks.
 //
-// Summary: Linter performs static analysis on the configuration.
-type Linter struct {
-	cfg *configv1.McpAnyServerConfig
+// Summary: Run executes all linting checks.
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//
+// Returns:
+//   - []Result: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 }
 
 // NewLinter creates a new Linter instance.
@@ -115,16 +152,16 @@ type Linter struct {
 // Summary: NewLinter creates a new Linter instance.
 //
 // Parameters:
-//   - cfg (*configv1.McpAnyServerConfig): The cfg parameter.
+//   - cfg (*configv1.McpAnyServerConfig): The configuration settings.
 //
 // Returns:
-//   - *Linter: The *Linter result.
+//   - *Linter: The calculated numeric value.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
@@ -134,17 +171,17 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 // Summary: Run executes all linting checks.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
 //
 // Returns:
-//   - []Result: The []Result result.
-//   - error: An error if the operation fails.
+//   - []Result: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// Pre-allocate to avoid performance warnings, though initial size is a guess.
 	results := make([]Result, 0, 10)

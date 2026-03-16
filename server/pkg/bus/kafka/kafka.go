@@ -31,30 +31,40 @@ type readerInterface interface {
 // Bus is a Kafka-backed implementation of the Bus interface.
 //
 // Summary: Bus is a Kafka-backed implementation of the Bus interface.
+//
+// Summary: Bus is a Kafka-backed implementation of the Bus interface.
 type Bus[T any] struct {
 	writer        writerInterface
 	brokers       []string
 	topicPrefix   string
 	consumerGroup string
 	readerCreator func(config kafkago.ReaderConfig) readerInterface
-}
-
 // New creates and initializes a new KafkaBus.
 //
 // Summary: New creates and initializes a new KafkaBus.
 //
 // Parameters:
-//   - config (*bus.KafkaBus): The config parameter.
+//   - config (*bus.KafkaBus): The configuration settings.
 //
 // Returns:
-//   - *Bus[T]: The *Bus[T] result.
-//   - error: An error if the operation fails.
+//   - *Bus[T]: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Returns:
+//   - *Bus[T]: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 	if len(config.GetBrokers()) == 0 {
 		return nil, fmt.Errorf("kafka brokers are missing")
@@ -67,45 +77,56 @@ func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 	}
 
 	return &Bus[T]{
-		writer:        writer,
-		brokers:       brokers,
-		topicPrefix:   config.GetTopicPrefix(),
-		consumerGroup: config.GetConsumerGroup(),
-		readerCreator: func(c kafkago.ReaderConfig) readerInterface {
-			return kafkago.NewReader(c)
-		},
-	}, nil
-}
-
 // Publish sends a message to a Kafka topic.
 //
 // Summary: Publish sends a message to a Kafka topic.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - topic (string): The topic parameter.
-//   - msg (T): The msg parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - topic (string): The textual representation of topic.
+//   - msg (T): The provided msg data.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
-	payload, err := json.Marshal(msg)
-	if err != nil {
-		return err
-	}
-
-	fullTopic := b.topicPrefix + topic
-
-	err = b.writer.WriteMessages(ctx, kafkago.Message{
-		Topic: fullTopic,
-		Value: payload,
-	})
+//   - May modify internal state or perform external network calls.
+//
+// Summary: Publish sends a message to a Kafka topic.
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - topic (string): The textual representation of topic.
+//   - msg (T): The provided msg data.
+//
+// Returns:
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
+// Subscribe subscribes to a Kafka topic.
+//
+// Summary: Subscribe subscribes to a Kafka topic.
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - topic (string): The textual representation of topic.
+//   - handler (func(T)): The provided handler data.
+//
+// Returns:
+//   - unsubscribe (func()): The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 
 	return err
 }
@@ -115,18 +136,18 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 // Summary: Subscribe subscribes to a Kafka topic.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - topic (string): The topic parameter.
-//   - handler (func(T)): The handler parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - topic (string): The textual representation of topic.
+//   - handler (func(T)): The provided handler data.
 //
 // Returns:
-//   - unsubscribe (func()): The func() result.
+//   - unsubscribe (func()): The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("kafka bus: handler cannot be nil")
@@ -180,17 +201,23 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 				return
 			}
 
-			var message T
-			err = json.Unmarshal(m.Value, &message)
-			if err != nil {
-				log.Error("Failed to unmarshal message", "error", err)
-				continue
-			}
-
-			func() {
-				defer func() {
-					if r := recover(); r != nil {
-						log.Error("panic in handler", "error", r)
+// SubscribeOnce subscribes to a topic for a single message.
+//
+// Summary: SubscribeOnce subscribes to a topic for a single message.
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - topic (string): The textual representation of topic.
+//   - handler (func(T)): The provided handler data.
+//
+// Returns:
+//   - unsubscribe (func()): The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 					}
 				}()
 				handler(message)
@@ -206,18 +233,18 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 // Summary: SubscribeOnce subscribes to a topic for a single message.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - topic (string): The topic parameter.
-//   - handler (func(T)): The handler parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - topic (string): The textual representation of topic.
+//   - handler (func(T)): The provided handler data.
 //
 // Returns:
-//   - unsubscribe (func()): The func() result.
+//   - unsubscribe (func()): The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("kafka bus: handler cannot be nil")

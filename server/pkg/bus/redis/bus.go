@@ -17,55 +17,79 @@ import (
 // Bus is a Redis-backed implementation of the Bus interface.
 //
 // Summary: Bus is a Redis-backed implementation of the Bus interface.
+//
+// Summary: Bus is a Redis-backed implementation of the Bus interface.
 type Bus[T any] struct {
 	client *redis.Client
-}
-
 // New creates and initializes a new RedisBus.
 //
 // Summary: New creates and initializes a new RedisBus.
 //
 // Parameters:
-//   - redisConfig (*bus.RedisBus): The redisConfig parameter.
+//   - redisConfig (*bus.RedisBus): The provided redisconfig data.
 //
 // Returns:
-//   - *Bus[T]: The *Bus[T] result.
-//   - error: An error if the operation fails.
+//   - *Bus[T]: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Returns:
+//   - *Bus[T]: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 	options := redis.Options{
 		Addr: "127.0.0.1:6379",
 	}
-	if redisConfig != nil {
-		if addr := redisConfig.GetAddress(); addr != "" {
-			options.Addr = addr
-		}
-		options.Password = redisConfig.GetPassword()
-		options.DB = int(redisConfig.GetDb())
-	}
+// NewWithClient creates a new RedisBus with an existing Redis client.
+//
+// Summary: NewWithClient creates a new RedisBus with an existing Redis client.
+//
+// Parameters:
+//   - client (*redis.Client): The provided client data.
+//
+// Returns:
+//   - *Bus[T]: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 	return NewWithClient[T](redis.NewClient(&options)), nil
 }
 
 // NewWithClient creates a new RedisBus with an existing Redis client.
 //
 // Summary: NewWithClient creates a new RedisBus with an existing Redis client.
+// Publish publishes a message to a Redis channel.
+//
+// Summary: Publish publishes a message to a Redis channel.
 //
 // Parameters:
-//   - client (*redis.Client): The client parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - topic (string): The textual representation of topic.
+//   - msg (T): The provided msg data.
 //
 // Returns:
-//   - *Bus[T]: The *Bus[T] result.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - May modify internal state or perform external network calls.
 func NewWithClient[T any](client *redis.Client) *Bus[T] {
 	return &Bus[T]{
 		client: client,
@@ -73,22 +97,27 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 }
 
 // Publish publishes a message to a Redis channel.
+// Subscribe subscribes to a Redis channel.
 //
-// Summary: Publish publishes a message to a Redis channel.
+// Summary: Subscribe subscribes to a Redis channel.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - topic (string): The topic parameter.
-//   - msg (T): The msg parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - topic (string): The textual representation of topic.
+//   - handler (func(T)): The provided handler data.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - unsubscribe (func()): The resulting object or data structure.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
@@ -102,18 +131,18 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 // Summary: Subscribe subscribes to a Redis channel.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - topic (string): The topic parameter.
-//   - handler (func(T)): The handler parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - topic (string): The textual representation of topic.
+//   - handler (func(T)): The provided handler data.
 //
 // Returns:
-//   - unsubscribe (func()): The func() result.
+//   - unsubscribe (func()): The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -134,17 +163,23 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 		log := logging.GetLogger()
 		ch := pubsub.Channel()
 		for {
-			select {
-			case <-ctx.Done():
-				return
-			case msg := <-ch:
-				if msg == nil {
-					return
-				}
-				var message T
-				err := json.Unmarshal([]byte(msg.Payload), &message)
-				if err != nil {
-					log.Error("Failed to unmarshal message", "error", err)
+// SubscribeOnce subscribes to a topic for a single message.
+//
+// Summary: SubscribeOnce subscribes to a topic for a single message.
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - topic (string): The textual representation of topic.
+//   - handler (func(T)): The provided handler data.
+//
+// Returns:
+//   - unsubscribe (func()): The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 					continue
 				}
 
@@ -168,18 +203,18 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 // Summary: SubscribeOnce subscribes to a topic for a single message.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - topic (string): The topic parameter.
-//   - handler (func(T)): The handler parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - topic (string): The textual representation of topic.
+//   - handler (func(T)): The provided handler data.
 //
 // Returns:
-//   - unsubscribe (func()): The func() result.
+//   - unsubscribe (func()): The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")

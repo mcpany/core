@@ -13,6 +13,7 @@ import (
 // GlobalSettingsManager manages the global settings of the application in a thread-safe manner.
 //
 // Summary: GlobalSettingsManager manages the global settings of the application in a thread-safe manner.
+// Summary: GlobalSettingsManager manages the global settings of the application in a thread-safe manner.
 type GlobalSettingsManager struct {
 	mu            sync.RWMutex
 	apiKey        atomic.Value // stores string

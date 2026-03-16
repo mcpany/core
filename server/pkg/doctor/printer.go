@@ -15,8 +15,8 @@ import (
 // Summary: PrintResults prints the doctor check results in a structured table to the provided writer.
 //
 // Parameters:
-//   - w (io.Writer): The w parameter.
-//   - results ([]CheckResult): The results parameter.
+//   - w (io.Writer): The provided w data.
+//   - results ([]CheckResult): The provided results data.
 //
 // Returns:
 //   - None.
@@ -25,7 +25,10 @@ import (
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func PrintResults(w io.Writer, results []CheckResult) {
 	if w == nil {
 		w = os.Stdout

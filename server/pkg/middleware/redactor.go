@@ -218,19 +218,13 @@ func (r *Redactor) RedactString(s string) string {
 
 // RedactStruct redacts sensitive information from a map.
 //
-// Summary: RedactStruct redacts sensitive information from a map.
+// Summary: Recursively redacts sensitive information from a map (struct representation).
 //
 // Parameters:
-//   - v (map[string]interface{}): The v parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - v: map[string]interface{}. The map to redact.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Modifies the map in place.
 func (r *Redactor) RedactStruct(v map[string]interface{}) {
 	if r == nil {
 		return

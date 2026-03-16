@@ -32,16 +32,24 @@ const (
 // StatusOk indicates the check passed successfully.
 //
 // Summary: StatusOk indicates the check passed successfully.
-	StatusOk Status = "OK"
+//
 // StatusWarning indicates a partial failure or non-critical issue that should be investigated.
 //
 // Summary: StatusWarning indicates a partial failure or non-critical issue that should be investigated.
-	StatusWarning Status = "WARNING"
+	StatusOk Status = "OK"
 // StatusError indicates a critical failure that prevents the service from functioning correctly.
 //
 // Summary: StatusError indicates a critical failure that prevents the service from functioning correctly.
-	StatusError Status = "ERROR"
+//
 // StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
+//
+// Summary: StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
+	StatusWarning Status = "WARNING"
+// StatusError indicates a critical failure that prevents the service from functioning correctly.
+//
+// CheckResult represents the result of a single service check.
+//
+// Summary: CheckResult represents the result of a single service check.
 //
 // Summary: StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
 	StatusSkipped Status = "SKIPPED"
@@ -53,30 +61,32 @@ const (
 type CheckResult struct {
 	// ServiceName is the name of the service being checked.
 	ServiceName string
-	// Status is the outcome of the check (OK, WARNING, ERROR, SKIPPED).
-	Status Status
-	// Message provides human-readable details about the check result.
-	Message string
-	// Error contains the underlying error object if the check failed.
-	Error error
-}
-
 // RunChecks performs connectivity and health checks on the provided configuration.
 //
 // Summary: RunChecks performs connectivity and health checks on the provided configuration.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - config (*configv1.McpAnyServerConfig): The config parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - config (*configv1.McpAnyServerConfig): The configuration settings.
 //
 // Returns:
-//   - []CheckResult: The []CheckResult result.
+//   - []CheckResult: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - config (*configv1.McpAnyServerConfig): The configuration settings.
+//
+// Returns:
+//   - []CheckResult: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
 	// Using 'services' variable to support existing loop
 	services := config.GetUpstreamServices()
@@ -91,32 +101,34 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 				Message:     "Service is disabled",
 			})
 			continue
-		}
-
-		res := CheckService(ctx, service)
-		res.ServiceName = service.GetName()
-		results = append(results, res)
-	}
-
-	return results
-}
-
 // CheckService performs a connectivity check for a single service.
 //
 // Summary: CheckService performs a connectivity check for a single service.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - service (*configv1.UpstreamServiceConfig): The service parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - service (*configv1.UpstreamServiceConfig): The provided service data.
 //
 // Returns:
-//   - CheckResult: The CheckResult result.
+//   - CheckResult: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - service (*configv1.UpstreamServiceConfig): The provided service data.
+//
+// Returns:
+//   - CheckResult: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) CheckResult {
 	// 5 second timeout for checks
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)

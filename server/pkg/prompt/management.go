@@ -75,25 +75,25 @@ type Manager struct {
 //   - None.
 //
 // Returns:
-//   - *Manager: The *Manager result.
+//   - *Manager: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func NewManager() *Manager {
-	return &Manager{
-		prompts: xsync.NewMap[string, Prompt](),
-	}
-}
-
+//   - May modify internal state or perform external network calls.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Manager: The resulting object or data structure.
+//
 // SetMCPServer provides the Manager with a reference to the MCP server.
 //
 // Summary: SetMCPServer provides the Manager with a reference to the MCP server.
 //
 // Parameters:
-//   - mcpServer (MCPServerProvider): The mcpServer parameter.
+//   - mcpServer (MCPServerProvider): The provided mcpserver data.
 //
 // Returns:
 //   - None.
@@ -102,7 +102,33 @@ func NewManager() *Manager {
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - May modify internal state or perform external network calls.
+func NewManager() *Manager {
+	return &Manager{
+		prompts: xsync.NewMap[string, Prompt](),
+	}
+}
+// AddPrompt registers a new prompt with the manager.
+//
+// Summary: AddPrompt registers a new prompt with the manager.
+//
+// Parameters:
+//   - prompt (Prompt): The provided prompt data.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	pm.mu.Lock()
 	defer pm.mu.Unlock()
@@ -112,38 +138,12 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 // AddPrompt registers a new prompt with the manager.
 //
 // Summary: AddPrompt registers a new prompt with the manager.
-//
-// Parameters:
-//   - prompt (Prompt): The prompt parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external calls.
-func (pm *Manager) AddPrompt(prompt Prompt) {
-	promptName := prompt.Prompt().Name
-	if existingPrompt, loaded := pm.prompts.LoadAndStore(promptName, prompt); loaded {
-		logging.GetLogger().Warn(fmt.Sprintf("Prompt with the same name already exists. Overwriting. promptName=%s, newPromptService=%s, existingPromptService=%s",
-			promptName,
-			prompt.Service(),
-			existingPrompt.Service(),
-		))
-	}
-	pm.mu.Lock()
-	pm.cachedPrompts = nil
-	pm.mu.Unlock()
-}
-
 // UpdatePrompt updates an existing prompt in the manager.
 //
 // Summary: UpdatePrompt updates an existing prompt in the manager.
 //
 // Parameters:
-//   - prompt (Prompt): The prompt parameter.
+//   - prompt (Prompt): The provided prompt data.
 //
 // Returns:
 //   - None.
@@ -152,7 +152,55 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Side Effects:
+//   - May modify internal state or perform external network calls.
+func (pm *Manager) AddPrompt(prompt Prompt) {
+	promptName := prompt.Prompt().Name
+	if existingPrompt, loaded := pm.prompts.LoadAndStore(promptName, prompt); loaded {
+		logging.GetLogger().Warn(fmt.Sprintf("Prompt with the same name already exists. Overwriting. promptName=%s, newPromptService=%s, existingPromptService=%s",
+			promptName,
+// GetPrompt retrieves a prompt from the manager by its name.
+//
+// Summary: GetPrompt retrieves a prompt from the manager by its name.
+//
+// Parameters:
+//   - name (string): The human-readable or system name.
+//
+// Returns:
+//   - Prompt: The resulting object or data structure.
+//   - bool: True if successful or valid, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
+
+// UpdatePrompt updates an existing prompt in the manager.
+//
+// Summary: UpdatePrompt updates an existing prompt in the manager.
+//
+// ListPrompts returns a slice containing all the prompts currently registered.
+//
+// Summary: ListPrompts returns a slice containing all the prompts currently registered.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []Prompt: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (pm *Manager) UpdatePrompt(prompt Prompt) {
 	pm.prompts.Store(prompt.Prompt().Name, prompt)
 	pm.mu.Lock()
@@ -165,17 +213,17 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 // Summary: GetPrompt retrieves a prompt from the manager by its name.
 //
 // Parameters:
-//   - name (string): The name parameter.
+//   - name (string): The human-readable or system name.
 //
 // Returns:
-//   - Prompt: The Prompt result.
-//   - bool: The bool result.
+//   - Prompt: The resulting object or data structure.
+//   - bool: True if successful or valid, false otherwise.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 	prompt, ok := pm.prompts.Load(name)
 	return prompt, ok
@@ -186,16 +234,23 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 // Summary: ListPrompts returns a slice containing all the prompts currently registered.
 //
 // Parameters:
-//   - None.
+// ClearPromptsForService removes all prompts associated with a given service.
+//
+// Summary: ClearPromptsForService removes all prompts associated with a given service.
+//
+// Parameters:
+//   - serviceID (string): The textual representation of serviceid.
 //
 // Returns:
-//   - []Prompt: The []Prompt result.
+//   - None.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (pm *Manager) ListPrompts() []Prompt {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Update/Clear).
@@ -239,7 +294,7 @@ func (pm *Manager) ListPrompts() []Prompt {
 // Summary: ClearPromptsForService removes all prompts associated with a given service.
 //
 // Parameters:
-//   - serviceID (string): The serviceID parameter.
+//   - serviceID (string): The textual representation of serviceid.
 //
 // Returns:
 //   - None.
@@ -248,7 +303,7 @@ func (pm *Manager) ListPrompts() []Prompt {
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (pm *Manager) ClearPromptsForService(serviceID string) {
 	changed := false
 	pm.prompts.Range(func(key string, value Prompt) bool {

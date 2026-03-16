@@ -228,20 +228,14 @@ func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []fl
 
 // Prune removes expired entries.
 //
-// Summary: Prune removes expired entries.
+// Summary: Deletes expired cache entries from the database.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - key (string): The key parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - ctx: context.Context. The context for the database operation.
+//   - key: string. Optional key to restrict pruning to a specific cache key. If empty, prunes all expired entries.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Deletes rows from the 'semantic_cache_entries' table.
 func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 	query := "DELETE FROM semantic_cache_entries WHERE expires_at <= $1"
 	args := []interface{}{time.Now()}

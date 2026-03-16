@@ -59,16 +59,18 @@ var (
 // Summary: PrometheusMetricsMiddleware provides protocol-level metrics for all MCP requests. It intercepts requests to track duration, success/failure counts, payload sizes, and token counts.
 //
 // Parameters:
-//   - t (tokenizer.Tokenizer): The t parameter.
+//   - t (tokenizer.Tokenizer): The provided t data.
 //
 // Returns:
-//   - mcp.Middleware: The mcp.Middleware result.
+//   - mcp.Middleware: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 	registerProtocolMetricsOnce.Do(func() {
 		prometheus.MustRegister(mcpOperationDuration)
@@ -212,24 +214,32 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 	// Randomized Selection from Top 5 High-Impact Targets
 	c, _ := tokenizer.CountTokensInValue(t, res)
 	return c
-}
-
 // CalculateToolResultTokens calculates the number of tokens in a tool result.
 //
 // Summary: CalculateToolResultTokens calculates the number of tokens in a tool result.
 //
 // Parameters:
-//   - t (tokenizer.Tokenizer): The t parameter.
-//   - result (any): The result parameter.
+//   - t (tokenizer.Tokenizer): The provided t data.
+//   - result (any): The provided result data.
 //
 // Returns:
-//   - int: The int result.
+//   - int: The calculated numeric value.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - result (any): The provided result data.
+//
+// Returns:
+//   - int: The calculated numeric value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func CalculateToolResultTokens(t tokenizer.Tokenizer, result any) int {
 	if result == nil {
 		return 0

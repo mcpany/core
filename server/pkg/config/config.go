@@ -19,7 +19,7 @@ import (
 // Summary: BindRootFlags binds the global and persistent command-line flags to the Viper configuration registry.
 //
 // Parameters:
-//   - cmd (*cobra.Command): The cmd parameter.
+//   - cmd (*cobra.Command): The provided cmd data.
 //
 // Returns:
 //   - None.
@@ -28,7 +28,7 @@ import (
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func BindRootFlags(cmd *cobra.Command) {
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("MCPANY")
@@ -82,7 +82,7 @@ func BindRootFlags(cmd *cobra.Command) {
 // Summary: BindServerFlags binds server-specific command-line flags to the Viper configuration registry.
 //
 // Parameters:
-//   - cmd (*cobra.Command): The cmd parameter.
+//   - cmd (*cobra.Command): The provided cmd data.
 //
 // Returns:
 //   - None.
@@ -91,7 +91,7 @@ func BindRootFlags(cmd *cobra.Command) {
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func BindServerFlags(cmd *cobra.Command) {
 	cmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
 	cmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO")
@@ -131,7 +131,7 @@ func BindServerFlags(cmd *cobra.Command) {
 // Summary: BindFlags binds both root and server-specific command line flags to the Viper configuration registry.
 //
 // Parameters:
-//   - cmd (*cobra.Command): The cmd parameter.
+//   - cmd (*cobra.Command): The provided cmd data.
 //
 // Returns:
 //   - None.
@@ -140,7 +140,8 @@ func BindServerFlags(cmd *cobra.Command) {
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - May modify internal state or perform external network calls.
 func BindFlags(cmd *cobra.Command) {
 	BindRootFlags(cmd)
 	BindServerFlags(cmd)

@@ -17,27 +17,31 @@ import (
 // MilvusClient implements VectorClient for Milvus.
 //
 // Summary: MilvusClient implements VectorClient for Milvus.
+//
+// Summary: MilvusClient implements VectorClient for Milvus.
 type MilvusClient struct {
 	config *configv1.MilvusVectorDB
 	client client.Client
-}
-
 // NewMilvusClient creates a new Milvus client.
 //
 // Summary: NewMilvusClient creates a new Milvus client.
 //
 // Parameters:
-//   - config (*configv1.MilvusVectorDB): The config parameter.
+//   - config (*configv1.MilvusVectorDB): The configuration settings.
 //
 // Returns:
-//   - *MilvusClient: The *MilvusClient result.
-//   - error: An error if the operation fails.
+//   - *MilvusClient: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 	if config.GetAddress() == "" {
 		return nil, fmt.Errorf("address is required for Milvus")
@@ -74,30 +78,36 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 
 	return &MilvusClient{
 		config: config,
-		client: c,
-	}, nil
-}
-
 // Query searches for similar vectors.
 //
 // Summary: Query searches for similar vectors.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - vector ([]float32): The vector parameter.
-//   - topK (int64): The topK parameter.
-//   - filter (map[string]interface{}): The filter parameter.
-//   - namespace (string): The namespace parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - vector ([]float32): The numeric value for vector.
+//   - topK (int64): The numeric value for topk.
+//   - filter (map[string]interface{}): The textual representation of filter.
+//   - namespace (string): The human-readable or system name.
 //
 // Returns:
-//   - map[string]interface{}: The map[string]interface{} result.
-//   - error: An error if the operation fails.
+//   - map[string]interface{}: The resulting text.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Returns:
+//   - map[string]interface{}: The resulting text.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	// Milvus uses partitions as namespaces usually, or just metadata fields.
 	// Assuming namespace maps to partition names if provided.
@@ -199,34 +209,40 @@ func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, 
 					}
 				}
 			}
-			match["metadata"] = metadata
-			matches = append(matches, match)
-		}
-	}
-
-	return map[string]interface{}{
-		"matches": matches,
-	}, nil
-}
-
 // Upsert inserts or updates vectors.
 //
 // Summary: Upsert inserts or updates vectors.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - vectors ([]map[string]interface{}): The vectors parameter.
-//   - namespace (string): The namespace parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - vectors ([]map[string]interface{}): The textual representation of vectors.
+//   - namespace (string): The human-readable or system name.
 //
 // Returns:
-//   - map[string]interface{}: The map[string]interface{} result.
-//   - error: An error if the operation fails.
+//   - map[string]interface{}: The resulting text.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// Summary: Upsert inserts or updates vectors.
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - vectors ([]map[string]interface{}): The textual representation of vectors.
+//   - namespace (string): The human-readable or system name.
+//
+// Returns:
+//   - map[string]interface{}: The resulting text.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (c *MilvusClient) Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	// Milvus Upsert (v2.3+)
 	if len(vectors) == 0 {
@@ -414,19 +430,25 @@ func fillMetadataColumn(col entity.Column, i int, val interface{}) {
 		col.(*entity.ColumnFloat).Data()[i] = v
 	case entity.FieldTypeDouble:
 		var v float64
-		switch t := val.(type) {
-		case float64:
-			v = t
-		case float32:
-			v = float64(t)
-		}
-		col.(*entity.ColumnDouble).Data()[i] = v
-	case entity.FieldTypeBool:
-		var v bool
-		if b, ok := val.(bool); ok {
-			v = b
-		}
-		col.(*entity.ColumnBool).Data()[i] = v
+// Delete removes vectors.
+//
+// Summary: Delete removes vectors.
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - ids ([]string): The textual representation of ids.
+//   - namespace (string): The human-readable or system name.
+//   - filter (map[string]interface{}): The textual representation of filter.
+//
+// Returns:
+//   - map[string]interface{}: The resulting text.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 	}
 }
 
@@ -435,20 +457,20 @@ func fillMetadataColumn(col entity.Column, i int, val interface{}) {
 // Summary: Delete removes vectors.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - ids ([]string): The ids parameter.
-//   - namespace (string): The namespace parameter.
-//   - filter (map[string]interface{}): The filter parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - ids ([]string): The textual representation of ids.
+//   - namespace (string): The human-readable or system name.
+//   - filter (map[string]interface{}): The textual representation of filter.
 //
 // Returns:
-//   - map[string]interface{}: The map[string]interface{} result.
-//   - error: An error if the operation fails.
+//   - map[string]interface{}: The resulting text.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error) {
 	// Construct expression
 	var expr string
@@ -485,17 +507,23 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 				parts = append(parts, fmt.Sprintf("%s == \"%s\"", k, s))
 			} else {
 				parts = append(parts, fmt.Sprintf("%s == %v", k, v))
-			}
-		}
-		expr = strings.Join(parts, " && ")
-	default:
-		return nil, fmt.Errorf("must provide ids or filter")
-	}
-
-	partitionName := ""
-	if namespace != "" {
-		partitionName = namespace
-	}
+// DescribeIndexStats returns statistics about the index.
+//
+// Summary: DescribeIndexStats returns statistics about the index.
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - _ (map[string]interface{}): The textual representation of _.
+//
+// Returns:
+//   - map[string]interface{}: The resulting text.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 
 	err := c.client.Delete(ctx, c.config.GetCollectionName(), partitionName, expr)
 	if err != nil {
@@ -512,18 +540,18 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 // Summary: DescribeIndexStats returns statistics about the index.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - _ (map[string]interface{}): The _ parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - _ (map[string]interface{}): The textual representation of _.
 //
 // Returns:
-//   - map[string]interface{}: The map[string]interface{} result.
-//   - error: An error if the operation fails.
+//   - map[string]interface{}: The resulting text.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (c *MilvusClient) DescribeIndexStats(ctx context.Context, _ map[string]interface{}) (map[string]interface{}, error) {
 	coll, err := c.client.DescribeCollection(ctx, c.config.GetCollectionName())
 	if err != nil {

@@ -14,6 +14,8 @@ import (
 // ErrResourceNotFound is returned when a requested resource cannot be found.
 //
 // Summary: ErrResourceNotFound is returned when a requested resource cannot be found.
+//
+// Summary: ErrResourceNotFound is returned when a requested resource cannot be found.
 var ErrResourceNotFound = errors.New("resource not found")
 
 // Resource defines the interface for a resource that can be managed by the Manager.

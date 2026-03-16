@@ -11,6 +11,8 @@ import (
 // BuiltinServiceCollections contains the official service collections.
 //
 // Summary: BuiltinServiceCollections contains the official service collections.
+//
+// Summary: BuiltinServiceCollections contains the official service collections.
 var BuiltinServiceCollections []*configv1.Collection
 
 func init() {

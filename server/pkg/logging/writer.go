@@ -12,26 +12,30 @@ import (
 // RedactingWriter is an io.Writer that redacts sensitive information from JSON logs.
 //
 // Summary: RedactingWriter is an io.Writer that redacts sensitive information from JSON logs.
+//
+// Summary: RedactingWriter is an io.Writer that redacts sensitive information from JSON logs.
 type RedactingWriter struct {
 	w io.Writer
-}
-
 // Write implements io.Writer.
 //
 // Summary: Write implements io.Writer.
 //
 // Parameters:
-//   - p ([]byte): The p parameter.
+//   - p ([]byte): The provided p data.
 //
 // Returns:
-//   - n (int): The int result.
-//   - err (error): An error if the operation fails.
+//   - n (int): The calculated numeric value.
+//   - err (error): An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (w *RedactingWriter) Write(p []byte) (n int, err error) {
 	// Attempt to redact JSON. RedactJSON handles validation internally.
 	// If it's not valid JSON (e.g. partial write), it returns original input.

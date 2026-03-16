@@ -21,11 +21,15 @@ import (
 // AuthTestRequest defines the structure for an authentication test request.
 //
 // Summary: AuthTestRequest defines the structure for an authentication test request.
+//
+// Summary: AuthTestRequest defines the structure for an authentication test request.
 type AuthTestRequest struct {
 	CredentialID  string         `json:"credential_id"`
 	ServiceType   string         `json:"service_type"`
 	ServiceConfig map[string]any `json:"service_config"`
-}
+// AuthTestResponse defines the structure for an authentication test response.
+//
+// Summary: AuthTestResponse defines the structure for an authentication test response.
 
 // AuthTestResponse defines the structure for an authentication test response.
 //

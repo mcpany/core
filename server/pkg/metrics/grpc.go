@@ -20,29 +20,49 @@ var (
 // GrpcStatsHandler is a gRPC stats handler that records metrics for RPCs and connections.
 //
 // Summary: GrpcStatsHandler is a gRPC stats handler that records metrics for RPCs and connections.
+// Summary: GrpcStatsHandler is a gRPC stats handler that records metrics for RPCs and connections.
 type GrpcStatsHandler struct {
 	Wrapped stats.Handler
 }
-
 // TagRPC can be used to tag RPCs with custom information.
 //
 // Summary: TagRPC can be used to tag RPCs with custom information.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - info (*stats.RPCTagInfo): The info parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - info (*stats.RPCTagInfo): The provided info data.
 //
 // Returns:
-//   - context.Context: The context.Context result.
+//   - context.Context: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func (h *GrpcStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
-	if h.Wrapped != nil {
-		ctx = h.Wrapped.TagRPC(ctx, info)
+//   - May modify internal state or perform external network calls.
+//
+// Returns:
+//   - context.Context: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// HandleRPC processes RPC stats and increments counters for started and finished RPCs.
+//
+// Summary: HandleRPC processes RPC stats and increments counters for started and finished RPCs.
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - s (stats.RPCStats): The provided s data.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 	}
 	return ctx
 }
@@ -52,17 +72,25 @@ func (h *GrpcStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) c
 // Summary: HandleRPC processes RPC stats and increments counters for started and finished RPCs.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - s (stats.RPCStats): The s parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - s (stats.RPCStats): The provided s data.
+//
+// TagConn can be used to tag connections with custom information.
+//
+// Summary: TagConn can be used to tag connections with custom information.
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - info (*stats.ConnTagInfo): The provided info data.
 //
 // Returns:
-//   - None.
+//   - context.Context: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	if h.Wrapped != nil {
 		h.Wrapped.HandleRPC(ctx, s)
@@ -70,27 +98,38 @@ func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	switch s.(type) {
 	case *stats.Begin:
 		IncrCounter(metricGrpcRPCStartedTotal, 1)
-	case *stats.End:
-		IncrCounter(metricGrpcRPCFinishedTotal, 1)
-	}
-}
-
-// TagConn can be used to tag connections with custom information.
+// HandleConn processes connection stats and increments counters for opened and closed connections.
 //
-// Summary: TagConn can be used to tag connections with custom information.
+// Summary: HandleConn processes connection stats and increments counters for opened and closed connections.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - info (*stats.ConnTagInfo): The info parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - s (stats.ConnStats): The provided s data.
 //
 // Returns:
-//   - context.Context: The context.Context result.
+//   - None.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// TagConn can be used to tag connections with custom information.
+//
+// Summary: TagConn can be used to tag connections with custom information.
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - info (*stats.ConnTagInfo): The provided info data.
+//
+// Returns:
+//   - context.Context: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (h *GrpcStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo) context.Context {
 	if h.Wrapped != nil {
 		ctx = h.Wrapped.TagConn(ctx, info)
@@ -103,8 +142,8 @@ func (h *GrpcStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo)
 // Summary: HandleConn processes connection stats and increments counters for opened and closed connections.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - s (stats.ConnStats): The s parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - s (stats.ConnStats): The provided s data.
 //
 // Returns:
 //   - None.
@@ -113,7 +152,7 @@ func (h *GrpcStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo)
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (h *GrpcStatsHandler) HandleConn(ctx context.Context, s stats.ConnStats) {
 	if h.Wrapped != nil {
 		h.Wrapped.HandleConn(ctx, s)

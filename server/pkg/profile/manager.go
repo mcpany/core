@@ -39,19 +39,10 @@ func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 
 // Update updates the profile definitions managed by the manager.
 //
-// Summary: Update updates the profile definitions managed by the manager.
+// Summary: Updates the stored profile definitions.
 //
 // Parameters:
-//   - profiles ([]*configv1.ProfileDefinition): The profiles parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external calls.
+//   - profiles: []*configv1.ProfileDefinition. The new list of profiles.
 func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 	newProfiles := make(map[string]*configv1.ProfileDefinition)
 	for _, p := range profiles {

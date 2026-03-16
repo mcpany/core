@@ -66,6 +66,8 @@ const (
 // ToolUsageStats represents usage statistics for a tool.
 //
 // Summary: ToolUsageStats represents usage statistics for a tool.
+//
+// Summary: ToolUsageStats represents usage statistics for a tool.
 type ToolUsageStats struct {
 	Name      string `json:"name"`
 	ServiceID string `json:"serviceId"`
@@ -209,7 +211,9 @@ func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("OK"))
 	}
-}
+// ToolFailureStats represents failure statistics for a tool.
+//
+// Summary: ToolFailureStats represents failure statistics for a tool.
 
 // ToolFailureStats represents failure statistics for a tool.
 //
@@ -329,7 +333,9 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 		a.setStatsCache(cacheKey, stats)
 
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(stats)
+// ToolAnalytics represents detailed usage analytics for a tool.
+//
+// Summary: ToolAnalytics represents detailed usage analytics for a tool.
 	}
 }
 
@@ -443,13 +449,17 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 
 		// ⚡ Bolt Optimization: Update cache
 		a.setStatsCache(cacheKey, analytics)
-
+// ServiceHealthResponse represents the response for the health dashboard.
+//
+// Summary: ServiceHealthResponse represents the response for the health dashboard.
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(analytics)
 	}
 }
 
-// ServiceHealthResponse represents the response for the health dashboard.
+// ServiceHealth represents the health status of a service.
+//
+// Summary: ServiceHealth represents the health status of a service.
 //
 // Summary: ServiceHealthResponse represents the response for the health dashboard.
 type ServiceHealthResponse struct {

@@ -25,11 +25,11 @@ import (
 // Upstream implements the upstream.Upstream interface for SQL databases.
 //
 // Summary: Upstream implements the upstream.Upstream interface for SQL databases.
+//
+// Summary: Upstream implements the upstream.Upstream interface for SQL databases.
 type Upstream struct {
 	db *sql.DB
 	mu sync.Mutex
-}
-
 // NewUpstream creates a new SQL upstream.
 //
 // Summary: NewUpstream creates a new SQL upstream.
@@ -38,68 +38,82 @@ type Upstream struct {
 //   - None.
 //
 // Returns:
-//   - *Upstream: The *Upstream result.
+//   - *Upstream: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func NewUpstream() *Upstream {
-	return &Upstream{}
-}
-
+//   - May modify internal state or perform external network calls.
+//   - None.
+//
+// Returns:
+//   - *Upstream: The resulting object or data structure.
 // Shutdown closes the database connection.
 //
 // Summary: Shutdown closes the database connection.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
+//   - _ (context.Context): The provided _ data.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Parameters:
+//   - _ (context.Context): The provided _ data.
+//
+// Returns:
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (u *Upstream) Shutdown(_ context.Context) error {
-	u.mu.Lock()
-	defer u.mu.Unlock()
-	if u.db != nil {
-		return u.db.Close()
-	}
-	return nil
-}
-
-func ptr(s string) *string {
-	return &s
-}
-
 // Register discovers and registers tools from the SQL configuration. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
 // Summary: Register discovers and registers tools from the SQL configuration. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
-//   - toolManager (tool.ManagerInterface): The toolManager parameter.
-//   - _ (prompt.ManagerInterface): The _ parameter.
-//   - _ (resource.ManagerInterface): The _ parameter.
-//   - _ (bool): The _ parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The provided serviceconfig data.
+//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
+//   - _ (prompt.ManagerInterface): The provided _ data.
+//   - _ (resource.ManagerInterface): The provided _ data.
+//   - _ (bool): A flag indicating whether _ is enabled.
 //
 // Returns:
-//   - string: The string result.
-//   - []*configv1.ToolDefinition: The []*configv1.ToolDefinition result.
-//   - []*configv1.ResourceDefinition: The []*configv1.ResourceDefinition result.
-//   - error: An error if the operation fails.
+//   - string: The resulting text.
+//   - []*configv1.ToolDefinition: The resulting object or data structure.
+//   - []*configv1.ResourceDefinition: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - _ (resource.ManagerInterface): The provided _ data.
+//   - _ (bool): A flag indicating whether _ is enabled.
+//
+// Returns:
+//   - string: The resulting text.
+//   - []*configv1.ToolDefinition: The resulting object or data structure.
+//   - []*configv1.ResourceDefinition: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

@@ -16,19 +16,13 @@ var redisClientCreator = redis.NewClient
 
 // SetRedisClientCreatorForTests allows injecting a mock Redis client creator for testing purposes.
 //
-// Summary: SetRedisClientCreatorForTests allows injecting a mock Redis client creator for testing purposes.
+// Summary: Replaces the default Redis client creator with a mock for unit testing.
 //
 // Parameters:
-//   - creator (func(opts *redis.Options) *redis.Client): The creator parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - creator: func(*redis.Options) *redis.Client. The factory function to create Redis clients.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Modifies the global redisClientCreator variable.
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
 	redisClientCreator = creator
 }
@@ -258,20 +252,14 @@ func (l *RedisLimiter) AllowN(ctx context.Context, n int) (bool, error) {
 
 // Update dynamically updates the rate limit configuration for the running limiter.
 //
-// Summary: Update dynamically updates the rate limit configuration for the running limiter.
+// Summary: Updates the rate limit settings (RPS and burst).
 //
 // Parameters:
-//   - rps (float64): The rps parameter.
-//   - burst (int): The burst parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - rps: float64. The new requests per second limit.
+//   - burst: int. The new burst capacity.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Modifies the internal state of the limiter.
 func (l *RedisLimiter) Update(rps float64, burst int) {
 	l.rps = rps
 	l.burst = burst

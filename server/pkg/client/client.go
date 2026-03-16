@@ -50,6 +50,7 @@ type HTTPClient interface {
 // MCPClient defines the interface for a client that interacts with an MCP
 //
 // Summary: MCPClient defines the interface for a client that interacts with an MCP
+// Summary: MCPClient defines the interface for a client that interacts with an MCP
 type MCPClient interface {
 	// CallTool executes a tool on the MCP service, sending the tool name and
 	// inputs and returning the result.

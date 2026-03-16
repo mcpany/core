@@ -18,41 +18,57 @@ import (
 // UpstreamWorker is a background worker that handles tool execution requests. It
 //
 // Summary: UpstreamWorker is a background worker that handles tool execution requests. It
-type UpstreamWorker struct {
 	bus         *bus.Provider
 	toolManager tool.ManagerInterface
 	wg          sync.WaitGroup
 }
 
 // NewUpstreamWorker creates a new UpstreamWorker.
+// NewUpstreamWorker creates a new UpstreamWorker.
 //
 // Summary: NewUpstreamWorker creates a new UpstreamWorker.
 //
 // Parameters:
-//   - bus (*bus.Provider): The bus parameter.
-//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - bus (*bus.Provider): The provided bus data.
+//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
 //
 // Returns:
-//   - *UpstreamWorker: The *UpstreamWorker result.
+//   - *UpstreamWorker: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
-func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
-	return &UpstreamWorker{
-		bus:         bus,
-		toolManager: toolManager,
-	}
-}
+//   - May modify internal state or perform external network calls.
+//   - *UpstreamWorker: The resulting object or data structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
+// Start launches the worker in a new goroutine. It subscribes to tool execution
+//
+// Summary: Start launches the worker in a new goroutine. It subscribes to tool execution
+//
+// Parameters:
+//   - ctx (context.Context): The cancellation and deadline context.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 
 // Start launches the worker in a new goroutine. It subscribes to tool execution
 //
 // Summary: Start launches the worker in a new goroutine. It subscribes to tool execution
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
+//   - ctx (context.Context): The cancellation and deadline context.
 //
 // Returns:
 //   - None.
@@ -61,7 +77,7 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (w *UpstreamWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "UpstreamWorker")
@@ -97,19 +113,21 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 		if err != nil {
 			metrics.IncrCounter([]string{"worker", "upstream", "request", "error"}, 1)
 		} else {
-			metrics.IncrCounter([]string{"worker", "upstream", "request", "success"}, 1)
-		}
-		res.SetCorrelationID(req.CorrelationID())
-		if err := resultBus.Publish(ctx, req.CorrelationID(), res); err != nil {
-			log.Error("Failed to publish tool execution result", "error", err)
-		}
-	})
-
-	go func() {
-		defer w.wg.Done()
-		<-ctx.Done()
-		log.Info("Upstream worker stopping")
-		unsubscribe()
+// Stop waits for the worker to stop.
+//
+// Summary: Stop waits for the worker to stop.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 	}()
 }
 
@@ -127,7 +145,7 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
 func (w *UpstreamWorker) Stop() {
 	w.wg.Wait()
 }

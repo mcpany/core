@@ -12,6 +12,7 @@ import (
 // Session defines the interface for tools to interact with the client session.
 //
 // Summary: Session defines the interface for tools to interact with the client session.
+// Summary: Session defines the interface for tools to interact with the client session.
 type Session interface {
 	// CreateMessage requests a message creation (sampling) from the client.
 	//
@@ -38,7 +39,9 @@ type Session interface {
 	//   - error: An error if the operation fails.
 	ListRoots(ctx context.Context) (*mcp.ListRootsResult, error)
 }
-
+// Sampler is an alias for Session for backward compatibility.
+//
+// Summary: Sampler is an alias for Session for backward compatibility.
 // Sampler is an alias for Session for backward compatibility.
 //
 // Summary: Sampler is an alias for Session for backward compatibility.

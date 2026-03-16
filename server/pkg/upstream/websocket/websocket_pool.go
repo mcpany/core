@@ -16,26 +16,33 @@ import (
 // Pool is a type alias for a pool of WebSocket client connections.
 //
 // Summary: Pool is a type alias for a pool of WebSocket client connections.
+// Summary: Pool is a type alias for a pool of WebSocket client connections.
 type Pool = pool.Pool[*client.WebsocketClientWrapper]
-
 // NewPool creates a new connection pool for WebSocket clients. It
 //
 // Summary: NewPool creates a new connection pool for WebSocket clients. It
 //
 // Parameters:
-//   - maxSize (int): The maxSize parameter.
-//   - idleTimeout (time.Duration): The idleTimeout parameter.
-//   - address (string): The address parameter.
+//   - maxSize (int): The numeric value for maxsize.
+//   - idleTimeout (time.Duration): The provided idletimeout data.
+//   - address (string): The textual representation of address.
 //
 // Returns:
-//   - Pool: The Pool result.
-//   - error: An error if the operation fails.
+//   - Pool: The resulting object or data structure.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func NewPool(maxSize int, idleTimeout time.Duration, address string) (Pool, error) {
 	factory := func(_ context.Context) (*client.WebsocketClientWrapper, error) {
 		conn, resp, err := websocket.DefaultDialer.Dial(address, nil)

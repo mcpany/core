@@ -38,8 +38,14 @@ const (
 // Server represents the server binary.
 //
 // Summary: Server represents the server binary.
-	Server BinaryType = iota
+//
 // Worker represents the worker binary.
+//
+// Summary: Worker represents the worker binary.
+	Server BinaryType = iota
+// Client represents the client binary.
+//
+// Summary: Client represents the client binary.
 //
 // Summary: Worker represents the worker binary.
 	Worker
@@ -49,21 +55,27 @@ const (
 	Client
 )
 
-// AuthValidationContext defines the context for authentication validation.
+// AuthValidationContextIncoming represents incoming authentication (e.g., Users).
 //
-// Summary: Enumeration of authentication validation contexts.
+// Summary: AuthValidationContextIncoming represents incoming authentication (e.g., Users).
+//
+// AuthValidationContextOutgoing represents outgoing authentication (e.g., Upstream Services).
+//
+// Summary: AuthValidationContextOutgoing represents outgoing authentication (e.g., Upstream Services).
 type AuthValidationContext int
 
 const (
 // AuthValidationContextIncoming represents incoming authentication (e.g., Users).
 //
 // Summary: AuthValidationContextIncoming represents incoming authentication (e.g., Users).
-	AuthValidationContextIncoming AuthValidationContext = iota
-// AuthValidationContextOutgoing represents outgoing authentication (e.g., Upstream Services).
+// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
+//
+// Summary: SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
 //
 // Summary: AuthValidationContextOutgoing represents outgoing authentication (e.g., Upstream Services).
-	AuthValidationContextOutgoing
-)
+// SkipFilesystemCheckKey is the context key to skip filesystem existence checks (e.g. for config check API).
+//
+// Summary: SkipFilesystemCheckKey is the context key to skip filesystem existence checks (e.g. for config check API).
 
 type contextKey string
 
@@ -80,18 +92,6 @@ const (
 )
 
 var (
-	osStat       = os.Stat
-	execLookPath = exec.LookPath
-)
-
-// ValidationError encapsulates a validation error for a specific service.
-//
-// Summary: Represents a configuration validation error.
-type ValidationError struct {
-	ServiceName string
-	Err         error
-}
-
 // Error returns the formatted error message. Side Effects: - None.
 //
 // Summary: Error returns the formatted error message. Side Effects: - None.
@@ -100,13 +100,27 @@ type ValidationError struct {
 //   - None.
 //
 // Returns:
-//   - string: The string result.
+//   - string: The resulting text.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//
+// Summary: Error returns the formatted error message. Side Effects: - None.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The resulting text.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func (e *ValidationError) Error() string {
 	return fmt.Sprintf("service %q: %v", e.ServiceName, e.Err)
 }

@@ -15,43 +15,59 @@ import (
 // Summary: Password hashes a password using bcrypt.
 //
 // Parameters:
-//   - password (string): The password parameter.
+//   - password (string): The textual representation of password.
 //
 // Returns:
-//   - string: The string result.
-//   - error: An error if the operation fails.
+//   - string: The resulting text.
+//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+//   - string: The resulting text.
+//   - error: An error if the execution fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func Password(password string) (string, error) {
 	// Increase cost to 12 for better security (default is 10)
-	const cost = 12
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), cost)
-	if err != nil {
-		return "", fmt.Errorf("failed to hash password: %w", err)
-	}
-	return string(bytes), nil
-}
-
 // CheckPassword checks if a password matches a hash.
 //
 // Summary: CheckPassword checks if a password matches a hash.
 //
 // Parameters:
-//   - password (string): The password parameter.
-//   - hash (string): The hash parameter.
+//   - password (string): The textual representation of password.
+//   - hash (string): The textual representation of hash.
 //
 // Returns:
-//   - bool: The bool result.
+//   - bool: True if successful or valid, false otherwise.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - May modify internal state or perform external network calls.
+// CheckPassword checks if a password matches a hash.
+//
+// Summary: CheckPassword checks if a password matches a hash.
+//
+// Parameters:
+//   - password (string): The textual representation of password.
+//   - hash (string): The textual representation of hash.
+//
+// Returns:
+//   - bool: True if successful or valid, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external network calls.
 func CheckPassword(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil

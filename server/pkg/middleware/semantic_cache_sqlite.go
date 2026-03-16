@@ -257,20 +257,15 @@ func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []floa
 
 // Prune removes expired entries from both memory and DB.
 //
-// Summary: Prune removes expired entries from both memory and DB.
+// Summary: Manually triggers removal of expired entries from memory and disk.
 //
 // Parameters:
-//   - ctx (context.Context): The ctx parameter.
-//   - key (string): The key parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - ctx: context.Context. The request context.
+//   - key: string. Optional key to restrict pruning scope.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Removes items from memory.
+//   - Deletes rows from SQLite database.
 func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 	s.memoryStore.Prune(ctx, key)
 
