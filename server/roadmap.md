@@ -434,6 +434,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
 *   **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-generated UI fragments (Added: 2026-04-23).
 
+#### Upcoming (2026-04-27 Evolution)
+*   **[P0] LFTA ARL Middleware**: Real-time Attestation Revocation List listener for LFTA v2.1 compliance. (Added: 2026-04-27)
+*   **[P0] Intent-Gated Shard Manager**: Cryptographic intent-alignment enforcement for Context Sharding lifecycle. (Added: 2026-04-27)
+*   **[P1] Adaptive Anchor Pruner**: Implementation of OpenClaw v2026.3.9 semantic pruning for the Cognitive Anchor Manager. (Added: 2026-04-27)
+
 #### Upcoming (2026-04-26 Evolution)
 *   **[P0] Multi-Hop Trust Relay**: Implementation of LFTA v2.0 for multi-hop trust delegation through deep agent swarms. (Added: 2026-04-26)
 *   **[P0] Cognitive Anchor Manager**: Extension for ContextEngine to manage immutable mission-root anchors, preventing semantic drift. (Added: 2026-04-26)

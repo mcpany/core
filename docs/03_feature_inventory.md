@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-04-27] Updates
+
+### Proposed Additions
+- **LFTA ARL Middleware**: (P0) A high-priority security listener that ingests Attestation Revocation Lists from trust-roots to provide sub-millisecond revocation of compromised trust leases.
+- **Intent-Gated Shard Manager**: (P0) Advanced extension of the Context Sharding middleware that enforces cryptographic intent-alignment before mounting or unmounting specific context shards.
+- **Adaptive Anchor Pruner**: (P1) Optimization service that implements the OpenClaw v2026.3.9 pruning logic, dynamically shedding irrelevant cognitive anchors to prevent context bloat.
+
+### Priority Shifts
+- **Cognitive Anchor Manager**: (Re-affirmed P0) Now elevated with the requirement for "Smart Pruning" to support deep, long-running agent swarms.
+- **A2A Safety Proof Validator**: (Re-affirmed P0) Expanded to integrate with the LFTA ARL Middleware for real-time reputation and revocation checks.
+
 ---
 
 ## Evolution: [2026-04-26] Updates
