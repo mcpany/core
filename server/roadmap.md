@@ -11,6 +11,78 @@
 
 ### Status: Active Development
 
+#### Upcoming (2026-05-06 Evolution)
+*   **[P0] ContextEngine Lifecycle Adapter**: Implementation of OpenClaw-compatible context hooks for pluggable memory segmentation. (Added: 2026-05-06)
+*   **[P1] Multi-modal RCS Sanitizer**: Deep media inspection for SVG/CSS metadata to detect steganographic "Invisible Fragments." (Added: 2026-05-06)
+*   **[P0] IBME Orchestrator**: Integrated security service for hardware-attested, cryptographically sealed mission enclaves. (Added: 2026-05-06)
+
+#### Upcoming (2026-05-05 Evolution)
+*   **[P0] RAMS Isolation Hub**: Implementation of Reasoning-Aware Memory Segmentation for cryptographically isolated Blackboard shards. (Added: 2026-05-05)
+*   **[P0] HEPA Provider**: Hardware-Enclave Path Attestation for TPM-bound configuration loading. (Added: 2026-05-05)
+*   **[P1] Cross-Swarm Intent Attestation**: UACO-native multi-signature coordination for mission-root intents. (Added: 2026-05-05)
+
+#### Upcoming (2026-05-04 Evolution)
+*   **[P0] Semantic Integrity Bridge**: Intent Drift Detection middleware to prevent Recursive Intent Poisoning (RIP) and RCS. (Added: 2026-05-04 - Promoted to P0 on 2026-05-05)
+*   **[P0] Kernel-Bound FD Persistence Middleware**: FD-passing and pinning for absolute configuration immutability. (Added: 2026-05-04)
+*   **[P1] Bi-directional A2UI State Bridge**: Two-way state synchronization for corrective user intent injection. (Added: 2026-05-04)
+
+#### Upcoming (2026-05-03 Evolution)
+*   **[P0] Deadlock-Resilient CQ Controller**: Advanced cycle-detection and wait-graph analysis for the CQ Hub. (Added: 2026-05-03)
+*   **[P0] Hierarchical Intent Lease (HIL) Broker**: Task-bound, hierarchical capability management based on UACO v3.2. (Added: 2026-05-03)
+*   **[P0] Depth-Aware Inode Pinning (DAIP)**: Recursive symlink validation with hardware-bound depth limits. (Added: 2026-05-03)
+
+#### Upcoming (2026-05-02 Evolution)
+*   **[P0] Risk-Adaptive CQ Controller**: Dynamic policy engine for scaling quorum thresholds based on tool risk and reasoning confidence. (Added: 2026-05-02)
+*   **[P1] Reasoning-Responsive Rate Limiter (RRRL)**: Middleware to throttle tool execution based on real-time reasoning confidence scores. (Added: 2026-05-02)
+*   **[P1] Inter-Swarm Deadlock Detector**: UACO monitoring service for detecting and breaking circular attestation dependencies. (Added: 2026-05-02)
+*   **[P0] Deterministic Recovery Bridge (DSR)**: Standardized mapping of subagent exit codes to automated PLSS rollbacks. (Added: 2026-05-02)
+
+#### Upcoming (2026-05-01 Evolution)
+*   **[P0] Contextual Quorum (CQ) Hub**: Coordination service for multi-agent attestation and consensus-based tool execution. (Added: 2026-05-01)
+*   **[P1] Adaptive Intent Budgeting (AIB)**: Resource management layer for dynamic token and compute lease scaling. (Added: 2026-05-01)
+*   **[P0] Project-Local Snapshot (PLSS) Sync**: OS-level bridge for rapid environment recovery and speculative agent rollbacks. (Added: 2026-05-01 - Promoted to P0 on 2026-05-02)
+
+#### Upcoming (2026-04-30 Evolution)
+*   **[P0] Mesh-Aware Blackboard Adaptor**: Graph-based intent mesh for multi-agent swarm reconciliation. (Added: 2026-04-30)
+*   **[P0] Kernel-Level Inode Pinning (KLIP)**: Hardware-bound file handle protection against SIR (Symlink-to-Inode Racing) exploits. (Added: 2026-04-30)
+*   **[P0] UACO v3.0 S2S Trust Broker**: Multi-signature identity management for Swarm-to-Swarm task negotiation. (Added: 2026-04-30)
+
+#### Upcoming (2026-04-29 Evolution)
+*   **[P0] ContextEngine Security Bridge**: Core integration mapping OpenClaw lifecycle signals (spawning/ended) to MCP Any security policies. (Added: 2026-04-29)
+*   **[P0] PII-Sovereign Context Scrubber**: Mandatory sanitization layer for hybrid-cloud deployments (Promoted to P0). (Added: 2026-04-29)
+*   **[P1] Speculative Integrity Quorum Hub**: Coordination service for Shadow-FS orchestrating multi-agent consensus. (Added: 2026-04-29)
+*   **[P0] Lifecycle-Bound EPM**: Refinement of EPM to bind privilege leases to active agent reasoning sessions. (Added: 2026-04-29)
+
+#### Upcoming (2026-04-28 Evolution)
+*   **[P0] Ephemeral Privilege Manager (EPM)**: Core security service managing JIT privilege escalation and task-bound leases. (Added: 2026-04-28)
+*   **[P0] Shadow-FS Virtualization Adapter**: Transactional filesystem overlay for speculative agent edits and atomic commits. (Added: 2026-04-28)
+*   **[P1] De-biometricization Sanitizer**: Context middleware for local PII/biometric scrubbing before cloud propagation. (Added: 2026-04-28)
+*   **[P0] Semantic Risk HITL Arbiter**: Upgraded HITL middleware that uses semantic context risk to trigger MFA. (Added: 2026-04-28)
+
+#### Upcoming (2026-04-27 Evolution)
+*   **[P0] LFTA ARL Middleware**: Real-time Attestation Revocation List listener for LFTA v2.1 compliance. (Added: 2026-04-27)
+*   **[P0] Intent-Gated Shard Manager**: Cryptographic intent-alignment enforcement for Context Sharding lifecycle. (Added: 2026-04-27)
+*   **[P1] Adaptive Anchor Pruner**: Implementation of OpenClaw v2026.3.9 semantic pruning for the Cognitive Anchor Manager. (Added: 2026-04-27)
+
+#### Upcoming (2026-04-26 Evolution)
+*   **[P0] Multi-Hop Trust Relay**: Implementation of LFTA v2.0 for multi-hop trust delegation through deep agent swarms. (Added: 2026-04-26)
+*   **[P0] Cognitive Anchor Manager**: Extension for ContextEngine to manage immutable mission-root anchors, preventing semantic drift. (Added: 2026-04-26)
+*   **[P0] A2UI Interactive Delegation Bridge**: Hardened rendering for delegated task card approvals via declarative A2UI manifests. (Added: 2026-04-26)
+
+#### Upcoming (2026-04-25 Evolution)
+*   **[P0] A2A Session Persistence Middleware**: Core security service for managing token refresh and trust persistence in deep reasoning chains. (Added: 2026-04-25)
+*   **[P0] DAP Enforcement for Pre-Flight Validator**: Mandatory enforcement of Deterministic Absence Proofs as a prerequisite for all agent boots. (Added: 2026-04-25)
+
+#### Upcoming (2026-04-24 Evolution)
+*   **[P0] A2A Authenticated Handshake Provider**: Implementation of Gemini CLI v0.33.0 style HTTP authentication for all agent-to-agent remote communications. (Added: 2026-04-24)
+*   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
+*   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
+
+#### Upcoming (2026-04-22 Evolution)
+*   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
+*   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
+*   **[P1] Cognitive Fragment Reconciler**: Background service for synchronizing encrypted monologues across agent sessions. (Added: 2026-04-22)
+
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
@@ -379,7 +451,7 @@ These features represent the next logical steps for the product, focusing on Ent
 #### Upcoming (2026-04-07 Evolution)
 *   **[P0] Verified Skill Auction (VSA)**: Integration of DCA Auction Broker with real-time skill attestation to mitigate ClawHavoc-style attacks. (Added: 2026-04-07)
 *   **[P0] Mandatory Origin Validation (SOP)**: Enforcement of browser-origin headers for all local listeners to patch CVE-2026-25253. (Added: 2026-04-07)
-*   **[P1] Social-Agent Privacy Sandbox**: Middleware to prevent context reconstruction in shared multi-agent social spaces. (Added: 2026-04-07)
+*   **[P1] Social-Agent Privacy Sandbox**: Middleware to prevent context reconstruction in shared multi-agent social platforms. (Added: 2026-04-07)
 
 #### Upcoming (2026-04-14 Evolution)
 *   **[P0] Delegation Attestation Layer (DAL)**: Core security service for evaluating A2A task proposals and generating "Safety Proofs." (Added: 2026-04-14)

@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-06]
+### Focus: Pluggable Context Sovereignty & Multi-modal RCS Defense
+**Context**: The release of OpenClaw v2026.3.7's pluggable `ContextEngine` and the discovery of steganographic "Invisible Fragments" in multi-modal traces (RCS) mark a shift from textual state to "Rich-Media Governance." Security must now be multi-modal, while state management must become a pluggable utility that bridges disparate agent frameworks.
+**Strategic Pivot**:
+- **Pluggable ContextEngine Integration**: MCP Any will pivot to become a native host for OpenClaw-compatible `ContextEngine` plugins. This allows us to provide "Pluggable Memory Segmentation," where specialized memory logic is isolated and bound to agent lifecycle hooks, neutralizing framework lock-in.
+- **Multi-modal RCS Sanitizer**: We are evolving the "Semantic Integrity Bridge" to perform "Deep Media Inspection." MCP Any will now scan SVG, CSS, and other multi-modal metadata for "Invisible Fragments" that could trigger Recursive Context Splicing (RCS) during handoffs.
+- **Intent-Bound Memory Enclaves**: Leveraging RAMS and HEPA, we will implement "Intent-Bound Memory Enclaves." These are hardware-attested memory regions that are cryptographically sealed to a specific reasoning mission, ensuring that even multi-modal injections cannot "smear" across agent boundaries.
+
 ## Strategic Evolution: [2026-05-05]
 ### Focus: Reasoning-Aware Memory Segmentation (RAMS)
 **Context**: OpenClaw's prototyping of "Intent-Bound Memory Isolation" and the emergence of "Recursive Context Splicing" (RCS) exploits reveal that shared state is the new primary attack surface. As swarms become more complex, "Memory Smearing" and "Ghost Fragment" injection demand a move from simple isolation to "Active Reasoning Segmentation."

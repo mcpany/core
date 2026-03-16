@@ -196,6 +196,11 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-05-06 Evolution)
+- [ ] **[P0] ContextEngine Lifecycle Visualizer**: Visual debugger for OpenClaw-compatible lifecycle hooks and shard transitions. (Added: 2026-05-06)
+- [ ] **[P1] Multi-modal RCS Alert Dashboard**: Real-time security dashboard for steganographic fragment detection in SVG/CSS. (Added: 2026-05-06)
+- [ ] **[P0] IBME Mission Control**: Command center for managing hardware-attested memory enclaves and mission-root intents. (Added: 2026-05-06)
+
 #### Upcoming (2026-04-06 Evolution)
 - [ ] **[P0] Metadata Poisoning Guard Dashboard**: UI for reviewing sanitized tool definitions and blocked instruction fragments. (Added: 2026-04-06)
 - [ ] **[P0] Inode Security Monitor**: Real-time visualization of pinned Inodes and alerts for unauthorized filesystem swaps. (Added: 2026-04-06)

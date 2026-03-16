@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-06] Updates
+
+### Proposed Additions
+- **ContextEngine Lifecycle Adapter**: (P0) A core integration service that maps OpenClaw v2026.3.7 ContextEngine lifecycle hooks (compression, summarization, retrieval) to MCP Any's internal state management.
+- **Multi-modal RCS Sanitizer Middleware**: (P1) Advanced security layer for the Semantic Integrity Bridge that performs deep inspection of SVG, CSS, and other rich-media metadata to detect steganographic "Invisible Fragments."
+- **Intent-Bound Memory Enclave (IBME) Orchestrator**: (P0) Advanced security service that combines RAMS and HEPA to provide hardware-attested, cryptographically sealed memory regions for mission-critical agent reasoning.
+
+### Priority Shifts
+- **RAMS Hub**: (Re-affirmed P0) Now elevated to support pluggable memory segmentation via the ContextEngine Lifecycle Adapter.
+- **Semantic Integrity Bridge**: (Re-affirmed P0) Expanded to include Multi-modal RCS Sanitization as a mandatory requirement.
+
 ## Evolution: [2026-05-05] Updates
 
 ### Proposed Additions
