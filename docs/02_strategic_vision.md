@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-28]
+### Focus: Ephemeral Agency & Virtualized Sovereignty
+**Context**: The "BoryptGrab" security crisis and the emergence of Purdue's "De-biometricization" system signal a move toward "Ephemeral Agency." We must evolve from persistent tool access to a "Just-in-Time" privilege model, while ensuring that local data is scrubbed of PII before entering the cloud reasoning loop.
+**Strategic Pivot**:
+- **Ephemeral Privilege Escalation (EPE)**: MCP Any will move to a default "Zero-Privilege" state. High-level capabilities (e.g., sudo, SSH) will be granted as time-bound, task-specific "Leases" that expire automatically upon task completion.
+- **De-biometricization Middleware**: Integrating local scrubbers that "de-biometricize" data before it is propagated to external LLMs. This ensures that agent context remains sovereignty-aware even in hybrid cloud/local deployments.
+- **Shadow-FS Virtualization**: To mitigate the risk of rogue file edits, MCP Any will implement a "Shadow-FS" overlay. Agents will operate on a virtualized filesystem, and changes will only be committed to the host after passing local integrity quorums.
+
 ## Strategic Evolution: [2026-04-27]
 ### Focus: Adaptive Anchor Governance & Revocable Trust Continuity
 **Context**: The introduction of OpenClaw v2026.3.9's "Adaptive Anchor Pruning" and Gemini CLI's LFTA v2.1 "Attestation Revocation Lists" signals a transition from static trust to "Dynamic Revocable Agency." We must evolve to manage the density of cognitive state while ensuring that trust can be withdrawn in real-time across deep swarms.
