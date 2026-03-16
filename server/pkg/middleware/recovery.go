@@ -26,7 +26,7 @@ import (
 //   - Writes a 500 Internal Server Error response to the client on panic.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func RecoveryMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {

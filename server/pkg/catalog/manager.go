@@ -41,9 +41,9 @@ type Manager struct {
 //   - *Manager: The initialized manager.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewManager(fs afero.Fs, catalogPath string) *Manager {
 	return &Manager{
 		fs:          fs,

@@ -48,7 +48,7 @@ type Redactor struct {
 //   - Logs warnings for invalid regex patterns.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 	if config == nil || !config.GetEnabled() {
 		return nil

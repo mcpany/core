@@ -31,7 +31,7 @@ import (
 //   - Updates metrics.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	if log == nil {
 		log = logging.GetLogger()

@@ -35,9 +35,9 @@ type Bus[T any] struct {
 //   - error: An error if the connection or embedded server startup fails.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 	var s *server.Server
 	if config.GetServerUrl() == "" {

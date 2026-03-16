@@ -36,9 +36,9 @@ type StaticResource struct {
 //   - *StaticResource: The initialized static resource.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *StaticResource {
 	return &StaticResource{
 		resource: &mcp.Resource{

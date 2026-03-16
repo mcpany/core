@@ -86,7 +86,7 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //   - Starts a background cache cleaner.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),

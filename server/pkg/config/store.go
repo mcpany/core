@@ -100,9 +100,9 @@ type ConfigurableEngine interface {
 //   - (error): An error if the file extension is not supported.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -695,9 +695,9 @@ func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 //   - (*FileStore): A new instance of FileStore.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths}
 }
@@ -714,9 +714,9 @@ func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 //   - (*FileStore): A new instance of FileStore.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths, skipErrors: true}
 }
@@ -1247,9 +1247,9 @@ type MultiStore struct {
 //   - *MultiStore: A new instance of MultiStore.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewMultiStore(stores ...Store) *MultiStore {
 	return &MultiStore{stores: stores}
 }

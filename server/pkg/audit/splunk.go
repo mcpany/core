@@ -48,7 +48,7 @@ type SplunkAuditStore struct {
 //   - Starts background workers.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func NewSplunkAuditStore(config *configv1.SplunkConfig) *SplunkAuditStore {
 	if config == nil {
 		config = &configv1.SplunkConfig{}

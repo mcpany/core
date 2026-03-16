@@ -118,7 +118,7 @@ func (s *Server) Server() *mcp.Server {
 //   - Registers middleware.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,

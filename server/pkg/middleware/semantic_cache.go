@@ -88,7 +88,7 @@ type SemanticCache struct {
 //   - Creates a memory-based vector store if store is nil.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold float32) *SemanticCache {
 	if threshold <= 0 {
 		threshold = 0.9 // Default high threshold

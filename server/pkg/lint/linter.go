@@ -95,9 +95,9 @@ type Linter struct {
 //   - *Linter: A new Linter instance initialized with the provided configuration.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }

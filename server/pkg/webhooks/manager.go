@@ -52,9 +52,9 @@ type Manager struct {
 //   - Initializes internal maps and HTTP client.
 //
 // Parameters:
-//   - Specific inputs depending on signature.
+//   - params: Inputs expected by the function.
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func NewManager() *Manager {
 	return &Manager{
 		webhooks:   make(map[string]*WebhookConfig),

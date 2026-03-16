@@ -41,9 +41,9 @@ var (
 //   - Prunes history if it exceeds 1000 points.
 //
 // Returns:
-//   - Results based on execution outcome.
+//   - outcome: The resulting data or value.
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func AddHealthStatus(serviceName string, status string) {
 	historyMu.Lock()
 	defer historyMu.Unlock()
@@ -90,9 +90,9 @@ func AddHealthStatus(serviceName string, status string) {
 //   - Acquires a read lock on the history store.
 //
 // Parameters:
-//   - Specific inputs depending on signature.
+//   - params: Inputs expected by the function.
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func GetHealthHistory() map[string][]HistoryPoint {
 	historyMu.RLock()
 	defer historyMu.RUnlock()

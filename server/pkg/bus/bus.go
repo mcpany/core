@@ -88,9 +88,9 @@ var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 //   error: An error if creation fails.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
 		return NewProviderHook(messageBus)
@@ -143,9 +143,9 @@ var GetBusHook func(p *Provider, topic string) (any, error)
 //   error: An error if retrieval or creation fails.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func GetBus[T any](p *Provider, topic string) (Bus[T], error) {
 	if GetBusHook != nil {
 		bus, err := GetBusHook(p, topic)

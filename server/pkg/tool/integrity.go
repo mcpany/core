@@ -24,9 +24,9 @@ import (
 //   - error: An error if integrity check fails.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func VerifyIntegrity(t *v1.Tool) error {
 	if !t.HasIntegrity() {
 		return nil // No integrity check required
@@ -59,9 +59,9 @@ func VerifyIntegrity(t *v1.Tool) error {
 //   - error: An error if integrity check fails.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
 	if t.GetIntegrity() == nil {
 		return nil // No integrity check required
@@ -95,9 +95,9 @@ func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
 //   - error: An error if marshaling fails.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func CalculateHash(t *v1.Tool) (string, error) {
 	// Create a copy of the tool without the integrity field to calculate the hash
 	toolCopy := proto.Clone(t).(*v1.Tool)
@@ -128,9 +128,9 @@ func CalculateHash(t *v1.Tool) (string, error) {
 //   - error: An error if marshaling fails.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func CalculateConfigHash(t *configv1.ToolDefinition) (string, error) {
 	// Create a copy of the tool to calculate the hash
 	toolCopy := proto.Clone(t).(*configv1.ToolDefinition)

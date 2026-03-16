@@ -32,9 +32,9 @@ var (
 //   - Updates the global log level atomic variable.
 //
 // Returns:
-//   - Results based on execution outcome.
+//   - outcome: The resulting data or value.
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func SetLevel(level slog.Level) {
 	programLevel.Set(level)
 }
@@ -77,9 +77,9 @@ func ForTestsOnlyResetLogger() {
 //   - May open a file for writing.
 //
 // Returns:
-//   - Results based on execution outcome.
+//   - outcome: The resulting data or value.
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func Init(level slog.Level, output io.Writer, logFilePath string, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -158,9 +158,9 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 //   - May initialize the default logger if not already set.
 //
 // Parameters:
-//   - Specific inputs depending on signature.
+//   - params: Inputs expected by the function.
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func GetLogger() *slog.Logger {
 	// ⚡ Bolt Optimization: Fast path to avoid lock contention on every log call.
 	// Atomic load is much cheaper than mutex lock.
@@ -192,7 +192,7 @@ func GetLogger() *slog.Logger {
 //   - None.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func ToSlogLevel(level configv1.GlobalSettings_LogLevel) slog.Level {
 	switch level {
 	case configv1.GlobalSettings_LOG_LEVEL_DEBUG:

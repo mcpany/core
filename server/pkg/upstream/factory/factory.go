@@ -65,9 +65,9 @@ type UpstreamServiceFactory struct {
 //   - Factory: A new Factory instance.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *configv1.GlobalSettings) Factory {
 	return &UpstreamServiceFactory{
 		poolManager:    poolManager,

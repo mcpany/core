@@ -51,7 +51,7 @@ type Registry struct {
 //   - Allocates memory for the registry map.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func NewRegistry() *Registry {
 	return &Registry{
 		hooks: make(map[string]Handler),

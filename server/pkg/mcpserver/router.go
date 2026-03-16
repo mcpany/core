@@ -46,7 +46,7 @@ type Router struct {
 //   - Allocates memory for the Router and its handler map.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func NewRouter() *Router {
 	return &Router{
 		handlers: make(map[string]MethodHandler),

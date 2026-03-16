@@ -29,7 +29,7 @@ import (
 //   - Registers "test-service" in the manager.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func NewTestPoolManager(t *testing.T) *pool.Manager {
 	t.Helper()
 	pm := pool.NewManager()

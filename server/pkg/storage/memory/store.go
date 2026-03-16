@@ -50,9 +50,9 @@ type Store struct {
 //   - Allocates internal maps and slices.
 //
 // Parameters:
-//   - Specific inputs depending on signature.
+//   - params: Inputs expected by the function.
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 func NewStore() *Store {
 	return &Store{
 		services:           make(map[string]*configv1.UpstreamServiceConfig),

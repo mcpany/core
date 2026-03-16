@@ -59,9 +59,9 @@ type UpstreamServiceManager struct {
 //   - (*UpstreamServiceManager): A pointer to a fully initialized UpstreamServiceManager.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager {
 	if len(enabledProfiles) == 0 {
 		enabledProfiles = []string{"default"}

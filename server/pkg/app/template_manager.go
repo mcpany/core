@@ -33,9 +33,9 @@ type TemplateManager struct {
 //   - *TemplateManager: The initialized manager.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewTemplateManager(dataDir string) *TemplateManager {
 	tm := &TemplateManager{
 		filePath: filepath.Join(dataDir, "templates.json"),

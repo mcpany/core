@@ -44,9 +44,9 @@ type Worker struct {
 //   - *Worker: The initialized worker.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	return &Worker{
 		busProvider: busProvider,

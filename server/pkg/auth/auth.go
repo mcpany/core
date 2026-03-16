@@ -42,9 +42,9 @@ const (
 //   - context.Context: A new context containing the API key.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func ContextWithAPIKey(ctx context.Context, apiKey string) context.Context {
 	return context.WithValue(ctx, APIKeyContextKey, apiKey)
 }
@@ -61,9 +61,9 @@ func ContextWithAPIKey(ctx context.Context, apiKey string) context.Context {
 //   - bool: True if found.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func APIKeyFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(APIKeyContextKey).(string)
 	return val, ok
@@ -81,9 +81,9 @@ func APIKeyFromContext(ctx context.Context) (string, bool) {
 //   - context.Context: A new context containing the user ID.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func ContextWithUser(ctx context.Context, userID string) context.Context {
 	return context.WithValue(ctx, UserContextKey, userID)
 }
@@ -100,9 +100,9 @@ func ContextWithUser(ctx context.Context, userID string) context.Context {
 //   - bool: True if found.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func UserFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(UserContextKey).(string)
 	return val, ok
@@ -120,9 +120,9 @@ func UserFromContext(ctx context.Context) (string, bool) {
 //   - context.Context: A new context containing the profile ID.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func ContextWithProfileID(ctx context.Context, profileID string) context.Context {
 	return context.WithValue(ctx, ProfileIDContextKey, profileID)
 }
@@ -139,9 +139,9 @@ func ContextWithProfileID(ctx context.Context, profileID string) context.Context
 //   - bool: True if found.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func ProfileIDFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(ProfileIDContextKey).(string)
 	return val, ok
@@ -185,9 +185,9 @@ type APIKeyAuthenticator struct {
 //   - *APIKeyAuthenticator: The initialized authenticator, or nil if config is invalid.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
 	if config == nil || config.GetParamName() == "" || config.GetVerificationValue() == "" {
 		return nil
@@ -251,9 +251,9 @@ type BasicAuthenticator struct {
 //   - *BasicAuthenticator: The initialized authenticator, or nil if config is invalid.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewBasicAuthenticator(config *configv1.BasicAuth) *BasicAuthenticator {
 	if config == nil || config.GetPasswordHash() == "" {
 		return nil
@@ -316,9 +316,9 @@ type TrustedHeaderAuthenticator struct {
 //   - *TrustedHeaderAuthenticator: The initialized authenticator, or nil if config is invalid.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewTrustedHeaderAuthenticator(config *configv1.TrustedHeaderAuth) *TrustedHeaderAuthenticator {
 	if config == nil || config.GetHeaderName() == "" {
 		return nil
@@ -378,11 +378,11 @@ type Manager struct {
 //   - *Manager: A new Manager instance.
 //
 // Parameters:
-//   - Specific inputs depending on signature.
+//   - params: Inputs expected by the function.
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewManager() *Manager {
 	return &Manager{
 		authenticators: xsync.NewMap[string, Authenticator](),
@@ -601,9 +601,9 @@ var (
 //   - error: Error if validation fails.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func ValidateAuthentication(ctx context.Context, config *configv1.Authentication, r *http.Request) error {
 	if config == nil {
 		return nil // No auth configured implies allowed

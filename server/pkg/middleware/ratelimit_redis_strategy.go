@@ -30,11 +30,11 @@ type RedisStrategy struct {
 //   - *RedisStrategy: The initialized strategy.
 //
 // Parameters:
-//   - Specific inputs depending on signature.
+//   - params: Inputs expected by the function.
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewRedisStrategy() *RedisStrategy {
 	return &RedisStrategy{}
 }

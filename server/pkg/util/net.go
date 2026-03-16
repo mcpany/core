@@ -88,11 +88,11 @@ type SafeDialer struct {
 //   - (*SafeDialer): A new SafeDialer instance with restrictive defaults.
 //
 // Parameters:
-//   - Specific inputs depending on signature.
+//   - params: Inputs expected by the function.
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewSafeDialer() *SafeDialer {
 	return &SafeDialer{
 		AllowLoopback:  false,
@@ -191,9 +191,9 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 //   - (error): An error if the connection is blocked by policy or fails.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }
@@ -213,11 +213,11 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //   - (*http.Client): A configured HTTP client.
 //
 // Parameters:
-//   - Specific inputs depending on signature.
+//   - params: Inputs expected by the function.
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
@@ -255,9 +255,9 @@ func NewSafeHTTPClient() *http.Client {
 //   - (error): nil if the connection succeeded, or an error if it failed.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func CheckConnection(ctx context.Context, address string) error {
 	var target string
 	if strings.Contains(address, "://") {
@@ -334,9 +334,9 @@ func CheckConnection(ctx context.Context, address string) error {
 //   - (error): An error if binding fails after all retries.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func ListenWithRetry(ctx context.Context, network, address string) (net.Listener, error) {
 	var lis net.Listener
 	var err error

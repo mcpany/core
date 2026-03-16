@@ -42,11 +42,11 @@ var (
 //   - factory (Factory): The factory.
 //
 // Returns:
-//   - Results based on execution outcome.
+//   - outcome: The resulting data or value.
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -60,11 +60,11 @@ func Register(name string, factory Factory) {
 //   - factory (MCPFactory): The factory.
 //
 // Returns:
-//   - Results based on execution outcome.
+//   - outcome: The resulting data or value.
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -80,9 +80,9 @@ func RegisterMCP(name string, factory MCPFactory) {
 //   - ([]func(http.Handler) http.Handler): The result.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -115,9 +115,9 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 //   - ([]func(mcp.MethodHandler) mcp.MethodHandler): The result.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -171,9 +171,9 @@ type StandardMiddlewares struct {
 //   - (error): An error if the operation fails.
 //
 // Errors:
-//   - May return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - None.
+//   - changes: Any state modifications.
 func InitStandardMiddlewares(
 	authManager *auth.Manager,
 	toolManager tool.ManagerInterface,
