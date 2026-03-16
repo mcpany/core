@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-04] Updates
+
+### Proposed Additions
+- **Semantic Integrity Bridge**: (P0) A monitoring extension for the CQ Hub that utilizes "Intent Drift Detection" and SGC-aware analysis to prevent Recursive Intent Poisoning (RIP).
+- **Kernel-Bound FD Persistence Middleware**: (P0) Advanced security layer that utilizes FD-passing and hardware-bound Inode pinning to ensure the absolute immutability of project-local configurations.
+- **Bi-directional A2UI State Bridge**: (P1) Infrastructure for two-way state synchronization between the agent reasoning loop and the secure user interface, enabling "Corrective Intent" injection.
+
+### Priority Shifts
+- **Depth-Aware Inode Pinning (DAIP)**: (Evolved to Kernel-Bound FD Persistence) Upgraded to handle FD-passing for stronger immutability guarantees.
+- **A2UI Native Gateway**: (Evolved to Bi-directional Bridge) Now requires support for user-initiated state pushes back to the agent.
+
 ## Evolution: [2026-05-03] Updates
 
 ### Proposed Additions

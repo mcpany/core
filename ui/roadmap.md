@@ -283,6 +283,11 @@
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
 
+#### Upcoming (2026-05-04 Evolution)
+- [ ] **[P0] Semantic Integrity Dashboard**: Real-time visualization of intent drift and RIP alerts. (Added: 2026-05-04)
+- [ ] **[P0] FD Persistence Monitor**: Visual tracker for kernel-bound file descriptors and pinning status. (Added: 2026-05-04)
+- [ ] **[P1] Bi-directional A2UI Sync Workspace**: Interactive bridge for user-initiated state pushes and intent correction. (Added: 2026-05-04)
+
 #### Upcoming (2026-05-03 Evolution)
 - [ ] **[P0] Hierarchical Trust Monitor**: Visualize intent-bound leases, their parentage, and automated revocation events. (Added: 2026-05-03)
 - [ ] **[P0] DAIP Path Inspector**: Visual debugger for recursive symlinks and hardware-bound depth validation. (Added: 2026-05-03)
