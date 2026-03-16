@@ -283,6 +283,11 @@
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
 
+#### Upcoming (2026-04-30 Evolution)
+- [ ] **[P0] Socket Security Dashboard**: Real-time visualization of tool socket activity and Reverse SSH tunnel alerts. (Added: 2026-04-30)
+- [ ] **[P0] Skill Reputation Explorer**: Unified browser for Attested Skill Reputation Hub scores and malware reports. (Added: 2026-04-30)
+- [ ] **[P1] Swarm Reasoning Stability Monitor**: Visualizer for semantic drift and cascading failure circuit breaker status. (Added: 2026-04-30)
+
 #### Upcoming (2026-04-29 Evolution)
 - [ ] **[P0] Sovereignty Audit Dashboard**: Comprehensive UI for monitoring de-biometricization events and scrubbing logs. (Added: 2026-04-29)
 - [ ] **[P0] Lifecycle Security Monitor**: Visualizer for session-bound capabilities and active privilege leases. (Added: 2026-04-29)
