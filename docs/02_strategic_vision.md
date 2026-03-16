@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-03]
+### Focus: Deadlock-Resilient Attestation & Hierarchical Lease Enforcement
+**Context**: The emergence of "Attestation Deadlocks" in OpenClaw swarms and the release of the UACO v3.2 "Hierarchical Intent Leases" (HIL) draft mark a shift toward lifecycle-aware, self-clearing agency. Additionally, the discovery of "Recursive Symlink Tunnels" proves that path normalization must be accompanied by depth-aware hardware attestation.
+**Strategic Pivot**:
+- **Deadlock-Resilient CQ Hub**: MCP Any will evolve its Contextual Quorum Hub to include "Wait-Graph Analysis." We will implement an automated "Deadlock Resolver" that identifies circular attestation dependencies and applies mission-aligned timeouts to prevent resource exhaustion.
+- **Hierarchical Intent Lease (HIL) Orchestrator**: We are adopting the UACO v3.2 HIL standard. MCP Any will act as the authoritative "Lease Broker," ensuring that subagent capabilities are tied to specific hierarchical task completions and are automatically revoked upon sub-mission termination.
+- **Depth-Aware Inode Pinning (DAIP)**: To counter Recursive Symlink Tunnels, we are evolving KLIP into DAIP. MCP Any will now enforce hardware-bound Inode pinning with mandatory depth-limit validation, ensuring that no project-local configuration can bridge into host regions via nested symlink escapes.
+
 ## Strategic Evolution: [2026-05-02]
 ### Focus: Risk-Adaptive Quorums & Deterministic Environment Recovery
 **Context**: The introduction of OpenClaw's "Adaptive Quorum Thresholds" (AQT) and Claude Code's "Deterministic Sandbox Recovery" (DSR) signals a move toward highly granular, automated governance. Security is no longer a static gate but a dynamic system that scales with risk, while environment resilience is becoming "Self-Healing" via standardized recovery triggers.

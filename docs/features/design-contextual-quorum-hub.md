@@ -46,3 +46,9 @@ As AI agent swarms move from simple automation to autonomous high-stakes operati
 
 ## 7. Evolutionary Changelog
 * **2026-05-02:** Initial Document Creation.
+* **2026-05-03:** [Update] - Implementing Deadlock-Resilient Attestation.
+    * **Context**: Today's market sync revealed a new exploit pattern where subagents create circular attestation dependencies (Deadlocks).
+    * **Architecture Adjustment**:
+        * Introducing "Wait-Graph Analysis" into the UACO-MAQ token collection flow.
+        * Implementing a "Deadlock Resolver" service that performs cycle-detection on the quorum participants.
+        * Adding mission-aligned "Attestation Timeouts" to prevent infinite resource consumption in deadlocked swarms.

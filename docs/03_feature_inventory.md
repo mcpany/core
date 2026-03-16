@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-03] Updates
+
+### Proposed Additions
+- **Deadlock-Resilient CQ Controller**: (P0) Advanced extension of the CQ Hub that performs "Wait-Graph Analysis" to identify and break circular attestation dependencies in multi-agent swarms.
+- **Hierarchical Intent Lease (HIL) Broker**: (P0) Core security service implementing UACO v3.2 HIL. Manages hierarchical, task-bound capability leases that automatically expire upon sub-mission completion.
+- **Depth-Aware Inode Pinning (DAIP) Middleware**: (P0) Security layer for the Shadow-FS that enforces mandatory depth-limit validation for recursive symlink tunnels, preventing host-region escapes.
+
+### Priority Shifts
+- **Inter-Swarm Deadlock Detector**: (Promoted to P0) Critical for preventing resource exhaustion in the face of malicious attestation loops.
+- **KLIP Enforcement**: (Evolved to DAIP) Now requires depth-aware validation to counter recursive symlink tunnels.
+
 ## Evolution: [2026-05-02] Updates
 
 ### Proposed Additions
