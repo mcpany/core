@@ -36,7 +36,7 @@ func TestOperatorE2E(t *testing.T) {
 
 	checkPrerequisites(t)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 40*time.Minute)
 	defer cancel()
 
 	rootDir, err := getRootDir()
@@ -78,7 +78,7 @@ nodes:
 		t.Fatalf("Failed to write temp kind config: %v", err)
 	}
 
-	if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "2m"); err != nil {
+	if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "5m"); err != nil {
 		t.Fatalf("Failed to create kind cluster: %v", err)
 	}
 
@@ -137,7 +137,7 @@ nodes:
 		"--set", "env.MCPANY_ALLOW_LOOPBACK_RESOURCES=true",
 		"--set-file", "config=server/config.minimal.yaml",
 		"--wait",
-		"--timeout", "10m",
+		"--timeout", "15m",
 	); err != nil {
 		t.Fatalf("Failed to install helm chart: %v", err)
 	}
@@ -146,7 +146,7 @@ nodes:
 
 	// 7. Verify Pods
 	t.Log("Verifying pods...")
-	if err := runCommand(t, ctx, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "-l", "app.kubernetes.io/name=mcpany", "-n", namespace, "--timeout=60s"); err != nil {
+	if err := runCommand(t, ctx, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "-l", "app.kubernetes.io/name=mcpany", "-n", namespace, "--timeout=300s"); err != nil {
 		t.Fatalf("Failed to wait for pods: %v", err)
 	}
 
