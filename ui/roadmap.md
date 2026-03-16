@@ -353,6 +353,11 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-09 Evolution)
+- [ ] **[P0] Structured Task Event Timeline**: Visual mission timeline showing standardized `task_completion` events from heterogeneous swarms. (Added: 2026-05-09)
+- [ ] **[P0] Zero-Hallucination Policy Debugger**: Tool for verifying transport-layer deny-rules and auditing DPG/HDS enforcement status. (Added: 2026-05-09)
+- [ ] **[P1] Reasoning Effort Visualizer**: Real-time graph correlating token usage with agent-reported reasoning effort signals. (Added: 2026-05-09)
+
 #### Upcoming (2026-05-08 Evolution)
 - [ ] **[P0] Context Sealing Auditor**: Visualization of cryptographically sealed context shards and exfiltration attempt alerts. (Added: 2026-05-08)
 - [ ] **[P0] Permission Enforcement Monitor**: Real-time tracker for DPG-blocked tool calls and project-local policy violations. (Added: 2026-05-08)
