@@ -119,17 +119,19 @@ func isGitHubURL(rawURL string) bool {
 
 // ToRawContentURL constructs the raw content URL for the configured GitHub path.
 //
+// Summary: ToRawContentURL constructs the raw content URL for the configured GitHub path.
+//
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - string: The resulting string.
+//   - string: The string result.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (g *GitHub) ToRawContentURL() string {
 	return fmt.Sprintf("%s/%s/%s/%s/%s", g.rawContentURL, g.Owner, g.Repo, g.Ref, g.Path)
 }

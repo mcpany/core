@@ -14,24 +14,27 @@ import (
 )
 
 // A2ABridgeMiddleware represents the Agent-to-Agent (A2A) Bridge middleware.
-// It intercepts tool calls prefixed with "call_agent_" and bridges them to the A2A protocol.
+//
+// Summary: A2ABridgeMiddleware represents the Agent-to-Agent (A2A) Bridge middleware.
 type A2ABridgeMiddleware struct {
 	contextManager *RecursiveContextManager
 }
 
 // NewA2ABridgeMiddleware creates a new A2ABridgeMiddleware.
 //
+// Summary: NewA2ABridgeMiddleware creates a new A2ABridgeMiddleware.
+//
 // Parameters:
-//   - contextManager (*RecursiveContextManager): The manager for A2A session tokens.
+//   - contextManager (*RecursiveContextManager): The contextManager parameter.
 //
 // Returns:
-//   - *A2ABridgeMiddleware: The newly created middleware.
+//   - *A2ABridgeMiddleware: The *A2ABridgeMiddleware result.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - Allocates memory for the middleware struct.
+//   - May modify internal state or perform external calls.
 func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeMiddleware {
 	return &A2ABridgeMiddleware{
 		contextManager: contextManager,
@@ -40,21 +43,23 @@ func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeM
 
 // Execute processes the MCP request and intercepts A2A agent calls.
 //
+// Summary: Execute processes the MCP request and intercepts A2A agent calls.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - method (string): The MCP method being called.
-//   - req (mcp.Request): The incoming MCP request.
-//   - next (mcp.MethodHandler): The next handler in the middleware chain.
+//   - ctx (context.Context): The ctx parameter.
+//   - method (string): The method parameter.
+//   - req (mcp.Request): The req parameter.
+//   - next (mcp.MethodHandler): The next parameter.
 //
 // Returns:
-//   - mcp.Result: The result of the request, either intercepted or from the next handler.
-//   - error: Any error that occurred during processing.
+//   - mcp.Result: The mcp.Result result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns errors from the next handler if the request is not intercepted.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - May create a new session in the RecursiveContextManager if intercepted.
+//   - May modify internal state or perform external calls.
 func (m *A2ABridgeMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	if method != "tools/call" {
 		return next(ctx, method, req)

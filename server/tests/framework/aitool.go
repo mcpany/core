@@ -11,16 +11,15 @@ import (
 )
 
 // Re-exporting these from the integration package so that framework users
-// don't need to import both.
-var (
-	FindFreePort          = integration.FindFreePort
-	NewManagedProcess     = integration.NewManagedProcess
-	WaitForTCPPort        = integration.WaitForTCPPort
+//
+// Summary: Re-exporting these from the integration package so that framework users
 	GetProjectRoot        = integration.GetProjectRoot
 	ServiceStartupTimeout = 15 * time.Second
 )
 
 // AITool represents an AI tool used in testing.
+//
+// Summary: AITool represents an AI tool used in testing.
 type AITool interface {
 	// Install performs any necessary installation steps for the AI tool.
 	Install()

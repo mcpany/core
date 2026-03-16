@@ -14,8 +14,8 @@ import (
 )
 
 // PageFetcher fetches the visible text content of a URL.
-// It is an interface so tests can inject a lightweight implementation without
-// requiring a real browser installation.
+//
+// Summary: PageFetcher fetches the visible text content of a URL.
 type PageFetcher interface {
 	// FetchText retrieves the text content of a URL.
 	//

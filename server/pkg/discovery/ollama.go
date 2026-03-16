@@ -18,6 +18,8 @@ import (
 )
 
 // Provider defines the interface for auto-discovering local services.
+//
+// Summary: Provider defines the interface for auto-discovering local services.
 type Provider interface {
 	// Name returns the name of the discovery provider.
 	Name() string
@@ -26,7 +28,8 @@ type Provider interface {
 }
 
 // OllamaProvider discovers local Ollama instances.
-// OllamaProvider is a provider that discovers local Ollama instances.
+//
+// Summary: OllamaProvider discovers local Ollama instances.
 type OllamaProvider struct {
 	Endpoint   string // e.g., "http://localhost:11434"
 	client     *http.Client
@@ -35,35 +38,39 @@ type OllamaProvider struct {
 
 // Name returns the name of the provider.
 //
+// Summary: Name returns the name of the provider.
+//
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - string: The resulting string.
+//   - string: The string result.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (p *OllamaProvider) Name() string {
 	return "ollama"
 }
 
 // Discover attempts to find local Ollama instances and return them as tools.
 //
+// Summary: Discover attempts to find local Ollama instances and return them as tools.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - []*configv1.UpstreamServiceConfig: The resulting []*configv1.UpstreamServiceConfig.
+//   - []*configv1.UpstreamServiceConfig: The []*configv1.UpstreamServiceConfig result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (p *OllamaProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	// ⚡ BOLT: Reuse http.Client to avoid socket exhaustion.
 	// Randomized Selection from Top 5 High-Impact Targets

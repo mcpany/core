@@ -16,9 +16,8 @@ import (
 )
 
 // UpstreamWorker is a background worker that handles tool execution requests. It
-// listens for ToolExecutionRequest messages on the event bus, uses the
-// tool manager to execute the requested tool, and then publishes the outcome as
-// a ToolExecutionResult message.
+//
+// Summary: UpstreamWorker is a background worker that handles tool execution requests. It
 type UpstreamWorker struct {
 	bus         *bus.Provider
 	toolManager tool.ManagerInterface
@@ -27,12 +26,20 @@ type UpstreamWorker struct {
 
 // NewUpstreamWorker creates a new UpstreamWorker.
 //
+// Summary: NewUpstreamWorker creates a new UpstreamWorker.
+//
 // Parameters:
-//   - bus: The event bus used for receiving requests and publishing results.
-//   - toolManager: The tool manager that will handle the actual tool execution.
+//   - bus (*bus.Provider): The bus parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //
 // Returns:
-//   - *UpstreamWorker: A new upstream worker.
+//   - *UpstreamWorker: The *UpstreamWorker result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
 	return &UpstreamWorker{
 		bus:         bus,
@@ -41,11 +48,20 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 }
 
 // Start launches the worker in a new goroutine. It subscribes to tool execution
-// requests on the event bus and will continue to process them until the
-// provided context is canceled.
+//
+// Summary: Start launches the worker in a new goroutine. It subscribes to tool execution
 //
 // Parameters:
-//   - ctx: The context that controls the lifecycle of the worker.
+//   - ctx (context.Context): The ctx parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (w *UpstreamWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "UpstreamWorker")
@@ -99,17 +115,19 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 
 // Stop waits for the worker to stop.
 //
+// Summary: Stop waits for the worker to stop.
+//
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (w *UpstreamWorker) Stop() {
 	w.wg.Wait()
 }

@@ -16,13 +16,19 @@ var redisClientCreator = redis.NewClient
 
 // SetRedisClientCreatorForTests allows injecting a mock Redis client creator for testing purposes.
 //
-// Summary: Replaces the default Redis client creator with a mock for unit testing.
+// Summary: SetRedisClientCreatorForTests allows injecting a mock Redis client creator for testing purposes.
 //
 // Parameters:
-//   - creator: func(*redis.Options) *redis.Client. The factory function to create Redis clients.
+//   - creator (func(opts *redis.Options) *redis.Client): The creator parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Modifies the global redisClientCreator variable.
+//   - May modify internal state or perform external calls.
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
 	redisClientCreator = creator
 }
@@ -147,8 +153,8 @@ func NewRedisLimiterWithClient(client *redis.Client, serviceID, limitScopeKey, p
 }
 
 // RedisRateLimitScript is the Lua script executed atomically in Redis to perform token bucket updates.
-// It handles token refill based on time elapsed, checks against burst capacity, and manages
-// the expiration of unused keys to prevent memory leaks in Redis.
+//
+// Summary: RedisRateLimitScript is the Lua script executed atomically in Redis to perform token bucket updates.
 const RedisRateLimitScript = `
     -- ⚡ BOLT: Use server time to prevent clock skew issues in distributed systems.
     -- Randomized Selection from Top 5 High-Impact Targets
@@ -252,14 +258,20 @@ func (l *RedisLimiter) AllowN(ctx context.Context, n int) (bool, error) {
 
 // Update dynamically updates the rate limit configuration for the running limiter.
 //
-// Summary: Updates the rate limit settings (RPS and burst).
+// Summary: Update dynamically updates the rate limit configuration for the running limiter.
 //
 // Parameters:
-//   - rps: float64. The new requests per second limit.
-//   - burst: int. The new burst capacity.
+//   - rps (float64): The rps parameter.
+//   - burst (int): The burst parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Modifies the internal state of the limiter.
+//   - May modify internal state or perform external calls.
 func (l *RedisLimiter) Update(rps float64, burst int) {
 	l.rps = rps
 	l.burst = burst

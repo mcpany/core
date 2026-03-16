@@ -54,10 +54,19 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 
 // Start starts the worker and its background tasks.
 //
-// Summary: Starts the worker processing loop.
+// Summary: Start starts the worker and its background tasks.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the worker.
+//   - ctx (context.Context): The ctx parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (w *Worker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)

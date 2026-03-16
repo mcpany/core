@@ -27,7 +27,8 @@ import (
 )
 
 // ParsedMcpAnnotations holds the structured data extracted from MCP
-// (Model Context Protocol) annotations within a set of protobuf files.
+//
+// Summary: ParsedMcpAnnotations holds the structured data extracted from MCP
 type ParsedMcpAnnotations struct {
 	Tools     []McpTool
 	Prompts   []McpPrompt
@@ -35,7 +36,8 @@ type ParsedMcpAnnotations struct {
 }
 
 // McpTool represents the information extracted from a gRPC method that has been
-// annotated as an MCP tool.
+//
+// Summary: McpTool represents the information extracted from a gRPC method that has been
 type McpTool struct {
 	Name            string
 	Description     string
@@ -53,7 +55,8 @@ type McpTool struct {
 }
 
 // McpField represents a field within a protobuf message, including its name,
-// description, type, and whether it is repeated.
+//
+// Summary: McpField represents a field within a protobuf message, including its name,
 type McpField struct {
 	Name        string
 	Description string
@@ -63,64 +66,98 @@ type McpField struct {
 
 // GetName returns the name of the McpField.
 //
+// Summary: GetName returns the name of the McpField.
+//
+// Parameters:
+//   - None.
+//
 // Returns:
-//   - string: The result.
+//   - string: The string result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *McpField) GetName() string {
 	return f.Name
 }
 
 // GetDescription returns the description of the McpField.
 //
+// Summary: GetDescription returns the description of the McpField.
+//
+// Parameters:
+//   - None.
+//
 // Returns:
-//   - string: The result.
+//   - string: The string result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *McpField) GetDescription() string {
 	return f.Description
 }
 
 // GetType returns the type of the McpField.
 //
+// Summary: GetType returns the type of the McpField.
+//
+// Parameters:
+//   - None.
+//
 // Returns:
-//   - string: The result.
+//   - string: The string result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *McpField) GetType() string {
 	return f.Type
 }
 
 // GetIsRepeated returns true if the McpField is a repeated field.
 //
+// Summary: GetIsRepeated returns true if the McpField is a repeated field.
+//
+// Parameters:
+//   - None.
+//
 // Returns:
-//   - bool: The result.
+//   - bool: The bool result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *McpField) GetIsRepeated() bool {
 	return f.IsRepeated
 }
 
 // ParseProtoFromDefs parses a set of protobuf definitions from a slice of ProtoDefinition and a ProtoCollection. It writes the proto files to a temporary directory, invokes protoc to generate a FileDescriptorSet, and then returns the parsed FileDescriptorSet.
 //
+// Summary: ParseProtoFromDefs parses a set of protobuf definitions from a slice of ProtoDefinition and a ProtoCollection. It writes the proto files to a temporary directory, invokes protoc to generate a FileDescriptorSet, and then returns the parsed FileDescriptorSet.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //   - protoDefinitions ([]*configv1.ProtoDefinition): The protoDefinitions parameter.
 //   - protoCollections ([]*configv1.ProtoCollection): The protoCollections parameter.
 //
 // Returns:
-//   - *descriptorpb.FileDescriptorSet: The resulting *descriptorpb.FileDescriptorSet.
+//   - *descriptorpb.FileDescriptorSet: The *descriptorpb.FileDescriptorSet result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func ParseProtoFromDefs(
 	ctx context.Context,
 	protoDefinitions []*configv1.ProtoDefinition,
@@ -332,7 +369,8 @@ func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, erro
 }
 
 // McpPrompt represents the information extracted from a gRPC method that has
-// been annotated as an MCP prompt.
+//
+// Summary: McpPrompt represents the information extracted from a gRPC method that has
 type McpPrompt struct {
 	Name           string
 	Description    string
@@ -345,7 +383,8 @@ type McpPrompt struct {
 }
 
 // McpResource represents a protobuf message that has been annotated as an MCP
-// resource.
+//
+// Summary: McpResource represents a protobuf message that has been annotated as an MCP
 type McpResource struct {
 	Name        string
 	Description string
@@ -353,22 +392,22 @@ type McpResource struct {
 }
 
 // ParseProtoByReflection connects to a gRPC service that has server reflection
-// enabled, discovers its entire set of protobuf definitions, including all
-// dependencies, and returns them as a complete FileDescriptorSet.
+//
+// Summary: ParseProtoByReflection connects to a gRPC service that has server reflection
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - target (string): The parameter.
+//   - ctx (context.Context): The ctx parameter.
+//   - target (string): The target parameter.
 //
 // Returns:
-//   - *descriptorpb.FileDescriptorSet: The result.
+//   - *descriptorpb.FileDescriptorSet: The *descriptorpb.FileDescriptorSet result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func ParseProtoByReflection(ctx context.Context, target string) (*descriptorpb.FileDescriptorSet, error) {
 	// Create a context with a timeout for the entire reflection process
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
@@ -552,21 +591,21 @@ func getFileDescriptorByFilename(stream reflectpb.ServerReflection_ServerReflect
 }
 
 // ExtractMcpDefinitions iterates through a FileDescriptorSet, parsing any MCP
-// (Model Context Protocol) options found in service methods and messages. It
-// extracts definitions for tools, prompts, and resources.
+//
+// Summary: ExtractMcpDefinitions iterates through a FileDescriptorSet, parsing any MCP
 //
 // Parameters:
-//   - fds (*descriptorpb.FileDescriptorSet): The parameter.
+//   - fds (*descriptorpb.FileDescriptorSet): The fds parameter.
 //
 // Returns:
-//   - *ParsedMcpAnnotations: The result.
+//   - *ParsedMcpAnnotations: The *ParsedMcpAnnotations result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func ExtractMcpDefinitions(fds *descriptorpb.FileDescriptorSet) (*ParsedMcpAnnotations, error) {
 	if fds == nil {
 		return nil, fmt.Errorf("FileDescriptorSet is nil")

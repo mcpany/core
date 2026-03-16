@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	// IsDockerSocketAccessibleFunc is a variable to allow mocking in tests.
-	// It checks if the Docker socket is accessible.
+// IsDockerSocketAccessibleFunc is a variable to allow mocking in tests.
+//
+// Summary: IsDockerSocketAccessibleFunc is a variable to allow mocking in tests.
 	IsDockerSocketAccessibleFunc = isDockerSocketAccessibleDefault
 
 	dockerClient     client.APIClient

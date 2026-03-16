@@ -43,10 +43,20 @@ import (
 
 // CreateTempConfigFile creates a temporary configuration file for the configured upstream service.
 //
-// t is the t.
-// config holds the configuration settings.
+// Summary: CreateTempConfigFile creates a temporary configuration file for the configured upstream service.
 //
-// Returns the result.
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - config (*configv1.UpstreamServiceConfig): The config parameter.
+//
+// Returns:
+//   - string: The string result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) string {
 	t.Helper()
 
@@ -71,9 +81,19 @@ func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) 
 
 // CreateTempNatsConfigFile creates a temporary configuration file for NATS.
 //
-// t is the t.
+// Summary: CreateTempNatsConfigFile creates a temporary configuration file for NATS.
 //
-// Returns the result.
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//
+// Returns:
+//   - string: The string result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func CreateTempNatsConfigFile(t *testing.T) string {
 	t.Helper()
 
@@ -110,10 +130,20 @@ type threadSafeBuffer struct {
 
 // Write appends the contents of p to the buffer, growing the buffer as needed.
 //
-// p is the p.
+// Summary: Write appends the contents of p to the buffer, growing the buffer as needed.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - p ([]byte): The p parameter.
+//
+// Returns:
+//   - int: The int result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (b *threadSafeBuffer) Write(p []byte) (int, error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -121,7 +151,20 @@ func (b *threadSafeBuffer) Write(p []byte) (int, error) {
 }
 
 // String returns the contents of the unread portion of the buffer
-// as a string. If the Buffer is a nil pointer, it returns "<nil>".
+//
+// Summary: String returns the contents of the unread portion of the buffer
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The string result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (b *threadSafeBuffer) String() string {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
@@ -130,9 +173,19 @@ func (b *threadSafeBuffer) String() string {
 
 // ProjectRoot returns the absolute path to the project root.
 //
-// t is the t.
+// Summary: ProjectRoot returns the absolute path to the project root.
 //
-// Returns the result.
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//
+// Returns:
+//   - string: The string result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func ProjectRoot(t *testing.T) string {
 	t.Helper()
 	root, err := GetProjectRoot()
@@ -141,22 +194,36 @@ func ProjectRoot(t *testing.T) string {
 }
 
 const (
-	// McpAnyServerStartupTimeout is the timeout for the server to start.
+// McpAnyServerStartupTimeout is the timeout for the server to start.
+//
+// Summary: McpAnyServerStartupTimeout is the timeout for the server to start.
 	McpAnyServerStartupTimeout = 300 * time.Second
-	// ServiceStartupTimeout is the timeout for services to start up.
+// ServiceStartupTimeout is the timeout for services to start up.
+//
+// Summary: ServiceStartupTimeout is the timeout for services to start up.
 	ServiceStartupTimeout = 120 * time.Second
-	// TestWaitTimeShort is a short wait time for tests.
+// TestWaitTimeShort is a short wait time for tests.
+//
+// Summary: TestWaitTimeShort is a short wait time for tests.
 	TestWaitTimeShort = 120 * time.Second
-	// TestWaitTimeMedium is the default timeout for medium duration tests.
+// TestWaitTimeMedium is the default timeout for medium duration tests.
+//
+// Summary: TestWaitTimeMedium is the default timeout for medium duration tests.
 	TestWaitTimeMedium = 480 * time.Second
-	// TestWaitTimeLong is the default timeout for long duration tests.
+// TestWaitTimeLong is the default timeout for long duration tests.
+//
+// Summary: TestWaitTimeLong is the default timeout for long duration tests.
 	TestWaitTimeLong = 10 * time.Minute
-	// RetryInterval is the interval between retries.
+// RetryInterval is the interval between retries.
+//
+// Summary: RetryInterval is the interval between retries.
 	RetryInterval           = 250 * time.Millisecond
 	localHeaderMcpSessionID = "Mcp-Session-Id"
 	dockerCmd               = "docker"
 	sudoCmd                 = "sudo"
-	// LoopbackIP is the default loopback IP for testing.
+// LoopbackIP is the default loopback IP for testing.
+//
+// Summary: LoopbackIP is the default loopback IP for testing.
 	LoopbackIP      = "127.0.0.1"
 	loopbackIP      = LoopbackIP
 	dynamicBindAddr = loopbackIP + ":0"
@@ -295,8 +362,20 @@ func prepareRuntimeDir(t *testing.T, root string) string {
 
 // GetProjectRoot returns the absolute path to the project root (the server/ directory).
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Summary: GetProjectRoot returns the absolute path to the project root (the server/ directory).
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The string result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func GetProjectRoot() (string, error) {
 	var err error
 	findRootOnce.Do(func() {
@@ -367,8 +446,20 @@ func GetProjectRoot() (string, error) {
 }
 
 // ServerBinary returns the path to the mcpany server binary.
-// Under Bazel it resolves from runfiles; otherwise it falls back to ../build/bin/server
-// relative to the project root.
+//
+// Summary: ServerBinary returns the path to the mcpany server binary.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//
+// Returns:
+//   - string: The string result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func ServerBinary(t *testing.T) string {
 	t.Helper()
 	if bin := runfilesBinaryPath("server", "cmd", "server", "server_", "server"); bin != "" {
@@ -379,8 +470,21 @@ func ServerBinary(t *testing.T) string {
 }
 
 // MockBinary returns the path to a mock test binary by name.
-// Under Bazel it resolves from runfiles; otherwise it falls back to ../build/test/bin/<name>
-// relative to the project root.
+//
+// Summary: MockBinary returns the path to a mock test binary by name.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - name (string): The name parameter.
+//
+// Returns:
+//   - string: The string result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func MockBinary(t *testing.T, name string) string {
 	t.Helper()
 	if bin := runfilesBinaryPath("server", "tests", "integration", "cmd", "mocks", name, name+"_", name); bin != "" {
@@ -395,9 +499,19 @@ var portMutex sync.Mutex
 
 // FindFreePort finds a free TCP port on localhost.
 //
-// t is the t.
+// Summary: FindFreePort finds a free TCP port on localhost.
 //
-// Returns the result.
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//
+// Returns:
+//   - int: The int result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func FindFreePort(t *testing.T) int {
 	portMutex.Lock()
 	defer portMutex.Unlock()
@@ -416,8 +530,8 @@ func FindFreePort(t *testing.T) int {
 }
 
 // ManagedProcess represents an external process managed by the test framework.
-// --- Process Management for External Services ---
-// ManagedProcess manages an external process for testing.
+//
+// Summary: ManagedProcess represents an external process managed by the test framework.
 type ManagedProcess struct {
 	cmd                 *exec.Cmd
 	t                   *testing.T
@@ -433,13 +547,23 @@ type ManagedProcess struct {
 
 // NewManagedProcess creates a new ManagedProcess instance.
 //
-// t is the t.
-// label is the label.
-// command is the command.
-// args is the args.
-// env is the env.
+// Summary: NewManagedProcess creates a new ManagedProcess instance.
 //
-// Returns the result.
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - label (string): The label parameter.
+//   - command (string): The command parameter.
+//   - args ([]string): The args parameter.
+//   - env ([]string): The env parameter.
+//
+// Returns:
+//   - *ManagedProcess: The *ManagedProcess result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func NewManagedProcess(t *testing.T, label, command string, args []string, env []string) *ManagedProcess {
 	t.Helper()
 	cmd := exec.CommandContext(context.Background(), command, args...)
@@ -468,14 +592,38 @@ func NewManagedProcess(t *testing.T, label, command string, args []string, env [
 
 // Cmd returns the underlying exec.Cmd.
 //
-// Returns the result.
+// Summary: Cmd returns the underlying exec.Cmd.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *exec.Cmd: The *exec.Cmd result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (mp *ManagedProcess) Cmd() *exec.Cmd {
 	return mp.cmd
 }
 
 // Start starts the process.
 //
-// Returns an error if the operation fails.
+// Summary: Start starts the process.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (mp *ManagedProcess) Start() error {
 	if mp.Dir != "" {
 		mp.cmd.Dir = mp.Dir
@@ -519,6 +667,20 @@ func (mp *ManagedProcess) Start() error {
 var syscallKill = syscall.Kill
 
 // Stop stops the process, attempting graceful shutdown then force kill.
+//
+// Summary: Stop stops the process, attempting graceful shutdown then force kill.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (mp *ManagedProcess) Stop() {
 	select {
 	case <-mp.waitDone:
@@ -597,19 +759,55 @@ func (mp *ManagedProcess) Stop() {
 
 // StdoutString returns the captured stdout as a string.
 //
-// Returns the result.
+// Summary: StdoutString returns the captured stdout as a string.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The string result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (mp *ManagedProcess) StdoutString() string { return mp.stdout.String() }
 
 // StderrString returns the captured stderr as a string.
 //
-// Returns the result.
+// Summary: StderrString returns the captured stderr as a string.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The string result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (mp *ManagedProcess) StderrString() string { return mp.stderr.String() }
 
 // WaitForText waits for specific text to appear in the process's stdout.
 //
-// t is the t.
-// text is the text.
-// timeout is the timeout.
+// Summary: WaitForText waits for specific text to appear in the process's stdout.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - text (string): The text parameter.
+//   - timeout (time.Duration): The timeout parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (mp *ManagedProcess) WaitForText(t *testing.T, text string, timeout time.Duration) {
 	t.Helper()
 	require.Eventually(t, func() bool {
@@ -619,9 +817,21 @@ func (mp *ManagedProcess) WaitForText(t *testing.T, text string, timeout time.Du
 
 // WaitForTCPPort waits for a TCP port to become open and accepting connections.
 //
-// t is the t.
-// port is the port.
-// timeout is the timeout.
+// Summary: WaitForTCPPort waits for a TCP port to become open and accepting connections.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - port (int): The port parameter.
+//   - timeout (time.Duration): The timeout parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func WaitForTCPPort(t *testing.T, port int, timeout time.Duration) {
 	t.Helper()
 	require.Eventually(t, func() bool {
@@ -637,9 +847,21 @@ func WaitForTCPPort(t *testing.T, port int, timeout time.Duration) {
 
 // WaitForGRPCReady waits for a gRPC server to become ready by attempting to connect.
 //
-// t is the t.
-// grpcAddress is the grpcAddress.
-// timeout is the timeout.
+// Summary: WaitForGRPCReady waits for a gRPC server to become ready by attempting to connect.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - grpcAddress (string): The grpcAddress parameter.
+//   - timeout (time.Duration): The timeout parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func WaitForGRPCReady(t *testing.T, grpcAddress string, timeout time.Duration) {
 	t.Helper()
 	require.Eventually(t, func() bool {
@@ -671,9 +893,21 @@ func WaitForGRPCReady(t *testing.T, grpcAddress string, timeout time.Duration) {
 
 // WaitForWebsocketReady waits for a websocket server to become ready by attempting to connect.
 //
-// t is the t.
-// url is the url.
-// timeout is the timeout.
+// Summary: WaitForWebsocketReady waits for a websocket server to become ready by attempting to connect.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - url (string): The url parameter.
+//   - timeout (time.Duration): The timeout parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func WaitForWebsocketReady(t *testing.T, url string, timeout time.Duration) {
 	t.Helper()
 	require.Eventually(t, func() bool {
@@ -693,9 +927,21 @@ func WaitForWebsocketReady(t *testing.T, url string, timeout time.Duration) {
 
 // WaitForHTTPHealth waits for an HTTP endpoint to return a 200 OK status.
 //
-// t is the t.
-// url is the url.
-// timeout is the timeout.
+// Summary: WaitForHTTPHealth waits for an HTTP endpoint to return a 200 OK status.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - url (string): The url parameter.
+//   - timeout (time.Duration): The timeout parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 	t.Helper()
 	client := http.Client{
@@ -716,9 +962,20 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 }
 
 // EnsureServerImageLoaded ensures that the mcpany/server:latest Docker image is
-// available for tests. When running under Bazel, it loads the image from the
-// Bazel-built oci_load runfile (//server/cmd/server:server_tarball). Outside
-// Bazel it is a no-op — the caller is responsible for having the image pre-built.
+//
+// Summary: EnsureServerImageLoaded ensures that the mcpany/server:latest Docker image is
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func EnsureServerImageLoaded(t *testing.T) {
 	t.Helper()
 	runfilesDir := os.Getenv("RUNFILES_DIR")
@@ -753,7 +1010,19 @@ func EnsureServerImageLoaded(t *testing.T) {
 
 // IsDockerSocketAccessible checks if the Docker daemon is accessible.
 //
-// Returns true if successful.
+// Summary: IsDockerSocketAccessible checks if the Docker daemon is accessible.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: The bool result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func IsDockerSocketAccessible() bool {
 	dockerExe, dockerArgs := getDockerCommand()
 
@@ -775,13 +1044,23 @@ func IsDockerSocketAccessible() bool {
 
 // StartDockerContainer starts a docker container with the given image and args.
 //
-// t is the t.
-// imageName is the imageName.
-// containerName is the containerName.
-// runArgs is the runArgs.
-// command is the command.
+// Summary: StartDockerContainer starts a docker container with the given image and args.
 //
-// Returns the result.
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - imageName (string): The imageName parameter.
+//   - containerName (string): The containerName parameter.
+//   - runArgs ([]string): The runArgs parameter.
+//   - command (...string): The command parameter.
+//
+// Returns:
+//   - cleanupFunc (func()): The func() result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs []string, command ...string) (cleanupFunc func()) {
 	t.Helper()
 	dockerExe, dockerBaseArgs := getDockerCommand()
@@ -839,8 +1118,8 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 }
 
 // MCPANYTestServerInfo contains information about a running MCPANY test server.
-// --- MCPANY Server Helper (External Process) ---
-// MCPANYTestServerInfo contains information about a running MCP Any server instance for testing.
+//
+// Summary: MCPANYTestServerInfo contains information about a running MCPANY test server.
 type MCPANYTestServerInfo struct {
 	Process                  *ManagedProcess
 	JSONRPCEndpoint          string
@@ -858,6 +1137,21 @@ type MCPANYTestServerInfo struct {
 }
 
 // SeedDatabase seeds the database using the debug endpoint.
+//
+// Summary: SeedDatabase seeds the database using the debug endpoint.
+//
+// Parameters:
+//   - ctx (context.Context): The ctx parameter.
+//   - seedData ([]byte): The seedData parameter.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (s *MCPANYTestServerInfo) SeedDatabase(ctx context.Context, seedData []byte) error {
 	url := fmt.Sprintf("%s/api/v1/debug/seed?api_key=%s", s.JSONRPCEndpoint, s.APIKey)
 	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(seedData))
@@ -880,8 +1174,8 @@ func (s *MCPANYTestServerInfo) SeedDatabase(ctx context.Context, seedData []byte
 }
 
 // WebsocketEchoServerInfo contains information about a running Websocket echo server.
-// --- Websocket Echo Server Helper ---
-// WebsocketEchoServerInfo contains information about a running mock WebSocket echo server.
+//
+// Summary: WebsocketEchoServerInfo contains information about a running Websocket echo server.
 type WebsocketEchoServerInfo struct {
 	URL         string
 	CleanupFunc func()
@@ -889,9 +1183,19 @@ type WebsocketEchoServerInfo struct {
 
 // StartWebsocketEchoServer starts a mock WebSocket echo server.
 //
-// t is the t.
+// Summary: StartWebsocketEchoServer starts a mock WebSocket echo server.
 //
-// Returns the result.
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//
+// Returns:
+//   - *WebsocketEchoServerInfo: The *WebsocketEchoServerInfo result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func StartWebsocketEchoServer(t *testing.T) *WebsocketEchoServerInfo {
 	t.Helper()
 
@@ -952,11 +1256,21 @@ func StartWebsocketEchoServer(t *testing.T) *WebsocketEchoServerInfo {
 
 // StartMCPANYServerWithConfig starts the MCP Any server with a provided config content.
 //
-// t is the t.
-// testName is the testName.
-// configContent is the configContent.
+// Summary: StartMCPANYServerWithConfig starts the MCP Any server with a provided config content.
 //
-// Returns the result.
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - testName (string): The testName parameter.
+//   - configContent (string): The configContent parameter.
+//
+// Returns:
+//   - *MCPANYTestServerInfo: The *MCPANYTestServerInfo result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func StartMCPANYServerWithConfig(t *testing.T, testName, configContent string) *MCPANYTestServerInfo {
 	t.Helper()
 	tmpFile, err := os.CreateTemp(t.TempDir(), "mcpany-config-*.yaml")
@@ -970,33 +1284,63 @@ func StartMCPANYServerWithConfig(t *testing.T, testName, configContent string) *
 
 // StartMCPANYServer starts the MCP Any server with default settings.
 //
-// t is the t.
-// testName is the testName.
-// extraArgs is the extraArgs.
+// Summary: StartMCPANYServer starts the MCP Any server with default settings.
 //
-// Returns the result.
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - testName (string): The testName parameter.
+//   - extraArgs (...string): The extraArgs parameter.
+//
+// Returns:
+//   - *MCPANYTestServerInfo: The *MCPANYTestServerInfo result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func StartMCPANYServer(t *testing.T, testName string, extraArgs ...string) *MCPANYTestServerInfo {
 	return StartMCPANYServerWithClock(t, testName, true, extraArgs...)
 }
 
 // StartMCPANYServerWithNoHealthCheck starts the MCP Any server but skips the health check.
 //
-// t is the t.
-// testName is the testName.
-// extraArgs is the extraArgs.
+// Summary: StartMCPANYServerWithNoHealthCheck starts the MCP Any server but skips the health check.
 //
-// Returns the result.
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - testName (string): The testName parameter.
+//   - extraArgs (...string): The extraArgs parameter.
+//
+// Returns:
+//   - *MCPANYTestServerInfo: The *MCPANYTestServerInfo result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func StartMCPANYServerWithNoHealthCheck(t *testing.T, testName string, extraArgs ...string) *MCPANYTestServerInfo {
 	return StartMCPANYServerWithClock(t, testName, false, extraArgs...)
 }
 
 // StartInProcessMCPANYServer starts an in-process MCP Any server for testing.
 //
-// t is the t.
-// _ is an unused parameter.
-// apiKey is the apiKey.
+// Summary: StartInProcessMCPANYServer starts an in-process MCP Any server for testing.
 //
-// Returns the result.
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - _ (string): The _ parameter.
+//   - apiKey (...string): The apiKey parameter.
+//
+// Returns:
+//   - *MCPANYTestServerInfo: The *MCPANYTestServerInfo result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPANYTestServerInfo {
 	t.Helper()
 
@@ -1127,6 +1471,21 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 }
 
 // StartNatsServer starts an embedded NATS server for testing.
+//
+// Summary: StartNatsServer starts an embedded NATS server for testing.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//
+// Returns:
+//   - string: The string result.
+//   - func(): The func() result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func StartNatsServer(t *testing.T) (string, func()) {
 	t.Helper()
 
@@ -1156,7 +1515,21 @@ func StartNatsServer(t *testing.T) (string, func()) {
 }
 
 // StartRedisContainer starts a Redis container for testing.
-// StartRedisContainer starts a Redis container for testing.
+//
+// Summary: StartRedisContainer starts a Redis container for testing.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//
+// Returns:
+//   - redisAddr (string): The string result.
+//   - cleanupFunc (func()): The func() result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
 	if !IsDockerSocketAccessible() {
@@ -1235,12 +1608,22 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 
 // StartMCPANYServerWithClock starts the MCP Any server, optionally waiting for health.
 //
-// t is the t.
-// testName is the testName.
-// healthCheck is the healthCheck.
-// extraArgs is the extraArgs.
+// Summary: StartMCPANYServerWithClock starts the MCP Any server, optionally waiting for health.
 //
-// Returns the result.
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - testName (string): The testName parameter.
+//   - healthCheck (bool): The healthCheck parameter.
+//   - extraArgs (...string): The extraArgs parameter.
+//
+// Returns:
+//   - *MCPANYTestServerInfo: The *MCPANYTestServerInfo result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool, extraArgs ...string) *MCPANYTestServerInfo {
 	t.Helper()
 
@@ -1452,9 +1835,19 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 
 // Initialize performs the MCP initialization handshake.
 //
-// ctx is the context for the request.
+// Summary: Initialize performs the MCP initialization handshake.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The ctx parameter.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 	// 1. Send initialize request
 	initReq := map[string]interface{}{
@@ -1557,10 +1950,20 @@ func parseMCPResponse(_ *testing.T, resp *http.Response) ([]byte, error) {
 
 // ListTools calls tools/list via JSON-RPC.
 //
-// ctx is the context for the request.
+// Summary: ListTools calls tools/list via JSON-RPC.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The ctx parameter.
+//
+// Returns:
+//   - *mcp.ListToolsResult: The *mcp.ListToolsResult result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsResult, error) {
 	reqBody, err := json.Marshal(map[string]interface{}{
 		"jsonrpc": "2.0",
@@ -1615,11 +2018,21 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 
 // CallTool calls tools/call via JSON-RPC.
 //
-// ctx is the context for the request.
-// params is the params.
+// Summary: CallTool calls tools/call via JSON-RPC.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The ctx parameter.
+//   - params (*mcp.CallToolParams): The params parameter.
+//
+// Returns:
+//   - *mcp.CallToolResult: The *mcp.CallToolResult result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 	reqBody, err := json.Marshal(map[string]interface{}{
 		"jsonrpc": "2.0",
@@ -1674,9 +2087,21 @@ func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToo
 
 // RegisterServiceViaAPI registers a service using the gRPC API.
 //
-// t is the t.
-// regClient is the regClient.
-// req is the request object.
+// Summary: RegisterServiceViaAPI registers a service using the gRPC API.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - regClient (apiv1.RegistrationServiceClient): The regClient parameter.
+//   - req (*apiv1.RegisterServiceRequest): The req parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func RegisterServiceViaAPI(t *testing.T, regClient apiv1.RegistrationServiceClient, req *apiv1.RegisterServiceRequest) {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
@@ -1689,14 +2114,26 @@ func RegisterServiceViaAPI(t *testing.T, regClient apiv1.RegistrationServiceClie
 
 // RegisterHTTPService registers a simple HTTP service.
 //
-// t is the t.
-// regClient is the regClient.
-// serviceID is the serviceID.
-// baseURL is the baseURL.
-// operationID is the operationID.
-// endpointPath is the endpointPath.
-// httpMethod is the httpMethod.
-// authConfig is the authConfig.
+// Summary: RegisterHTTPService registers a simple HTTP service.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - regClient (apiv1.RegistrationServiceClient): The regClient parameter.
+//   - serviceID (string): The serviceID parameter.
+//   - baseURL (string): The baseURL parameter.
+//   - operationID (string): The operationID parameter.
+//   - endpointPath (string): The endpointPath parameter.
+//   - httpMethod (string): The httpMethod parameter.
+//   - authConfig (*configv1.Authentication): The authConfig parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func RegisterHTTPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID, endpointPath, httpMethod string, authConfig *configv1.Authentication) {
 	t.Helper()
 	toolDef := configv1.ToolDefinition_builder{
@@ -1707,15 +2144,27 @@ func RegisterHTTPService(t *testing.T, regClient apiv1.RegistrationServiceClient
 
 // RegisterHTTPServiceWithParams registers an HTTP service with parameters.
 //
-// t is the t.
-// regClient is the regClient.
-// serviceID is the serviceID.
-// baseURL is the baseURL.
-// toolDef is the toolDef.
-// endpointPath is the endpointPath.
-// httpMethod is the httpMethod.
-// params is the params.
-// authConfig is the authConfig.
+// Summary: RegisterHTTPServiceWithParams registers an HTTP service with parameters.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - regClient (apiv1.RegistrationServiceClient): The regClient parameter.
+//   - serviceID (string): The serviceID parameter.
+//   - baseURL (string): The baseURL parameter.
+//   - toolDef (*configv1.ToolDefinition): The toolDef parameter.
+//   - endpointPath (string): The endpointPath parameter.
+//   - httpMethod (string): The httpMethod parameter.
+//   - params ([]*configv1.HttpParameterMapping): The params parameter.
+//   - authConfig (*configv1.Authentication): The authConfig parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL string, toolDef *configv1.ToolDefinition, endpointPath, httpMethod string, params []*configv1.HttpParameterMapping, authConfig *configv1.Authentication) {
 	t.Helper()
 	t.Logf("Registering HTTP service '%s' with endpoint path: %s", serviceID, endpointPath)
@@ -1758,12 +2207,24 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 
 // RegisterWebsocketService registers a WebSocket service.
 //
-// t is the t.
-// regClient is the regClient.
-// serviceID is the serviceID.
-// baseURL is the baseURL.
-// operationID is the operationID.
-// authConfig is the authConfig.
+// Summary: RegisterWebsocketService registers a WebSocket service.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - regClient (apiv1.RegistrationServiceClient): The regClient parameter.
+//   - serviceID (string): The serviceID parameter.
+//   - baseURL (string): The baseURL parameter.
+//   - operationID (string): The operationID parameter.
+//   - authConfig (*configv1.Authentication): The authConfig parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID string, authConfig *configv1.Authentication) {
 	t.Helper()
 	t.Logf("Registering Websocket service '%s' with endpoint: %s", serviceID, baseURL)
@@ -1801,12 +2262,24 @@ func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceC
 
 // RegisterWebrtcService registers a WebRTC service.
 //
-// t is the t.
-// regClient is the regClient.
-// serviceID is the serviceID.
-// baseURL is the baseURL.
-// operationID is the operationID.
-// authConfig is the authConfig.
+// Summary: RegisterWebrtcService registers a WebRTC service.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - regClient (apiv1.RegistrationServiceClient): The regClient parameter.
+//   - serviceID (string): The serviceID parameter.
+//   - baseURL (string): The baseURL parameter.
+//   - operationID (string): The operationID parameter.
+//   - authConfig (*configv1.Authentication): The authConfig parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID string, authConfig *configv1.Authentication) {
 	t.Helper()
 	t.Logf("Registering Webrtc service '%s' with endpoint: %s", serviceID, baseURL)
@@ -1844,12 +2317,24 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 
 // RegisterStreamableMCPService registers a streamable MCP service (SSE).
 //
-// t is the t.
-// regClient is the regClient.
-// serviceID is the serviceID.
-// targetURL is the targetURL.
-// toolAutoDiscovery is the toolAutoDiscovery.
-// authConfig is the authConfig.
+// Summary: RegisterStreamableMCPService registers a streamable MCP service (SSE).
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - regClient (apiv1.RegistrationServiceClient): The regClient parameter.
+//   - serviceID (string): The serviceID parameter.
+//   - targetURL (string): The targetURL parameter.
+//   - toolAutoDiscovery (bool): The toolAutoDiscovery parameter.
+//   - authConfig (*configv1.Authentication): The authConfig parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, targetURL string, toolAutoDiscovery bool, authConfig *configv1.Authentication) {
 	t.Helper()
 
@@ -1891,11 +2376,23 @@ func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServ
 
 // RegisterStdioMCPService registers an MCP service using stdio.
 //
-// t is the t.
-// regClient is the regClient.
-// serviceID is the serviceID.
-// command is the command.
-// toolAutoDiscovery is the toolAutoDiscovery.
+// Summary: RegisterStdioMCPService registers an MCP service using stdio.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - regClient (apiv1.RegistrationServiceClient): The regClient parameter.
+//   - serviceID (string): The serviceID parameter.
+//   - command (string): The command parameter.
+//   - toolAutoDiscovery (bool): The toolAutoDiscovery parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func RegisterStdioMCPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, command string, toolAutoDiscovery bool) {
 	t.Helper()
 	parts := strings.Fields(command)
@@ -1907,11 +2404,23 @@ func RegisterStdioMCPService(t *testing.T, regClient apiv1.RegistrationServiceCl
 
 // RegisterGRPCService registers a gRPC service.
 //
-// t is the t.
-// regClient is the regClient.
-// serviceID is the serviceID.
-// grpcTargetAddress is the grpcTargetAddress.
-// authConfig is the authConfig.
+// Summary: RegisterGRPCService registers a gRPC service.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - regClient (apiv1.RegistrationServiceClient): The regClient parameter.
+//   - serviceID (string): The serviceID parameter.
+//   - grpcTargetAddress (string): The grpcTargetAddress parameter.
+//   - authConfig (*configv1.Authentication): The authConfig parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func RegisterGRPCService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, grpcTargetAddress string, authConfig *configv1.Authentication) {
 	t.Helper()
 
@@ -1937,12 +2446,24 @@ func RegisterGRPCService(t *testing.T, regClient apiv1.RegistrationServiceClient
 
 // RegisterStdioService registers a raw stdio service.
 //
-// t is the t.
-// regClient is the regClient.
-// serviceID is the serviceID.
-// commandName is the commandName.
-// toolAutoDiscovery is the toolAutoDiscovery.
-// commandArgs is the commandArgs.
+// Summary: RegisterStdioService registers a raw stdio service.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - regClient (apiv1.RegistrationServiceClient): The regClient parameter.
+//   - serviceID (string): The serviceID parameter.
+//   - commandName (string): The commandName parameter.
+//   - toolAutoDiscovery (bool): The toolAutoDiscovery parameter.
+//   - commandArgs (...string): The commandArgs parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func RegisterStdioService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, commandName string, toolAutoDiscovery bool, commandArgs ...string) {
 	t.Helper()
 	RegisterStdioServiceWithSetup(t, regClient, serviceID, commandName, toolAutoDiscovery, "", "", nil, nil, commandArgs...)
@@ -1950,16 +2471,28 @@ func RegisterStdioService(t *testing.T, regClient apiv1.RegistrationServiceClien
 
 // RegisterStdioServiceWithSetup registers a stdio service with setup steps.
 //
-// t is the t.
-// regClient is the regClient.
-// serviceID is the serviceID.
-// commandName is the commandName.
-// toolAutoDiscovery is the toolAutoDiscovery.
-// workingDir is the workingDir.
-// containerImage is the containerImage.
-// setupCommands is the setupCommands.
-// env is the env.
-// commandArgs is the commandArgs.
+// Summary: RegisterStdioServiceWithSetup registers a stdio service with setup steps.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - regClient (apiv1.RegistrationServiceClient): The regClient parameter.
+//   - serviceID (string): The serviceID parameter.
+//   - commandName (string): The commandName parameter.
+//   - toolAutoDiscovery (bool): The toolAutoDiscovery parameter.
+//   - workingDir (string): The workingDir parameter.
+//   - containerImage (string): The containerImage parameter.
+//   - setupCommands ([]string): The setupCommands parameter.
+//   - env (map[string]string): The env parameter.
+//   - commandArgs (...string): The commandArgs parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, commandName string, toolAutoDiscovery bool, workingDir, containerImage string, setupCommands []string, env map[string]string, commandArgs ...string) {
 	t.Helper()
 
@@ -2005,12 +2538,24 @@ func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationSer
 
 // RegisterOpenAPIService registers an OpenAPI service.
 //
-// t is the t.
-// regClient is the regClient.
-// serviceID is the serviceID.
-// openAPISpecPath is the openAPISpecPath.
-// serverURLOverride is the serverURLOverride.
-// authConfig is the authConfig.
+// Summary: RegisterOpenAPIService registers an OpenAPI service.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - regClient (apiv1.RegistrationServiceClient): The regClient parameter.
+//   - serviceID (string): The serviceID parameter.
+//   - openAPISpecPath (string): The openAPISpecPath parameter.
+//   - serverURLOverride (string): The serverURLOverride parameter.
+//   - authConfig (*configv1.Authentication): The authConfig parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, openAPISpecPath, serverURLOverride string, authConfig *configv1.Authentication) {
 	t.Helper()
 	absSpecPath, err := filepath.Abs(openAPISpecPath)
@@ -2045,14 +2590,26 @@ func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceCli
 
 // RegisterHTTPServiceWithJSONRPC registers an HTTP service using the JSON-RPC endpoint.
 //
-// t is the t.
-// mcpanyEndpoint is the mcpanyEndpoint.
-// serviceID is the serviceID.
-// baseURL is the baseURL.
-// operationID is the operationID.
-// endpointPath is the endpointPath.
-// httpMethod is the httpMethod.
-// authConfig is the authConfig.
+// Summary: RegisterHTTPServiceWithJSONRPC registers an HTTP service using the JSON-RPC endpoint.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - mcpanyEndpoint (string): The mcpanyEndpoint parameter.
+//   - serviceID (string): The serviceID parameter.
+//   - baseURL (string): The baseURL parameter.
+//   - operationID (string): The operationID parameter.
+//   - endpointPath (string): The endpointPath parameter.
+//   - httpMethod (string): The httpMethod parameter.
+//   - authConfig (*configv1.Authentication): The authConfig parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, baseURL, operationID, endpointPath, httpMethod string, authConfig *configv1.Authentication) {
 	t.Helper()
 	t.Logf("Registering HTTP service '%s' via JSON-RPC with endpoint path: %s", serviceID, endpointPath)
@@ -2127,12 +2684,22 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 
 // WaitForPortFromLogs waits for a log line indicating the server is listening and extracts the address.
 //
-// t is the t.
-// mp is the mp.
-// serverName is the serverName.
+// Summary: WaitForPortFromLogs waits for a log line indicating the server is listening and extracts the address.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - mp (*ManagedProcess): The mp parameter.
+//   - serverName (string): The serverName parameter.
+//
+// Returns:
+//   - string: The string result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func WaitForPortFromLogs(t *testing.T, mp *ManagedProcess, serverName string) (string, error) {
 	t.Helper()
 	var port string
@@ -2165,6 +2732,8 @@ func WaitForPortFromLogs(t *testing.T, mp *ManagedProcess, serverName string) (s
 }
 
 // MCPJSONRPCError represents a JSON-RPC error.
+//
+// Summary: MCPJSONRPCError represents a JSON-RPC error.
 type MCPJSONRPCError struct {
 	// Code is the error code.
 	Code int `json:"code"`
@@ -2176,7 +2745,19 @@ type MCPJSONRPCError struct {
 
 // Error implements the error interface.
 //
-// Returns the result.
+// Summary: Error implements the error interface.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The string result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (e *MCPJSONRPCError) Error() string {
 	return fmt.Sprintf("JSON-RPC Error: Code=%d, Message=%s, Data=%v", e.Code, e.Message, e.Data)
 }

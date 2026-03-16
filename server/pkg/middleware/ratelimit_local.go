@@ -56,14 +56,20 @@ func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 
 // Update updates the limiter configuration.
 //
-// Summary: Dynamically updates the rate limit and burst size.
+// Summary: Update updates the limiter configuration.
 //
 // Parameters:
-//   - rps: float64. The new requests per second limit.
-//   - burst: int. The new burst size.
+//   - rps (float64): The rps parameter.
+//   - burst (int): The burst parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Modifies the underlying rate.Limiter state.
+//   - May modify internal state or perform external calls.
 func (l *LocalLimiter) Update(rps float64, burst int) {
 	limit := rate.Limit(rps)
 	if l.Limit() != limit {

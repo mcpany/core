@@ -34,18 +34,20 @@ type Watcher struct {
 
 // NewWatcher creates a new file watcher.
 //
+// Summary: NewWatcher creates a new file watcher.
+//
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - *Watcher: The resulting *Watcher.
+//   - *Watcher: The *Watcher result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -189,8 +191,19 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 
 // Close stops the file watcher and releases resources.
 //
+// Summary: Close stops the file watcher and releases resources.
+//
 // Parameters:
 //   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (w *Watcher) Close() {
 	close(w.done)
 	_ = w.watcher.Close()

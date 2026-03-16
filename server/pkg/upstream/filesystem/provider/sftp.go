@@ -17,6 +17,8 @@ import (
 )
 
 // SftpProvider provides access to files via SFTP.
+//
+// Summary: SftpProvider provides access to files via SFTP.
 type SftpProvider struct {
 	fs     afero.Fs
 	client *sftp.Client
@@ -25,18 +27,20 @@ type SftpProvider struct {
 
 // NewSftpProvider creates a new SftpProvider from the given configuration.
 //
+// Summary: NewSftpProvider creates a new SftpProvider from the given configuration.
+//
 // Parameters:
-//   - config (*configv1.SftpFs): The parameter.
+//   - config (*configv1.SftpFs): The config parameter.
 //
 // Returns:
-//   - *SftpProvider: The result.
+//   - *SftpProvider: The *SftpProvider result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func NewSftpProvider(config *configv1.SftpFs) (*SftpProvider, error) {
 	if config == nil {
 		return nil, fmt.Errorf("sftp config is nil")
@@ -91,29 +95,39 @@ func NewSftpProvider(config *configv1.SftpFs) (*SftpProvider, error) {
 
 // GetFs returns the underlying filesystem.
 //
+// Summary: GetFs returns the underlying filesystem.
+//
+// Parameters:
+//   - None.
+//
 // Returns:
-//   - afero.Fs: The result.
+//   - afero.Fs: The afero.Fs result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (p *SftpProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
 // ResolvePath resolves the virtual path to a real path.
 //
+// Summary: ResolvePath resolves the virtual path to a real path.
+//
 // Parameters:
-//   - virtualPath (string): The parameter.
+//   - virtualPath (string): The virtualPath parameter.
 //
 // Returns:
-//   - string: The result.
+//   - string: The string result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (p *SftpProvider) ResolvePath(virtualPath string) (string, error) {
 	// SFTP paths are remote paths. We assume they are absolute or relative to user home.
 	// But `clean` is probably good enough for now.
@@ -125,14 +139,19 @@ func (p *SftpProvider) ResolvePath(virtualPath string) (string, error) {
 
 // Close closes the SFTP client and connection.
 //
+// Summary: Close closes the SFTP client and connection.
+//
+// Parameters:
+//   - None.
+//
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (p *SftpProvider) Close() error {
 	if p.client != nil {
 		_ = p.client.Close()
@@ -151,18 +170,20 @@ type sftpFs struct {
 
 // Create creates a file in the filesystem, returning the file and an error, if any happens.
 //
+// Summary: Create creates a file in the filesystem, returning the file and an error, if any happens.
+//
 // Parameters:
-//   - name (string): The parameter.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - afero.File: The result.
+//   - afero.File: The afero.File result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (s *sftpFs) Create(name string) (afero.File, error) {
 	f, err := s.client.Create(name)
 	if err != nil {
@@ -173,54 +194,60 @@ func (s *sftpFs) Create(name string) (afero.File, error) {
 
 // Mkdir creates a directory in the filesystem, returning an error, if any happens.
 //
+// Summary: Mkdir creates a directory in the filesystem, returning an error, if any happens.
+//
 // Parameters:
-//   - name (string): The parameter.
-//   - _ (os.FileMode): The parameter.
+//   - name (string): The name parameter.
+//   - _ (os.FileMode): The _ parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (s *sftpFs) Mkdir(name string, _ os.FileMode) error {
 	return s.client.Mkdir(name)
 }
 
 // MkdirAll creates a directory path and all parents that does not exist for a given name.
 //
+// Summary: MkdirAll creates a directory path and all parents that does not exist for a given name.
+//
 // Parameters:
-//   - path (string): The parameter.
-//   - _ (os.FileMode): The parameter.
+//   - path (string): The path parameter.
+//   - _ (os.FileMode): The _ parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (s *sftpFs) MkdirAll(path string, _ os.FileMode) error {
 	return s.client.MkdirAll(path)
 }
 
 // Open opens a file, returning it or an error, if any happens.
 //
+// Summary: Open opens a file, returning it or an error, if any happens.
+//
 // Parameters:
-//   - name (string): The parameter.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - afero.File: The result.
+//   - afero.File: The afero.File result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (s *sftpFs) Open(name string) (afero.File, error) {
 	f, err := s.client.Open(name)
 	if err != nil {
@@ -231,20 +258,22 @@ func (s *sftpFs) Open(name string) (afero.File, error) {
 
 // OpenFile opens a file using the given flags and the given mode.
 //
+// Summary: OpenFile opens a file using the given flags and the given mode.
+//
 // Parameters:
-//   - name (string): The parameter.
-//   - flag (int): The parameter.
-//   - _ (os.FileMode): The parameter.
+//   - name (string): The name parameter.
+//   - flag (int): The flag parameter.
+//   - _ (os.FileMode): The _ parameter.
 //
 // Returns:
-//   - afero.File: The result.
+//   - afero.File: The afero.File result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (s *sftpFs) OpenFile(name string, flag int, _ os.FileMode) (afero.File, error) {
 	f, err := s.client.OpenFile(name, flag)
 	if err != nil {
@@ -255,34 +284,38 @@ func (s *sftpFs) OpenFile(name string, flag int, _ os.FileMode) (afero.File, err
 
 // Remove removes a file identified by name, returning an error, if any happens.
 //
+// Summary: Remove removes a file identified by name, returning an error, if any happens.
+//
 // Parameters:
-//   - name (string): The parameter.
+//   - name (string): The name parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (s *sftpFs) Remove(name string) error {
 	return s.client.Remove(name)
 }
 
 // RemoveAll removes a directory path and any children it contains.
 //
+// Summary: RemoveAll removes a directory path and any children it contains.
+//
 // Parameters:
-//   - path (string): The parameter.
+//   - path (string): The path parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (s *sftpFs) RemoveAll(path string) error {
 	// sftp.Client.RemoveAll actually does recursive removal
 	return s.client.RemoveAll(path)
@@ -290,103 +323,121 @@ func (s *sftpFs) RemoveAll(path string) error {
 
 // Rename renames a file.
 //
+// Summary: Rename renames a file.
+//
 // Parameters:
-//   -  (oldname): The parameter.
-//   - newname (string): The parameter.
+//   - oldname (string): The oldname parameter.
+//   - newname (string): The newname parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (s *sftpFs) Rename(oldname, newname string) error {
 	return s.client.Rename(oldname, newname)
 }
 
 // Stat returns a FileInfo describing the named file, or an error, if any happens.
 //
+// Summary: Stat returns a FileInfo describing the named file, or an error, if any happens.
+//
 // Parameters:
-//   - name (string): The parameter.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - os.FileInfo: The result.
+//   - os.FileInfo: The os.FileInfo result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (s *sftpFs) Stat(name string) (os.FileInfo, error) {
 	return s.client.Stat(name)
 }
 
 // Name returns the name of this file system.
 //
+// Summary: Name returns the name of this file system.
+//
+// Parameters:
+//   - None.
+//
 // Returns:
-//   - string: The result.
+//   - string: The string result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (s *sftpFs) Name() string {
 	return "sftp"
 }
 
 // Chmod changes the mode of the named file to mode.
 //
+// Summary: Chmod changes the mode of the named file to mode.
+//
 // Parameters:
-//   - name (string): The parameter.
-//   - mode (os.FileMode): The parameter.
+//   - name (string): The name parameter.
+//   - mode (os.FileMode): The mode parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (s *sftpFs) Chmod(name string, mode os.FileMode) error {
 	return s.client.Chmod(name, mode)
 }
 
 // Chown changes the uid and gid of the named file.
 //
+// Summary: Chown changes the uid and gid of the named file.
+//
 // Parameters:
-//   - name (string): The parameter.
-//   -  (uid): The parameter.
-//   - gid (int): The parameter.
+//   - name (string): The name parameter.
+//   - uid (int): The uid parameter.
+//   - gid (int): The gid parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (s *sftpFs) Chown(name string, uid, gid int) error {
 	return s.client.Chown(name, uid, gid)
 }
 
 // Chtimes changes the access and modification times of the named file.
 //
+// Summary: Chtimes changes the access and modification times of the named file.
+//
 // Parameters:
-//   - name (string): The parameter.
-//   - atime (time.Time): The parameter.
-//   - mtime (time.Time): The parameter.
+//   - name (string): The name parameter.
+//   - atime (time.Time): The atime parameter.
+//   - mtime (time.Time): The mtime parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (s *sftpFs) Chtimes(name string, atime time.Time, mtime time.Time) error {
 	return s.client.Chtimes(name, atime, mtime)
 }
@@ -398,155 +449,181 @@ type sftpFile struct {
 
 // Close closes the file.
 //
+// Summary: Close closes the file.
+//
+// Parameters:
+//   - None.
+//
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *sftpFile) Close() error {
 	return f.f.Close()
 }
 
 // Read reads up to len(b) bytes from the File.
 //
+// Summary: Read reads up to len(b) bytes from the File.
+//
 // Parameters:
-//   - p ([]byte): The parameter.
+//   - p ([]byte): The p parameter.
 //
 // Returns:
-//   - n (int): The result.
+//   - n (int): The int result.
 //   - err (error): An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *sftpFile) Read(p []byte) (n int, err error) {
 	return f.f.Read(p)
 }
 
 // ReadAt reads len(b) bytes from the File starting at byte offset off.
 //
+// Summary: ReadAt reads len(b) bytes from the File starting at byte offset off.
+//
 // Parameters:
-//   - p ([]byte): The parameter.
-//   - off (int64): The parameter.
+//   - p ([]byte): The p parameter.
+//   - off (int64): The off parameter.
 //
 // Returns:
-//   - n (int): The result.
+//   - n (int): The int result.
 //   - err (error): An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *sftpFile) ReadAt(p []byte, off int64) (n int, err error) {
 	return f.f.ReadAt(p, off)
 }
 
 // Seek sets the offset for the next Read or Write to offset, interpreted according to whence.
 //
+// Summary: Seek sets the offset for the next Read or Write to offset, interpreted according to whence.
+//
 // Parameters:
-//   - offset (int64): The parameter.
-//   - whence (int): The parameter.
+//   - offset (int64): The offset parameter.
+//   - whence (int): The whence parameter.
 //
 // Returns:
-//   - int64: The result.
+//   - int64: The int64 result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *sftpFile) Seek(offset int64, whence int) (int64, error) {
 	return f.f.Seek(offset, whence)
 }
 
 // Write writes len(b) bytes to the File.
 //
+// Summary: Write writes len(b) bytes to the File.
+//
 // Parameters:
-//   - p ([]byte): The parameter.
+//   - p ([]byte): The p parameter.
 //
 // Returns:
-//   - n (int): The result.
+//   - n (int): The int result.
 //   - err (error): An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *sftpFile) Write(p []byte) (n int, err error) {
 	return f.f.Write(p)
 }
 
 // WriteAt writes len(b) bytes to the File starting at byte offset off.
 //
+// Summary: WriteAt writes len(b) bytes to the File starting at byte offset off.
+//
 // Parameters:
-//   - p ([]byte): The parameter.
-//   - off (int64): The parameter.
+//   - p ([]byte): The p parameter.
+//   - off (int64): The off parameter.
 //
 // Returns:
-//   - n (int): The result.
+//   - n (int): The int result.
 //   - err (error): An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *sftpFile) WriteAt(p []byte, off int64) (n int, err error) {
 	return f.f.WriteAt(p, off)
 }
 
 // Name returns the name of the file as presented to Open.
 //
+// Summary: Name returns the name of the file as presented to Open.
+//
+// Parameters:
+//   - None.
+//
 // Returns:
-//   - string: The result.
+//   - string: The string result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *sftpFile) Name() string {
 	return f.f.Name()
 }
 
 // Readdir reads the contents of the directory associated with file and returns
-// a slice of up to n FileInfo values, as would be returned by Lstat, in directory order.
+//
+// Summary: Readdir reads the contents of the directory associated with file and returns
 //
 // Parameters:
-//   - _ (int): The parameter.
+//   - _ (int): The _ parameter.
 //
 // Returns:
-//   - []os.FileInfo: The result.
+//   - []os.FileInfo: The []os.FileInfo result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *sftpFile) Readdir(_ int) ([]os.FileInfo, error) {
 	return f.client.ReadDir(f.f.Name())
 }
 
 // Readdirnames reads and returns a slice of names from the directory f.
 //
+// Summary: Readdirnames reads and returns a slice of names from the directory f.
+//
 // Parameters:
-//   - n (int): The parameter.
+//   - n (int): The n parameter.
 //
 // Returns:
-//   - []string: The result.
+//   - []string: The []string result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *sftpFile) Readdirnames(n int) ([]string, error) {
 	infos, err := f.Readdir(n)
 	if err != nil {
@@ -561,64 +638,78 @@ func (f *sftpFile) Readdirnames(n int) ([]string, error) {
 
 // Stat returns the FileInfo structure describing file.
 //
+// Summary: Stat returns the FileInfo structure describing file.
+//
+// Parameters:
+//   - None.
+//
 // Returns:
-//   - os.FileInfo: The result.
+//   - os.FileInfo: The os.FileInfo result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *sftpFile) Stat() (os.FileInfo, error) {
 	return f.f.Stat()
 }
 
 // Sync commits the current contents of the file to stable storage.
 //
+// Summary: Sync commits the current contents of the file to stable storage.
+//
+// Parameters:
+//   - None.
+//
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *sftpFile) Sync() error {
 	return nil
 }
 
 // Truncate changes the size of the file.
 //
+// Summary: Truncate changes the size of the file.
+//
 // Parameters:
-//   - size (int64): The parameter.
+//   - size (int64): The size parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *sftpFile) Truncate(size int64) error {
 	return f.f.Truncate(size)
 }
 
 // WriteString is like Write, but writes the contents of string s rather than a slice of bytes.
 //
+// Summary: WriteString is like Write, but writes the contents of string s rather than a slice of bytes.
+//
 // Parameters:
-//   - s (string): The parameter.
+//   - s (string): The s parameter.
 //
 // Returns:
-//   - ret (int): The result.
+//   - ret (int): The int result.
 //   - err (error): An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *sftpFile) WriteString(s string) (ret int, err error) {
 	return f.f.Write([]byte(s))
 }

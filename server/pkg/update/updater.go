@@ -20,7 +20,7 @@ import (
 
 // Updater handles the self-update process.
 //
-// It manages checking for updates on GitHub and applying them to the local executable.
+// Summary: Updater handles the self-update process.
 type Updater struct {
 	client     *github.Client
 	httpClient *http.Client
@@ -28,12 +28,20 @@ type Updater struct {
 
 // NewUpdater creates a new Updater.
 //
+// Summary: NewUpdater creates a new Updater.
+//
 // Parameters:
-//   - httpClient: *http.Client. The HTTP client to use for network requests. If nil, http.DefaultClient is used.
-//   - githubAPIURL: string. Optional URL for the GitHub API (useful for Enterprise GitHub).
+//   - httpClient (*http.Client): The httpClient parameter.
+//   - githubAPIURL (string): The githubAPIURL parameter.
 //
 // Returns:
-//   - *Updater: A new Updater instance.
+//   - *Updater: The *Updater result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -53,18 +61,24 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 
 // CheckForUpdate checks for a new release on GitHub.
 //
-// It compares the provided current version tag with the latest release tag on the repository.
+// Summary: CheckForUpdate checks for a new release on GitHub.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - owner: string. The GitHub repository owner (e.g., "mcpany").
-//   - repo: string. The GitHub repository name (e.g., "core").
-//   - currentVersion: string. The current version tag of the application.
+//   - ctx (context.Context): The ctx parameter.
+//   - owner (string): The owner parameter.
+//   - repo (string): The repo parameter.
+//   - currentVersion (string): The currentVersion parameter.
 //
 // Returns:
-//   - *github.RepositoryRelease: The release information if an update is available, nil otherwise.
-//   - bool: True if a newer version is available, false otherwise.
-//   - error: An error if the check fails (e.g., network error, API rate limit).
+//   - *github.RepositoryRelease: The *github.RepositoryRelease result.
+//   - bool: The bool result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersion string) (*github.RepositoryRelease, bool, error) {
 	release, _, err := u.client.Repositories.GetLatestRelease(ctx, owner, repo)
 	if err != nil {
@@ -80,22 +94,24 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 
 // UpdateTo downloads the new release, verifies its checksum, and replaces the current executable.
 //
-// It handles downloading artifacts, verifying SHA256 checksums, and safely swapping the binary.
+// Summary: UpdateTo downloads the new release, verifies its checksum, and replaces the current executable.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - fs: afero.Fs. The file system abstraction (usually afero.NewOsFs()).
-//   - executablePath: string. The path to the currently running executable to replace.
-//   - release: *github.RepositoryRelease. The release object to update to.
-//   - assetName: string. The name of the binary asset to download.
-//   - checksumsAssetName: string. The name of the checksums file asset.
+//   - ctx (context.Context): The ctx parameter.
+//   - fs (afero.Fs): The fs parameter.
+//   - executablePath (string): The executablePath parameter.
+//   - release (*github.RepositoryRelease): The release parameter.
+//   - assetName (string): The assetName parameter.
+//   - checksumsAssetName (string): The checksumsAssetName parameter.
 //
 // Returns:
-//   - error: An error if any step of the update process fails (download, verify, replace).
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - Writes temporary files to disk.
-//   - Modifies the executable file on disk.
+//   - May modify internal state or perform external calls.
 func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath string, release *github.RepositoryRelease, assetName, checksumsAssetName string) error {
 	var asset *github.ReleaseAsset
 	for _, a := range release.Assets {

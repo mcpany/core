@@ -32,7 +32,8 @@ import (
 type sanitizer func(string) (string, error)
 
 // Upstream implements the upstream.Upstream interface for services that
-// communicate over WebRTC data channels.
+//
+// Summary: Upstream implements the upstream.Upstream interface for services that
 type Upstream struct {
 	poolManager       *pool.Manager
 	toolNameSanitizer sanitizer
@@ -42,17 +43,19 @@ type Upstream struct {
 
 // CheckHealth performs a health check on the upstream service.
 //
+// Summary: CheckHealth performs a health check on the upstream service.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -69,19 +72,20 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 }
 
 // Shutdown is a no-op for the WebRTC upstream, as connections are transient
-// and not managed by a persistent pool.
+//
+// Summary: Shutdown is a no-op for the WebRTC upstream, as connections are transient
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -95,14 +99,19 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of WebrtcUpstream.
 //
+// Summary: NewUpstream creates a new instance of WebrtcUpstream.
+//
 // Parameters:
-//   - poolManager (*pool.Manager): The parameter.
+//   - poolManager (*pool.Manager): The poolManager parameter.
 //
 // Returns:
-//   - upstream.Upstream: The result.
+//   - upstream.Upstream: The upstream.Upstream result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager:       poolManager,
@@ -112,8 +121,10 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 
 // Register processes the configuration for a WebRTC service, creating and registering tools for each call definition specified in the configuration.
 //
+// Summary: Register processes the configuration for a WebRTC service, creating and registering tools for each call definition specified in the configuration.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //   - promptManager (prompt.ManagerInterface): The promptManager parameter.
@@ -121,16 +132,16 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - isReload (bool): The isReload parameter.
 //
 // Returns:
-//   - string: The resulting string.
-//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
-//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
+//   - string: The string result.
+//   - []*configv1.ToolDefinition: The []*configv1.ToolDefinition result.
+//   - []*configv1.ResourceDefinition: The []*configv1.ResourceDefinition result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

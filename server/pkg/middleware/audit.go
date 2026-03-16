@@ -99,15 +99,20 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 }
 
 // SetStore sets the audit store.
-// This is primarily used for testing.
 //
-// Summary: Sets the audit store implementation.
+// Summary: SetStore sets the audit store.
 //
 // Parameters:
-//   - store (audit.Store): The audit store to use.
+//   - store (audit.Store): The store parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Replaces the current audit store.
+//   - May modify internal state or perform external calls.
 func (m *AuditMiddleware) SetStore(store audit.Store) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -330,13 +335,19 @@ func (m *AuditMiddleware) GetHistory() []any {
 
 // Unsubscribe removes a subscriber channel.
 //
-// Summary: Unsubscribes from audit events.
+// Summary: Unsubscribe removes a subscriber channel.
 //
 // Parameters:
-//   - ch (chan any): The channel to unsubscribe.
+//   - ch (chan any): The ch parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Removes the subscriber from the broadcaster.
+//   - May modify internal state or perform external calls.
 func (m *AuditMiddleware) Unsubscribe(ch chan any) {
 	m.broadcaster.Unsubscribe(ch)
 }
@@ -389,15 +400,20 @@ func (m *AuditMiddleware) Close() error {
 
 // Write writes an audit entry directly to the store.
 //
+// Summary: Write writes an audit entry directly to the store.
+//
 // Parameters:
-//   - ctx: context.Context for the operation.
-//   - entry: The audit.Entry to write.
+//   - ctx (context.Context): The ctx parameter.
+//   - entry (audit.Entry): The entry parameter.
 //
 // Returns:
-//   - error: An error if the write fails, or nil on success.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the audit store is not initialized.
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
 	m.mu.RLock()
 	store := m.store

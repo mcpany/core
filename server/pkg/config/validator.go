@@ -35,11 +35,17 @@ const (
 )
 
 const (
-	// Server represents the server binary.
+// Server represents the server binary.
+//
+// Summary: Server represents the server binary.
 	Server BinaryType = iota
-	// Worker represents the worker binary.
+// Worker represents the worker binary.
+//
+// Summary: Worker represents the worker binary.
 	Worker
-	// Client represents the client binary.
+// Client represents the client binary.
+//
+// Summary: Client represents the client binary.
 	Client
 )
 
@@ -49,21 +55,27 @@ const (
 type AuthValidationContext int
 
 const (
-	// AuthValidationContextIncoming represents incoming authentication (e.g., Users).
+// AuthValidationContextIncoming represents incoming authentication (e.g., Users).
+//
+// Summary: AuthValidationContextIncoming represents incoming authentication (e.g., Users).
 	AuthValidationContextIncoming AuthValidationContext = iota
-	// AuthValidationContextOutgoing represents outgoing authentication (e.g., Upstream Services).
+// AuthValidationContextOutgoing represents outgoing authentication (e.g., Upstream Services).
+//
+// Summary: AuthValidationContextOutgoing represents outgoing authentication (e.g., Upstream Services).
 	AuthValidationContextOutgoing
 )
 
 type contextKey string
 
 const (
-	// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
-	// Value should be a boolean.
+// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
+//
+// Summary: SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
 	SkipSecretValidationKey contextKey = "skip_secret_validation"
 
-	// SkipFilesystemCheckKey is the context key to skip filesystem existence checks (e.g. for config check API).
-	// Value should be a boolean.
+// SkipFilesystemCheckKey is the context key to skip filesystem existence checks (e.g. for config check API).
+//
+// Summary: SkipFilesystemCheckKey is the context key to skip filesystem existence checks (e.g. for config check API).
 	SkipFilesystemCheckKey contextKey = "skip_filesystem_check"
 )
 
@@ -82,17 +94,19 @@ type ValidationError struct {
 
 // Error returns the formatted error message. Side Effects: - None.
 //
+// Summary: Error returns the formatted error message. Side Effects: - None.
+//
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - string: The resulting string.
+//   - string: The string result.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (e *ValidationError) Error() string {
 	return fmt.Sprintf("service %q: %v", e.ServiceName, e.Err)
 }

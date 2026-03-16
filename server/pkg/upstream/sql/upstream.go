@@ -23,6 +23,8 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for SQL databases.
+//
+// Summary: Upstream implements the upstream.Upstream interface for SQL databases.
 type Upstream struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -30,28 +32,38 @@ type Upstream struct {
 
 // NewUpstream creates a new SQL upstream.
 //
+// Summary: NewUpstream creates a new SQL upstream.
+//
+// Parameters:
+//   - None.
+//
 // Returns:
-//   - *Upstream: The result.
+//   - *Upstream: The *Upstream result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func NewUpstream() *Upstream {
 	return &Upstream{}
 }
 
 // Shutdown closes the database connection.
 //
+// Summary: Shutdown closes the database connection.
+//
 // Parameters:
-//   - _ (context.Context): The parameter.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -67,8 +79,10 @@ func ptr(s string) *string {
 
 // Register discovers and registers tools from the SQL configuration. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
+// Summary: Register discovers and registers tools from the SQL configuration. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //   - _ (prompt.ManagerInterface): The _ parameter.
@@ -76,16 +90,16 @@ func ptr(s string) *string {
 //   - _ (bool): The _ parameter.
 //
 // Returns:
-//   - string: The resulting string.
-//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
-//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
+//   - string: The string result.
+//   - []*configv1.ToolDefinition: The []*configv1.ToolDefinition result.
+//   - []*configv1.ResourceDefinition: The []*configv1.ResourceDefinition result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

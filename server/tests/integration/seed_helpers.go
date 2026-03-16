@@ -13,8 +13,21 @@ import (
 )
 
 // SeedStandardData populates the server with a standard set of data for E2E testing.
-// It registers a "Core" service (mocked) and a "Tools" service (mocked).
-// It also seeds some traffic history if supported.
+//
+// Summary: SeedStandardData populates the server with a standard set of data for E2E testing.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//   - serverInfo (*MCPANYTestServerInfo): The serverInfo parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func SeedStandardData(t *testing.T, serverInfo *MCPANYTestServerInfo) {
 	t.Helper()
 

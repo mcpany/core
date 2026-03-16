@@ -15,6 +15,8 @@ import (
 )
 
 // AuditHandler is a slog.Handler that exports logs to audit sinks.
+//
+// Summary: AuditHandler is a slog.Handler that exports logs to audit sinks.
 type AuditHandler struct {
 	next   slog.Handler
 	config *configv1.AuditConfig
@@ -23,18 +25,20 @@ type AuditHandler struct {
 
 // NewAuditHandler creates a new AuditHandler.
 //
+// Summary: NewAuditHandler creates a new AuditHandler.
+//
 // Parameters:
 //   - next (slog.Handler): The next parameter.
 //   - config (*configv1.AuditConfig): The config parameter.
 //
 // Returns:
-//   - *AuditHandler: The resulting *AuditHandler.
+//   - *AuditHandler: The *AuditHandler result.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func NewAuditHandler(next slog.Handler, config *configv1.AuditConfig) *AuditHandler {
 	h := &AuditHandler{
 		next:   next,
@@ -81,36 +85,40 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 
 // Enabled reports whether the handler handles records at the given level.
 //
+// Summary: Enabled reports whether the handler handles records at the given level.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //   - level (slog.Level): The level parameter.
 //
 // Returns:
-//   - bool: True if successful, false otherwise.
+//   - bool: The bool result.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	return h.next.Enabled(ctx, level)
 }
 
 // Handle handles the Record.
 //
+// Summary: Handle handles the Record.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //   - r (slog.Record): The r parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 	// 1. Export the record
 	if err := h.Export(ctx, r); err != nil {
@@ -123,17 +131,19 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 
 // WithAttrs returns a new generic Handler with the given attributes.
 //
+// Summary: WithAttrs returns a new generic Handler with the given attributes.
+//
 // Parameters:
 //   - attrs ([]slog.Attr): The attrs parameter.
 //
 // Returns:
-//   - slog.Handler: The resulting slog.Handler.
+//   - slog.Handler: The slog.Handler result.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return &AuditHandler{
 		next:   h.next.WithAttrs(attrs),
@@ -144,17 +154,19 @@ func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 
 // WithGroup returns a new generic Handler with the given group.
 //
+// Summary: WithGroup returns a new generic Handler with the given group.
+//
 // Parameters:
 //   - name (string): The name parameter.
 //
 // Returns:
-//   - slog.Handler: The resulting slog.Handler.
+//   - slog.Handler: The slog.Handler result.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (h *AuditHandler) WithGroup(name string) slog.Handler {
 	return &AuditHandler{
 		next:   h.next.WithGroup(name),
@@ -165,18 +177,20 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 
 // Export sends the log record to the configued sinks.
 //
+// Summary: Export sends the log record to the configued sinks.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //   - r (slog.Record): The r parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (h *AuditHandler) Export(ctx context.Context, r slog.Record) error {
 	if h.store == nil {
 		return nil

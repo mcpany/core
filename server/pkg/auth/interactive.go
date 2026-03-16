@@ -19,23 +19,25 @@ import (
 
 // InitiateOAuth starts the OAuth2 flow for a given service or credential. It returns the authorization URL and the state parameter.
 //
+// Summary: InitiateOAuth starts the OAuth2 flow for a given service or credential. It returns the authorization URL and the state parameter.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //   - userID (string): The userID parameter.
 //   - serviceID (string): The serviceID parameter.
 //   - credentialID (string): The credentialID parameter.
 //   - redirectURL (string): The redirectURL parameter.
 //
 // Returns:
-//   - string: The resulting string.
-//   - string: The resulting string.
+//   - string: The string result.
+//   - string: The string result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credentialID, redirectURL string) (string, string, error) {
 	// Fix for unused userID:
 	_ = userID
@@ -136,8 +138,10 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 
 // HandleOAuthCallback handles the OAuth2 callback code exchange.
 //
+// Summary: HandleOAuthCallback handles the OAuth2 callback code exchange.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //   - userID (string): The userID parameter.
 //   - serviceID (string): The serviceID parameter.
 //   - credentialID (string): The credentialID parameter.
@@ -148,10 +152,10 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, credentialID, code, redirectURL string) error {
 	am.mu.RLock()
 	storage := am.storage

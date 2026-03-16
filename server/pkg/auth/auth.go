@@ -22,11 +22,17 @@ import (
 type authContextKey string
 
 const (
-	// UserContextKey is the context key for the user ID.
+// UserContextKey is the context key for the user ID.
+//
+// Summary: UserContextKey is the context key for the user ID.
 	UserContextKey authContextKey = "user_id"
-	// ProfileIDContextKey is the context key for the profile ID.
+// ProfileIDContextKey is the context key for the profile ID.
+//
+// Summary: ProfileIDContextKey is the context key for the profile ID.
 	ProfileIDContextKey authContextKey = "profile_id"
-	// APIKeyContextKey is the context key for the API Key.
+// APIKeyContextKey is the context key for the API Key.
+//
+// Summary: APIKeyContextKey is the context key for the API Key.
 	APIKeyContextKey authContextKey = "api_key"
 )
 
@@ -340,13 +346,19 @@ func NewManager() *Manager {
 
 // SetUsers updates the list of active users.
 //
-// Summary: Sets the configured users.
+// Summary: SetUsers updates the list of active users.
 //
 // Parameters:
-//   - users: []*configv1.User. The list of users.
+//   - users ([]*configv1.User): The users parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Updates the internal user map.
+//   - May modify internal state or perform external calls.
 func (am *Manager) SetUsers(users []*configv1.User) {
 	am.usersMu.Lock()
 	defer am.usersMu.Unlock()
@@ -357,13 +369,19 @@ func (am *Manager) SetUsers(users []*configv1.User) {
 
 // SetStorage sets the storage backend for the manager.
 //
-// Summary: Configures the storage backend.
+// Summary: SetStorage sets the storage backend for the manager.
 //
 // Parameters:
-//   - s: storage.Storage. The storage implementation.
+//   - s (storage.Storage): The s parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Updates the internal storage reference.
+//   - May modify internal state or perform external calls.
 func (am *Manager) SetStorage(s storage.Storage) {
 	am.mu.Lock()
 	defer am.mu.Unlock()
@@ -389,13 +407,19 @@ func (am *Manager) GetUser(id string) (*configv1.User, bool) {
 
 // SetAPIKey sets the global API key for the server.
 //
-// Summary: Sets the global API key.
+// Summary: SetAPIKey sets the global API key for the server.
 //
 // Parameters:
-//   - apiKey: string. The API key.
+//   - apiKey (string): The apiKey parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Updates the internal API key.
+//   - May modify internal state or perform external calls.
 func (am *Manager) SetAPIKey(apiKey string) {
 	am.apiKey = apiKey
 }
@@ -498,13 +522,19 @@ func (am *Manager) GetAuthenticator(serviceID string) (Authenticator, bool) {
 
 // RemoveAuthenticator removes the authenticator for a given service ID.
 //
-// Summary: Removes an authenticator by service ID.
+// Summary: RemoveAuthenticator removes the authenticator for a given service ID.
 //
 // Parameters:
-//   - serviceID: string. The service ID.
+//   - serviceID (string): The serviceID parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Removes an entry from the authenticators map.
+//   - May modify internal state or perform external calls.
 func (am *Manager) RemoveAuthenticator(serviceID string) {
 	am.authenticators.Delete(serviceID)
 }

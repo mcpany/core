@@ -26,6 +26,8 @@ type activityEvent struct {
 }
 
 // Manager handles topology state tracking.
+//
+// Summary: Manager handles topology state tracking.
 type Manager struct {
 	mu              sync.RWMutex
 	sessions        map[string]*SessionStats
@@ -38,6 +40,8 @@ type Manager struct {
 }
 
 // SessionStats contains statistics about a topology session.
+//
+// Summary: SessionStats contains statistics about a topology session.
 type SessionStats struct {
 	ID             string
 	Metadata       map[string]string
@@ -52,6 +56,8 @@ type SessionStats struct {
 }
 
 // Stats aggregated metrics.
+//
+// Summary: Stats aggregated metrics.
 type Stats struct {
 	TotalRequests int64
 	AvgLatency    time.Duration
@@ -59,6 +65,8 @@ type Stats struct {
 }
 
 // MinuteStats tracks stats for a single minute.
+//
+// Summary: MinuteStats tracks stats for a single minute.
 type MinuteStats struct {
 	Requests     int64
 	Errors       int64
@@ -68,6 +76,8 @@ type MinuteStats struct {
 }
 
 // ServiceTrafficStats tracks stats for a single service in a minute.
+//
+// Summary: ServiceTrafficStats tracks stats for a single service in a minute.
 type ServiceTrafficStats struct {
 	Requests int64
 	Errors   int64
@@ -76,6 +86,8 @@ type ServiceTrafficStats struct {
 }
 
 // TrafficPoint represents a data point for the traffic chart.
+//
+// Summary: TrafficPoint represents a data point for the traffic chart.
 type TrafficPoint struct {
 	Time    string `json:"time"`
 	Total   int64  `json:"requests"` // mapped to "requests" for UI
@@ -236,21 +248,25 @@ func (m *Manager) handleActivity(event activityEvent) {
 }
 
 // RecordActivity updates the session activity.
-// ⚡ BOLT: Offloaded to asynchronous channel to prevent blocking the request path.
-// Randomized Selection from Top 5 High-Impact Targets
 //
-// Summary: Records a new activity event for a session.
+// Summary: RecordActivity updates the session activity.
 //
 // Parameters:
-//   - sessionID (string): The unique identifier of the session.
-//   - meta (map[string]interface{}): Metadata associated with the activity.
-//   - latency (time.Duration): The duration of the operation.
-//   - isError (bool): Whether the operation resulted in an error.
-//   - serviceID (string): The identifier of the service involved (optional).
-//   - responseLen (int64): The length of the response in bytes.
+//   - sessionID (string): The sessionID parameter.
+//   - meta (map[string]interface{}): The meta parameter.
+//   - latency (time.Duration): The latency parameter.
+//   - isError (bool): The isError parameter.
+//   - serviceID (string): The serviceID parameter.
+//   - responseLen (int64): The responseLen parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Sends an activity event to the processing channel (non-blocking).
+//   - May modify internal state or perform external calls.
 func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, latency time.Duration, isError bool, serviceID string, responseLen int64) {
 	// ⚡ BOLT: Shallow copy meta to prevent race conditions as map is passed by reference
 	metaCopy := make(map[string]interface{}, len(meta))
@@ -276,13 +292,19 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 
 // Close stops the background worker.
 //
-// Summary: gracefully shuts down the Topology Manager.
+// Summary: Close stops the background worker.
 //
 // Parameters:
 //   - None.
 //
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
 // Side Effects:
-//   - Closes the shutdown channel, stopping the background loop.
+//   - May modify internal state or perform external calls.
 func (m *Manager) Close() {
 	close(m.shutdownCh)
 }
@@ -458,16 +480,20 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 }
 
 // SeedTrafficHistory allows seeding the traffic history with external data.
-// This is primarily for testing and debugging purposes.
 //
-// Summary: Seeds the traffic history with provided data points.
+// Summary: SeedTrafficHistory allows seeding the traffic history with external data.
 //
 // Parameters:
-//   - points ([]TrafficPoint): The traffic data points to seed.
+//   - points ([]TrafficPoint): The points parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Modifies the internal traffic history state.
-//   - Updates the "seed-data" session stats.
+//   - May modify internal state or perform external calls.
 func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

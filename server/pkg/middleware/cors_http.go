@@ -11,7 +11,8 @@ import (
 )
 
 // HTTPCORSMiddleware handles CORS for HTTP endpoints.
-// It is thread-safe and supports dynamic updates.
+//
+// Summary: HTTPCORSMiddleware handles CORS for HTTP endpoints.
 type HTTPCORSMiddleware struct {
 	mu              sync.RWMutex
 	allowedOrigins  map[string]struct{}
@@ -38,10 +39,19 @@ func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 
 // Update updates the allowed origins.
 //
-// Summary: Updates the allowed origins dynamically.
+// Summary: Update updates the allowed origins.
 //
 // Parameters:
-//   - allowedOrigins ([]string): The new list of allowed origins.
+//   - allowedOrigins ([]string): The allowedOrigins parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

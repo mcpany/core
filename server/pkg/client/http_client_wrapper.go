@@ -13,9 +13,8 @@ import (
 )
 
 // HTTPClientWrapper wraps an `*http.Client` to adapt it to the
-// `pool.ClosableClient` interface. This allows HTTP clients to be managed by a
-// connection pool, which can help control the number of concurrent connections
-// and reuse them where appropriate.
+//
+// Summary: HTTPClientWrapper wraps an `*http.Client` to adapt it to the
 type HTTPClientWrapper struct {
 	*http.Client
 	config *configv1.UpstreamServiceConfig
@@ -25,19 +24,21 @@ type HTTPClientWrapper struct {
 
 // NewHTTPClientWrapper creates a new HTTPClientWrapper. It accepts a shared health checker to avoid creating a new one for every client.
 //
+// Summary: NewHTTPClientWrapper creates a new HTTPClientWrapper. It accepts a shared health checker to avoid creating a new one for every client.
+//
 // Parameters:
 //   - client (*http.Client): The client parameter.
 //   - config (*configv1.UpstreamServiceConfig): The config parameter.
 //   - checker (health.Checker): The checker parameter.
 //
 // Returns:
-//   - *HTTPClientWrapper: The resulting *HTTPClientWrapper.
+//   - *HTTPClientWrapper: The *HTTPClientWrapper result.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceConfig, checker health.Checker) *HTTPClientWrapper {
 	// If no checker is provided, create a new one (backward compatibility or standalone usage).
 	if checker == nil {
@@ -52,17 +53,19 @@ func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceC
 
 // IsHealthy checks the health of the upstream service by making a request to the configured health check endpoint. ctx is the context for the request. Returns true if successful.
 //
+// Summary: IsHealthy checks the health of the upstream service by making a request to the configured health check endpoint. ctx is the context for the request. Returns true if successful.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - bool: True if successful, false otherwise.
+//   - bool: The bool result.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.checker == nil {
 		return true // No health check configured, assume healthy.
@@ -72,17 +75,19 @@ func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 
 // Close is a no-op for the wrapper as it does not own the http.Client. The owner of the http.Client (e.g., the pool manager) is responsible for closing idle connections on the shared Transport when the service is shut down. Previously, this called CloseIdleConnections on the shared transport, which would negatively impact other concurrent requests sharing the same Transport.
 //
+// Summary: Close is a no-op for the wrapper as it does not own the http.Client. The owner of the http.Client (e.g., the pool manager) is responsible for closing idle connections on the shared Transport when the service is shut down. Previously, this called CloseIdleConnections on the shared transport, which would negatively impact other concurrent requests sharing the same Transport.
+//
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (w *HTTPClientWrapper) Close() error {
 	return nil
 }

@@ -18,10 +18,13 @@ import (
 )
 
 var (
-	// ErrPoolClosed is returned when an operation is attempted on a closed pool.
+// ErrPoolClosed is returned when an operation is attempted on a closed pool.
+//
+// Summary: ErrPoolClosed is returned when an operation is attempted on a closed pool.
 	ErrPoolClosed = fmt.Errorf("pool has been closed")
-	// ErrPoolFull is returned when the pool has reached its maximum capacity and
-	// cannot create new clients.
+// ErrPoolFull is returned when the pool has reached its maximum capacity and
+//
+// Summary: ErrPoolFull is returned when the pool has reached its maximum capacity and
 	ErrPoolFull = fmt.Errorf("pool is full")
 
 	// retryBackoff is the duration to wait before retrying to create a new client
@@ -397,10 +400,19 @@ func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
 
 // Put returns a client to the pool for reuse.
 //
-// Summary: Returns a client to the pool.
+// Summary: Put returns a client to the pool for reuse.
 //
 // Parameters:
-//   - client: T. The client to return.
+//   - client (T): The client parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (p *poolImpl[T]) Put(client T) {
 	v := reflect.ValueOf(client)
 	if !v.IsValid() || ((v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil()) {
@@ -524,11 +536,20 @@ func NewManager() *Manager {
 
 // Register adds a new pool to the manager under a given name.
 //
-// Summary: Registers a pool by name.
+// Summary: Register adds a new pool to the manager under a given name.
 //
 // Parameters:
-//   - name: string. The pool name.
-//   - pool: any. The pool instance.
+//   - name (string): The name parameter.
+//   - pool (any): The pool parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (m *Manager) Register(name string, pool any) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -546,10 +567,19 @@ func (m *Manager) Register(name string, pool any) {
 
 // Deregister closes and removes a pool from the manager.
 //
-// Summary: Removes a pool by name.
+// Summary: Deregister closes and removes a pool from the manager.
 //
 // Parameters:
-//   - name: string. The pool name.
+//   - name (string): The name parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (m *Manager) Deregister(name string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

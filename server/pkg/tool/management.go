@@ -295,17 +295,20 @@ func NewManager(bus *bus.Provider) *Manager {
 
 // SetProfiles sets the enabled profiles and their definitions for filtering.
 //
-// Summary: Configures profiles for filtering.
-//
-// This method updates the internal state used for profile-based access control.
-// It pre-computes allowed services for each profile to optimize lookup performance.
+// Summary: SetProfiles sets the enabled profiles and their definitions for filtering.
 //
 // Parameters:
-//   - enabled ([]string): A list of names of the currently active profiles.
-//   - defs ([]*configv1.ProfileDefinition): The definitions of all available profiles.
+//   - enabled ([]string): The enabled parameter.
+//   - defs ([]*configv1.ProfileDefinition): The defs parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Updates internal profile definitions and caches.
+//   - May modify internal state or perform external calls.
 func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -573,30 +576,38 @@ func (tm *Manager) matchesProperties(annotations *v1.ToolAnnotations, props map[
 
 // AddMiddleware adds a middleware to the tool manager.
 //
-// Summary: Adds execution middleware.
-//
-// The middleware will be executed as part of the tool execution chain.
+// Summary: AddMiddleware adds a middleware to the tool manager.
 //
 // Parameters:
-//   - middleware (ExecutionMiddleware): The middleware instance to add.
+//   - middleware (ExecutionMiddleware): The middleware parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Appends middleware to the internal list.
+//   - May modify internal state or perform external calls.
 func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 	tm.middlewares = append(tm.middlewares, middleware)
 }
 
 // SetMCPServer provides the Manager with a reference to the MCP server.
 //
-// Summary: Sets the MCP server.
-//
-// This allows the manager to register tool handlers directly with the server.
+// Summary: SetMCPServer provides the Manager with a reference to the MCP server.
 //
 // Parameters:
-//   - mcpServer (MCPServerProvider): The MCP server provider interface.
+//   - mcpServer (MCPServerProvider): The mcpServer parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Updates the internal mcpServer reference.
+//   - May modify internal state or perform external calls.
 func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -781,16 +792,20 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 
 // AddServiceInfo registers metadata about a service.
 //
-// Summary: Registers service metadata.
-//
-// It processes the service configuration to set up hooks and call policies.
+// Summary: AddServiceInfo registers metadata about a service.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier for the service.
-//   - info (*ServiceInfo): The ServiceInfo struct containing the service's metadata and configuration.
+//   - serviceID (string): The serviceID parameter.
+//   - info (*ServiceInfo): The info parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Stores service info in the internal map.
+//   - May modify internal state or perform external calls.
 func (tm *Manager) AddServiceInfo(serviceID string, info *ServiceInfo) {
 	if info.Config != nil {
 		var preHooks []PreCallHook
@@ -1194,16 +1209,19 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 
 // ClearToolsForService removes all tools associated with a given service ID.
 //
-// Summary: Removes tools for a service.
-//
-// It efficiently cleans up internal indices and caches.
+// Summary: ClearToolsForService removes all tools associated with a given service ID.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier for the service.
+//   - serviceID (string): The serviceID parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Removes entries from the tools map and secondary indices.
-//   - Invalidates internal caches.
+//   - May modify internal state or perform external calls.
 func (tm *Manager) ClearToolsForService(serviceID string) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()

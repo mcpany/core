@@ -25,28 +25,38 @@ var (
 
 // SetLevel updates the global log level dynamically.
 //
+// Summary: SetLevel updates the global log level dynamically.
+//
 // Parameters:
-//   - level (slog.Level): The new log level.
+//   - level (slog.Level): The level parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Updates the global log level atomic variable.
+//   - May modify internal state or perform external calls.
 func SetLevel(level slog.Level) {
 	programLevel.Set(level)
 }
 
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once` mechanism. This allows the global logger to be re-initialized in different test cases. This function should not be used in production code.
 //
+// Summary: ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once` mechanism. This allows the global logger to be re-initialized in different test cases. This function should not be used in production code.
+//
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func ForTestsOnlyResetLogger() {
 	mu.Lock()
 	defer mu.Unlock()
@@ -56,20 +66,23 @@ func ForTestsOnlyResetLogger() {
 }
 
 // Init initializes the application's global logger with a specific log level
-// and output destination.
 //
-// This function is designed to be called only once, typically at the start of the application,
-// to ensure a consistent logging setup.
+// Summary: Init initializes the application's global logger with a specific log level
 //
 // Parameters:
-//   - level (slog.Level): The minimum log level to be recorded.
-//   - output (io.Writer): The output destination for logs.
-//   - logFilePath (string): Optional path to a log file for JSON output.
-//   - format (...string): Optional format string ("json" or "text"). Defaults to "text".
+//   - level (slog.Level): The level parameter.
+//   - output (io.Writer): The output parameter.
+//   - logFilePath (string): The logFilePath parameter.
+//   - format (...string): The format parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Sets the global logger instance.
-//   - May open a file for writing.
+//   - May modify internal state or perform external calls.
 func Init(level slog.Level, output io.Writer, logFilePath string, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -138,14 +151,19 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 
 // GetLogger returns the shared global logger instance.
 //
-// If the logger has not yet been initialized through a call to `Init`, this function will
-// initialize it with default settings: logging to `os.Stderr` at `slog.LevelInfo`.
+// Summary: GetLogger returns the shared global logger instance.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *slog.Logger: The global `*slog.Logger` instance.
+//   - *slog.Logger: The *slog.Logger result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - May initialize the default logger if not already set.
+//   - May modify internal state or perform external calls.
 func GetLogger() *slog.Logger {
 	// ⚡ Bolt Optimization: Fast path to avoid lock contention on every log call.
 	// Atomic load is much cheaper than mutex lock.
@@ -167,14 +185,19 @@ func GetLogger() *slog.Logger {
 
 // ToSlogLevel converts a string log level to a slog.Level.
 //
+// Summary: ToSlogLevel converts a string log level to a slog.Level.
+//
 // Parameters:
-//   - level (configv1.GlobalSettings_LogLevel): The log level from the configuration.
+//   - level (configv1.GlobalSettings_LogLevel): The level parameter.
 //
 // Returns:
-//   - slog.Level: The corresponding slog.Level.
+//   - slog.Level: The slog.Level result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func ToSlogLevel(level configv1.GlobalSettings_LogLevel) slog.Level {
 	switch level {
 	case configv1.GlobalSettings_LOG_LEVEL_DEBUG:

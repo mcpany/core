@@ -6,28 +6,46 @@ package alerts
 import "time"
 
 // Severity represents the severity level of an alert.
+//
+// Summary: Severity represents the severity level of an alert.
 type Severity string
 
 // Status represents the status of an alert.
+//
+// Summary: Status represents the status of an alert.
 type Status string
 
 const (
-	// SeverityCritical indicates a critical issue.
+// SeverityCritical indicates a critical issue.
+//
+// Summary: SeverityCritical indicates a critical issue.
 	SeverityCritical Severity = "critical"
-	// SeverityWarning indicates a warning.
+// SeverityWarning indicates a warning.
+//
+// Summary: SeverityWarning indicates a warning.
 	SeverityWarning Severity = "warning"
-	// SeverityInfo indicates an informational alert.
+// SeverityInfo indicates an informational alert.
+//
+// Summary: SeverityInfo indicates an informational alert.
 	SeverityInfo Severity = "info"
 
-	// StatusActive indicates the alert is currently active.
+// StatusActive indicates the alert is currently active.
+//
+// Summary: StatusActive indicates the alert is currently active.
 	StatusActive Status = "active"
-	// StatusAcknowledged indicates the alert has been acknowledged.
+// StatusAcknowledged indicates the alert has been acknowledged.
+//
+// Summary: StatusAcknowledged indicates the alert has been acknowledged.
 	StatusAcknowledged Status = "acknowledged"
-	// StatusResolved indicates the alert has been resolved.
+// StatusResolved indicates the alert has been resolved.
+//
+// Summary: StatusResolved indicates the alert has been resolved.
 	StatusResolved Status = "resolved"
 )
 
 // Alert represents a system alert.
+//
+// Summary: Alert represents a system alert.
 type Alert struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
@@ -40,6 +58,8 @@ type Alert struct {
 }
 
 // AlertRule defines a condition for triggering an alert.
+//
+// Summary: AlertRule defines a condition for triggering an alert.
 type AlertRule struct {
 	ID          string    `json:"id"`
 	Name        string    `json:"name"`
@@ -53,6 +73,8 @@ type AlertRule struct {
 }
 
 // AlertStats represents aggregated statistics for alerts.
+//
+// Summary: AlertStats represents aggregated statistics for alerts.
 type AlertStats struct {
 	ActiveCritical int    `json:"activeCritical"`
 	ActiveWarning  int    `json:"activeWarning"`

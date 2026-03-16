@@ -17,7 +17,9 @@ import (
 )
 
 const (
-	// SkillFileName is the name of the main skill file.
+// SkillFileName is the name of the main skill file.
+//
+// Summary: SkillFileName is the name of the main skill file.
 	SkillFileName = "SKILL.md"
 )
 
@@ -28,6 +30,8 @@ var (
 )
 
 // Manager handles the storage and retrieval of skills.
+//
+// Summary: Manager handles the storage and retrieval of skills.
 type Manager struct {
 	rootDir string
 	mu      sync.RWMutex
@@ -36,18 +40,20 @@ type Manager struct {
 
 // NewManager creates a new Skill Manager. rootDir is the directory where skills are stored.
 //
+// Summary: NewManager creates a new Skill Manager. rootDir is the directory where skills are stored.
+//
 // Parameters:
 //   - rootDir (string): The rootDir parameter.
 //
 // Returns:
-//   - *Manager: The resulting *Manager.
+//   - *Manager: The *Manager result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func NewManager(rootDir string) (*Manager, error) {
 	if err := os.MkdirAll(rootDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create skill root directory: %w", err)
@@ -59,18 +65,20 @@ func NewManager(rootDir string) (*Manager, error) {
 
 // ListSkills returns all available skills. It scans the root directory for subdirectories containing SKILL.md.
 //
+// Summary: ListSkills returns all available skills. It scans the root directory for subdirectories containing SKILL.md.
+//
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - []*Skill: The resulting []*Skill.
+//   - []*Skill: The []*Skill result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (m *Manager) ListSkills() ([]*Skill, error) {
 	// ⚡ BOLT: Optimization - Cached skill listing to avoid redundant I/O.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -113,18 +121,20 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 
 // GetSkill retrieves a specific skill by name. name is the name of the resource. Returns the result. Returns an error if the operation fails.
 //
+// Summary: GetSkill retrieves a specific skill by name. name is the name of the resource. Returns the result. Returns an error if the operation fails.
+//
 // Parameters:
 //   - name (string): The name parameter.
 //
 // Returns:
-//   - *Skill: The resulting *Skill.
+//   - *Skill: The *Skill result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (m *Manager) GetSkill(name string) (*Skill, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -133,6 +143,8 @@ func (m *Manager) GetSkill(name string) (*Skill, error) {
 
 // CreateSkill creates a new skill. It ensures the name is valid and the directory doesn't already exist.
 //
+// Summary: CreateSkill creates a new skill. It ensures the name is valid and the directory doesn't already exist.
+//
 // Parameters:
 //   - skill (*Skill): The skill parameter.
 //
@@ -140,10 +152,10 @@ func (m *Manager) GetSkill(name string) (*Skill, error) {
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (m *Manager) CreateSkill(skill *Skill) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -174,6 +186,8 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 
 // UpdateSkill updates an existing skill. If the name has changed, it renames the directory.
 //
+// Summary: UpdateSkill updates an existing skill. If the name has changed, it renames the directory.
+//
 // Parameters:
 //   - originalName (string): The originalName parameter.
 //   - skill (*Skill): The skill parameter.
@@ -182,10 +196,10 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -219,6 +233,8 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 
 // DeleteSkill deletes a skill. name is the name of the resource. Returns an error if the operation fails.
 //
+// Summary: DeleteSkill deletes a skill. name is the name of the resource. Returns an error if the operation fails.
+//
 // Parameters:
 //   - name (string): The name parameter.
 //
@@ -226,10 +242,10 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (m *Manager) DeleteSkill(name string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -248,6 +264,8 @@ func (m *Manager) DeleteSkill(name string) error {
 
 // SaveAsset saves an asset file (script, reference, etc.) for a skill. path is relative to the skill root (e.g. "scripts/myscript.py").
 //
+// Summary: SaveAsset saves an asset file (script, reference, etc.) for a skill. path is relative to the skill root (e.g. "scripts/myscript.py").
+//
 // Parameters:
 //   - skillName (string): The skillName parameter.
 //   - relPath (string): The relPath parameter.
@@ -257,10 +275,10 @@ func (m *Manager) DeleteSkill(name string) error {
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - May modify internal state or perform external calls.
 func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
