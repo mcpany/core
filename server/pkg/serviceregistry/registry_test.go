@@ -7,6 +7,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"sync"
 	"testing"
 
@@ -154,6 +156,13 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 	assert.False(t, ok)
 
 	t.Run("with OAuth2 authenticator", func(t *testing.T) {
+		var ts *httptest.Server
+		ts = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"issuer": "` + ts.URL + `"}`))
+		}))
+		defer ts.Close()
+
 		serviceConfig := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String("oauth2-service"),
 			HttpService: configv1.HttpUpstreamService_builder{
@@ -161,7 +170,7 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 			}.Build(),
 			Authentication: configv1.Authentication_builder{
 				Oauth2: configv1.OAuth2Auth_builder{
-					IssuerUrl: proto.String("https://accounts.google.com"),
+					IssuerUrl: proto.String(ts.URL),
 					Audience:  proto.String("test-audience"),
 				}.Build(),
 			}.Build(),

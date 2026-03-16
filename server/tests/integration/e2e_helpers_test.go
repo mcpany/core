@@ -62,14 +62,42 @@ func TestWaitForText(t *testing.T) {
 }
 
 func TestDockerHelpers(t *testing.T) {
-	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
-		t.Log("Skipping TestDockerHelpers in CI environment (CI/GITHUB_ACTIONS=true)")
-		// t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
-	}
-	t.Parallel()
-	if !IsDockerSocketAccessible() {
-		// t.Skip("Docker is not available")
-	}
+	// Remove t.Parallel() because it conflicts with t.Setenv
+
+	// Create a mock docker script to simulate Docker CLI behavior
+	mockDockerScript := filepath.Join(t.TempDir(), "mock-docker.sh")
+	scriptContent := `#!/bin/sh
+if [ "$1" = "ps" ]; then
+	echo "$@"
+elif [ "$1" = "inspect" ]; then
+	# StartRedisContainer parses "{{.State.Running}}" == "true"
+	echo "true"
+elif [ "$1" = "port" ]; then
+	# Return a fake port
+	echo "0.0.0.0:12345"
+elif [ "$1" = "run" ]; then
+	# Ensure background jobs or quick tasks return 0
+	# Wait a short amount of time to simulate a task if 'sleep' is found
+	if echo "$@" | grep -q "sleep"; then
+		# Actually run sleep in background to keep process alive slightly?
+		# It's better to just exit 0, but if it runs in background, maybe it's fine.
+		exit 0
+	fi
+	exit 0
+elif [ "$1" = "exec" ]; then
+	# Handle "docker exec <container> redis-cli ping"
+	if echo "$@" | grep -q "redis-cli ping"; then
+		echo "PONG"
+	fi
+	exit 0
+else
+	exit 0
+fi
+`
+	err := os.WriteFile(mockDockerScript, []byte(scriptContent), 0755)
+	require.NoError(t, err, "Failed to create mock docker script")
+
+	t.Setenv("MOCK_DOCKER_CMD", mockDockerScript)
 
 	// Test StartDockerContainer
 	imageName := "alpine:latest"

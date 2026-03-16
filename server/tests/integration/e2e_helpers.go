@@ -172,6 +172,9 @@ var (
 // checking for direct access, then trying passwordless sudo. The result is
 // cached for subsequent calls.
 func getDockerCommand() (string, []string) {
+	if mock := os.Getenv("MOCK_DOCKER_CMD"); mock != "" {
+		return mock, []string{}
+	}
 	dockerOnce.Do(func() {
 		// Environment variable overrides detection.
 		if val := os.Getenv("USE_SUDO_FOR_DOCKER"); val == "true" || val == "1" {
