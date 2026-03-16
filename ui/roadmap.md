@@ -283,8 +283,13 @@
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
 
+#### Upcoming (2026-05-05 Evolution)
+- [ ] **[P0] RAMS Shard Inspector**: Visual debugger for reasoning-aware memory segments and intent-sealed shards. (Added: 2026-05-05)
+- [ ] **[P0] HEPA Security Widget**: Real-time status for hardware-enclave path attestation and TPM-locked configs. (Added: 2026-05-05)
+- [ ] **[P1] Multi-modal Trace Debugger**: Forensic UI for analyzing textual and visual traces for RCS patterns. (Added: 2026-05-05)
+
 #### Upcoming (2026-05-04 Evolution)
-- [ ] **[P0] Semantic Integrity Dashboard**: Real-time visualization of intent drift and RIP alerts. (Added: 2026-05-04)
+- [ ] **[P0] Semantic Integrity Dashboard**: Real-time visualization of intent drift and RIP/RCS alerts. (Added: 2026-05-04 - Promoted to P0 on 2026-05-05)
 - [ ] **[P0] FD Persistence Monitor**: Visual tracker for kernel-bound file descriptors and pinning status. (Added: 2026-05-04)
 - [ ] **[P1] Bi-directional A2UI Sync Workspace**: Interactive bridge for user-initiated state pushes and intent correction. (Added: 2026-05-04)
 

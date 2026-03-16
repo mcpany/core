@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-05] Updates
+
+### Proposed Additions
+- **Reasoning-Aware Memory Segmentation (RAMS) Hub**: (P0) A core extension for the Blackboard that provides cryptographically isolated "Intent-Sealed Shards" for subagents, neutralizing "Memory Smearing."
+- **Hardware-Enclave Path Attestation (HEPA) Provider**: (P0) Security service that utilizes Secure Enclaves (TPM/SEP) to provide hardware-bound path validation during the initial O_PATH open phase.
+- **Cross-Swarm Intent Attestation Middleware**: (P1) UACO-native service that facilitates multi-signature attestation of mission-root intents across heterogeneous agent swarms.
+
+### Priority Shifts
+- **Kernel-Bound FD Persistence**: (Evolved to HEPA) Upgraded with hardware enclave support for stronger path-resolution guarantees.
+- **Semantic Integrity Bridge**: (Promoted to P0) Critical requirement for detecting "Recursive Context Splicing" (RCS) in multi-modal reasoning traces.
+
 ## Evolution: [2026-05-04] Updates
 
 ### Proposed Additions
