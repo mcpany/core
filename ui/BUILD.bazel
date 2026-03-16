@@ -9,6 +9,7 @@ load("@npm//ui:typescript/package_json.bzl", tsc_bin = "bin")
 load("@npm//ui:vite/package_json.bzl", vite_bin = "bin")
 load("@npm//ui:vitest/package_json.bzl", vitest_bin = "bin")
 load("//ui:playwright_tests.bzl", "define_playwright_tests")
+load("//ui:vitest_tests.bzl", "define_vitest_tests")
 
 npm_link_all_packages(name = "node_modules")
 
@@ -107,17 +108,8 @@ playwright_bin.playwright_binary(
     ],
 )
 
-# Vitest unit tests
-vitest_bin.vitest_test(
-    name = "vitest",
-    args = ["run"],
-    chdir = package_name(),
-    data = [
-        ":node_modules",
-        ":srcs",
-        "//proto:ts_proto",
-    ],
-)
+# Vitest unit tests split by file to maximize remote cache reuse.
+define_vitest_tests(vitest_bin)
 
 # Linting
 eslint_bin.eslint_test(
