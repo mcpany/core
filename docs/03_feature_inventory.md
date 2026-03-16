@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-04-30] Updates
+
+### Proposed Additions
+- **Mesh-Aware Blackboard Adaptor**: (P0) Transformation of the Shared KV Store into a graph-based intent mesh, enabling complex intent reconciliation for multi-agent swarms.
+- **Kernel-Level Inode Pinning (KLIP) Middleware**: (P0) A kernel-resident security layer for the Shadow-FS that prevents symlink-racing (SIR) by pinning hardware Inodes to session-bound file handles.
+- **UACO v3.0 S2S Trust Broker**: (P0) Multi-signature coordination service for Swarm-to-Swarm (S2S) task negotiation and identity management.
+
+### Priority Shifts
+- **Mesh-Aware Intelligence**: (Promoted to P0) Critical for reconciling conflicting intents in deep, heterogeneous swarms.
+- **KLIP Enforcement**: (Promoted to P0) Designated as the primary defense against the evolved BoryptGrab SIR exploit.
+
 ## Evolution: [2026-04-29] Updates
 
 ### Proposed Additions
