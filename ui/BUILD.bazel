@@ -161,16 +161,10 @@ pkg_tar(
 # Package the minimal node_modules needed by vite preview (vite itself + proxy deps).
 # We conservatively include the full node_modules; a future optimisation can
 # prune dev-only packages.
-js_binary(
-    name = "vite_preview_bin",
-    data = [":node_modules"],
-    entry_point = "node_modules/vite/bin/vite.js",
-)
-
-js_image_layer(
-    name = "ui_node_modules_layer",
-    binary = ":vite_preview_bin",
-    root = "/app",
+pkg_tar(
+    name = "ui_node_modules_tar",
+    srcs = [":node_modules"],
+    package_dir = "/app/node_modules",
 )
 
 # Static config files required by `vite preview` at runtime.
@@ -189,13 +183,22 @@ pkg_tar(
     deps = [
         ":ui_dist_tar",
         ":ui_config_tar",
+        ":ui_node_modules_tar",
     ],
 )
 
 oci_image(
     name = "ui_image",
     base = "@distroless_nodejs24",
-    entrypoint = ["/app/ui/vite_preview_bin", "preview", "--host", "0.0.0.0", "--port", "3000"],
+    entrypoint = [
+        "node",
+        "/app/node_modules/vite/bin/vite.js",
+        "preview",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "3000",
+    ],
     env = {
         # Override at deploy-time (k8s env, docker run --env, Helm values).
         "BACKEND_URL": "http://localhost:50050",
