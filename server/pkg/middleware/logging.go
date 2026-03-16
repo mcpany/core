@@ -29,6 +29,9 @@ import (
 // Side Effects:
 //   - Logs request start and end.
 //   - Updates metrics.
+//
+// Errors:
+//   - May return an error on failure.
 func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	if log == nil {
 		log = logging.GetLogger()

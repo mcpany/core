@@ -28,6 +28,9 @@ import (
 //
 // Side Effects:
 //   - Modifies the context to include authenticated user info.
+//
+// Errors:
+//   - May return an error on failure.
 func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {

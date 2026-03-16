@@ -46,6 +46,11 @@ type Upstream struct {
 //
 // Side Effects:
 //   - None.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Errors:
+//   - May return an error on failure.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		closers: make([]io.Closer, 0),

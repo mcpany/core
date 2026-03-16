@@ -59,6 +59,9 @@ type Debugger struct {
 //
 // Side Effects:
 //   - Starts a background goroutine to process debug entries.
+//
+// Errors:
+//   - May return an error on failure.
 func NewDebugger(size int) *Debugger {
 	d := &Debugger{
 		ring:        ring.New(size),

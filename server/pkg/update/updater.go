@@ -34,6 +34,11 @@ type Updater struct {
 //
 // Returns:
 //   - *Updater: A new Updater instance.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 	if httpClient == nil {
 		httpClient = http.DefaultClient

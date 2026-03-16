@@ -55,6 +55,9 @@ var (
 //
 // Side Effects:
 //   - Initializes the singleton if it doesn't exist.
+//
+// Errors:
+//   - May return an error on failure.
 func GlobalSettings() *Settings {
 	once.Do(func() {
 		globalSettings = &Settings{

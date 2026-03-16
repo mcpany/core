@@ -30,6 +30,11 @@ type IPAllowlistMiddleware struct {
 // Returns:
 //   - *IPAllowlistMiddleware: The initialized middleware instance.
 //   - error: An error if any of the provided CIDRs are invalid.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, error) {
 	m := &IPAllowlistMiddleware{}
 	if err := m.Update(allowedCIDRs); err != nil {

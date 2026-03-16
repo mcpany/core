@@ -21,6 +21,11 @@ type TmpfsProvider struct {
 //
 // Side Effects:
 //   - None.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Errors:
+//   - May return an error on failure.
 func NewTmpfsProvider() *TmpfsProvider {
 	return &TmpfsProvider{
 		fs: afero.NewMemMapFs(),

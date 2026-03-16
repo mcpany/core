@@ -103,6 +103,9 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - May return an error on failure.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager:       poolManager,

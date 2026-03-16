@@ -49,6 +49,9 @@ var _ resource.Resource = &SkillResource{}
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - May return an error on failure.
 func NewSkillResource(s *skill.Skill) *SkillResource {
 	return &SkillResource{
 		skill: s,
@@ -68,6 +71,9 @@ func NewSkillResource(s *skill.Skill) *SkillResource {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - May return an error on failure.
 func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 	return &SkillResource{
 		skill:     s,
@@ -316,6 +322,9 @@ func (r *SkillResource) Subscribe(_ context.Context) error {
 //
 // Side Effects:
 //   - Registers resources with the manager.
+//
+// Errors:
+//   - May return an error on failure.
 func RegisterSkillResources(rm resource.ManagerInterface, sm *skill.Manager) error {
 	skills, err := sm.ListSkills()
 	if err != nil {

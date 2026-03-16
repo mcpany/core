@@ -38,6 +38,11 @@ type ServiceRegistrationWorker struct {
 //
 // Returns:
 //   - *ServiceRegistrationWorker: A new service registration worker.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
 	return &ServiceRegistrationWorker{
 		bus:             bus,

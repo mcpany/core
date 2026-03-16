@@ -67,6 +67,9 @@ type CheckResult struct {
 //
 // Side Effects:
 //   - Performs network I/O to connect to upstream services.
+//
+// Errors:
+//   - May return an error on failure.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
 	// Using 'services' variable to support existing loop
 	services := config.GetUpstreamServices()
@@ -105,6 +108,9 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 //
 // Side Effects:
 //   - Performs network I/O to connect to the upstream service.
+//
+// Errors:
+//   - May return an error on failure.
 func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) CheckResult {
 	// 5 second timeout for checks
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)

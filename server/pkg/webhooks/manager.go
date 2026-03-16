@@ -50,6 +50,11 @@ type Manager struct {
 //
 // Side Effects:
 //   - Initializes internal maps and HTTP client.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Errors:
+//   - May return an error on failure.
 func NewManager() *Manager {
 	return &Manager{
 		webhooks:   make(map[string]*WebhookConfig),

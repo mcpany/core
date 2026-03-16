@@ -221,6 +221,11 @@ const toolContextKey = contextKey("tool")
 //
 // Returns:
 //   - context.Context: A new context containing the tool.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 	return context.WithValue(ctx, toolContextKey, t)
 }
@@ -235,6 +240,11 @@ func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 // Returns:
 //   - Tool: The tool instance from the context.
 //   - bool: True if a tool was found, false otherwise.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func GetFromContext(ctx context.Context) (Tool, bool) {
 	t, ok := ctx.Value(toolContextKey).(Tool)
 	return t, ok
@@ -299,6 +309,11 @@ const cacheControlContextKey = contextKey("cache_control")
 //
 // Returns:
 //   - context.Context: A new context containing the CacheControl.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.Context {
 	return context.WithValue(ctx, cacheControlContextKey, cc)
 }
@@ -313,6 +328,11 @@ func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.C
 // Returns:
 //   - *CacheControl: The CacheControl instance if found.
 //   - bool: True if CacheControl exists, false otherwise.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 	cc, ok := ctx.Value(cacheControlContextKey).(*CacheControl)
 	return cc, ok
@@ -369,6 +389,11 @@ type GRPCTool struct {
 //
 // Returns:
 //   - *GRPCTool: The initialized GRPCTool.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition, resilienceConfig *configv1.ResilienceConfig) *GRPCTool {
 	return &GRPCTool{
 		tool:              tool,
@@ -554,6 +579,11 @@ type HTTPTool struct {
 //
 // Returns:
 //   - *HTTPTool: The initialized HTTPTool.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *HTTPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1327,6 +1357,11 @@ type MCPTool struct {
 //
 // Returns:
 //   - *MCPTool: The initialized MCPTool.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1565,6 +1600,11 @@ type OpenAPITool struct {
 //
 // Returns:
 //   - *OpenAPITool: The initialized OpenAPITool.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1844,6 +1884,11 @@ type CommandTool struct {
 //
 // Returns:
 //   - Tool: The created CommandTool.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -1909,6 +1954,11 @@ type LocalCommandTool struct {
 //
 // Returns:
 //   - Tool: The created LocalCommandTool.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewLocalCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,

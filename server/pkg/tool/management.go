@@ -280,6 +280,9 @@ type Manager struct {
 //
 // Side Effects:
 //   - Allocates memory for internal maps and indices.
+//
+// Errors:
+//   - May return an error on failure.
 func NewManager(bus *bus.Provider) *Manager {
 	return &Manager{
 		bus:                  bus,

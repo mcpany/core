@@ -53,6 +53,11 @@ type Doctor struct {
 //
 // Side Effects:
 //   - Initializes internal maps and HTTP client.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Errors:
+//   - May return an error on failure.
 func NewDoctor() *Doctor {
 	return &Doctor{
 		checks:     make(map[string]CheckFunc),

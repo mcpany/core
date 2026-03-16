@@ -23,6 +23,13 @@ import (
 //
 // Returns:
 //   - (mcp.Middleware): The middleware function.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func CORSMiddleware() mcp.Middleware {
 	// Log a warning once when the middleware is created to inform the user.
 	// This helps avoid confusion if they expect this middleware to handle HTTP CORS.

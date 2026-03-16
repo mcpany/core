@@ -71,6 +71,9 @@ var byteBufferPool = sync.Pool{
 // Side Effects:
 //   - Intercepts the response writer to buffer and compress content.
 //   - Modifies the Content-Encoding header.
+//
+// Errors:
+//   - May return an error on failure.
 func GzipCompressionMiddleware(next http.Handler) http.Handler {
 	pool := sync.Pool{
 		New: func() interface{} {

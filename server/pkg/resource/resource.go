@@ -132,6 +132,13 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A new Manager instance.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		resources: make(map[string]Resource),

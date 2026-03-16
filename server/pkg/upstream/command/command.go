@@ -63,6 +63,11 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - None.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Errors:
+//   - May return an error on failure.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }

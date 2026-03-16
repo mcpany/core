@@ -16,6 +16,11 @@ import (
 //
 // Side Effects:
 //   - Reads environment variables.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Errors:
+//   - May return an error on failure.
 func CheckAuth() map[string]CheckResult {
 	results := make(map[string]CheckResult)
 

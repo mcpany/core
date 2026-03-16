@@ -220,6 +220,11 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 //
 // Returns:
 //   - int: The estimated token count.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func CalculateToolResultTokens(t tokenizer.Tokenizer, result any) int {
 	if result == nil {
 		return 0

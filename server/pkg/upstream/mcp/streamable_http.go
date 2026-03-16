@@ -112,6 +112,9 @@ type ClientSession interface {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - May return an error on failure.
 func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1.McpStdioConnection, httpAddress string, httpClient *http.Client) client.MCPClient) {
 	newClientImplForTesting = f
 }
@@ -127,6 +130,9 @@ func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - May return an error on failure.
 func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 	newClientForTesting = f
 }
@@ -146,6 +152,9 @@ func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - May return an error on failure.
 func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error)) {
 	connectForTesting = f
 }
@@ -242,6 +251,9 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - May return an error on failure.
 func NewUpstream(globalSettings *configv1.GlobalSettings) upstream.Upstream {
 	return &Upstream{
 		sessionRegistry: NewSessionRegistry(),

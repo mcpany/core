@@ -29,6 +29,11 @@ type CallPolicyMiddleware struct {
 //
 // Returns:
 //   - *CallPolicyMiddleware: The initialized middleware.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
 	return &CallPolicyMiddleware{
 		toolManager: toolManager,

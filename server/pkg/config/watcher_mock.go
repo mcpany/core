@@ -16,6 +16,11 @@ type MockWatcher struct {
 //
 // Side Effects:
 //   - None.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Errors:
+//   - May return an error on failure.
 func NewMockWatcher() *MockWatcher {
 	return &MockWatcher{}
 }

@@ -40,6 +40,11 @@ const (
 //
 // Returns:
 //   - context.Context: A new context containing the API key.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func ContextWithAPIKey(ctx context.Context, apiKey string) context.Context {
 	return context.WithValue(ctx, APIKeyContextKey, apiKey)
 }
@@ -54,6 +59,11 @@ func ContextWithAPIKey(ctx context.Context, apiKey string) context.Context {
 // Returns:
 //   - string: The API key.
 //   - bool: True if found.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func APIKeyFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(APIKeyContextKey).(string)
 	return val, ok
@@ -69,6 +79,11 @@ func APIKeyFromContext(ctx context.Context) (string, bool) {
 //
 // Returns:
 //   - context.Context: A new context containing the user ID.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func ContextWithUser(ctx context.Context, userID string) context.Context {
 	return context.WithValue(ctx, UserContextKey, userID)
 }
@@ -83,6 +98,11 @@ func ContextWithUser(ctx context.Context, userID string) context.Context {
 // Returns:
 //   - string: The user ID.
 //   - bool: True if found.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func UserFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(UserContextKey).(string)
 	return val, ok
@@ -98,6 +118,11 @@ func UserFromContext(ctx context.Context) (string, bool) {
 //
 // Returns:
 //   - context.Context: A new context containing the profile ID.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func ContextWithProfileID(ctx context.Context, profileID string) context.Context {
 	return context.WithValue(ctx, ProfileIDContextKey, profileID)
 }
@@ -112,6 +137,11 @@ func ContextWithProfileID(ctx context.Context, profileID string) context.Context
 // Returns:
 //   - string: The profile ID.
 //   - bool: True if found.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func ProfileIDFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(ProfileIDContextKey).(string)
 	return val, ok
@@ -153,6 +183,11 @@ type APIKeyAuthenticator struct {
 //
 // Returns:
 //   - *APIKeyAuthenticator: The initialized authenticator, or nil if config is invalid.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
 	if config == nil || config.GetParamName() == "" || config.GetVerificationValue() == "" {
 		return nil
@@ -214,6 +249,11 @@ type BasicAuthenticator struct {
 //
 // Returns:
 //   - *BasicAuthenticator: The initialized authenticator, or nil if config is invalid.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewBasicAuthenticator(config *configv1.BasicAuth) *BasicAuthenticator {
 	if config == nil || config.GetPasswordHash() == "" {
 		return nil
@@ -274,6 +314,11 @@ type TrustedHeaderAuthenticator struct {
 //
 // Returns:
 //   - *TrustedHeaderAuthenticator: The initialized authenticator, or nil if config is invalid.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewTrustedHeaderAuthenticator(config *configv1.TrustedHeaderAuth) *TrustedHeaderAuthenticator {
 	if config == nil || config.GetHeaderName() == "" {
 		return nil
@@ -331,6 +376,13 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A new Manager instance.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		authenticators: xsync.NewMap[string, Authenticator](),
@@ -547,6 +599,11 @@ var (
 //
 // Returns:
 //   - error: Error if validation fails.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func ValidateAuthentication(ctx context.Context, config *configv1.Authentication, r *http.Request) error {
 	if config == nil {
 		return nil // No auth configured implies allowed

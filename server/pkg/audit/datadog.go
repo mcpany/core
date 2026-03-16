@@ -48,6 +48,9 @@ type DatadogAuditStore struct {
 //
 // Side Effects:
 //   - Starts background workers to process the log queue.
+//
+// Errors:
+//   - May return an error on failure.
 func NewDatadogAuditStore(config *configv1.DatadogConfig) *DatadogAuditStore {
 	if config == nil {
 		config = &configv1.DatadogConfig{}

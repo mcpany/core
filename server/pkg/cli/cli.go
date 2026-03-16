@@ -30,6 +30,11 @@ type JSONExecutor struct {
 //
 // Returns:
 //   - (*JSONExecutor): Result.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 	return &JSONExecutor{
 		in:  in,

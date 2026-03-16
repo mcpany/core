@@ -55,6 +55,11 @@ type Option func(*RateLimitMiddleware)
 //
 // Returns:
 //   - (Option): The configured option.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func WithTokenizer(t tokenizer.Tokenizer) Option {
 	return func(m *RateLimitMiddleware) {
 		m.tokenizer = t
@@ -71,6 +76,11 @@ func WithTokenizer(t tokenizer.Tokenizer) Option {
 //
 // Returns:
 //   - (*RateLimitMiddleware): The initialized middleware.
+//
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,
