@@ -440,8 +440,13 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Inter-Swarm Deadlock Detector**: UACO monitoring service for detecting and breaking circular attestation dependencies. (Added: 2026-05-02)
 *   **[P0] Deterministic Recovery Bridge (DSR)**: Standardized mapping of subagent exit codes to automated PLSS rollbacks. (Added: 2026-05-02)
 
+#### Upcoming (2026-05-05 Evolution)
+*   **[P0] RAMS Isolation Hub**: Implementation of Reasoning-Aware Memory Segmentation for cryptographically isolated Blackboard shards. (Added: 2026-05-05)
+*   **[P0] HEPA Provider**: Hardware-Enclave Path Attestation for TPM-bound configuration loading. (Added: 2026-05-05)
+*   **[P1] Cross-Swarm Intent Attestation**: UACO-native multi-signature coordination for mission-root intents. (Added: 2026-05-05)
+
 #### Upcoming (2026-05-04 Evolution)
-*   **[P0] Semantic Integrity Bridge**: Intent Drift Detection middleware to prevent Recursive Intent Poisoning (RIP). (Added: 2026-05-04)
+*   **[P0] Semantic Integrity Bridge**: Intent Drift Detection middleware to prevent Recursive Intent Poisoning (RIP) and RCS. (Added: 2026-05-04 - Promoted to P0 on 2026-05-05)
 *   **[P0] Kernel-Bound FD Persistence Middleware**: FD-passing and pinning for absolute configuration immutability. (Added: 2026-05-04)
 *   **[P1] Bi-directional A2UI State Bridge**: Two-way state synchronization for corrective user intent injection. (Added: 2026-05-04)
 
