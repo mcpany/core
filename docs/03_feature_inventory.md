@@ -6,6 +6,15 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-03] Updates
+
+### Proposed Additions
+- **Intent-Scoped Snapshot Controller**: (P0) Extension of the PLSS Sync that performs targeted environment rollbacks restricted to the affected intent branch, reducing blast radius during recovery events.
+- **ContextEngine Sidecar Adapter**: (P1) Pluggable middleware that implements OpenClaw-native ContextEngine hooks, enabling modular context compression and retrieval strategies across different agent frameworks.
+
+### Priority Shifts
+- **Deterministic Absence Proof (DAP) Generator**: (Re-affirmed P0) Critical requirement to mitigate "absence-as-exploit" vectors (CVE-2026-25725) identified in recent ecosystem audits.
+
 ## Evolution: [2026-05-02] Updates
 
 ### Proposed Additions
@@ -122,8 +131,6 @@
 ### Priority Shifts
 - **RL Telemetry Provider**: (Promoted to P0) Now essential for providing high-frequency feedback tokens to OpenClaw-RL asynchronous training loops.
 - **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include DAP as a mandatory boot requirement for all compliant agent environments.
-
----
 
 ## Evolution: [2026-04-22] Updates
 
@@ -660,22 +667,6 @@
 - **Shared KV Store (Blackboard)**: Re-affirmed as **P0**. Expanded to include support for "Branch-Aware State Isolation" and "Merge Conflict Resolution."
 - **UDP Beacon Discovery Listener**: Promoted from **P1** to **P0**. Essential prerequisite for the new Federated Discovery Quorum.
 - **Inode-Aware Symlink Validator**: Re-prioritized to **P0**. Critical for mitigating project-local exfiltration vectors.
-
----
-
-## Evolution: 2026-04-01 Updates
-
-### Proposed Additions
-- **Reasoning-Bound Context Shifter**: (P0) Context management middleware that synchronizes dynamic shifting logic across frameworks.
-- **Path Normalization Engine (NaaS)**: (P0) Centralized service for OS-agnostic path normalization to prevent symlink and traversal escapes.
-- **Optimistic Capability Loading Middleware**: (P1) Predictive tool registry that handles Gemini-style optimistic loading with built-in TOCTOU protection.
-
-### Priority Shifts
-- **Inode-Aware Symlink Validator**: (Re-affirmed P0) Urgent requirement to address "Normalization Fatigue" in project-local config parsing.
-
-### Deprecations / Monitoring
-- **OS-Specific Path Joins**: Monitoring for deprecation in favor of the **Path Normalization Engine**.
-- **Static Discovery Quorums**: Moving toward **Optimistic Loading** with background attestation.
 
 ---
 

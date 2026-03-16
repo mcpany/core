@@ -9,6 +9,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 3. **Context Persistence**: Shared state and context inheritance across agent swarms and execution environments.
 
 ---
+---
+
+## Strategic Evolution: [2026-05-03]
+### Focus: Negative Attestation & Modular Context Sovereignty
+**Context**: The emergence of "Absence-as-Exploit" vectors (CVE-2026-25725) and the maturation of OpenClaw's pluggable `ContextEngine` demand a shift in how MCP Any manages environment integrity and state interoperability. We must move from verifying what *is* there to proving the absence of what *shouldn't* be there, while providing a seamless bridge for modular context strategies.
+**Strategic Pivot**:
+- **Deterministic Absence Proofs (DAP)**: We are mandating the generation of "Negative Manifests." MCP Any will act as the authoritative provider of signed proofs that restricted project-local configuration paths are either absent or in an attested baseline state before any agent boot occurs.
+- **ContextEngine Sidecar Hub**: MCP Any will evolve to host framework-agnostic "Context Sidecars." By implementing a native bridge to OpenClaw's `ContextEngine` hooks, we enable agents to leverage specialized memory and compression strategies while maintaining a centralized security boundary.
+- **Intent-Aware Snapshotting**: Leveraging the PLSS bridge, we will implement "Intent-Scoped Recovery." Rollbacks will no longer be global but targeted to the specific intent branch affected by a quorum failure or security violation, minimizing disruption in multi-threaded swarms.
+
+---
 
 ## Strategic Evolution: [2026-05-02]
 ### Focus: Risk-Adaptive Quorums & Deterministic Environment Recovery

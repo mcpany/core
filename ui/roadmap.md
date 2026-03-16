@@ -3,6 +3,9 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Absence Proof (DAP) Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (CVE-2026-25725). (Added: 2026-05-03)
+- [ ] **[P1] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions. (Added: 2026-05-03)
+- [ ] **[P0] Intent-Scoped Recovery Explorer**: UI for visualizing and managing targeted environment rollbacks. (Added: 2026-05-03)
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)
