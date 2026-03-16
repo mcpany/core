@@ -72,6 +72,7 @@ go_test(
     tags = [
         "integration",
         "no-remote-exec",
+        "no-sandbox",
     ],
     deps = [
         "//proto/api/v1:api",

@@ -763,7 +763,9 @@ func IsDockerSocketAccessible() bool {
 	}
 
 	// Also check if we can run a container (catch overlayfs issues in dind)
-	runCmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "run", "--rm", "alpine:latest", "true")...)
+	// We use sleep 1 to force a background/daemon style check which triggers the overlayfs mount failure
+	// more reliably than just 'true' which might exit too fast or not fully trigger the snapshotter in some environments.
+	runCmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "run", "--rm", "alpine:latest", "sleep", "1")...)
 	if err := runCmd.Run(); err != nil {
 		return false
 	}
