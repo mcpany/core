@@ -32,11 +32,6 @@ type DynamicResource struct {
 // Returns:
 //   - *DynamicResource: The initialized dynamic resource.
 //   - error: An error if validation fails.
-//
-// Errors:
-//   - None.
-// Side Effects:
-//   - None.
 func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*DynamicResource, error) {
 	if def == nil {
 		return nil, fmt.Errorf("resource definition is nil")

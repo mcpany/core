@@ -29,11 +29,6 @@ type ConnectionFactory struct {
 //
 // Side Effects:
 //   - None.
-//
-// Parameters:
-//   - None.
-// Errors:
-//   - None.
 func NewConnectionFactory() *ConnectionFactory {
 	return &ConnectionFactory{}
 }

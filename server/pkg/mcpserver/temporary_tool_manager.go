@@ -29,11 +29,6 @@ type TemporaryToolManager struct {
 //
 // Side Effects:
 //   - None.
-//
-// Parameters:
-//   - None.
-// Errors:
-//   - None.
 func NewTemporaryToolManager() *TemporaryToolManager {
 	return &TemporaryToolManager{
 		serviceInfo: make(map[string]*tool.ServiceInfo),

@@ -84,9 +84,6 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // Side Effects:
 //   - Starts a background cache cleaner.
-//
-// Errors:
-//   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),

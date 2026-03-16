@@ -29,11 +29,6 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: The initialized manager.
-//
-// Errors:
-//   - None.
-// Side Effects:
-//   - None.
 func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 	m := &Manager{
 		profiles: make(map[string]*configv1.ProfileDefinition),

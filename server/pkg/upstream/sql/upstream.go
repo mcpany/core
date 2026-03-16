@@ -35,11 +35,6 @@ type Upstream struct {
 //
 // Side Effects:
 //   - None.
-//
-// Parameters:
-//   - None.
-// Errors:
-//   - None.
 func NewUpstream() *Upstream {
 	return &Upstream{}
 }

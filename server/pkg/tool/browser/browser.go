@@ -50,13 +50,6 @@ type Provider struct {
 //
 // Returns:
 //   - *Provider: The initialized provider.
-//
-// Parameters:
-//   - None.
-// Errors:
-//   - None.
-// Side Effects:
-//   - None.
 func NewProvider() *Provider {
 	return &Provider{}
 }

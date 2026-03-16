@@ -34,11 +34,6 @@ type StaticResource struct {
 //
 // Returns:
 //   - *StaticResource: The initialized static resource.
-//
-// Errors:
-//   - None.
-// Side Effects:
-//   - None.
 func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *StaticResource {
 	return &StaticResource{
 		resource: &mcp.Resource{

@@ -23,9 +23,6 @@ import (
 //
 // Side Effects:
 //   - Writes formatted text to the provided writer.
-//
-// Errors:
-//   - None.
 func PrintResults(w io.Writer, results []CheckResult) {
 	if w == nil {
 		w = os.Stdout

@@ -85,13 +85,6 @@ type LocalStrategy struct{}
 //
 // Returns:
 //   - *LocalStrategy: The initialized strategy.
-//
-// Parameters:
-//   - None.
-// Errors:
-//   - None.
-// Side Effects:
-//   - None.
 func NewLocalStrategy() *LocalStrategy {
 	return &LocalStrategy{}
 }

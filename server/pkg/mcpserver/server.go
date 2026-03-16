@@ -116,9 +116,6 @@ func (s *Server) Server() *mcp.Server {
 //   - Registers HTTP handlers.
 //   - Registers built-in tools.
 //   - Registers middleware.
-//
-// Errors:
-//   - None.
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,

@@ -30,11 +30,6 @@ type HTTPCORSMiddleware struct {
 //
 // Returns:
 //   - (*HTTPCORSMiddleware): The initialized middleware.
-//
-// Errors:
-//   - None.
-// Side Effects:
-//   - None.
 func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 	m := &HTTPCORSMiddleware{}
 	m.updateInternal(allowedOrigins)

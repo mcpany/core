@@ -129,9 +129,6 @@ type ServiceRegistry struct {
 //
 // Side Effects:
 //   - Allocates memory for internal maps.
-//
-// Errors:
-//   - None.
 func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManager prompt.ManagerInterface, resourceManager resource.ManagerInterface, authManager *auth.Manager) *ServiceRegistry {
 	return &ServiceRegistry{
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),

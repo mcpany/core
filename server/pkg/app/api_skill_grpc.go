@@ -29,11 +29,6 @@ type SkillServiceServer struct {
 //
 // Returns:
 //   - *SkillServiceServer: The initialized gRPC server.
-//
-// Errors:
-//   - None.
-// Side Effects:
-//   - None.
 func NewSkillServiceServer(manager *skill.Manager) *SkillServiceServer {
 	return &SkillServiceServer{
 		manager: manager,

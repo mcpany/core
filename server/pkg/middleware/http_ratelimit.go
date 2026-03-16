@@ -37,11 +37,6 @@ type HTTPRateLimitOption func(*HTTPRateLimitMiddleware)
 //
 // Returns:
 //   - HTTPRateLimitOption: The configuration option.
-//
-// Errors:
-//   - None.
-// Side Effects:
-//   - None.
 func WithTrustProxy(trust bool) HTTPRateLimitOption {
 	return func(m *HTTPRateLimitMiddleware) {
 		m.trustProxy = trust
@@ -59,11 +54,6 @@ func WithTrustProxy(trust bool) HTTPRateLimitOption {
 //
 // Returns:
 //   - *HTTPRateLimitMiddleware: The initialized middleware instance.
-//
-// Errors:
-//   - None.
-// Side Effects:
-//   - None.
 func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOption) *HTTPRateLimitMiddleware {
 	// ⚡ BOLT: Prevented unbounded memory growth by enforcing a capacity limit on the rate limiter cache.
 	// Randomized Selection from Top 5 High-Impact Targets
