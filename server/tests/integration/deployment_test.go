@@ -20,6 +20,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// dockerComposeDemoAPIKey is the API key defined in server/examples/docker-compose-demo/config.yaml.
+const dockerComposeDemoAPIKey = "demo-key"
+
 func commandExists(cmd string) bool {
 	_, err := exec.LookPath(cmd)
 	return err == nil
@@ -177,14 +180,13 @@ func TestDockerCompose(t *testing.T) {
 	payload := `{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo/-/echo", "arguments": {"message": "Hello from Docker!"}}, "id": 1}`
 	var resp *http.Response
 	require.Eventually(t, func() bool {
-		req, err := http.NewRequest("POST", "http://127.0.0.1:50050/mcp", bytes.NewBufferString(payload))
+		req, err := http.NewRequest("POST", "http://127.0.0.1:50050/mcp?api_key="+dockerComposeDemoAPIKey, bytes.NewBufferString(payload))
 		if err != nil {
 			t.Logf("failed to create request: %v", err)
 			return false
 		}
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Accept", "application/json, text/event-stream")
-		req.Header.Set("Authorization", "Bearer demo-key")
 
 		client := &http.Client{Timeout: 5 * time.Second}
 		resp, err = client.Do(req)
