@@ -10,6 +10,16 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-14]
+### Focus: Semantic Guarding & Port-Free Local Coordination
+**Context**: The 2026 "ClawdBot" loopback vulnerability and the Cyera report on Gemini CLI prompt/command injection confirm that local network ports and un-sanitized tool inputs are the two primary agents of collapse in modern swarms. Security must move from the network layer to the filesystem and from reactive monitoring to pre-execution semantic shielding.
+**Strategic Pivot**:
+- **Semantic Shielding & Pre-Execution Scanning**: MCP Any will implement mandatory "Injection Shields" for all tool calls and configuration hooks. We are pivoting to perform real-time, SEMGREP-style static analysis and semantic scanning on all inputs *before* they are ingested by the agent reasoning engine, neutralizing prompt and command injection at the source.
+- **Mandatory Port-Free Local Coordination**: We are mandating the transition of all local inter-agent communication away from TCP/UDP loopback. MCP Any will prioritize isolated, Docker-bound named pipes (UNIX domain sockets) to eliminate the risk of unauthenticated local port hijacking and MitM attacks.
+- **Origin-Locked Loopback Proxying**: To support legacy tool-to-UI connectivity while local ports are being deprecated, we will enforce mandatory browser-origin and session-token binding for all remaining local listeners, ensuring that only verified local applications—not malicious websites—can command the Universal Agent Bus.
+
+---
+
 ## Strategic Evolution: [2026-05-13]
 ### Focus: Mandatory Loopback-to-Pipe Migration & Pre-Execution Injection Shielding
 **Context**: The disclosure of "ClawdBot" unauthenticated loopback vulnerabilities (port 18789) and the Cyera report on Gemini CLI prompt/command injection confirm that local network ports and un-sanitized tool inputs are the two primary agents of collapse in modern swarms. Security must move from the network layer to the filesystem and from reactive monitoring to pre-execution shielding.

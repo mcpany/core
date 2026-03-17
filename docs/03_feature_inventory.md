@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-14] Updates
+
+### Proposed Additions
+- **Semantic Injection-Shield Middleware**: (P0) A mandatory pre-execution scanning layer for all tool inputs that performs SEMGREP-style static analysis and semantic validation to neutralize prompt and command injection at the source.
+- **Port-Free Local Transport Gateway**: (P0) Transitionary middleware for inter-agent communication that mandates the use of isolated, kernel-resident named pipes (UNIX domain sockets) to eliminate local network port exposure.
+- **Origin-Locked Auth Proxy**: (P0) Mandatory security gate for remaining legacy loopback ports, enforcing browser-origin and session-token binding to prevent cross-site hijacking.
+
+### Priority Shifts
+- **Injection-Shielding Middleware**: (Re-affirmed P0) Critical for neutralizing vulnerabilities identified in the 2026 Gemini CLI and OpenClaw reports.
+- **Loopback Authentication Proxy**: (Re-affirmed P0) Now elevated with the requirement for "Mandatory Origin-Binding" during the port-free transition.
+
 ## Evolution: [2026-05-13] Updates
 
 ### Proposed Additions

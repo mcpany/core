@@ -3,6 +3,9 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Semantic Injection Shield Monitor**: (2026-05-14) UI for reviewing sanitized tool inputs and blocked injection attempts.
+- [ ] **[P0] Port-Free Transport Status Widget**: (2026-05-14) Real-time monitor for isolated named-pipe connections and kernel-level throughput.
+- [ ] **[P0] Origin Violation Security Hub**: (Re-affirmed P0) Visual dashboard for tracking and approving blocked browser-origin requests.
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)

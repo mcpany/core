@@ -46,3 +46,10 @@ The industry pivot away from local network port exposure (GSA-2026-OPENCLAW-ROUT
 
 ## 7. Evolutionary Changelog
 * **2026-05-13:** Initial Document Creation.
+
+### Update: 2026-05-14 - Transitioning to Port-Free Coordination
+**Context:** The "ClawdBot" exploit pattern confirms that legacy TCP loopback is an unacceptable risk for local agent swarms.
+**Architecture Adjustment:**
+* Mandating isolated Docker-bound named pipes for all inter-agent communication.
+* Deprecating TCP/UDP loopback transport in Section 4.
+**Security Impact:** Eliminates the risk of unauthenticated local port hijacking and MitM attacks by moving coordination to the kernel-resident filesystem layer.

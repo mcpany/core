@@ -45,3 +45,10 @@ The Cyera Research report (2026) on Gemini CLI vulnerabilities has highlighted t
 
 ## 7. Evolutionary Changelog
 * **2026-05-13:** Initial Document Creation.
+
+### Update: 2026-05-14 - Mandating Semantic Pre-Execution Shielding
+**Context:** The disclosure of Gemini CLI Issue 433939935 and OpenClaw SKILL.md vulnerabilities confirms that tool inputs are the primary vector for system compromise.
+**Architecture Adjustment:**
+* Implementing mandatory SEMGREP-style static analysis for all tool inputs.
+* Integrating a lightweight "Security LLM" for real-time semantic scanning of tool outputs.
+**Security Impact:** Neutralizes prompt and command injection before they reach the agent's reasoning engine, preventing credential exfiltration and RCE.
