@@ -100,6 +100,11 @@
 *   **[P1] DNS/ICMP Exfiltration Monitor**: L4 telemetry middleware to detect and block non-HTTP exfiltration attempts. (Added: 2026-03-21)
 *   **[P1] Hardware-Bound Trust Continuity**: TPM/Secure Enclave signatures to persist trust for verified headless agents. (Added: 2026-03-21)
 
+#### Upcoming (2026-03-17 Evolution)
+*   **[P0] Inter-Agent Mailbox Guard (IAMG)**: Mandatory mediation for teammate-to-teammate messaging with intent validation. (Added: 2026-03-17)
+*   **[P1] Verifiable RL Reward Provider**: Authoritative source for binary truth attestation to optimize RL reasoning loops. (Added: 2026-03-17)
+*   **[P0] Identity-Bound Discovery (IBD)**: Mission-token gated tool and capability discovery. (Added: 2026-03-17)
+
 #### Upcoming (2026-03-22 Evolution)
 *   **[P0] UACO Agentic SLA Middleware**: Enforcement of resource contracts (token budget, reasoning time) during task delegation. (Added: 2026-03-22)
 *   **[P0] Ghost Shell Execution Mode**: Isolated profiling environment for behavioral analysis of un-attested hooks. (Added: 2026-03-22)

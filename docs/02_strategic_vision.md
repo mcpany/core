@@ -374,6 +374,16 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-03-17]
+### Focus: Swarm Messaging Integrity & Verifiable Reward Infrastructure
+**Context**: The rapid adoption of "Agent Teams" (Claude Code) and the pivot to "RL-driven Reasoning" (DeepSeek/OpenClaw) confirm that the "Universal Agent Bus" must move from simple connectivity to **Active Inter-Agent Governance**. As swarms become deeper and more autonomous, the security frontier is no longer just the "tool," but the **Inbox** where agents coordinate and the **Reward** that optimizes their reasoning.
+**Strategic Pivot**:
+- **Inter-Agent Mailbox Guard (IAMG)**: MCP Any will evolve to act as the authoritative gatekeeper for inter-agent messaging (Mailboxes). We are mandating the use of "Intent-Bound Messaging" where every teammate-to-teammate request must be cryptographically signed and validated against a "Parental Mission Root." This ensures that a compromised subagent cannot "Mailbox Inject" a sibling into an unauthorized action.
+- **Verifiable Reward Provider (VRP)**: Supporting the next generation of RL-driven agents, MCP Any will act as the authoritative source for "Truth Attestation." We will provide the infrastructure for agents to request verifiable, binary rewards (e.g., "Was this shell command successful?" or "Does this file match this hash?") to optimize their internal reasoning loops without hallucination.
+- **Identity-Bound Discovery (IBD)**: To counter autonomous GitHub compromises, we are mandating "IBD." No capability (tool or subagent) will be exposed in the "Discovery Bus" unless the requester provides a cryptographically bound mission-token. This ensures that agents only "see" tools relevant to their specific, supervised task.
+
+---
+
 ## Strategic Evolution: [2026-03-16]
 ### Focus: Zero-Trust Local Transport & Cross-Framework Relational Integrity
 **Context**: The OpenClaw security crisis (CVE-2026-25253) has fundamentally shifted the "Local Trust" paradigm. Implicit trust of localhost is no longer viable in a browser-connected world. Simultaneously, the momentum of the Universal Agent Bus (UAB) and Gemini CLI's A2A discovery updates demand that MCP Any matures from a tool gateway into a secure, cross-framework Relational Hub.

@@ -37,6 +37,8 @@
 - [ ] **[P1] Skill Burn-In Profiler**: (2026-03-17) Dashboard for monitoring skills during their isolation period, showing real-time behavior compared to baseline.
 - [ ] **[P1] Skill Impact Simulator**: (2026-03-13) Interactive "dry-run" interface to preview skill side-effects.
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
+- [ ] **[P0] Inter-Agent Mailbox Monitor**: (2026-03-17) Visual tracking and security auditing of teammate-to-teammate coordination messages.
+- [ ] **[P1] RL Reward Attestation Viewer**: (2026-03-17) UI for monitoring verifiable binary rewards and reasoning optimization metrics.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
   - [x] "Execute" button with history and result visualization.
