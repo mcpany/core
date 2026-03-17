@@ -188,9 +188,10 @@ func TestDockerCompose(t *testing.T) {
 		return mcpanyReady && echoReady
 	}, 2*time.Minute, 5*time.Second, "Docker services did not become healthy in time")
 
-	// Make a request to the echo tool via mcpany
+	// Make a request to the echo tool via mcpany.
+	// The /mcp endpoint may respond with SSE (text/event-stream) instead of plain JSON.
+	// We retry until we receive a response that parses to a valid JSON-RPC result.
 	payload := `{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo/-/echo", "arguments": {"message": "Hello from Docker!"}}, "id": 1}`
-	var resp *http.Response
 	require.Eventually(t, func() bool {
 		req, err := http.NewRequest("POST", "http://127.0.0.1:50050/mcp?api_key="+dockerComposeDemoAPIKey, bytes.NewBufferString(payload))
 		if err != nil {
@@ -200,31 +201,43 @@ func TestDockerCompose(t *testing.T) {
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Accept", "application/json, text/event-stream")
 
-		client := &http.Client{Timeout: 5 * time.Second}
-		resp, err = client.Do(req)
+		client := &http.Client{Timeout: 10 * time.Second}
+		resp, err := client.Do(req)
 		if err != nil {
-			t.Logf("curl request failed: %v", err)
+			t.Logf("tool call request failed: %v", err)
 			return false
 		}
+		defer func() { _ = resp.Body.Close() }()
+
 		if resp.StatusCode != http.StatusOK {
-			t.Logf("Status code: %d", resp.StatusCode)
-			_ = resp.Body.Close()
+			t.Logf("unexpected status code: %d", resp.StatusCode)
 			return false
 		}
-		return true
-	}, 30*time.Second, 2*time.Second, "Failed to get a successful response from mcpany")
 
-	defer func() { _ = resp.Body.Close() }()
-	bodyBytes, err := io.ReadAll(resp.Body)
-	require.NoError(t, err)
-	var result map[string]interface{}
-	err = json.Unmarshal(bodyBytes, &result)
-	if err != nil {
-		t.Fatalf("Failed to decode json response: %v, raw body: %s", err, string(bodyBytes))
-	}
+		bodyBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			t.Logf("failed to read response body: %v", err)
+			return false
+		}
 
-	// Check the response
-	require.NotNil(t, result["result"])
+		// Handle SSE format: extract the JSON payload from the "data:" field.
+		jsonBytes := bodyBytes
+		if resp.Header.Get("Content-Type") == "text/event-stream" || bytes.HasPrefix(bodyBytes, []byte("event: ")) {
+			for _, line := range bytes.Split(bodyBytes, []byte("\n")) {
+				if bytes.HasPrefix(line, []byte("data: ")) {
+					jsonBytes = bytes.TrimPrefix(line, []byte("data: "))
+					break
+				}
+			}
+		}
+
+		var result map[string]interface{}
+		if err := json.Unmarshal(jsonBytes, &result); err != nil {
+			t.Logf("failed to decode response (raw body: %q): %v", string(bodyBytes), err)
+			return false
+		}
+		return result["result"] != nil
+	}, 30*time.Second, 2*time.Second, "Failed to get a successful tool-call response from mcpany")
 }
 
 func TestHelmChart(t *testing.T) {
