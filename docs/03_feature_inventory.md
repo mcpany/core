@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-14] Updates
+
+### Proposed Additions
+- **ContextEngine Lifecycle Adapter**: (P0) A native implementation of the OpenClaw v2026.3.7 ContextEngine lifecycle hooks, enabling MCP Any to act as a universal host for pluggable context plugins.
+- **Swarm-Aware Rate Limiter**: (P0) A high-speed security middleware designed to detect and neutralize coordinated "Hivenet" swarm attacks at sub-millisecond speeds.
+- **Hardware-Attested NHI Identity Wallets**: (P1) Integration of TPM/Secure Enclave-bound machine identities for all connected agents, ensuring non-repudiable agency and Zero-Trust identity.
+- **Asynchronous Telemetry Sink**: (P1) High-speed, non-blocking telemetry middleware that acts as the authoritative collector for OpenClaw-RL v1.0 reasoning traces and rollout tokens.
+
+### Priority Shifts
+- **Injection-Shielding Middleware**: (Re-affirmed P0) Designated as a mandatory prerequisite for all tool-driven code commits to counter high vulnerability rates in agent-generated PRs.
+- **A2A Messaging Hub**: (Re-affirmed P0) Expanded to support "Hardware-Attested NHI Wallets" as the primary identity transport.
+
 ## Evolution: [2026-05-13] Updates
 
 ### Proposed Additions

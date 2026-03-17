@@ -353,6 +353,12 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-14 Evolution)
+- [ ] **[P0] Swarm Attack Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and SAAD neutralization events. (Added: 2026-05-14)
+- [ ] **[P0] ContextEngine Plugin Manager**: Re-affirmed P0 for managing OpenClaw-compatible lifecycle hooks and "Mission-Root" anchors. (Added: 2026-05-14)
+- [ ] **[P1] NHI Identity Wallet Status**: UI for monitoring hardware-attested machine identities and their non-repudiable audit logs. (Added: 2026-05-14)
+- [ ] **[P1] Async Telemetry Dashboard**: Stream viewer for OpenClaw-RL v1.0 reasoning traces and background policy evaluations. (Added: 2026-05-14)
+
 #### Upcoming (2026-05-13 Evolution)
 - [ ] **[P0] Loopback Security Monitor**: Real-time visualization of authenticated vs. blocked local port requests. (Added: 2026-05-13)
 - [ ] **[P0] Injection Shield Alert Center**: UI for reviewing and approving sanitized tool inputs and blocked injection attempts. (Added: 2026-05-13)
