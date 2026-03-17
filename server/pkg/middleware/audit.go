@@ -300,6 +300,18 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 	}
 }
 
+// ClearHistory clears the audit history from the broadcaster.
+//
+// Summary: Clears the audit history.
+//
+// Side Effects:
+//   - Clears the history in the broadcaster.
+func (m *AuditMiddleware) ClearHistory() {
+	if m.broadcaster != nil {
+		m.broadcaster.ClearHistory()
+	}
+}
+
 // SubscribeWithHistory returns a channel that will receive broadcast messages,
 // and the current history of messages.
 //
