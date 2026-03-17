@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-16] Updates
+
+### Proposed Additions
+- **Hardware-Locked Intent Store (HLIS)**: (P0) Cryptographic anchoring of mission-root intents in Secure Enclaves (TPM/SEP), ensuring core goals remain immutable even if the agent is partially compromised.
+- **Secure Coordination Bus**: (P0) Implementation of cryptographically signed teammate-to-teammate messaging and state reconciliation for parallel agent teams.
+- **Multi-Modal Trace Sanitizer**: (P1) Semantic scanning and sanitization for visual and auditory reasoning traces to prevent multi-modal prompt injection.
+- **Identity-Bound Discovery (IBD) Enforcer**: (P0) Discovery-phase security gate that restricts tool and peer visibility to those cryptographically linked to the mission-token.
+
+### Priority Shifts
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Designated as a mandatory prerequisite for parallel team task delegation.
+- **Parallel Team Coordination Hub**: (Promoted to P0) Critical for supporting the new Claude Code "Agent Teams" model with secure coordination.
+
 ## Evolution: [2026-05-15] Updates
 
 ### Proposed Additions
