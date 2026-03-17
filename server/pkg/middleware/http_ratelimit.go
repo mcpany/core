@@ -4,11 +4,13 @@
 package middleware
 
 import (
+	"net"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/jellydator/ttlcache/v3"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/util"
 	"golang.org/x/time/rate"
 )
@@ -103,15 +105,32 @@ func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 			}
 		}
 
+		// Local-Loopback Rate Limiting check
+		// For loopback IPs, we limit per-origin to prevent malicious websites from brute-forcing
+		// local agent listeners. This fulfills the "Local Zero Trust" mandate.
+		cacheKey := ip
+		parsedIP := net.ParseIP(ip)
+		if parsedIP != nil && parsedIP.IsLoopback() {
+			origin := r.Header.Get("Origin")
+			if origin == "" {
+				cacheKey = "loopback:no-origin"
+			} else {
+				cacheKey = "loopback:" + origin
+			}
+		}
+
 		var limiter *rate.Limiter
-		if item := m.limiters.Get(ip); item != nil {
+		if item := m.limiters.Get(cacheKey); item != nil {
 			limiter = item.Value()
 		} else {
 			limiter = rate.NewLimiter(m.rps, m.burst)
-			m.limiters.Set(ip, limiter, ttlcache.DefaultTTL)
+			m.limiters.Set(cacheKey, limiter, ttlcache.DefaultTTL)
 		}
 
 		if !limiter.Allow() {
+			if strings.HasPrefix(cacheKey, "loopback:") {
+				logging.GetLogger().Warn("Loopback rate limit exceeded", "origin", r.Header.Get("Origin"), "ip", ip)
+			}
 			http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
 			return
 		}
