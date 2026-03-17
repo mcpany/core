@@ -515,6 +515,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-20 Evolution)
+*   **[P0] Policy-Bound Reasoning (PBR) Adapter**: Host and enforce immutable "Policy Anchors" at the pre-reasoning layer for cross-framework cognitive governance. (Added: 2026-05-20)
+*   **[P0] Multi-modal Integrity Bridge (MIB)**: Real-time sanitization of non-textual reasoning traces (SVG, CSS, Audio) to prevent context smuggling. (Added: 2026-05-20)
+*   **[P1] AIR Reconciliation Broker**: Decentralized intent reconciliation service utilizing hardware-attested multi-signature quorums. (Added: 2026-05-20)
+
 #### Upcoming (2026-05-19 Evolution)
 *   **[P0] Signed Reasoning Monologue (SRM) Provider**: Cryptographically bind and isolate an agent's internal reasoning from subagent inputs. (Added: 2026-05-19)
 *   **[P0] Namespace-Locked Discovery (NLD)**: Deterministic and collision-free capability mapping for heterogeneous swarms. (Added: 2026-05-19)
