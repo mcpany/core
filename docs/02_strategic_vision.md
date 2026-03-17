@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-11]
+### Focus: Discovery-Phase Sovereignty & Parallel Team Coordination
+**Context**: The disclosure of CVE-2026-0628 and the rise of "Ghost-Execution" via discovery commands confirm that the tool discovery phase is the new critical security frontier. Simultaneously, the launch of Claude Code "Agent Teams" signals a paradigm shift toward parallel, multi-agent execution, where coordination and state consistency must be managed at sub-millisecond latency.
+**Strategic Pivot**:
+- **Discovery-Phase Sovereignty**: MCP Any will evolve the "Ghost Shell" into a mandatory "Discovery Sandbox." All discovery-time execution (e.g., `discoveryCommand`) will be isolated in zero-trust, ephemeral environments. We will implement "Negative Discovery Attestation," providing cryptographic proof that no unauthorized project-local hooks were executed during the pre-flight phase.
+- **Parallel Team Coordination Hub**: Supporting the "Agent Teams" model, MCP Any will evolve into a "Parallel Coordination Bus." We will provide the infrastructure for high-speed message passing and "Snapshot-and-Merge" state reconciliation for the Blackboard, ensuring that parallel teammates maintain a consistent worldview without coordination deadlocks.
+- **Sovereign Context Sidecars**: Leveraging OpenClaw's pluggable ContextEngine, MCP Any will act as the authoritative "Sovereignty Broker" for context sidecars. We will ensure that specialized state management (e.g., long-term memory) is semantically sanitized and "Intent-Bound" before being shared across parallel teammate context windows.
+
 ## Strategic Evolution: [2026-05-10]
 ### Focus: Task-Bound Discovery Isolation & Continuous Negative Attestation
 **Context**: The Gemini CLI "Ghost-Execution" via discovery commands and Claude Code's "Shadow-Sandbox" escape (CVE-2026-25725) prove that the "Pre-Flight" phase is the new primary attack vector. Security must now extend to the very moment an agent *discovers* a tool, and must prove the absolute absence of malicious configuration hooks throughout the entire lifecycle.

@@ -353,6 +353,11 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-11 Evolution)
+- [ ] **[P0] Parallel Team Coordination Dashboard**: Visualization of inter-teammate message flow and Blackboard merge events. (Added: 2026-05-11)
+- [ ] **[P0] Negative Discovery Audit Viewer**: Dashboard for reviewing non-execution proofs and blocked discovery-phase hooks. (Added: 2026-05-11)
+- [ ] **[P1] Async RL Telemetry Streamer**: Real-time feed of reasoning traces and process rewards being exported to RL pipelines. (Added: 2026-05-11)
+
 #### Upcoming (2026-05-10 Evolution)
 - [ ] **[P0] Discovery Sandbox Monitor**: Real-time visualization of sandboxed discovery command execution and safety attestation status. (Added: 2026-05-10)
 - [ ] **[P0] DAP Continuous Audit Viewer**: UI for monitoring hardware-attested non-existence proofs across the session lifecycle. (Added: 2026-05-10)
