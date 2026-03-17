@@ -282,7 +282,7 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                                 scrollBeyondLastLine: false,
                                 fontSize: 12,
                                 diffCodeLens: true,
-                                renderSideBySide: true,
+                                renderSideBySide: false,
                             }}
                         />
                     </div>
