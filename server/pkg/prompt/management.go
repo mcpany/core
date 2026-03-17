@@ -15,6 +15,8 @@ import (
 // ManagerInterface defines the interface for a prompt manager.
 //
 // It manages the lifecycle, registration, and retrieval of prompts within the system.
+//
+// Summary: Represents a ManagerInterface.
 type ManagerInterface interface {
 	// AddPrompt registers a new prompt.
 	//
@@ -60,6 +62,8 @@ type ManagerInterface interface {
 // Manager is a thread-safe manager for registering and retrieving prompts.
 //
 // It supports concurrent access and uses caching for efficient list operations.
+//
+// Summary: Represents a Manager.
 type Manager struct {
 	prompts       *xsync.Map[string, Prompt]
 	mcpServer     MCPServerProvider
@@ -71,6 +75,20 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A pointer to the newly created Manager.
+//
+// Summary: Initializes NewManager operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		prompts: xsync.NewMap[string, Prompt](),
@@ -81,6 +99,20 @@ func NewManager() *Manager {
 //
 // Parameters:
 //   - mcpServer: MCPServerProvider. The MCP server provider.
+//
+// Summary: Updates SetMCPServer operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	pm.mu.Lock()
 	defer pm.mu.Unlock()
@@ -98,6 +130,20 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 // Side Effects:
 //   - Updates the internal prompt registry.
 //   - Invalidates the list cache.
+//
+// Summary: Executes AddPrompt operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (pm *Manager) AddPrompt(prompt Prompt) {
 	promptName := prompt.Prompt().Name
 	if existingPrompt, loaded := pm.prompts.LoadAndStore(promptName, prompt); loaded {
@@ -122,6 +168,20 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 // Side Effects:
 //   - Updates the internal prompt registry.
 //   - Invalidates the list cache.
+//
+// Summary: Executes UpdatePrompt operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (pm *Manager) UpdatePrompt(prompt Prompt) {
 	pm.prompts.Store(prompt.Prompt().Name, prompt)
 	pm.mu.Lock()
@@ -137,6 +197,20 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 // Returns:
 //   - Prompt: The prompt instance.
 //   - bool: True if found, false otherwise.
+//
+// Summary: Retrieves GetPrompt operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 	prompt, ok := pm.prompts.Load(name)
 	return prompt, ok
@@ -148,6 +222,20 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 //
 // Returns:
 //   - []Prompt: A slice of currently registered prompts.
+//
+// Summary: Executes ListPrompts operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (pm *Manager) ListPrompts() []Prompt {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Update/Clear).
@@ -194,6 +282,20 @@ func (pm *Manager) ListPrompts() []Prompt {
 // Side Effects:
 //   - Removes matching prompts from the registry.
 //   - Invalidates the list cache.
+//
+// Summary: Executes ClearPromptsForService operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (pm *Manager) ClearPromptsForService(serviceID string) {
 	changed := false
 	pm.prompts.Range(func(key string, value Prompt) bool {

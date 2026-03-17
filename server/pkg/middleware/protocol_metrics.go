@@ -21,8 +21,10 @@ var (
 	// Define Prometheus metrics for general MCP protocol operations.
 	mcpOperationDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name:    "mcp_operation_duration_seconds",
-			Help:    "Histogram of MCP operation duration in seconds.",
+			// Summary: Defines Nam.
+			Name: "mcp_operation_duration_seconds",
+			Help: "Histogram of MCP operation duration in seconds.",
+			// Summary: Defines Bucket.
 			Buckets: prometheus.DefBuckets,
 		},
 		[]string{"method", "status", "error_type"},
@@ -30,6 +32,7 @@ var (
 
 	mcpOperationTotal = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
+			// Summary: Defines Nam.
 			Name: "mcp_operations_total",
 			Help: "Total number of MCP operations.",
 		},
@@ -38,8 +41,10 @@ var (
 
 	mcpPayloadSizeBytes = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name:    "mcp_payload_size_bytes",
-			Help:    "Histogram of MCP payload size in bytes.",
+			// Summary: Defines Nam.
+			Name: "mcp_payload_size_bytes",
+			Help: "Histogram of MCP payload size in bytes.",
+			// Summary: Defines Bucket.
 			Buckets: prometheus.ExponentialBuckets(100, 10, 6),
 		},
 		[]string{"method", "direction"}, // direction: request, response
@@ -47,6 +52,7 @@ var (
 
 	mcpOperationTokensTotal = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
+			// Summary: Defines Nam.
 			Name: "mcp_operation_tokens_total",
 			Help: "Total number of tokens in MCP operations.",
 		},
@@ -67,6 +73,20 @@ var (
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes PrometheusMetricsMiddleware operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 	registerProtocolMetricsOnce.Do(func() {
 		prometheus.MustRegister(mcpOperationDuration)
@@ -220,6 +240,20 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 //
 // Returns:
 //   - int: The estimated token count.
+//
+// Summary: Executes CalculateToolResultTokens operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func CalculateToolResultTokens(t tokenizer.Tokenizer, result any) int {
 	if result == nil {
 		return 0
