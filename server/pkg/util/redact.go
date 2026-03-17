@@ -117,7 +117,6 @@ func init() {
 //
 // Returns:
 //   - []byte: The redacted JSON output.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -153,7 +152,6 @@ func RedactJSON(input []byte) []byte {
 //
 // Returns:
 //   - map[string]interface{}: The potentially redacted map.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -273,7 +271,6 @@ var sensitiveKeys = []string{
 //
 // Returns:
 //   - bool: True if the key is considered sensitive, false otherwise.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -515,7 +512,6 @@ var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
 //
 // Returns:
 //   - string: The redacted DSN string.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -640,7 +636,6 @@ type SecretRedactor struct {
 //
 // Returns:
 //   - *SecretRedactor: The configured redactor.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -706,7 +701,6 @@ func (r *SecretRedactor) Redact(text string) string {
 //
 // Returns:
 //   - string: The redacted text.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

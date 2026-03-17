@@ -30,7 +30,6 @@ type GlobalSettingsManager struct {
 //
 // Returns:
 //   - *GlobalSettingsManager: The initialized manager.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

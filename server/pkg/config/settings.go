@@ -55,7 +55,6 @@ var (
 //
 // Side Effects:
 //   - Initializes the singleton if it doesn't exist.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func GlobalSettings() *Settings {

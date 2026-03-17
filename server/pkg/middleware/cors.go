@@ -23,7 +23,6 @@ import (
 //
 // Returns:
 //   - (mcp.Middleware): The middleware function.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:

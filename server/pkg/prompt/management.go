@@ -71,7 +71,6 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A pointer to the newly created Manager.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:

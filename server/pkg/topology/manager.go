@@ -97,7 +97,6 @@ type TrafficPoint struct {
 //
 // Side Effects:
 //   - Starts the background process loop.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.ManagerInterface) *Manager {

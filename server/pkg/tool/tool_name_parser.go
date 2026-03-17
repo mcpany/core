@@ -21,7 +21,6 @@ import (
 //   - namespace: string. The service ID/namespace.
 //   - tool: string. The bare tool name.
 //   - err: error. An error if the tool name is invalid.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -51,7 +50,6 @@ func ParseToolName(toolName string) (namespace string, tool string, err error) {
 //
 // Returns:
 //   - string: The combined, fully qualified tool name.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

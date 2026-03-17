@@ -53,7 +53,6 @@ type sessionContextKey struct{}
 //
 // Returns:
 //   - context.Context: The new context.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -72,7 +71,6 @@ func NewContextWithSession(ctx context.Context, s Session) context.Context {
 // Returns:
 //   - Session: The session if found.
 //   - bool: True if the session exists.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -94,7 +92,6 @@ func GetSession(ctx context.Context) (Session, bool) {
 //
 // Returns:
 //   - context.Context: The new context.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -115,7 +112,6 @@ func NewContextWithSampler(ctx context.Context, s Sampler) context.Context {
 // Returns:
 //   - Sampler: The sampler if found.
 //   - bool: True if the sampler exists.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

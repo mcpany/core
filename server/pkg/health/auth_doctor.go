@@ -16,7 +16,6 @@ import (
 //
 // Side Effects:
 //   - Reads environment variables.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:

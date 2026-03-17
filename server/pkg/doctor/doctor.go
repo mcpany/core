@@ -67,7 +67,6 @@ type CheckResult struct {
 //
 // Side Effects:
 //   - Performs network I/O to connect to upstream services.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
@@ -108,7 +107,6 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 //
 // Side Effects:
 //   - Performs network I/O to connect to the upstream service.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) CheckResult {

@@ -108,7 +108,6 @@ func (e *ValidationError) Error() string {
 //
 // Returns:
 //   - ([]ValidationError): A slice of ValidationErrors, which will be empty if the configuration is valid.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -519,7 +518,6 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 //
 // Returns:
 //   - (error): An error if validation fails.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

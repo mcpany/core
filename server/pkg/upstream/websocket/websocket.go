@@ -97,7 +97,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Returns:
 //   - upstream.Upstream: A new Upstream instance for WebSocket services.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

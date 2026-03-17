@@ -59,7 +59,6 @@ type Debugger struct {
 //
 // Side Effects:
 //   - Starts a background goroutine to process debug entries.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewDebugger(size int) *Debugger {

@@ -21,7 +21,6 @@ import (
 //
 // Returns:
 //   - mcp.Middleware: The configured middleware function.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

@@ -34,7 +34,6 @@ type VectorEntry struct {
 //
 // Returns:
 //   - *SimpleVectorStore: A pointer to the newly created SimpleVectorStore.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:

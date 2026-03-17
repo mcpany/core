@@ -44,7 +44,6 @@ type Router struct {
 //
 // Side Effects:
 //   - Allocates memory for the Router and its handler map.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewRouter() *Router {

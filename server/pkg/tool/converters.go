@@ -26,7 +26,6 @@ import (
 // Returns:
 //   - *pb.Tool: The corresponding protobuf tool definition.
 //   - error: An error if conversion fails (e.g. invalid schema).
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -120,7 +119,6 @@ func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 // Returns:
 //   - *structpb.Struct: A struct representing the properties JSON schema.
 //   - error: An error if conversion fails.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -160,7 +158,6 @@ func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 // Returns:
 //   - *pb.Tool: The protobuf tool definition.
 //   - error: An error if conversion fails.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -215,7 +212,6 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 // Returns:
 //   - *jsonschema.Schema: The generated JSON schema.
 //   - error: An error if the scalar type is unsupported.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -255,7 +251,6 @@ func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 // Returns:
 //   - *mcp.Tool: The corresponding MCP tool definition.
 //   - error: An error if conversion fails.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

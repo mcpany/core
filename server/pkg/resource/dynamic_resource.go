@@ -32,7 +32,6 @@ type DynamicResource struct {
 // Returns:
 //   - *DynamicResource: The initialized dynamic resource.
 //   - error: An error if validation fails.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

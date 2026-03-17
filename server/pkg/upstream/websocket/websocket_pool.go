@@ -29,7 +29,6 @@ type Pool = pool.Pool[*client.WebsocketClientWrapper]
 // Returns:
 //   - Pool: A new WebSocket client pool.
 //   - error: An error if the pool cannot be created.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

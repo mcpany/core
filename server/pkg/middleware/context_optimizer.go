@@ -30,7 +30,6 @@ type ContextOptimizer struct {
 //
 // Returns:
 //   - *ContextOptimizer: The initialized optimizer.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

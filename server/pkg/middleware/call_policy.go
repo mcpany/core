@@ -29,7 +29,6 @@ type CallPolicyMiddleware struct {
 //
 // Returns:
 //   - *CallPolicyMiddleware: The initialized middleware.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

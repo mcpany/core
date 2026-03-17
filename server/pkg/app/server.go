@@ -315,7 +315,6 @@ type statsCacheEntry struct {
 //
 // Returns:
 //   - (*Application): The initialized application.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:
@@ -1486,7 +1485,6 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -1512,7 +1510,6 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

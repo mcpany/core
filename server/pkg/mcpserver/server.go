@@ -116,7 +116,6 @@ func (s *Server) Server() *mcp.Server {
 //   - Registers HTTP handlers.
 //   - Registers built-in tools.
 //   - Registers middleware.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewServer(

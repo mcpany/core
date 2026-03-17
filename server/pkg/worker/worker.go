@@ -42,7 +42,6 @@ type Worker struct {
 //
 // Returns:
 //   - *Worker: The initialized worker.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

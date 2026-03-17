@@ -48,7 +48,6 @@ type Store struct {
 //
 // Side Effects:
 //   - Allocates internal maps and slices.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:

@@ -42,7 +42,6 @@ const MaxRecursionDepth = 10
 // Returns:
 //   - *structpb.Struct: The properties structure for the input schema.
 //   - error: An error if the conversion fails.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -61,7 +60,6 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 // Returns:
 //   - *structpb.Struct: The properties structure for the output schema.
 //   - error: An error if the conversion fails.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -204,7 +202,6 @@ type McpFieldParameter interface {
 //   - *structpb.Struct: The properties structure for the input schema.
 //   - []string: A list of required parameter names.
 //   - error: An error if the conversion fails.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -254,7 +251,6 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 // Returns:
 //   - *structpb.Struct: The properties structure for the input schema.
 //   - error: An error if the conversion fails.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

@@ -30,7 +30,6 @@ var (
 //
 // Side Effects:
 //   - Updates the global log level atomic variable.
-//
 // Returns:
 //   - outcome: The resulting data or value.
 // Errors:
@@ -75,7 +74,6 @@ func ForTestsOnlyResetLogger() {
 // Side Effects:
 //   - Sets the global logger instance.
 //   - May open a file for writing.
-//
 // Returns:
 //   - outcome: The resulting data or value.
 // Errors:
@@ -156,7 +154,6 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 //
 // Side Effects:
 //   - May initialize the default logger if not already set.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:
@@ -190,7 +187,6 @@ func GetLogger() *slog.Logger {
 //
 // Side Effects:
 //   - None.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func ToSlogLevel(level configv1.GlobalSettings_LogLevel) slog.Level {

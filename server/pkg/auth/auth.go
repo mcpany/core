@@ -40,7 +40,6 @@ const (
 //
 // Returns:
 //   - context.Context: A new context containing the API key.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -59,7 +58,6 @@ func ContextWithAPIKey(ctx context.Context, apiKey string) context.Context {
 // Returns:
 //   - string: The API key.
 //   - bool: True if found.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -79,7 +77,6 @@ func APIKeyFromContext(ctx context.Context) (string, bool) {
 //
 // Returns:
 //   - context.Context: A new context containing the user ID.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -98,7 +95,6 @@ func ContextWithUser(ctx context.Context, userID string) context.Context {
 // Returns:
 //   - string: The user ID.
 //   - bool: True if found.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -118,7 +114,6 @@ func UserFromContext(ctx context.Context) (string, bool) {
 //
 // Returns:
 //   - context.Context: A new context containing the profile ID.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -137,7 +132,6 @@ func ContextWithProfileID(ctx context.Context, profileID string) context.Context
 // Returns:
 //   - string: The profile ID.
 //   - bool: True if found.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -183,7 +177,6 @@ type APIKeyAuthenticator struct {
 //
 // Returns:
 //   - *APIKeyAuthenticator: The initialized authenticator, or nil if config is invalid.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -249,7 +242,6 @@ type BasicAuthenticator struct {
 //
 // Returns:
 //   - *BasicAuthenticator: The initialized authenticator, or nil if config is invalid.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -314,7 +306,6 @@ type TrustedHeaderAuthenticator struct {
 //
 // Returns:
 //   - *TrustedHeaderAuthenticator: The initialized authenticator, or nil if config is invalid.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -376,7 +367,6 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A new Manager instance.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:
@@ -599,7 +589,6 @@ var (
 //
 // Returns:
 //   - error: Error if validation fails.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
