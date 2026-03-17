@@ -416,10 +416,35 @@ func (a *Application) Run(opts RunOptions) error {
 		}
 	}()
 
+	// Determine config sources
+	// Priority: File (if enabled/provided) > Database
 	var stores []config.Store
 
-	// Initialize DB if empty
-	if err := a.initializeDatabase(opts.Ctx, storageStore); err != nil {
+	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
+	if len(opts.ConfigPaths) > 0 {
+		// Always load config files if they are explicitly provided
+		log.Info("Loading config from files (highest priority)", "paths", opts.ConfigPaths)
+		stores = append(stores, config.NewFileStore(fs, opts.ConfigPaths))
+	} else if enableFileConfig {
+		log.Info("File configuration enabled via env var, but no config paths provided.")
+	}
+
+	// Add database as a fallback/secondary source
+	stores = append(stores, storageStore)
+
+	multiStore := config.NewMultiStore(stores...)
+
+	var cfg *config_v1.McpAnyServerConfig
+	cfg, err = config.LoadServices(opts.Ctx, multiStore, "server")
+	if err != nil {
+		return fmt.Errorf("failed to load services from merged config: %w", err)
+	}
+	if cfg == nil {
+		cfg = config_v1.McpAnyServerConfig_builder{}.Build()
+	}
+
+	// Initialize DB if empty (passing the loaded config to check if seeding is needed)
+	if err := a.initializeDatabase(opts.Ctx, storageStore, cfg); err != nil {
 		return fmt.Errorf("failed to initialize database: %w", err)
 	}
 
@@ -429,32 +454,6 @@ func (a *Application) Run(opts RunOptions) error {
 			log.Error("Failed to initialize log persistence", "error", err)
 		}
 		a.startLogPersistence(opts.Ctx, s)
-	}
-
-	// Determine config sources
-	// Priority: Database < File (if enabled)
-	stores = append(stores, storageStore)
-
-	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
-	if len(opts.ConfigPaths) > 0 {
-		// Always load config files if they are explicitly provided
-		log.Info("Loading config from files (overrides database)", "paths", opts.ConfigPaths)
-		stores = append(stores, config.NewFileStore(fs, opts.ConfigPaths))
-	} else if enableFileConfig {
-		// If enabled but no paths provided, we might still want to load from default locations (if any)
-		// but currently NewFileStore requires paths. We keep this variable if it's used elsewhere,
-		// but for now, we just log that we are enabled but have no paths.
-		log.Info("File configuration enabled via env var, but no config paths provided.")
-	}
-	multiStore := config.NewMultiStore(stores...)
-
-	var cfg *config_v1.McpAnyServerConfig
-	cfg, err = config.LoadServices(opts.Ctx, multiStore, "server")
-	if err != nil {
-		return fmt.Errorf("failed to load services from config: %w", err)
-	}
-	if cfg == nil {
-		cfg = config_v1.McpAnyServerConfig_builder{}.Build()
 	}
 	a.lastReloadTime = time.Now()
 
@@ -554,13 +553,28 @@ func (a *Application) Run(opts RunOptions) error {
 	a.AuthManager = authManager
 
 	// Initialize Profile Manager and set profile definitions
-	// GetProfileDefinitions returns nil if not set, handled by Update
 	var profileDefinitions []*config_v1.ProfileDefinition
 	if cfg.GetGlobalSettings() != nil {
 		profileDefinitions = cfg.GetGlobalSettings().GetProfileDefinitions()
 	} else {
 		profileDefinitions = config.GlobalSettings().GetProfileDefinitions()
 	}
+
+	// Ensure there is at least a "default" profile
+	hasDefault := false
+	for _, p := range profileDefinitions {
+		if p.GetName() == "default" {
+			hasDefault = true
+			break
+		}
+	}
+	if !hasDefault {
+		log.Debug("Injected missing 'default' profile definition")
+		profileDefinitions = append(profileDefinitions, config_v1.ProfileDefinition_builder{
+			Name: proto.String("default"),
+		}.Build())
+	}
+
 	a.ProfileManager = profile.NewManager(profileDefinitions)
 
 	// Set profiles for tool filtering

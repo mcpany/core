@@ -475,3 +475,30 @@ global_settings: {
 	// Verify the default user DOES NOT have the disabled profile
 	assert.NotContains(t, defaultUser.GetProfileIds(), "disabled_profile", "Default user should not have access to disabled profiles")
 }
+
+func TestDefaultUser_UsesAPIKeyFromResolvedConfig(t *testing.T) {
+	content := `
+global_settings: {
+    api_key: "1234567890abcdef"
+}
+upstream_services: {
+	name: "service-implicit-profile"
+	http_service: {
+		address: "http://api.example.com"
+	}
+}
+`
+	filePath := createTempConfigFile(t, content)
+	fs := afero.NewOsFs()
+	fileStore := NewFileStore(fs, []string{filePath})
+
+	cfg, err := LoadServices(context.Background(), fileStore, "server")
+	require.NoError(t, err)
+	require.NotNil(t, cfg)
+	require.Len(t, cfg.GetUsers(), 1)
+
+	defaultUser := cfg.GetUsers()[0]
+	require.NotNil(t, defaultUser.GetAuthentication())
+	require.NotNil(t, defaultUser.GetAuthentication().GetApiKey())
+	assert.Equal(t, "1234567890abcdef", defaultUser.GetAuthentication().GetApiKey().GetVerificationValue())
+}

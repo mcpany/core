@@ -6,6 +6,7 @@ package integration_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -115,11 +116,14 @@ func TestDockerCompose(t *testing.T) {
 	integration.EnsureHTTPEchoServerImageLoaded(t)
 
 	dockerCmd := getDockerCommand(t)
+	hostPort := findFreePort(t)
+	composeEnv := append(os.Environ(), fmt.Sprintf("HOST_PORT=%d", hostPort))
 
 	// Run in detached mode using the compose file's directory as the project directory
 	// so that relative volume mounts (./config.yaml) resolve correctly.
 	upCmdArgs := append(dockerCmd, "compose", "--project-directory", composeDir, "-f", dockerComposeFile, "up", "-d")
 	upCmd := exec.Command(upCmdArgs[0], upCmdArgs[1:]...) //nolint:gosec
+	upCmd.Env = composeEnv
 	upOutput, err := upCmd.CombinedOutput()
 	require.NoError(t, err, "docker compose up -d should not fail: %s", string(upOutput))
 
@@ -136,6 +140,7 @@ func TestDockerCompose(t *testing.T) {
 		t.Log("Cleaning up docker compose services...")
 		downCmdArgs := append(dockerCmd, "compose", "--project-directory", composeDir, "-f", dockerComposeFile, "down", "--volumes")
 		downCmd := exec.Command(downCmdArgs[0], downCmdArgs[1:]...) //nolint:gosec
+		downCmd.Env = composeEnv
 		downOutput, err := downCmd.CombinedOutput()
 		if err != nil {
 			t.Logf("Failed to run 'docker compose down': %s\n%s", err, string(downOutput))
@@ -148,6 +153,7 @@ func TestDockerCompose(t *testing.T) {
 	require.Eventually(t, func() bool {
 		psCmdArgs := append(dockerCmd, "compose", "--project-directory", composeDir, "-f", dockerComposeFile, "ps", "--format", "json")
 		psCmd := exec.Command(psCmdArgs[0], psCmdArgs[1:]...) //nolint:gosec
+		psCmd.Env = composeEnv
 		psOutput, err := psCmd.CombinedOutput()
 		if err != nil {
 			t.Logf("docker compose ps failed: %v", err)
@@ -189,19 +195,73 @@ func TestDockerCompose(t *testing.T) {
 	}, 2*time.Minute, 5*time.Second, "Docker services did not become healthy in time")
 
 	// Make a request to the echo tool via mcpany.
-	// The /mcp endpoint may respond with SSE (text/event-stream) instead of plain JSON.
-	// We retry until we receive a response that parses to a valid JSON-RPC result.
-	payload := `{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo.echo", "arguments": {"message": "Hello from Docker!"}}, "id": 1}`
+	// The streamable MCP endpoint requires an initialized session before tools/call.
+	// We retry the full initialize -> initialized -> tools/call flow until the upstream service is ready.
+	initializePayload := `{"jsonrpc":"2.0","method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"docker-compose-test","version":"1.0.0"}},"id":1}`
+	initializedPayload := `{"jsonrpc":"2.0","method":"notifications/initialized","params":{}}`
+	payload := `{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo.echo", "arguments": {"message": "Hello from Docker!"}}, "id": 2}`
+	baseURL := fmt.Sprintf("http://127.0.0.1:%d/mcp?api_key=%s", hostPort, dockerComposeDemoAPIKey)
 	require.Eventually(t, func() bool {
-		req, err := http.NewRequest("POST", "http://127.0.0.1:50050/mcp?api_key="+dockerComposeDemoAPIKey, bytes.NewBufferString(payload))
+		client := &http.Client{Timeout: 10 * time.Second}
+
+		initReq, err := http.NewRequest("POST", baseURL, bytes.NewBufferString(initializePayload))
 		if err != nil {
-			t.Logf("failed to create request: %v", err)
+			t.Logf("failed to create initialize request: %v", err)
+			return false
+		}
+		initReq.Header.Set("Content-Type", "application/json")
+		initReq.Header.Set("Accept", "application/json, text/event-stream")
+
+		initResp, err := client.Do(initReq)
+		if err != nil {
+			t.Logf("initialize request failed: %v", err)
+			return false
+		}
+		defer func() { _ = initResp.Body.Close() }()
+
+		if initResp.StatusCode != http.StatusOK {
+			bodyBytes, _ := io.ReadAll(initResp.Body)
+			t.Logf("unexpected initialize status code: %d body=%q", initResp.StatusCode, string(bodyBytes))
+			return false
+		}
+
+		sessionID := initResp.Header.Get("Mcp-Session-Id")
+		if sessionID == "" {
+			t.Log("initialize response did not include MCP session id")
+			return false
+		}
+
+		initializedReq, err := http.NewRequest("POST", baseURL, bytes.NewBufferString(initializedPayload))
+		if err != nil {
+			t.Logf("failed to create initialized request: %v", err)
+			return false
+		}
+		initializedReq.Header.Set("Content-Type", "application/json")
+		initializedReq.Header.Set("Accept", "application/json, text/event-stream")
+		initializedReq.Header.Set("Mcp-Session-Id", sessionID)
+
+		initializedResp, err := client.Do(initializedReq)
+		if err != nil {
+			t.Logf("initialized notification failed: %v", err)
+			return false
+		}
+		defer func() { _ = initializedResp.Body.Close() }()
+
+		if initializedResp.StatusCode != http.StatusOK && initializedResp.StatusCode != http.StatusAccepted {
+			bodyBytes, _ := io.ReadAll(initializedResp.Body)
+			t.Logf("unexpected initialized status code: %d body=%q", initializedResp.StatusCode, string(bodyBytes))
+			return false
+		}
+
+		req, err := http.NewRequest("POST", baseURL, bytes.NewBufferString(payload))
+		if err != nil {
+			t.Logf("failed to create tool call request: %v", err)
 			return false
 		}
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Accept", "application/json, text/event-stream")
+		req.Header.Set("Mcp-Session-Id", sessionID)
 
-		client := &http.Client{Timeout: 10 * time.Second}
 		resp, err := client.Do(req)
 		if err != nil {
 			t.Logf("tool call request failed: %v", err)
@@ -210,7 +270,8 @@ func TestDockerCompose(t *testing.T) {
 		defer func() { _ = resp.Body.Close() }()
 
 		if resp.StatusCode != http.StatusOK {
-			t.Logf("unexpected status code: %d", resp.StatusCode)
+			bodyBytes, _ := io.ReadAll(resp.Body)
+			t.Logf("unexpected tool-call status code: %d body=%q", resp.StatusCode, string(bodyBytes))
 			return false
 		}
 
