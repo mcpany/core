@@ -76,6 +76,20 @@ func (w *Worker) Start(ctx context.Context) {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes Stop operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (w *Worker) Stop() {
 	w.wg.Wait() // Wait for the subscription to be set up
 	w.mu.Lock()

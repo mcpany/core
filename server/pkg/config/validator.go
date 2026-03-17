@@ -39,6 +39,7 @@ const (
 	// Summary: Defines Serve.
 	Server BinaryType = iota
 	// Worker represents the worker binary.
+	// Summary: Defines Worke.
 	Worker
 	// Client represents the client binary.
 	// Summary: Defines Clien.
@@ -55,6 +56,7 @@ const (
 	// Summary: Defines AuthValidationContextIncomin.
 	AuthValidationContextIncoming AuthValidationContext = iota
 	// AuthValidationContextOutgoing represents outgoing authentication (e.g., Upstream Services).
+	// Summary: Defines AuthValidationContextOutgoin.
 	AuthValidationContextOutgoing
 )
 
