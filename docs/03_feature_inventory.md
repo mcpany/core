@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-17] Updates
+
+### Proposed Additions
+- **`TeammateTool` Orchestration Adapter**: (P0) Infrastructure for cross-framework "Agent Teams," facilitating Claude-style delegation and synchronization for heterogeneous swarms.
+- **Transport-Layer Session Binder (TLSB)**: (P0) A security middleware that cryptographically binds inter-agent transport channels (Named Pipes/WebSockets) to hardware-attested reasoning session tokens.
+- **Authenticated Agent Card Discovery**: (P0) Identity-bound discovery service for the A2A Messaging Hub that enforces "Auth-Before-Discovery" for agent capabilities.
+- **ContextEngine Lifecycle Adapter (v2026.3.7)**: (P0) Upgrade for the ContextEngine Adapter to support the full OpenClaw v2026.3.7 lifecycle hooks for third-party context plugins.
+
+### Priority Shifts
+- **A2A Messaging Hub**: (Re-affirmed P0) Designated as the primary gateway for the new "Authenticated Agent Card Discovery."
+- **Isolated Named-Pipe Transport Middleware**: (Re-affirmed P0) Elevated with the requirement for mandatory TLSB to prevent "Team Ghosting."
+
 ## Evolution: [2026-05-16] Updates
 
 ### Proposed Additions
