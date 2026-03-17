@@ -191,7 +191,7 @@ func TestDockerCompose(t *testing.T) {
 	// Make a request to the echo tool via mcpany.
 	// The /mcp endpoint may respond with SSE (text/event-stream) instead of plain JSON.
 	// We retry until we receive a response that parses to a valid JSON-RPC result.
-	payload := `{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo/-/echo", "arguments": {"message": "Hello from Docker!"}}, "id": 1}`
+	payload := `{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo.echo", "arguments": {"message": "Hello from Docker!"}}, "id": 1}`
 	require.Eventually(t, func() bool {
 		req, err := http.NewRequest("POST", "http://127.0.0.1:50050/mcp?api_key="+dockerComposeDemoAPIKey, bytes.NewBufferString(payload))
 		if err != nil {
