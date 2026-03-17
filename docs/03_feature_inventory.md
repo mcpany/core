@@ -376,11 +376,14 @@
 ## Evolution: [2026-03-17] Updates
 
 ### Proposed Additions
+- **Local-Loopback Rate Limiter**: (P0) Mandatory rate limiting and auditing for all 127.0.0.1 / ::1 traffic to mitigate high-frequency brute-force and token hijacking attempts.
+- **Origin-Locked Session Bridge**: (P0) A hardened security layer that cryptographically binds session tokens to the initiating browser origin, neutralizing token exfiltration (CVE-2026-25253).
 - **Inter-Agent Mailbox Guard (IAMG)**: (P0) A security gateway for inter-agent messaging (Mailboxes) that enforces Zero-Trust identity and intent-validation on all teammate-to-teammate requests.
 - **Verifiable RL Reward Provider**: (P1) A "Truth Attestation" middleware that provides verifiable binary rewards (command success, hash match) to optimize agent reasoning loops.
 - **Identity-Bound Discovery (IBD) Enforcer**: (P0) A core security layer for the Discovery Bus that mandates cryptographically bound mission-tokens for all capability discovery requests.
 
 ### Priority Shifts
+- **Same-Origin Policy (SOP) Enforcer**: (Promoted to P0) Now designated as a mandatory prerequisite for all local listeners to counter CVE-2026-25253.
 - **A2A Messaging Hub**: (Re-affirmed P0) Evolving to act as the primary transport for the Inter-Agent Mailbox Guard.
 - **RL Telemetry Provider**: (Promoted to P0) Essential for feeding verifiable rewards back to OpenClaw-RL policy engines.
 

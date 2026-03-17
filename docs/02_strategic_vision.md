@@ -386,6 +386,16 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ---
 
 ## Strategic Evolution: [2026-03-17]
+### Focus: Hardened Local Sovereignty & Local Zero Trust
+**Context**: The disclosure of CVE-2026-25253 (OpenClaw Token Exfiltration) and the Oasis Security report confirm that "Implicit Local Trust" is a catastrophic failure point. Attackers are now bridging the browser-to-local gap to hijack agent control planes.
+**Strategic Pivot**:
+- **Local Zero Trust Mandate**: MCP Any will transition from "Local-by-Default" to "Local Zero Trust." We will mandate strict `Origin` and `Sec-Fetch-Site` validation for all local endpoints, ensuring only verified local applications can communicate with the gateway.
+- **Loopback Rate Limiting**: To counter brute-force attempts from malicious JavaScript, we are introducing mandatory rate limiting and auditing for all loopback (`127.0.0.1`) traffic.
+- **Origin-Bound Session Tokens**: We will evolve our session management to cryptographically bind session tokens to the initiating browser origin, neutralizing token exfiltration attempts even if a WebSocket connection is established.
+
+---
+
+## Strategic Evolution: [2026-03-17]
 ### Focus: Swarm Messaging Integrity & Verifiable Reward Infrastructure
 **Context**: The rapid adoption of "Agent Teams" (Claude Code) and the pivot to "RL-driven Reasoning" (DeepSeek/OpenClaw) confirm that the "Universal Agent Bus" must move from simple connectivity to **Active Inter-Agent Governance**. As swarms become deeper and more autonomous, the security frontier is no longer just the "tool," but the **Inbox** where agents coordinate and the **Reward** that optimizes their reasoning.
 **Strategic Pivot**:
