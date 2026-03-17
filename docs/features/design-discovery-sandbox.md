@@ -43,3 +43,10 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 
 ## 7. Evolutionary Changelog
 * **2026-05-10:** Initial Document Creation.
+
+### Update: 2026-05-15 - Mandatory Sandbox Enforcement
+**Context:** Verification of the Gemini CLI `discoveryCommand` exploit confirms that "Unknown Trust" state is a critical RCE vector.
+**Architecture Adjustment:**
+* Moving from "Optional" to "Mandatory" sandboxing for all `discoveryCommand` execution in Section 4.
+* Introducing a "Pre-Discovery Attestation" phase where discovery logic must pass a static behavioral profile before entering the sandbox.
+**Security Impact:** Neutralizes RCE-on-clone attacks by ensuring no discovery logic ever executes with host privileges.

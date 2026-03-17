@@ -393,3 +393,12 @@
 - [ ] **[P0] A2A Replay Security Dashboard**: Visualize nonce status and replay attempt alerts in the A2A hub. (Added: 2026-04-22)
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)
 - [ ] **[P1] Encrypted Monologue Explorer**: Secure UI fragment for user-authorized decryption and review of subagent reasoning. (Added: 2026-04-22)
+
+#### Upcoming (2026-05-15 Evolution)
+- [ ] **[P0] S2S Mesh Orchestration Dashboard**: Visualization of inter-swarm negotiations, Swarm Wallets, and multi-signature handshakes. (Added: 2026-05-15)
+- [ ] **[P0] IBHI Sovereignty Monitor**: Real-time status indicator for hardware-locked mission intents and violation alerts. (Added: 2026-05-15)
+- [ ] **[P0] Shared-Memory BSH Performance Heatmap**: High-resolution metrics for zero-copy state handoffs between local teammates. (Added: 2026-05-15)
+- [ ] **[P1] NFA Feedback Compliance Viewer**: Interactive tracker for user corrective feedback and agent reasoning alignment. (Added: 2026-05-15)
+- [ ] **[P0] Discovery Sandbox Real-time Logs**: Visualizer for ephemeral sandboxed discovery execution and attestation status. (Added: 2026-05-15)
+- [ ] **[P1] Swarm Wallet Manager**: UI for managing multi-signature wallets and collective NHI identities. (Added: 2026-05-15)
+- [ ] **[P1] Consensus Optimizer Dashboard**: Visualization of high-trust negotiation paths and token savings. (Added: 2026-05-15)

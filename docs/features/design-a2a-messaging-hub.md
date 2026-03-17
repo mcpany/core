@@ -75,3 +75,10 @@ With the transition of the Agent2Agent (A2A) protocol to the Linux Foundation, i
 * **Safety Proof Mandatory Validation:** Updating the `/v1/a2a/propose` logic in Section 4 to mandate a "Safety Proof" for all task proposals. This proof must include a cryptographically signed justification and a reputation-bound capability claim.
 * **Coercion Detection Middleware:** Introducing an interception layer that scans task proposals for imperative instructions targeting the parent agent's reasoning engine (e.g., "forget previous instructions").
 **Security Impact:** Neutralizes the "ClawHavoc" style coercion vector by ensuring all inter-agent task delegations are authenticated, scoped, and semantically sanitized.
+
+### Update: 2026-05-15 - S2S Mesh Gateway Evolution
+**Context:** The stabilization of UACO v3.5 (S2S Negotiation) marks a shift from agent-to-agent communication to collective swarm-to-swarm mesh orchestration.
+**Architecture Adjustment:**
+* **UACO v3.5 S2S Handshake Implementation:** The hub is being upgraded to a full S2S Gateway in Section 4, supporting the discovery and negotiation between entire agent collectives.
+* **Swarm Wallet Support:** Introducing "Swarm Wallets" to the Identity Store. This allows collectives to bid on tasks and sign handshakes as single entities using multi-signature (M-of-N) attestation.
+**Security Impact:** Facilitates secure, high-level negotiation between swarms while maintaining granular, hardware-bound identity for every individual subagent call.

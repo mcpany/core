@@ -55,3 +55,7 @@ As agent swarms grow in depth and complexity, the overhead of transferring massi
         * **Context**: OpenClaw v2.5 and UACO v1.8 emphasize the risk of "Binary Context Poisoning" in deep swarms.
         * **Architecture Adjustment**: Integrated a pluggable WASM sandbox into the BSH handoff flow. Binary buffers are now validated against a signed Protobuf schema within the sandbox before being mapped to the target agent.
         * **Security Impact**: Neutralizes "State Injection" attacks while maintaining the performance benefits of Zero-Copy transport.
+    * **2026-05-15: Zero-Copy Shared-Memory BSH Update**
+        * **Context**: Claude Code's move toward high-density "Team-Aware" execution has identified named-pipe serialization as a critical bottleneck for teammate-to-teammate sync.
+        * **Architecture Adjustment**: Implementing "Shared-Memory BSH" as the primary transport for local agent teams. MCP Any will now facilitate direct memory mapping of context shards between authorized subagent processes, bypassing the kernel-space copy overhead.
+        * **Performance Impact**: Expected to eliminate the "Coordination Stall" in parallel swarms, reducing handoff latency to sub-microsecond levels for local teammate coordination.

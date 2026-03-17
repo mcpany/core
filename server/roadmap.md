@@ -546,3 +546,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
 *   **[P1] Cognitive Fragment Reconciler**: Background service for synchronizing encrypted monologues across agent sessions. (Added: 2026-04-22)
+
+#### Upcoming (2026-05-15 Evolution)
+*   **[P0] UACO v3.5 S2S Mesh Gateway**: Native implementation of Swarm-to-Swarm (S2S) handshakes and "Swarm Wallets." (Added: 2026-05-15)
+*   **[P0] Hardware-Enforced Intent Sovereignty (IBHI) Broker**: Security middleware for binding "Mission Root" intents to hardware-protected memory. (Added: 2026-05-15)
+*   **[P0] Zero-Copy Shared-Memory BSH Transport**: Context handoff layer using shared-memory regions for local agent teams. (Added: 2026-05-15)
+*   **[P1] Negative Feedback Attestation (NFA) Middleware**: Governance service binding user corrective feedback to reasoning loops. (Added: 2026-05-15)
+*   **[P0] Mandatory Discovery Sandboxing**: Isolation of all `discoveryCommand` execution to prevent pre-flight RCE. (Added: 2026-05-15)
+*   **[P1] NHI Identity Aggregator**: Multi-tenant service for managing collective swarm identities and wallets. (Added: 2026-05-15)
+*   **[P1] Consensus-Aware Delegation Optimizer**: Efficiency middleware identifying high-trust paths in swarm negotiations. (Added: 2026-05-15)
