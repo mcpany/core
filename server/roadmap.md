@@ -515,6 +515,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-16 Evolution)
+*   **[P0] Reasoning Quorum Middleware**: Infrastructure for multi-agent semantic consensus on reasoning traces. (Added: 2026-05-16)
+*   **[P0] Transport-Layer Session Binder**: Cryptographically bind named-pipe/local transport to hardware-attested session tokens. (Added: 2026-05-16)
+*   **[P1] RRRA Budget Controller**: Dynamic resource allocation based on real-time reasoning intensity. (Added: 2026-05-16)
+*   **[P0] Coordination Token Optimizer**: Promoted to P0. Mandatory efficiency middleware for parallel swarm messages. (Added: 2026-05-16)
+
 #### Upcoming (2026-05-15 Evolution)
 *   **[P0] Consensus Tool Validation Hub**: Distributed security middleware requiring multi-agent signatures for high-risk delegations. (Added: 2026-05-15)
 *   **[P1] PNTD Discovery Provider**: Universal discovery bus for mapping MCP, gRPC, and UACO tasks into a single registry. (Added: 2026-05-15)

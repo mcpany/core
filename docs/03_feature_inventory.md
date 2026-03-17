@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-16] Updates
+
+### Proposed Additions
+- **Reasoning Quorum Middleware**: (P0) Infrastructure for agents to reach a cryptographically bound quorum on non-deterministic reasoning outputs, neutralizing "Hallucination Variance."
+- **Transport-Layer Session Binder**: (P0) Security middleware that cryptographically binds every named-pipe and local transport connection to a unique hardware-attested reasoning session token.
+- **RRRA Budget Controller**: (P1) Advanced resource manager implementing Reasoning-Responsive Resource Allocation, scaling compute/token budgets based on real-time reasoning intensity.
+- **Intent-Aware Transport Proxy**: (P1) Efficiency middleware that performs semantic deduplication of coordination messages between parallel agents sharing a mission root.
+
+### Priority Shifts
+- **Coordination Token Optimizer**: (Promoted to P0) Critical for neutralizing the overhead and "Team Ghosting" risks in parallel swarm coordination.
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to support the new Reasoning-Level Consensus (RLC) requirements.
+
 ## Evolution: [2026-05-15] Updates
 
 ### Proposed Additions
