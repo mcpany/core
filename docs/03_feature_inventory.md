@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-21] Updates
+
+### Proposed Additions
+- **Cognitive Load Shedding (CLS) Controller**: (P0) A high-speed stability middleware that dynamically throttles or revokes subagent capabilities based on real-time reasoning intensity and mission stability scores.
+- **Temporal Reasoning Attestation (TRA) Provider**: (P0) Security extension for the SRM Provider that adds hardware-attested monotonic timestamps to reasoning fragments to neutralize "Reasoning Timing Attacks."
+- **CFRR Reconciliation Adapter**: (P1) Orchestration bridge for OpenClaw's Conflict-Free Replicated Reasoning engine, enabling MCP Any to merge non-conflicting reasoning traces in parallel teams.
+- **Hardware-Attested Privacy Enclave (HAPE) Adapter**: (P0) Infrastructure for local, hardware-bound processing of sensitive PII context, providing only sanitized intent fragments to cloud providers.
+
+### Priority Shifts
+- **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory TRA to prevent context-switch hijacking.
+- **TeammateTool Orchestration Adapter**: (Re-affirmed P0) Evolving to support CFRR-native state reconciliation.
+
 ## Evolution: [2026-05-20] Updates
 
 ### Proposed Additions

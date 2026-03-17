@@ -43,3 +43,4 @@ As AI agents move toward deeper autonomy, "Tool Gating" (blocking a specific cal
 
 ## 7. Evolutionary Changelog
 * **2026-05-20:** Initial Document Creation.
+* **2026-05-21:** Added **Temporal Reasoning Attestation (TRA)** requirement to the PBR Adapter to neutralize "Reasoning Timing Attacks." Updated Section 4 to include hardware-attested monotonic timestamps for all policy anchor handoffs.
