@@ -1,0 +1,7 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+# Exposes the runner Dockerfile as a Bazel target.
+# This image is non-hermetic and must be built via `docker build` or the Makefile —
+# it requires network access for Go, Node, Playwright, Docker CLI, and apt packages.
+exports_files(["Dockerfile"])

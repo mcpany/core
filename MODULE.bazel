@@ -21,12 +21,14 @@ bazel_dep(name = "rules_nodejs", version = "6.7.3")
 bazel_dep(name = "aspect_rules_js", version = "3.0.3")
 bazel_dep(name = "aspect_rules_ts", version = "3.8.7")
 bazel_dep(name = "toolchains_buildbuddy", version = "0.0.4")
+bazel_dep(name = "rules_python", version = "1.3.0")
 
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(version = "1.26.1")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//server:go.mod")
+go_deps.from_file(go_mod = "//k8s/operator:go.mod")
 go_deps.gazelle_override(
     directives = [
         "gazelle:proto disable_global",
@@ -123,7 +125,10 @@ use_repo(
     "in_gopkg_square_go_jose_v2",
     "in_gopkg_yaml_v2",
     "in_gopkg_yaml_v3",
+    "io_k8s_api",
+    "io_k8s_apimachinery",
     "io_k8s_client_go",
+    "io_k8s_sigs_controller_runtime",
     "io_k8s_sigs_yaml",
     "io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc",
     "io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp",
@@ -169,7 +174,14 @@ oci.pull(
         "linux/arm64",
     ],
 )
-use_repo(oci, "debian_bookworm_slim", "debian_bookworm_slim_linux_amd64", "debian_bookworm_slim_linux_arm64", "distroless_nodejs24", "distroless_nodejs24_linux_amd64", "distroless_nodejs24_linux_arm64")
+# Python 3.12-slim base image for Python-based container images (cowsay server, timeserver).
+oci.pull(
+    name = "python312_slim",
+    digest = "sha256:fe778fce55d620e6b4b27885aa170579aed9b119ba45652e45a2e8bf48c22ede",
+    image = "mirror.gcr.io/library/python",
+    platforms = ["linux/amd64"],
+)
+use_repo(oci, "debian_bookworm_slim", "debian_bookworm_slim_linux_amd64", "debian_bookworm_slim_linux_arm64", "distroless_nodejs24", "distroless_nodejs24_linux_amd64", "distroless_nodejs24_linux_arm64", "python312_slim", "python312_slim_linux_amd64")
 
 npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm")
 npm.npm_translate_lock(
@@ -293,3 +305,19 @@ node.toolchain(node_version = "24.13.0")
 use_repo(node, "nodejs_toolchains")
 
 buildbuddy = use_extension("@toolchains_buildbuddy//:extensions.bzl", "buildbuddy")
+
+python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+python.toolchain(python_version = "3.12")
+
+pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+pip.parse(
+    hub_name = "cowsay_server_deps",
+    python_version = "3.12",
+    requirements_lock = "//server/tests/integration/cmd/mocks/python_cowsay_server:requirements_lock.txt",
+)
+pip.parse(
+    hub_name = "timeserver_deps",
+    python_version = "3.12",
+    requirements_lock = "//server/tests/integration/examples:requirements_lock.txt",
+)
+use_repo(pip, "cowsay_server_deps", "timeserver_deps")
