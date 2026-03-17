@@ -353,6 +353,11 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-13 Evolution)
+- [ ] **[P0] Loopback Security Monitor**: Real-time visualization of authenticated vs. blocked local port requests. (Added: 2026-05-13)
+- [ ] **[P0] Injection Shield Alert Center**: UI for reviewing and approving sanitized tool inputs and blocked injection attempts. (Added: 2026-05-13)
+- [ ] **[P1] Coordination Efficiency Dashboard**: Visualization of token savings from coordination message deduplication and compression. (Added: 2026-05-13)
+
 #### Upcoming (2026-05-12 Evolution)
 - [ ] **[P0] Named-Pipe Transport Monitor**: Real-time visualization of kernel-level inter-agent communication channels and connection health. (Added: 2026-05-12)
 - [ ] **[P0] Routing Firewall Security Hub**: Dashboard for managing "Auth-at-the-Pipe" tokens and visualizing blocked routing attempts. (Added: 2026-05-12)

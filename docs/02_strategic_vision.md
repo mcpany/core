@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-13]
+### Focus: Mandatory Loopback-to-Pipe Migration & Pre-Execution Injection Shielding
+**Context**: The disclosure of "ClawdBot" unauthenticated loopback vulnerabilities (port 18789) and the Cyera report on Gemini CLI prompt/command injection confirm that local network ports and un-sanitized tool inputs are the two primary agents of collapse in modern swarms. Security must move from the network layer to the filesystem and from reactive monitoring to pre-execution shielding.
+**Strategic Pivot**:
+- **Mandatory Loopback-to-Pipe Migration**: MCP Any will transition all local coordination and tool discovery away from TCP/UDP loopback. We are mandating the use of isolated, Docker-bound named pipes (UNIX domain sockets) to eliminate the risk of unauthenticated local port hijacking and MitM attacks.
+- **Pre-Execution Injection Shielding**: We are introducing a mandatory "Injection Shield" for all tool calls and configuration hooks. MCP Any will perform real-time, SEMGREP-style static analysis and semantic scanning on all inputs *before* they are ingested by the agent reasoning engine, neutralizing prompt and command injection at the source.
+- **Coordination Token Compression**: Supporting the Claude Code "Agent Teams" model, we will implement "Reasoning-Aware Token Compression." MCP Any will act as the authoritative state mediator, deduplicating and compressing coordination messages within the named-pipe bus to reduce the economic and latency overhead of parallel swarm execution.
+
 ## Strategic Evolution: [2026-05-12]
 ### Focus: Routing Isolation Sovereignty & Port-Free Transport
 **Context**: The GSA-2026-OPENCLAW-ROUTING advisory and the subsequent industry pivot confirm that local network port exposure is a critical vulnerability for multi-agent swarms. As coordination becomes parallel and distributed, inter-agent communication must move from the network stack to the kernel and filesystem for absolute isolation.

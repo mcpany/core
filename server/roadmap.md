@@ -506,6 +506,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-13 Evolution)
+*   **[P0] Loopback Authentication Proxy**: Mandatory security interceptor for legacy loopback ports enforcing origin-locked authentication. (Added: 2026-05-13)
+*   **[P0] Injection-Shielding Middleware**: Pre-execution scanning layer for tool inputs/outputs to neutralize prompt and command injection. (Added: 2026-05-13)
+*   **[P1] Coordination Token Optimizer**: Deduplication and compression proxy for inter-teammate messages to reduce swarm token consumption. (Added: 2026-05-13)
+
 #### Upcoming (2026-05-12 Evolution)
 *   **[P0] Isolated Named-Pipe Transport**: Kernel-level transport layer using UNIX domain sockets to eliminate local port exposure for inter-agent comms. (Added: 2026-05-12)
 *   **[P0] Subagent Routing Firewall**: Transport-level security broker enforcing "Auth-at-the-Pipe" identity validation. (Added: 2026-05-12)
