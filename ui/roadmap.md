@@ -353,6 +353,11 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-13 Evolution)
+- [ ] **[P0] eBPF Audit Streamer**: Real-time UI for visualizing kernel-level inter-agent semantic logs and pipe-siphoning alerts. (Added: 2026-05-13)
+- [ ] **[P0] OS Identity Status Widget**: UI component showing UID/GID and attestation status for connected local subagents. (Added: 2026-05-13)
+- [ ] **[P1] Browser Discovery Sandbox Monitor**: Visual workspace for managing ephemeral browser environments and BMPI kill switches. (Added: 2026-05-13)
+
 #### Upcoming (2026-05-12 Evolution)
 - [ ] **[P0] Named-Pipe Transport Monitor**: Real-time visualization of kernel-level inter-agent communication channels and connection health. (Added: 2026-05-12)
 - [ ] **[P0] Routing Firewall Security Hub**: Dashboard for managing "Auth-at-the-Pipe" tokens and visualizing blocked routing attempts. (Added: 2026-05-12)

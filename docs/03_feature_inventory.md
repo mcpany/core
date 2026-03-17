@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-13] Updates
+
+### Proposed Additions
+- **eBPF Socket Sentinel**: (P0) A kernel-resident monitoring service that provides real-time semantic auditing of all inter-agent traffic over isolated named pipes.
+- **UID-Bound Socket Identity Verifier**: (P0) Security middleware that uses `SO_PEERCRED` to verify the OS-level UID/GID of connecting agents, preventing identity spoofing.
+- **Ephemeral Browser Discovery Sandbox**: (P1) A hardware-isolated browser environment for tool discovery that includes proactive "BMPI" kill switches.
+
+### Priority Shifts
+- **Isolated Named-Pipe Transport Middleware**: (Re-affirmed P0) Evolved to include support for mandatory eBPF-based audit logging.
+- **Negative Discovery Attestation Provider**: (Promoted to P0) Critical for neutralizing URL-masked prompt injections in agentic browsers.
+
 ## Evolution: [2026-05-12] Updates
 
 ### Proposed Additions
