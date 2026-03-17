@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-15] Updates
+
+### Proposed Additions
+- **Consensus Tool Validation Hub**: (P0) Distributed security middleware requiring multi-agent signatures for high-risk tool calls and task delegations, neutralizing "Agentic Social Engineering."
+- **PNTD Discovery Provider**: (P1) Implementation of Protocol-Neutral Task Discovery to unify capability mapping across MCP, gRPC, and UACO transports, providing a universal discovery bus.
+- **Intent-Bound Memory Isolation**: (P0) Extension for the ContextEngine Adapter that ensures "Mission-Root" anchors are cryptographically protected and semantically isolated to prevent "Context Ghosting."
+- **Negative Discovery Attestation Provider**: (P0) Mandatory extension for the PNTD Provider that provides cryptographic proof of the absolute absence of unauthorized hook execution during the discovery phase.
+
+### Priority Shifts
+- **Consensus Tool Validation Gateway**: (Re-affirmed P0) Designated as a mandatory requirement for all enterprise swarm deployments to counter machine-speed coercion.
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Expanded to support "Intent-Bound Memory Isolation" as the primary state persistence model.
+
 ## Evolution: [2026-05-14] Updates
 
 ### Proposed Additions

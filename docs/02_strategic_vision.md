@@ -10,6 +10,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-15]
+### Focus: Discovery-Phase Sovereignty & Consensus-Based Task Attestation
+**Context**: The rise of "Agentic Social Engineering" and the emergence of "Protocol-Neutral Task Discovery" (PNTD) mark a critical shift in the Universal Agent Bus architecture. Security must now extend from point-to-point tool calls to the collective integrity of the swarm's reasoning and the absolute sovereignty of the tool discovery phase.
+**Strategic Pivot**:
+- **Discovery-Phase Sovereignty**: MCP Any will evolve to mandate "Sovereign Discovery" via the PNTD-native registry. We will implement "Negative Discovery Attestation," providing cryptographic proof that no unauthorized project-local hooks were executed during the pre-flight phase, neutralizing "Shadow Delegation" attempts.
+- **Consensus-Based Task Attestation (CBTA)**: To counter "Agentic Social Engineering," we are introducing CBTA. High-risk task delegations and tool calls will now require multi-agent signatures, ensuring that a single compromised agent cannot coerce the swarm without a verified security quorum.
+- **Intent-Bound Memory Isolation**: We are evolving the ContextEngine Adapter to support "Intent-Bound Memory." This ensures that "Mission-Root" anchors are cryptographically protected and semantically isolated, preventing "Context Ghosting" and state pollution during deep, multi-hop reasoning.
+- **PNTD-Native Capability Mapping**: Supporting the industry move toward protocol-neutrality, MCP Any will act as the authoritative bridge for PNTD. We will provide the infrastructure to map MCP, gRPC, and UACO tasks into a single, searchable, and secure discovery bus for all agents.
+
+---
+
 ## Strategic Evolution: [2026-05-14]
 ### Focus: Pluggable Context Sovereignty & Swarm-Speed Identity Defense
 **Context**: The maturation of OpenClaw's `ContextEngine` and the rise of "AI Swarm Attacks" (Hivenets) mark a shift from linear agent security to "Machine-Speed Mesh Defense." As non-human identities outnumber humans 100:1, the "Universal Agent Bus" must move beyond simple bridging to active, hardware-attested identity and state orchestration.

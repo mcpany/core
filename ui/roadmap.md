@@ -353,6 +353,12 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-15 Evolution)
+- [ ] **[P0] Consensus Attestation Workspace**: Security UI for orchestrating multi-agent approval quorums for high-risk delegations. (Added: 2026-05-15)
+- [ ] **[P1] PNTD Registry Explorer**: Unified browser for discovering capabilities across MCP, gRPC, and UACO via the universal discovery bus. (Added: 2026-05-15)
+- [ ] **[P0] Intent Isolation Monitor**: Real-time visualization of cryptographically protected "Mission-Root" anchors and memory boundaries. (Added: 2026-05-15)
+- [ ] **[P0] Negative Discovery Audit Viewer**: Security dashboard for reviewing non-execution proofs and blocked discovery-phase hooks in PNTD. (Added: 2026-05-15)
+
 #### Upcoming (2026-05-14 Evolution)
 - [ ] **[P0] Swarm Attack Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and SAAD neutralization events. (Added: 2026-05-14)
 - [ ] **[P0] ContextEngine Plugin Manager**: Re-affirmed P0 for managing OpenClaw-compatible lifecycle hooks and "Mission-Root" anchors. (Added: 2026-05-14)
