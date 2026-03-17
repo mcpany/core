@@ -19,7 +19,8 @@ test.describe('Rich Result Viewer', () => {
         command_line_service: {
           command: 'echo',
           tools: [
-            { name: 'get_complex_data', call_id: 'call1', description: 'Returns complex data' }
+            { name: 'get_complex_data', call_id: 'call1', description: 'Returns complex data' },
+            { name: 'get_single_object', call_id: 'call2', description: 'Returns a single object' }
           ],
           calls: {
             'call1': {
@@ -28,6 +29,16 @@ test.describe('Rich Result Viewer', () => {
                   { name: 'Alice', role: 'Admin', id: 1 },
                   { name: 'Bob', role: 'User', id: 2 }
                 ])
+              ]
+            },
+            'call2': {
+              args: [
+                JSON.stringify({
+                  status: 'ok',
+                  user_id: 42,
+                  is_active: true,
+                  nested: { a: 1 }
+                })
               ]
             }
           }
@@ -98,5 +109,55 @@ test.describe('Rich Result Viewer', () => {
     // Switch to Raw Output tab
     await viewerTabs.getByRole('tab', { name: 'Raw Output' }).click();
     await expect(page.getByText('"stdout":')).toBeVisible();
+  });
+
+  test('Tool Inspector renders rich table result for a single object', async ({ page }) => {
+    await page.goto('/tools');
+
+    // Search for the test tool
+    await page.getByPlaceholder('Search tools...').fill('get_single_object');
+    await expect(page.getByText('rich-result-test-service.get_single_object').first()).toBeVisible({ timeout: 10000 });
+
+    // Open inspector
+    await page.getByRole('row', { name: 'rich-result-test-service.get_single_object' }).getByRole('button', { name: 'Inspect' }).click();
+
+    // Wait for inspector to open
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('heading', { name: 'rich-result-test-service.get_single_object', exact: true })).toBeVisible();
+
+    // Execute tool
+    await page.getByRole('button', { name: 'Execute' }).click();
+
+    // Wait for result
+    await expect(page.locator('label').filter({ hasText: 'Result' })).toBeVisible({ timeout: 10000 });
+
+    // Check if Table tab is active or available
+    const tableTab = page.getByRole('tab', { name: 'Table' });
+    await expect(tableTab).toBeVisible();
+
+    // Verify content in table
+    const table = page.getByRole('table');
+    await expect(table).toBeVisible();
+
+    // Verify headers
+    await expect(table.getByRole('columnheader', { name: 'Property' })).toBeVisible();
+    await expect(table.getByRole('columnheader', { name: 'Value' })).toBeVisible();
+
+    // Verify data
+    await expect(table.getByRole('cell', { name: 'status', exact: true })).toBeVisible();
+    await expect(table.getByRole('cell', { name: 'ok', exact: true })).toBeVisible();
+
+    await expect(table.getByRole('cell', { name: 'user_id', exact: true })).toBeVisible();
+    await expect(table.getByRole('cell', { name: '42', exact: true })).toBeVisible();
+
+    await expect(table.getByRole('cell', { name: 'is_active', exact: true })).toBeVisible();
+    await expect(table.getByRole('cell', { name: 'true', exact: true })).toBeVisible();
+
+    await expect(table.getByRole('cell', { name: 'nested', exact: true })).toBeVisible();
+    await expect(table.getByRole('cell', { name: '{"a":1}', exact: true })).toBeVisible();
+
+    // Take a screenshot for verification
+    await page.screenshot({ path: '/home/jules/verification/rich-result-single-object.png' });
   });
 });

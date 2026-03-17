@@ -126,12 +126,33 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     }, [content]);
 
     const isTableEligible = useMemo(() => {
-        return !mcpContent && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
+        if (mcpContent) return false;
+
+        // Array of objects
+        if (Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null) {
+            return true;
+        }
+
+        // Single object
+        if (content && typeof content === 'object' && !Array.isArray(content) && Object.keys(content).length > 0) {
+            return true;
+        }
+
+        return false;
     }, [content, mcpContent]);
+
+    const isSingleObject = useMemo(() => {
+        return isTableEligible && !Array.isArray(content);
+    }, [isTableEligible, content]);
 
     // Get columns for table
     const columns = useMemo(() => {
         if (!isTableEligible) return [];
+
+        if (isSingleObject) {
+            return ["Property", "Value"];
+        }
+
         // aggregate all keys from all objects to handle sparse data
         const keys = new Set<string>();
         // Limit rows scanned for columns to avoid perf issues on huge datasets
@@ -141,7 +162,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             }
         });
         return Array.from(keys);
-    }, [content, isTableEligible]);
+    }, [content, isTableEligible, isSingleObject]);
 
     const renderCell = (value: any) => {
         if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
@@ -197,15 +218,24 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {content.map((row: any, i: number) => (
-                                    <TableRow key={i}>
-                                        {columns.map(col => (
-                                            <TableCell key={col} className="py-2">
-                                                {renderCell(row[col])}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))}
+                                {isSingleObject ? (
+                                    Object.entries(content as object).map(([key, value]) => (
+                                        <TableRow key={key}>
+                                            <TableCell className="py-2 font-medium">{key}</TableCell>
+                                            <TableCell className="py-2">{renderCell(value)}</TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    (content as any[]).map((row: any, i: number) => (
+                                        <TableRow key={i}>
+                                            {columns.map(col => (
+                                                <TableCell key={col} className="py-2">
+                                                    {renderCell(row[col])}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    ))
+                                )}
                             </TableBody>
                         </Table>
                     </ScrollArea>
