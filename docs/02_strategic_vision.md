@@ -10,6 +10,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-17]
+### Focus: Cross-Framework Swarm Orchestration & Transport-Layer Session Integrity
+**Context**: The official launch of Claude Code "Agent Teams" and the stabilization of OpenClaw's `ContextEngine` v2026.3.7 signal a transition from single-framework agents to "Heterogeneous Swarms." Simultaneously, the discovery of "Team Ghosting" in parallel coordination and Gemini CLI's move toward authenticated A2A discovery confirm that identity must be cryptographically bound to the transport session itself.
+**Strategic Pivot**:
+- **Heterogeneous Swarm Orchestration**: MCP Any will evolve to act as the universal bridge for the `TeammateTool` protocol. We will provide the infrastructure for a Claude-led team to seamlessly delegate tasks to OpenClaw specialists, ensuring intent and state consistency across framework boundaries.
+- **Transport-Layer Session Binding (TLSB)**: To neutralize "Team Ghosting," we are mandating TLSB. Every inter-agent transport channel (Named Pipes, WebSockets) must be cryptographically bound to a hardware-attested reasoning session token, ensuring that subagent identities cannot be hijacked or reused across parallel branches.
+- **Authenticated Capability Discovery**: Leveraging Gemini CLI v0.33.0 patterns, we are implementing "Auth-Before-Discovery" for the A2A mesh. Agent capabilities and "Agent Cards" will only be visible to authenticated peers within a verified mission scope, neutralizing "Shadow Capability" mapping by malicious subagents.
+- **Pluggable ContextEngine Interop**: We are upgrading the ContextEngine Adapter to support the full v2026.3.7 lifecycle. MCP Any will act as the authoritative host for pluggable context strategies, ensuring that "Mission Root" persistence is maintained even when using third-party summarization or retrieval plugins.
+
+---
+
 ## Strategic Evolution: [2026-05-16]
 ### Focus: Reasoning-Level Consensus & Transport-Session Binding
 **Context**: The emergence of "Reasoning Quorum" (RQ) and the discovery of "Team Ghosting" in named pipes confirm that security must now move from the tool-call layer to the semantic-output layer and the underlying transport session. As swarms become more parallel and non-deterministic, the Universal Agent Bus must ensure that reasoning remains consistent and that transport channels are cryptographically bound to active sessions.

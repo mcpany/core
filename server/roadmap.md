@@ -515,6 +515,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-17 Evolution)
+*   **[P0] `TeammateTool` Orchestration Adapter**: Universal bridge for Claude Code orchestration protocol supporting heterogeneous swarms. (Added: 2026-05-17)
+*   **[P0] Transport-Layer Session Binder (TLSB)**: Cryptographically bind all local transport channels to hardware-attested Reasoning Session Tokens. (Added: 2026-05-17)
+*   **[P0] Authenticated Agent Card Discovery**: Implementation of Gemini CLI v0.33.0 style "Auth-Before-Discovery" for the A2A mesh. (Added: 2026-05-17)
+*   **[P0] ContextEngine Lifecycle Adapter (v2026.3.7)**: Upgrade to support full OpenClaw v2026.3.7 plugin hooks for third-party context strategies. (Added: 2026-05-17)
+
 #### Upcoming (2026-05-16 Evolution)
 *   **[P0] Reasoning Quorum Middleware**: Infrastructure for multi-agent semantic consensus on reasoning traces. (Added: 2026-05-16)
 *   **[P0] Transport-Layer Session Binder**: Cryptographically bind named-pipe/local transport to hardware-attested session tokens. (Added: 2026-05-16)

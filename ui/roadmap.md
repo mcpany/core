@@ -359,6 +359,11 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-17 Evolution)
+- [ ] **[P0] Teammate Orchestration Tree**: Visual hierarchical tracer for `TeammateTool` operations across heterogeneous swarms. (Added: 2026-05-17)
+- [ ] **[P0] TLSB Security Widget**: Real-time status indicator for session-bound transport channels and "Ghosting" alerts. (Added: 2026-05-17)
+- [ ] **[P0] A2A Authenticated Discovery Manager**: Enhanced UI for managing and approving identity-bound agent cards in the A2A mesh. (Added: 2026-05-17)
+
 #### Upcoming (2026-05-16 Evolution)
 - [ ] **[P0] Reasoning Alignment Visualizer**: Visualization of semantic consensus scores and reasoning traces across the quorum. (Added: 2026-05-16)
 - [ ] **[P0] Transport Session Monitor**: Real-time indicator for cryptographically bound transport channels and "Team Ghosting" alerts. (Added: 2026-05-16)
