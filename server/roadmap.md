@@ -511,6 +511,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-15 Evolution)
+*   **[P0] Consensus Tool Validation Hub**: Distributed security middleware requiring multi-agent signatures for high-risk delegations. (Added: 2026-05-15)
+*   **[P1] PNTD Discovery Provider**: Universal discovery bus for mapping MCP, gRPC, and UACO tasks into a single registry. (Added: 2026-05-15)
+*   **[P0] Intent-Bound Memory Isolation**: Cryptographically protected and semantically isolated mission-root anchors for ContextEngine. (Added: 2026-05-15)
+*   **[P0] Negative Discovery Attestation Provider**: Cryptographic proof of non-execution for restricted paths during the PNTD discovery phase. (Added: 2026-05-15)
+
 #### Upcoming (2026-05-14 Evolution)
 *   **[P0] ContextEngine Lifecycle Adapter**: Implementation of OpenClaw v2026.3.7 "ContextEngine" lifecycle hooks for universal context plugin hosting. (Added: 2026-05-14)
 *   **[P0] Swarm-Aware Rate Limiter**: High-speed security middleware for neutralizing coordinated "Hivenet" swarm attacks at sub-millisecond speeds. (Added: 2026-05-14)
