@@ -515,6 +515,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-16 Evolution)
+*   **[P0] CBTA Authorization Gateway**: Implementation of Consensus-Based Task Attestation for inter-agent delegation. (Added: 2026-05-16)
+*   **[P0] PNTD Registry Engine**: Native support for Protocol-Neutral Task Discovery across MCP, gRPC, and UACO. (Added: 2026-05-16)
+*   **[P0] UACO Transport Guard**: Active deadlock detection and resolution for autonomous task negotiation. (Added: 2026-05-16)
+
 #### Upcoming (2026-05-15 Evolution)
 *   **[P0] Consensus Tool Validation Hub**: Distributed security middleware requiring multi-agent signatures for high-risk delegations. (Added: 2026-05-15)
 *   **[P1] PNTD Discovery Provider**: Universal discovery bus for mapping MCP, gRPC, and UACO tasks into a single registry. (Added: 2026-05-15)

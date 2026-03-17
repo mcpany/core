@@ -52,3 +52,9 @@ The tool discovery phase in AI agents has become a primary attack vector (e.g., 
 
 ## 7. Evolutionary Changelog
 * **2026-05-12:** Initial Document Creation.
+* **2026-05-16:** [Update] - PNTD-Native Capability Mapping.
+    * **Context**: Fragmentation in discovery protocols (MCP, gRPC, UACO) is being consolidated into the Protocol-Neutral Task Discovery (PNTD) standard.
+    * **Architecture Adjustment**:
+        * Expanding the NDAP to support PNTD-native capability mapping.
+        * Implementing "Sovereign Discovery Buffers" where discovered tasks are staged in an isolated memory region until the Negative Attestation Receipt is verified.
+        * Adding support for "Dynamic Discovery Proofs" that allow agents to verify discovery integrity in real-time during long-running registry crawls.

@@ -58,3 +58,9 @@ As AI agent swarms move from simple automation to autonomous high-stakes operati
         * Introducing "Semantic Integrity Bridge" as a middleware for the CQ Hub.
         * Implementing "Intent Drift Detection" that compares real-time subagent outputs against the "Mission Root" using OpenClaw-compatible SGC logic.
         * High-drift events will trigger a "Quorum Re-Attestation" requirement, escalating the AQT threshold dynamically.
+* **2026-05-16:** [Update] - Consensus-Based Task Attestation (CBTA).
+    * **Context**: The rise of "Agentic Social Engineering" demands that inter-agent delegation be bound by collective consensus rather than individual intent.
+    * **Architecture Adjustment**:
+        * Evolving the CQ Hub into the authoritative backend for CBTA.
+        * High-frequency delegations now require "Micro-Quorums" where at least two independent auditor agents must sign the delegation token.
+        * Integrating "Behavioral Reputation Scores" into the AQT calculation, where agents with high drift history require larger quorums.

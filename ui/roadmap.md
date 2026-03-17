@@ -359,6 +359,11 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-16 Evolution)
+- [ ] **[P0] CBTA Delegation Inspector**: UI for reviewing multi-agent consensus tokens and auditor signatures for task delegation. (Added: 2026-05-16)
+- [ ] **[P0] PNTD Universal Browser**: Unified capability explorer supporting MCP, gRPC, and UACO protocols. (Added: 2026-05-16)
+- [ ] **[P0] Negotiation Deadlock Visualizer**: Real-time graph showing autonomous bidding loops and active resolution events. (Added: 2026-05-16)
+
 #### Upcoming (2026-05-15 Evolution)
 - [ ] **[P0] Consensus Attestation Workspace**: Security UI for orchestrating multi-agent approval quorums for high-risk delegations. (Added: 2026-05-15)
 - [ ] **[P1] PNTD Registry Explorer**: Unified browser for discovering capabilities across MCP, gRPC, and UACO via the universal discovery bus. (Added: 2026-05-15)

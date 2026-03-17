@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-16] Updates
+
+### Proposed Additions
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolved into a mandatory "Consensus-Based Task Attestation" (CBTA) gateway to neutralize machine-speed social engineering.
+- **PNTD Registry Provider**: (P0) Unified capability mapping engine that integrates MCP, gRPC, and UACO tasks into a single protocol-neutral registry.
+- **UACO Negotiation Guard**: (P0) Real-time monitoring layer for inter-agent transport to detect and resolve circular bidding deadlocks.
+- **Negative Discovery Receipt Generator**: (P0) PNTD extension that generates cryptographically signed proofs of non-execution for restricted paths during tool discovery.
+
+### Priority Shifts
+- **PNTD Discovery Provider**: (Promoted to P0) Designated as the primary discovery backbone for all 2026-compliant agent environments.
+- **A2A Messaging Hub**: (Re-affirmed P0) Evolved to support CBTA multi-signature tokens as the primary authorization transport.
+
 ## Evolution: [2026-05-15] Updates
 
 ### Proposed Additions
