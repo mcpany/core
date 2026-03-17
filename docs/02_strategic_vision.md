@@ -10,6 +10,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-22]
+### Focus: Local Zero-Trust (LOWA) & Peer-to-Peer Agent Orchestration
+**Context**: The disclosure of "ClawJacked" (CVE-2026-25253) proves that "Implicit Local Trust" for loopback WebSocket traffic is a critical failure point. Simultaneously, the rise of Claude Code's "Agent Teams" signals a shift toward horizontal (mesh) collaboration. The "Universal Agent Bus" must now act as the secure, authenticated bridge for both local control and peer-to-peer teammate communication.
+**Strategic Pivot**:
+- **Local-Only WebSocket Auth (LOWA)**: MCP Any will evolve to mandate session-bound authentication for all local WebSocket listeners. This neutralizes cross-site brute-force attacks and ensures that only verified local applications—not malicious browser scripts—can command the gateway.
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: Supporting horizontal swarms, MCP Any will implement a T2T Encryption Bridge. This service provides the infrastructure for teammates from disparate frameworks (Claude Code, OpenClaw, AutoGen) to securely exchange mailbox messages and synchronize their views of a "Shared Task List."
+- **Full-Mesh Discovery Authorization**: We are mandating "Auth-before-Discovery" for all A2A-compliant agents. Capabilities and "Agent Cards" will only be visible to peers who have completed a cryptographically bound handshake within a verified mission scope.
+- **Mailbox Integrity Middleware**: To prevent "Mailbox Injection" by rogue subagents, we are introducing a message-validation layer. Every inter-agent message must be signed and validated against the "Mission Root" intent before reaching the target teammate's mailbox.
+
 ## Strategic Evolution: [2026-05-21]
 ### Focus: Reasoning Stability & Temporal Integrity
 **Context**: The GA release of Policy-Bound Reasoning (PBR) and the disclosure of "Reasoning Timing Attacks" (RTA) confirm that the "Universal Agent Bus" must now secure the *temporality* of thought. Simultaneously, the rise of "Cognitive Meltdowns" in deep swarms proves that stability cannot be maintained through simple gating alone; we must implement proactive "Load Shedding" to preserve the mission-root anchor.

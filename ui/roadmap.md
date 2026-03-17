@@ -438,3 +438,9 @@
 - [ ] **[P0] A2A Replay Security Dashboard**: Visualize nonce status and replay attempt alerts in the A2A hub. (Added: 2026-04-22)
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)
 - [ ] **[P1] Encrypted Monologue Explorer**: Secure UI fragment for user-authorized decryption and review of subagent reasoning. (Added: 2026-04-22)
+
+#### Upcoming (2026-05-22 Evolution)
+- [ ] **[P0] LOWA Pairing Portal**: Desktop UI for reviewing and approving local WebSocket pairing requests. (Added: 2026-05-22)
+- [ ] **[P0] T2T Mailbox Explorer**: Visual workspace for monitoring encrypted teammate-to-teammate coordination. (Added: 2026-05-22)
+- [ ] **[P0] Shared Task List Synchronizer**: Real-time diff viewer for cross-framework task list alignment. (Added: 2026-05-22)
+- [ ] **[P0] Mesh Discovery Handshake Monitor**: Real-time visualization of A2A discovery auth events. (Added: 2026-05-22)
