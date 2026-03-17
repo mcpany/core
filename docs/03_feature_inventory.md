@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-19] Updates
+
+### Proposed Additions
+- **Signed Reasoning Monologue (SRM) Provider**: (P0) A core security middleware that cryptographically binds internal monologues to hardware-attested sessions, neutralizing "Reasoning Hijacking."
+- **Namespace-Locked Discovery (NLD) Gateway**: (P0) Advanced extension for the PNTD Provider that ensures deterministic and collision-free capability mapping across registries.
+- **HASS-Compliant PLSS Manager**: (P0) Upgrade for the Project-Local Snapshot Sync supporting TPM-signed environment snapshots for "Deterministic Sandbox Recovery."
+- **Cognitive Truth Attestation Hub**: (P1) Advanced orchestration service that provides verifiable proof of reasoning integrity across heterogeneous agent swarms.
+
+### Priority Shifts
+- **Project-Local Snapshot (PLSS) Sync**: (Promoted to P0) Now critical for implementing HASS-compliant "Point-in-Time Integrity."
+- **PNTD Discovery Provider**: (Re-affirmed P0) Now designated as the mandatory registry for all enterprise swarms to support NLD.
+
 ## Evolution: [2026-05-18] Updates
 
 ### Proposed Additions

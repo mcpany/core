@@ -515,6 +515,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-19 Evolution)
+*   **[P0] Signed Reasoning Monologue (SRM) Provider**: Cryptographically bind and isolate an agent's internal reasoning from subagent inputs. (Added: 2026-05-19)
+*   **[P0] Namespace-Locked Discovery (NLD)**: Deterministic and collision-free capability mapping for heterogeneous swarms. (Added: 2026-05-19)
+*   **[P0] HASS-Compliant PLSS**: Upgrade to hardware-attested snapshot integrity for Deterministic Sandbox Recovery. (Added: 2026-05-19)
+*   **[P1] Cognitive Truth Attestation Hub**: Orchestration service for providing verifiable proof of reasoning integrity across frameworks. (Added: 2026-05-19)
+
 #### Upcoming (2026-05-18 Evolution)
 *   **[P0] Mission-Root Pinning (MRP) Middleware**: Transport-level safeguard to protect mission intent from context-window exhaustion attacks. (Added: 2026-05-18)
 *   **[P0] State-Trust Labeling (STL) Provider**: Security extension for the Blackboard to tag data with its framework trust-level. (Added: 2026-05-18)

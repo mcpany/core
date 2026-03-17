@@ -44,3 +44,4 @@ The emergence of "Mission Root Exhaustion" (MRE) attacks represents a critical t
 
 ## 7. Evolutionary Changelog
 * **2026-05-18:** Initial Document Creation.
+* **2026-05-19:** Expanded MRP's role to serve as the prerequisite foundation for **Signed Reasoning Monologue (SRM) Integrity**. By pinning the Mission Root, we ensure the SRM Provider has a verified semantic anchor for validating internal reasoning chains against the session's primary intent.
