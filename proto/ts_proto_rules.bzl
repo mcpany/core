@@ -192,4 +192,3 @@ ts_wkt_gen = rule(
     },
     doc = "Generates TypeScript bindings from WKT proto_library targets, preserving package paths.",
 )
-
