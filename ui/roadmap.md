@@ -359,6 +359,11 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-20 Evolution)
+- [ ] **[P0] Policy-Bound Reasoning (PBR) Dashboard**: UI for managing and visualizing immutable "Policy Anchors" and cognitive governance status. (Added: 2026-05-20)
+- [ ] **[P0] Multi-modal Integrity Monitor**: Real-time visualization of semantically sanitized non-textual traces (SVG, Audio) and smuggling alerts. (Added: 2026-05-20)
+- [ ] **[P1] AIR Reconciliation Console**: Workspace for reviewing and auditing decentralized intent reconciliation events. (Added: 2026-05-20)
+
 #### Upcoming (2026-05-19 Evolution)
 - [ ] **[P0] Reasoning Integrity Dashboard**: Visual indicator for SRM attestation status and Monologue Injection alerts. (Added: 2026-05-19)
 - [ ] **[P0] Namespace Collision Monitor**: UI for visualizing NLD collisions and shadowing attempts across registries. (Added: 2026-05-19)

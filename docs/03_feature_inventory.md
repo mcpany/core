@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-20] Updates
+
+### Proposed Additions
+- **Policy-Bound Reasoning (PBR) Adapter**: (P0) Infrastructure for hosting and enforcing immutable "Policy Anchors" at the pre-reasoning layer, ensuring cross-framework cognitive governance.
+- **Multi-modal Integrity Bridge (MIB)**: (P0) Upgrade for the Semantic Integrity Bridge providing real-time sanitization of non-textual traces (SVG, CSS, Audio metadata) to prevent context smuggling.
+- **AIR Reconciliation Broker**: (P1) Decentralized intent reconciliation service utilizing hardware-attested multi-signature quorums to resolve conflicting swarm objectives.
+
+### Priority Shifts
+- **Semantic Integrity Bridge**: (Evolved to MIB) Now designated as the primary defense against multi-modal "Context Smuggling" exploits.
+- **Cognitive Truth Attestation Hub**: (Promoted to P0) Critical for providing the verifiable proof required for AIR-mediated intent reconciliation.
+
 ## Evolution: [2026-05-19] Updates
 
 ### Proposed Additions
