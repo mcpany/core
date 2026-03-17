@@ -51,3 +51,9 @@ With the release of Claude Code "Agent Teams," the industry is moving from seque
 
 ## 7. Evolutionary Changelog
 * **2026-05-11:** Initial Document Creation.
+* **2026-05-12:** Resolving Local Port Exposure.
+    * **Context:** Today's market sync revealed a new exploit pattern in OpenClaw subagent routing involving local port hijacking.
+    * **Architecture Adjustment:**
+        * Deprecating TCP/UDP-based local teammate communication in Section 4.
+        * Introducing **Isolated Named-Pipe Transport** (UNIX domain sockets) for inter-agent and inter-teammate coordination.
+    * **Security Impact:** Mitigates unauthorized host-level file access and MitM attacks by rogue subagents by eliminating port exposure.
