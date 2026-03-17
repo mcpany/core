@@ -34,7 +34,7 @@ type SSOConfig struct {
 //   - Sets "UserID" in the context on successful authentication.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 func SSOMiddleware(config SSOConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !config.Enabled {

@@ -37,7 +37,7 @@ type OllamaEmbeddingProvider struct {
 //   - Sets default values for baseURL and model if not provided.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 func NewOllamaEmbeddingProvider(baseURL, model string) *OllamaEmbeddingProvider {
 	if baseURL == "" {
 		baseURL = "http://localhost:11434"

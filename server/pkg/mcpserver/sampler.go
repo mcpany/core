@@ -29,9 +29,9 @@ type MCPSession struct {
 //   - *MCPSession: A new instance of MCPSession.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 	return &MCPSession{session: session}
 }
@@ -50,7 +50,7 @@ func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 //   - This function is deprecated and should be replaced by NewMCPSession.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 	return NewMCPSession(session)
 }

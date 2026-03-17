@@ -27,9 +27,9 @@ type schemaGenerator struct {
 //   - error: An error if the schema generation fails.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func GenerateSchemaFromProto(msg protoreflect.Message) (*jsonschema.Schema, error) {
 	schemaMap := GenerateSchemaMapFromProto(msg)
 	return CompileSchema(schemaMap)
@@ -47,9 +47,9 @@ func GenerateSchemaFromProto(msg protoreflect.Message) (*jsonschema.Schema, erro
 //   - map[string]interface{}: The generated JSON schema map.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func GenerateSchemaMapFromProto(msg protoreflect.Message) map[string]interface{} {
 	gen := &schemaGenerator{
 		defs: make(map[string]interface{}),
@@ -76,9 +76,9 @@ func GenerateSchemaMapFromProto(msg protoreflect.Message) map[string]interface{}
 //   - error: An error if compilation fails.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func CompileSchema(schemaMap map[string]interface{}) (*jsonschema.Schema, error) {
 	compiler := jsonschema.NewCompiler()
 	url := "config.schema.json"

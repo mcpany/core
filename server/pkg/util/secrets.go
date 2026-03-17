@@ -42,9 +42,9 @@ const maxSecretRecursionDepth = 10
 //   - error: An error if resolution fails.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func ResolveSecret(ctx context.Context, secret *configv1.SecretValue) (string, error) {
 	return resolveSecretRecursive(ctx, secret, 0)
 }
@@ -318,9 +318,9 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 //   - error: An error if any secret resolution fails.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func ResolveSecretMap(ctx context.Context, secretMap map[string]*configv1.SecretValue, plainMap map[string]string) (map[string]string, error) {
 	result := make(map[string]string)
 	for k, v := range plainMap {

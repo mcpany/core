@@ -29,9 +29,9 @@ type Bus[T any] struct {
 //   - error: An error if initialization fails (currently always nil).
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 	options := redis.Options{
 		Addr: "127.0.0.1:6379",
@@ -55,9 +55,9 @@ func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 //   - *Bus[T]: A pointer to the initialized Redis bus.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func NewWithClient[T any](client *redis.Client) *Bus[T] {
 	return &Bus[T]{
 		client: client,

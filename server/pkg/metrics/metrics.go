@@ -29,11 +29,11 @@ type Label = metrics.Label
 //   - error: An error if the sink creation fails.
 //
 // Parameters:
-//   - specific inputs depending on signature.
+//   - params: Inputs expected by the function.
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
 	return prometheus.NewPrometheusSink()
 }
@@ -51,11 +51,11 @@ var initOnce sync.Once
 //   - error: An error if the initialization fails.
 //
 // Parameters:
-//   - specific inputs depending on signature.
+//   - params: Inputs expected by the function.
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func Initialize() error {
 	var err error
 	initOnce.Do(func() {
@@ -86,11 +86,11 @@ func Initialize() error {
 //   - http.Handler: An http.Handler that serves the Prometheus metrics.
 //
 // Parameters:
-//   - specific inputs depending on signature.
+//   - params: Inputs expected by the function.
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func Handler() http.Handler {
 	return promhttp.Handler()
 }
@@ -106,9 +106,9 @@ func Handler() http.Handler {
 //   - error: An error if the server fails to start.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func StartServer(addr string) error {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", Handler())
@@ -144,11 +144,11 @@ func StartServer(addr string) error {
 //   - labels: ...string. A list of labels to apply to the gauge.
 //
 // Returns:
-//   - results based on execution outcome.
+//   - outcome: The resulting data or value.
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func SetGauge(name string, val float32, labels ...string) {
 	var metricLabels []metrics.Label
 	if len(labels) > 0 {
@@ -168,11 +168,11 @@ func SetGauge(name string, val float32, labels ...string) {
 //   - val: float32. The amount to increment.
 //
 // Returns:
-//   - results based on execution outcome.
+//   - outcome: The resulting data or value.
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func IncrCounter(name []string, val float32) {
 	metrics.IncrCounter(name, val)
 }
@@ -187,11 +187,11 @@ func IncrCounter(name []string, val float32) {
 //   - labels: []metrics.Label. The labels to apply.
 //
 // Returns:
-//   - results based on execution outcome.
+//   - outcome: The resulting data or value.
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.IncrCounterWithLabels(name, val, labels)
 }
@@ -205,11 +205,11 @@ func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 //   - start: time.Time. The start time.
 //
 // Returns:
-//   - results based on execution outcome.
+//   - outcome: The resulting data or value.
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func MeasureSince(name []string, start time.Time) {
 	metrics.MeasureSince(name, start)
 }
@@ -224,11 +224,11 @@ func MeasureSince(name []string, start time.Time) {
 //   - labels: []metrics.Label. The labels to apply.
 //
 // Returns:
-//   - results based on execution outcome.
+//   - outcome: The resulting data or value.
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Label) {
 	metrics.MeasureSinceWithLabels(name, start, labels)
 }
@@ -242,11 +242,11 @@ func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Lab
 //   - val: float32. The value to sample.
 //
 // Returns:
-//   - results based on execution outcome.
+//   - outcome: The resulting data or value.
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func AddSample(name []string, val float32) {
 	metrics.AddSample(name, val)
 }
@@ -261,11 +261,11 @@ func AddSample(name []string, val float32) {
 //   - labels: []metrics.Label. The labels to apply.
 //
 // Returns:
-//   - results based on execution outcome.
+//   - outcome: The resulting data or value.
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func AddSampleWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.AddSampleWithLabels(name, val, labels)
 }

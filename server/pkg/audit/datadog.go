@@ -50,7 +50,7 @@ type DatadogAuditStore struct {
 //   - Starts background workers to process the log queue.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 func NewDatadogAuditStore(config *configv1.DatadogConfig) *DatadogAuditStore {
 	if config == nil {
 		config = &configv1.DatadogConfig{}

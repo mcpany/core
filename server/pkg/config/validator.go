@@ -110,9 +110,9 @@ func (e *ValidationError) Error() string {
 //   - ([]ValidationError): A slice of ValidationErrors, which will be empty if the configuration is valid.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
 	serviceNames := make(map[string]bool)
@@ -521,9 +521,9 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 //   - (error): An error if validation fails.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(ctx, service)
 }

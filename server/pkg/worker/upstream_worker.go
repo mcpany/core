@@ -35,9 +35,9 @@ type UpstreamWorker struct {
 //   - *UpstreamWorker: A new upstream worker.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
 	return &UpstreamWorker{
 		bus:         bus,

@@ -119,9 +119,9 @@ func init() {
 //   - []byte: The redacted JSON output.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func RedactJSON(input []byte) []byte {
 	// Check if input looks like JSON object or array.
 	// We skip whitespace and comments to find the first significant character.
@@ -155,9 +155,9 @@ func RedactJSON(input []byte) []byte {
 //   - map[string]interface{}: The potentially redacted map.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func RedactMap(m map[string]interface{}) map[string]interface{} {
 	redacted, changed := redactMapMaybe(m)
 	if changed {
@@ -275,9 +275,9 @@ var sensitiveKeys = []string{
 //   - bool: True if the key is considered sensitive, false otherwise.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func IsSensitiveKey(key string) bool {
 	// Use the optimized byte-based scanner for keys as well.
 	// Avoid allocation using zero-copy conversion.
@@ -517,9 +517,9 @@ var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
 //   - string: The redacted DSN string.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func RedactDSN(dsn string) string {
 	u, err := url.Parse(dsn)
 	if err == nil && u.User != nil {
@@ -642,9 +642,9 @@ type SecretRedactor struct {
 //   - *SecretRedactor: The configured redactor.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func NewSecretRedactor(secrets []string) *SecretRedactor {
 	// ⚡ BOLT: Optimization - Pre-compile the replacer for reuse.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -708,9 +708,9 @@ func (r *SecretRedactor) Redact(text string) string {
 //   - string: The redacted text.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func RedactSecrets(text string, secrets []string) string {
 	// Use the new struct-based implementation for consistency.
 	return NewSecretRedactor(secrets).Redact(text)

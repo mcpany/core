@@ -33,7 +33,7 @@ type Retry struct {
 //   - None.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 func NewRetry(config *configv1.RetryConfig) *Retry {
 	if config == nil {
 		config = &configv1.RetryConfig{}

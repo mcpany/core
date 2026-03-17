@@ -23,9 +23,9 @@ import (
 //   - err: error. An error if the tool name is invalid.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func ParseToolName(toolName string) (namespace string, tool string, err error) {
 	namespace, tool, found := strings.Cut(toolName, consts.ToolNameServiceSeparator)
 	if !found {
@@ -53,9 +53,9 @@ func ParseToolName(toolName string) (namespace string, tool string, err error) {
 //   - string: The combined, fully qualified tool name.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func GetFullyQualifiedToolName(serviceID, methodName string) string {
 	return fmt.Sprintf("%s%s%s", serviceID, consts.ToolNameServiceSeparator, methodName)
 }

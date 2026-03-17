@@ -25,7 +25,7 @@ import (
 //   - Writes formatted text to the provided writer.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 func PrintResults(w io.Writer, results []CheckResult) {
 	if w == nil {
 		w = os.Stdout

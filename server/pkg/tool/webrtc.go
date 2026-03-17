@@ -99,9 +99,9 @@ type WebrtcTool struct {
 //   - (error): An error if initialization fails.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func NewWebrtcTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,

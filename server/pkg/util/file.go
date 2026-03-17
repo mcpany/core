@@ -30,7 +30,7 @@ import (
 //   - Opens and reads the specified file from the filesystem.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 func ReadLastNLines(path string, n int) ([][]byte, error) {
 	if n <= 0 {
 		return nil, nil

@@ -25,9 +25,9 @@ const RedactedString = "REDACTED"
 //   - *configv1.User: A sanitized copy of the user object, or nil if input is nil.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func SanitizeUser(u *configv1.User) *configv1.User {
 	if u == nil {
 		return nil
@@ -53,9 +53,9 @@ func SanitizeUser(u *configv1.User) *configv1.User {
 //   - *configv1.Credential: A sanitized copy of the credential object, or nil if input is nil.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
 	if c == nil {
 		return nil
@@ -85,9 +85,9 @@ func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
 //   - *configv1.Authentication: The sanitized authentication object, or nil if input is nil.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication {
 	if a == nil {
 		return nil
@@ -139,9 +139,9 @@ func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication
 //   - *configv1.UserToken: The sanitized user token, or nil if input is nil.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
 	if t == nil {
 		return nil
@@ -166,9 +166,9 @@ func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
 //   - *configv1.SecretValue: The sanitized secret value, or nil if input is nil.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func SanitizeSecretValue(s *configv1.SecretValue) *configv1.SecretValue {
 	if s == nil {
 		return nil

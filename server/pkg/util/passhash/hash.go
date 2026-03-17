@@ -20,9 +20,9 @@ import (
 //   - error: An error if the hashing fails.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func Password(password string) (string, error) {
 	// Increase cost to 12 for better security (default is 10)
 	const cost = 12
@@ -43,9 +43,9 @@ func Password(password string) (string, error) {
 //   - bool: True if the password matches the hash, false otherwise.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func CheckPassword(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil

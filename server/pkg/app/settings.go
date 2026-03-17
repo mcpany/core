@@ -32,9 +32,9 @@ type GlobalSettingsManager struct {
 //   - *GlobalSettingsManager: The initialized manager.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func NewGlobalSettingsManager(apiKey string, allowedIPs []string, allowedOrigins []string) *GlobalSettingsManager {
 	m := &GlobalSettingsManager{}
 	m.apiKey.Store(apiKey)

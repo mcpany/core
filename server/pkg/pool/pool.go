@@ -132,9 +132,9 @@ type poolImpl[T ClosableClient] struct {
 //   - error: An error if configuration is invalid.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func New[T ClosableClient](
 	factory func(context.Context) (T, error),
 	initialSize, maxIdleSize, maxSize int,
@@ -523,11 +523,11 @@ type Manager struct {
 //   - *Manager: The initialized manager.
 //
 // Parameters:
-//   - specific inputs depending on signature.
+//   - params: Inputs expected by the function.
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func NewManager() *Manager {
 	return &Manager{
 		pools: make(map[string]any),
@@ -590,9 +590,9 @@ func (m *Manager) Deregister(name string) {
 //   - bool: True if found and type matches.
 //
 // Errors:
-//   - may return an error on failure.
+//   - err: Any error that occurs during execution.
 // Side Effects:
-//   - none.
+//   - changes: Any state modifications.
 func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
