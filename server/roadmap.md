@@ -511,6 +511,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-15 Evolution)
+*   **[P0] Team Execution Pinning Middleware**: Security and state-synchronization layer for Filesystem Adapter enforcing sub-tree locks for parallel agents. (Added: 2026-05-15)
+*   **[P0] Recursive Reasoning-Budget Broker**: Resource management service enforcing strictly inherited compute/token budgets across subagent lineages. (Added: 2026-05-15)
+*   **[P1] Negative Capability Attestation (NCA) Provider**: Security utility for generating and verifying cryptographic proofs of non-possession for high-risk tools. (Added: 2026-05-15)
+*   **[P0] Multimodal Metadata Scanner**: Extension of Injection Shield performing semantic analysis on structured metadata to block "Context Smuggling." (Added: 2026-05-15)
+
 #### Upcoming (2026-05-14 Evolution)
 *   **[P0] ContextEngine Lifecycle Adapter**: Implementation of OpenClaw v2026.3.7 "ContextEngine" lifecycle hooks for universal context plugin hosting. (Added: 2026-05-14)
 *   **[P0] Swarm-Aware Rate Limiter**: High-speed security middleware for neutralizing coordinated "Hivenet" swarm attacks at sub-millisecond speeds. (Added: 2026-05-14)

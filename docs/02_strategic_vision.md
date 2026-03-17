@@ -10,6 +10,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-15]
+### Focus: Recursive Governance & Negative Trust Attestation
+**Context**: The introduction of "Team Execution Pinning" in Claude Code and "Negative Capability Attestation" (NCA) in OpenClaw marks a transition from simple boundary enforcement to "Recursive Governance." As swarms become deeper and more parallel, security must provide cryptographic guarantees of both presence and *absence* of capabilities, while ensuring state consistency across teammates.
+**Strategic Pivot**:
+- **Recursive Reasoning-Budget Enforcement**: Leveraging Gemini CLI ARE v1.3, MCP Any will evolve into a "Recursive Budget Broker." We will implement mandatory, hierarchical token and compute budgets that are strictly inherited and enforced across all subagent spawns, neutralizing "Budget Runaway" in deep swarms.
+- **Negative Trust Architecture**: We are adopting the "Negative Capability Attestation" model. MCP Any will provide the infrastructure to generate and verify cryptographically signed proofs of *non-possession* for high-risk capabilities (e.g., shell access), ensuring that specialized agents remain within their "Capability Sandbox."
+- **Team Execution Pinning Proxy**: To support parallel "Agent Teams," MCP Any will act as the authoritative "Pinning Broker." We will implement a filesystem proxy that enforces sub-tree locks for teammate subagents, neutralizing "State Divergence" and race conditions in shared project environments.
+- **Multimodal Metadata Sanitization**: To counter the emerging "Context Smuggling" exploit, we are expanding our semantic scanning layer. MCP Any will perform real-time, SEMGREP-style inspection on all structured and multimodal metadata (SVG, CSS, EXIF) returned by tools, ensuring that hidden imperative instructions are blocked before reaching the agent.
+
+---
+
 ## Strategic Evolution: [2026-05-14]
 ### Focus: Pluggable Context Sovereignty & Swarm-Speed Identity Defense
 **Context**: The maturation of OpenClaw's `ContextEngine` and the rise of "AI Swarm Attacks" (Hivenets) mark a shift from linear agent security to "Machine-Speed Mesh Defense." As non-human identities outnumber humans 100:1, the "Universal Agent Bus" must move beyond simple bridging to active, hardware-attested identity and state orchestration.
@@ -301,7 +312,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
 
----
 ---
 
 ## Strategic Evolution: [2026-03-09]

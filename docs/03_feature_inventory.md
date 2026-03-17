@@ -51,6 +51,18 @@
 - **Discovery Sandbox Middleware**: (Re-affirmed P0) Evolved with the requirement for "Mandatory Discovery-Phase Isolation" to counter CVE-2026-0628.
 - **Shared KV Store (Blackboard)**: (Promoted to P0) Critical for implementing the "Snapshot-and-Merge" reconciliation needed for parallel agent teams.
 
+## Evolution: [2026-05-15] Updates
+
+### Proposed Additions
+- **Team Execution Pinning Middleware**: (P0) A security and state-synchronization layer for the Filesystem Adapter that enforces sub-tree locks for parallel teammate agents, neutralizing "State Divergence."
+- **Recursive Reasoning-Budget Broker**: (P0) A core resource management service implementing Gemini CLI ARE v1.3, enforcing strictly inherited compute/token budgets across deep subagent lineages.
+- **Negative Capability Attestation (NCA) Provider**: (P1) Security utility implementing OpenClaw v2026.3.8 NCA, providing signed cryptographic proofs of non-possession for high-risk capabilities.
+- **Multimodal Metadata Scanner**: (P0) Advanced extension of the Injection Shield that performs real-time semantic analysis on structured metadata (SVG, CSS, EXIF) to block "Context Smuggling."
+
+### Priority Shifts
+- **Structural Metadata Sanitizer**: (Promoted to P0) Elevated to critical priority to counter the "Context Smuggling" multimodal metadata exploit discovered today.
+- **ARE-Responsive Budget Controller**: (Re-affirmed P0) Evolved with the requirement for "Recursive Budget Enforcement" to align with Gemini CLI ARE v1.3.
+
 ## Evolution: [2026-05-10] Updates
 
 ### Proposed Additions
