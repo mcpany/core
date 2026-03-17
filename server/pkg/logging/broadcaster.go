@@ -230,6 +230,15 @@ func (b *Broadcaster) Broadcast(msg any) {
 	}
 }
 
+// ClearHistory clears the history of the broadcaster without removing subscribers.
+func (b *Broadcaster) ClearHistory() {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.history = make([]any, b.limit)
+	b.head = 0
+	b.full = false
+}
+
 // GetHistory returns the current log history.
 //
 // Parameters:

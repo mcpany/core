@@ -153,6 +153,22 @@ func (a *Application) handleTraces() http.HandlerFunc {
 	}
 }
 
+func (a *Application) handleClearTraces() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodDelete {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
+			a.standardMiddlewares.Audit.ClearHistory()
+			logging.GetLogger().Info("Cleared trace history via API")
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
 func (a *Application) handleTracesWS() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
