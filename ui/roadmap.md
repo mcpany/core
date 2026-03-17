@@ -353,6 +353,11 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-14 Evolution)
+- [ ] **[P0] Swarm Consensus Arbiter**: Real-time visualization of parallel agent branch reconciliation and "Consensus Barrier" status. (Added: 2026-05-14)
+- [ ] **[P0] Identity-Bound Socket Monitor**: Security indicator for TPM-verified named pipe connections and "Pipe-Splicing" alerts. (Added: 2026-05-14)
+- [ ] **[P1] Monologue Sanitization Auditor**: UI for reviewing semantic scans of shared agent reasoning and blocked "Hijacking" instructions. (Added: 2026-05-14)
+
 #### Upcoming (2026-05-13 Evolution)
 - [ ] **[P0] Loopback Security Monitor**: Real-time visualization of authenticated vs. blocked local port requests. (Added: 2026-05-13)
 - [ ] **[P0] Injection Shield Alert Center**: UI for reviewing and approving sanitized tool inputs and blocked injection attempts. (Added: 2026-05-13)
