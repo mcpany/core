@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-18] Updates
+
+### Proposed Additions
+- **Mission-Root Pinning (MRP) Middleware**: (P0) A transport-level security component that protects the "Mission Root" from context-window eviction during high-frequency "noise" injections (MRE defense).
+- **State-Trust Labeling (STL) Provider**: (P0) Security extension for the Blackboard that tags all KV data with the trust level of its origin framework, neutralizing PASI (Protocol-Agnostic State Injection).
+- **Wait-Graph Deadlock Resolver**: (P1) Advanced orchestration service for the `TeammateTool` Adapter that proactively breaks circular task dependencies in parallel swarms.
+- **Intent-Weighted Context Summarizer**: (P1) Upgrade for the ContextEngine Adapter supporting RCE v2.0 logic for mission-anchored context compression.
+
+### Priority Shifts
+- **TeammateTool Orchestration Adapter**: (Re-affirmed P0) Now elevated with the requirement for "Multi-Agent Quorum" (MAQ) cross-framework coordination.
+- **Contextual Quorum (CQ) Hub**: (Promoted to P0) Critical for supporting the new Claude-led MAQ protocol for high-risk actions.
+
 ## Evolution: [2026-05-17] Updates
 
 ### Proposed Additions
