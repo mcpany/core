@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-12] Updates
+
+### Proposed Additions
+- **Isolated Named-Pipe Transport Middleware**: (P0) A high-performance inter-agent transport layer using Docker-bound named pipes (UNIX domain sockets) to eliminate local port exposure.
+- **Subagent Routing Firewall**: (P0) Transport-level security gate that enforces "Auth-at-the-Pipe" identity validation before establishing inter-agent connections.
+- **Kernel-Resident Trace Scrubber**: (P1) Real-time semantic sanitization engine for binary state handoffs (BSH) within isolated named-pipe transports.
+
+### Priority Shifts
+- **Parallel Team Coordination Hub**: (Re-affirmed P0) Evolved to mandate the use of Isolated Named-Pipe Transport for all inter-teammate coordination.
+- **A2A Messaging Hub**: (Promoted to P0) Critical requirement for managing "Auth-at-the-Pipe" tokens across heterogeneous agent swarms.
+
 ## Evolution: [2026-05-11] Updates
 
 ### Proposed Additions

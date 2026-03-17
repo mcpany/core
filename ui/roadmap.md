@@ -353,6 +353,11 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-12 Evolution)
+- [ ] **[P0] Named-Pipe Transport Monitor**: Real-time visualization of kernel-level inter-agent communication channels and connection health. (Added: 2026-05-12)
+- [ ] **[P0] Routing Firewall Security Hub**: Dashboard for managing "Auth-at-the-Pipe" tokens and visualizing blocked routing attempts. (Added: 2026-05-12)
+- [ ] **[P1] Trace Scrubbing Auditor**: UI for reviewing semantic sanitization events within isolated transport channels. (Added: 2026-05-12)
+
 #### Upcoming (2026-05-11 Evolution)
 - [ ] **[P0] Parallel Team Coordination Dashboard**: Visualization of inter-teammate message flow and Blackboard merge events. (Added: 2026-05-11)
 - [ ] **[P0] Negative Discovery Audit Viewer**: Dashboard for reviewing non-execution proofs and blocked discovery-phase hooks. (Added: 2026-05-11)

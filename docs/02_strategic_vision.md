@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-12]
+### Focus: Routing Isolation Sovereignty & Port-Free Transport
+**Context**: The GSA-2026-OPENCLAW-ROUTING advisory and the subsequent industry pivot confirm that local network port exposure is a critical vulnerability for multi-agent swarms. As coordination becomes parallel and distributed, inter-agent communication must move from the network stack to the kernel and filesystem for absolute isolation.
+**Strategic Pivot**:
+- **Routing Isolation Sovereignty**: MCP Any will evolve to mandate "Port-Free Transport" for all local inter-agent communication. We will prioritize the implementation of isolated, Docker-bound named pipes (UNIX domain sockets) to eliminate the risk of local port hijacking and MitM attacks.
+- **"Auth-at-the-Pipe" Enforcement**: We are adopting the "Auth-at-the-Pipe" model. MCP Any will act as the authoritative broker for transport-level security, requiring hardware-attested identity tokens before any agent-to-agent connection is established over the isolated bus.
+- **Kernel-Resident Trace Scrubbing**: To support "Routing Isolation," we will integrate kernel-level trace scrubbing. This ensures that even in isolated named pipes, binary state handoffs (BSH) are semantically sanitized in real-time before reaching the recipient agent's reasoning engine.
+
 ## Strategic Evolution: [2026-05-11]
 ### Focus: Discovery-Phase Sovereignty & Parallel Team Coordination
 **Context**: The disclosure of CVE-2026-0628 and the rise of "Ghost-Execution" via discovery commands confirm that the tool discovery phase is the new critical security frontier. Simultaneously, the launch of Claude Code "Agent Teams" signals a paradigm shift toward parallel, multi-agent execution, where coordination and state consistency must be managed at sub-millisecond latency.
