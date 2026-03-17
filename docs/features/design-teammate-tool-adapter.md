@@ -45,3 +45,4 @@ With the official launch of Claude Code "Agent Teams," the `TeammateTool` has em
 
 ## 7. Evolutionary Changelog
 * **2026-05-17:** Initial Document Creation.
+* **2026-05-18:** Added support for **Multi-Agent Quorum (MAQ)** coordination. The adapter now facilitates cross-framework approval tokens, allowing an OpenClaw specialist to participate in a Claude-led quorum for high-risk actions. Integrated **Wait-Graph Deadlock Resolution** to identify and break circular task dependencies on the Blackboard during parallel execution.
