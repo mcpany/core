@@ -359,6 +359,12 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-19 Evolution)
+- [ ] **[P0] Reasoning Integrity Dashboard**: Visual indicator for SRM attestation status and Monologue Injection alerts. (Added: 2026-05-19)
+- [ ] **[P0] Namespace Collision Monitor**: UI for visualizing NLD collisions and shadowing attempts across registries. (Added: 2026-05-19)
+- [ ] **[P0] HASS Attestation Viewer**: Monitor for TPM-signed environment snapshots and DSR integrity. (Added: 2026-05-19)
+- [ ] **[P1] Cognitive Truth Explorer**: Interactive visualization of hardware-attested reasoning traces and SRM provenance. (Added: 2026-05-19)
+
 #### Upcoming (2026-05-18 Evolution)
 - [ ] **[P0] Mission-Root Persistence Monitor**: Real-time visual indicator for pinned intents and re-injection events (MRE defense). (Added: 2026-05-18)
 - [ ] **[P0] State Trust-Level Inspector**: Visual debugger for Blackboard data, highlighting origin framework trust-labels (STL). (Added: 2026-05-18)
