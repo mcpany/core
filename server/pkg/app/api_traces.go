@@ -238,6 +238,13 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 
 func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if rec := recover(); rec != nil {
+				logging.GetLogger().Error("PANIC in handleDebugSeedTraces", "panic", rec)
+				panic(rec) // re-panic to let recovery middleware catch it, but log it first
+			}
+		}()
+
 		if r.Method != http.MethodPost {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -306,11 +313,9 @@ func generateMockAuditEntries() []audit.Entry {
 			SpanID:     traceID + "-1",
 			ParentID:   traceID + "-0",
 			Arguments:  json.RawMessage(child1Args),
-			Result: map[string]any{
-				"results": []map[string]any{
-					{"file": "report_q3.pdf", "size": "1.2MB", "type": "pdf"},
-					{"file": "data_q3.xlsx", "size": "5.4MB", "type": "excel"},
-				},
+			Result: []map[string]any{
+				{"file": "report_q3.pdf", "size": "1.2MB", "type": "pdf"},
+				{"file": "data_q3.xlsx", "size": "5.4MB", "type": "excel"},
 			},
 			Duration:   "400ms",
 			DurationMs: 400,

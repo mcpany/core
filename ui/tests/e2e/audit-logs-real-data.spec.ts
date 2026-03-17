@@ -6,22 +6,35 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Audit Logs Real Data (No Mocks)', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+        localStorage.setItem('mcp_auth_token', 'test-token');
+    });
+  });
+
   test('should seed the database and render table for tabular result', async ({ page, request }) => {
-    // 1. Seed the trace data in the database
-    const res = await request.post('/api/v1/debug/traces');
+    // 1. Seed the trace data in the database using the API with the test token
+    const res = await request.post('/api/v1/debug/traces', {
+      headers: {
+        'Authorization': 'Bearer test-token'
+      }
+    });
+
+    if (!res.ok()) {
+      const errorText = await res.text();
+      console.error(`Failed to seed trace: ${res.status()} ${errorText}`);
+    }
     expect(res.ok()).toBeTruthy();
 
     // 2. Go to the audit page
     await page.goto('/audit');
 
     // 3. Wait for the rows to appear
-    await expect(page.getByRole('row').nth(1)).toBeVisible();
+    await expect(page.getByText('search-tool').first()).toBeVisible({ timeout: 10000 });
 
-    // 4. Click the "View" button for the data-analyzer tool (which has the tabular data)
-    // Find the row containing "data-analyzer"
-    const row = page.getByRole('row').filter({ hasText: 'search-tool' }).first();
-    const viewButton = row.getByRole('button', { name: 'View' });
-    await viewButton.click();
+    // 4. Click the "View" button for the search-tool
+    const row = page.locator('tr').filter({ hasText: 'search-tool' }).first();
+    await row.getByRole('button', { name: 'View' }).click();
 
     // 5. Verify the Modal opens and shows the expected data in a table
     const dialog = page.getByRole('dialog');

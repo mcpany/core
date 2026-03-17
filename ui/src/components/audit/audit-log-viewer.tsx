@@ -30,14 +30,19 @@ import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 
 interface AuditLogEntry {
     timestamp: string;
-    toolName: string;
-    userId: string;
-    profileId: string;
+    tool_name: string;
+    user_id: string;
+    profile_id: string;
     arguments: string;
     result: string;
     error: string;
     duration: string;
-    durationMs: number;
+    duration_ms: number;
+    // Keep old names optional just in case
+    toolName?: string;
+    userId?: string;
+    profileId?: string;
+    durationMs?: number;
 }
 
 /**
@@ -243,8 +248,8 @@ export function AuditLogViewer() {
                                     <TableCell className="font-mono text-xs">
                                         {new Date(log.timestamp).toLocaleString()}
                                     </TableCell>
-                                    <TableCell className="font-medium">{log.toolName}</TableCell>
-                                    <TableCell>{log.userId || "-"}</TableCell>
+                                    <TableCell className="font-medium">{log.tool_name || log.toolName}</TableCell>
+                                    <TableCell>{(log.user_id || log.userId) || "-"}</TableCell>
                                     <TableCell>{log.duration}</TableCell>
                                     <TableCell>
                                         {log.error ? (
@@ -274,7 +279,7 @@ export function AuditLogViewer() {
                     <DialogHeader>
                         <DialogTitle>Audit Log Detail</DialogTitle>
                         <DialogDescription>
-                            Execution details for {selectedLog?.toolName} at {selectedLog && new Date(selectedLog.timestamp).toLocaleString()}
+                        Execution details for {selectedLog?.tool_name || selectedLog?.toolName} at {selectedLog && new Date(selectedLog.timestamp).toLocaleString()}
                         </DialogDescription>
                     </DialogHeader>
                     {selectedLog && (
@@ -282,15 +287,15 @@ export function AuditLogViewer() {
                             <div className="grid grid-cols-2 gap-4 text-sm">
                                 <div>
                                     <span className="font-semibold block text-muted-foreground">User ID</span>
-                                    {selectedLog.userId || "N/A"}
+                                {(selectedLog.user_id || selectedLog.userId) || "N/A"}
                                 </div>
                                 <div>
                                     <span className="font-semibold block text-muted-foreground">Profile ID</span>
-                                    {selectedLog.profileId || "N/A"}
+                                {(selectedLog.profile_id || selectedLog.profileId) || "N/A"}
                                 </div>
                                 <div>
                                     <span className="font-semibold block text-muted-foreground">Duration</span>
-                                    {selectedLog.duration} ({selectedLog.durationMs}ms)
+                                {selectedLog.duration} ({(selectedLog.duration_ms || selectedLog.durationMs)}ms)
                                 </div>
                                 <div>
                                     <span className="font-semibold block text-muted-foreground">Status</span>
