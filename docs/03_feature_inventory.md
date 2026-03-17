@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-13] Updates
+
+### Proposed Additions
+- **Loopback Authentication Proxy**: (P0) A mandatory security interceptor for all local network ports that enforces origin-locked authentication, neutralizing "ClawdBot" style loopback hijacking.
+- **Injection-Shielding Middleware**: (P0) Pre-execution scanning service that performs SEMGREP-style static analysis and semantic validation on all tool inputs to block prompt and command injection.
+- **Coordination Token Optimizer**: (P1) Efficiency middleware for parallel swarms that deduplicates and compresses coordination messages within the named-pipe bus to reduce token overhead.
+
+### Priority Shifts
+- **Isolated Named-Pipe Transport Middleware**: (Re-affirmed P0) Designated as the mandatory replacement for all local TCP/UDP coordination channels.
+- **Pre-Flight Sandbox Validator**: (Promoted to P0) Critical for integrating the new Injection-Shielding logic before agent boot.
+
 ## Evolution: [2026-05-12] Updates
 
 ### Proposed Additions
