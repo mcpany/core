@@ -107,6 +107,8 @@ func (b *Provider) ToolDefinition() map[string]interface{} {
 	}
 }
 
+var runPlaywright = playwright.Run
+
 // playwrightFetcher is the production PageFetcher that uses playwright-go.
 type playwrightFetcher struct{}
 
@@ -128,7 +130,7 @@ type playwrightFetcher struct{}
 // Side Effects:
 //   - None.
 func (f *playwrightFetcher) FetchText(_ context.Context, url string) (string, error) {
-	pw, err := playwright.Run()
+	pw, err := runPlaywright()
 	if err != nil {
 		return "", fmt.Errorf("could not start playwright: %w", err)
 	}

@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/playwright-community/playwright-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -65,4 +66,42 @@ func TestBrowserProvider(t *testing.T) {
 	_, err = p.BrowsePage(context.Background(), "")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "url is required")
+}
+
+// errorPageFetcher simulates a fetcher that returns an error
+type errorPageFetcher struct{}
+
+func (f *errorPageFetcher) FetchText(ctx context.Context, url string) (string, error) {
+	return "", fmt.Errorf("mock fetch error")
+}
+
+func TestBrowserProvider_FetchError(t *testing.T) {
+	p := &Provider{fetcher: &errorPageFetcher{}}
+
+	content, err := p.BrowsePage(context.Background(), "http://example.com")
+	assert.Error(t, err)
+	assert.Empty(t, content)
+	assert.Contains(t, err.Error(), "mock fetch error")
+}
+
+func TestNewProvider(t *testing.T) {
+	p := NewProvider()
+	assert.NotNil(t, p)
+	assert.Nil(t, p.fetcher)
+}
+
+func TestBrowserProvider_DefaultFetcher(t *testing.T) {
+	p := NewProvider()
+
+	// Mock the internal runPlaywright function to ensure a hermetic failure
+	// without actually hitting the environment.
+	originalRun := runPlaywright
+	runPlaywright = func(options ...*playwright.RunOptions) (*playwright.Playwright, error) {
+		return nil, fmt.Errorf("mock playwright run error")
+	}
+	defer func() { runPlaywright = originalRun }()
+
+	_, err := p.BrowsePage(context.Background(), "http://example.com")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "mock playwright run error")
 }
