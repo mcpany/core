@@ -377,7 +377,7 @@ export function PlaygroundClientPro() {
                             <TabsList>
                                 <TabsTrigger value="console" className="flex items-center gap-2">
                                     <Terminal className="h-4 w-4" />
-                                    Console
+                                    Playground
                                 </TabsTrigger>
                                 <TabsTrigger value="runner" className="flex items-center gap-2">
                                     <Sparkles className="h-4 w-4" />
@@ -527,7 +527,7 @@ export function PlaygroundClientPro() {
                                 <Zap className="h-12 w-12 stroke-[1] mb-4 opacity-50" />
                                 <h3 className="text-lg font-medium">No Tool Selected</h3>
                                 <p className="text-sm max-w-sm text-center">
-                                    Select a tool from the sidebar to start the Tool Runner, or switch to Console mode.
+                                    Select a tool from the sidebar to start the Tool Runner, or switch to Playground mode.
                                 </p>
                                 <Button variant="outline" className="mt-4" onClick={() => setSidebarOpen(true)}>
                                     Browse Tools

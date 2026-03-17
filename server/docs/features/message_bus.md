@@ -6,6 +6,8 @@ MCP Any uses a message bus for asynchronous communication and decoupled architec
 
 - **[NATS](nats.md)**: Lightweight and high-performance.
 - **[Kafka](kafka.md)**: Robust and scalable for high-throughput.
+- **Redis**: Fast, in-memory data store with pub/sub capabilities.
+- **Memory**: Built-in, zero-dependency broker for single-instance deployments.
 
 ## Use Cases
 

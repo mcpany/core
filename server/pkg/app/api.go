@@ -138,6 +138,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 
 	// Users
 	mux.HandleFunc("/users", a.handleUsers(store))
+	mux.HandleFunc("/users/me/preferences", a.handleUserPreferences(store))
 	mux.HandleFunc("/users/me", a.handleUserMe(store))
 	mux.HandleFunc("/users/", a.handleUserDetail(store))
 

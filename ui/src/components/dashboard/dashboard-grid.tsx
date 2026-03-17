@@ -109,7 +109,11 @@ export function DashboardGrid() {
         const loadLayout = async () => {
             try {
                 // Fetch from API
-                const res = await fetch('/api/v1/user/preferences');
+                const res = await fetch('/api/v1/users/me/preferences', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('mcpany_token')}`
+                    }
+                });
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data['dashboard-layout']) {
@@ -182,9 +186,12 @@ export function DashboardGrid() {
 
         const timer = setTimeout(async () => {
             try {
-                await fetch('/api/v1/user/preferences', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                await fetch('/api/v1/users/me/preferences', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('mcpany_token')}`
+                    },
                     body: JSON.stringify({
                         'dashboard-layout': JSON.stringify(widgets)
                     })

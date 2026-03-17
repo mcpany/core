@@ -63,6 +63,7 @@ You can instantly stop routing traffic to a service by toggling the switch in th
 
 - **HTTP (OpenAPI)**: Connects to REST/OpenAPI endpoints. Ideal for third-party SaaS (e.g., GitHub, Stripe).
 - **gRPC**: Connects to high-performance internal microservices using Protobuf reflection.
+- **GraphQL**: Introspects GraphQL schemas to dynamically create tools for Queries and Mutations.
 - **MCP**: Connects to other Model Context Protocol servers.
 - **CMD (Local)**: Executes local command-line tools (stdio). Perfect for scripts, Python environments, or CLI utilities.
 

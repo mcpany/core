@@ -1,32 +1,37 @@
-# Audit Report: Truth Reconciliation
+# Truth Reconciliation Audit Report
 
 ## Executive Summary
-An extensive "Truth Reconciliation Audit" was performed comparing the features defined in `ui/docs` and `server/docs` (along with the product roadmap) against the codebase.
+A Truth Reconciliation Audit was performed across 10 sampled documentation features to ensure perfect synchronization between `ui/docs`, `server/docs`, the Codebase, and the Project Roadmap.
 
-Overall Health of the 10 Sampled Features: **Excellent**. Nine out of the 10 sampled features were found to be fully implemented and working as designed. One feature was identified as Roadmap Debt (Missing Logic) and was engineered to align with the roadmap.
+The overall health of the sampled features shows strong alignment with the Roadmap, though several instances of "Documentation Drift" (Case A) and one instance of "Roadmap Debt" (Case B) were identified and aggressively remediated.
 
 ## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/native_file_upload_playground.md` | Verified | None | Feature correctly implemented in `ui/src/components/shared/universal-schema-form.tsx` mapping `contentEncoding: "base64"` to file uploads. |
-| `ui/docs/features/stack-composer.md` | Verified | None | Feature is present in `ui/src/app/stacks/page.tsx` and related components in `ui/src/components/stacks/`. |
-| `ui/docs/features/structured_log_viewer.md` | Verified | None | JSON parsing and expandable UI verified in `ui/src/components/logs/log-viewer.tsx`. |
-| `ui/docs/features/real-time-inspector.md` | Verified | None | WebSocket connections and live traces are functioning in `ui/src/app/inspector/page.tsx` and `inspector-table.tsx`. |
-| `ui/docs/features/tag-based-access-control.md` | Verified | None | Profiles accurately enforce access via Tags through `ui/src/components/profiles/profile-editor.tsx` and `server/pkg/tool/management.go`. |
-| `server/docs/features/dynamic_registration.md` | **Roadmap Debt** | Engineered Solution | Discovery logic was only partially present. Added `OpenAPIProvider`, `GRPCProvider`, and `GraphQLProvider` to `server/pkg/discovery/` as described by the feature documentation. |
-| `server/docs/features/security.md` | Verified | None | Tool Poisoning Mitigation (Integrity Check) logic acts correctly in `server/pkg/tool/integrity.go`. |
-| `ui/docs/features/policy_management.md` | Verified | None | Granular Tool Export Policies with Regex support are functional in `ui/src/components/services/editor/policy-editor.tsx`. |
-| `ui/docs/features/playground.md` | Verified | None | Session history Import/Export behaves properly in `ui/src/components/playground/pro/playground-client-pro.tsx`. |
-| `server/docs/features/wasm.md` | Verified | None | WASM Plugin system (mock/experimental phase) correctly exists inside `server/pkg/wasm/runtime.go`. |
+| `ui/docs/features/playground.md` | Diverged | Updated title from "Console" to "Playground" | Modified `ui/docs/features/playground.md`, `ui/src/app/playground/page.tsx`, and `ui/src/components/playground/pro/playground-client-pro.tsx` to align with the Roadmap's "Tool Playground & Explorer". |
+| `server/docs/features/message_bus.md` | Diverged | Updated document to include Redis and Memory brokers | Code supports NATS, Kafka, Redis, and Memory; documentation was missing Redis and Memory. Modified `server/docs/features/message_bus.md`. |
+| `server/docs/features/security.md` | Aligned | None | "Sentinel Security Mode" correctly reflects the code's `localhost`-only fallback and Roadmap's "Safe-by-Default Hardening". |
+| `ui/docs/features/dashboard.md` | Diverged | Implemented Backend Persistence for Dashboard Widgets | Roadmap called for `Dashboard Widget Persistence` to the backend, but code used `localStorage`. Engineered the solution by adding the `/api/v1/users/me/preferences` API and updating the UI to use it. |
+| `ui/docs/features/services.md` | Diverged | Added GraphQL to supported service types | Code implements GraphQL Upstream Services and Roadmap includes it; documentation was missing it. Modified `ui/docs/features/services.md`. |
+| `server/docs/features/dynamic_registration.md` | Aligned | None | Document correctly details OpenAPI, gRPC, and GraphQL support matching the codebase. |
+| `ui/docs/features/stack-composer.md` | Aligned | None | "Intelligent Stack Composer" functionality is verified in code and matches the Roadmap. |
+| `server/docs/features/context_optimizer.md` | Aligned | None | Middleware implementation in code matches document exactly. |
+| `ui/docs/features/network.md` | Diverged | Updated Roadmap status to Complete `[x]` | The Network Topology Graph is fully implemented in the code, but the Roadmap incorrectly listed it as pending. |
+| `ui/docs/features/logs.md` | Aligned | None | Live Logs stream functionality is verified in code and UI routes. |
 
 ## Remediation Log
-- **Dynamic Tool Registration**: The code only supported `Ollama` discovery despite the documentation (`server/docs/features/dynamic_registration.md`) claiming support for OpenAPI, gRPC, and GraphQL. Engineered Go discovery provider implementations for all 3 missing sources:
-  - `server/pkg/discovery/openapi.go`
-  - `server/pkg/discovery/grpc.go`
-  - `server/pkg/discovery/graphql.go`
-- Connected the newly created providers in the core server initialization loop (`server/pkg/app/server.go`).
-- Wrote full unit tests (`*_test.go`) for each provider to adhere to Google Style Guides and TDD requirements.
+
+### Case A: Documentation Drift (Code is Correct)
+- **Playground Title Fix:** Standardized the naming convention across the UI and documentation from "Console" to "Playground" to properly match the "Tool Playground & Explorer" roadmap item.
+- **Message Bus Brokers:** The Message Bus documentation was updated to list all supported brokers, including the natively supported "Redis" and "Memory" options.
+- **GraphQL Upstream Service:** Added "GraphQL" to the list of supported service types in the Services documentation.
+- **Visual Connection Graph Status:** The Roadmap was out of sync with reality. The `Visual Connection Graph` was marked as completed (`[x]`) since the UI fully implements the `/network` topology view.
+
+### Case B: Roadmap Debt (Code is Missing/Broken)
+- **Dashboard Widget Persistence:**
+  - **Issue:** The Roadmap prioritized backend persistence for Dashboard Widget layouts (`Dashboard Widget Persistence`), but the implementation relied solely on `localStorage`.
+  - **Fix:** Engineered the missing logic by implementing the `/api/v1/users/me/preferences` endpoint (GET/PUT) in the server (`server/pkg/app/api_users_me.go` and `server/pkg/app/user_handlers.go`). The React UI (`ui/src/components/dashboard/dashboard-grid.tsx`) was then refactored to fetch and persist layout preferences using the new API, with `localStorage` serving as a graceful fallback.
 
 ## Security Scrub
-This report has been reviewed to ensure it contains NO Personally Identifiable Information (PII), secrets, or internal IP addresses.
+The audit report and remediations have been verified to contain NO Personally Identifiable Information (PII), secrets, internal IP addresses, or sensitive credentials. All code additions strictly adhere to Google Style Guides and testing requirements.

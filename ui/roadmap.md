@@ -107,7 +107,7 @@
 - [ ] **Error Boundary Reporting**: Implement a global error boundary that catches component crashes (like the SecretsManager issue) and reports them to the diagnostic log or backend.
 - [x] **Tool Usage Analytics**: Display usage statistics (calls, failures) directly in the tool list or details view.
 - [x] **Recent Tools in Search**: Show recently used or searched tools in the search dropdown.
-- [ ] **Visual Connection Graph**: View how services interact with agents.
+- [x] **Visual Connection Graph**: View how services interact with agents.
 - [x] **Dashboard Layout Customization**: Ability for users to rearrange and resize dashboard widgets.
 - [ ] **Dashboard Widget Gallery**: Allow users to add multiple instances of widgets (e.g., multiple "Metric" cards for different queries).
 - [ ] **Compact Density Mode**: A toggle to reduce padding and font sizes for high-information-density dashboards.

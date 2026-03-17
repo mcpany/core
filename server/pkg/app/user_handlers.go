@@ -13,6 +13,24 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+import (
+	"github.com/mcpany/core/server/pkg/storage"
+)
+
+// handleUserPreferences multiplexes GET and PUT requests for user preferences.
+func (a *Application) handleUserPreferences(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			a.handleGetUserPreferences(w, r)
+		case http.MethodPut:
+			a.handleUpdateUserPreferences(w, r)
+		default:
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		}
+	}
+}
+
 // handleGetUserPreferences retrieves the preferences for the authenticated user.
 func (a *Application) handleGetUserPreferences(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()

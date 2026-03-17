@@ -19,7 +19,7 @@ Navigate to `/playground`. The interface presents a clean slate.
 
 ![Playground Overview](screenshots/playground_blank.png)
 
-> **Note**: The page title is "Console".
+> **Note**: The page title is "Playground".
 
 ### 2. Select a Tool
 
