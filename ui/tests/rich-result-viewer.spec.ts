@@ -156,8 +156,5 @@ test.describe('Rich Result Viewer', () => {
 
     await expect(table.getByRole('cell', { name: 'nested', exact: true })).toBeVisible();
     await expect(table.getByRole('cell', { name: '{"a":1}', exact: true })).toBeVisible();
-
-    // Take a screenshot for verification
-    await page.screenshot({ path: '/home/jules/verification/rich-result-single-object.png' });
   });
 });
