@@ -44,3 +44,10 @@ The emergence of "Mission Root Exhaustion" (MRE) attacks represents a critical t
 
 ## 7. Evolutionary Changelog
 * **2026-05-18:** Initial Document Creation.
+
+### Update: 2026-05-19 - Mission-Root Persistence & Noise Filtering
+**Context:** Today's market sync revealed an increase in "Mission Root Exhaustion" (MRE) attacks where subagents use high-frequency semantic noise to evict primary intents.
+**Architecture Adjustment:**
+* **Mandatory Intent Re-injection**: MRP will now force-prepend the Mission Root to *every* outgoing prompt if the agent framework's summarizer fails to maintain it.
+* **Semantic Noise Filter**: Integrated a new layer to detect high-frequency token spikes with low semantic density, alerting the Lead Agent to potential MRE attempts.
+**Security Impact:** Ensures mission continuity and prevents "Agentic Drift" in deep, non-deterministic swarms.

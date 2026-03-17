@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-19] Updates
+
+### Proposed Additions
+- **Mission-Root Pinning (MRP) Middleware**: (P0) A transport-level security component designed to protect the "Mission Root" from context-window eviction during high-frequency "noise" injections.
+- **State-Trust Labeling (STL) Provider**: (P0) A security extension for the Blackboard that cryptographically tags data with the trust level of its framework origin, neutralizing PASI.
+- **Teammate-Coordination Bridge**: (P0) Infrastructure for cross-framework "Agent Teams," providing the translation layer between Claude's `TeammateTool` and OpenClaw's `ContextEngine`.
+- **Authenticated Agent-Card Discovery Gate**: (P0) Identity-bound discovery service for the A2A mesh that enforces "Auth-Before-Discovery" for agent capability cards.
+
+### Priority Shifts
+- **TeammateTool Orchestration Adapter**: (Promoted to P0) Critical for supporting the rapid adoption of Claude-style parallel teams.
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Elevated as a mandatory requirement for heterogeneous swarm delegations.
+
 ## Evolution: [2026-05-18] Updates
 
 ### Proposed Additions

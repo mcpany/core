@@ -10,6 +10,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-19]
+### Focus: Mission-Root Integrity & Cross-Framework Teammate Coordination
+**Context**: The rapid maturation of Claude Code "Agent Teams" and the stabilization of OpenClaw's pluggable `ContextEngine` (v2026.3.7) signal a transition from individual agents to "Heterogeneous Swarms" where specialized agents from different frameworks must coordinate. Simultaneously, the discovery of "Mission-Root Exhaustion" (MRE) and "Protocol-Agnostic State Injection" (PASI) confirm that the "Universal Agent Bus" must move from simple routing to active semantic defense.
+**Strategic Pivot**:
+- **Mission-Root Pinning (MRP)**: To neutralize MRE attacks, MCP Any will implement MRP. This transport-level safeguard ensures that the cryptographically signed "Mission Root" intent is protected from context-window eviction, even during high-frequency "noise" injections by subagents.
+- **Cross-Framework Teammate Coordination**: MCP Any will evolve to act as the universal bridge for the `TeammateTool` and `ContextEngine` protocols. We will provide the infrastructure for a Claude-led team to seamlessly delegate tasks to OpenClaw specialists, ensuring intent and state consistency across framework boundaries.
+- **State-Trust Labeling (STL)**: To counter PASI, we are introducing STL for the Shared KV Store (Blackboard). Every data fragment will be cryptographically tagged with the trust level of its origin framework, preventing low-trust state from polluting high-trust reasoning loops.
+- **Authenticated Agent-Card Discovery**: Leveraging Gemini CLI v0.33.0 patterns, we are implementing "Auth-Before-Discovery" for the A2A mesh. Agent capabilities and "Agent Cards" will only be visible to authenticated peers within a verified mission scope.
+
+---
+
 ## Strategic Evolution: [2026-05-18]
 ### Focus: Contextual Integrity & Deadlock-Resilient Orchestration
 **Context**: The emergence of "Mission Root Exhaustion" (MRE) and "Protocol-Agnostic State Injection" (PASI) proves that securing the transport layer is insufficient. We must now protect the **semantic integrity** of the mission itself. Simultaneously, the rise of "Teammate Deadlock" in parallel swarms (Claude Code Agent Teams) confirms that the Universal Agent Bus must move from passive routing to active lifecycle and state reconciliation.

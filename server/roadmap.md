@@ -515,6 +515,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-19 Evolution)
+*   **[P0] Mission-Root Pinning (MRP) Middleware**: Transport-level security to protect the "Mission Root" from context-window exhaustion. (Added: 2026-05-19)
+*   **[P0] State-Trust Labeling (STL) Provider**: Security extension for the Blackboard to cryptographically tag data with its framework origin trust level. (Added: 2026-05-19)
+*   **[P0] Teammate-Coordination Bridge**: Cross-framework translation layer between Claude's `TeammateTool` and OpenClaw's `ContextEngine`. (Added: 2026-05-19)
+*   **[P0] Authenticated Agent-Card Discovery Gate**: Identity-bound discovery for the A2A mesh that enforces "Auth-Before-Discovery." (Added: 2026-05-19)
+
 #### Upcoming (2026-05-18 Evolution)
 *   **[P0] Mission-Root Pinning (MRP) Middleware**: Transport-level safeguard to protect mission intent from context-window exhaustion attacks. (Added: 2026-05-18)
 *   **[P0] State-Trust Labeling (STL) Provider**: Security extension for the Blackboard to tag data with its framework trust-level. (Added: 2026-05-18)
