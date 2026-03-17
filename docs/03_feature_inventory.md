@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-11] Updates
+
+### Proposed Additions
+- **Parallel Team Coordination Hub**: (P0) High-speed coordination bus for Claude Code-style "Agent Teams," providing message passing and Snapshot-and-Merge state reconciliation for parallel branches.
+- **Negative Discovery Attestation Provider**: (P0) Extension of the Discovery Sandbox that provides cryptographic proof of the absolute absence of unauthorized hook execution during the discovery phase.
+- **Async RL Rollout Orchestrator**: (P1) High-speed, non-blocking telemetry bridge for OpenClaw-RL v1.0, facilitating the export of reasoning traces and PRM evaluations.
+
+### Priority Shifts
+- **Discovery Sandbox Middleware**: (Re-affirmed P0) Evolved with the requirement for "Mandatory Discovery-Phase Isolation" to counter CVE-2026-0628.
+- **Shared KV Store (Blackboard)**: (Promoted to P0) Critical for implementing the "Snapshot-and-Merge" reconciliation needed for parallel agent teams.
+
 ## Evolution: [2026-05-10] Updates
 
 ### Proposed Additions

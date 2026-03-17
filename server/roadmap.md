@@ -506,6 +506,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-11 Evolution)
+*   **[P0] Parallel Team Coordination Hub**: High-speed coordination bus supporting message passing and state reconciliation for parallel agent teams. (Added: 2026-05-11)
+*   **[P0] Negative Discovery Attestation Provider**: Cryptographic proof of non-execution for restricted paths during the tool discovery phase. (Added: 2026-05-11)
+*   **[P1] Async RL Rollout Orchestrator**: Non-blocking telemetry bridge for high-frequency reasoning trace and reward export. (Added: 2026-05-11)
+
 #### Upcoming (2026-05-10 Evolution)
 *   **[P0] Discovery Sandbox Middleware**: Ephemeral, zero-trust execution environment for MCP discovery commands to prevent "Ghost-Execution" exploits. (Added: 2026-05-10)
 *   **[P0] Session-Persistent DAP Provider**: Hardware-attested manifest of non-existent files to neutralize "Shadow-Sandbox" escapes (CVE-2026-25725). (Added: 2026-05-10)
