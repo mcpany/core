@@ -23,6 +23,7 @@ const (
 	// Summary: Defines StateClose.
 	StateClosed State = iota
 	// StateOpen represents the state where the circuit breaker blocks requests immediately.
+	// Summary: Defines StateOpe.
 	StateOpen
 	// StateHalfOpen represents the state where the circuit breaker allows a limited number of requests to test if the service has recovered.
 	// Summary: Defines StateHalfOpe.
