@@ -353,6 +353,12 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-15 Evolution)
+- [ ] **[P0] Capability Beacon Firewall Monitor**: Real-time visualization of incoming discovery beacons, throttle events, and quarantined sources. (Added: 2026-05-15)
+- [ ] **[P0] Mission-Root Lineage Inspector**: Security UI for verifying the cross-framework continuity of cryptographically signed "Mission Root" tokens. (Added: 2026-05-15)
+- [ ] **[P1] Semantic Quota Dashboard**: Visual tracker for mission-based semantic risk scores and quota consumption. (Added: 2026-05-15)
+- [ ] **[P1] Ephemeral Branch Manager**: Git-native interface for reviewing and approving subagent task branch merges. (Added: 2026-05-15)
+
 #### Upcoming (2026-05-14 Evolution)
 - [ ] **[P0] Swarm Attack Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and SAAD neutralization events. (Added: 2026-05-14)
 - [ ] **[P0] ContextEngine Plugin Manager**: Re-affirmed P0 for managing OpenClaw-compatible lifecycle hooks and "Mission-Root" anchors. (Added: 2026-05-14)

@@ -506,6 +506,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-15 Evolution)
+*   **[P0] Capability Beacon Firewall (CBF)**: High-performance discovery middleware to rate-limit and quarantine unauthenticated "Capability Beacons". (Added: 2026-05-15)
+*   **[P0] Mission-Root Continuity Broker**: Coordination service for cross-framework preservation and validation of cryptographically signed "Mission Root" tokens. (Added: 2026-05-15)
+*   **[P1] Semantic Quota Middleware**: Risk-aware resource manager that throttles tool calls and reasoning effort based on "Semantic Risk" scores. (Added: 2026-05-15)
+*   **[P1] Ephemeral Branch Orchestrator**: Git-native isolation bridge for automating the creation and merging of disposable task branches. (Added: 2026-05-15)
+
 #### Upcoming (2026-05-14 Evolution)
 *   **[P0] ContextEngine Lifecycle Adapter**: Implementation of OpenClaw v2026.3.7 "ContextEngine" lifecycle hooks for universal context plugin hosting. (Added: 2026-05-14)
 *   **[P0] Swarm-Aware Rate Limiter**: High-speed security middleware for neutralizing coordinated "Hivenet" swarm attacks at sub-millisecond speeds. (Added: 2026-05-14)

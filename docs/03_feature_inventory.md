@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-15] Updates
+
+### Proposed Additions
+- **Capability Beacon Firewall (CBF)**: (P0) A high-performance discovery middleware designed to rate-limit and quarantine unauthenticated "Capability Beacons" to prevent Discovery DoS attacks.
+- **Mission-Root Continuity Broker**: (P0) A coordination service that facilitates the cross-framework preservation and validation of cryptographically signed "Mission Root" tokens.
+- **Semantic Quota Middleware**: (P1) A risk-aware resource manager that throttles tool calls and reasoning effort based on the "Semantic Risk" score of the active mission.
+- **Ephemeral Branch Orchestrator**: (P1) A Git-native isolation bridge that automates the creation and merging of disposable task branches for subagent code modifications.
+
+### Priority Shifts
+- **ContextEngine Lifecycle Adapter**: (Re-affirmed P0) Designated as the primary host for the new Mission-Root Continuity logic.
+- **Injection-Shielding Middleware**: (Re-affirmed P0) Now integrates with the Ephemeral Branch Orchestrator for mandatory branch-merge scanning.
+
 ## Evolution: [2026-05-14] Updates
 
 ### Proposed Additions

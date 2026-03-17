@@ -10,6 +10,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-15]
+### Focus: Mission-Root Continuity & Zero-Click Discovery Defense
+**Context**: The release of OpenClaw v2026.5.2's "Mission-Root Attestation" and the emergence of "Capability Beacon Storms" (Discovery DoS) signal a move toward harder boundary enforcement at the start of the agent lifecycle. As swarms become heterogeneous, the UAB must ensure that mission intent is immutable and that the "Discovery-Phase" is protected from machine-speed flooding.
+**Strategic Pivot**:
+- **Mission-Root Continuity Broker**: MCP Any will evolve to act as the authoritative "Root Broker" for heterogeneous swarms. We will provide the infrastructure to preserve and validate "Mission-Root" tokens across framework boundaries, ensuring that a subagent in Framework A remains bound to the mission-root defined in Framework B.
+- **Capability Beacon Firewall (CBF)**: To neutralize "Discovery DoS" attacks, we are introducing the CBF. MCP Any will implement sub-millisecond, rate-limited ingestion of reactive discovery beacons. Beacons from un-attested or high-frequency sources will be automatically throttled or quarantined before they can reach the agent's reasoning loop.
+- **Semantic Quota Enforcement**: Aligning with Gemini CLI's update, we are introducing "Semantic Quotas." MCP Any will dynamically adjust the available tool set and execution priority based on the real-time "Semantic Risk" of the mission, preventing agents from exhausting their quota on low-value/high-risk actions.
+- **Ephemeral Branch Orchestrator**: Supporting Claude Code's isolation model, MCP Any will act as the "Branch Mediator." We will provide the non-blocking infrastructure to manage disposable "Task Branches" and facilitate the "Peer Review" attestation required for state merging in parallel swarms.
+
+---
+
 ## Strategic Evolution: [2026-05-14]
 ### Focus: Pluggable Context Sovereignty & Swarm-Speed Identity Defense
 **Context**: The maturation of OpenClaw's `ContextEngine` and the rise of "AI Swarm Attacks" (Hivenets) mark a shift from linear agent security to "Machine-Speed Mesh Defense." As non-human identities outnumber humans 100:1, the "Universal Agent Bus" must move beyond simple bridging to active, hardware-attested identity and state orchestration.
