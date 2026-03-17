@@ -10,6 +10,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-19]
+### Focus: Standardized Trust Translation & Deadlock-Resilient Orchestration
+**Context**: The rapid adoption of OpenClaw RCE v2.0 and the consolidation of Claude Code's MAQ for high-stakes tool calls have highlighted a critical gap: **"Trust Fragmentation."** As agents bridge between disparate frameworks (UAB, A2A, MCP), the lack of standardized trust-metadata mapping is leading to "Trust Mismatch" errors and coordination deadlocks.
+**Strategic Pivot**:
+- **Standardized Trust-Metadata Translation**: MCP Any will evolve to act as the authoritative "Trust Translation Layer." We will provide the infrastructure to map and normalize trust-metadata (UAB attestation tokens, legacy MCP headers, etc.) during cross-framework state handoffs, ensuring seamless trust continuity.
+- **Cross-Framework Wait-Graph Sync**: To address "Teammate Deadlock" in heterogeneous swarms, we are introducing "Cross-Framework Wait-Graph Sync." MCP Any will provide a unified bus for agents to report their "Wait-States," enabling the Wait-Graph Deadlock Resolver to identify and break circular dependencies across framework boundaries.
+- **Intent-Weighted MRP**: Leveraging OpenClaw's RCE v2.0, we are upgrading Mission-Root Pinning (MRP) to be "Intent-Weighted." This ensures that the pinned mission intent is not only protected from eviction but also acts as the primary weight for all context summarization hooks.
+- **MAQ Heartbeat Monitoring**: Supporting the efficiency of MAQ quorums, we will implement "Quorum Heartbeat Monitoring" to proactively identify and alert on coordination stalls, reducing the latency overhead of multi-agent high-stakes actions.
+
+---
+
 ## Strategic Evolution: [2026-05-18]
 ### Focus: Contextual Integrity & Deadlock-Resilient Orchestration
 **Context**: The emergence of "Mission Root Exhaustion" (MRE) and "Protocol-Agnostic State Injection" (PASI) proves that securing the transport layer is insufficient. We must now protect the **semantic integrity** of the mission itself. Simultaneously, the rise of "Teammate Deadlock" in parallel swarms (Claude Code Agent Teams) confirms that the Universal Agent Bus must move from passive routing to active lifecycle and state reconciliation.

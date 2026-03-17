@@ -359,6 +359,11 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-19 Evolution)
+- [ ] **[P0] Universal Trust-Metadata Map**: UI for managing and visualizing the mapping between disparate framework trust labels. (Added: 2026-05-19)
+- [ ] **[P1] Cross-Framework Wait-State Bus**: Visualizer for inter-agent wait states and swarm-wide deadlock alerts. (Added: 2026-05-19)
+- [ ] **[P1] MAQ Quorum Heartbeat Monitor**: Real-time telemetry dashboard for monitoring coordination health in multi-agent quorums. (Added: 2026-05-19)
+
 #### Upcoming (2026-05-18 Evolution)
 - [ ] **[P0] Mission-Root Persistence Monitor**: Real-time visual indicator for pinned intents and re-injection events (MRE defense). (Added: 2026-05-18)
 - [ ] **[P0] State Trust-Level Inspector**: Visual debugger for Blackboard data, highlighting origin framework trust-labels (STL). (Added: 2026-05-18)

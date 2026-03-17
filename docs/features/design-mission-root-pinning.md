@@ -43,4 +43,9 @@ The emergence of "Mission Root Exhaustion" (MRE) attacks represents a critical t
 * **Observability**: Metrics on "Intent Re-injections" and "MRE Attack Signals" will be surfaced in the UI Health Dashboard.
 
 ## 7. Evolutionary Changelog
+* **2026-05-19: Integrating Intent-Weighted Summarization**
+    **Context**: The rapid adoption of OpenClaw RCE v2.0 has highlighted a new integration challenge: ensuring that the "Mission Root" is not only "pinned" but also acts as the primary semantic weight for context compression.
+    **Architecture Adjustment**:
+    *   Updating `MRP.inject_intent(payload)` to include `weight: high` metadata for OpenClaw-compatible summarization hooks.
+    *   Implementing a "Semantic Integrity Bridge" between MRP and the ContextEngine Lifecycle Adapter to ensure intent-bound summarization.
 * **2026-05-18:** Initial Document Creation.
