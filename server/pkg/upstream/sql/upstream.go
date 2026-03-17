@@ -23,6 +23,8 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for SQL databases.
+//
+// Summary: Represents a Upstream.
 type Upstream struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -32,6 +34,20 @@ type Upstream struct {
 //
 // Returns:
 //   - *Upstream: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewUpstream operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -49,6 +65,20 @@ func NewUpstream() *Upstream {
 //
 // Errors:
 //   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Shutdown operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -86,6 +116,20 @@ func ptr(s string) *string {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes Register operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

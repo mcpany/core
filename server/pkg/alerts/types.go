@@ -6,28 +6,38 @@ package alerts
 import "time"
 
 // Severity represents the severity level of an alert.
+//
+// Summary: Represents a Severity.
 type Severity string
 
 // Status represents the status of an alert.
+//
+// Summary: Represents a Status.
 type Status string
 
 const (
 	// SeverityCritical indicates a critical issue.
+	// Summary: Defines SeverityCritica.
 	SeverityCritical Severity = "critical"
 	// SeverityWarning indicates a warning.
 	SeverityWarning Severity = "warning"
 	// SeverityInfo indicates an informational alert.
+	// Summary: Defines SeverityInf.
 	SeverityInfo Severity = "info"
 
 	// StatusActive indicates the alert is currently active.
+	// Summary: Defines StatusActiv.
 	StatusActive Status = "active"
 	// StatusAcknowledged indicates the alert has been acknowledged.
 	StatusAcknowledged Status = "acknowledged"
 	// StatusResolved indicates the alert has been resolved.
+	// Summary: Defines StatusResolve.
 	StatusResolved Status = "resolved"
 )
 
 // Alert represents a system alert.
+//
+// Summary: Represents a Alert.
 type Alert struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
@@ -40,6 +50,8 @@ type Alert struct {
 }
 
 // AlertRule defines a condition for triggering an alert.
+//
+// Summary: Represents a AlertRule.
 type AlertRule struct {
 	ID          string    `json:"id"`
 	Name        string    `json:"name"`
@@ -53,6 +65,8 @@ type AlertRule struct {
 }
 
 // AlertStats represents aggregated statistics for alerts.
+//
+// Summary: Represents a AlertStats.
 type AlertStats struct {
 	ActiveCritical int    `json:"activeCritical"`
 	ActiveWarning  int    `json:"activeWarning"`
