@@ -359,6 +359,11 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-16 Evolution)
+- [ ] **[P0] Reasoning Alignment Visualizer**: Visualization of semantic consensus scores and reasoning traces across the quorum. (Added: 2026-05-16)
+- [ ] **[P0] Transport Session Monitor**: Real-time indicator for cryptographically bound transport channels and "Team Ghosting" alerts. (Added: 2026-05-16)
+- [ ] **[P1] RRRA Intensity Dashboard**: Visual tracker for real-time reasoning intensity and dynamic resource budgeting. (Added: 2026-05-16)
+
 #### Upcoming (2026-05-15 Evolution)
 - [ ] **[P0] Consensus Attestation Workspace**: Security UI for orchestrating multi-agent approval quorums for high-risk delegations. (Added: 2026-05-15)
 - [ ] **[P1] PNTD Registry Explorer**: Unified browser for discovering capabilities across MCP, gRPC, and UACO via the universal discovery bus. (Added: 2026-05-15)
