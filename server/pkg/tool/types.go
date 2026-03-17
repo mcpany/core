@@ -2279,7 +2279,13 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		var result map[string]interface{}
 		if err := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
 			<-stderrDone
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, redactor.Redact(stderrBuf.String()))
+			// 🛡️ Sentinel Security Update: Prevent Information Leakage
+			// Do not leak raw stderr to the client. Log it server-side instead.
+			redactedStderr := redactor.Redact(stderrBuf.String())
+			if redactedStderr != "" {
+				logging.GetLogger().WarnContext(ctx, "JSON CLI command failed with stderr", "tool", t.tool.GetName(), "stderr", redactedStderr)
+			}
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w", err)
 		}
 		return result, nil
 	}
@@ -2663,7 +2669,13 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		var result map[string]interface{}
 		if err := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
 			<-stderrDone
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, redactor.Redact(stderrBuf.String()))
+			// 🛡️ Sentinel Security Update: Prevent Information Leakage
+			// Do not leak raw stderr to the client. Log it server-side instead.
+			redactedStderr := redactor.Redact(stderrBuf.String())
+			if redactedStderr != "" {
+				logging.GetLogger().WarnContext(ctx, "JSON CLI command failed with stderr", "tool", t.tool.GetName(), "stderr", redactedStderr)
+			}
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w", err)
 		}
 		return result, nil
 	}
