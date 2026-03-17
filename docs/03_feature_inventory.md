@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-22] Updates
+
+### Proposed Additions
+- **Local-Only WebSocket Auth (LOWA) Gateway**: (P0) A mandatory security layer for all local listeners that enforces session-bound authentication to neutralize "ClawJacked" style brute-force attacks.
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: (P0) Infrastructure for secure, peer-to-peer mailbox messaging and task list synchronization between teammates from disparate frameworks.
+- **Mailbox Integrity Middleware**: (P0) Security extension for the T2T Bridge that validates inter-agent messages against the "Mission Root" intent to prevent malicious mailbox injection.
+- **Full-Mesh Discovery Auth Provider**: (P0) Advanced discovery service that mandates hardware-attested handshakes before revealing agent capability cards in a mesh environment.
+
+### Priority Shifts
+- **Inter-Agent Mailbox Guard (IAMG)**: (Evolved to Mailbox Integrity Middleware) Now designated as a mandatory requirement for all mesh-based teammate coordination.
+- **Origin-Locked Agent Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory session-bound LOWA authentication.
+
 ## Evolution: [2026-05-21] Updates
 
 ### Proposed Additions

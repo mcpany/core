@@ -596,3 +596,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
 *   **[P1] Cognitive Fragment Reconciler**: Background service for synchronizing encrypted monologues across agent sessions. (Added: 2026-04-22)
+
+#### Upcoming (2026-05-22 Evolution)
+*   **[P0] Local-Only WebSocket Auth (LOWA) Gateway**: Mandatory session-bound authentication for all local WebSocket listeners. (Added: 2026-05-22)
+*   **[P0] Teammate-to-Teammate (T2T) Encryption Bridge**: Secure, cross-framework bus for encrypted teammate messaging. (Added: 2026-05-22)
+*   **[P0] Mailbox Integrity Middleware**: Intent-bound message validation for inter-agent mailboxes. (Added: 2026-05-22)
+*   **[P0] Full-Mesh Discovery Auth Provider**: Hardware-attested discovery handshakes for A2A meshes. (Added: 2026-05-22)
