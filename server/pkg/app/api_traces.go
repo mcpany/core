@@ -307,7 +307,10 @@ func generateMockAuditEntries() []audit.Entry {
 			ParentID:   traceID + "-0",
 			Arguments:  json.RawMessage(child1Args),
 			Result: map[string]any{
-				"results": []string{"report_q3.pdf", "data_q3.xlsx"},
+				"results": []map[string]any{
+					{"file": "report_q3.pdf", "size": "1.2MB", "type": "pdf"},
+					{"file": "data_q3.xlsx", "size": "5.4MB", "type": "excel"},
+				},
 			},
 			Duration:   "400ms",
 			DurationMs: 400,
