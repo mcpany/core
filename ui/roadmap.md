@@ -428,6 +428,12 @@
 - [ ] **[P0] Permission Enforcement Monitor**: Real-time tracker for DPG-blocked tool calls and project-local policy violations. (Added: 2026-05-08)
 - [ ] **[P1] RL Rollout Streamer**: Live feed of asynchronous RL feedback tokens and policy drift metrics. (Added: 2026-05-08)
 
+#### Upcoming (2026-05-21 Evolution)
+- [ ] **[P0] Cognitive Load Visualizer**: Real-time dashboard for monitoring reasoning intensity and CLS shedding events. (Added: 2026-05-21)
+- [ ] **[P0] Temporal Integrity Inspector**: Forensic UI for verifying hardware-attested timestamps on reasoning traces. (Added: 2026-05-21)
+- [ ] **[P0] HAPE Privacy Auditor**: Secure UI for reviewing local PII sanitization status and enclave logs. (Added: 2026-05-21)
+- [ ] **[P1] CFRR Merge Conflict Resolver**: Interactive workspace for reviewing and resolving CFRR reasoning conflicts. (Added: 2026-05-21)
+
 #### Upcoming (2026-04-22 Evolution)
 - [ ] **[P0] A2A Replay Security Dashboard**: Visualize nonce status and replay attempt alerts in the A2A hub. (Added: 2026-04-22)
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)

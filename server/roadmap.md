@@ -586,6 +586,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Deterministic Permission Guard (DPG)**: Kernel-level security middleware for non-bypassable enforcement of project-local "Deny" rules. (Added: 2026-05-08)
 *   **[P1] Asynchronous RL Rollout Collector**: Telemetry bridge for OpenClaw-RL v1.0, enabling high-frequency feedback collection for policy optimization. (Added: 2026-05-08)
 
+#### Upcoming (2026-05-21 Evolution)
+*   **[P0] Cognitive Load Shedding (CLS) Controller**: Stability middleware to dynamically throttle subagent capabilities based on reasoning intensity. (Added: 2026-05-21)
+*   **[P0] Temporal Reasoning Attestation (TRA)**: Security extension for SRM Provider adding monotonic timestamps to reasoning fragments. (Added: 2026-05-21)
+*   **[P0] Hardware-Attested Privacy Enclave (HAPE)**: Secure enclave infrastructure for local PII context processing. (Added: 2026-05-21)
+*   **[P1] CFRR Reconciliation Adapter**: Bridge for OpenClaw CFRR engine to support parallel reasoning trace merging. (Added: 2026-05-21)
+
 #### Upcoming (2026-04-22 Evolution)
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
