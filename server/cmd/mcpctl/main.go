@@ -6,6 +6,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -56,21 +57,47 @@ func newRootCmd() *cobra.Command {
 			}
 
 			store := config.NewFileStore(osFs, cfg.ConfigPaths())
-			configs, err := config.LoadServices(context.Background(), store, "server")
+			configs, err := config.LoadResolvedConfig(context.Background(), store)
 			if err != nil {
 				return fmt.Errorf("failed to load configurations from %v: %w", cfg.ConfigPaths(), err)
 			}
 
 			var allErrors []string
+			var jsonErrors []map[string]interface{}
 			// Validate using the same logic as the server
-			if validationErrors := config.Validate(context.Background(), configs, config.Server); len(validationErrors) > 0 {
+			validationErrors := config.Validate(context.Background(), configs, config.Server)
+			if len(validationErrors) > 0 {
 				for _, e := range validationErrors {
 					allErrors = append(allErrors, e.Error())
+
+					jsonErr := map[string]interface{}{
+						"service": e.ServiceName,
+						"error":   e.Err.Error(),
+					}
+					if ae, ok := e.Err.(*config.ActionableError); ok {
+						jsonErr["suggestion"] = ae.Suggestion
+						jsonErr["error"] = ae.Err.Error()
+					}
+					jsonErrors = append(jsonErrors, jsonErr)
 				}
 			}
 
-			if len(allErrors) > 0 {
-				return fmt.Errorf("configuration validation failed with errors:\n- %s", strings.Join(allErrors, "\n- "))
+			outputFormat, _ := cmd.Flags().GetString("output")
+			if outputFormat == "json" {
+				if len(jsonErrors) > 0 {
+					jsonBytes, _ := json.MarshalIndent(map[string]interface{}{"errors": jsonErrors}, "", "  ")
+					fmt.Fprintln(cmd.OutOrStdout(), string(jsonBytes))
+					return fmt.Errorf("configuration validation failed")
+				}
+			} else {
+				if len(allErrors) > 0 {
+					return fmt.Errorf("configuration validation failed with errors:\n- %s", strings.Join(allErrors, "\n- "))
+				}
+			}
+
+			if outputFormat == "json" {
+				fmt.Fprintln(cmd.OutOrStdout(), `{"valid": true}`)
+				return nil
 			}
 
 			_, err = fmt.Fprintln(cmd.OutOrStdout(), "Configuration is valid.")
@@ -80,6 +107,7 @@ func newRootCmd() *cobra.Command {
 			return nil
 		},
 	}
+	validateCmd.Flags().StringP("output", "o", "text", "Output format (text, json)")
 	// Bind flags like --config, etc.
 	config.BindRootFlags(rootCmd)
 	rootCmd.AddCommand(validateCmd)

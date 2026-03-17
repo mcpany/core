@@ -104,7 +104,29 @@ upstream_services:
 		cmd.SetArgs([]string{"validate", "--config-path", invalidConfigPath})
 		err := cmd.Execute()
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "Configuration Validation Failed")
+		assert.Contains(t, err.Error(), "configuration validation failed")
 		assert.Contains(t, err.Error(), "invalid http address")
+	})
+
+	t.Run("Validation Error JSON Output", func(t *testing.T) {
+		cmd := newRootCmd()
+		b := bytes.NewBufferString("")
+		cmd.SetOut(b)
+		cmd.SetArgs([]string{"validate", "--config-path", invalidConfigPath, "--output", "json"})
+		err := cmd.Execute()
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "configuration validation failed")
+		assert.Contains(t, b.String(), `"error"`)
+		assert.Contains(t, b.String(), "invalid http address")
+	})
+
+	t.Run("Valid Configuration JSON Output", func(t *testing.T) {
+		cmd := newRootCmd()
+		b := bytes.NewBufferString("")
+		cmd.SetOut(b)
+		cmd.SetArgs([]string{"validate", "--config-path", validConfigPath, "--output", "json"})
+		err := cmd.Execute()
+		assert.NoError(t, err)
+		assert.Contains(t, b.String(), `{"valid": true}`)
 	})
 }
