@@ -632,3 +632,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Fragment-Aware Mailbox Isolation (FAMI)**: Semantic fragment scanning for AMS shards to neutralize "State Splicing" exploits. (Added: 2026-05-27)
 *   **[P0] Recursive Delegation Reaper (RDR)**: Branch-depth monitor and autonomous pruning service for deep swarms. (Added: 2026-05-27)
 *   **[P1] Mission-Root Budget Registry**: Persistent storage and reconciliation for cross-mission reasoning budget continuity. (Added: 2026-05-27)
+
+#### Upcoming (2026-05-28 Evolution)
+*   **[P0] Command Traceability Provider (CTP)**: Authoritative security middleware issuing cryptographically signed "Chain of Command" tokens for every instruction. (Added: 2026-05-28)
+*   **[P0] Autonomous PR Integrity Gate (APRIG)**: Multi-agent security quorum for code-generating tool calls requiring independent attestation for pull request safety. (Added: 2026-05-28)
+*   **[P0] Trace-Aware Identity Propagation (TAIP)**: Extension for SMI Relay ensuring hardware-attested identities carry full lineage metadata. (Added: 2026-05-28)
+*   **[P1] Reasoning-Effort Attribution Middleware**: Resource management service cryptographically attributing token/compute usage to specific mission-root branches. (Added: 2026-05-28)
