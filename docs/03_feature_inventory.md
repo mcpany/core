@@ -1098,3 +1098,15 @@
 ### Priority Shifts
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for **Intent-Scoped ARE Enforcement** to counter subagent spoofing.
 - **T2T Encryption Bridge**: (Re-affirmed P0) Designated as the primary infrastructure for AMS-based non-blocking teammate coordination.
+
+## Evolution: [2026-05-27] Updates
+
+### Proposed Additions
+- **Sovereign Mesh Identity (SMI) Relay**: (P0) Federated identity service that provides hardware-attested identity fragments that persist across local and multi-cloud environments.
+- **Fragment-Aware Mailbox Isolation (FAMI)**: (P0) Security extension for the Mailbox Integrity Middleware that performs semantic analysis of state fragments to prevent "State Splicing" exfiltration.
+- **Recursive Delegation Reaper (RDR)**: (P0) Stability middleware that monitors branching depth and semantic redundancy to prune non-convergent or redundant subagent branches.
+- **Cross-Mission Budget Continuity Provider**: (P1) Resource management service allowing reasoning budgets to be reconciled across mission phases and framework-neutral handoffs.
+
+### Priority Shifts
+- **Federated Swarm Identity (FSI) Provider**: (Re-affirmed P0) Evolving to act as the authoritative "SMI Relay" for cross-cloud agent swarms.
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for "Cross-Mission Budget Continuity."

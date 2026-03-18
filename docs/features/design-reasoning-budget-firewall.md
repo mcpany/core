@@ -52,3 +52,10 @@ As AI agent frameworks like Gemini CLI and OpenClaw move toward high-intensity r
 *   Implementing **Intent-Scoped ARE Enforcement**. Reasoning budgets are now cryptographically pinned to the specific intent branch defined by the Mission Root.
 *   Integrating hardware-attested role validation into the ARE header processing loop.
 **Security Impact:** Prevents subagents from "stealing" reasoning tokens from sibling tasks or the primary mission loop, ensuring economic integrity of the swarm.
+
+### Update: 2026-05-27 - Cross-Mission Budget Continuity
+**Context:** Today's market sync revealed the need for "Budget Continuity" across complex mission phases. Current budget leases are session-bound, leading to "Budget Fragmentation" when agents migrate or hand off tasks between missions.
+**Architecture Adjustment:**
+*   Implementing **Cross-Mission Budget Continuity**. Reasoning budgets are now reconciled against a persistent "Mission Root Registry."
+*   Introducing a "Lease Migration Protocol" for framework-neutral handoffs, ensuring budget integrity as agents move between local and cloud environments.
+**Security Impact:** Prevents "Budget Reset" exploits where subagents trigger mission restarts to refresh their reasoning quotas.
