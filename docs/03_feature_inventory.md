@@ -1134,6 +1134,18 @@
 - **Mesh-Bound Context Sovereignty Bridge**: (Re-affirmed P0) Now elevated with the requirement for **Hardware-Attested Identity Rotation**.
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now designated as the primary backend for the **Teammate Task-List Arbiter**.
 
+## Evolution: [2026-05-31] Updates
+
+### Proposed Additions
+- **Lock-Free Mesh Arbiter (LFMA)**: (P0) A core coordination service implementing CRDT-based task list synchronization for non-blocking teammate coordination in horizontal swarms.
+- **Sharded Mailbox Sovereignty (SMS) Middleware**: (P0) Advanced extension for the T2T Bridge providing task-bound mailbox shards to eliminate global coordination locks.
+- **Autonomous Task Reaper (ATR)**: (P1) Stability service that monitors teammate liveness and reasoning monologues to reclaim and re-auction "Ghost" tasks.
+- **Hardware-Attested Identity Rotation (HAIR) Provider**: (P0) Security middleware mandating periodic, hardware-bound identity rotation for inter-teammate requests in sharded meshes.
+
+### Priority Shifts
+- **Teammate Task-List Arbiter**: (Evolved to Lock-Free Mesh Arbiter) Now designated as the primary mechanism for lock-free horizontal coordination.
+- **Asynchronous Mailbox Sharding (AMS) Middleware**: (Evolved to Sharded Mailbox Sovereignty) Now elevated with mission-root intent anchoring.
+
 ## Evolution: [2026-05-29] Updates
 
 ### Proposed Additions
