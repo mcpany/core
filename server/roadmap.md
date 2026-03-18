@@ -690,3 +690,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **[P0] Capability Garbage Collection (CGC) Provider**: Authoritative security service for tracking capability lineage and enforcing immediate revocation upon sub-intent termination.
 - **[P0] HAIL v0.36.1 Lineage Provider**: Identity extension supporting hardware-attested intent lineage for non-repudiable mission-root attestation.
 - **[P0] MRLA Gateway**: Advanced A2A handshake gateway mandating proof of mission-root lineage before capability discovery.
+
+### Upcoming: [2026-06-07]
+- **Recursive Mission Attestation (RMA) Provider**: (P0) Authoritative hardware-attested mission token issuer for recursive sub-missions.
+- **Context-Aware Shard Isolation (CASI) Middleware**: (P0) Semantic isolation of mailbox shards to prevent cross-teammate state pollution.
+- **CFIB Auction Bridge**: (P1) Orchestration bridge for cross-framework intent bidding between Gemini HAIL and OpenClaw SRM.
+- **Mission-Receipt Logging Service**: (P0) Cryptographic audit trail for mission receipts to prevent shadow delegations.

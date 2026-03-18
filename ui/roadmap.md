@@ -528,3 +528,9 @@
 - **Intent-Splicing Audit Log**: (P0) Real-time visualization of semantically deconstructed inter-agent messages and blocked splicing attempts.
 - **CGC Lifecycle Manager**: (P0) Security dashboard for monitoring capability garbage collection and identifying "Ghost Agents."
 - **MRLA Handshake Debugger**: (P0) Forensic UI for visualizing A2A discovery handshakes and mission-root lineage proofs.
+
+### Upcoming: [2026-06-07]
+- [ ] **[P0] Mission Receipt Tracer**: Visualize the recursive hierarchy of hardware-attested mission tokens.
+- [ ] **[P0] CASI Shard Inspector**: Debugger for semantically isolated mailbox shards and fragment-level access violations.
+- [ ] **[P1] CFIB Bidding Workspace**: Real-time visualization of cross-framework task auctions and bid translations.
+- [ ] **[P0] Intent Sovereignty Audit Log**: Forensic UI for reviewing cryptographically logged mission receipts.
