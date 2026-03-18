@@ -650,6 +650,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Autonomous Task Reaper (ATR)**: Stability service for proactive reclamation and re-auction of "Ghost" tasks. (Added: 2026-05-31)
 *   **[P0] Hardware-Attested Identity Rotation (HAIR)**: Security middleware mandating periodic, hardware-bound identity rotation for inter-teammate requests. (Added: 2026-05-31)
 
+#### Upcoming (2026-06-02 Evolution)
+*   **[P0] Teammate Reputation Score Provider**: Authoritative ledger for peer-to-peer agent reputation scoring. (Added: 2026-06-02)
+*   **[P0] Mission-Bound Attestation Gateway**: Hardware-attested binding of every sub-task to the root mission token. (Added: 2026-06-02)
+*   **[P1] Fast-Path Mission Token Provider**: Performance optimization for low-latency intent-bound handoffs. (Added: 2026-06-02)
+*   **[P0] Autonomous Interdiction Controller**: Machine-speed peer-to-peer mailbox isolation for predator swarm defense. (Added: 2026-06-02)
+
 #### Upcoming (2026-06-01 Evolution)
 *   **[P0] Machine-Speed Swarm Quarantine (MSSQ)**: Autonomous, sub-millisecond revocation of agent capabilities based on CSAD triggers. (Added: 2026-06-01)
 *   **[P0] Adaptive Context Lifecycle Orchestrator**: Authoritative host for pluggable ContextEngine strategies with security policy enforcement. (Added: 2026-06-01)

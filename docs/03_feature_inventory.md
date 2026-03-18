@@ -1134,6 +1134,19 @@
 - **Mesh-Bound Context Sovereignty Bridge**: (Re-affirmed P0) Now elevated with the requirement for **Hardware-Attested Identity Rotation**.
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now designated as the primary backend for the **Teammate Task-List Arbiter**.
 
+## Evolution: [2026-06-02] Updates
+
+### Proposed Additions
+- **Teammate Reputation Score Provider**: (P0) Authoritative mesh service that maintains a peer-to-peer reputation ledger for agents, governing delegation based on historical alignment.
+- **Intent-Leakage Shielding (ILS) Middleware**: (P0) Security extension for the MRP middleware that monitors semantic entropy and blocks subagent requests designed to probe mission-root constraints.
+- **Mission-Bound Attestation Gateway**: (P0) High-speed security service that cryptographically binds every sub-task and handoff to the hardware-attested mission-root token.
+- **Fast-Path Mission Token Provider**: (P1) Performance optimization for the Attestation Gateway, providing low-latency verification for high-frequency subagent calls.
+- **Autonomous Interdiction Controller**: (P0) Extension for the CSAD Hub that automatically severs peer-to-peer mailbox access upon detection of credential splicing or intent drift.
+
+### Priority Shifts
+- **Collective Swarm Anomaly Detection (CSAD) Hub**: (Re-affirmed P0) Now elevated with the requirement for **Autonomous Interdiction** to support machine-speed quarantine.
+- **Context Sidecar Adapter**: (Promoted to P0) Now elevated with the requirement for **Sovereignty Proofs** to prevent sidecar collisions in heterogeneous meshes.
+
 ## Evolution: [2026-06-01] Updates
 
 ### Proposed Additions

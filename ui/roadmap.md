@@ -490,6 +490,12 @@
 - [ ] **[P1] Autonomous Task Reaper (ATR) Log**: Real-time tracker for "Ghost" task reclamation and re-auction events. (Added: 2026-05-31)
 - [ ] **[P0] HAIR Identity Widget**: Status monitor for hardware-attested identity rotation sessions. (Added: 2026-05-31)
 
+#### Upcoming (2026-06-02 Evolution)
+- [ ] **[P0] Teammate Reputation Ledger**: Peer-to-peer visualization of agent reputation scores and behavioral alignment. (Added: 2026-06-02)
+- [ ] **[P0] Mission-Root Token Inspector**: Visual debugger for tracking intent-bound attestation across multi-agent chains. (Added: 2026-06-02)
+- [ ] **[P1] Fast-Path Attestation Status**: Real-time monitor for hardware-bound mission tokens and handoff latency. (Added: 2026-06-02)
+- [ ] **[P0] Interdiction Logic Workspace**: Dashboard for configuring autonomous peer-to-peer isolation rules in CSAD. (Added: 2026-06-02)
+
 #### Upcoming (2026-06-01 Evolution)
 - [ ] **[P0] Swarm Quarantine Monitor**: Real-time visualization of MSSQ-isolated mission scopes and revocation events. (Added: 2026-06-01)
 - [ ] **[P0] Adaptive Context Hub**: Dashboard for managing pluggable ContextEngine plugins and monitoring "Cognitive Anchoring" health. (Added: 2026-06-01)
