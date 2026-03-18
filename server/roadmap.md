@@ -678,3 +678,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Mission-Root Gravity (MRG) Middleware**: Advanced extension for Live Context Sharding to prevent "Semantic Drift" in granular meshes.
 - **Multi-Hop Persistence Relay (MHPR)**: Performance-optimizing security service for the LFTA Trust Lease Manager to support persistent hardware-attested trust across multiple delegation hops.
 - **Sub-Millisecond ARL Synchronizer**: High-speed listener for the LFTA ARL Middleware to support ARL v3.0 synchronization in sub-100ms intervals.
+
+### Upcoming: [2026-06-05]
+- **[P0] Supply Chain Provenance Attestor (SCPA)**: Implement hardware-bound (TPM/Secure Enclave) signature validation for tool manifest updates.
+- **[P0] RAG-Retrieval Integrity Guard (RRIG)**: Middleware for semantic sanitization of retrieved context to prevent uncontrolled PII/IP exposure.
+- **[P0] Upstream Signature Validator (USV)**: Extension for PNTD provider to enforce cryptographically signed provenance for mesh-wide tool discovery.

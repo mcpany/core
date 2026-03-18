@@ -517,3 +517,8 @@
 - **Speculative Sanitization Dashboard**: Visualization of neutralized speculative poisoned fragments and their sources.
 - **Mission-Root Gravity Status**: Real-time monitoring of "Semantic Drift" and mission-root anchoring across agent teammate shards.
 - **Multi-Hop Trust Persistence Monitor**: Detailed view of hardware-attested trust leases and their propagation across deep swarms.
+
+### Upcoming: [2026-06-05]
+- **Supply Chain Provenance Explorer**: Visualization of hardware-attested tool lineages and "Trust Strength" indicators for the supply chain.
+- **Retrieval Sanitization Monitor**: Real-time dashboard for visualizing RRIG-redacted context fragments and sensitive data detection alerts.
+- **Upstream Signature Reviewer**: Security workspace for reviewing and approving provenance tokens for external A2A capability cards.
