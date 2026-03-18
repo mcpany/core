@@ -479,6 +479,11 @@
 - [ ] **[P0] Identity Lineage Inspector**: Forensic UI for visualizing trace-aware identities and their parentage. (Added: 2026-05-28)
 - [ ] **[P1] Resource Attribution Overlay**: Cost and effort metrics broken down by intent-branch and agent parentage. (Added: 2026-05-28)
 
+#### Upcoming (2026-05-30 Evolution)
+- [ ] **[P0] T2T Identity Rotation Dashboard**: Monitor for hardware-attested identity rotation events and stale-token alerts. (Added: 2026-05-30)
+- [ ] **[P0] Task-List Arbiter Workspace**: Real-time visualization of lock-free task-claiming in horizontal meshes. (Added: 2026-05-30)
+- [ ] **[P1] Mesh Snapshot Explorer**: UI for reviewing and restoring hardware-attested HAMS snapshots. (Added: 2026-05-30)
+
 #### Upcoming (2026-05-29 Evolution)
 - [ ] **[P0] Swarm Anomaly Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and CSAD neutralization events. (Added: 2026-05-29)
 - [ ] **[P0] Mesh Command Sovereignty Dashboard**: Visual "Chain of Mesh-Command" tracer for inter-teammate mailbox validation. (Added: 2026-05-29)

@@ -1123,6 +1123,17 @@
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Reasoning-Effort Attribution**.
 - **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to support the new APRIG multi-agent quorum for PR safety.
 
+## Evolution: [2026-05-30] Updates
+
+### Proposed Additions
+- **T2T Identity Rotation Provider**: (P0) Advanced security service for the T2T Bridge that manages hardware-attested, session-bound identity rotation to neutralize teammate impersonation.
+- **Teammate Task-List Arbiter**: (P0) Coordination middleware for horizontal swarms that provides lock-free, asynchronous task-claiming logic to resolve "Mailbox Lock" bottlenecks.
+- **Hardware-Attested Mesh Snapshot (HAMS)**: (P1) Stability service that provides cryptographically signed snapshots of the entire mesh state for mission-root consistency.
+
+### Priority Shifts
+- **Mesh-Bound Context Sovereignty Bridge**: (Re-affirmed P0) Now elevated with the requirement for **Hardware-Attested Identity Rotation**.
+- **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now designated as the primary backend for the **Teammate Task-List Arbiter**.
+
 ## Evolution: [2026-05-29] Updates
 
 ### Proposed Additions
