@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-23] Updates
+
+### Proposed Additions
+- **Federated Swarm Identity (FSI) Provider**: (P0) A local identity service that issues hardware-attested, cross-framework tokens for secure teammate verification in heterogeneous meshes.
+- **Intent-Leakage Shielding (ILS) Middleware**: (P0) Security extension for the MRP middleware that monitors semantic entropy and blocks subagent requests designed to probe mission-root constraints.
+- **Hardware-Attested Discovery Handshake (HADH) Gateway**: (P0) Advanced discovery service that mandates hardware-bound handshakes before revealing any agent capabilities to peers.
+- **Reasoning-Effort Quota Controller**: (P0) Resource management middleware that dynamically throttles high-intensity reasoning (e.g., `x-gemini-reasoning-effort`) to prevent Agentic DoS.
+
+### Priority Shifts
+- **Full-Mesh Discovery Auth Provider**: (Promoted to P0) Elevated with the requirement for mandatory HADH to neutralize pre-flight shadow mapping.
+- **Mission-Root Pinning (MRP) Middleware**: (Re-affirmed P0) Now designated as the primary host for the ILS exfiltration defense.
+
 ## Evolution: [2026-05-22] Updates
 
 ### Proposed Additions
