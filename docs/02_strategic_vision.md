@@ -8,6 +8,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 2. **Zero Trust Security**: Granular, capability-based access control for all tool calls.
 3. **Context Persistence**: Shared state and context inheritance across agent swarms and execution environments.
 
+## Strategic Evolution: [2026-05-23]
+### Focus: Federated Swarm Identity & Mission-Root Sovereignty
+**Context**: The emergence of "Intent Leakage" via high-frequency reasoning traces and the persistent "Identity Spoofing" in heterogeneous meshes (Claude Code teammates vs. OpenClaw specialists) confirm that transport-layer security is no longer sufficient. We must now protect the **semantic sovereignty** of the mission intent and provide a **federated, hardware-bound identity** that persists across all connected frameworks.
+**Strategic Pivot**:
+- **Federated Swarm Identity (FSI) Provider**: MCP Any will evolve to act as the authoritative "Identity Mint" for all connected agents. We will implement FSI, issuing hardware-attested, cross-framework identity tokens that allow disparate agents (Claude, OpenClaw, AutoGen) to verify each other's lineage and mission-bound authority.
+- **Intent-Leakage Shielding (ILS)**: Supporting the sovereignty of the mission root, we are evolving the MRP middleware to include ILS. This layer will monitor the semantic entropy of subagent reasoning requests, blocking those designed to "probe" and exfiltrate private mission-root constraints.
+- **Hardware-Attested Discovery Handshake (HADH)**: To counter "Pre-Flight Shadow Mapping," we are mandating HADH. Agent capabilities will remain cryptographically invisible until a hardware-bound, identity-verified handshake is completed within the mission scope.
+- **Reasoning-Effort Quota Controller**: To neutralize "Agentic DoS" attacks, MCP Any will implement quota management for high-intensity reasoning (e.g., `x-gemini-reasoning-effort`). We will dynamically throttle subagent reasoning budgets to ensure they cannot "stall" the primary intent loop.
+
 ---
 
 ## Strategic Evolution: [2026-05-22]

@@ -602,3 +602,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Teammate-to-Teammate (T2T) Encryption Bridge**: Secure, cross-framework bus for encrypted teammate messaging. (Added: 2026-05-22)
 *   **[P0] Mailbox Integrity Middleware**: Intent-bound message validation for inter-agent mailboxes. (Added: 2026-05-22)
 *   **[P0] Full-Mesh Discovery Auth Provider**: Hardware-attested discovery handshakes for A2A meshes. (Added: 2026-05-22)
+
+#### Upcoming (2026-05-23 Evolution)
+*   **[P0] Federated Swarm Identity (FSI) Provider**: Authority for hardware-attested cross-framework agent identities. (Added: 2026-05-23)
+*   **[P0] Intent-Leakage Shielding (ILS)**: Semantic entropy monitoring to prevent subagent probing of mission-root constraints. (Added: 2026-05-23)
+*   **[P0] Hardware-Attested Discovery Handshake (HADH)**: Advanced A2A handshake mandating identity proof before capability discovery. (Added: 2026-05-23)
+*   **[P0] Reasoning-Effort Quota Controller**: Dynamic budgeting for high-intensity reasoning to prevent Agentic DoS. (Added: 2026-05-23)

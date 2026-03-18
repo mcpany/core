@@ -444,3 +444,9 @@
 - [ ] **[P0] T2T Mailbox Explorer**: Visual workspace for monitoring encrypted teammate-to-teammate coordination. (Added: 2026-05-22)
 - [ ] **[P0] Shared Task List Synchronizer**: Real-time diff viewer for cross-framework task list alignment. (Added: 2026-05-22)
 - [ ] **[P0] Mesh Discovery Handshake Monitor**: Real-time visualization of A2A discovery auth events. (Added: 2026-05-22)
+
+#### Upcoming (2026-05-23 Evolution)
+- [ ] **[P0] Federated Identity Manager**: UI for reviewing and approving hardware-attested agent identities. (Added: 2026-05-23)
+- [ ] **[P0] Intent-Leakage Alert Dashboard**: Visual monitor for semantic entropy violations and probing attempts. (Added: 2026-05-23)
+- [ ] **[P0] Mesh Handshake Debugger**: Forensic tool for visualizing the HADH identity-proof sequence. (Added: 2026-05-23)
+- [ ] **[P0] Reasoning Quota Monitor**: Real-time visualization of subagent reasoning effort and dynamic throttling. (Added: 2026-05-23)
