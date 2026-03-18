@@ -1075,3 +1075,15 @@
 ### Priority Shifts
 - **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Now elevated as the primary solution for the "Approval Fatigue" scaling bottleneck.
 - **Pluggable Context Bridge**: (Re-affirmed P0) Expanded to support the new Standardized Context Sidecar Interface.
+
+## Evolution: [2026-05-25] Updates
+
+### Proposed Additions
+- **Reasoning-Budget Firewall (RBF)**: (P0) Authoritative economic gatekeeper that enforces strictly scoped, hardware-attested token and ARE budgets for subagents to prevent Reasoning-Budget Hijacking.
+- **Asynchronous Mailbox Sharding (AMS) Middleware**: (P0) Upgrade for the T2T Encryption Bridge that hosts granular, task-bound mailbox shards to eliminate "Mailbox Lock" bottlenecks.
+- **Cognitive Stall Arbitrator (CSA)**: (P0) Stability middleware that monitors semantic entropy and refinement drift to detect and terminate non-convergent subagent loops.
+- **Identity Fragment Attestation (IFA) Provider**: (P0) Security extension for the T2T Bridge mandating hardware-attested, session-bound tokens for every mailbox request to prevent identity spoofing.
+
+### Priority Shifts
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Now elevated with the requirement for AMS to support high-density parallel swarms.
+- **Reasoning-Effort Quota Controller**: (Evolved to Reasoning-Budget Firewall) Now designated as a mandatory defense against Reasoning-Budget Hijacking (RBH).

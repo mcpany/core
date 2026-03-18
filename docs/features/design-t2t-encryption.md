@@ -62,3 +62,11 @@ The T2T Encryption Bridge provides a universal, secure bus for teammate-to-teamm
 
 ## 7. Evolutionary Changelog
 *   **2026-05-22:** Initial Document Creation.
+
+### Update: 2026-05-25 - Introducing Asynchronous Mailbox Sharding (AMS)
+**Context:** Today's market sync revealed "Mailbox Lock" bottlenecks in horizontal swarms with 10+ teammates. The monolithic encrypted mailbox model is causing significant latency during peak coordination.
+**Architecture Adjustment:**
+*   Deprecating the single encrypted SQLite mailbox backend in Section 4.
+*   Introducing **Asynchronous Mailbox Sharding (AMS)**. Every teammate-to-teammate pair now utilizes a dedicated, task-bound shard.
+*   Implementing a lock-free queue for inter-shard synchronization.
+**Security Impact:** Enhances isolation by ensuring a compromise of one shard doesn't expose the metadata or throughput of unrelated teammate coordination.
