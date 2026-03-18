@@ -614,3 +614,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Differential Context Guarding (DCG)**: Semantic analysis of tool outputs to prevent context-dump exfiltration. (Added: 2026-05-24)
 *   **[P1] Zero-Knowledge Capability Proof (ZKCP)**: Prove skill possession without revealing sensitive implementation details. (Added: 2026-05-24)
 *   **[P0] Self-Correction Loop Arbiter**: Lifecycle monitor to prevent reasoning hijacking via self-correction drift. (Added: 2026-05-24)
+
+#### Upcoming (2026-05-25 Evolution)
+*   **[P0] Reasoning-Budget Firewall (RBF)**: Authoritative economic gatekeeper enforcing hardware-attested token/ARE budgets. (Added: 2026-05-25)
+*   **[P0] Asynchronous Mailbox Sharding (AMS)**: Upgrade for T2T bridge to host task-bound mailbox shards and eliminate coordination locks. (Added: 2026-05-25)
+*   **[P0] Cognitive Stall Arbitrator (CSA)**: Stability middleware to detect and terminate non-convergent subagent refinement loops. (Added: 2026-05-25)
+*   **[P0] Identity Fragment Attestation (IFA)**: Security extension mandating hardware-attested, session-bound identity tokens for mailbox requests. (Added: 2026-05-25)

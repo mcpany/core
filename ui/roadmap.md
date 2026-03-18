@@ -456,3 +456,9 @@
 - [ ] **[P0] Context Redaction Audit Log**: UI for inspecting fragments blocked by the DCG middleware. (Added: 2026-05-24)
 - [ ] **[P1] ZK-Proof Verification Badges**: Visual indicators for hardware-attested, masked agent capabilities (ZKCP). (Added: 2026-05-24)
 - [ ] **[P0] Self-Correction Drift Monitor**: Visual tracker for subagent refinement loops and arbiter-triggered terminations. (Added: 2026-05-24)
+
+#### Upcoming (2026-05-25 Evolution)
+- [ ] **[P0] Reasoning Budget Dashboard**: Real-time visualization of subagent token leases and ARE budget consumption. (Added: 2026-05-25)
+- [ ] **[P0] Mailbox Shard Monitor**: Visual tracker for task-bound teammate communication channels and sharding efficiency. (Added: 2026-05-25)
+- [ ] **[P0] Cognitive Stall Alert Center**: UI for reviewing and terminating stalled subagent reasoning branches. (Added: 2026-05-25)
+- [ ] **[P0] Identity Fragment Viewer**: Security indicator for session-bound fragment attestation and "Stale Identity" alerts. (Added: 2026-05-25)
