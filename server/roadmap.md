@@ -644,6 +644,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Teammate Task-List Arbiter**: Lock-free asynchronous task-claiming logic to resolve horizontal coordination bottlenecks. (Added: 2026-05-30)
 *   **[P1] Hardware-Attested Mesh Snapshot (HAMS)**: Stability service for cryptographically signed snapshots of the entire mesh state. (Added: 2026-05-30)
 
+#### Upcoming (2026-05-31 Evolution)
+*   **[P0] Lock-Free Mesh Arbiter (LFMA)**: Core coordination service implementing CRDT-based task list synchronization. (Added: 2026-05-31)
+*   **[P0] Shard-Aware Mailbox Sovereignty (SMS)**: Advanced isolation extension for task-bound mailbox shards. (Added: 2026-05-31)
+*   **[P1] Autonomous Task Reaper (ATR)**: Stability service for proactive reclamation and re-auction of "Ghost" tasks. (Added: 2026-05-31)
+*   **[P0] Hardware-Attested Identity Rotation (HAIR)**: Security middleware mandating periodic, hardware-bound identity rotation for inter-teammate requests. (Added: 2026-05-31)
+
 #### Upcoming (2026-05-29 Evolution)
 *   **[P0] Collective Swarm Anomaly Detection (CSAD) Hub**: Cross-agent behavioral analysis middleware to detect "Hivenet" swarm attacks. (Added: 2026-05-29)
 *   **[P0] Cross-Mesh Command Sovereignty (CMCS) Provider**: Hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms. (Added: 2026-05-29)

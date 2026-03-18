@@ -484,6 +484,12 @@
 - [ ] **[P0] Task-List Arbiter Workspace**: Real-time visualization of lock-free task-claiming in horizontal meshes. (Added: 2026-05-30)
 - [ ] **[P1] Mesh Snapshot Explorer**: UI for reviewing and restoring hardware-attested HAMS snapshots. (Added: 2026-05-30)
 
+#### Upcoming (2026-05-31 Evolution)
+- [ ] **[P0] LFMA Mesh State Debugger**: Interactive visualizer for CRDT-based task claiming and conflict resolution. (Added: 2026-05-31)
+- [ ] **[P0] Sharded Mailbox Sovereignty Manager**: Dashboard for monitoring task-bound shards and fragmented state security. (Added: 2026-05-31)
+- [ ] **[P1] Autonomous Task Reaper (ATR) Log**: Real-time tracker for "Ghost" task reclamation and re-auction events. (Added: 2026-05-31)
+- [ ] **[P0] HAIR Identity Widget**: Status monitor for hardware-attested identity rotation sessions. (Added: 2026-05-31)
+
 #### Upcoming (2026-05-29 Evolution)
 - [ ] **[P0] Swarm Anomaly Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and CSAD neutralization events. (Added: 2026-05-29)
 - [ ] **[P0] Mesh Command Sovereignty Dashboard**: Visual "Chain of Mesh-Command" tracer for inter-teammate mailbox validation. (Added: 2026-05-29)
