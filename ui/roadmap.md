@@ -484,3 +484,9 @@
 - [ ] **[P0] Mesh Command Sovereignty Dashboard**: Visual "Chain of Mesh-Command" tracer for inter-teammate mailbox validation. (Added: 2026-05-29)
 - [ ] **[P0] Teammate Handshake Monitor**: Real-time status indicator for ATH identity exchange in horizontal swarms. (Added: 2026-05-29)
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
+
+#### Upcoming (2026-05-30 Evolution)
+- [ ] **[P0] Intent Hierarchy Dashboard**: Visualize Blackboard priority levels and detect Context Shadowing attempts. (Added: 2026-05-30)
+- [ ] **[P0] Isolated Runner Monitor**: Real-time status indicator for Kernel-Namespace Command Runner and Firecracker/runc health. (Added: 2026-05-30)
+- [ ] **[P0] Mission Anchor Visualizer**: UI for managing and monitoring pinned team-wide context anchors and alignment scores. (Added: 2026-05-30)
+- [ ] **[P1] ZKC Discovery Log**: Forensic log for reviewing masked capability proofs and A2A v1.0 discovery handshakes. (Added: 2026-05-30)

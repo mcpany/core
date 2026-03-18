@@ -844,3 +844,12 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Cross-Mesh Command Sovereignty (CMCS)**: To neutralize "Teammate Impersonation" in horizontal swarms, we are introducing CMCS. Every inter-teammate mailbox request must be signed with a hardware-attested "Mesh Token" that binds the command to the mission root and its authorized role in the shared task list.
 - **Atomic Teammate Handshake (ATH)**: Supporting the SMI standard, MCP Any will implement the ATH. This ensures that teammates (Claude, OpenClaw, AutoGen) must complete a hardware-attested identity exchange before they can "claim" or "delegate" tasks from the shared mailbox.
 - **Mesh-Bound Context Sovereignty**: To counter "Context-Dump" exfiltration in deep teams, we are evolving the DCG middleware to support Mesh-Bound Sovereignty. This layer will perform semantic analysis of state fragments as they cross teammate boundaries, ensuring they remain anchored to the mission-root intent.
+
+## Strategic Evolution: [2026-05-30]
+### Focus: Enforced Intent Hierarchies & Kernel-Level Tool Isolation
+**Context**: The emergence of "Context Shadowing" in shared swarms and OpenClaw's transition to Isolated Execution Contexts (IEC) confirm that semantic security must now be paired with kernel-level enforcement. We must prevent subagents from subverting the mission root via shared state and move tool execution into ephemeral, isolated namespaces to neutralize local RCE.
+**Strategic Pivot**:
+- **Enforced Intent Hierarchies (EIH)**: MCP Any will evolve to mandate hierarchical state management. The Blackboard will implement EIH, ensuring that "Mission Root" instructions are immutable and carry higher semantic priority than subagent-injected fragments, neutralizing Context Shadowing.
+- **Kernel-Namespace Tool Isolation (KNTI)**: Adopting the IEC pattern, MCP Any will transition its Command Adapter to utilize kernel-level namespaces (e.g., via runc/Firecracker) for every tool call. This provides a "Proof-of-Isolation" (PoI) for all local executions.
+- **Zero-Knowledge Capability Discovery**: Supporting A2A v1.0, we will facilitate "Capability Masking." Agents can prove Skill possession without revealing metadata until a mission-bound handshake is completed.
+- **Context Anchor Synchronization**: To address Claude-style team latency, MCP Any will act as the authoritative host for "Pinned Mission Anchors," ensuring all teammates maintain intent alignment without redundant mailbox messaging.

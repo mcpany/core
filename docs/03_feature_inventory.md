@@ -1134,3 +1134,15 @@
 ### Priority Shifts
 - **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
 - **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
+
+## Evolution: [2026-05-30] Updates
+
+### Proposed Additions
+- **Intent Hierarchy Enforcer (IHE)**: (P0) Security extension for the Blackboard that enforces immutable mission-root priority for state fragments, neutralizing Context Shadowing.
+- **Kernel-Namespace (KNS) Command Runner**: (P0) A high-performance isolation wrapper for the Command Adapter that executes tools in ephemeral, hardware-attested namespaces (Firecracker/runc).
+- **Zero-Knowledge Capability (ZKC) Masker**: (P1) Advanced discovery component for the A2A Messaging Hub that facilitates capability proving without metadata exposure.
+- **Mission Anchor Host (MAH)**: (P0) Orchestration service that manages pinned, team-wide context anchors to reduce inter-teammate coordination latency.
+
+### Priority Shifts
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Now elevated with the requirement for mandatory Intent Hierarchy Enforcement (IHE).
+- **Command Adapter**: (Re-affirmed P0) Evolving to mandate Kernel-Namespace Isolation (KNS) as the default execution mode.

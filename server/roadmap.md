@@ -644,3 +644,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Cross-Mesh Command Sovereignty (CMCS) Provider**: Hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms. (Added: 2026-05-29)
 *   **[P0] Atomic Teammate Handshake (ATH) Gateway**: Mandatory identity exchange before teammate task delegation in horizontal teams. (Added: 2026-05-29)
 *   **[P0] Mesh-Bound Context Sovereignty Bridge**: Semantic fragment analysis across teammate boundaries for horizontal team stability. (Added: 2026-05-29)
+
+#### Upcoming (2026-05-30 Evolution)
+*   **[P0] Intent Hierarchy Enforcer (IHE)**: Security extension for the Blackboard mandating mission-root priority for state fragments. (Added: 2026-05-30)
+*   **[P0] Kernel-Namespace Command Runner**: High-performance isolation wrapper using ephemeral namespaces (runc/Firecracker) for tool execution. (Added: 2026-05-30)
+*   **[P0] Mission Anchor Host (MAH)**: Orchestration service for pinned, team-wide context anchors to reduce swarm coordination latency. (Added: 2026-05-30)
+*   **[P1] Zero-Knowledge Capability Masker**: Advanced discovery component facilitating capability proving without metadata exposure. (Added: 2026-05-30)
