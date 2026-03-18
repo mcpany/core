@@ -626,3 +626,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Non-Blocking AMS Core**: Kernel-level lock-free buffers for high-density horizontal teammate coordination. (Added: 2026-05-26)
 *   **[P0] Intent-Scoped ARE Validator**: Cryptographic pinning of reasoning budgets to mission-root intent branches. (Added: 2026-05-26)
 *   **[P0] Hardware-Attested Monologue Vault**: Encrypted SQLite sidecar for subagent reasoning monologues with TPM-bound keys. (Added: 2026-05-26)
+
+#### Upcoming (2026-05-27 Evolution)
+*   **[P0] SMI Relay Provider**: Implementation of Sovereign Mesh Identity standard for cross-cloud agent identity persistence. (Added: 2026-05-27)
+*   **[P0] Fragment-Aware Mailbox Isolation (FAMI)**: Semantic fragment scanning for AMS shards to neutralize "State Splicing" exploits. (Added: 2026-05-27)
+*   **[P0] Recursive Delegation Reaper (RDR)**: Branch-depth monitor and autonomous pruning service for deep swarms. (Added: 2026-05-27)
+*   **[P1] Mission-Root Budget Registry**: Persistent storage and reconciliation for cross-mission reasoning budget continuity. (Added: 2026-05-27)
