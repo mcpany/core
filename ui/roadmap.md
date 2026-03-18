@@ -507,3 +507,8 @@
 - [ ] **[P0] Spectral Jitter Monitor**: Real-time visualization of timing jitter injected by the Spectral Mitigator. (Added: 2026-06-02)
 - [ ] **[P0] Context Sovereignty Hub**: Dashboard for managing CSP-compliant redaction rules and state ownership. (Added: 2026-06-02)
 - [ ] **[P0] Granular Shard Streamer**: Visual monitor for dynamic context fragments streaming between teammates. (Added: 2026-06-02)
+
+#### Upcoming (2026-06-03 Evolution)
+- [ ] **[P0] Attestation Bridge Monitor**: Visual indicator for translated hardware attestation tokens. (Added: 2026-06-03)
+- [ ] **[P0] Shard Lock Visualizer**: Real-time dashboard for monitoring atomic locks and shard ownership. (Added: 2026-06-03)
+- [ ] **[P1] Prefetching Performance Overlay**: Visualization of speculative context hit/miss rates. (Added: 2026-06-03)
