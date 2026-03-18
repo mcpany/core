@@ -17,9 +17,18 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Attested Discovery Handshake (HADH)**: To counter "Pre-Flight Shadow Mapping," we are mandating HADH. Agent capabilities will remain cryptographically invisible until a hardware-bound, identity-verified handshake is completed within the mission scope.
 - **Reasoning-Effort Quota Controller**: To neutralize "Agentic DoS" attacks, MCP Any will implement quota management for high-intensity reasoning (e.g., `x-gemini-reasoning-effort`). We will dynamically throttle subagent reasoning budgets to ensure they cannot "stall" the primary intent loop.
 
+## Strategic Evolution: [2026-05-24]
+### Focus: Active Negotiation Brokering & Differential Context Sovereignty
+**Context**: The emergence of "Dynamic Task-Capability Bidding" (DTCB) and the disclosure of the "Context-Dump" exploit (CVE-2026-39102) reveal that the security of a swarm now depends on the integrity of the **bidding process** and the **granularity of state sharing**. Transport-layer security and binary handoffs are no longer enough; we must now protect the semantic boundaries of the shared teammate mailbox.
+**Strategic Pivot**:
+- **Active Negotiation Broker (ANB)**: MCP Any will evolve to act as the authoritative host for task auctions. We will implement the ANB, utilizing hardware-attested agent "Capability Cards" to filter and validate bids locally, preventing token exhaustion from recursive bidding loops.
+- **Differential Context Guarding (DCG)**: To neutralize "Context-Dump" exfiltration, we are upgrading the Mailbox Integrity Middleware to include DCG. This layer will perform real-time, semantic analysis of tool outputs, ensuring they only contain state fragments explicitly requested by the mission root, blocking mass exfiltration of the teammate mailbox.
+- **Zero-Knowledge Capability Proofs (ZKCP)**: Supporting "Capability Masking," MCP Any will facilitate ZKCPs during the discovery phase. Agents will be able to prove they possess a specific skill (e.g., "Database Admin") without revealing the underlying connection strings or schema until a mission-bound handshake is completed.
+- **Self-Correction Loop Arbiter**: To counter "Reasoning Hijacking" via self-correction, MCP Any will implement an arbiter that monitors subagent "Refinement Drift," forcefully terminating sub-sessions that attempt to use "Self-Correction" as a means to bypass parent-imposed constraints.
+
 ---
 
-## Strategic Evolution: [2026-05-22]
+## Strategic Evolution: [2026-05-23]
 ### Focus: Local Zero-Trust (LOWA) & Peer-to-Peer Agent Orchestration
 **Context**: The disclosure of "ClawJacked" (CVE-2026-25253) proves that "Implicit Local Trust" for loopback WebSocket traffic is a critical failure point. Simultaneously, the rise of Claude Code's "Agent Teams" signals a shift toward horizontal (mesh) collaboration. The "Universal Agent Bus" must now act as the secure, authenticated bridge for both local control and peer-to-peer teammate communication.
 **Strategic Pivot**:

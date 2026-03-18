@@ -450,3 +450,9 @@
 - [ ] **[P0] Intent-Leakage Alert Dashboard**: Visual monitor for semantic entropy violations and probing attempts. (Added: 2026-05-23)
 - [ ] **[P0] Mesh Handshake Debugger**: Forensic tool for visualizing the HADH identity-proof sequence. (Added: 2026-05-23)
 - [ ] **[P0] Reasoning Quota Monitor**: Real-time visualization of subagent reasoning effort and dynamic throttling. (Added: 2026-05-23)
+
+#### Upcoming (2026-05-24 Evolution)
+- [ ] **[P0] Auction Bidding Interface**: Real-time visualization of agent bids in the Active Negotiation Broker (ANB). (Added: 2026-05-24)
+- [ ] **[P0] Context Redaction Audit Log**: UI for inspecting fragments blocked by the DCG middleware. (Added: 2026-05-24)
+- [ ] **[P1] ZK-Proof Verification Badges**: Visual indicators for hardware-attested, masked agent capabilities (ZKCP). (Added: 2026-05-24)
+- [ ] **[P0] Self-Correction Drift Monitor**: Visual tracker for subagent refinement loops and arbiter-triggered terminations. (Added: 2026-05-24)

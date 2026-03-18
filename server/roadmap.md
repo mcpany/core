@@ -608,3 +608,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Intent-Leakage Shielding (ILS)**: Semantic entropy monitoring to prevent subagent probing of mission-root constraints. (Added: 2026-05-23)
 *   **[P0] Hardware-Attested Discovery Handshake (HADH)**: Advanced A2A handshake mandating identity proof before capability discovery. (Added: 2026-05-23)
 *   **[P0] Reasoning-Effort Quota Controller**: Dynamic budgeting for high-intensity reasoning to prevent Agentic DoS. (Added: 2026-05-23)
+
+#### Upcoming (2026-05-24 Evolution)
+*   **[P0] Active Negotiation Broker (ANB)**: Authoritative bidding bus for hardware-attested multi-agent auctions. (Added: 2026-05-24)
+*   **[P0] Differential Context Guarding (DCG)**: Semantic analysis of tool outputs to prevent context-dump exfiltration. (Added: 2026-05-24)
+*   **[P1] Zero-Knowledge Capability Proof (ZKCP)**: Prove skill possession without revealing sensitive implementation details. (Added: 2026-05-24)
+*   **[P0] Self-Correction Loop Arbiter**: Lifecycle monitor to prevent reasoning hijacking via self-correction drift. (Added: 2026-05-24)

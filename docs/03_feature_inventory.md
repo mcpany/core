@@ -14,11 +14,19 @@
 - **Hardware-Attested Discovery Handshake (HADH) Gateway**: (P0) Advanced discovery service that mandates hardware-bound handshakes before revealing any agent capabilities to peers.
 - **Reasoning-Effort Quota Controller**: (P0) Resource management middleware that dynamically throttles high-intensity reasoning (e.g., `x-gemini-reasoning-effort`) to prevent Agentic DoS.
 
-### Priority Shifts
-- **Full-Mesh Discovery Auth Provider**: (Promoted to P0) Elevated with the requirement for mandatory HADH to neutralize pre-flight shadow mapping.
-- **Mission-Root Pinning (MRP) Middleware**: (Re-affirmed P0) Now designated as the primary host for the ILS exfiltration defense.
+## Evolution: [2026-05-24] Updates
 
-## Evolution: [2026-05-22] Updates
+### Proposed Additions
+- **Active Negotiation Broker (ANB)**: (P0) Authoritative bidding bus for multi-agent auctions, utilizing hardware-attested Capability Cards to filter and validate bids locally.
+- **Differential Context Guarding (DCG) Middleware**: (P0) Security extension for the Mailbox Integrity Middleware that performs semantic analysis of tool outputs to prevent context-dump exfiltration.
+- **Zero-Knowledge Capability Proof (ZKCP) Provider**: (P1) Advanced discovery service allowing agents to prove skill possession without revealing sensitive implementation details during the discovery phase.
+- **Self-Correction Loop Arbiter**: (P0) Lifecycle security middleware that monitors subagent refinement drift and terminates sessions bypassing parent intent constraints.
+
+### Priority Shifts
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory DCG to counter CVE-2026-39102.
+- **`TeammateTool` Orchestration Adapter**: (Re-affirmed P0) Evolving to support ANB-native task auctions.
+
+## Evolution: [2026-05-23] Updates
 
 ### Proposed Additions
 - **Local-Only WebSocket Auth (LOWA) Gateway**: (P0) A mandatory security layer for all local listeners that enforces session-bound authentication to neutralize "ClawJacked" style brute-force attacks.
