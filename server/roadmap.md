@@ -673,6 +673,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Atomic Shard Lock-Manager**: Kernel-level lock manager for granular context streaming. (Added: 2026-06-03)
 *   **[P1] Zero-Latency Shard Prefetcher**: Speculative context loading based on real-time intent analysis. (Added: 2026-06-03)
 
+### Upcoming: [2026-06-05]
+- **Intent-Splicing Detector (ISD)**: (P0) Structural validation middleware for the Semantic Integrity Bridge to prevent malicious instruction splicing in inter-agent streams.
+- **Recursive Accountability Tracker (RAT)**: (P0) Lifecycle-aware accounting service ensuring immediate revocation of session-bound capabilities upon task completion.
+- **HAIL Lineage Provider**: (P0) Identity middleware supporting Hardware-Attested Intent Lineage (HAIL) for non-repudiable mission-root attestation.
+- **Synthetic Policy Synthesizer**: (P1) Experimental mesh-local policy generation service backed by hardware attestation.
+
 ### Upcoming: [2026-06-04]
 - **Pre-Commit Speculative Sanitizer (PCSS)**: Mandatory security middleware for the Speculative Execution Guard to neutralize "Speculative Fragment Poisoning."
 - **Mission-Root Gravity (MRG) Middleware**: Advanced extension for Live Context Sharding to prevent "Semantic Drift" in granular meshes.
