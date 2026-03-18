@@ -672,3 +672,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Cross-Framework Attestation Translator**: Bridge proprietary TPM-bound reasoning paths to OpenClaw SRM format. (Added: 2026-06-03)
 *   **[P0] Atomic Shard Lock-Manager**: Kernel-level lock manager for granular context streaming. (Added: 2026-06-03)
 *   **[P1] Zero-Latency Shard Prefetcher**: Speculative context loading based on real-time intent analysis. (Added: 2026-06-03)
+
+### Upcoming: [2026-06-04]
+- **Pre-Commit Speculative Sanitizer (PCSS)**: Mandatory security middleware for the Speculative Execution Guard to neutralize "Speculative Fragment Poisoning."
+- **Mission-Root Gravity (MRG) Middleware**: Advanced extension for Live Context Sharding to prevent "Semantic Drift" in granular meshes.
+- **Multi-Hop Persistence Relay (MHPR)**: Performance-optimizing security service for the LFTA Trust Lease Manager to support persistent hardware-attested trust across multiple delegation hops.
+- **Sub-Millisecond ARL Synchronizer**: High-speed listener for the LFTA ARL Middleware to support ARL v3.0 synchronization in sub-100ms intervals.

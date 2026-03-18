@@ -512,3 +512,8 @@
 - [ ] **[P0] Attestation Bridge Monitor**: Visual indicator for translated hardware attestation tokens. (Added: 2026-06-03)
 - [ ] **[P0] Shard Lock Visualizer**: Real-time dashboard for monitoring atomic locks and shard ownership. (Added: 2026-06-03)
 - [ ] **[P1] Prefetching Performance Overlay**: Visualization of speculative context hit/miss rates. (Added: 2026-06-03)
+
+### Upcoming: [2026-06-04]
+- **Speculative Sanitization Dashboard**: Visualization of neutralized speculative poisoned fragments and their sources.
+- **Mission-Root Gravity Status**: Real-time monitoring of "Semantic Drift" and mission-root anchoring across agent teammate shards.
+- **Multi-Hop Trust Persistence Monitor**: Detailed view of hardware-attested trust leases and their propagation across deep swarms.

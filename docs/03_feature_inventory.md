@@ -1194,3 +1194,15 @@
 ### Priority Shifts
 - **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for **CFAT** to ensure trust continuity across heterogeneous frameworks.
 - **Live Context Sharding Middleware**: (Re-affirmed P0) Now elevated with the requirement for **ASLM** to prevent state corruption in horizontal meshes.
+
+## Evolution: [2026-06-04] Updates
+
+### Proposed Additions
+- **Pre-Commit Speculative Sanitizer (PCSS)**: (P0) A high-performance security middleware for the Speculative Execution Guard that performs real-time semantic analysis and sanitization of context fragments before they are ingested by the reasoning engine.
+- **Mission-Root Gravity (MRG) Middleware**: (P0) Advanced extension for the Live Context Sharding middleware that "pins" the primary mission intent to every sharded context fragment to prevent "Semantic Drift" in granular meshes.
+- **Multi-Hop Persistence Relay (MHPR)**: (P0) Performance-optimizing security service for the LFTA Trust Lease Manager that allows hardware-attested trust leases to persist across multiple delegation hops.
+- **Sub-Millisecond ARL Synchronizer**: (P1) High-speed listener for the LFTA ARL Middleware that synchronizes with global ARL v3.0 repositories in sub-100ms intervals to prevent "Stale-Token Hijacking."
+
+### Priority Shifts
+- **Speculative Execution Guard**: (Re-affirmed P0) Now elevated with the requirement for mandatory **PCSS** to counter speculative fragment poisoning.
+- **Live Context Sharding Middleware**: (Re-affirmed P0) Now elevated with the requirement for **MRG** to maintain mission-root sovereignty in horizontal meshes.
