@@ -44,4 +44,10 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 * **Observability:** Provides real-time "Mesh Health" metrics to the UI.
 
 ## 7. Evolutionary Changelog
+### Update: 2026-05-30 - Neutralizing Coordinated "Context Mirroring"
+**Context:** Today's market sync revealed the "Context Mirroring" exploit (CVE-2026-45012) where Hivenets spoof high-trust capability cards.
+**Architecture Adjustment:** * Integrating the CSAD Hub with the new **Monotonic Task Nonce (MTN) Provider**.
+* CSAD will now correlate nonce-exhaustion patterns across disparate agents to detect "Identity Mirroring" attempts in real-time.
+**Security Impact:** Prevents large-scale task-redirection attacks by ensuring that even "low-and-slow" mirror probes are detected through collective nonce-audit traces.
+
 * **2026-05-29:** Initial Document Creation.

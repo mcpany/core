@@ -1123,6 +1123,16 @@
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Reasoning-Effort Attribution**.
 - **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to support the new APRIG multi-agent quorum for PR safety.
 
+## Evolution: [2026-05-30] Updates
+
+### Proposed Additions
+- **Reasoning-Bound Context Sharding (RBCS) Hub**: (P0) Advanced "Context Arbiter" providing Just-in-Time context shards cryptographically bound to an agent's active reasoning path, neutralizing "Context Smearing."
+- **Reasoning-Gaslighting Detection (RGD) Middleware**: (P0) Security middleware that monitors the semantic consistency of shared reasoning traces to block malicious logic injection.
+- **Monotonic Task Nonce (MTN) Provider**: (P1) Identity security service issuing non-reusable, monotonic nonces for every task delegation proposal to neutralize "Context Mirroring."
+
+### Priority Shifts
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Elevated with the requirement for **Sovereign Teammate Mailboxes** to counter peer-to-peer coercion.
+
 ## Evolution: [2026-05-29] Updates
 
 ### Proposed Additions

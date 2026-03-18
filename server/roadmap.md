@@ -639,6 +639,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Trace-Aware Identity Propagation (TAIP)**: Extension for SMI Relay ensuring hardware-attested identities carry full lineage metadata. (Added: 2026-05-28)
 *   **[P1] Reasoning-Effort Attribution Middleware**: Resource management service cryptographically attributing token/compute usage to specific mission-root branches. (Added: 2026-05-28)
 
+#### Upcoming (2026-05-30 Evolution)
+*   **[P0] Reasoning-Bound Context Sharding (RBCS) Hub**: Advanced "Context Arbiter" providing Just-in-Time shards cryptographically bound to an agent's active reasoning path. (Added: 2026-05-30)
+*   **[P0] Reasoning-Gaslighting Detection (RGD) Middleware**: Semantic consistency monitor for shared reasoning traces to block malicious logic injection. (Added: 2026-05-30)
+*   **[P1] Monotonic Task Nonce (MTN) Provider**: Security service issuing non-reusable nonces for delegation proposals to neutralize "Context Mirroring." (Added: 2026-05-30)
+
 #### Upcoming (2026-05-29 Evolution)
 *   **[P0] Collective Swarm Anomaly Detection (CSAD) Hub**: Cross-agent behavioral analysis middleware to detect "Hivenet" swarm attacks. (Added: 2026-05-29)
 *   **[P0] Cross-Mesh Command Sovereignty (CMCS) Provider**: Hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms. (Added: 2026-05-29)
