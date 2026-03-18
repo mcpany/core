@@ -1,32 +1,30 @@
-# Audit Report: Truth Reconciliation
+# Truth Reconciliation Audit Report
 
 ## Executive Summary
-An extensive "Truth Reconciliation Audit" was performed comparing the features defined in `ui/docs` and `server/docs` (along with the product roadmap) against the codebase.
-
-Overall Health of the 10 Sampled Features: **Excellent**. Nine out of the 10 sampled features were found to be fully implemented and working as designed. One feature was identified as Roadmap Debt (Missing Logic) and was engineered to align with the roadmap.
+An exhaustive audit of 10 distinct documentation files (spanning UI, APIs, and System Configuration) was conducted to verify alignment against the central Project Roadmap and the actual Codebase implementation. The overall health of the documentation is strong, with 90% accuracy. One divergence was identified regarding the Webhooks UI, where the documentation prematurely stated the feature was implemented, while the UI only possessed a mocked component and the actual functional flow was strictly "Config-Driven" (via `config.yaml` sidecars), perfectly aligning with the Roadmap.
 
 ## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
-| :--- | :--- | :--- | :--- |
-| `ui/docs/features/native_file_upload_playground.md` | Verified | None | Feature correctly implemented in `ui/src/components/shared/universal-schema-form.tsx` mapping `contentEncoding: "base64"` to file uploads. |
-| `ui/docs/features/stack-composer.md` | Verified | None | Feature is present in `ui/src/app/stacks/page.tsx` and related components in `ui/src/components/stacks/`. |
-| `ui/docs/features/structured_log_viewer.md` | Verified | None | JSON parsing and expandable UI verified in `ui/src/components/logs/log-viewer.tsx`. |
-| `ui/docs/features/real-time-inspector.md` | Verified | None | WebSocket connections and live traces are functioning in `ui/src/app/inspector/page.tsx` and `inspector-table.tsx`. |
-| `ui/docs/features/tag-based-access-control.md` | Verified | None | Profiles accurately enforce access via Tags through `ui/src/components/profiles/profile-editor.tsx` and `server/pkg/tool/management.go`. |
-| `server/docs/features/dynamic_registration.md` | **Roadmap Debt** | Engineered Solution | Discovery logic was only partially present. Added `OpenAPIProvider`, `GRPCProvider`, and `GraphQLProvider` to `server/pkg/discovery/` as described by the feature documentation. |
-| `server/docs/features/security.md` | Verified | None | Tool Poisoning Mitigation (Integrity Check) logic acts correctly in `server/pkg/tool/integrity.go`. |
-| `ui/docs/features/policy_management.md` | Verified | None | Granular Tool Export Policies with Regex support are functional in `ui/src/components/services/editor/policy-editor.tsx`. |
-| `ui/docs/features/playground.md` | Verified | None | Session history Import/Export behaves properly in `ui/src/components/playground/pro/playground-client-pro.tsx`. |
-| `server/docs/features/wasm.md` | Verified | None | WASM Plugin system (mock/experimental phase) correctly exists inside `server/pkg/wasm/runtime.go`. |
+|---------------|--------|--------------|----------|
+| `ui/docs/features/services.md` | Matched | Verified UI logic exists | `ui/src/app/services/page.tsx` supports Service lists and config. |
+| `ui/docs/features/playground.md` | Matched | Verified UI logic exists | `ui/src/components/playground/pro/playground-client-pro.tsx` correctly handles History Import/Export. |
+| `server/docs/features/admin_api.md` | Matched | Verified Code exists | `server/pkg/admin/server.go` explicitly implements all documented RPCs, including `DeleteUser`. |
+| `server/docs/features/dynamic_registration.md` | Matched | Verified Code exists | `server/pkg/discovery/` contains the auto-discovery handlers for gRPC, HTTP, etc. |
+| `ui/docs/features/connect-client-center.md` | Matched | Verified UI logic exists | The Connect Client UI is fully functional in the codebase. |
+| `server/docs/features/terraform.md` | Matched | Verified Document scope | Doc explicitly marks the feature as "Proposal / Not Implemented", which matches the missing code state and Roadmap future scope. |
+| `server/docs/features/log_streaming_ui.md` | Matched | Verified UI logic exists | `ui/src/components/logs/log-stream.tsx` handles real-time websockets/SSE logging. |
+| `ui/docs/features/secrets.md` | Matched | Verified UI logic exists | `ui/src/components/settings/secrets-manager.tsx` supports secret masking and creation. |
+| `ui/docs/features/auth.md` | Matched | Verified UI logic exists | `ui/src/app/login/page.tsx` and `ui/src/app/users/page.tsx` enforce login and RBAC. |
+| `ui/docs/features/webhooks.md` | Drifted | **Case A: Documentation Drift** | UI is mocked (e.g. "Toggle active status not implemented"). Refactored documentation to state it is "Config-Driven (UI Planned)". |
 
 ## Remediation Log
-- **Dynamic Tool Registration**: The code only supported `Ollama` discovery despite the documentation (`server/docs/features/dynamic_registration.md`) claiming support for OpenAPI, gRPC, and GraphQL. Engineered Go discovery provider implementations for all 3 missing sources:
-  - `server/pkg/discovery/openapi.go`
-  - `server/pkg/discovery/grpc.go`
-  - `server/pkg/discovery/graphql.go`
-- Connected the newly created providers in the core server initialization loop (`server/pkg/app/server.go`).
-- Wrote full unit tests (`*_test.go`) for each provider to adhere to Google Style Guides and TDD requirements.
+
+* **Case A: Documentation Drift (`ui/docs/features/webhooks.md`)**
+  * *Context:* The documentation incorrectly claimed the Webhooks management UI was "Implemented" and allowed dynamic URL registration.
+  * *Code Reality:* The UI component at `ui/src/app/webhooks/page.tsx` contained explicit developer comments indicating the backend endpoints were missing (`// Toggle active status not implemented in backend yet`). The backend API itself (`proto/admin/v1`) did not contain webhook mutation endpoints.
+  * *Roadmap Reality:* The Roadmap dictates Webhooks operate primarily as a "Sidecar pattern" driven by `config.yaml` (`server/cmd/webhooks`).
+  * *Action:* Refactored `ui/docs/features/webhooks.md` to flag the status as "Config-Driven (UI Planned)" and aligned the usage instructions with the YAML-first approach documented in the backend `README.md`. No code changes were needed since the codebase correctly matched the Roadmap.
 
 ## Security Scrub
-This report has been reviewed to ensure it contains NO Personally Identifiable Information (PII), secrets, or internal IP addresses.
+The audit report and associated commit logs have been scrubbed. No PII, API Keys, Database credentials, or internal IPs were exposed during testing or in this report.
