@@ -70,3 +70,10 @@ The T2T Encryption Bridge provides a universal, secure bus for teammate-to-teamm
 *   Introducing **Asynchronous Mailbox Sharding (AMS)**. Every teammate-to-teammate pair now utilizes a dedicated, task-bound shard.
 *   Implementing a lock-free queue for inter-shard synchronization.
 **Security Impact:** Enhances isolation by ensuring a compromise of one shard doesn't expose the metadata or throughput of unrelated teammate coordination.
+
+### Update: 2026-05-26 - Non-Blocking Mailbox Sharding (AMS)
+**Context:** Further analysis of Claude Code "Mailbox Lock" confirms that synchronous sharding still introduces global coordination overhead. High-density teams (50+ agents) require a move to fully non-blocking coordination.
+**Architecture Adjustment:**
+*   Upgrading AMS to a **Non-Blocking Architecture**. Replacing inter-shard queues with lock-free ring buffers.
+*   Introducing "Intent-Agnostic Buffering" for metadata-only coordination messages, further reducing the load on the primary Mailbox Integrity Validator.
+**Security Impact:** Mitigates "Coordination DoS" where a single slow teammate can stall the entire swarm's mailbox throughput.
