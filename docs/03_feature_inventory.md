@@ -1183,3 +1183,14 @@
 ### Priority Shifts
 - **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hardware-Bound RPA** to ensure cognitive path integrity.
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support **CSP-compliant recursive redaction** for sharded teammate meshes.
+
+## Evolution: [2026-06-03] Updates
+
+### Proposed Additions
+- **Cross-Framework Attestation Translator (CFAT)**: (P0) Advanced bridge for the SRM Provider that translates Gemini's proprietary attestation format into OpenClaw-compliant signatures.
+- **Atomic Shard Lock-Manager (ASLM)**: (P0) A kernel-level locking service for the Context Sharding middleware that prevents parallel write collisions during granular state streaming.
+- **Zero-Latency Shard Prefetcher**: (P1) Optimization service that speculative loads context shards based on real-time intent analysis to reduce streaming latency.
+
+### Priority Shifts
+- **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for **CFAT** to ensure trust continuity across heterogeneous frameworks.
+- **Live Context Sharding Middleware**: (Re-affirmed P0) Now elevated with the requirement for **ASLM** to prevent state corruption in horizontal meshes.

@@ -667,3 +667,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Spectral Reasoning Mitigator**: Inject reasoning-aware timing jitter into ARE headers to neutralize side-channel leaks. (Added: 2026-06-02)
 *   **[P0] CSP v1.0 Native Bridge**: Authoritative support for OpenClaw Context Sovereignty Protocol hooks. (Added: 2026-06-02)
 *   **[P0] Dynamic Context Sharding Adapter**: Implement granular context streaming to eliminate teammate mailbox locks. (Added: 2026-06-02)
+
+#### Upcoming (2026-06-03 Evolution)
+*   **[P0] Cross-Framework Attestation Translator**: Bridge proprietary TPM-bound reasoning paths to OpenClaw SRM format. (Added: 2026-06-03)
+*   **[P0] Atomic Shard Lock-Manager**: Kernel-level lock manager for granular context streaming. (Added: 2026-06-03)
+*   **[P1] Zero-Latency Shard Prefetcher**: Speculative context loading based on real-time intent analysis. (Added: 2026-06-03)
