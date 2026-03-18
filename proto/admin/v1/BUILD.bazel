@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 load("@protobuf//bazel:proto_library.bzl", "proto_library")
-load("@rules_go//go:def.bzl", "go_library")
 load("@rules_go//proto:def.bzl", "go_proto_library")
 
 proto_library(
@@ -17,11 +16,15 @@ proto_library(
     ],
 )
 
+# go_proto_library with grpc-gateway compiler generates both gRPC stubs and
+# HTTP/JSON reverse-proxy code (admin.pb.gw.go) at build time.
+# No generated files are stored in the source tree.
 go_proto_library(
-    name = "v1_go_proto",
+    name = "admin",
     compilers = [
         "@rules_go//proto:go_proto",
         "@rules_go//proto:go_grpc_v2",
+        "@com_github_grpc_ecosystem_grpc_gateway_v2//protoc-gen-grpc-gateway:go_gen_grpc_gateway_opaque",
     ],
     importpath = "github.com/mcpany/core/proto/admin/v1",
     proto = ":v1_proto",
@@ -29,25 +32,22 @@ go_proto_library(
     deps = [
         "//proto/config/v1:config",
         "//proto/mcp_router/v1:mcp_router",
-        "@org_golang_google_genproto_googleapis_api//annotations",
-        "@org_golang_google_protobuf//types/gofeaturespb",
-    ],
-)
-
-go_library(
-    name = "admin",
-    srcs = ["admin.pb.gw.go"],
-    embed = [":v1_go_proto"],
-    importpath = "github.com/mcpany/core/proto/admin/v1",
-    visibility = ["//visibility:public"],
-    deps = [
         "@com_github_grpc_ecosystem_grpc_gateway_v2//runtime",
         "@com_github_grpc_ecosystem_grpc_gateway_v2//utilities",
+        "@org_golang_google_genproto_googleapis_api//annotations",
         "@org_golang_google_grpc//:grpc",
         "@org_golang_google_grpc//codes",
         "@org_golang_google_grpc//grpclog",
         "@org_golang_google_grpc//metadata",
         "@org_golang_google_grpc//status",
         "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//types/gofeaturespb",
     ],
+)
+
+# Backward-compatible alias for existing consumers of :v1_go_proto.
+alias(
+    name = "v1_go_proto",
+    actual = ":admin",
+    visibility = ["//visibility:public"],
 )
