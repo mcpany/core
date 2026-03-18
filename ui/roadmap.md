@@ -478,3 +478,9 @@
 - [ ] **[P0] PR Integrity Quorum Interface**: Authorization workspace for multi-agent code reviews and APRIG attestation status. (Added: 2026-05-28)
 - [ ] **[P0] Identity Lineage Inspector**: Forensic UI for visualizing trace-aware identities and their parentage. (Added: 2026-05-28)
 - [ ] **[P1] Resource Attribution Overlay**: Cost and effort metrics broken down by intent-branch and agent parentage. (Added: 2026-05-28)
+
+#### Upcoming (2026-05-29 Evolution)
+- [ ] **[P0] Swarm Anomaly Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and CSAD neutralization events. (Added: 2026-05-29)
+- [ ] **[P0] Mesh Command Sovereignty Dashboard**: Visual "Chain of Mesh-Command" tracer for inter-teammate mailbox validation. (Added: 2026-05-29)
+- [ ] **[P0] Teammate Handshake Monitor**: Real-time status indicator for ATH identity exchange in horizontal swarms. (Added: 2026-05-29)
+- [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
