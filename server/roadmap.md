@@ -638,3 +638,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Autonomous PR Integrity Gate (APRIG)**: Multi-agent security quorum for code-generating tool calls requiring independent attestation for pull request safety. (Added: 2026-05-28)
 *   **[P0] Trace-Aware Identity Propagation (TAIP)**: Extension for SMI Relay ensuring hardware-attested identities carry full lineage metadata. (Added: 2026-05-28)
 *   **[P1] Reasoning-Effort Attribution Middleware**: Resource management service cryptographically attributing token/compute usage to specific mission-root branches. (Added: 2026-05-28)
+
+#### Upcoming (2026-05-29 Evolution)
+*   **[P0] Collective Swarm Anomaly Detection (CSAD) Hub**: Cross-agent behavioral analysis middleware to detect "Hivenet" swarm attacks. (Added: 2026-05-29)
+*   **[P0] Cross-Mesh Command Sovereignty (CMCS) Provider**: Hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms. (Added: 2026-05-29)
+*   **[P0] Atomic Teammate Handshake (ATH) Gateway**: Mandatory identity exchange before teammate task delegation in horizontal teams. (Added: 2026-05-29)
+*   **[P0] Mesh-Bound Context Sovereignty Bridge**: Semantic fragment analysis across teammate boundaries for horizontal team stability. (Added: 2026-05-29)
