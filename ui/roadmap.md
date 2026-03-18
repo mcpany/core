@@ -457,6 +457,12 @@
 - [ ] **[P1] ZK-Proof Verification Badges**: Visual indicators for hardware-attested, masked agent capabilities (ZKCP). (Added: 2026-05-24)
 - [ ] **[P0] Self-Correction Drift Monitor**: Visual tracker for subagent refinement loops and arbiter-triggered terminations. (Added: 2026-05-24)
 
+#### Upcoming (2026-05-26 Evolution)
+- [ ] **[P0] LOWA Pairing Portal**: Desktop UI for reviewing and approving local WebSocket pairing requests with challenge-response. (Added: 2026-05-26)
+- [ ] **[P0] T2T Mailbox Explorer**: Visual workspace for monitoring encrypted teammate-to-teammate coordination. (Added: 2026-05-26)
+- [ ] **[P0] Mesh Discovery Monitor**: Real-time visualization of hardware-attested discovery handshakes. (Added: 2026-05-26)
+- [ ] **[P0] Session Security Dashboard**: Indicator for `SameSite` session enforcement and origin-bound cookie status. (Added: 2026-05-26)
+
 #### Upcoming (2026-05-25 Evolution)
 - [ ] **[P0] Reasoning Budget Dashboard**: Real-time visualization of subagent token leases and ARE budget consumption. (Added: 2026-05-25)
 - [ ] **[P0] Mailbox Shard Monitor**: Visual tracker for task-bound teammate communication channels and sharding efficiency. (Added: 2026-05-25)

@@ -615,6 +615,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Zero-Knowledge Capability Proof (ZKCP)**: Prove skill possession without revealing sensitive implementation details. (Added: 2026-05-24)
 *   **[P0] Self-Correction Loop Arbiter**: Lifecycle monitor to prevent reasoning hijacking via self-correction drift. (Added: 2026-05-24)
 
+#### Upcoming (2026-05-26 Evolution)
+*   **[P0] Challenge-Response LOWA Pairing**: Enhanced local auth protocol requiring manual cryptographic challenge validation. (Added: 2026-05-26)
+*   **[P0] T2T Encryption Bridge**: Secure, cross-framework bus for encrypted teammate-to-teammate coordination. (Added: 2026-05-26)
+*   **[P0] Full-Mesh Discovery Auth**: Hardware-attested "Auth-before-Discovery" for A2A meshes to prevent shadow capability mapping. (Added: 2026-05-26)
+*   **[P0] Same-Site Session Enforcement**: Integration of `SameSite=Strict` and origin-bound cookies for local tool listeners. (Added: 2026-05-26)
+
 #### Upcoming (2026-05-25 Evolution)
 *   **[P0] Reasoning-Budget Firewall (RBF)**: Authoritative economic gatekeeper enforcing hardware-attested token/ARE budgets. (Added: 2026-05-25)
 *   **[P0] Asynchronous Mailbox Sharding (AMS)**: Upgrade for T2T bridge to host task-bound mailbox shards and eliminate coordination locks. (Added: 2026-05-25)

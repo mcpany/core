@@ -61,3 +61,9 @@ LOWA is a mandatory security layer for MCP Any that enforces session-bound authe
 
 ## 7. Evolutionary Changelog
 *   **2026-05-22:** Initial Document Creation.
+*   **2026-05-26: Strengthening Handshake Integrity**
+    **Context:** Today's research on OpenClaw v2026.3.11 confirms that simple origin validation is insufficient for high-frequency CSWSH attacks.
+    **Architecture Adjustment:**
+    *   Mandating **Challenge-Response Pairings**: Every new local session now requires a cryptographic challenge (HMAC-based) presented via the MCP Any terminal/system tray, preventing automated script approvals.
+    *   **Same-Site Cookie Enforcement**: Adding `SameSite=Strict` session cookies as a secondary validation layer for browser-based tool calls.
+    **Security Impact:** Prevents "Brute-Force Handshaking" by rogue browser scripts even if the user is socially engineered into clicking an "Approve" button.

@@ -800,6 +800,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Attested Boot Integrity**: We are moving from signed manifests to "Hardware-Locked Deterministic Boot." MCP Any will mandate that any project-local configuration be cryptographically bound to a Trusted Platform Module (TPM) or Secure Enclave, ensuring that cloned repositories cannot execute malicious hooks without explicit, hardware-bound user re-attestation.
 - **VTD-Powered Automation**: To break the "Approval Fatigue" bottleneck, we are accelerating the deployment of the Verifiable Task Delegation (VTD) layer, enabling autonomous A2A handoffs for verified low-risk operations.
 
+## Strategic Evolution: [2026-05-26]
+### Focus: Local Zero-Trust (LOWA) & Authenticated Mesh Discovery
+**Context**: The disclosure of "ClawJacked" (CVE-2026-3.11) and the stabilization of Gemini CLI's A2A auth suite confirm that "Implicit Local Trust" for loopback traffic is no longer a viable security paradigm. At the same time, the rise of Claude Code's "Agent Teams" signals a shift from vertical subagent hierarchies to horizontal meshes. The "Universal Agent Bus" must now act as the secure, authenticated bridge for both local control and teammate-to-teammate coordination.
+**Strategic Pivot**:
+- **Local-Only WebSocket Auth (LOWA)**: MCP Any will evolve to mandate session-bound authentication for all local WebSocket listeners. This ensures that only verified local applications—not malicious browser scripts—can bridge into the agent's control plane via unvalidated loopback connections.
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: Supporting horizontal swarms, MCP Any will implement a T2T Encryption Bridge. This service provides the infrastructure for teammates from disparate frameworks (Claude Code, OpenClaw, AutoGen) to securely exchange mailbox messages and synchronize their views of the Shared Task List.
+- **Full-Mesh Discovery Authorization**: We are mandating "Auth-before-Discovery" for all A2A-compliant agents. Capabilities and "Agent Cards" will only be visible to peers who have completed a hardware-attested handshake within a verified mission scope.
+- **Mailbox Integrity Middleware**: To prevent "Mailbox Injection" by rogue teammates, we are introducing a message-validation layer. Every inter-agent mailbox message must be signed and validated against the "Mission Root" intent before reaching the target agent.
+
 ## Strategic Evolution: [2026-05-25]
 ### Focus: Reasoning-Budget Sovereignty & Asynchronous Mailbox Sharding
 **Context**: The emergence of "Reasoning-Budget Hijacking" (RBH) via spoofed ARE headers and the persistent "Mailbox Lock" bottlenecks in high-density Claude Code teams confirm that the Universal Agent Bus must now move beyond simple context guarding. We must now protect the **economic integrity** of the reasoning path and ensure that inter-teammate communication remains non-blocking as swarms scale horizontally.
