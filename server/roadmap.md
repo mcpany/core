@@ -650,6 +650,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Autonomous Task Reaper (ATR)**: Stability service for proactive reclamation and re-auction of "Ghost" tasks. (Added: 2026-05-31)
 *   **[P0] Hardware-Attested Identity Rotation (HAIR)**: Security middleware mandating periodic, hardware-bound identity rotation for inter-teammate requests. (Added: 2026-05-31)
 
+#### Upcoming (2026-06-01 Evolution)
+*   **[P0] Machine-Speed Swarm Quarantine (MSSQ)**: Autonomous, sub-millisecond revocation of agent capabilities based on CSAD triggers. (Added: 2026-06-01)
+*   **[P0] Adaptive Context Lifecycle Orchestrator**: Authoritative host for pluggable ContextEngine strategies with security policy enforcement. (Added: 2026-06-01)
+*   **[P0] Autonomous Verification Quorum (AVQ) Hub**: Distributed security middleware for hardware-attested, multi-agent task validation. (Added: 2026-06-01)
+*   **[P0] Authenticated A2A Discovery Enforcer**: Mandatory cryptographic masking of agent capability cards for unauthenticated peers. (Added: 2026-06-01)
+
 #### Upcoming (2026-05-29 Evolution)
 *   **[P0] Collective Swarm Anomaly Detection (CSAD) Hub**: Cross-agent behavioral analysis middleware to detect "Hivenet" swarm attacks. (Added: 2026-05-29)
 *   **[P0] Cross-Mesh Command Sovereignty (CMCS) Provider**: Hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms. (Added: 2026-05-29)

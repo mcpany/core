@@ -490,6 +490,12 @@
 - [ ] **[P1] Autonomous Task Reaper (ATR) Log**: Real-time tracker for "Ghost" task reclamation and re-auction events. (Added: 2026-05-31)
 - [ ] **[P0] HAIR Identity Widget**: Status monitor for hardware-attested identity rotation sessions. (Added: 2026-05-31)
 
+#### Upcoming (2026-06-01 Evolution)
+- [ ] **[P0] Swarm Quarantine Monitor**: Real-time visualization of MSSQ-isolated mission scopes and revocation events. (Added: 2026-06-01)
+- [ ] **[P0] Adaptive Context Hub**: Dashboard for managing pluggable ContextEngine plugins and monitoring "Cognitive Anchoring" health. (Added: 2026-06-01)
+- [ ] **[P0] Autonomous Quorum Workspace**: Authorization UI for multi-agent verification quorums and AVQ attestation status. (Added: 2026-06-01)
+- [ ] **[P0] Authenticated Discovery Widget**: Security status indicator for masked agent capability cards and A2A auth-gate actions. (Added: 2026-06-01)
+
 #### Upcoming (2026-05-29 Evolution)
 - [ ] **[P0] Swarm Anomaly Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and CSAD neutralization events. (Added: 2026-05-29)
 - [ ] **[P0] Mesh Command Sovereignty Dashboard**: Visual "Chain of Mesh-Command" tracer for inter-teammate mailbox validation. (Added: 2026-05-29)
