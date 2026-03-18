@@ -1110,3 +1110,15 @@
 ### Priority Shifts
 - **Federated Swarm Identity (FSI) Provider**: (Re-affirmed P0) Evolving to act as the authoritative "SMI Relay" for cross-cloud agent swarms.
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for "Cross-Mission Budget Continuity."
+
+## Evolution: [2026-05-28] Updates
+
+### Proposed Additions
+- **Command Traceability Provider (CTP)**: (P0) Authoritative security middleware that issues cryptographically signed "Chain of Command" tokens for every instruction.
+- **Autonomous PR Integrity Gate (APRIG)**: (P0) Multi-agent security quorum for code-generating tool calls, requiring independent attestation for pull request safety.
+- **Trace-Aware Identity Propagation (TAIP)**: (P0) Extension for the SMI Relay that ensures hardware-attested identities carry full lineage metadata.
+- **Reasoning-Effort Attribution Middleware**: (P1) Resource management service that cryptographically attributes token and compute usage to specific mission-root branches.
+
+### Priority Shifts
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Reasoning-Effort Attribution**.
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to support the new APRIG multi-agent quorum for PR safety.

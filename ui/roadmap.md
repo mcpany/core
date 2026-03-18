@@ -472,3 +472,9 @@
 - [ ] **[P0] FAMI Fragment Auditor**: Security UI for inspecting and approving sharded mailbox fragments flagged by the isolation engine. (Added: 2026-05-27)
 - [ ] **[P0] Recursive Delegation Tree**: Visual hierarchical tracer with pruning triggers for the Recursive Delegation Reaper. (Added: 2026-05-27)
 - [ ] **[P1] Cross-Mission Budget Registry**: UI for reviewing and managing persistent reasoning budgets across multiple mission phases. (Added: 2026-05-27)
+
+#### Upcoming (2026-05-28 Evolution)
+- [ ] **[P0] Command Traceability Dashboard**: Visual "Chain of Command" tracer for auditing the hardware-attested lineage of agent tool calls. (Added: 2026-05-28)
+- [ ] **[P0] PR Integrity Quorum Interface**: Authorization workspace for multi-agent code reviews and APRIG attestation status. (Added: 2026-05-28)
+- [ ] **[P0] Identity Lineage Inspector**: Forensic UI for visualizing trace-aware identities and their parentage. (Added: 2026-05-28)
+- [ ] **[P1] Resource Attribution Overlay**: Cost and effort metrics broken down by intent-branch and agent parentage. (Added: 2026-05-28)
