@@ -1134,3 +1134,15 @@
 ### Priority Shifts
 - **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
 - **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
+
+## Evolution: [2026-05-30] Updates
+
+### Proposed Additions
+- **Asynchronous Mailbox Sharding (AMS) Provider**: (P0) High-performance coordination service that hosts granular, task-bound mailbox shards to eliminate "Task List Contention" in parallel teams.
+- **Teammate Identity Attestation (TIA) Enforcer**: (P0) Security middleware mandating hardware-attested, session-bound tokens for every inter-teammate request to neutralize "Teammate Impersonation."
+- **Reasoning-Budget Arbiter (RBA)**: (P1) Resource governance service that dynamically monitors subagent refinement loops and revokes ARE capabilities to prevent budget squatting.
+- **Mission-Bound Identity (MBI) Manager**: (P0) Identity lifecycle service that issues cryptographically bound, mission-specific identity tokens that automatically expire upon task completion.
+
+### Priority Shifts
+- **T2T Encryption Bridge**: (Re-affirmed P0) Now elevated with the requirement for **Mandatory TIA** for all inter-teammate communication.
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Evolving to support the new **RBA** for dynamic budget arbitration in deep swarms.

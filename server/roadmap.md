@@ -639,6 +639,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Trace-Aware Identity Propagation (TAIP)**: Extension for SMI Relay ensuring hardware-attested identities carry full lineage metadata. (Added: 2026-05-28)
 *   **[P1] Reasoning-Effort Attribution Middleware**: Resource management service cryptographically attributing token/compute usage to specific mission-root branches. (Added: 2026-05-28)
 
+#### Upcoming (2026-05-30 Evolution)
+*   **[P0] Asynchronous Mailbox Sharding (AMS) Provider**: High-performance coordination service hosting task-bound mailbox shards to eliminate task list contention. (Added: 2026-05-30)
+*   **[P0] Teammate Identity Attestation (TIA) Enforcer**: Security middleware mandating hardware-attested tokens for inter-teammate message validation. (Added: 2026-05-30)
+*   **[P1] Reasoning-Budget Arbiter (RBA)**: Resource governance service for monitoring subagent refinement drift and revoking ARE capabilities. (Added: 2026-05-30)
+*   **[P0] Mission-Bound Identity (MBI) Manager**: Lifecycle service for issuing cryptographically bound identity tokens that expire upon mission completion. (Added: 2026-05-30)
+
 #### Upcoming (2026-05-29 Evolution)
 *   **[P0] Collective Swarm Anomaly Detection (CSAD) Hub**: Cross-agent behavioral analysis middleware to detect "Hivenet" swarm attacks. (Added: 2026-05-29)
 *   **[P0] Cross-Mesh Command Sovereignty (CMCS) Provider**: Hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms. (Added: 2026-05-29)

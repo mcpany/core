@@ -28,6 +28,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-30]
+### Focus: Asynchronous Mailbox Sharding (AMS) & Teammate Identity Attestation (TIA)
+**Context**: The emergence of "Task List Contention" in large Claude Code teams and the detection of "Teammate Impersonation" exfiltration reveal that synchronous locks on shared state are failing at scale. Simultaneously, "Reasoning-Budget Exhaustion" (RBE) in deep swarms demonstrates that budget sovereignty must be enforced at the subagent level.
+**Strategic Pivot**:
+- **Asynchronous Mailbox Sharding (AMS)**: MCP Any will evolve to implement AMS for the T2T Encryption Bridge. We are moving from a single, locked shared task list to granular, task-bound mailbox shards that allow parallel teammates (Claude, OpenClaw, AutoGen) to coordinate without global contention locks.
+- **Teammate Identity Attestation (TIA)**: To neutralize "Teammate Impersonation" in horizontal swarms, we are mandating TIA. Every inter-agent mailbox request must be signed with a hardware-attested, session-bound "Teammate Token" that binds the identity to the mission-root mission scope.
+- **Reasoning-Budget Arbiter (RBA)**: Supporting the stability of deep swarms, MCP Any will implement the RBA. This service will dynamically monitor and revoke subagent reasoning (ARE) capabilities when "Refinement Drift" or budget squatting is detected, ensuring mission-root budget sovereignty.
+- **Mission-Bound Identity (MBI) Enforcement**: We are adopting the MBI standard. All connected agents will be assigned a hardware-attested identity that is cryptographically bound to the specific mission root and automatically expires upon task completion, neutralizing stale-identity hijacking.
+
+---
+
 ## Strategic Evolution: [2026-05-23]
 ### Focus: Local Zero-Trust (LOWA) & Peer-to-Peer Agent Orchestration
 **Context**: The disclosure of "ClawJacked" (CVE-2026-25253) proves that "Implicit Local Trust" for loopback WebSocket traffic is a critical failure point. Simultaneously, the rise of Claude Code's "Agent Teams" signals a shift toward horizontal (mesh) collaboration. The "Universal Agent Bus" must now act as the secure, authenticated bridge for both local control and peer-to-peer teammate communication.

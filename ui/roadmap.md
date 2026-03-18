@@ -484,3 +484,9 @@
 - [ ] **[P0] Mesh Command Sovereignty Dashboard**: Visual "Chain of Mesh-Command" tracer for inter-teammate mailbox validation. (Added: 2026-05-29)
 - [ ] **[P0] Teammate Handshake Monitor**: Real-time status indicator for ATH identity exchange in horizontal swarms. (Added: 2026-05-29)
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
+
+#### Upcoming (2026-05-30 Evolution)
+- [ ] **[P0] Contention Heatmap Dashboard**: Visual indicator of task list contention and mailbox sharding efficiency (AMS). (Added: 2026-05-30)
+- [ ] **[P0] Teammate Token Inspector**: Forensic UI for verifying hardware-attested TIA tokens on coordination messages. (Added: 2026-05-30)
+- [ ] **[P1] Budget Arbiter Console**: Real-time monitor of reasoning effort (ARE) and arbiter-triggered capability revocations (RBA). (Added: 2026-05-30)
+- [ ] **[P0] Mission Identity Lifecycle Tracker**: UI for tracking the creation and expiration of mission-bound identity tokens (MBI). (Added: 2026-05-30)
