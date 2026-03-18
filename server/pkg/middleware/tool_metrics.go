@@ -22,10 +22,8 @@ var (
 	// Define Prometheus metrics.
 	toolExecutionDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			// Summary: Defines Nam.
 			Name:    "mcpany_tools_call_latency_seconds",
 			Help:    "Histogram of tool execution duration in seconds.",
-			// Summary: Defines Bucket.
 			Buckets: prometheus.DefBuckets, // Use default buckets or customize
 		},
 		[]string{"tool", "service_id", "status", "error_type"},
@@ -33,7 +31,6 @@ var (
 
 	toolExecutionTotal = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			// Summary: Defines Nam.
 			Name: "mcpany_tools_call_total",
 			// Help string must match the existing registration to avoid conflicts.
 			// The conflicting registration seems to use the name as the help string.
