@@ -1134,6 +1134,20 @@
 - **Mesh-Bound Context Sovereignty Bridge**: (Re-affirmed P0) Now elevated with the requirement for **Hardware-Attested Identity Rotation**.
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now designated as the primary backend for the **Teammate Task-List Arbiter**.
 
+## Evolution: [2026-06-01] Updates
+
+### Proposed Additions
+- **Machine-Speed Swarm Quarantine (MSSQ)**: (P0) Advanced security middleware extension for the CSAD Hub that performs sub-millisecond, autonomous revocation of agent capabilities across a compromised mission scope.
+- **Adaptive Context Lifecycle Orchestrator**: (P0) Authoritative sidecar host for OpenClaw-compatible ContextEngine plugins, enforcing mission-root security policies across pluggable state management strategies.
+- **Autonomous Verification Quorum (AVQ) Hub**: (P0) Distributed security middleware that facilitates hardware-attested, multi-agent quorums for high-stakes tasks, bridging the "Delegation Gap."
+- **Authenticated A2A Discovery Enforcer**: (P0) Mandatory discovery gate that implements the Gemini CLI v0.33.0 baseline, ensuring agent capabilities are cryptographically invisible to unauthenticated peers.
+
+### Priority Shifts
+- **Collective Swarm Anomaly Detection (CSAD) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory MSSQ integration to support machine-speed response.
+- **ContextEngine Lifecycle Adapter**: (Re-affirmed P0) Evolving into the **Adaptive Context Lifecycle Orchestrator** to support full plugin hosting and security enforcement.
+
+---
+
 ## Evolution: [2026-05-31] Updates
 
 ### Proposed Additions
