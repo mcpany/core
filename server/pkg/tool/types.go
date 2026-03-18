@@ -2827,13 +2827,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
-			if err := checkForPathTraversal(valStr); err != nil {
+			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
-			}
-			if !isDocker {
-				if err := checkForLocalFileAccess(valStr); err != nil {
-					return nil, fmt.Errorf("parameter %q: %w", name, err)
-				}
 			}
 			// Sentinel Security: For shell commands, we only add environment variables if they are safe
 			// for unquoted use. If they contain dangerous characters, we omit them from the environment
