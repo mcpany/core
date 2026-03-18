@@ -496,6 +496,11 @@
 - [ ] **[P0] Autonomous Quorum Workspace**: Authorization UI for multi-agent verification quorums and AVQ attestation status. (Added: 2026-06-01)
 - [ ] **[P0] Authenticated Discovery Widget**: Security status indicator for masked agent capability cards and A2A auth-gate actions. (Added: 2026-06-01)
 
+#### Upcoming (2026-06-02 Evolution)
+- [ ] **[P1] AVQ Governance Interface**: Advanced orchestration workspace for monitoring and configuring multi-agent verification quorums. (Added: 2026-06-02)
+- [ ] **[P0] Execution Lineage Inspector**: Forensic UI for visualizing the hardware-attested reasoning path for system-level tool calls. (Added: 2026-06-02)
+- [ ] **[P0] Sovereign Receipt Vault**: UI for reviewing and exporting cryptographically signed execution receipts for compliance audits. (Added: 2026-06-02)
+
 #### Upcoming (2026-05-29 Evolution)
 - [ ] **[P0] Swarm Anomaly Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and CSAD neutralization events. (Added: 2026-05-29)
 - [ ] **[P0] Mesh Command Sovereignty Dashboard**: Visual "Chain of Mesh-Command" tracer for inter-teammate mailbox validation. (Added: 2026-05-29)
