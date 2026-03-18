@@ -44,6 +44,26 @@ go_deps.gazelle_override(
     path = "google.golang.org/genproto/googleapis/api",
 )
 
+# Disable proto generation for grpc-gateway so Gazelle uses pre-generated .pb.go
+# files directly and does not try to resolve @googleapis (which is not visible
+# from the grpc-gateway Go dep context in Bzlmod).
+# Use build_file_generation=off to preserve the original BUILD files and apply
+# our patch on top, which replaces the proto-based apiconfig target with one
+# that uses the pre-generated apiconfig.pb.go source file directly.
+go_deps.gazelle_override(
+    build_file_generation = "off",
+    path = "github.com/grpc-ecosystem/grpc-gateway/v2",
+)
+
+go_deps.module_override(
+    patch_strip = 1,
+    patches = [
+        "//patches:grpc_gateway_apiconfig.patch",
+        "//patches:grpc_gateway_pure.patch",
+    ],
+    path = "github.com/grpc-ecosystem/grpc-gateway/v2",
+)
+
 # Add required direct dependencies from go.mod manually or via use_repo
 # For now, let's let Gazelle handle it.
 use_repo(
