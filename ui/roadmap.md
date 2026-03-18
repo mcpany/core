@@ -523,3 +523,8 @@
 - **Speculative Sanitization Dashboard**: Visualization of neutralized speculative poisoned fragments and their sources.
 - **Mission-Root Gravity Status**: Real-time monitoring of "Semantic Drift" and mission-root anchoring across agent teammate shards.
 - **Multi-Hop Trust Persistence Monitor**: Detailed view of hardware-attested trust leases and their propagation across deep swarms.
+
+### Upcoming: [2026-06-06]
+- **Intent-Splicing Audit Log**: (P0) Real-time visualization of semantically deconstructed inter-agent messages and blocked splicing attempts.
+- **CGC Lifecycle Manager**: (P0) Security dashboard for monitoring capability garbage collection and identifying "Ghost Agents."
+- **MRLA Handshake Debugger**: (P0) Forensic UI for visualizing A2A discovery handshakes and mission-root lineage proofs.

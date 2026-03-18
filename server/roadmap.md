@@ -684,3 +684,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Mission-Root Gravity (MRG) Middleware**: Advanced extension for Live Context Sharding to prevent "Semantic Drift" in granular meshes.
 - **Multi-Hop Persistence Relay (MHPR)**: Performance-optimizing security service for the LFTA Trust Lease Manager to support persistent hardware-attested trust across multiple delegation hops.
 - **Sub-Millisecond ARL Synchronizer**: High-speed listener for the LFTA ARL Middleware to support ARL v3.0 synchronization in sub-100ms intervals.
+
+### Upcoming: [2026-06-06]
+- **[P0] Active Intent-Deconstruction (AID) Hub**: Advanced security middleware extension for real-time deconstruction and structural validation of all inter-agent messages.
+- **[P0] Capability Garbage Collection (CGC) Provider**: Authoritative security service for tracking capability lineage and enforcing immediate revocation upon sub-intent termination.
+- **[P0] HAIL v0.36.1 Lineage Provider**: Identity extension supporting hardware-attested intent lineage for non-repudiable mission-root attestation.
+- **[P0] MRLA Gateway**: Advanced A2A handshake gateway mandating proof of mission-root lineage before capability discovery.
