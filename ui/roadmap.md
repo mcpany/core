@@ -462,3 +462,7 @@
 - [ ] **[P0] Mailbox Shard Monitor**: Visual tracker for task-bound teammate communication channels and sharding efficiency. (Added: 2026-05-25)
 - [ ] **[P0] Cognitive Stall Alert Center**: UI for reviewing and terminating stalled subagent reasoning branches. (Added: 2026-05-25)
 - [ ] **[P0] Identity Fragment Viewer**: Security indicator for session-bound fragment attestation and "Stale Identity" alerts. (Added: 2026-05-25)
+- [ ] **[P0] Foundation Governance Dashboard**: UI for reviewing cross-framework mission-root sovereignty and governance events. (Added: 2026-05-26)
+- [ ] **[P0] Non-Blocking Coordination Monitor**: Real-time visualizer for lock-free AMS buffers and inter-teammate throughput. (Added: 2026-05-26)
+- [ ] **[P0] Intent-Scoped Budget Visualizer**: Hierarchical chart of reasoning budgets pinned to intent branches. (Added: 2026-05-26)
+- [ ] **[P0] Monologue Privacy Console**: Authorization UI for hardware-attested subagent monologue decryption. (Added: 2026-05-26)

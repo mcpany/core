@@ -45,3 +45,10 @@ As AI agent frameworks like Gemini CLI and OpenClaw move toward high-intensity r
 
 ## 7. Evolutionary Changelog
 * **2026-05-25:** Initial Document Creation.
+
+### Update: 2026-05-26 - Intent-Scoped ARE Enforcement
+**Context:** Today's market sync revealed the emergence of "Reasoning-Budget Hijacking" (RBH) via spoofed Gemini CLI ARE headers. Subagents are bypassing parent-imposed budgets by injecting high-effort reasoning instructions into sub-missions.
+**Architecture Adjustment:**
+*   Implementing **Intent-Scoped ARE Enforcement**. Reasoning budgets are now cryptographically pinned to the specific intent branch defined by the Mission Root.
+*   Integrating hardware-attested role validation into the ARE header processing loop.
+**Security Impact:** Prevents subagents from "stealing" reasoning tokens from sibling tasks or the primary mission loop, ensuring economic integrity of the swarm.

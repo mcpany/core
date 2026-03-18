@@ -620,3 +620,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Asynchronous Mailbox Sharding (AMS)**: Upgrade for T2T bridge to host task-bound mailbox shards and eliminate coordination locks. (Added: 2026-05-25)
 *   **[P0] Cognitive Stall Arbitrator (CSA)**: Stability middleware to detect and terminate non-convergent subagent refinement loops. (Added: 2026-05-25)
 *   **[P0] Identity Fragment Attestation (IFA)**: Security extension mandating hardware-attested, session-bound identity tokens for mailbox requests. (Added: 2026-05-25)
+
+#### Upcoming (2026-05-26 Evolution)
+*   **[P0] Foundation Governance Sync**: Implementation of neutral lifecycle hooks for OpenClaw Foundation compliance. (Added: 2026-05-26)
+*   **[P0] Non-Blocking AMS Core**: Kernel-level lock-free buffers for high-density horizontal teammate coordination. (Added: 2026-05-26)
+*   **[P0] Intent-Scoped ARE Validator**: Cryptographic pinning of reasoning budgets to mission-root intent branches. (Added: 2026-05-26)
+*   **[P0] Hardware-Attested Monologue Vault**: Encrypted SQLite sidecar for subagent reasoning monologues with TPM-bound keys. (Added: 2026-05-26)
