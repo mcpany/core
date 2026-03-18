@@ -673,6 +673,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Atomic Shard Lock-Manager**: Kernel-level lock manager for granular context streaming. (Added: 2026-06-03)
 *   **[P1] Zero-Latency Shard Prefetcher**: Speculative context loading based on real-time intent analysis. (Added: 2026-06-03)
 
+### Upcoming: [2026-06-07]
+- **Semantic Shadowing Mitigator (SSM)**: (P0) A behavioral security middleware for the AID Hub performing stylometric and contextual consistency checks to detect mimicry-based intent hijacking.
+- **Mission-Locked Execution (MLE) Gateway**: (P0) Core security service that enforces cryptographic locking of tool calls and sub-delegations to a hardware-attested mission-root intent.
+- **STR-Native Discovery Provider**: (P1) Upgrade for the PNTD Provider to support "Sovereign Tool Registry" (STR) manifests and TPM-signed behavioral baselines.
+- **Temporal Sovereignty Controller**: (P1) Lifecycle management service implementing "Ephemeral Mission Roots" to prevent long-term session hijacking.
+
 ### Upcoming: [2026-06-05]
 - **Intent-Splicing Detector (ISD)**: (P0) Structural validation middleware for the Semantic Integrity Bridge to prevent malicious instruction splicing in inter-agent streams.
 - **Recursive Accountability Tracker (RAT)**: (P0) Lifecycle-aware accounting service ensuring immediate revocation of session-bound capabilities upon task completion.
