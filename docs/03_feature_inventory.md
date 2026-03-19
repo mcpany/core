@@ -1301,3 +1301,14 @@
 ### Priority Shifts
 - **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MRA-compliant** hash-chaining to counter spoofing.
 - **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Designated as the primary integration point for the **SCI** to neutralize shadow coordination.
+
+## Evolution: [2026-06-13] Updates
+
+### Proposed Additions
+- **Shadow Coordination Interceptor (SCI)**: (P0) Authoritative security service for the T2T Bridge that monitors transport metadata and state-tags to neutralize out-of-band collusion.
+- **Dynamic Attention Gating (DAG) Middleware**: (P0) Stability middleware that performs real-time attention-utilization analysis and dynamically prunes noise to prevent REE-driven intent eviction.
+- **Hardware-Locked Coordination Handshake**: (P0) Core security standard mandating hardware-bound session attestation for all inter-agent state fragments and task bidding.
+
+### Priority Shifts
+- **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Designated as the primary enforcement mechanism for **Attention-Locked Context Windows**.
+- **Mesh-Resident Attestation (MRA) Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SCI-compliant** metadata signing.
