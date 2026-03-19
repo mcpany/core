@@ -5,14 +5,16 @@
 
 
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FileJson, Table as TableIcon, Terminal, FileText } from "lucide-react";
+import { FileJson, Table as TableIcon, Terminal, FileText, Download, ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface RichResultViewerProps {
     result: any;
@@ -129,6 +131,10 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return !mcpContent && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
     }, [content, mcpContent]);
 
+    const { toast } = useToast();
+    const [sortColumn, setSortColumn] = useState<string | null>(null);
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
     // Get columns for table
     const columns = useMemo(() => {
         if (!isTableEligible) return [];
@@ -142,6 +148,71 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         });
         return Array.from(keys);
     }, [content, isTableEligible]);
+
+    const handleSort = (column: string) => {
+        if (sortColumn === column) {
+            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortColumn(column);
+            setSortDirection('asc');
+        }
+    };
+
+    const sortedContent = useMemo(() => {
+        if (!isTableEligible || !sortColumn) return content;
+
+        const sorted = [...content].sort((a: any, b: any) => {
+            const aVal = a[sortColumn];
+            const bVal = b[sortColumn];
+
+            if (aVal === bVal) return 0;
+            if (aVal === null || aVal === undefined) return 1;
+            if (bVal === null || bVal === undefined) return -1;
+
+            if (typeof aVal === 'string' && typeof bVal === 'string') {
+                return sortDirection === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+            }
+            if (typeof aVal === 'number' && typeof bVal === 'number') {
+                return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+            }
+
+            // Fallback for objects, booleans, etc. Stringify then compare
+            const aStr = String(aVal);
+            const bStr = String(bVal);
+            return sortDirection === 'asc' ? aStr.localeCompare(bStr) : bStr.localeCompare(aStr);
+        });
+        return sorted;
+    }, [content, sortColumn, sortDirection, isTableEligible]);
+
+    const handleExportCSV = () => {
+        if (!isTableEligible) return;
+
+        // Escape helper for CSV cells
+        const escapeCSV = (val: any) => {
+            if (val === null || val === undefined) return '""';
+            let str = typeof val === 'object' ? JSON.stringify(val) : String(val);
+            // Replace double quotes with double-double quotes, and wrap in double quotes
+            return `"${str.replace(/"/g, '""')}"`;
+        };
+
+        const headers = columns.map(escapeCSV).join(',');
+        const rows = sortedContent.map((row: any) =>
+            columns.map(col => escapeCSV(row[col])).join(',')
+        ).join('\n');
+
+        const csvContent = headers + '\n' + rows;
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `mcpany-result-${Date.now()}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        toast({ title: "Exported to CSV", description: "Your result has been successfully exported." });
+    };
 
     const renderCell = (value: any) => {
         if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
@@ -186,18 +257,36 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             )}
 
             {isTableEligible && (
-                <TabsContent value="table" className="border rounded-md">
+                <TabsContent value="table" className="border rounded-md bg-card flex flex-col">
+                    <div className="flex justify-end p-2 border-b bg-muted/20">
+                        <Button variant="outline" size="sm" onClick={handleExportCSV} className="h-8 gap-1.5 text-xs">
+                            <Download className="h-3.5 w-3.5" /> Export CSV
+                        </Button>
+                    </div>
                     <ScrollArea className="h-[400px]">
                         <Table>
-                            <TableHeader>
+                            <TableHeader className="sticky top-0 bg-background/95 backdrop-blur z-10 shadow-sm">
                                 <TableRow>
                                     {columns.map(col => (
-                                        <TableHead key={col} className="whitespace-nowrap">{col}</TableHead>
+                                        <TableHead
+                                            key={col}
+                                            className="whitespace-nowrap cursor-pointer hover:bg-muted/50 transition-colors select-none"
+                                            onClick={() => handleSort(col)}
+                                        >
+                                            <div className="flex items-center gap-1">
+                                                {col}
+                                                {sortColumn === col ? (
+                                                    sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
+                                                ) : (
+                                                    <ArrowUpDown className="h-3 w-3 opacity-20" />
+                                                )}
+                                            </div>
+                                        </TableHead>
                                     ))}
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {content.map((row: any, i: number) => (
+                                {sortedContent.map((row: any, i: number) => (
                                     <TableRow key={i}>
                                         {columns.map(col => (
                                             <TableCell key={col} className="py-2">
