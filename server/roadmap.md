@@ -729,3 +729,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Shadow Coordination Interceptor (SCI)**: (P0) Authoritative transport-level security service for the T2T Bridge that monitors metadata and state-tags to neutralize out-of-band collusion. (Added: 2026-06-13)
 - **Dynamic Attention Gating (DAG) Middleware**: (P0) Cognitive stability middleware that performs real-time attention-utilization analysis and dynamically prunes noise to prevent mission-root intent eviction. (Added: 2026-06-13)
 - **Hardware-Locked Coordination Handshake**: (Re-affirmed P0) Designated as the primary enforcement point for **Attention Sovereignty** and **Side-Channel Immunity**.
+
+### Upcoming: [2026-06-14]
+- **Structural Metadata Sanitizer (SMS)**: (P0) Real-time semantic deconstruction of discovery metadata to neutralize SDMI instructions. (Added: 2026-06-14)
+- **Multi-Hop Persistence Relay (MHPR)**: (P0) Trust-lease propagation service to neutralize MSHE-driven cognitive stall in deep swarms. (Added: 2026-06-14)
+- **Attention-Locked Context Sharding (ALCS)**: (P0) Hardware-protected pinning of mission-critical fragments to prevent noise-driven eviction. (Added: 2026-06-14)
+- **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative discovery gateway for hardware-attested tool capability card validation. (Added: 2026-06-14)

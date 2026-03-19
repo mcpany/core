@@ -1312,3 +1312,15 @@
 ### Priority Shifts
 - **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Designated as the primary enforcement mechanism for **Attention-Locked Context Windows**.
 - **Mesh-Resident Attestation (MRA) Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SCI-compliant** metadata signing.
+
+## Evolution: [2026-06-14] Updates
+
+### Proposed Additions
+- **Structural Metadata Sanitizer (SMS)**: (P0) Advanced security service for the PNTD Provider that performs real-time semantic sanitization of tool descriptions and examples to neutralize SDMI.
+- **Multi-Hop Persistence Relay (MHPR)**: (P0) Performance-optimizing security middleware for the SMI Relay that facilitates hardware-attested trust lease propagation across deep swarms.
+- **Attention-Locked Context Sharding (ALCS)**: (P0) Security extension for the SMS and HAAL providers that cryptographically pins mission-critical fragments to protected attention tiers.
+- **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative gateway for the Discovery Bus that performs hardware-attested validation of all tool capability cards.
+
+### Priority Shifts
+- **PNTD Discovery Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SMS** integration to counter metadata-based reasoning hijacking.
+- **Sovereign Mesh Identity (SMI) Relay**: (Re-affirmed P0) Evolving to act as the primary backend for the **Multi-Hop Persistence Relay (MHPR)**.

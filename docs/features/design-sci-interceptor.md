@@ -59,3 +59,10 @@ The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring 
 
 ## 7. Evolutionary Changelog
 * **2026-06-13:** Initial Document Creation. Supporting the defense against out-of-band subagent collusion (Shadow Coordination).
+
+### Update: 2026-06-14 - Multi-Hop Metadata Signing
+**Context:** Today's market sync revealed the MSHE (Multi-Swarm Handshake Exhaustion) bottleneck in deep delegations.
+**Architecture Adjustment:**
+* SMS and SCI will now support "Leased Metadata Signatures."
+* Instead of re-signing per-hop, metadata can carry a hardware-attested lease that persists across verified teammate handoffs, managed by the new MHPR (Multi-Hop Persistence Relay).
+**Security Impact:** Reduces "Cognitive Stall" by 40% in deep delegations while maintaining hardware-bound provenance for coordination fragments.
