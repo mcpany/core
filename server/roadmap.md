@@ -729,3 +729,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Shadow Coordination Interceptor (SCI)**: (P0) Authoritative transport-level security service for the T2T Bridge that monitors metadata and state-tags to neutralize out-of-band collusion. (Added: 2026-06-13)
 - **Dynamic Attention Gating (DAG) Middleware**: (P0) Cognitive stability middleware that performs real-time attention-utilization analysis and dynamically prunes noise to prevent mission-root intent eviction. (Added: 2026-06-13)
 - **Hardware-Locked Coordination Handshake**: (Re-affirmed P0) Designated as the primary enforcement point for **Attention Sovereignty** and **Side-Channel Immunity**.
+
+### Upcoming: [2026-06-14]
+- **[P0] MRA-Backed Lineage Provider**: Advanced ARI extension anchoring every coordination fragment to a TPM-backed semantic hash-chain. (Added: 2026-06-14)
+- **[P0] HLCH-Compliant T2T Bridge**: Mandatory hardware-locked handshakes for all horizontal inter-teammate coordination. (Added: 2026-06-14)
+- **[P1] Side-Channel Immunity Filter**: Metadata-level interceptor for the T2T bridge to neutralize "Dormant" coordination instructions. (Added: 2026-06-14)
+- **[P0] Attention Sovereignty Hub**: Real-time entropy gating middleware to prevent REE-driven mission-root eviction. (Added: 2026-06-14)

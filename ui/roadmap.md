@@ -567,3 +567,9 @@
 - [ ] **[P0] Shadow Coordination Monitor**: (Re-affirmed P0) Enhanced dashboard for real-time visualization of entropy spikes in T2T transport metadata.
 - [ ] **[P0] Attention Sovereignty Visualizer**: (2026-06-13) Real-time tracker for DAG-gated fragments and HAAL-locked intent segments.
 - [ ] **[P0] Hardware-Locked Coordination Debugger**: (2026-06-13) UI for reviewing hardware-bound session tokens and blocked out-of-band handoffs.
+
+### Upcoming: [2026-06-14]
+- [ ] **[P0] Lineage Hash-Chain Inspector**: (2026-06-14) Forensic UI for visualizing TPM-backed coordination lineages and detecting spoofing attempts.
+- [ ] **[P0] HLCH Handshake Monitor**: (2026-06-14) Real-time status indicator for mandatory hardware-locked handshakes in horizontal meshes.
+- [ ] **[P1] Shadow-Channel Instruction Scanner**: (2026-06-14) Security dashboard for reviewing "Dormant" coordination patterns blocked by the SCI filter.
+- [ ] **[P0] Attention Sovereignty Dashboard**: (2026-06-14) Advanced visualization for REE noise levels and mission-root attention health.
