@@ -753,3 +753,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+### Upcoming: [2026-06-18]
+- **Mesh-Resident Governance Oracle (MRGO) Adapter**: (P0) Decentralized governance service providing hardware-attested quorums for local policy arbitration (Added: 2026-06-18).
+- **Consensus Partition Interdictor (CPI)**: (P0) Security middleware for detecting and halting "Mesh-Split" (CVE-2026-82001) intent divergence (Added: 2026-06-18).
+- **PAD-v2 Discovery Validator**: (P1) Upgrade for the PNTD Provider to support protocol-agnostic capability beacons and PAD-v2 discovery (Added: 2026-06-18).
+- **Recursive Attestation Orchestrator**: (P0) Identity service mandating TPM-signed attestation chains for all sub-delegations (Added: 2026-06-18).

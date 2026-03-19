@@ -60,3 +60,10 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
     * **Context:** Today's market sync revealed that hardware-bound entangled shards can leak state fragments via cache-timing side-channels.
     * **Architecture Adjustment:** Introducing **Temporal Shard Jitter (TSJ) Injection** in Section 4. The ESB will now inject hardware-attested timing jitter into state synchronization for non-primary mission-root requests.
     * **Security Impact:** Mitigates the risk of subagents mapping mission-root constraints via high-frequency latency monitoring.
+
+### Update: 2026-06-18 - Resolving Mesh-Split (CVE-2026-82001)
+**Context:** Today's market sync revealed that high-frequency sharded meshes can diverge into "Consensus Partitions" during network latency or entropy-noise events.
+**Architecture Adjustment:** Introducing the **Consensus Partition Interdictor (CPI)** in Section 4.
+*   The ESB will now mandate "Inter-Teammate Intent Partitioning" checks during state synchronization.
+*   The CPI will automatically freeze the Blackboard state if it detects two sub-swarms attempting to commit conflicting "winning intents" for the same mission-root fragment.
+**Security Impact:** Prevents state corruption and "Split-Brain" intent divergence in deep speculative meshes.

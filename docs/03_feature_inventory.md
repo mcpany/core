@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Mesh-Resident Governance Oracle (MRGO) Adapter**: (P0) Decentralized governance service providing hardware-attested quorums for local teammate policy arbitration.
+- **Consensus Partition Interdictor (CPI)**: (P0) Security middleware for detecting and halting "Mesh-Split" intent divergence in sharded swarms.
+- **PAD-v2 Discovery Validator**: (P1) Upgrade for the PNTD Provider to support Gemini-style Protocol-Agnostic Discovery v2 and hardware-attested capability beacons.
+- **Recursive Attestation Orchestrator**: (P0) Identity service mandating TPM-signed attestation chains for all sub-delegations to counter "Shadow Subagent" spawns.
+
+### Priority Shifts
+- **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **CPI-compliant** split-brain interdiction.
+- **PNTD Discovery Provider**: (Re-affirmed P0) Designated as the primary enforcement point for **PAD-v2** discovery validation.
+
 ## Evolution: [2026-06-16] Updates
 
 ### Proposed Additions
