@@ -735,3 +735,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Hop Persistence Relay (MHPR)**: (P0) Trust-lease propagation service to neutralize MSHE-driven cognitive stall in deep swarms. (Added: 2026-06-14)
 - **Attention-Locked Context Sharding (ALCS)**: (P0) Hardware-protected pinning of mission-critical fragments to prevent noise-driven eviction. (Added: 2026-06-14)
 - **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative discovery gateway for hardware-attested tool capability card validation. (Added: 2026-06-14)
+
+### Upcoming: [2026-06-15]
+- **Intent-Resumption Gateway (IRG)**: (P0) Authoritative resumption broker implementing OpenClaw-compliant "Intent-Resumption Tokens" to eliminate cognitive stall during teammate rotation. (Added: 2026-06-15)
+- **Side-Channel Timing Mitigator (SCTM)**: (P0) Advanced security middleware for the ASLM that injects hardware-attested timing jitter to neutralize shard-collision timing attacks. (Added: 2026-06-15)
+- **Attention-Locked Telemetry Proxy**: (P1) Authoritative telemetry sanitizer for Gemini-compliant reasoning traces, ensuring attention-mapping privacy during RL feedback export. (Added: 2026-06-15)
+- **WASM-Hook Behavioral Profiler**: (P0) Mandatory extension for the SMS that performs sandboxed profiling of AI-generated configuration hooks to counter PR "Logic Bombs." (Added: 2026-06-15)
