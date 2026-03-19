@@ -1360,3 +1360,15 @@
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Intent-Boundary Telemetry (IBT) Hub**: (P0) Authoritative security service for monitoring inter-intent traversals and detecting "Boundary Smearing" in real-time.
+- **Cognitive Proof-of-Work (CPoW) Gateway**: (P0) Resource protection middleware mandating hardware-attested computational proof for high-intensity reasoning requests.
+- **Dynamic Context Reshuffling (DCR) Middleware**: (P1) Attention window optimizer that re-prioritizes context fragments based on real-time reasoning path shifts.
+- **Active Fragment Garbage Collection (AF-GC)**: (P0) Mandatory lifecycle service for sharded meshes that purges orphaned fragments upon mission-root shifts.
+
+### Priority Shifts
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with mandatory **CPoW** integration for high-trust reasoning branches.
+- **Shard-Aware Mailbox Sovereignty (SMS)**: (Re-affirmed P0) Evolving to support the new **AF-GC** requirement for orphaned fragment mitigation.

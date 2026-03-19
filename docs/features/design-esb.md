@@ -60,3 +60,7 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
     * **Context:** Today's market sync revealed that hardware-bound entangled shards can leak state fragments via cache-timing side-channels.
     * **Architecture Adjustment:** Introducing **Temporal Shard Jitter (TSJ) Injection** in Section 4. The ESB will now inject hardware-attested timing jitter into state synchronization for non-primary mission-root requests.
     * **Security Impact:** Mitigates the risk of subagents mapping mission-root constraints via high-frequency latency monitoring.
+    * **2026-06-18:** **Neutralizing Fragment-Ghosting via Active Garbage Collection.**
+    * **Context:** Today's research identified "Fragment-Ghosting" where state fragments are orphaned and re-ingested by unauthorized teammates after mission shifts.
+    * **Architecture Adjustment:** Integrating **Active Fragment Garbage Collection (AF-GC)** into the ESB lifecycle. The broker will now perform mandatory, hardware-attested purging of all sharded memory buffers upon any mission-root rotation or teammate termination.
+    * **Security Impact:** Ensures that "Ghost" fragments cannot be weaponized to bypass isolation in multi-tenant sharded meshes.
