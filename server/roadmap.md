@@ -742,6 +742,12 @@ These features represent the next logical steps for the product, focusing on Ent
 - **[P1] Speculative Branching Guard (SBG)**: Isolation for un-executed reasoning paths to prevent speculative attention leakage. (Added: 2026-06-16)
 - **[P0] Mesh-Resident Key Exchange (MRKE) Provider**: Hardware-bound session key rotation for sub-100ms inter-teammate coordination. (Added: 2026-06-16)
 
+### Upcoming: [2026-06-18]
+- **[P0] Active Intent Alignment (AIA) Hub**: Advanced alignment service utilizing hardware-attested heartbeats to ensure specialist reasoning remains mission-anchored. (Added: 2026-06-18)
+- **[P0] Trace-Aware Identity (TAI) Bridge**: Hardware-attested identity service binding teammate actions to their unique reasoning lineage. (Added: 2026-06-18)
+- **[P1] Mesh-Resident Reasoning-GC**: Decentralized stability middleware for purging redundant reasoning fragments from shared mesh memory. (Added: 2026-06-18)
+- **[P0] Semantic Entropy Filter (SEF)**: Transport-level security middleware for detecting "Trace-Injection" patterns in sharded caches. (Added: 2026-06-18)
+
 ### Upcoming: [2026-06-15]
 - **Intent-Resumption Gateway (IRG)**: (P0) Authoritative resumption broker implementing OpenClaw-compliant "Intent-Resumption Tokens" to eliminate cognitive stall during teammate rotation. (Added: 2026-06-15)
 - **Side-Channel Timing Mitigator (SCTM)**: (P0) Advanced security middleware for the ASLM that injects hardware-attested timing jitter to neutralize shard-collision timing attacks. (Added: 2026-06-15)

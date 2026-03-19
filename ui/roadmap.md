@@ -580,6 +580,12 @@
 - [ ] **[P1] Speculative Branching Visualizer**: (2026-06-16) Visual tracker for "Shadow Branches" and attention leakage alerts.
 - [ ] **[P0] MRKE Key Rotation Widget**: (2026-06-16) Status indicator for hardware-bound session key rotation.
 
+### Upcoming: [2026-06-18]
+- [ ] **[P0] Active Intent Alignment Monitor**: (2026-06-18) Visual indicator for AIA heartbeat status and semantic drift alerts.
+- [ ] **[P0] Trace-Aware Identity (TAI) Explorer**: (2026-06-18) Security workspace for visualizing teammate lineage and reasoning-bound identity proofs.
+- [ ] **[P1] Mesh Reasoning-GC Status**: (2026-06-18) Real-time visualization of redundant fragment pruning and attention window efficiency.
+- [ ] **[P0] Semantic Entropy Alert Center**: (2026-06-18) UI for inspecting sharded memory fragments flagged for trace-injection patterns.
+
 ### Upcoming: [2026-06-15]
 - [ ] **[P0] Intent-Resumption Dashboard**: (2026-06-15) Visualizer for monitoring "Intent-Resumption Token" issuance and handoff latency.
 - [ ] **[P0] Side-Channel Timing Heatmap**: (2026-06-15) Real-time monitor of ASLM timing jitter and blocked shard-collision probes.
