@@ -729,3 +729,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Shadow Coordination Interceptor (SCI)**: (P0) Authoritative transport-level security service for the T2T Bridge that monitors metadata and state-tags to neutralize out-of-band collusion. (Added: 2026-06-13)
 - **Dynamic Attention Gating (DAG) Middleware**: (P0) Cognitive stability middleware that performs real-time attention-utilization analysis and dynamically prunes noise to prevent mission-root intent eviction. (Added: 2026-06-13)
 - **Hardware-Locked Coordination Handshake**: (Re-affirmed P0) Designated as the primary enforcement point for **Attention Sovereignty** and **Side-Channel Immunity**.
+
+### Upcoming: [2026-06-14]
+- **Attention-Locked Routing Hub (ALRH)**: (P0) Advanced security middleware extension for the ISD and DAG hubs that performs real-time, mission-anchored attention prioritization. (Added: 2026-06-14)
+- **MDRA-Native Attestation Bridge**: (P0) Unified trust service for aggregating hardware, behavioral, and lineage attestation into a single, low-jitter token. (Added: 2026-06-14)
+- **Three-Factor Agency Gateway**: (P0) Advanced discovery gate mandating MDRA-unified tokens before revealing agent capabilities or high-trust tools. (Added: 2026-06-14)
+- **Physical-Layer Side-Channel Shield**: (P1) Resource-aware noise injection for inter-agent transport channels to neutralize thermal and fan-based side-channels. (Added: 2026-06-14)

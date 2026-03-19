@@ -567,3 +567,9 @@
 - [ ] **[P0] Shadow Coordination Monitor**: (Re-affirmed P0) Enhanced dashboard for real-time visualization of entropy spikes in T2T transport metadata.
 - [ ] **[P0] Attention Sovereignty Visualizer**: (2026-06-13) Real-time tracker for DAG-gated fragments and HAAL-locked intent segments.
 - [ ] **[P0] Hardware-Locked Coordination Debugger**: (2026-06-13) UI for reviewing hardware-bound session tokens and blocked out-of-band handoffs.
+
+### Upcoming: [2026-06-14]
+- [ ] **[P0] ALRH Mission Proximity Map**: (2026-06-14) Visualization of reasoning fragments prioritized by mission-root proximity and attention window status.
+- [ ] **[P0] MDRA Unified Token Inspector**: (2026-06-14) Security dashboard for reviewing aggregated hardware, behavioral, and lineage attestation proofs.
+- [ ] **[P0] Three-Factor Discovery Gate**: (2026-06-14) Authorization UI for approving MDRA-unified handshakes and capability reveals.
+- [ ] **[P1] Side-Channel Entropy Monitor**: (2026-06-14) Real-time tracker for thermal and resource-aware noise injection in isolated transport channels.

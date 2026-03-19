@@ -66,3 +66,11 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * Mandating integration with the **Shadow Coordination Interceptor (SCI)** in Section 4.
 * Upgrading hash-chaining to require **MRA-compliant** hardware-bound hashes to prevent legacy collision spoofing.
 **Security Impact:** Prevents subagents from colluding via metadata while appearing to follow the "Reasoning Mainline."
+
+### Update: 2026-06-14 - Mission-Anchored Attention Sovereignty
+**Context:** Today's market sync revealed the transition to Hardware-Locked Context Pinning and the draft specification for MDRA (Multi-Dimensional Reasoning Attestation).
+**Architecture Adjustment:**
+* Introducing the **Attention-Locked Routing Hub (ALRH)** in Section 4 to prioritize fragments by mission-root proximity.
+* Transitioning to **Hardware-Locked Pinning** for all mission-critical shards to prevent attention eviction.
+* Upgrading `VerifyLineage` to support **MDRA-unified tokens**, aggregating hardware, behavioral, and lineage proofs.
+**Security Impact:** Mitigates Reasoning Entropy Exhaustion (REE) attacks and ensures cross-framework mission sovereignty via three-factor agency.
