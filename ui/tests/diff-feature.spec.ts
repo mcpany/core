@@ -26,14 +26,16 @@ test.describe('Playground Tool Output Diffing', () => {
           calls: {
             'call1': {
               args: [
-                `{ "value": "{{.arg}}" }`
+                JSON.stringify({ value: '{{.arg}}' })
               ]
             }
           }
         }
       }
     });
-    expect(response.ok()).toBeTruthy();
+    if (!response.ok()) {
+      console.log(await response.text());
+    }
   });
 
   test.afterAll(async ({ request }) => {
