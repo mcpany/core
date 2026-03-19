@@ -281,8 +281,8 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                                 minimap: { enabled: false },
                                 scrollBeyondLastLine: false,
                                 fontSize: 12,
-                                diffCodeLens: false,
-                                renderSideBySide: false,
+                                diffCodeLens: true,
+                                renderSideBySide: true,
                             }}
                         />
                     </div>

@@ -6,50 +6,46 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Playground Tool Output Diffing', () => {
-  test('should allow comparing tool outputs when they differ', async ({ page }) => {
-    // Mock the tools API response
-    await page.route('/api/v1/tools', async route => {
-      const json = {
-        tools: [
-          {
-            name: 'diff_test_tool',
-            description: 'Test diffing',
-            inputSchema: {
-              type: 'object',
-              properties: {
-                arg: { type: 'string' }
-              }
-            }
-          }
-        ]
-      };
-      await route.fulfill({ json });
-    });
+  const serviceName = 'diff-feature-test-service';
 
-    // Mock the tool execution
-    let callCount = 0;
-    await page.route('/api/v1/execute', async route => {
-      callCount++;
-      const result = callCount === 1 ? { value: "Version 1" } : { value: "Version 2" };
+  test.beforeAll(async ({ request }) => {
+    // Clean up
+    await request.delete(`/api/v1/services/${serviceName}`).catch(() => { });
 
-      await route.fulfill({
-        json: {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result)
+    // Seed service
+    const response = await request.post('/api/v1/services', {
+      data: {
+        name: serviceName,
+        command_line_service: {
+          command: 'echo',
+          tools: [
+            { name: 'diff_test_tool', call_id: 'call1', description: 'Test diffing',
+              inputSchema: { type: 'object', properties: { arg: { type: 'string' } } }
             }
           ],
-          isError: false,
-          ...result
+          calls: {
+            'call1': {
+              args: [
+                '{"value": "{{.arg}}"}'
+              ]
+            }
+          }
         }
-      });
+      }
     });
+    expect(response.ok()).toBeTruthy();
+  });
+
+  test.afterAll(async ({ request }) => {
+    await request.delete(`/api/v1/services/${serviceName}`).catch(() => { });
+  });
+
+  test('should allow comparing tool outputs when they differ', async ({ page }) => {
 
     await page.goto('/playground');
 
     // 1. Run the tool first time
-    await page.fill('input[placeholder="Enter command or select a tool..."]', 'diff_test_tool {"arg":"test"}');
+    await page.fill('input[placeholder="Enter command or select a tool..."]', `${serviceName}.diff_test_tool {"arg":"Version 1"}`);
     await page.keyboard.press('Enter');
 
     // Wait for first result
@@ -57,7 +53,7 @@ test.describe('Playground Tool Output Diffing', () => {
 
     // 2. Run the tool second time (same args)
     // The input clears after send, so we type again.
-    await page.fill('input[placeholder="Enter command or select a tool..."]', 'diff_test_tool {"arg":"test"}');
+    await page.fill('input[placeholder="Enter command or select a tool..."]', `${serviceName}.diff_test_tool {"arg":"Version 2"}`);
     await page.keyboard.press('Enter');
 
     // Wait for second result
@@ -79,8 +75,6 @@ test.describe('Playground Tool Output Diffing', () => {
     // Or we can check for the content text being present twice (original and modified).
     // Monaco renders text in lines.
     await expect(page.locator('.monaco-diff-editor')).toBeVisible();
-
-
 
   });
 });
