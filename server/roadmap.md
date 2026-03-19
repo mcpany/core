@@ -724,3 +724,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Mesh-Resident Attestation (MRA) Provider**: (P0) Core security service utilizing hardware-bound (TPM) primitives to generate and verify collision-resistant semantic hashes for the ARI Hub. (Added: 2026-06-12)
 - **Dynamic Attention Gating (DAG) Middleware**: (P1) Stability middleware that dynamically "gates" subagent reasoning fragments based on parent attention-utilization to prevent REE. (Added: 2026-06-12)
 - **Hardware-Locked Coordination Handshake**: (P0) Mandatory hardware-locked handshake for all inter-agent coordination to ensure mission-root sovereignty. (Added: 2026-06-12)
+
+### Upcoming: [2026-06-13]
+- **Shadow Coordination Interceptor (SCI)**: (P0) Authoritative transport-level security service for the T2T Bridge that monitors metadata and state-tags to neutralize out-of-band collusion. (Added: 2026-06-13)
+- **Dynamic Attention Gating (DAG) Middleware**: (P0) Cognitive stability middleware that performs real-time attention-utilization analysis and dynamically prunes noise to prevent mission-root intent eviction. (Added: 2026-06-13)
+- **Hardware-Locked Coordination Handshake**: (Re-affirmed P0) Designated as the primary enforcement point for **Attention Sovereignty** and **Side-Channel Immunity**.

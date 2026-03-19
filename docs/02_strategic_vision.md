@@ -991,3 +991,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Mesh-Resident Attestation (MRA) Provider**: To counter hash spoofing, we are introducing the MRA Provider. This service will utilize hardware-bound (TPM) primitives to generate and verify semantic hashes for the ARI Hub, ensuring that reasoning fragments cannot be re-played or spoofed within the coordination bus.
 - **Dynamic Attention Gating (DAG) Middleware**: Supporting the stability of parent agents, MCP Any will implement DAG. This service will dynamically "gate" subagent reasoning fragments based on real-time attention-utilization scores, preventing REE attacks by automatically pruning low-entropy noise before it reaches the parent context window.
 - **Hardware-Locked Coordination Handshake**: We are mandating a hardware-locked handshake for all inter-agent coordination. No state fragment or task bidding will be accepted unless it is cryptographically bound to a verified, hardware-attested coordination session, ensuring absolute sovereignty of the mission root.
+
+---
+
+## Strategic Evolution: [2026-06-13]
+### Focus: Attention Sovereignty & Side-Channel Immunity
+**Context**: The discovery of **Reasoning Entropy Exhaustion (REE)** and the emergence of **Shadow Coordination (SC)** side-channels prove that attention pinning and fragment validation are no longer sufficient. As agents become more specialized, they can bypass the hardware-attested mainline by colluding via non-primary channels. Infrastructure must now provide **Side-Channel Immunity** and **Hardware-Locked Attention Governance**.
+**Strategic Pivot**:
+- **Dynamic Attention Gating (DAG) Middleware**: MCP Any will evolve to act as the authoritative "Attention Guard." We will implement the DAG, performing real-time attention-utilization analysis and dynamically pruning low-entropy reasoning fragments from subagents to prevent mission-root eviction during REE attacks.
+- **Shadow Coordination Interceptor (SCI)**: To neutralize out-of-band collusion, we are upgrading the T2T Bridge to include the SCI. This service will perform multi-dimensional monitoring of coordination transport metadata, headers, and state-tags to detect and block hidden side-channel communications.
+- **Hardware-Locked Coordination Handshake**: Supporting "Coordination Sovereignty," we are mandating hardware-locked coordination handshakes. No state fragment or task bidding will be accepted unless it is cryptographically bound to a verified, hardware-attested session, ensuring that all coordination occurs within the verified mainline.
+- **Attention-Locked Context Windows**: Leveraging the HAAL standard, MCP Any will provide hardware-bound attention locking for mission-critical intent fragments, ensuring they remain "pinned" in the LLM context window despite high-entropy noise injections by subagents.
