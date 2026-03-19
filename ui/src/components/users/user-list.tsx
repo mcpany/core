@@ -128,7 +128,7 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                         </TableRow>
                     )}
                     itemContent={(index, user) => (
-                                <TableRow key={user.id} data-testid={`user-row-${user.id}`}>
+                                <TableRow data-testid={`user-row-${user.id}`}>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             <Avatar className="h-9 w-9 border">
