@@ -60,3 +60,10 @@ The Atomic Reasoning Integrity (ARI) Validator is needed to perform fragment-lev
 
 ## 7. Evolutionary Changelog
 * **2026-06-08:** Initial Document Creation.
+
+### Update: 2026-06-09 - RIV Integration & Multi-Hop Lineage
+**Context:** Today's research into "Recursive Mesh Hijacking" revealed that fragment-level consistency is bypassable in deep meshes without ancestral lineage verification.
+**Architecture Adjustment:**
+* Upgrading Section 4 to support RIV-aware consistency checks.
+* Mandatory requirement for ARI tokens to be merged into "Lineage-Aware Proofs" via the RIV Provider before shard commitment.
+**Security Impact:** Prevents "Logic Drift" in deep delegations by ensuring every fragment is cryptographically bound to the entire parentage of the reasoning chain.

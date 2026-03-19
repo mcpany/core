@@ -1254,3 +1254,15 @@
 ### Priority Shifts
 - **Semantic Integrity Bridge**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Active Intent-Deconstruction (AID)** to counter semantic splicing.
 - **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Evolving to support mandatory **Capability Garbage Collection (CGC)** for all task-bound leases.
+
+## Evolution: [2026-06-09] Updates
+
+### Proposed Additions
+- **Recursive Integrity Verification (RIV) Provider**: (P0) Advanced security service evolving the ARI Validator to support lineage-aware proofs across infinite delegation hops, neutralizing Logic Drift.
+- **Context-Window Pinning (CWP) Middleware**: (P0) Attention-governance middleware that utilizes hardware-bound headers to protect mission-root anchors from Context-Window Flooding (CWF).
+- **Ephemeral Credential Manager (ECM)**: (P1) Lifecycle extension for the EPM that issues task-specific, mission-bound JWTs to neutralize Credential Squatting in specialist agents.
+- **Mesh-Resident Lineage Tracker**: (P0) Orchestration UI component for visualizing and auditing the hardware-attested Chain-of-Thought Lineage across deep swarms.
+
+### Priority Shifts
+- **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RIV** integration to support multi-hop mission-root sovereignty.
+- **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Designated as the primary infrastructure for **EMC-compliant** credential issuance.
