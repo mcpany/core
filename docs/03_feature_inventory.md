@@ -1360,3 +1360,15 @@
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Recursive Intent Attestation (RIA) Provider**: (P0) Advanced security service that provides hardware-attested proofs of the entire reasoning lineage across multi-hop delegations.
+- **Mesh-Resident Cognitive Load Balancer (MCLB)**: (P0) Stability service that dynamically redistributes reasoning tasks across horizontal teammates based on real-time ARE scores.
+- **Intent-Bound Ephemeral Tunnels (IBET)**: (P0) Transport-level security standard mandating that all comms channels be cryptographically bound to specific mission fragments.
+- **Continuous Fragment-Integrity Attestation (CFIA) Provider**: (P0) Upgrade for RAMS providing periodic, cryptographically signed proofs of shard-level integrity.
+
+### Priority Shifts
+- **Reasoning-Aware Memory Segmentation (RAMS) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **CFIA** integration to counter Intent-Grafting.
+- **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **RIA-compliant** lineage verification for all deconstructed messages.

@@ -753,3 +753,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+### Upcoming: [2026-06-18]
+- **Recursive Intent Attestation (RIA) Provider**: (P0) Authoritative lineage proof issuer for deep agent swarms. (Added: 2026-06-18)
+- **Mesh-Resident Cognitive Load Balancer (MCLB)**: (P0) Dynamic task redistribution service for horizontal teammates based on real-time ARE scores. (Added: 2026-06-18)
+- **Intent-Bound Ephemeral Tunnels (IBET)**: (P0) Cryptographically bound transport standard for task-specific inter-agent communication. (Added: 2026-06-18)
+- **Continuous Fragment-Integrity Attestation (CFIA) Provider**: (P0) High-frequency integrity monitoring for sharded meshes to counter Intent-Grafting. (Added: 2026-06-18)
