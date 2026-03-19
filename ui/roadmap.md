@@ -573,3 +573,8 @@
 - [ ] **[P0] Trust Persistence Monitor**: (2026-06-14) Visual tracker for MHPR trust-lease propagation and MSHE-latency gains.
 - [ ] **[P0] Attention-Locked Shard Viewer**: (2026-06-14) Dashboard for monitoring hardware-protected fragments in the ALCS attention tier.
 - [ ] **[P0] Sovereign Discovery Console**: (2026-06-14) Authorization workspace for hardware-attested SDP validation of capability cards.
+
+### Upcoming: [2026-06-15]
+- [ ] **[P0] Attention-Locked Shard Viewer**: (2026-06-15) Dashboard for monitoring hardware-protected fragments in the ALCS attention tier.
+- [ ] **[P0] Sovereign Discovery Console**: (2026-06-15) Authorization workspace for hardware-attested SDP validation of capability cards.
+- [ ] **[P1] Trust Persistence Monitor**: (2026-06-15) Visual tracker for MHPR trust-lease propagation and MSHE-latency gains.
