@@ -18,7 +18,7 @@ import {
     DialogDescription,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { SchemaVisualizer } from "@/components/schema-visualizer";
+import { SchemaViewer } from "@/components/tools/schema-viewer";
 
 
 interface ServiceToolsProps {
@@ -68,7 +68,7 @@ export function ServiceTools({ tools }: ServiceToolsProps) {
                                         </DialogDescription>
                                     </DialogHeader>
                                     <div className="rounded-md border overflow-hidden">
-                                        <SchemaVisualizer schema={tool.inputSchema || {}} />
+                                        <SchemaViewer schema={(tool.inputSchema || {}) as any} />
                                     </div>
                                 </DialogContent>
                             </Dialog>
