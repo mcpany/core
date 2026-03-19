@@ -513,6 +513,12 @@
 - [ ] **[P0] Shard Lock Visualizer**: Real-time dashboard for monitoring atomic locks and shard ownership. (Added: 2026-06-03)
 - [ ] **[P1] Prefetching Performance Overlay**: Visualization of speculative context hit/miss rates. (Added: 2026-06-03)
 
+### Upcoming: [2026-06-08]
+- [ ] **[P0] ARI Fragment Monitor**: (2026-06-08) Real-time visualization of fragment-level semantic validation events and blocked state-splicing attempts.
+- [ ] **[P0] HAMM Manifest Reviewer**: (2026-06-08) UI for reviewing pre-declared hardware-attested mission manifests before sub-mission execution.
+- [ ] **[P1] Graceful Decay Indicator**: (2026-06-08) Visual status widget for monitoring mission sovereignty decay and re-attestation windows.
+- [ ] **[P0] Fragment Sovereignty Auditor**: (2026-06-08) Security dashboard for verifying ARI-attestation status across the teammate mesh.
+
 ### Upcoming: [2026-06-07]
 - **Semantic Shadowing Dashboard**: (P0) A behavioral security workspace for the AID Hub that visualizes stylometric and contextual consistency alerts.
 - **Mission-Locked Execution (MLE) Visualizer**: (P0) Security UI for viewing and auditing cryptographically locked tool calls and their mission-root lineage.
