@@ -550,3 +550,9 @@
 - [ ] **[P0] L7 Semantic Inspection Monitor**: (P0) Real-time visualization of high-entropy semantic validation events and REE neutralization. (Added: 2026-06-10)
 - [ ] **[P0] Environment Isolation Dashboard**: (P0) Visual tracker for hardware-attested environment scrubbing and metadata wipe events. (Added: 2026-06-10)
 - [ ] **[P0] Mission-Root Registry Viewer**: (P0) Authoritative UI for reviewing and auditing the hardware-attested Mission-Root Attestation Registry. (Added: 2026-06-10)
+
+### Upcoming: [2026-06-11]
+- [ ] **[P0] ARI Lineage Visualizer**: (P0) Real-time visualization of semantic hash-chains and logic grafting alerts in shared shards. (Added: 2026-06-11)
+- [ ] **[P0] Attention Governance Dashboard**: (P0) Visual tracker for HAAL-locked intent fragments and REE noise levels. (Added: 2026-06-11)
+- [ ] **[P1] DTAI Performance Overlay**: (P1) Performance dashboard for monitoring trace-aware identity verification latency. (Added: 2026-06-11)
+- [ ] **[P0] Reasoning Provenance Inspector**: (P0) Forensic UI for reviewing the hardware-attested reasoning lineage of high-risk actions. (Added: 2026-06-11)

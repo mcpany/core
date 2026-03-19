@@ -712,3 +712,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Layer-7 Semantic Inspection Hub (L7SIH)**: (P0) Advanced security middleware for the ISD Hub performing real-time, high-entropy semantic analysis of inter-teammate coordination. (Added: 2026-06-10)
 - **Environment Sovereignty Enforcer (ESE)**: (P0) Core security service for the EPM and LOWA providers mandating hardware-attested "Environment Scrubbing" to prevent ILPE exfiltration. (Added: 2026-06-10)
 - **Mission-Root Attestation Registry**: (P0) Authoritative registry for hardware-attested identity fragments and their environmental bounds. (Added: 2026-06-10)
+
+### Upcoming: [2026-06-11]
+- **Active Reasoning Interdiction (ARI) Hub**: (P0) Authoritative reasoning validator utilizing semantic hash-chaining to detect and block Logic Grafting. (Added: 2026-06-11)
+- **Hardware-Attested Attention Locking (HAAL)**: (P0) Core attention governance middleware utilizing hardware-bound headers to cryptographically lock mission-critical fragments. (Added: 2026-06-11)
+- **DTAI Bridge**: (P1) Performance-optimizing identity bridge supporting Distributed Trace-Aware Identity for sub-millisecond teammate verification. (Added: 2026-06-11)
+- **Reasoning Provenance Validator**: (P0) Security extension for the MAQ Hub mandating hardware-attested, hash-chained reasoning lineages for all high-risk actions. (Added: 2026-06-11)
