@@ -591,3 +591,9 @@
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
+
+### Upcoming: [2026-06-18]
+- [ ] **[P0] Attention Boundary Monitor**: (2026-06-18) Real-time visualization of LLM attention-tier status and splicing alerts.
+- [ ] **[P0] Teammate Integrity Token Viewer**: (2026-06-18) Dashboard for monitoring TIT issuance and hardware-attested non-repudiation logs.
+- [ ] **[P1] Predictive Pruning Log**: (2026-06-18) Visual tracker for context shards purged by the PSP adapter.
+- [ ] **[P0] Zero-Tier Attention Widget**: (2026-06-18) Status indicator for cryptographically locked mission-root intent fragments.
