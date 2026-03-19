@@ -1290,3 +1290,14 @@
 ### Priority Shifts
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for **Mission-Root Budget Continuity** (ARE v1.6 compliance).
 - **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving into the **Reasoning Provenance Validator** to counter swarm coordination breakdowns.
+
+## Evolution: [2026-06-12] Updates
+
+### Proposed Additions
+- **Shadow Coordination Interceptor (SCI)**: (P0) Advanced security middleware for the T2T Bridge that monitors non-primary channels (metadata, tags) for out-of-band subagent collusion.
+- **Mesh-Resident Attestation (MRA) Provider**: (P0) Core security service utilizing hardware-bound (TPM) primitives to generate and verify collision-resistant semantic hashes for the ARI Hub.
+- **Dynamic Attention Gating (DAG) Middleware**: (P0) Stability middleware that dynamically gates subagent reasoning fragments based on parent attention-utilization to prevent REE.
+
+### Priority Shifts
+- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MRA-compliant** hash-chaining to counter spoofing.
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Designated as the primary integration point for the **SCI** to neutralize shadow coordination.
