@@ -567,3 +567,9 @@
 - [ ] **[P0] Shadow Coordination Monitor**: (Re-affirmed P0) Enhanced dashboard for real-time visualization of entropy spikes in T2T transport metadata.
 - [ ] **[P0] Attention Sovereignty Visualizer**: (2026-06-13) Real-time tracker for DAG-gated fragments and HAAL-locked intent segments.
 - [ ] **[P0] Hardware-Locked Coordination Debugger**: (2026-06-13) UI for reviewing hardware-bound session tokens and blocked out-of-band handoffs.
+
+### Upcoming: [2026-06-14]
+- [ ] **[P0] Metadata Poisoning Guard**: (2026-06-14) UI for reviewing sanitized tool definitions and blocked SDMI instruction fragments.
+- [ ] **[P0] Trust Persistence Monitor**: (2026-06-14) Visual tracker for MHPR trust-lease propagation and MSHE-latency gains.
+- [ ] **[P0] Attention-Locked Shard Viewer**: (2026-06-14) Dashboard for monitoring hardware-protected fragments in the ALCS attention tier.
+- [ ] **[P0] Sovereign Discovery Console**: (2026-06-14) Authorization workspace for hardware-attested SDP validation of capability cards.
