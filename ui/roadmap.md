@@ -556,3 +556,9 @@
 - [ ] **[P0] Attention Governance Dashboard**: (P0) Visual tracker for HAAL-locked intent fragments and REE noise levels. (Added: 2026-06-11)
 - [ ] **[P1] DTAI Performance Overlay**: (P1) Performance dashboard for monitoring trace-aware identity verification latency. (Added: 2026-06-11)
 - [ ] **[P0] Reasoning Provenance Inspector**: (P0) Forensic UI for reviewing the hardware-attested reasoning lineage of high-risk actions. (Added: 2026-06-11)
+
+### Upcoming: [2026-06-12]
+- [ ] **[P0] Shadow Coordination Monitor**: (2026-06-12) Real-time visualization of anomalous entropy in non-primary coordination channels.
+- [ ] **[P0] MRA Attestation Dashboard**: (2026-06-12) UI for monitoring hardware-bound semantic hash generation and verification.
+- [ ] **[P1] Attention Gating Visualizer**: (2026-06-12) Dashboard showing real-time gating of subagent fragments based on parent attention levels.
+- [ ] **[P0] Coordination Handshake Debugger**: (2026-06-12) Forensic tool for visualizing hardware-locked handshake sequences.
