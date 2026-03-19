@@ -573,3 +573,9 @@
 - [ ] **[P0] Trust Persistence Monitor**: (2026-06-14) Visual tracker for MHPR trust-lease propagation and MSHE-latency gains.
 - [ ] **[P0] Attention-Locked Shard Viewer**: (2026-06-14) Dashboard for monitoring hardware-protected fragments in the ALCS attention tier.
 - [ ] **[P0] Sovereign Discovery Console**: (2026-06-14) Authorization workspace for hardware-attested SDP validation of capability cards.
+
+### Upcoming: [2026-06-15]
+- [ ] **[P0] Intent-Resumption Dashboard**: (2026-06-15) Visualizer for monitoring "Intent-Resumption Token" issuance and handoff latency.
+- [ ] **[P0] Side-Channel Timing Heatmap**: (2026-06-15) Real-time monitor of ASLM timing jitter and blocked shard-collision probes.
+- [ ] **[P1] Attention-Locked Telemetry Viewer**: (2026-06-15) Security UI for reviewing sanitized reasoning traces and attention-mapping redactions.
+- [ ] **[P0] WASM-Hook Safety Reporter**: (2026-06-15) UI for viewing behavioral profiling results for un-attested configuration hooks.

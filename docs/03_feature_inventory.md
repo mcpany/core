@@ -1324,3 +1324,15 @@
 ### Priority Shifts
 - **PNTD Discovery Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SMS** integration to counter metadata-based reasoning hijacking.
 - **Sovereign Mesh Identity (SMI) Relay**: (Re-affirmed P0) Evolving to act as the primary backend for the **Multi-Hop Persistence Relay (MHPR)**.
+
+## Evolution: [2026-06-15] Updates
+
+### Proposed Additions
+- **Intent-Resumption Gateway (IRG)**: (P0) Authoritative resumption broker implementing OpenClaw-compliant "Intent-Resumption Tokens" to eliminate cognitive stall during teammate rotation.
+- **Side-Channel Timing Mitigator (SCTM)**: (P0) Advanced security middleware for the ASLM that injects hardware-attested timing jitter to neutralize shard-collision timing attacks.
+- **Attention-Locked Telemetry Proxy**: (P1) Authoritative telemetry sanitizer for Gemini-compliant reasoning traces, ensuring attention-mapping privacy during RL feedback export.
+- **WASM-Hook Behavioral Profiler**: (P0) Mandatory extension for the SMS that performs sandboxed profiling of AI-generated configuration hooks to counter PR "Logic Bombs."
+
+### Priority Shifts
+- **Atomic Shard Lock-Manager (ASLM)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SCTM** integration to counter timing-based side-channel attacks.
+- **Structural Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving to support the new **WASM-Hook Behavioral Profiling** requirement.
