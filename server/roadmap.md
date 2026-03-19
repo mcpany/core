@@ -707,3 +707,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Recursive Integrity Verification (RIV) Provider**: (P0) Advanced security service facilitating lineage-aware proofs across multi-hop delegations. (Added: 2026-06-09)
 - **Context-Window Pinning (CWP) Middleware**: (P0) Attention-governance layer utilizing hardware-bound headers to protect mission-root anchors. (Added: 2026-06-09)
 - **Ephemeral Credential Manager (ECM)**: (P1) Lifecycle extension for the EPM that issues task-specific, mission-bound JWT tokens. (Added: 2026-06-09)
+
+### Upcoming: [2026-06-10]
+- **Layer-7 Semantic Inspection Hub (L7SIH)**: (P0) Advanced security middleware for the ISD Hub performing real-time, high-entropy semantic analysis of inter-teammate coordination. (Added: 2026-06-10)
+- **Environment Sovereignty Enforcer (ESE)**: (P0) Core security service for the EPM and LOWA providers mandating hardware-attested "Environment Scrubbing" to prevent ILPE exfiltration. (Added: 2026-06-10)
+- **Mission-Root Attestation Registry**: (P0) Authoritative registry for hardware-attested identity fragments and their environmental bounds. (Added: 2026-06-10)

@@ -1266,3 +1266,15 @@
 ### Priority Shifts
 - **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RIV** integration to support multi-hop mission-root sovereignty.
 - **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Designated as the primary infrastructure for **EMC-compliant** credential issuance.
+
+## Evolution: [2026-06-10] Updates
+
+### Proposed Additions
+- **Layer-7 Semantic Inspection Hub (L7SIH)**: (P0) Advanced security middleware for the ISD Hub that performs real-time, high-entropy semantic analysis of inter-teammate coordination to neutralize REE.
+- **Environment Sovereignty Enforcer (ESE)**: (P0) Core security service for the EPM and LOWA providers that mandates hardware-attested "Environment Scrubbing" to prevent ILPE exfiltration.
+- **Continuous Fragment-Integrity Attestation (CFIA) Provider**: (P1) Lifecycle management service for sharded meshes that provides cryptographically signed proofs of shard-level integrity to counter MRLB.
+- **Mission-Root Attestation Registry**: (P0) Authoritative registry for hardware-attested identity fragments and their environmental bounds, ensuring non-repudiable mission-root sovereignty.
+
+### Priority Shifts
+- **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **L7SIH** integration to counter high-entropy noise injection.
+- **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Evolving to act as the primary enforcement point for **ESE-compliant** environment scrubbing.
