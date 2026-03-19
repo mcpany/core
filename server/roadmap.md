@@ -753,3 +753,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+### Upcoming: [2026-06-18]
+- **Reason-Graph Integrity (RGI) Provider**: (P0) Authoritative graph arbitration service for merging parallel teammate reasoning traces without cognitive stall (Added: 2026-06-18).
+- **Mesh-Resident Policy Monitor (MRPM)**: (P0) Hardware-bound auditing service for mesh-resident synthesized policies (Added: 2026-06-18).
+- **Attention-Aware Gating (AAG) Middleware**: (P0) Cognitive stability middleware for the HAAL provider that prunes low-entropy "Attention-Baiting" noise (Added: 2026-06-18).
+- **Spectral Attention Guard**: (P0) Security extension for the SCTM injecting hardware-attested jitter into attention-locked fragment access (Added: 2026-06-18).

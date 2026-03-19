@@ -1360,3 +1360,15 @@
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Reason-Graph Integrity (RGI) Provider**: (P0) Authoritative graph arbitration service for merging parallel teammate reasoning traces without cognitive stall.
+- **Mesh-Resident Policy Monitor (MRPM)**: (P0) Hardware-bound auditing service for synthesized mesh policies, ensuring alignment with the mission-root intent.
+- **Attention-Aware Gating (AAG) Middleware**: (P0) Dynamic stability middleware for the HAAL provider that prunes low-entropy "Attention-Baiting" noise.
+- **Spectral Attention Guard**: (P0) Security extension for the SCTM injecting hardware-attested jitter to prevent attention-locked fragment probing.
+
+### Priority Shifts
+- **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **AAG** integration to counter attention-baiting.
+- **Side-Channel Timing Mitigator (SCTM)**: (Re-affirmed P0) Evolving to support the new **Spectral Attention Guard** requirement.

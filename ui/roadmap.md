@@ -591,3 +591,9 @@
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
+
+### Upcoming: [2026-06-18]
+- [ ] **[P0] Reason-Graph Visualizer**: (2026-06-18) Real-time auditing workspace for RGI conflict resolution and teammate graph merging.
+- [ ] **[P0] Mesh Policy Compliance Monitor**: (2026-06-18) Hardware-bound status indicator for synthesized mesh policy alignment.
+- [ ] **[P0] Attention Entropy Dashboard**: (2026-06-18) Cognitive stability UI for visualizing AAG-gated baiting noise and mission-root attention health.
+- [ ] **[P0] Spectral Attention Heatmap**: (2026-06-18) Security monitor for attention-locked jitter status and probing attempt alerts.
