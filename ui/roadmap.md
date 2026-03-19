@@ -545,3 +545,8 @@
 - **Mesh-Resident Lineage Tracker**: (P0) Visualizer for auditing hardware-attested reasoning chains across multi-hop delegations. (Added: 2026-06-09)
 - **Context Attention Monitor**: (P0) Real-time tracker for CWP-pinned fragments and context-flooding alerts. (Added: 2026-06-09)
 - **Ephemeral Credential Vault**: (P1) UI for managing task-specific JWTs and mission-bound credential lifetimes. (Added: 2026-06-09)
+
+### Upcoming: [2026-06-10]
+- [ ] **[P0] L7 Semantic Inspection Monitor**: (P0) Real-time visualization of high-entropy semantic validation events and REE neutralization. (Added: 2026-06-10)
+- [ ] **[P0] Environment Isolation Dashboard**: (P0) Visual tracker for hardware-attested environment scrubbing and metadata wipe events. (Added: 2026-06-10)
+- [ ] **[P0] Mission-Root Registry Viewer**: (P0) Authoritative UI for reviewing and auditing the hardware-attested Mission-Root Attestation Registry. (Added: 2026-06-10)
