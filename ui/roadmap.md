@@ -574,6 +574,12 @@
 - [ ] **[P0] Attention-Locked Shard Viewer**: (2026-06-14) Dashboard for monitoring hardware-protected fragments in the ALCS attention tier.
 - [ ] **[P0] Sovereign Discovery Console**: (2026-06-14) Authorization workspace for hardware-attested SDP validation of capability cards.
 
+### Upcoming: [2026-06-16]
+- [ ] **[P0] Entanglement Shard Monitor**: (2026-06-16) Real-time visualization of cryptographically entangled state fragments.
+- [ ] **[P0] Stylometric Mimicry Dashboard**: (2026-06-16) Security workspace for visualizing stylometric consistency alerts.
+- [ ] **[P1] Speculative Branching Visualizer**: (2026-06-16) Visual tracker for "Shadow Branches" and attention leakage alerts.
+- [ ] **[P0] MRKE Key Rotation Widget**: (2026-06-16) Status indicator for hardware-bound session key rotation.
+
 ### Upcoming: [2026-06-15]
 - [ ] **[P0] Intent-Resumption Dashboard**: (2026-06-15) Visualizer for monitoring "Intent-Resumption Token" issuance and handoff latency.
 - [ ] **[P0] Side-Channel Timing Heatmap**: (2026-06-15) Real-time monitor of ASLM timing jitter and blocked shard-collision probes.

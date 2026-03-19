@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-06-16] Updates
+
+### Proposed Additions
+- **Entangled State Broker (ESB)**: (P0) Authoritative coordination service for "Entanglement Shards" that are cryptographically bound to the mission-root intent.
+- **Stylometric Mimicry Mitigator (SMM)**: (P0) Security middleware that performs real-time stylometric analysis of inter-agent messages to detect reasoning-path shadowing.
+- **Speculative Branching Guard (SBG)**: (P1) Isolation service for un-executed reasoning paths that prevents speculative attention leakage.
+- **Mesh-Resident Key Exchange (MRKE) Provider**: (P0) Hardware-bound session key rotation service for sub-100ms inter-teammate coordination.
+
+### Priority Shifts
+- **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ESB-compliant** state entanglement.
+- **Stylometric Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving to support the new **Stylometric Mimicry** defense requirements.
+
 ## Evolution: [2026-06-08] Updates
 
 ### Proposed Additions

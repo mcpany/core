@@ -67,3 +67,10 @@ The Atomic Reasoning Integrity (ARI) Validator is needed to perform fragment-lev
 * Upgrading Section 4 to support RIV-aware consistency checks.
 * Mandatory requirement for ARI tokens to be merged into "Lineage-Aware Proofs" via the RIV Provider before shard commitment.
 **Security Impact:** Prevents "Logic Drift" in deep delegations by ensuring every fragment is cryptographically bound to the entire parentage of the reasoning chain.
+
+### Update: 2026-06-16 - Entangled State Sovereignty Integration
+**Context:** Today's research confirms that fragment-level semantic validation is insufficient if the underlying state transport can be tampered with between verification and ingestion.
+**Architecture Adjustment:**
+* Mandating that all ARI-attested fragments be committed to **Entanglement Shards** via the Entangled State Broker (ESB).
+* Introducing a "Late-Binding Integrity Check" where the recipient teammate re-verifies the hardware-attested entanglement signature before reasoning ingestion.
+**Security Impact:** Prevents "Time-of-Check to Time-of-Use" (TOCTOU) attacks on shared mailbox state by ensuring state fragments are cryptographically bound to the mission-root intent throughout their entire lifecycle.

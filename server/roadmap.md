@@ -736,6 +736,12 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Locked Context Sharding (ALCS)**: (P0) Hardware-protected pinning of mission-critical fragments to prevent noise-driven eviction. (Added: 2026-06-14)
 - **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative discovery gateway for hardware-attested tool capability card validation. (Added: 2026-06-14)
 
+### Upcoming: [2026-06-16]
+- **[P0] Entangled State Broker (ESB)**: Authoritative coordination for "Entanglement Shards" bound to mission-root intent. (Added: 2026-06-16)
+- **[P0] Stylometric Mimicry Mitigator (SMM)**: Real-time stylometric analysis of inter-agent messages to detect reasoning-path shadowing. (Added: 2026-06-16)
+- **[P1] Speculative Branching Guard (SBG)**: Isolation for un-executed reasoning paths to prevent speculative attention leakage. (Added: 2026-06-16)
+- **[P0] Mesh-Resident Key Exchange (MRKE) Provider**: Hardware-bound session key rotation for sub-100ms inter-teammate coordination. (Added: 2026-06-16)
+
 ### Upcoming: [2026-06-15]
 - **Intent-Resumption Gateway (IRG)**: (P0) Authoritative resumption broker implementing OpenClaw-compliant "Intent-Resumption Tokens" to eliminate cognitive stall during teammate rotation. (Added: 2026-06-15)
 - **Side-Channel Timing Mitigator (SCTM)**: (P0) Advanced security middleware for the ASLM that injects hardware-attested timing jitter to neutralize shard-collision timing attacks. (Added: 2026-06-15)
