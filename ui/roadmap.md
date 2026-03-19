@@ -574,6 +574,11 @@
 - [ ] **[P0] Attention-Locked Shard Viewer**: (2026-06-14) Dashboard for monitoring hardware-protected fragments in the ALCS attention tier.
 - [ ] **[P0] Sovereign Discovery Console**: (2026-06-14) Authorization workspace for hardware-attested SDP validation of capability cards.
 
+### Upcoming: [2026-06-18]
+- [ ] **[P0] Attention Sovereignty Monitor**: (2026-06-18) Visual tracking of real-time attention-utilization and hardware-locked intent fragments.
+- [ ] **[P0] Lock-Free Mesh Arbiter UI**: (2026-06-18) Dashboard for visualizing parallel task-claiming events and CRDT convergence.
+- [ ] **[P0] Shadow Coordination Alert Center**: (2026-06-18) Real-time monitoring of metadata-channel entropy and out-of-band collusion alerts.
+
 ### Upcoming: [2026-06-16]
 - [ ] **[P0] Entanglement Shard Monitor**: (2026-06-16) Real-time visualization of cryptographically entangled state fragments.
 - [ ] **[P0] Stylometric Mimicry Dashboard**: (2026-06-16) Security workspace for visualizing stylometric consistency alerts.

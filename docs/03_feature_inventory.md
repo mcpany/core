@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Hardware-Locked Attention Governance (HLAG) Provider**: (P0) Authoritative attention guard utilizing hardware-bound headers to protect mission-root anchors (REE defense).
+- **Lock-Free Mesh Coordination (LFMC) Hub**: (P0) Coordination service implementing CRDT-based task list synchronization for non-blocking teammate coordination.
+- **Shadow Coordination Interceptor (SCI)**: (P0) Security extension for the T2T Encryption Bridge that monitors non-primary channels for out-of-band collusion.
+- **Temporal Side-Channel Mitigator (TSCM)**: (P1) Advanced security middleware injecting hardware-attested timing jitter into lock responses (Spectral Reasoning defense).
+
+### Priority Shifts
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SCI** integration to counter shadow coordination.
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Expanded to support the new **LFMC-compliant** CRDT state synchronization.
+
 ## Evolution: [2026-06-16] Updates
 
 ### Proposed Additions

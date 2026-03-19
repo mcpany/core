@@ -736,6 +736,12 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Locked Context Sharding (ALCS)**: (P0) Hardware-protected pinning of mission-critical fragments to prevent noise-driven eviction. (Added: 2026-06-14)
 - **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative discovery gateway for hardware-attested tool capability card validation. (Added: 2026-06-14)
 
+### Upcoming: [2026-06-18]
+- **[P0] Hardware-Locked Attention Governance (HLAG) Provider**: Authoritative attention guard using hardware-bound headers for Mission-Root pinning (REE defense). (Added: 2026-06-18)
+- **[P0] Lock-Free Mesh Coordination (LFMC) Hub**: Coordination service implementing CRDT-based task list synchronization for non-blocking parallel teammates. (Added: 2026-06-18)
+- **[P0] Shadow Coordination Interceptor (SCI)**: Security middleware for the T2T Bridge monitoring transport metadata for out-of-band collusion. (Added: 2026-06-18)
+- **[P1] Temporal Side-Channel Mitigator (TSCM)**: Advanced security middleware injecting timing jitter into shard-level lock responses (Spectral Reasoning defense). (Added: 2026-06-18)
+
 ### Upcoming: [2026-06-16]
 - **[P0] Entangled State Broker (ESB)**: Authoritative coordination for "Entanglement Shards" bound to mission-root intent. (Added: 2026-06-16)
 - **[P0] Stylometric Mimicry Mitigator (SMM)**: Real-time stylometric analysis of inter-agent messages to detect reasoning-path shadowing. (Added: 2026-06-16)
