@@ -1360,3 +1360,15 @@
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Autonomous Capability Revocation (ACR) Hub**: (P0) High-speed revocation service integrated with AIA heartbeats to neutralize misaligned agents.
+- **Recursive Depth-Limit Enforcer (RDLE)**: (P0) Middleware mandating mission-root bound depth limits for task bidding and delegation to prevent shadow handoffs.
+- **Teammate-Aware Context Scrubber**: (P1) Advanced context sanitization service that preserves high-trust teammate fragments during state sharding.
+- **Reasoning-Path Watermarking Provider**: (P0) Core security service for cryptographically watermarking reasoning fragments with the mission-root identity.
+
+### Priority Shifts
+- **Active Intent Alignment (AIA) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ACR Hub** integration.
+- **Recursive Intent Delegation (RID) Validator**: (Re-affirmed P0) Designated as the primary enforcement layer for **RDLE-compliant** mission manifests.
