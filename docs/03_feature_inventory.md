@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-06-08] Updates
+
+### Proposed Additions
+- **Atomic Reasoning Integrity (ARI) Validator**: (P0) Advanced security middleware for the Mailbox Integrity Middleware that performs fragment-level semantic validation of shared teammate state.
+- **HAMM-Locked MLE Gateway**: (P0) Upgrade for the MLE Gateway to support "Hardware-Attested Mission Manifests," providing an immutable, hardware-locked boundary for tool discovery and execution.
+- **Temporal Decay Orchestrator**: (P1) Lifecycle management service for the Temporal Sovereignty Controller that handles "Graceful Mission Decay" signals and manages restricted agency transitions.
+- **Fragment-Level Sovereignty Attestation Provider**: (P0) Advanced security service mandating ARI-attestation for all A2A-compliant teammates to access shared shards.
+
+### Priority Shifts
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ARI** integration to counter fragment-level state-splicing.
+- **Mission-Locked Execution (MLE) Gateway**: (Re-affirmed P0) Designated as the primary enforcement point for **HAMM-compliant** mission manifests.
+
 ## Evolution: [2026-06-07] Updates
 
 ### Proposed Additions
