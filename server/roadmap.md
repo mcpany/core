@@ -702,3 +702,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **[P0] Capability Garbage Collection (CGC) Provider**: Authoritative security service for tracking capability lineage and enforcing immediate revocation upon sub-intent termination.
 - **[P0] HAIL v0.36.1 Lineage Provider**: Identity extension supporting hardware-attested intent lineage for non-repudiable mission-root attestation.
 - **[P0] MRLA Gateway**: Advanced A2A handshake gateway mandating proof of mission-root lineage before capability discovery.
+
+### Upcoming: [2026-06-09]
+- **Recursive Integrity Verification (RIV) Provider**: (P0) Advanced security service facilitating lineage-aware proofs across multi-hop delegations. (Added: 2026-06-09)
+- **Context-Window Pinning (CWP) Middleware**: (P0) Attention-governance layer utilizing hardware-bound headers to protect mission-root anchors. (Added: 2026-06-09)
+- **Ephemeral Credential Manager (ECM)**: (P1) Lifecycle extension for the EPM that issues task-specific, mission-bound JWT tokens. (Added: 2026-06-09)
