@@ -39,7 +39,7 @@ func TestLocalCommandTool_RubySyscallInjection(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool := NewLocalCommandTool(tool, service, callDef)
 
 	// Payload: syscall 20 (getpid)
 	// We avoid quotes to pass checkUnquotedInjection (which blocks ' and ").

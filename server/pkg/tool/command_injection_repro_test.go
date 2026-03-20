@@ -46,7 +46,7 @@ func TestLocalCommandTool_ShellInjection_ArgsBypass(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool := NewLocalCommandTool(tool, service, callDef)
 
 	// We attempt to pass a command with dangerous characters (space, semicolon) via 'args'
 	// 'echo hello; echo pwned'

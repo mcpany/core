@@ -61,7 +61,7 @@ func createTestScriptTool(command string) Tool {
 			}.Build(),
 		},
 	}.Build()
-	return NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
+	return NewLocalCommandTool(toolDef, service, callDef)
 }
 
 func stringPtr(s string) *string {

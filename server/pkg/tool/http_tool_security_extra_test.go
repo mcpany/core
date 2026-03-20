@@ -58,7 +58,7 @@ func TestHTTPTool_Security_PathTraversal(t *testing.T) {
 		Parameters: []*configv1.HttpParameterMapping{paramMapping},
 	}.Build()
 
-	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
 
 	testCases := []struct {
 		name      string
@@ -121,7 +121,7 @@ func TestHTTPTool_Security_SSRF_Host_Parsing(t *testing.T) {
 		Parameters: []*configv1.HttpParameterMapping{paramMapping},
 	}.Build()
 
-	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
 
 	inputs := json.RawMessage(`{"host": "localhost"}`)
 	req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -163,7 +163,7 @@ func TestHTTPTool_Security_SSRF_Scheme(t *testing.T) {
 		Parameters: []*configv1.HttpParameterMapping{paramMapping},
 	}.Build()
 
-	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
 
 	inputs := json.RawMessage(`{"url": "file:///etc/passwd"}`)
 	req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -221,7 +221,7 @@ func TestHTTPTool_Security_HeaderInjection(t *testing.T) {
 		Parameters: []*configv1.HttpParameterMapping{paramMapping},
 	}.Build()
 
-	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
 
 	// Attempt injection: "hello\r\nX-Injected: true"
 	injectionPayload := "hello\r\nX-Injected: true"

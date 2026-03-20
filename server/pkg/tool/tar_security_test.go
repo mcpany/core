@@ -41,7 +41,7 @@ func TestTarInjection_Vulnerability(t *testing.T) {
 		},
 	}.Build()
 
-	localToolVulnerable := NewLocalCommandTool(toolDef, service, callDefVulnerable, nil, "call-id")
+	localToolVulnerable := NewLocalCommandTool(toolDef, service, callDefVulnerable)
 
 	req := &ExecutionRequest{
 		ToolName: "tar-tool",

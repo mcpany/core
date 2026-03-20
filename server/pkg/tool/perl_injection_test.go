@@ -27,7 +27,7 @@ func TestLocalCommandTool_Perl_RCE(t *testing.T) {
 		},
 		Args: []string{"-e", "{{code}}"},
 	}.Build()
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool := NewLocalCommandTool(tool, service, callDef)
 
 	// Attempt RCE using qx// which uses safe characters
 	// print+qx/id/

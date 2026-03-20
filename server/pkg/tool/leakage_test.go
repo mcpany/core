@@ -50,7 +50,7 @@ func TestLocalCommandTool_Leakage(t *testing.T) {
 		Args: []string{"{{api_key}}"},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool := NewLocalCommandTool(tool, service, callDef)
 
 	secretVal := "SuperSecretValue123"
 	// JSON input

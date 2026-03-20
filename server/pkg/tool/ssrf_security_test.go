@@ -58,7 +58,7 @@ func TestLocalCommandTool_SSRF_Prevention(t *testing.T) {
 		Args: []string{"{{url}}"},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool := NewLocalCommandTool(tool, service, callDef)
 
 	testCases := []struct {
 		name      string

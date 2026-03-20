@@ -27,7 +27,7 @@ func TestLocalCommandTool_Perl_UnquotedArrayInjection(t *testing.T) {
 		},
 		Args: []string{"-e", "print {{msg}}"}, // Unquoted!
 	}.Build()
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id-perl-unquoted")
+	localTool := NewLocalCommandTool(tool, service, callDef)
 
 	// Attack payload: @INC - Prints include paths.
 	// This is allowed because checkUnquotedInjection does not block '@'.
@@ -72,7 +72,7 @@ func TestLocalCommandTool_Ruby_UnquotedVariableInjection(t *testing.T) {
 		},
 		Args: []string{"-e", "puts {{msg}}"}, // Unquoted
 	}.Build()
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id-ruby-unquoted")
+	localTool := NewLocalCommandTool(tool, service, callDef)
 
     payload := "@foo"
 
@@ -116,7 +116,7 @@ func TestLocalCommandTool_Perl_DoubleQuoteArrayInjection(t *testing.T) {
 		},
 		Args: []string{"-e", "print \"{{msg}}\""}, // Double Quoted
 	}.Build()
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id-perl-double")
+	localTool := NewLocalCommandTool(tool, service, callDef)
 
 	// Attack payload: @INC - Prints include paths in double quotes.
 	// Currently, allowed because checkNodePerlPhpInjection only blocks @{...}, not @var.
@@ -161,7 +161,7 @@ func TestLocalCommandTool_Ruby_DoubleQuoteInstanceInjection(t *testing.T) {
 		},
 		Args: []string{"-e", "puts \"{{msg}}\""},
 	}.Build()
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id-ruby-double")
+	localTool := NewLocalCommandTool(tool, service, callDef)
 
 	// Attack payload: #@foo - Interpolates instance variable.
 	// # is allowed in double quotes. @ is allowed in double quotes.

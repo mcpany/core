@@ -36,7 +36,7 @@ func TestInterpreterSecurity(t *testing.T) {
 			},
 		}).Build()
 
-		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
+		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef)
 
 		// Malicious input using Ruby interpolation
 		input := "#{system('echo injected')}"
@@ -76,7 +76,7 @@ func TestInterpreterSecurity(t *testing.T) {
 			},
 		}).Build()
 
-		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
+		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef)
 
 		// Input: {__import__("os").system("echo injected")}
 		input := `{__import__("os").system("echo injected")}`
@@ -116,7 +116,7 @@ func TestInterpreterSecurity(t *testing.T) {
 			},
 		}).Build()
 
-		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
+		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef)
 
 		input := `{__import__("os").system("echo injected")}`
 
@@ -155,7 +155,7 @@ func TestInterpreterSecurity(t *testing.T) {
             },
         }).Build()
 
-        tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
+        tool := NewLocalCommandTool(toolDef, serviceConfig, callDef)
 
         input := `{"foo": "bar"}` // Contains ", {, }
 
@@ -197,7 +197,7 @@ func TestInterpreterSecurity(t *testing.T) {
 			},
 		}).Build()
 
-		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
+		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef)
 
 		input := "${process.exit(1)}"
 
@@ -237,7 +237,7 @@ func TestInterpreterSecurity(t *testing.T) {
 			},
 		}).Build()
 
-		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
+		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef)
 
 		// Attempt full shell injection using ;
 		input := "; date"
@@ -279,7 +279,7 @@ func TestInterpreterSecurity(t *testing.T) {
 			},
 		}).Build()
 
-		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
+		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef)
 
 		payload := "system 'echo pwned'"
 		req := &ExecutionRequest{
@@ -319,7 +319,7 @@ func TestInterpreterSecurity(t *testing.T) {
 			},
 		}).Build()
 
-		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
+		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef)
 
 		payload := "print qx/echo pwned/"
 		req := &ExecutionRequest{

@@ -37,7 +37,7 @@ func TestBacktickInjection_Repro(t *testing.T) {
 		},
 	}.Build()
 
-	tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
+	tool := NewLocalCommandTool(toolDef, service, callDef)
 
 	req := &ExecutionRequest{
 		ToolName: "test",

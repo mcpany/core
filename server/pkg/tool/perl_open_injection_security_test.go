@@ -39,7 +39,7 @@ func TestPerlOpenInjection(t *testing.T) {
 	}.Build()
 
 	// Use LocalCommandTool to execute locally
-	tool := NewLocalCommandTool(toolProto, service, callDef, nil, "call-id")
+	tool := NewLocalCommandTool(toolProto, service, callDef)
 
 	// Payload: |echo PERL_RCE_SUCCESS
 	payload := "|echo PERL_RCE_SUCCESS"

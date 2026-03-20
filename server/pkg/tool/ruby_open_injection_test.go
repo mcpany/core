@@ -39,7 +39,7 @@ func TestRubyOpenInjection(t *testing.T) {
 		Name: strPtrRuby("ruby_open"),
 	}.Build()
 
-	tool := NewLocalCommandTool(toolProto, service, callDef, nil, "call-id")
+	tool := NewLocalCommandTool(toolProto, service, callDef)
 
 	// Payload: |echo RCE_SUCCESS
 	payload := "|echo RCE_SUCCESS"

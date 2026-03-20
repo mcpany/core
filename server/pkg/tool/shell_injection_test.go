@@ -61,7 +61,7 @@ func TestShellInjection_Regression(t *testing.T) {
 				}.Build(),
 			},
 		}.Build()
-		tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
+		tool := NewLocalCommandTool(toolDef, service, callDef)
 
 		req := &ExecutionRequest{
 			ToolName: "test",
@@ -88,5 +88,5 @@ func createTestCommandTool(command string) Tool {
 			}.Build(),
 		},
 	}.Build()
-	return NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
+	return NewLocalCommandTool(toolDef, service, callDef)
 }

@@ -52,7 +52,7 @@ func TestJQEnvLeakage(t *testing.T) {
 		InputSchema: inputSchema,
 	}.Build()
 
-	tool := NewLocalCommandTool(toolProto, service, callDef, nil, "test")
+	tool := NewLocalCommandTool(toolProto, service, callDef)
 
 	// Payload: env
 	payload := "env"

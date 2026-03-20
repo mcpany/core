@@ -40,7 +40,7 @@ func TestLocalCommandTool_Git_RCE_Repro(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool := NewLocalCommandTool(tool, service, callDef)
 
 	// The payload: sh -c echo PWNED
 	payload := "sh -c echo PWNED"
