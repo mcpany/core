@@ -29,18 +29,6 @@ import (
 // Side Effects:
 //   - Modifies the context to include authenticated user info.
 //
-// Summary: Executes AuthMiddleware operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
 //   - None.
 func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {

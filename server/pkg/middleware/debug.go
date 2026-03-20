@@ -26,18 +26,6 @@ import (
 // Side Effects:
 //   - None
 //
-// Summary: Executes DebugMiddleware operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
 //   - None.
 func DebugMiddleware() mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
