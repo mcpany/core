@@ -11,6 +11,17 @@
 - **Parallel Team Coordination Hub**: (Re-affirmed P0) Evolved to mandate "Consensus Integrity" validation for all parallel state merges.
 - **Isolated Named-Pipe Transport Middleware**: (Re-affirmed P0) Now elevated with the requirement for "Identity-Bound" socket attestation.
 
+## Evolution: [2026-05-14] Updates
+
+### Proposed Additions
+- **Consensus Integrity Monitor**: (P0) Authoritative reconciliation service for parallel agent teams that detects and resolves "Consensus Fragmentation" before tool execution.
+- **Identity-Bound Pipe Orchestrator**: (P0) Advanced transport middleware that cryptographically binds isolated named pipes to TPM-verified agent identities, neutralizing "Pipe-Splicing."
+- **Monologue Sanitization Middleware**: (P1) Semantic scanning service for shared agent monologues that detects and blocks "Reasoning Hijacking" and coercive instructions.
+
+### Priority Shifts
+- **Parallel Team Coordination Hub**: (Re-affirmed P0) Evolved to mandate "Consensus Integrity" validation for all parallel state merges.
+- **Isolated Named-Pipe Transport Middleware**: (Re-affirmed P0) Now elevated with the requirement for "Identity-Bound" socket attestation.
+
 ## Current Backlog (P0/P1)
 - **Policy Firewall**: Rego/CEL based hooking for tool calls.
 - **HITL Middleware**: Suspension protocol for user approval flows.

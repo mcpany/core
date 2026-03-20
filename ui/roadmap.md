@@ -358,6 +358,11 @@
 - [ ] **[P0] Identity-Bound Socket Monitor**: Security indicator for TPM-verified named pipe connections and "Pipe-Splicing" alerts. (Added: 2026-05-14)
 - [ ] **[P1] Monologue Sanitization Auditor**: UI for reviewing semantic scans of shared agent reasoning and blocked "Hijacking" instructions. (Added: 2026-05-14)
 
+#### Upcoming (2026-05-14 Evolution)
+- [ ] **[P0] Swarm Consensus Arbiter**: Real-time visualization of parallel agent branch reconciliation and "Consensus Barrier" status. (Added: 2026-05-14)
+- [ ] **[P0] Identity-Bound Socket Monitor**: Security indicator for TPM-verified named pipe connections and "Pipe-Splicing" alerts. (Added: 2026-05-14)
+- [ ] **[P1] Monologue Sanitization Auditor**: UI for reviewing semantic scans of shared agent reasoning and blocked "Hijacking" instructions. (Added: 2026-05-14)
+
 #### Upcoming (2026-05-13 Evolution)
 - [ ] **[P0] Loopback Security Monitor**: Real-time visualization of authenticated vs. blocked local port requests. (Added: 2026-05-13)
 - [ ] **[P0] Injection Shield Alert Center**: UI for reviewing and approving sanitized tool inputs and blocked injection attempts. (Added: 2026-05-13)
