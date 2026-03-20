@@ -356,10 +356,9 @@
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
 #### Upcoming (2026-05-15 Evolution)
-- [ ] **[P0] Parallel Intent Visualizer**: Enhanced Gantt-style chart showing real-time filesystem pins and sub-tree lock contention. (Added: 2026-05-15)
-- [ ] **[P0] Recursive Budget Monitor**: UI for tracking hierarchical token/compute consumption across subagent spawns. (Added: 2026-05-15)
-- [ ] **[P1] Negative Attestation Viewer**: Security dashboard for reviewing signed proofs of non-possession for high-risk capabilities. (Added: 2026-05-15)
-- [ ] **[P0] Multimodal Metadata Alert Center**: Real-time monitor for semantically sanitized structured metadata and "Context Smuggling" alerts. (Added: 2026-05-15)
+- [ ] **[P0] Parallel Intent Visualizer**: Real-time Gantt-style chart showing parallel sub-intent branches, sub-tree locks, and team execution pins. (Added: 2026-05-15)
+- [ ] **[P0] Recursive Budget Dashboard**: Visual tracker for hierarchical token and compute budgets across deep reasoning swarms (ARE v1.3 compliance). (Added: 2026-05-15)
+- [ ] **[P0] Multimodal Metadata Scanner Monitor**: Security UI for inspecting structured metadata (SVG/CSS) flagged for "Context Smuggling." (Added: 2026-05-15)
 
 #### Upcoming (2026-05-14 Evolution)
 - [ ] **[P0] Swarm Attack Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and SAAD neutralization events. (Added: 2026-05-14)

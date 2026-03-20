@@ -43,11 +43,11 @@ The emergence of "AI Swarm Attacks" (Hivenets) in 2026 has rendered traditional,
 * **Observability:** Swarm patterns and neutralization events are logged in the "Local Security Audit Dashboard."
 
 ## 7. Evolutionary Changelog
-* **[2026-05-14]:** Initial Document Creation.
+* **2026-05-14:** Initial Document Creation.
 
-### Update: [2026-05-15] - Supporting Team Execution Pinning
-**Context:** Today's market sync revealed the need for synchronized filesystem access in parallel swarms.
+### Update: 2026-05-15 - Adapting to Recursive Budgeting
+**Context:** Today's market sync revealed Gemini CLI's shift toward hierarchical reasoning budgets (ARE v1.3).
 **Architecture Adjustment:**
-*   Integrating with the Pinning Middleware to prioritize "Pinned" subagent requests.
-*   Implementing a "High-Contention" mode that throttles non-pinned teammates during critical write operations.
-**Security Impact:** Prevents state divergence and race conditions from being weaponized by rogue subagents to corrupt shared project state.
+* Integrating `Recursive Reasoning-Budget Broker` signals into the Rate Limiter's scoring engine.
+* Throttling thresholds are now inherited from the parent mission's aggregate budget rather than fixed per-agent limits.
+**Security Impact:** Prevents "Budget Siphoning" where a swarm of low-priority subagents exhausts the global mission token pool.

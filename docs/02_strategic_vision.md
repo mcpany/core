@@ -10,6 +10,8 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+---
+
 ## Strategic Evolution: [2026-05-15]
 ### Focus: Recursive Governance & Negative Trust Attestation
 **Context**: The introduction of "Team Execution Pinning" in Claude Code and "Negative Capability Attestation" (NCA) in OpenClaw marks a transition from simple boundary enforcement to "Recursive Governance." As swarms become deeper and more parallel, security must provide cryptographic guarantees of both presence and *absence* of capabilities, while ensuring state consistency across teammates.
@@ -312,6 +314,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
 
+---
 ---
 
 ## Strategic Evolution: [2026-03-09]
