@@ -129,25 +129,44 @@ fi
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
+    echo "==> Batch: mcpserver"
+    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 1 ./server/pkg/mcpserver/...
+
+    echo "==> Batch: upstream"
+    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 1 ./server/pkg/upstream/...
+
+    echo "==> Batch: tool"
+    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 1 ./server/pkg/tool/...
+
+    echo "==> Batch: core-logic (app, api, catalog, discovery)"
     "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 1 \
-        ./server/pkg/mcpserver/...
-    echo "    golangci-lint mcpserver OK."
+        ./server/pkg/app/... ./server/pkg/api/... ./server/pkg/catalog/... ./server/pkg/discovery/...
+
+    echo "==> Batch: infra (config, auth, service, storage, bus)"
     "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 1 \
-        ./server/pkg/upstream/...
-    echo "    golangci-lint upstream OK."
-    # Run on remaining pkgs in chunks to avoid OOM
+        ./server/pkg/config/... ./server/pkg/auth/... ./server/pkg/service/... ./server/pkg/storage/... ./server/pkg/bus/...
+
+    echo "==> Batch: middleware-utils (middleware, validation, util, logging)"
     "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 1 \
-        ./server/pkg/util/...
-    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 1 \
-        ./server/pkg/middleware/... ./server/pkg/validation/...
-    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 1 \
-        ./server/pkg/config/... ./server/pkg/auth/... ./server/pkg/service/...
-    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 1 \
-        ./server/pkg/api/... ./server/pkg/app/... ./server/pkg/catalog/...
-    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 1 \
-        ./server/pkg/tool/...
-    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 1 \
-        ./server/cmd/...
+        ./server/pkg/middleware/... ./server/pkg/validation/... ./server/pkg/util/... ./server/pkg/logging/...
+
+    echo "==> Batch: other-pkgs"
+    # Find all packages in pkg that haven't been run yet
+    # Exclude directories that only contain subdirectories and no Go files
+    PKGS=""
+    for d in $(find server/pkg -maxdepth 1 -type d | grep -vE "mcpserver|upstream|tool|app|api|catalog|discovery|config|auth|service|storage|bus|middleware|validation|util|logging|server/pkg$"); do
+        if ls "$d"/*.go >/dev/null 2>&1; then
+            PKGS="$PKGS $d/..."
+        fi
+    done
+    # shellcheck disable=SC2086
+    if [[ -n "$PKGS" ]]; then
+        "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 1 $PKGS
+    fi
+
+    echo "==> Batch: cmd & tests"
+    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 1 ./server/cmd/... ./server/tests/... ./server/examples/...
+
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
