@@ -94,8 +94,9 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/resources", a.handleResources())
 	mux.HandleFunc("/resources/read", a.handleResourceRead())
 
-	mux.HandleFunc("/secrets", a.handleSecrets(store))
-	mux.HandleFunc("/secrets/", a.handleSecretDetail(store))
+	rbacAdmin := middleware.NewRBACMiddleware().RequireRole("admin")
+	mux.Handle("/secrets", rbacAdmin(a.handleSecrets(store)))
+	mux.Handle("/secrets/", rbacAdmin(a.handleSecretDetail(store)))
 
 	mux.HandleFunc("/topology", a.handleTopology())
 	mux.HandleFunc("/dashboard/metrics", a.handleDashboardMetrics())
@@ -124,8 +125,8 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	// If I register `/skills/` for `handleSkillDetail`, I can't easily register `/skills/{name}/assets` separately without 1.22.
 	// Let's assume `handleSkillDetail` needs to handle sub-paths or I merge them.
 
-	mux.HandleFunc("/templates", a.handleTemplates())
-	mux.HandleFunc("/templates/", a.handleTemplateDetail())
+	mux.Handle("/templates", rbacAdmin(a.handleTemplates()))
+	mux.Handle("/templates/", rbacAdmin(a.handleTemplateDetail()))
 
 	mux.HandleFunc("/profiles", a.handleProfiles(store))
 	mux.HandleFunc("/profiles/", a.handleProfileDetail(store))
@@ -142,7 +143,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/users/", a.handleUserDetail(store))
 
 	// Credentials
-	mux.HandleFunc("/credentials", func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/credentials", rbacAdmin(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			a.listCredentialsHandler(w, r)
@@ -151,8 +152,8 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
-	})
-	mux.HandleFunc("/credentials/", func(w http.ResponseWriter, r *http.Request) {
+	})))
+	mux.Handle("/credentials/", rbacAdmin(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Manual dispatch for detail vs specific
 		// listCredentialsHandler handles GET /credentials (handled above)
 		// create is POST /credentials (handled below)
@@ -177,7 +178,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 			return
 		}
 		http.NotFound(w, r)
-	})
+	})))
 
 	// Auth (OAuth)
 	mux.Handle("/auth/login", loginRateLimiter.Handler(http.HandlerFunc(a.handleLogin)))
