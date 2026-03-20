@@ -22,6 +22,7 @@
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
 ### Upcoming: [2026-06-16]
 - **[P0] Entangled State Broker (ESB)**: Authoritative coordination for "Entanglement Shards" bound to mission-root intent. (Added: 2026-06-16)
 - **[P0] Stylometric Mimicry Mitigator (SMM)**: Real-time stylometric analysis of inter-agent messages to detect reasoning-path shadowing. (Added: 2026-06-16)
