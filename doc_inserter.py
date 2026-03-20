@@ -16,7 +16,6 @@ def expand_name(name, kind):
     elif kind == "const":
         return f"Constant value defining {' '.join(lower_words).lower()}."
 
-    # Function or method
     verb = lower_words[0].lower()
     rest = " ".join(lower_words[1:])
 
@@ -62,21 +61,17 @@ def process_file(filepath):
     with open(filepath, 'r') as f:
         content = f.read()
 
-    # Regex patterns
-    # Find exported functions
     func_pattern = re.compile(r'^(func\s+(?:\([^\)]+\)\s+)?([A-Z][a-zA-Z0-9_]*)\s*\([^)]*\)\s*(?:\([^)]*\)\s*)?\{)', re.MULTILINE)
     type_pattern = re.compile(r'^(type\s+([A-Z][a-zA-Z0-9_]*)\s+(?:struct|interface)\s*\{)', re.MULTILINE)
 
     lines = content.split('\n')
 
-    # We will build a new file content line by line to handle insertions safely
     out_lines = []
 
     i = 0
     while i < len(lines):
         line = lines[i]
 
-        # Check for function
         func_match = re.match(r'^func\s+(?:\([^\)]+\)\s+)?([A-Z][a-zA-Z0-9_]*)\s*\(', line)
         type_match = re.match(r'^type\s+([A-Z][a-zA-Z0-9_]*)\s+(struct|interface)', line)
         var_match = re.match(r'^(?:var|const)\s+(?:\(\s*)?([A-Z][a-zA-Z0-9_]*)\s*=', line)
@@ -92,7 +87,6 @@ def process_file(filepath):
                 name = var_match.group(1)
                 kind = line.split()[0]
 
-            # Check if there is already a comment block directly above
             has_doc = False
             has_summary = False
             comment_start = i
@@ -104,30 +98,22 @@ def process_file(filepath):
                     if "Summary:" in lines[j]:
                         has_summary = True
                 elif lines[j].strip() == "":
-                    continue # allow blank lines between comment and declaration? typically not in Go, but just in case
+                    continue
                 else:
                     break
 
             if not has_summary:
                 doc_lines = build_doc(name, kind).split('\n')
-                # If there's an existing comment but no summary, we append the structured part to it.
                 if has_doc:
-                    # Append structured part after the existing comment
-                    structured_part = doc_lines[1:] # Skip the first line which is just "// Name does something."
-                    # We need to insert this right before `i`
-                    lines_to_insert = structured_part
-                    # Actually wait, out_lines already contains the existing comments.
-                    # We just append lines_to_insert to out_lines before appending the current line
-                    for dl in lines_to_insert:
+                    structured_part = doc_lines[1:]
+                    for dl in structured_part:
                         if dl: out_lines.append(dl)
                 else:
-                    # Insert full doc block
                     for dl in doc_lines:
                         if dl: out_lines.append(dl)
 
         out_lines.append(line)
 
-        # Simple interface method check (inside interface)
         if type_match and type_match.group(2) == 'interface':
             in_interface = True
 
@@ -153,7 +139,6 @@ def process_file(filepath):
                 has_doc = lines[i-1].strip().startswith("//")
 
                 if has_doc:
-                    # insert before current line
                     for dl in structured_part:
                         if dl: out_lines.insert(-1, "\t" + dl)
                 else:
@@ -165,7 +150,6 @@ def process_file(filepath):
     with open(filepath, 'w') as f:
         f.write('\n'.join(out_lines))
 
-# Process specific directories
 for root, _, files in os.walk('server'):
     if 'vendor' in root or 'build' in root or 'tools' in root:
         continue
