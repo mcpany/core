@@ -4,14 +4,22 @@
 // Package terraform provides a Terraform provider skeleton.
 package terraform
 
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
+)
+
 // ResourceMCPServer represents the configuration schema for an MCP Server resource
 // This would map to hashicorp/terraform-plugin-sdk in a real provider.
 //
 // Summary: Represents a ResourceMCPServer.
 type ResourceMCPServer struct {
-	Name    string
-	Port    int
-	Enabled bool
+	Name    string `json:"name"`
+	Port    int    `json:"port"`
+	Enabled bool   `json:"enabled"`
 }
 
 // Schema returns the Terraform schema definition (Mock). Returns the result.
@@ -90,8 +98,24 @@ func Schema() map[string]interface{} {
 //
 // Side Effects:
 //   - None.
-func Create(_ *ResourceMCPServer) error {
-	// Simulate API call to provision resources
+func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) error {
+	payload, err := json.Marshal(resource)
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequestWithContext(ctx, "POST", serverURL+"/api/v1/servers", bytes.NewBuffer(payload))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("failed to create server: status %d", resp.StatusCode)
+	}
 	return nil
 }
 
@@ -123,10 +147,25 @@ func Create(_ *ResourceMCPServer) error {
 //
 // Side Effects:
 //   - None.
-func Read(name string) (*ResourceMCPServer, error) {
-	return &ResourceMCPServer{
-		Name:    name,
-		Port:    8080,
-		Enabled: true,
-	}, nil
+func Read(ctx context.Context, serverURL string, name string) (*ResourceMCPServer, error) {
+	req, err := http.NewRequestWithContext(ctx, "GET", serverURL+"/api/v1/servers/"+name, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, nil // not found
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to read server: status %d", resp.StatusCode)
+	}
+	var res ResourceMCPServer
+	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
+		return nil, err
+	}
+	return &res, nil
 }
