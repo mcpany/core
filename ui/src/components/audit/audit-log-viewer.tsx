@@ -25,9 +25,18 @@ import { format } from "date-fns";
 import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
-import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
-import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
+import { JsonView } from "@/components/ui/json-view";
+
+const parseJsonIfNeeded = (data: any) => {
+    if (typeof data === 'string') {
+        try {
+            return JSON.parse(data);
+        } catch {
+            return data;
+        }
+    }
+    return data;
+}
 
 interface AuditLogEntry {
     timestamp: string;
@@ -48,7 +57,6 @@ interface AuditLogEntry {
  * @returns The rendered AuditLogViewer component.
  */
 export function AuditLogViewer() {
-    SyntaxHighlighter.registerLanguage('json', json);
     const [logs, setLogs] = useState<AuditLogEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [exporting, setExporting] = useState(false);
@@ -121,15 +129,6 @@ export function AuditLogViewer() {
         }
     };
 
-    const formatJson = (jsonStr: string) => {
-        if (!jsonStr) return null;
-        try {
-            const obj = JSON.parse(jsonStr);
-            return JSON.stringify(obj, null, 2);
-        } catch (e) {
-            return jsonStr;
-        }
-    };
 
     return (
         <div className="space-y-4 h-full flex flex-col">
@@ -310,26 +309,22 @@ export function AuditLogViewer() {
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Arguments</h4>
                                 <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vs2015}
-                                        customStyle={{ margin: 0, fontSize: '12px' }}
-                                    >
-                                        {formatJson(selectedLog.arguments) || "{}"}
-                                    </SyntaxHighlighter>
+                                    <JsonView
+                                        data={parseJsonIfNeeded(selectedLog.arguments) || {}}
+                                        maxHeight={300}
+                                        smartTable={true}
+                                    />
                                 </div>
                             </div>
 
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Result</h4>
                                 <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vs2015}
-                                        customStyle={{ margin: 0, fontSize: '12px', maxHeight: '300px' }}
-                                    >
-                                        {formatJson(selectedLog.result) || (selectedLog.error ? "null" : "{}")}
-                                    </SyntaxHighlighter>
+                                    <JsonView
+                                        data={parseJsonIfNeeded(selectedLog.result) || (selectedLog.error ? null : {})}
+                                        maxHeight={300}
+                                        smartTable={true}
+                                    />
                                 </div>
                             </div>
                         </div>
