@@ -1729,8 +1729,6 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 
 	callID := "call-" + toolDef.GetName()
 	toolDef.SetCallId(callID)
-	// inline to prevent golangci-lint from seeing it as unused (since the nested builder causes typecheck false positives outside bazel)
-	methodPtr := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
@@ -1741,7 +1739,10 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 				callID: configv1.HttpCallDefinition_builder{
 					Id:           &callID,
 					EndpointPath: &endpointPath,
-					Method:       &methodPtr,
+					Method: func() *configv1.HttpCallDefinition_HttpMethod {
+						m := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
+						return &m
+					}(),
 					Parameters:   params,
 				}.Build(),
 			},
@@ -2069,7 +2070,6 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 	toolDef := configv1.ToolDefinition_builder{Name: &operationID}.Build()
 	callID := "call-" + toolDef.GetName()
 	toolDef.SetCallId(callID)
-	methodPtr := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
@@ -2080,7 +2080,10 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 				callID: configv1.HttpCallDefinition_builder{
 					Id:           &callID,
 					EndpointPath: &endpointPath,
-					Method:       &methodPtr,
+					Method: func() *configv1.HttpCallDefinition_HttpMethod {
+						m := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
+						return &m
+					}(),
 				}.Build(),
 			},
 		}.Build(),
