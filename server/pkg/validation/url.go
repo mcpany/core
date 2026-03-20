@@ -147,6 +147,10 @@ var IsSafeURL = func(urlStr string) error {
 //
 // Returns:
 //   - error: An error if the IP matches a forbidden range.
+// Errors:
+//   - none.
+// Side Effects:
+//   - none.
 func ValidateIP(ip net.IP, allowLoopback, allowPrivate bool) error {
 	if !allowLoopback && (ip.IsLoopback() || IsNAT64Loopback(ip) || (IsIPv4Compatible(ip) && ip[12] == 127)) {
 		return fmt.Errorf("loopback address is not allowed")

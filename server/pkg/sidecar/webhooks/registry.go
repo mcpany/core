@@ -49,6 +49,8 @@ type Registry struct {
 //
 // Side Effects:
 //   - Allocates memory for the registry map.
+// Errors:
+//   - none.
 func NewRegistry() *Registry {
 	return &Registry{
 		hooks: make(map[string]Handler),
@@ -70,6 +72,8 @@ func NewRegistry() *Registry {
 //
 // Side Effects:
 //   - Updates the registry map.
+// Errors:
+//   - none.
 func (r *Registry) Register(name string, handler Handler) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -89,6 +93,8 @@ func (r *Registry) Register(name string, handler Handler) {
 //
 // Side Effects:
 //   - None.
+// Errors:
+//   - none.
 func (r *Registry) Get(name string) (Handler, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

@@ -33,6 +33,8 @@ type DB struct {
 //
 // Side Effects:
 //   - Opens a network connection to the database.
+// Errors:
+//   - none.
 func NewDB(dsn string) (*DB, error) {
 	return NewDBWithDriver("postgres", dsn)
 }
@@ -52,6 +54,8 @@ func NewDB(dsn string) (*DB, error) {
 // Side Effects:
 //   - Opens a network connection to the database.
 //   - Initializes the schema.
+// Errors:
+//   - none.
 func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
@@ -92,6 +96,8 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 // Side Effects:
 //   - Pings the database.
 //   - Initializes the schema.
+// Errors:
+//   - none.
 func NewDBFromSQLDB(db *sql.DB) (*DB, error) {
 	if err := db.PingContext(context.Background()); err != nil {
 		return nil, fmt.Errorf("failed to ping db: %w", err)

@@ -314,6 +314,10 @@ type statsCacheEntry struct {
 //
 // Returns:
 //   - (*Application): The initialized application.
+// Errors:
+//   - none.
+// Side Effects:
+//   - none.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -350,6 +354,8 @@ func NewApplication() *Application {
 //   - Loads configuration.
 //
 //nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
+// Errors:
+//   - none.
 func (a *Application) Run(opts RunOptions) error {
 	log := logging.GetLogger()
 	fs, err := setup(opts.Fs)
@@ -931,6 +937,8 @@ func (a *Application) Run(opts RunOptions) error {
 // Side Effects:
 //   - Reads configuration files.
 //   - Updates global settings, user auth, profiles, and service registry.
+// Errors:
+//   - none.
 func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	start := time.Now()
@@ -1363,6 +1371,10 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 //
 // Returns:
 //   - (error): nil if startup completes successfully, or a context error if canceled.
+// Errors:
+//   - none.
+// Side Effects:
+//   - none.
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1493,6 +1505,10 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
+// Errors:
+//   - none.
+// Side Effects:
+//   - none.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -1514,6 +1530,10 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
+// Errors:
+//   - none.
+// Side Effects:
+//   - none.
 func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,
@@ -2548,6 +2568,10 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 //
 // Returns:
 //   - (http.Handler): The wrapped handler.
+// Errors:
+//   - none.
+// Side Effects:
+//   - none.
 func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), middleware.HTTPRequestContextKey, r)

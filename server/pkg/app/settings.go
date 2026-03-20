@@ -32,6 +32,10 @@ type GlobalSettingsManager struct {
 //
 // Returns:
 //   - *GlobalSettingsManager: The initialized manager.
+// Errors:
+//   - none.
+// Side Effects:
+//   - none.
 func NewGlobalSettingsManager(apiKey string, allowedIPs []string, allowedOrigins []string) *GlobalSettingsManager {
 	m := &GlobalSettingsManager{}
 	m.apiKey.Store(apiKey)
@@ -56,6 +60,10 @@ func NewGlobalSettingsManager(apiKey string, allowedIPs []string, allowedOrigins
 // Returns:
 //
 //	None.
+// Errors:
+//   - none.
+// Side Effects:
+//   - none.
 func (m *GlobalSettingsManager) Update(settings *config_v1.GlobalSettings, explicitAPIKey string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -90,6 +98,10 @@ func (m *GlobalSettingsManager) Update(settings *config_v1.GlobalSettings, expli
 //
 // Returns:
 //   - string: The API key.
+// Errors:
+//   - none.
+// Side Effects:
+//   - none.
 func (m *GlobalSettingsManager) GetAPIKey() string {
 	val := m.apiKey.Load()
 	if val == nil {
@@ -104,6 +116,10 @@ func (m *GlobalSettingsManager) GetAPIKey() string {
 //
 // Returns:
 //   - []string: A list of allowed IP CIDRs or addresses.
+// Errors:
+//   - none.
+// Side Effects:
+//   - none.
 func (m *GlobalSettingsManager) GetAllowedIPs() []string {
 	val := m.allowedIPs.Load()
 	if val == nil {
@@ -118,6 +134,10 @@ func (m *GlobalSettingsManager) GetAllowedIPs() []string {
 //
 // Returns:
 //   - []string: A list of allowed origins.
+// Errors:
+//   - none.
+// Side Effects:
+//   - none.
 func (m *GlobalSettingsManager) GetAllowedOrigins() []string {
 	val := m.allowedOrigins.Load()
 	if val == nil {

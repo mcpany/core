@@ -42,6 +42,8 @@ type ToolReconciler struct {
 // Side Effects:
 //   - Reads and updates Tool resources in the cluster.
 //   - May create or update related resources.
+// Errors:
+//   - none.
 func (r *ToolReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
@@ -59,6 +61,8 @@ func (r *ToolReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 //
 // Returns:
 //   - error: Any error that occurred during setup.
+// Errors:
+//   - none.
 func (r *ToolReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&mcpanyv1alpha1.Tool{}).

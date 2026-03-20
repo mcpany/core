@@ -26,13 +26,21 @@ def process_file_go(filepath):
                     break
 
             doc_str = '\n'.join(doc_lines)
+
             if 'Summary:' not in doc_str:
                 missing.append(f"{filepath} : {name}")
                 continue
 
             if pattern == func_pattern:
-                if 'Returns:' not in doc_str and 'Errors:' not in doc_str and 'Side Effects:' not in doc_str:
-                    missing.append(f"{filepath} : {name} (Missing structural components)")
+                if 'Returns:' not in doc_str:
+                    missing.append(f"{filepath} : {name} (Missing Returns)")
+                elif 'Errors:' not in doc_str:
+                    missing.append(f"{filepath} : {name} (Missing Errors)")
+                elif 'Side Effects:' not in doc_str:
+                    missing.append(f"{filepath} : {name} (Missing Side Effects)")
+                elif 'Parameters:' not in doc_str and len(match.group(0).split('(')[-1].split(')')[0].strip()) > 0 and not match.group(0).endswith('()'): # if it takes arguments
+                    # Let's ignore parameters check for a sec and see what else is missing
+                    pass
 
     return missing
 
@@ -48,3 +56,5 @@ for root, dirs, files in os.walk('.'):
             all_missing.extend(missing)
 
 print(f"Total missing: {len(all_missing)}")
+for m in all_missing[:20]:
+    print(m)

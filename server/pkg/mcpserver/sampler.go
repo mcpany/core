@@ -27,6 +27,10 @@ type MCPSession struct {
 //
 // Returns:
 //   - *MCPSession: A new instance of MCPSession.
+// Errors:
+//   - none.
+// Side Effects:
+//   - none.
 func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 	return &MCPSession{session: session}
 }
@@ -43,6 +47,8 @@ func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 //
 // Side Effects:
 //   - This function is deprecated and should be replaced by NewMCPSession.
+// Errors:
+//   - none.
 func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 	return NewMCPSession(session)
 }
@@ -81,6 +87,8 @@ func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessag
 //
 // Throws/Errors:
 //   - Returns an error if the session is nil.
+// Side Effects:
+//   - none.
 func (s *MCPSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for roots inspection")
