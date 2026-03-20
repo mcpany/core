@@ -34,16 +34,16 @@ func getDockerCommand(t *testing.T) []string {
 }
 
 func TestDockerCompose(t *testing.T) {
-	// t.Skip("Skipping heavy integration test TestDockerCompose (flaky in CI/env due to header/port issues)")
-	// t.SkipNow()
+	// 	// t.Skip("Skipping heavy integration test TestDockerCompose (flaky in CI/env due to header/port issues)")
+	// 	// t.SkipNow()
 	if !integration.IsDockerSocketAccessible() {
-		t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
+	// 		t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
 	}
 	if !commandExists("docker") {
-		t.Skip("docker command not found, skipping TestDockerCompose.")
+	// 		t.Skip("docker command not found, skipping TestDockerCompose.")
 	}
 	if os.Getenv("CI") != "" {
-		t.Skip("Skipping docker compose test in CI due to missing images in parallel runner")
+	// 		t.Skip("Skipping docker compose test in CI due to missing images in parallel runner")
 	}
 
 	// t.Parallel() removed to avoid port conflicts with hardcoded 50050 in docker-compose.yml
@@ -51,7 +51,7 @@ func TestDockerCompose(t *testing.T) {
 	rootDir := integration.ProjectRoot(t)
 	dockerComposeFile := filepath.Join(rootDir, "examples/docker-compose-demo/docker-compose.yml")
 	if _, err := os.Stat(dockerComposeFile); err != nil {
-		t.Skipf("docker-compose.yml not found at %s, skipping TestDockerCompose", dockerComposeFile)
+	// 		t.Skipf("docker-compose.yml not found at %s, skipping TestDockerCompose", dockerComposeFile)
 	}
 
 	// Load the Bazel-built server image when running under Bazel.
@@ -182,7 +182,7 @@ func TestDockerCompose(t *testing.T) {
 }
 
 func TestHelmChart(t *testing.T) {
-	// // t.Skip("Skipping heavy integration test TestHelmChart")
+	// 	// // t.Skip("Skipping heavy integration test TestHelmChart")
 	// Add build/env/bin to PATH to find helm installed by make
 	rootDir := integration.ProjectRoot(t)
 	buildBin := filepath.Join(rootDir, "../build/env/bin")
@@ -191,13 +191,13 @@ func TestHelmChart(t *testing.T) {
 	defer os.Setenv("PATH", oldPath)
 
 	if !commandExists("helm") {
-		t.Skip("helm command not found, skipping TestHelmChart.")
+	// 		t.Skip("helm command not found, skipping TestHelmChart.")
 	}
 	t.Parallel()
 
 	helmChartPath := filepath.Join(integration.ProjectRoot(t), "../k8s", "helm", "mcpany")
 	if _, err := os.Stat(helmChartPath); err != nil {
-		t.Skipf("Helm chart directory not found at %s (not in Bazel sandbox or missing from workspace), skipping TestHelmChart.", helmChartPath)
+	// 		t.Skipf("Helm chart directory not found at %s (not in Bazel sandbox or missing from workspace), skipping TestHelmChart.", helmChartPath)
 	}
 
 	// 1. Lint the chart
@@ -229,12 +229,12 @@ func TestK8sFullStack(t *testing.T) {
 	defer os.Setenv("PATH", oldPath)
 
 	if !commandExists("helm") {
-		t.Skip("helm command not found, skipping TestK8sFullStack.")
+	// 		t.Skip("helm command not found, skipping TestK8sFullStack.")
 	}
 
 	helmChartPath := filepath.Join(rootDir, "../k8s", "helm", "mcpany")
 	if _, err := os.Stat(helmChartPath); err != nil {
-		t.Skipf("Helm chart directory not found at %s, skipping TestK8sFullStack.", helmChartPath)
+	// 		t.Skipf("Helm chart directory not found at %s, skipping TestK8sFullStack.", helmChartPath)
 	}
 
 	t.Parallel()
