@@ -14,6 +14,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/encoding/protojson"
 )
@@ -27,6 +28,7 @@ type SeedRequest struct {
 	ProfilesRaw    []json.RawMessage `json:"profiles"`
 	UsersRaw       []json.RawMessage `json:"users"`
 	TemplatesRaw   []json.RawMessage `json:"service_templates"`
+	AuditLogsRaw   []json.RawMessage `json:"audit_logs"`
 }
 
 // handleDebugSeed creates a handler to seed the database with data.
@@ -265,5 +267,18 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 			return fmt.Errorf("failed to save service template %s: %w", t.GetId(), err)
 		}
 	}
+
+	if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
+		for _, raw := range req.AuditLogsRaw {
+			var entry audit.Entry
+			if err := json.Unmarshal(raw, &entry); err != nil {
+				return fmt.Errorf("invalid json for audit log")
+			}
+			if err := a.standardMiddlewares.Audit.Write(ctx, entry); err != nil {
+				return fmt.Errorf("failed to save audit log: %w", err)
+			}
+		}
+	}
+
 	return nil
 }
