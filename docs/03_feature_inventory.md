@@ -1360,3 +1360,14 @@
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Mission-Root Continuity Provider (MRCP)**: (P0) Session continuity service utilizing hardware-bound (TPM) tokens to persist mission-root sovereignty across environment transitions.
+- **Semantic Heartbeat Validator (SHV)**: (P0) High-frequency behavioral attestation middleware mandating sub-500ms alignment checks for high-trust teammates.
+- **Jitter-Adaptive Sharding (JAS) Controller**: (P0) Performance-optimizing security service that dynamically adjusts timing jitter based on cross-correlated probing frequency.
+
+### Priority Shifts
+- **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Cross-Shard Correlation (CSC)** to counter CVE-2026-70002.
+- **Mission-Locked Execution (MLE) Gateway**: (Re-affirmed P0) Evolving to support **MRCP-compliant** session persistence for long-running mission branches.

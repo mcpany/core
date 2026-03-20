@@ -60,3 +60,7 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
     * **Context:** Today's market sync revealed that hardware-bound entangled shards can leak state fragments via cache-timing side-channels.
     * **Architecture Adjustment:** Introducing **Temporal Shard Jitter (TSJ) Injection** in Section 4. The ESB will now inject hardware-attested timing jitter into state synchronization for non-primary mission-root requests.
     * **Security Impact:** Mitigates the risk of subagents mapping mission-root constraints via high-frequency latency monitoring.
+* **2026-06-18:** **Mitigating Collusive De-jittering (CVE-2026-70002).**
+    * **Context:** Today's market sync revealed that multiple subagents can collude to "de-jitter" a sharded mesh by comparing their respective latency timings.
+    * **Architecture Adjustment:** Upgrading TSJ Injection to include **Cross-Shard Correlation (CSC)** and the **Jitter-Adaptive Sharding (JAS) Controller**. Jitter patterns are now behaviorally correlated across all mission shards to prevent multi-point probing.
+    * **Security Impact:** Neutralizes multi-agent timing side-channels and strengthens the isolation of sharded meshes.

@@ -673,6 +673,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Atomic Shard Lock-Manager**: Kernel-level lock manager for granular context streaming. (Added: 2026-06-03)
 *   **[P1] Zero-Latency Shard Prefetcher**: Speculative context loading based on real-time intent analysis. (Added: 2026-06-03)
 
+#### Upcoming (2026-06-18 Evolution)
+*   **[P0] Mission-Root Continuity Provider (MRCP)**: Session continuity service utilizing hardware-bound (TPM) tokens to persist sovereignty across environment transitions. (Added: 2026-06-18)
+*   **[P0] Semantic Heartbeat Validator (SHV)**: High-frequency behavioral attestation middleware mandating sub-500ms alignment checks for high-trust teammates. (Added: 2026-06-18)
+*   **[P0] Jitter-Adaptive Sharding (JAS)**: Performance-optimizing security controller that dynamically adjusts timing jitter based on cross-correlated probing frequency. (Added: 2026-06-18)
+
 ### Upcoming: [2026-06-08]
 - **Atomic Reasoning Integrity (ARI) Validator**: (P0) Advanced security middleware for fragment-level semantic validation of shared teammate state. (Added: 2026-06-08)
 - **HAMM-Locked MLE Gateway**: (P0) Upgrade for the MLE Gateway to support "Hardware-Attested Mission Manifests" (Added: 2026-06-08).
