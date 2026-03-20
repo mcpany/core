@@ -144,44 +144,44 @@ func TestTool_MCPTool_Method(t *testing.T) {
 		assert.Equal(t, "service.webrtc-tool", mcpTool.Name)
 	})
 
-    // Test CallableTool.MCPTool() (via BaseTool)
+	// Test CallableTool.MCPTool() (via BaseTool)
 	t.Run("CallableTool", func(t *testing.T) {
-        toolDef := configv1.ToolDefinition_builder{
-            Name: proto.String("callable-tool"),
-            ServiceId: proto.String("service"),
-        }.Build()
-        ct, err := NewCallableTool(
-            toolDef,
-            configv1.UpstreamServiceConfig_builder{}.Build(),
-            nil, // Callable
-            nil,
-            nil,
-        )
-        assert.NoError(t, err)
+		toolDef := configv1.ToolDefinition_builder{
+			Name:      proto.String("callable-tool"),
+			ServiceId: proto.String("service"),
+		}.Build()
+		ct, err := NewCallableTool(
+			toolDef,
+			configv1.UpstreamServiceConfig_builder{}.Build(),
+			nil, // Callable
+			nil,
+			nil,
+		)
+		assert.NoError(t, err)
 
-        mcpTool := ct.MCPTool()
-        assert.NotNil(t, mcpTool)
-        assert.Equal(t, "service.callable-tool", mcpTool.Name)
-    })
+		mcpTool := ct.MCPTool()
+		assert.NotNil(t, mcpTool)
+		assert.Equal(t, "service.callable-tool", mcpTool.Name)
+	})
 
-    // Test WebsocketTool.MCPTool()
-    t.Run("WebsocketTool", func(t *testing.T) {
-        toolDef := pb.Tool_builder{
-            Name:      proto.String("websocket-tool"),
-            ServiceId: proto.String("service"),
-        }.Build()
-        wst := NewWebsocketTool(
-            toolDef,
-            nil,
-            "service-id",
-            nil,
-            configv1.WebsocketCallDefinition_builder{}.Build(),
-        )
+	// Test WebsocketTool.MCPTool()
+	t.Run("WebsocketTool", func(t *testing.T) {
+		toolDef := pb.Tool_builder{
+			Name:      proto.String("websocket-tool"),
+			ServiceId: proto.String("service"),
+		}.Build()
+		wst := NewWebsocketTool(
+			toolDef,
+			nil,
+			"service-id",
+			nil,
+			configv1.WebsocketCallDefinition_builder{}.Build(),
+		)
 
-        mcpTool := wst.MCPTool()
-        assert.NotNil(t, mcpTool)
-        assert.Equal(t, "service.websocket-tool", mcpTool.Name)
-    })
+		mcpTool := wst.MCPTool()
+		assert.NotNil(t, mcpTool)
+		assert.Equal(t, "service.websocket-tool", mcpTool.Name)
+	})
 }
 
 func TestTool_GetCacheConfig(t *testing.T) {
@@ -228,43 +228,43 @@ func TestTool_GetCacheConfig(t *testing.T) {
 		cacheCfg := configv1.CacheConfig_builder{IsEnabled: proto.Bool(true)}.Build()
 		// Note: CommandTool (remote) vs LocalCommandTool
 		// NewCommandTool returns Tool interface.
-	wt, err := NewWebrtcTool(
-		pb.Tool_builder{Name: proto.String("tool"), UnderlyingMethodFqn: proto.String("WEBRTC http://127.0.0.1")}.Build(),
-		nil, // No pool -> triggers executeWithoutPool
-		"s",
-		nil,
-		configv1.WebrtcCallDefinition_builder{}.Build(),
-	)
-	assert.NoError(t, err)
+		wt, err := NewWebrtcTool(
+			pb.Tool_builder{Name: proto.String("tool"), UnderlyingMethodFqn: proto.String("WEBRTC http://127.0.0.1")}.Build(),
+			nil, // No pool -> triggers executeWithoutPool
+			"s",
+			nil,
+			configv1.WebrtcCallDefinition_builder{}.Build(),
+		)
+		assert.NoError(t, err)
 
-	// Test Close (no pool)
-	assert.NoError(t, wt.Close())
+		// Test Close (no pool)
+		assert.NoError(t, wt.Close())
 
-	// Trigger Execute -> executeWithoutPool
-	// This will try to create connection and fail or hang?
-	// It calls newPeerConnection (succeeds with disabled STUN)
-	// Then executeWithPeerConnection -> unmarshal input -> ... -> http request
-	// We pass invalid input JSON to fail early in executeWithPeerConnection,
-	// verifying that executeWithoutPool was called and called executeWithPeerConnection.
+		// Trigger Execute -> executeWithoutPool
+		// This will try to create connection and fail or hang?
+		// It calls newPeerConnection (succeeds with disabled STUN)
+		// Then executeWithPeerConnection -> unmarshal input -> ... -> http request
+		// We pass invalid input JSON to fail early in executeWithPeerConnection,
+		// verifying that executeWithoutPool was called and called executeWithPeerConnection.
 
-	req := &ExecutionRequest{
-		ToolName:   "tool",
-		ToolInputs: []byte("invalid json"),
-	}
+		req := &ExecutionRequest{
+			ToolName:   "tool",
+			ToolInputs: []byte("invalid json"),
+		}
 
-	_, err = wt.Execute(context.Background(), req)
-	assert.Error(t, err)
-	// executeWithPeerConnection returns "failed to unmarshal tool inputs"
-	assert.Contains(t, err.Error(), "failed to unmarshal tool inputs")
+		_, err = wt.Execute(context.Background(), req)
+		assert.Error(t, err)
+		// executeWithPeerConnection returns "failed to unmarshal tool inputs"
+		assert.Contains(t, err.Error(), "failed to unmarshal tool inputs")
 
-	lct := NewLocalCommandTool(
-		pb.Tool_builder{}.Build(),
-		configv1.CommandLineUpstreamService_builder{}.Build(),
-		configv1.CommandLineCallDefinition_builder{Cache: cacheCfg}.Build(),
-		nil,
-		"",
-	)
-	assert.Equal(t, cacheCfg, lct.GetCacheConfig())
+		lct := NewLocalCommandTool(
+			pb.Tool_builder{}.Build(),
+			configv1.CommandLineUpstreamService_builder{}.Build(),
+			configv1.CommandLineCallDefinition_builder{Cache: cacheCfg}.Build(),
+			nil,
+			"",
+		)
+		assert.Equal(t, cacheCfg, lct.GetCacheConfig())
 	})
 
 	t.Run("WebrtcTool", func(t *testing.T) {

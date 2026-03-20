@@ -17,7 +17,7 @@ func TestEnvInjection_Repro(t *testing.T) {
 	cmd := "env"
 	tool := createEnvCommandTool(cmd)
 	req := &ExecutionRequest{
-		ToolName: "test",
+		ToolName:   "test",
 		ToolInputs: []byte(`{"input": "LD_PRELOAD=/tmp/evil.so"}`),
 	}
 

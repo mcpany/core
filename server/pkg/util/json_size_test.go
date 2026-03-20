@@ -67,7 +67,9 @@ func TestEstimateJSONSize(t *testing.T) {
 			// Allow some margin of error for whitespace or float formatting differences
 			// But for simple types it should be exact or very close
 			diff := got - want
-			if diff < 0 { diff = -diff }
+			if diff < 0 {
+				diff = -diff
+			}
 
 			// We accept up to 10% difference or 5 bytes (for small objects)
 			if diff > 5 && float64(diff)/float64(want) > 0.1 {
@@ -96,11 +98,11 @@ func TestEstimateJSONSizeCycles(t *testing.T) {
 
 func BenchmarkEstimateJSONSize(b *testing.B) {
 	v := map[string]interface{}{
-		"id": "12345",
-		"data": make([]string, 1000),
+		"id":    "12345",
+		"data":  make([]string, 1000),
 		"items": make([]map[string]int, 100),
 		"nested": map[string]interface{}{
-			"name": "test",
+			"name":  "test",
 			"value": 123.456,
 		},
 	}
@@ -119,11 +121,11 @@ func BenchmarkEstimateJSONSize(b *testing.B) {
 
 func BenchmarkJSONMarshal(b *testing.B) {
 	v := map[string]interface{}{
-		"id": "12345",
-		"data": make([]string, 1000),
+		"id":    "12345",
+		"data":  make([]string, 1000),
 		"items": make([]map[string]int, 100),
 		"nested": map[string]interface{}{
-			"name": "test",
+			"name":  "test",
 			"value": 123.456,
 		},
 	}
@@ -177,12 +179,12 @@ func TestEstimateJSONSizeEmptyValues(t *testing.T) {
 
 		// Map using reflection
 		{"reflect_map", map[int]string{1: "a", 2: "b"}, 17}, // estimateReflectMap
-		{"reflect_map_empty", map[int]string{}, 2}, // estimateReflectMap empty
-		{"reflect_map_nil", (map[int]string)(nil), 4}, // estimateReflectMap nil
+		{"reflect_map_empty", map[int]string{}, 2},          // estimateReflectMap empty
+		{"reflect_map_nil", (map[int]string)(nil), 4},       // estimateReflectMap nil
 
 		// Slice using reflection
-		{"reflect_slice", []int{1, 2, 3}, 7}, // estimateReflectSlice
-		{"reflect_slice_empty", []int{}, 2}, // estimateReflectSlice empty
+		{"reflect_slice", []int{1, 2, 3}, 7},   // estimateReflectSlice
+		{"reflect_slice_empty", []int{}, 2},    // estimateReflectSlice empty
 		{"reflect_slice_nil", ([]int)(nil), 4}, // estimateReflectSlice nil
 
 		// Interface using reflection
@@ -217,10 +219,10 @@ func TestEstimateJSONSizeEmptyValues(t *testing.T) {
 }
 
 func TestEstimateJSONSizeVisitedPool(t *testing.T) {
-    // Force reuse of the sync.Pool by calling concurrently or just multiple times
-    for i := 0; i < 100; i++ {
-        EstimateJSONSize(map[string]int{"a": 1})
-    }
+	// Force reuse of the sync.Pool by calling concurrently or just multiple times
+	for i := 0; i < 100; i++ {
+		EstimateJSONSize(map[string]int{"a": 1})
+	}
 }
 func TestEstimateJSONSizeVisitedPoolConcurrent(t *testing.T) {
 	// Let's use multiple goroutines to cause the pool to allocate multiple maps
@@ -248,21 +250,45 @@ func TestEstimateJSONSizeRemainingBranches(t *testing.T) {
 		{"struct_anon", struct{ X int }{1}},
 
 		// isEmptyValue edge cases
-		{"struct_zero_int8", struct{ V int8 `json:"v,omitempty"` }{0}},
-		{"struct_zero_int16", struct{ V int16 `json:"v,omitempty"` }{0}},
-		{"struct_zero_int32", struct{ V int32 `json:"v,omitempty"` }{0}},
-		{"struct_zero_int64", struct{ V int64 `json:"v,omitempty"` }{0}},
+		{"struct_zero_int8", struct {
+			V int8 `json:"v,omitempty"`
+		}{0}},
+		{"struct_zero_int16", struct {
+			V int16 `json:"v,omitempty"`
+		}{0}},
+		{"struct_zero_int32", struct {
+			V int32 `json:"v,omitempty"`
+		}{0}},
+		{"struct_zero_int64", struct {
+			V int64 `json:"v,omitempty"`
+		}{0}},
 
-		{"struct_zero_uint8", struct{ V uint8 `json:"v,omitempty"` }{0}},
-		{"struct_zero_uint16", struct{ V uint16 `json:"v,omitempty"` }{0}},
-		{"struct_zero_uint32", struct{ V uint32 `json:"v,omitempty"` }{0}},
-		{"struct_zero_uint64", struct{ V uint64 `json:"v,omitempty"` }{0}},
-		{"struct_zero_uintptr", struct{ V uintptr `json:"v,omitempty"` }{0}},
+		{"struct_zero_uint8", struct {
+			V uint8 `json:"v,omitempty"`
+		}{0}},
+		{"struct_zero_uint16", struct {
+			V uint16 `json:"v,omitempty"`
+		}{0}},
+		{"struct_zero_uint32", struct {
+			V uint32 `json:"v,omitempty"`
+		}{0}},
+		{"struct_zero_uint64", struct {
+			V uint64 `json:"v,omitempty"`
+		}{0}},
+		{"struct_zero_uintptr", struct {
+			V uintptr `json:"v,omitempty"`
+		}{0}},
 
-		{"struct_zero_float64", struct{ V float64 `json:"v,omitempty"` }{0}},
+		{"struct_zero_float64", struct {
+			V float64 `json:"v,omitempty"`
+		}{0}},
 
-		{"struct_empty_array", struct{ V [0]int `json:"v,omitempty"` }{[0]int{}}},
-		{"struct_empty_map", struct{ V map[int]int `json:"v,omitempty"` }{map[int]int{}}},
+		{"struct_empty_array", struct {
+			V [0]int `json:"v,omitempty"`
+		}{[0]int{}}},
+		{"struct_empty_map", struct {
+			V map[int]int `json:"v,omitempty"`
+		}{map[int]int{}}},
 
 		// Uint size checks
 		{"uint_9", uint(9)},
@@ -318,13 +344,21 @@ func TestEstimateJSONSizeEmptyValueEdgeCases(t *testing.T) {
 		v    interface{}
 	}{
 		// Pointers
-		{"struct_nil_ptr_bool", struct{ P *bool `json:"p,omitempty"` }{nil}},
+		{"struct_nil_ptr_bool", struct {
+			P *bool `json:"p,omitempty"`
+		}{nil}},
 		// Arrays
-		{"struct_empty_array_bool", struct{ A [0]bool `json:"a,omitempty"` }{[0]bool{}}},
+		{"struct_empty_array_bool", struct {
+			A [0]bool `json:"a,omitempty"`
+		}{[0]bool{}}},
 		// Maps
-		{"struct_empty_map_bool", struct{ M map[string]bool `json:"m,omitempty"` }{map[string]bool{}}},
+		{"struct_empty_map_bool", struct {
+			M map[string]bool `json:"m,omitempty"`
+		}{map[string]bool{}}},
 		// Slices
-		{"struct_empty_slice_bool", struct{ S []bool `json:"s,omitempty"` }{[]bool{}}},
+		{"struct_empty_slice_bool", struct {
+			S []bool `json:"s,omitempty"`
+		}{[]bool{}}},
 	}
 
 	for _, tt := range tests {
@@ -338,14 +372,14 @@ func TestEstimateJSONSizeEmptyValueEdgeCases(t *testing.T) {
 }
 
 func TestEstimateReflectRemaining(t *testing.T) {
-    // estimateReflect defaults
-    type MyString string
-    v := MyString("hello")
-    EstimateJSONSize(v) // Should hit the default case in estimateReflect
+	// estimateReflect defaults
+	type MyString string
+	v := MyString("hello")
+	EstimateJSONSize(v) // Should hit the default case in estimateReflect
 
-    // Test slice cycle properly
-    type RecurseSlice []interface{}
-    s := make(RecurseSlice, 1)
-    s[0] = s
-    EstimateJSONSize(s)
+	// Test slice cycle properly
+	type RecurseSlice []interface{}
+	s := make(RecurseSlice, 1)
+	s[0] = s
+	EstimateJSONSize(s)
 }

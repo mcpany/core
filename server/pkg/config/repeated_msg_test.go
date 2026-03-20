@@ -46,10 +46,10 @@ func TestEnvVarRepeatedMessage(t *testing.T) {
 			name:     "Malformed JSON Array (Fallback to CSV)",
 			envValue: `[{"name": "service3"`, // Invalid JSON
 			verify: func(t *testing.T, cfg *configv1.McpAnyServerConfig) {
-                // Should fall back to CSV processing.
-                // The value `[{"name": "service3"` will be treated as a string and appended.
-                // While this results in an invalid config structure (string instead of message),
-                // we mainly want to ensure it doesn't crash the parser.
+				// Should fall back to CSV processing.
+				// The value `[{"name": "service3"` will be treated as a string and appended.
+				// While this results in an invalid config structure (string instead of message),
+				// we mainly want to ensure it doesn't crash the parser.
 			},
 		},
 	}
@@ -62,12 +62,12 @@ func TestEnvVarRepeatedMessage(t *testing.T) {
 			store := config.NewFileStore(fs, []string{"/minimal.yaml"})
 			cfg, err := store.Load(context.Background())
 
-            if tt.name == "Malformed JSON Array (Fallback to CSV)" {
-                assert.Error(t, err)
-            } else {
-                require.NoError(t, err)
-                tt.verify(t, cfg)
-            }
+			if tt.name == "Malformed JSON Array (Fallback to CSV)" {
+				assert.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				tt.verify(t, cfg)
+			}
 		})
 	}
 }
@@ -84,7 +84,7 @@ func TestEnvVarRepeatedMessageCSVWithJSON(t *testing.T) {
 	cfg, err := store.Load(context.Background())
 	require.NoError(t, err)
 
-    require.Len(t, cfg.GetUpstreamServices(), 2)
-    assert.Equal(t, "s1", cfg.GetUpstreamServices()[0].GetName())
-    assert.Equal(t, "s2", cfg.GetUpstreamServices()[1].GetName())
+	require.Len(t, cfg.GetUpstreamServices(), 2)
+	assert.Equal(t, "s1", cfg.GetUpstreamServices()[0].GetName())
+	assert.Equal(t, "s2", cfg.GetUpstreamServices()[1].GetName())
 }

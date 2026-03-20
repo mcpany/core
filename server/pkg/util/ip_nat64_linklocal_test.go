@@ -33,7 +33,7 @@ func TestIsPrivateIP_NAT64_Loopback(t *testing.T) {
 
 func TestIsPrivateNetworkIP_NAT64_LinkLocal_Behavior(t *testing.T) {
 	// Documenting that IsPrivateNetworkIP currently excludes NAT64 LinkLocal,
-    // consistent with "It does NOT include loopback or link-local addresses."
+	// consistent with "It does NOT include loopback or link-local addresses."
 	ip := net.ParseIP("64:ff9b::a9fe:a9fe")
 	assert.False(t, IsPrivateNetworkIP(ip), "IsPrivateNetworkIP should return false for link-local (even if NAT64)")
 }

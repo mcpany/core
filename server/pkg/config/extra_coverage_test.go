@@ -59,7 +59,7 @@ func TestLoadServices_InvalidBinary(t *testing.T) {
 
 // TestStore_SkipValidation_Logic verifies that SetSkipValidation works.
 func TestStore_SkipValidation_Logic(t *testing.T) {
-    // This tests the plumbing of SetSkipValidation from FileStore to yamlEngine.
+	// This tests the plumbing of SetSkipValidation from FileStore to yamlEngine.
 	fs := afero.NewMemMapFs()
 	configContent := `
 global_settings:
@@ -71,35 +71,35 @@ global_settings:
 	store := NewFileStore(fs, []string{"/config.yaml"})
 	store.SetSkipValidation(true)
 
-    cfg, err := store.Load(context.Background())
-    require.NoError(t, err)
-    assert.Equal(t, "127.0.0.1:9090", cfg.GetGlobalSettings().GetMcpListenAddress())
+	cfg, err := store.Load(context.Background())
+	require.NoError(t, err)
+	assert.Equal(t, "127.0.0.1:9090", cfg.GetGlobalSettings().GetMcpListenAddress())
 }
 
 // TestLoadResolvedConfig_Empty verifies LoadResolvedConfig when store returns empty.
 func TestLoadResolvedConfig_Empty(t *testing.T) {
-    fs := afero.NewMemMapFs()
-    // Empty file
-    err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
-    require.NoError(t, err)
+	fs := afero.NewMemMapFs()
+	// Empty file
+	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	require.NoError(t, err)
 
-    store := NewFileStore(fs, []string{"/config.yaml"})
-    cfg, err := LoadResolvedConfig(context.Background(), store)
-    // Should fail with "configuration sources provided but loaded configuration is empty"
-    assert.Error(t, err)
-    assert.Nil(t, cfg)
-    assert.Contains(t, err.Error(), "configuration sources provided but loaded configuration is empty")
+	store := NewFileStore(fs, []string{"/config.yaml"})
+	cfg, err := LoadResolvedConfig(context.Background(), store)
+	// Should fail with "configuration sources provided but loaded configuration is empty"
+	assert.Error(t, err)
+	assert.Nil(t, cfg)
+	assert.Contains(t, err.Error(), "configuration sources provided but loaded configuration is empty")
 }
 
 // TestLoadResolvedConfig_NoSources verifies default config when no sources.
 func TestLoadResolvedConfig_NoSources(t *testing.T) {
-    store := NewFileStore(afero.NewMemMapFs(), []string{})
-    cfg, err := LoadResolvedConfig(context.Background(), store)
-    require.NoError(t, err)
-    assert.NotNil(t, cfg)
-    // Should have default user
-    assert.NotEmpty(t, cfg.GetUsers())
-    assert.Equal(t, "default", cfg.GetUsers()[0].GetId())
+	store := NewFileStore(afero.NewMemMapFs(), []string{})
+	cfg, err := LoadResolvedConfig(context.Background(), store)
+	require.NoError(t, err)
+	assert.NotNil(t, cfg)
+	// Should have default user
+	assert.NotEmpty(t, cfg.GetUsers())
+	assert.Equal(t, "default", cfg.GetUsers()[0].GetId())
 }
 
 // TestLoadServices_ActionableError covers handling of ActionableError in LoadServices.
@@ -191,7 +191,6 @@ func TestValidate_DuplicateUser(t *testing.T) {
 	}
 	assert.True(t, found, "Expected duplicate user id error")
 }
-
 
 func TestUpstreamServiceManager_LoadFromURL_Success(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

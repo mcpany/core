@@ -42,7 +42,7 @@ func TestInterpreterSecurity(t *testing.T) {
 		input := "#{system('echo injected')}"
 
 		req := &ExecutionRequest{
-			ToolName: "ruby_tool",
+			ToolName:   "ruby_tool",
 			ToolInputs: []byte(fmt.Sprintf(`{"msg": "%s"}`, input)),
 			Arguments: map[string]interface{}{
 				"msg": input,
@@ -82,7 +82,7 @@ func TestInterpreterSecurity(t *testing.T) {
 		input := `{__import__("os").system("echo injected")}`
 
 		req := &ExecutionRequest{
-			ToolName: "python_tool",
+			ToolName:   "python_tool",
 			ToolInputs: []byte(fmt.Sprintf(`{"msg": %q}`, input)),
 			Arguments: map[string]interface{}{
 				"msg": input,
@@ -95,8 +95,8 @@ func TestInterpreterSecurity(t *testing.T) {
 		assert.Contains(t, err.Error(), "python f-string injection detected", "Should detect python f-string injection")
 	})
 
-    // 2b. Python Raw F-String Injection (fr'...')
-    t.Run("Python_RawFString_Injection", func(t *testing.T) {
+	// 2b. Python Raw F-String Injection (fr'...')
+	t.Run("Python_RawFString_Injection", func(t *testing.T) {
 		toolDef := (&pb.Tool_builder{
 			Name: proto.String("python_tool"),
 		}).Build()
@@ -121,7 +121,7 @@ func TestInterpreterSecurity(t *testing.T) {
 		input := `{__import__("os").system("echo injected")}`
 
 		req := &ExecutionRequest{
-			ToolName: "python_tool",
+			ToolName:   "python_tool",
 			ToolInputs: []byte(fmt.Sprintf(`{"msg": %q}`, input)),
 			Arguments: map[string]interface{}{
 				"msg": input,
@@ -134,46 +134,46 @@ func TestInterpreterSecurity(t *testing.T) {
 		assert.Contains(t, err.Error(), "python f-string injection detected", "Should detect python raw f-string injection")
 	})
 
-    // 3. Python Valid JSON input (Should be allowed)
-    t.Run("Python_Valid_JSON", func(t *testing.T) {
-        toolDef := (&pb.Tool_builder{
-            Name: proto.String("python_json"),
-        }).Build()
+	// 3. Python Valid JSON input (Should be allowed)
+	t.Run("Python_Valid_JSON", func(t *testing.T) {
+		toolDef := (&pb.Tool_builder{
+			Name: proto.String("python_json"),
+		}).Build()
 		cmd := "python3"
 		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
 			Command: &cmd,
 		}).Build()
 
-        callDef := (&configv1.CommandLineCallDefinition_builder{
-            Args: []string{"process.py", "'{{msg}}'"},
-            Parameters: []*configv1.CommandLineParameterMapping{
+		callDef := (&configv1.CommandLineCallDefinition_builder{
+			Args: []string{"process.py", "'{{msg}}'"},
+			Parameters: []*configv1.CommandLineParameterMapping{
 				(&configv1.CommandLineParameterMapping_builder{
 					Schema: (&configv1.ParameterSchema_builder{
 						Name: proto.String("msg"),
 					}).Build(),
 				}).Build(),
-            },
-        }).Build()
+			},
+		}).Build()
 
-        tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
+		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
 
-        input := `{"foo": "bar"}` // Contains ", {, }
+		input := `{"foo": "bar"}` // Contains ", {, }
 
-        req := &ExecutionRequest{
-            ToolName: "python_json",
-            ToolInputs: []byte(fmt.Sprintf(`{"msg": %q}`, input)),
-            Arguments: map[string]interface{}{
-                "msg": input,
-            },
-        }
+		req := &ExecutionRequest{
+			ToolName:   "python_json",
+			ToolInputs: []byte(fmt.Sprintf(`{"msg": %q}`, input)),
+			Arguments: map[string]interface{}{
+				"msg": input,
+			},
+		}
 
-        _, err := tool.Execute(context.Background(), req)
+		_, err := tool.Execute(context.Background(), req)
 
-        // We expect checks to PASS. Execution might fail (process.py missing), but not "injection detected".
-        if err != nil {
-             assert.NotContains(t, err.Error(), "injection detected", "Valid JSON should not be flagged as injection")
-        }
-    })
+		// We expect checks to PASS. Execution might fail (process.py missing), but not "injection detected".
+		if err != nil {
+			assert.NotContains(t, err.Error(), "injection detected", "Valid JSON should not be flagged as injection")
+		}
+	})
 
 	// 4. JS Template Literal Injection
 	t.Run("JS_Template_Injection", func(t *testing.T) {
@@ -202,7 +202,7 @@ func TestInterpreterSecurity(t *testing.T) {
 		input := "${process.exit(1)}"
 
 		req := &ExecutionRequest{
-			ToolName: "node_tool",
+			ToolName:   "node_tool",
 			ToolInputs: []byte(fmt.Sprintf(`{"msg": %q}`, input)),
 			Arguments: map[string]interface{}{
 				"msg": input,
@@ -243,7 +243,7 @@ func TestInterpreterSecurity(t *testing.T) {
 		input := "; date"
 
 		req := &ExecutionRequest{
-			ToolName: "bash_tool",
+			ToolName:   "bash_tool",
 			ToolInputs: []byte(fmt.Sprintf(`{"msg": %q}`, input)),
 			Arguments: map[string]interface{}{
 				"msg": input,
@@ -283,7 +283,7 @@ func TestInterpreterSecurity(t *testing.T) {
 
 		payload := "system 'echo pwned'"
 		req := &ExecutionRequest{
-			ToolName: "ruby_sys_tool",
+			ToolName:   "ruby_sys_tool",
 			ToolInputs: []byte(fmt.Sprintf(`{"code": %q}`, payload)),
 			Arguments: map[string]interface{}{
 				"code": payload,
@@ -323,7 +323,7 @@ func TestInterpreterSecurity(t *testing.T) {
 
 		payload := "print qx/echo pwned/"
 		req := &ExecutionRequest{
-			ToolName: "perl_qx_tool",
+			ToolName:   "perl_qx_tool",
 			ToolInputs: []byte(fmt.Sprintf(`{"code": %q}`, payload)),
 			Arguments: map[string]interface{}{
 				"code": payload,

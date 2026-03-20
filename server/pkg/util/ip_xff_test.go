@@ -11,9 +11,9 @@ import (
 
 func TestGetClientIP_XFF_Validation(t *testing.T) {
 	tests := []struct {
-		name       string
-		xff        string
-		expected   string
+		name     string
+		xff      string
+		expected string
 	}{
 		{
 			name:     "XFF with brackets",
