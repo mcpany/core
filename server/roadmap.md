@@ -11,6 +11,12 @@
 
 ### Status: Active Development
 
+#### Upcoming (2026-06-07 Evolution)
+*   **[P0] Recursive Mission Attestation (RMA) Provider**: Authoritative hardware-attested mission token issuer for recursive sub-missions. (Added: 2026-06-07)
+*   **[P0] Context-Aware Shard Isolation (CASI) Middleware**: Semantic isolation of mailbox shards to prevent cross-teammate state pollution. (Added: 2026-06-07)
+*   **[P1] CFIB Auction Bridge**: Orchestration bridge for cross-framework intent bidding between Gemini HAIL and OpenClaw SRM. (Added: 2026-06-07)
+*   **[P0] Mission-Receipt Logging Service**: Cryptographic audit trail for mission receipts to prevent shadow delegations. (Added: 2026-06-07)
+
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
@@ -689,9 +695,3 @@ These features represent the next logical steps for the product, focusing on Ent
 - **[P0] Capability Garbage Collection (CGC) Provider**: Authoritative security service for tracking capability lineage and enforcing immediate revocation upon sub-intent termination.
 - **[P0] HAIL v0.36.1 Lineage Provider**: Identity extension supporting hardware-attested intent lineage for non-repudiable mission-root attestation.
 - **[P0] MRLA Gateway**: Advanced A2A handshake gateway mandating proof of mission-root lineage before capability discovery.
-
-### Upcoming: [2026-06-07]
-- **Recursive Mission Attestation (RMA) Provider**: (P0) Authoritative hardware-attested mission token issuer for recursive sub-missions.
-- **Context-Aware Shard Isolation (CASI) Middleware**: (P0) Semantic isolation of mailbox shards to prevent cross-teammate state pollution.
-- **CFIB Auction Bridge**: (P1) Orchestration bridge for cross-framework intent bidding between Gemini HAIL and OpenClaw SRM.
-- **Mission-Receipt Logging Service**: (P0) Cryptographic audit trail for mission receipts to prevent shadow delegations.

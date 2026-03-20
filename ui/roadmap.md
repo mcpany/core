@@ -3,6 +3,10 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Mission Receipt Tracer**: Visualize the recursive hierarchy of hardware-attested mission tokens. (Added: 2026-06-07)
+- [ ] **[P0] CASI Shard Inspector**: Debugger for semantically isolated mailbox shards and fragment-level access violations. (Added: 2026-06-07)
+- [ ] **[P1] CFIB Bidding Workspace**: Real-time visualization of cross-framework task auctions and bid translations. (Added: 2026-06-07)
+- [ ] **[P0] Intent Sovereignty Audit Log**: Forensic UI for reviewing cryptographically logged mission receipts. (Added: 2026-06-07)
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)
@@ -528,9 +532,3 @@
 - **Intent-Splicing Audit Log**: (P0) Real-time visualization of semantically deconstructed inter-agent messages and blocked splicing attempts.
 - **CGC Lifecycle Manager**: (P0) Security dashboard for monitoring capability garbage collection and identifying "Ghost Agents."
 - **MRLA Handshake Debugger**: (P0) Forensic UI for visualizing A2A discovery handshakes and mission-root lineage proofs.
-
-### Upcoming: [2026-06-07]
-- [ ] **[P0] Mission Receipt Tracer**: Visualize the recursive hierarchy of hardware-attested mission tokens.
-- [ ] **[P0] CASI Shard Inspector**: Debugger for semantically isolated mailbox shards and fragment-level access violations.
-- [ ] **[P1] CFIB Bidding Workspace**: Real-time visualization of cross-framework task auctions and bid translations.
-- [ ] **[P0] Intent Sovereignty Audit Log**: Forensic UI for reviewing cryptographically logged mission receipts.
