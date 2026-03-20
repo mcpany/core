@@ -5,7 +5,7 @@
 ### 1. Claude Code: Horizontal Swarm Proliferation
 *   **Update**: Claude Code's "Agent Teams" (v2.1.74+) has moved from experimental to a primary workflow.
 *   **Key Pattern**: Teammates coordinate via a `shared task list` and direct messaging, rather than strict parent-child hierarchies. Each teammate maintains a sovereign context window.
-*   **Pain Point**: "Mailbox Lock" – high-frequency coordination messages are creating latency bottlenecks in large teams.
+*   **Pain Point**: "Mailbox Lock" - high-frequency coordination messages are creating latency bottlenecks in large teams.
 *   **Security Risk**: Teammate-to-Teammate (T2T) impersonation where a compromised subagent sends malicious instructions to a sibling via the shared mailbox.
 
 ### 2. OpenClaw: Local-First Sovereignty
