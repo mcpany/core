@@ -204,16 +204,40 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
          })));
     };
 
-    const selectedCount = items.filter(i => i.selected).length;
-    const validCount = items.filter(i => i.validationStatus === "valid").length;
-    const warningCount = items.filter(i => i.validationStatus === "warning").length;
+    // ⚡ BOLT: [Render Optimization] Combined multiple O(N) array filter passes into a single O(N) memoized reduce block.
+    // Randomized Selection from Top 5 High-Impact Targets
+    const {
+        selectedCount,
+        validCount,
+        warningCount,
+        validOrWarningCount,
+        itemsToImport
+    } = useMemo(() => {
+        let selectedCount = 0;
+        let validCount = 0;
+        let warningCount = 0;
+        let validOrWarningCount = 0;
+        const itemsToImport: ImportItem[] = [];
+
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            if (item.selected) {
+                selectedCount++;
+                itemsToImport.push(item);
+            }
+            if (item.validationStatus === "valid") validCount++;
+            if (item.validationStatus === "warning") warningCount++;
+            if (item.validationStatus !== "invalid") validOrWarningCount++;
+        }
+
+        return { selectedCount, validCount, warningCount, validOrWarningCount, itemsToImport };
+    }, [items]);
 
     const startImport = async () => {
         setStep("import");
         setIsImporting(true);
         setProgress(0);
 
-        const itemsToImport = items.filter(i => i.selected);
         let successCount = 0;
         let failureCount = 0;
 
@@ -356,7 +380,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                             <TableRow>
                                 <TableHead className="w-[50px]">
                                     <Checkbox
-                                        checked={selectedCount > 0 && selectedCount === items.filter(i => i.validationStatus !== 'invalid').length}
+                                        checked={selectedCount > 0 && selectedCount === validOrWarningCount}
                                         onCheckedChange={(c) => toggleSelectAll(!!c)}
                                     />
                                 </TableHead>
@@ -452,7 +476,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                     </h3>
                     <p className="text-muted-foreground">
                         {isImporting
-                            ? `Processing ${items.filter(i => i.selected).length} services.`
+                            ? `Processing ${selectedCount} services.`
                             : `Successfully imported ${importSummary?.success} services.`}
                     </p>
                 </div>
@@ -480,7 +504,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                         <div className="border rounded-md max-h-[200px] overflow-y-auto">
                              <Table>
                                 <TableBody>
-                                    {items.filter(i => i.selected).map((item, idx) => (
+                                    {itemsToImport.map((item, idx) => (
                                         <TableRow key={idx}>
                                             <TableCell className="w-[30px]">
                                                 {item.importStatus === "success" && <CheckCircle2 className="h-4 w-4 text-green-500" />}
