@@ -17,28 +17,6 @@
 - **Inference-Time Data Sanitizer (IDS)**: (Re-affirmed P0) Now integrates with the Cascading Failure Circuit Breaker for real-time semantic risk scoring.
 - **Verified Skill Registry**: (Re-affirmed P0) Designated as the primary local sink for the Attested Skill Reputation Hub.
 
-## Evolution: [2026-04-30] Updates
-
-### Proposed Additions
-- **Reverse SSH Interception Proxy**: (P0) L7 socket inspection middleware that detects and blocks unauthorized out-of-band tunnel establishment (SSH/VPN) from tool processes.
-- **Swarm Cascading Failure Circuit Breaker**: (P1) Semantic monitoring service that halts agent swarms when reasoning drift exceeds a verified "Mission Root" threshold.
-- **Attested Skill Reputation Hub**: (P0) Federated reputation service that ingests ClawHub safety scores and VirusTotal telemetry to gate tool discovery.
-
-### Priority Shifts
-- **Inference-Time Data Sanitizer (IDS)**: (Re-affirmed P0) Now integrates with the Cascading Failure Circuit Breaker for real-time semantic risk scoring.
-- **Verified Skill Registry**: (Re-affirmed P0) Designated as the primary local sink for the Attested Skill Reputation Hub.
-
-## Evolution: [2026-04-30] Updates
-
-### Proposed Additions
-- **Reverse SSH Interception Proxy**: (P0) L7 socket inspection middleware that detects and blocks unauthorized out-of-band tunnel establishment (SSH/VPN) from tool processes.
-- **Swarm Cascading Failure Circuit Breaker**: (P1) Semantic monitoring service that halts agent swarms when reasoning drift exceeds a verified "Mission Root" threshold.
-- **Attested Skill Reputation Hub**: (P0) Federated reputation service that ingests ClawHub safety scores and VirusTotal telemetry to gate tool discovery.
-
-### Priority Shifts
-- **Inference-Time Data Sanitizer (IDS)**: (Re-affirmed P0) Now integrates with the Cascading Failure Circuit Breaker for real-time semantic risk scoring.
-- **Verified Skill Registry**: (Re-affirmed P0) Designated as the primary local sink for the Attested Skill Reputation Hub.
-
 ## Evolution: [2026-04-29] Updates
 
 ### Proposed Additions

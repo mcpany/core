@@ -439,16 +439,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Attested Skill Reputation Hub**: Federated reputation service integrating ClawHub/VirusTotal scores. (Added: 2026-04-30)
 *   **[P1] Swarm Cascading Failure Circuit Breaker**: Semantic monitoring middleware to prevent reasoning-loop death spirals. (Added: 2026-04-30)
 
-#### Upcoming (2026-04-30 Evolution)
-*   **[P0] Reverse SSH Interception Proxy**: L7 socket-level monitoring and blocking for tool processes. (Added: 2026-04-30)
-*   **[P0] Attested Skill Reputation Hub**: Federated reputation service integrating ClawHub/VirusTotal scores. (Added: 2026-04-30)
-*   **[P1] Swarm Cascading Failure Circuit Breaker**: Semantic monitoring middleware to prevent reasoning-loop death spirals. (Added: 2026-04-30)
-
-#### Upcoming (2026-04-30 Evolution)
-*   **[P0] Reverse SSH Interception Proxy**: L7 socket-level monitoring and blocking for tool processes. (Added: 2026-04-30)
-*   **[P0] Attested Skill Reputation Hub**: Federated reputation service integrating ClawHub/VirusTotal scores. (Added: 2026-04-30)
-*   **[P1] Swarm Cascading Failure Circuit Breaker**: Semantic monitoring middleware to prevent reasoning-loop death spirals. (Added: 2026-04-30)
-
 #### Upcoming (2026-04-29 Evolution)
 *   **[P0] ContextEngine Security Bridge**: Core integration mapping OpenClaw lifecycle signals (spawning/ended) to MCP Any security policies. (Added: 2026-04-29)
 *   **[P0] PII-Sovereign Context Scrubber**: Mandatory sanitization layer for hybrid-cloud deployments (Promoted to P0). (Added: 2026-04-29)
