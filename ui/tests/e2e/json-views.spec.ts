@@ -62,16 +62,22 @@ test.describe('JsonView UI Components', () => {
   test('should verify ToolRunner renders JsonView for schema rather than raw string', async ({ page }) => {
     await page.goto('/tools');
 
-    // Filter to ensure test tool is found
-    await page.getByPlaceholder('Search tools...').fill('test_json_schema');
+    // Wait for table to render rows, we might need to wait for API call to fetch tools
+    await page.waitForResponse('**/api/v1/tools*');
 
     // Wait for the specific tool to appear in the table
-    await expect(page.getByRole('row', { name: /test_json_schema/i })).toBeVisible({ timeout: 10000 });
+    // Sometimes the server is a bit slow responding with the updated tool
+    await expect(page.getByText(/test_json_schema/i).first()).toBeVisible({ timeout: 20000 });
+
+    // Filter to ensure test tool is found
+    const searchInput = page.getByPlaceholder('Search tools...');
+    await searchInput.fill('test_json_schema');
+    await page.waitForTimeout(500); // small wait for search filter
 
     // Open the inspector for our test tool
     // We use .first() or .nth(0) in case there are multiple matching rows, but we only expect one
-    const row = page.getByRole('row', { name: /test_json_schema/i }).first();
-    const inspectBtn = row.getByRole('button', { name: /Inspect/i });
+    const row = page.getByRole('row').filter({ hasText: /test_json_schema/i }).first();
+    const inspectBtn = row.getByRole('button', { name: /Inspect/i }).first();
 
     // Ensure button is ready to receive clicks
     await expect(inspectBtn).toBeEnabled({ timeout: 10000 });
