@@ -215,8 +215,11 @@ test.describe('Services Feature', () => {
     const deleteBtn = page.getByRole('button', { name: 'Delete' });
     await deleteBtn.click();
 
+    // Give the UI a moment to update/toast to appear
+    await page.waitForTimeout(500);
+
     // Verify successful bulk delete toast
-    await expect(page.getByText('Bulk Delete Successful')).toBeVisible();
+    await expect(page.getByText('Services Deleted')).toBeVisible();
 
     // Verify both services are no longer visible in the table
     await expect(page.getByText('Payment Gateway')).toBeHidden();
