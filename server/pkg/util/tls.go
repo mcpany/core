@@ -30,9 +30,6 @@ import (
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func NewHTTPClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
 	var tlsClientConfig *tls.Config
 

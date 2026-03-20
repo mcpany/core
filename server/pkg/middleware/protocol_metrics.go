@@ -56,21 +56,17 @@ var (
 
 // PrometheusMetricsMiddleware provides protocol-level metrics for all MCP requests. It intercepts requests to track duration, success/failure counts, payload sizes, and token counts.
 //
-// Summary: PrometheusMetricsMiddleware provides protocol-level metrics for all MCP requests. It intercepts requests to track duration, success/failure counts, payload sizes, and token counts.
-//
 // Parameters:
-//   - t (tokenizer.Tokenizer): The provided t data.
+//   - t (tokenizer.Tokenizer): The t parameter.
 //
 // Returns:
-//   - mcp.Middleware: The resulting object or data structure.
+//   - mcp.Middleware: The resulting mcp.Middleware.
 //
 // Errors:
-//   - None.
+//   - None
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None
 func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 	registerProtocolMetricsOnce.Do(func() {
 		prometheus.MustRegister(mcpOperationDuration)
@@ -214,32 +210,16 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 	// Randomized Selection from Top 5 High-Impact Targets
 	c, _ := tokenizer.CountTokensInValue(t, res)
 	return c
+}
+
 // CalculateToolResultTokens calculates the number of tokens in a tool result.
 //
-// Summary: CalculateToolResultTokens calculates the number of tokens in a tool result.
-//
 // Parameters:
-//   - t (tokenizer.Tokenizer): The provided t data.
-//   - result (any): The provided result data.
+//   - t: tokenizer.Tokenizer. The tokenizer to use for counting.
+//   - result: any. The result object to analyze (can be *mcp.CallToolResult, string, []byte, or others).
 //
 // Returns:
-//   - int: The calculated numeric value.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-//   - result (any): The provided result data.
-//
-// Returns:
-//   - int: The calculated numeric value.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - int: The estimated token count.
 func CalculateToolResultTokens(t tokenizer.Tokenizer, result any) int {
 	if result == nil {
 		return 0

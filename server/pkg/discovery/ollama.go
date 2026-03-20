@@ -20,22 +20,22 @@ import (
 // Provider defines the interface for auto-discovering local services.
 //
 // Summary: Provider defines the interface for auto-discovering local services.
-//
-// Summary: Provider defines the interface for auto-discovering local services.
 type Provider interface {
 	// Name returns the name of the discovery provider.
 	Name() string
 	// Discover attempts to find services and return their configurations.
 	Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
-// OllamaProvider discovers local Ollama instances.
-//
-// Summary: OllamaProvider discovers local Ollama instances.
+}
+
 // OllamaProvider discovers local Ollama instances.
 //
 // Summary: OllamaProvider discovers local Ollama instances.
 type OllamaProvider struct {
 	Endpoint   string // e.g., "http://localhost:11434"
 	client     *http.Client
+	clientOnce sync.Once
+}
+
 // Name returns the name of the provider.
 //
 // Summary: Name returns the name of the provider.
@@ -51,10 +51,10 @@ type OllamaProvider struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Errors:
-//   - None.
-//
-// Side Effects:
+func (p *OllamaProvider) Name() string {
+	return "ollama"
+}
+
 // Discover attempts to find local Ollama instances and return them as tools.
 //
 // Summary: Discover attempts to find local Ollama instances and return them as tools.
@@ -64,13 +64,6 @@ type OllamaProvider struct {
 //
 // Returns:
 //   - []*configv1.UpstreamServiceConfig: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:

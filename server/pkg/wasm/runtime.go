@@ -12,8 +12,6 @@ import (
 // Runtime defines the interface for a WASM plugin runtime.
 //
 // Summary: Runtime defines the interface for a WASM plugin runtime.
-//
-// Summary: Runtime defines the interface for a WASM plugin runtime.
 type Runtime interface {
 	// LoadPlugin loads a WASM plugin from bytecode.
 	//
@@ -31,9 +29,7 @@ type Runtime interface {
 	// Returns:
 	//   - error: An error if the operation fails.
 	Close() error
-// Plugin defines an instantiated WASM plugin.
-//
-// Summary: Plugin defines an instantiated WASM plugin.
+}
 
 // Plugin defines an instantiated WASM plugin.
 //
@@ -54,11 +50,15 @@ type Plugin interface {
 	// Close closes the plugin instance.
 	//
 	// Returns:
+	//   - error: An error if the operation fails.
+	Close() error
+}
+
 // MockRuntime is a placeholder implementation.
 //
 // Summary: MockRuntime is a placeholder implementation.
-	Close() error
-}
+type MockRuntime struct{}
+
 // NewMockRuntime creates a new MockRuntime.
 //
 // Summary: NewMockRuntime creates a new MockRuntime.
@@ -74,10 +74,10 @@ type Plugin interface {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-type MockRuntime struct{}
+func NewMockRuntime() *MockRuntime {
+	return &MockRuntime{}
+}
 
-// NewMockRuntime creates a new MockRuntime.
-//
 // LoadPlugin loads a plugin.
 //
 // Summary: LoadPlugin loads a plugin.
@@ -95,55 +95,9 @@ type MockRuntime struct{}
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-func NewMockRuntime() *MockRuntime {
-	return &MockRuntime{}
-}
-// Close closes the runtime.
-//
-// Summary: Close closes the runtime.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-//
-// Parameters:
-//   - _ (context.Context): The provided _ data.
-//   - bytecode ([]byte): The provided bytecode data.
-// MockPlugin is a mock plugin.
-//
-// Summary: MockPlugin is a mock plugin.
-// Returns:
-//   - Plugin: The resulting object or data structure.
-// Execute executes a function.
-//
-// Summary: Execute executes a function.
-//
-// Parameters:
-//   - _ (context.Context): The provided _ data.
-//   - function (string): The textual representation of function.
-//   - _ (...[]byte): The provided _ data.
-//
-// Returns:
-//   - []byte: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, error) {
+	if len(bytecode) == 0 {
+		return nil, fmt.Errorf("btyecode cannot be empty")
 	}
 	return &MockPlugin{}, nil
 }
@@ -151,21 +105,10 @@ func NewMockRuntime() *MockRuntime {
 // Close closes the runtime.
 //
 // Summary: Close closes the runtime.
-// Close closes the plugin.
-//
-// Summary: Close closes the plugin.
 //
 // Parameters:
 //   - None.
 //
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Returns:
 //   - error: An error if the execution fails, otherwise nil.
 //

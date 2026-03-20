@@ -46,10 +46,10 @@ type BaseMessage struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (m *BaseMessage) CorrelationID() string {
 	return m.CID
+}
+
 // SetCorrelationID sets the correlation ID for the message. This is typically called by the message publisher to assign a unique ID to a request.
 //
 // Summary: SetCorrelationID sets the correlation ID for the message. This is typically called by the message publisher to assign a unique ID to a request.
@@ -65,22 +65,19 @@ func (m *BaseMessage) CorrelationID() string {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-// ServiceRegistrationRequest is a message sent to the bus to request the
-//
-// Summary: ServiceRegistrationRequest is a message sent to the bus to request the
+func (m *BaseMessage) SetCorrelationID(id string) {
+	m.CID = id
+}
 
 // ServiceRegistrationRequest is a message sent to the bus to request the
 //
 // Summary: ServiceRegistrationRequest is a message sent to the bus to request the
 type ServiceRegistrationRequest struct {
 	BaseMessage
-// ServiceRegistrationResult is a message published in response to a
-//
-// Summary: ServiceRegistrationResult is a message published in response to a
+	Context context.Context
+	Config  *configv1.UpstreamServiceConfig
+}
+
 // ServiceRegistrationResult is a message published in response to a
 //
 // Summary: ServiceRegistrationResult is a message published in response to a
@@ -89,9 +86,9 @@ type ServiceRegistrationResult struct {
 	ServiceKey          string
 	DiscoveredTools     []*configv1.ToolDefinition
 	DiscoveredResources []*configv1.ResourceDefinition
-// ToolExecutionRequest is a message sent to the bus to request the execution of
-//
-// Summary: ToolExecutionRequest is a message sent to the bus to request the execution of
+	Error               error
+}
+
 // ToolExecutionRequest is a message sent to the bus to request the execution of
 //
 // Summary: ToolExecutionRequest is a message sent to the bus to request the execution of
@@ -99,42 +96,36 @@ type ToolExecutionRequest struct {
 	BaseMessage
 	Context    context.Context
 	ToolName   string
-// ToolExecutionResult is a message published in response to a
-//
-// Summary: ToolExecutionResult is a message published in response to a
+	ToolInputs json.RawMessage
+}
+
 // ToolExecutionResult is a message published in response to a
 //
 // Summary: ToolExecutionResult is a message published in response to a
 type ToolExecutionResult struct {
 	BaseMessage
 	Result json.RawMessage
-// ServiceListRequest is a message sent to the bus to request a list of all
-//
-// Summary: ServiceListRequest is a message sent to the bus to request a list of all
+	Error  error
+}
 
 // ServiceListRequest is a message sent to the bus to request a list of all
 //
 // Summary: ServiceListRequest is a message sent to the bus to request a list of all
-// ServiceListResult is a message published in response to a
-//
-// Summary: ServiceListResult is a message published in response to a
+type ServiceListRequest struct {
+	BaseMessage
 }
 
 // ServiceListResult is a message published in response to a
 //
 // Summary: ServiceListResult is a message published in response to a
 type ServiceListResult struct {
-// ServiceGetRequest is a message sent to the bus to request a specific service.
-//
-// Summary: ServiceGetRequest is a message sent to the bus to request a specific service.
+	BaseMessage
 	Services []*configv1.UpstreamServiceConfig
 	Error    error
 }
 
 // ServiceGetRequest is a message sent to the bus to request a specific service.
-// ServiceGetResult is a message published in response to a ServiceGetRequest.
 //
-// Summary: ServiceGetResult is a message published in response to a ServiceGetRequest.
 // Summary: ServiceGetRequest is a message sent to the bus to request a specific service.
 type ServiceGetRequest struct {
 	BaseMessage

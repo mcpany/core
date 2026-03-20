@@ -38,10 +38,10 @@ var (
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Returns:
-//   - None.
-//
-// Errors:
+func SetLevel(level slog.Level) {
+	programLevel.Set(level)
+}
+
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once` mechanism. This allows the global logger to be re-initialized in different test cases. This function should not be used in production code.
 //
 // Summary: ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once` mechanism. This allows the global logger to be re-initialized in different test cases. This function should not be used in production code.
@@ -57,32 +57,19 @@ var (
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
+func ForTestsOnlyResetLogger() {
+	mu.Lock()
+	defer mu.Unlock()
+	once = sync.Once{}
+	defaultLogger.Store(nil)
+	GlobalBroadcaster.Reset()
+}
+
 // Init initializes the application's global logger with a specific log level
 //
 // Summary: Init initializes the application's global logger with a specific log level
 //
 // Parameters:
-//   - level (slog.Level): The provided level data.
-//   - output (io.Writer): The provided output data.
-//   - logFilePath (string): The textual representation of logfilepath.
-//   - format (...string): The textual representation of format.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - level (slog.Level): The provided level data.
 //   - output (io.Writer): The provided output data.
 //   - logFilePath (string): The textual representation of logfilepath.
@@ -149,21 +136,16 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 			// Use JSON handler for file to ensure hydration works
 			fileHandler := slog.NewJSONHandler(&RedactingWriter{w: f}, opts)
 			handlers = append(handlers, fileHandler)
-// GetLogger returns the shared global logger instance.
-//
-// Summary: GetLogger returns the shared global logger instance.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - *slog.Logger: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+		}
+	}
+
+	// 3. Broadcast Handler (WebSocket)
+	broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, programLevel)
+	handlers = append(handlers, broadcastHandler)
+
+	teeHandler := NewTeeHandler(handlers...)
+
+	defaultLogger.Store(slog.New(teeHandler))
 	// Init complete
 }
 
@@ -183,21 +165,16 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 // Side Effects:
 //   - May modify internal state or perform external network calls.
 func GetLogger() *slog.Logger {
-// ToSlogLevel converts a string log level to a slog.Level.
-//
-// Summary: ToSlogLevel converts a string log level to a slog.Level.
-//
-// Parameters:
-//   - level (configv1.GlobalSettings_LogLevel): The provided level data.
-//
-// Returns:
-//   - slog.Level: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+	// ⚡ Bolt Optimization: Fast path to avoid lock contention on every log call.
+	// Atomic load is much cheaper than mutex lock.
+	if l := defaultLogger.Load(); l != nil {
+		return l
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+	once.Do(func() {
+		defaultLogger.Store(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
 			Level:     slog.LevelInfo,
 			// ⚡ BOLT: Defaults to INFO, so AddSource is false by default.
 			AddSource: false,

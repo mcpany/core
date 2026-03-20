@@ -21,12 +21,12 @@ import (
 // UpstreamAuthenticator defines the interface for authentication methods used
 //
 // Summary: UpstreamAuthenticator defines the interface for authentication methods used
+type UpstreamAuthenticator interface {
 	// Authenticate modifies the given HTTP request to add authentication
 	// information, such as headers or basic auth credentials.
 	Authenticate(req *http.Request) error
 }
 
-// NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
 // NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
 //
 // Summary: NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
@@ -43,6 +43,24 @@ import (
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
+func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuthenticator, error) {
+	if authConfig == nil {
+		return nil, nil
+	}
+
+	if apiKey := authConfig.GetApiKey(); apiKey != nil {
+		if apiKey.GetParamName() == "" {
+			return nil, errors.New("API key authentication requires a parameter name")
+		}
+		if apiKey.GetValue() == nil {
+			return nil, errors.New("API key authentication requires an API key value")
+		}
+		return &APIKeyAuth{
+			ParamName: apiKey.GetParamName(),
+			Value:     apiKey.GetValue(),
+			Location:  apiKey.GetIn(),
+		}, nil
+	}
 
 	if bearerToken := authConfig.GetBearerToken(); bearerToken != nil {
 		if bearerToken.GetToken() == nil {
@@ -106,30 +124,21 @@ type APIKeyAuth struct {
 //
 // Returns:
 //   - error: An error if the execution fails, otherwise nil.
-// APIKeyAuth implements UpstreamAuthenticator for API key-based authentication.
-//
-// Summary: APIKeyAuth implements UpstreamAuthenticator for API key-based authentication.
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-func (a *APIKeyAuth) Authenticate(req *http.Request) error {
-	if a.Value == nil {
-// Authenticate adds the configured API key to the request's header, query, or cookie.
-//
-// Summary: Authenticate adds the configured API key to the request's header, query, or cookie.
-//
-// Parameters:
-//   - req (*http.Request): The incoming request payload.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
+func (a *APIKeyAuth) Authenticate(req *http.Request) error {
+	if a.Value == nil {
+		return errors.New("api key secret is not configured")
+	}
+	value, err := util.ResolveSecret(req.Context(), a.Value)
+	if err != nil {
+		return err
+	}
+
 	switch a.Location {
 	case configv1.APIKeyAuth_QUERY:
 		q := req.URL.Query()
@@ -155,15 +164,6 @@ type BearerTokenAuth struct {
 	Token *configv1.SecretValue
 }
 
-// Authenticate adds the bearer token to the request's "Authorization" header.
-//
-// BearerTokenAuth implements UpstreamAuthenticator for bearer token-based
-//
-// Summary: BearerTokenAuth implements UpstreamAuthenticator for bearer token-based
-// Parameters:
-//   - req (*http.Request): The incoming request payload.
-//
-// Returns:
 // Authenticate adds the bearer token to the request's "Authorization" header.
 //
 // Summary: Authenticate adds the bearer token to the request's "Authorization" header.
@@ -194,11 +194,11 @@ func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 // BasicAuth implements UpstreamAuthenticator for basic HTTP authentication.
 //
 // Summary: BasicAuth implements UpstreamAuthenticator for basic HTTP authentication.
-// Summary: BasicAuth implements UpstreamAuthenticator for basic HTTP authentication.
 type BasicAuth struct {
 	Username string
 	Password *configv1.SecretValue
 }
+
 // Authenticate sets the request's basic authentication credentials.
 //
 // Summary: Authenticate sets the request's basic authentication credentials.
@@ -214,21 +214,10 @@ type BasicAuth struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (b *BasicAuth) Authenticate(req *http.Request) error {
 	if b.Password == nil {
 		return errors.New("basic auth password secret is not configured")
-// OAuth2Auth implements UpstreamAuthenticator for OAuth2 client credentials flow.
-//
-// Summary: OAuth2Auth implements UpstreamAuthenticator for OAuth2 client credentials flow.
+	}
 	password, err := util.ResolveSecret(req.Context(), b.Password)
 	if err != nil {
 		return err
@@ -261,21 +250,13 @@ func (o *OAuth2Auth) getTokenURL(ctx context.Context) (string, error) {
 
 	if o.IssuerURL != "" {
 		// Create a context for discovery
-// Authenticate fetches a token and adds it to the request's "Authorization" header.
-//
-// Summary: Authenticate fetches a token and adds it to the request's "Authorization" header.
-//
-// Parameters:
-//   - req (*http.Request): The incoming request payload.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+		provider, err := oidc.NewProvider(ctx, o.IssuerURL)
+		if err != nil {
+			return "", fmt.Errorf("failed to discover OIDC configuration from issuer %q: %w", o.IssuerURL, err)
+		}
+		o.TokenURL = provider.Endpoint().TokenURL
+		return o.TokenURL, nil
+	}
 
 	return "", errors.New("OAuth2 authentication requires a token URL (and no issuer provided)")
 }

@@ -38,8 +38,6 @@ import (
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credentialID, redirectURL string) (string, string, error) {
 	// Fix for unused userID:
 	_ = userID
@@ -136,6 +134,8 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 
 	url := conf.AuthCodeURL(state, oauth2.AccessTypeOffline)
 	return url, state, nil
+}
+
 // HandleOAuthCallback handles the OAuth2 callback code exchange.
 //
 // Summary: HandleOAuthCallback handles the OAuth2 callback code exchange.
@@ -152,10 +152,6 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 //   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:

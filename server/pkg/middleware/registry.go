@@ -18,20 +18,14 @@ import (
 // Registry manages available middlewares.
 //
 // Summary: Registry manages available middlewares.
-//
-// Summary: Registry manages available middlewares.
 type Registry struct {
 	mu           sync.RWMutex
 	factories    map[string]Factory
 	mcpFactories map[string]MCPFactory
-// Factory is a function that creates a HTTP middleware from configuration.
-//
-// Summary: Factory is a function that creates a HTTP middleware from configuration.
+}
 
 // Factory is a function that creates a HTTP middleware from configuration.
-// MCPFactory is a function that creates an MCP middleware from configuration.
 //
-// Summary: MCPFactory is a function that creates an MCP middleware from configuration.
 // Summary: Factory is a function that creates a HTTP middleware from configuration.
 type Factory func(config *configv1.Middleware) func(http.Handler) http.Handler
 
@@ -41,6 +35,12 @@ type Factory func(config *configv1.Middleware) func(http.Handler) http.Handler
 type MCPFactory func(config *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler
 
 var (
+	globalRegistry = &Registry{
+		factories:    make(map[string]Factory),
+		mcpFactories: make(map[string]MCPFactory),
+	}
+)
+
 // Register registers a HTTP middleware factory.
 //
 // Summary: Register registers a HTTP middleware factory.
@@ -57,49 +57,13 @@ var (
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
+func Register(name string, factory Factory) {
+	globalRegistry.mu.Lock()
+	defer globalRegistry.mu.Unlock()
+	globalRegistry.factories[name] = factory
+}
 
-// Register registers a HTTP middleware factory.
-//
-// Summary: Register registers a HTTP middleware factory.
-//
-// Parameters:
 // RegisterMCP registers an MCP middleware factory.
-//
-// Summary: RegisterMCP registers an MCP middleware factory.
-//
-// Parameters:
-//   - name (string): The human-readable or system name.
-//   - factory (MCPFactory): The provided factory data.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-// GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
-//
-// Summary: GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
-//
-// Parameters:
-//   - configs ([]*configv1.Middleware): The provided configs data.
-//
-// Returns:
-//   - []func(http.Handler) http.Handler: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Summary: RegisterMCP registers an MCP middleware factory.
 //
@@ -123,21 +87,13 @@ func RegisterMCP(name string, factory MCPFactory) {
 
 // GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
 //
-// GetMCPMiddlewares returns a sorted list of MCP middlewares based on configuration.
-//
-// Summary: GetMCPMiddlewares returns a sorted list of MCP middlewares based on configuration.
+// Summary: GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
 //
 // Parameters:
 //   - configs ([]*configv1.Middleware): The provided configs data.
 //
 // Returns:
-//   - []func(mcp.MethodHandler) mcp.MethodHandler: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - []func(http.Handler) http.Handler: The resulting object or data structure.
 //
 // Errors:
 //   - None.
@@ -161,9 +117,7 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 
 	middlewares := make([]func(http.Handler) http.Handler, 0, len(active))
 	for _, cfg := range active {
-// StandardMiddlewares holds the standard middlewares that might need to be updated.
-//
-// Summary: StandardMiddlewares holds the standard middlewares that might need to be updated.
+		factory := globalRegistry.factories[cfg.GetName()]
 		middlewares = append(middlewares, factory(cfg))
 	}
 	return middlewares
@@ -175,30 +129,22 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 //
 // Parameters:
 //   - configs ([]*configv1.Middleware): The provided configs data.
-// InitStandardMiddlewares registers standard middlewares.
-//
-// Summary: InitStandardMiddlewares registers standard middlewares.
-//
-// Parameters:
-//   - authManager (*auth.Manager): The provided authmanager data.
-//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
-//   - auditConfig (*configv1.AuditConfig): The provided auditconfig data.
-//   - cachingMiddleware (*CachingMiddleware): The provided cachingmiddleware data.
-//   - globalRateLimitConfig (*configv1.RateLimitConfig): The provided globalratelimitconfig data.
-//   - dlpConfig (*configv1.DLPConfig): The provided dlpconfig data.
-//   - contextOptimizerConfig (*configv1.ContextOptimizerConfig): The provided contextoptimizerconfig data.
-//   - debuggerConfig (*configv1.DebuggerConfig): The provided debuggerconfig data.
-//   - smartRecoveryConfig (*configv1.SmartRecoveryConfig): The provided smartrecoveryconfig data.
 //
 // Returns:
-//   - *StandardMiddlewares: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
+//   - []func(mcp.MethodHandler) mcp.MethodHandler: The resulting object or data structure.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - None.
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
+func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
+	globalRegistry.mu.RLock()
+	defer globalRegistry.mu.RUnlock()
+
+	active := make([]*configv1.Middleware, 0, len(configs))
+	for _, cfg := range configs {
+		if !cfg.GetDisabled() && globalRegistry.mcpFactories[cfg.GetName()] != nil {
 			active = append(active, cfg)
 		}
 	}

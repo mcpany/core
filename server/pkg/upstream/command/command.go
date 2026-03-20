@@ -29,11 +29,11 @@ import (
 // Upstream implements the upstream.Upstream interface for services that
 //
 // Summary: Upstream implements the upstream.Upstream interface for services that
+type Upstream struct {
+	mu      sync.Mutex
 	checker health.Checker
 }
 
-// Shutdown implements the upstream.Upstream interface.
-//
 // Shutdown implements the upstream.Upstream interface.
 //
 // Summary: Shutdown implements the upstream.Upstream interface.
@@ -49,9 +49,6 @@ import (
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -59,6 +56,9 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	if u.checker != nil {
 		u.checker.Stop()
 	}
+	return nil
+}
+
 // NewUpstream creates a new instance of CommandUpstream.
 //
 // Summary: NewUpstream creates a new instance of CommandUpstream.
@@ -74,10 +74,10 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Parameters:
-//   - None.
-//
-// Returns:
+func NewUpstream() upstream.Upstream {
+	return &Upstream{}
+}
+
 // Register processes the configuration for a command-line service, creates a
 //
 // Summary: Register processes the configuration for a command-line service, creates a
@@ -87,20 +87,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The provided serviceconfig data.
 //   - toolManager (tool.ManagerInterface): The provided toolmanager data.
 //   - promptManager (prompt.ManagerInterface): The provided promptmanager data.
-//   - resourceManager (resource.ManagerInterface): The provided resourcemanager data.
-//   - isReload (bool): A flag indicating whether isreload is enabled.
-//
-// Returns:
-//   - string: The resulting text.
-//   - []*configv1.ToolDefinition: The resulting object or data structure.
-//   - []*configv1.ResourceDefinition: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - resourceManager (resource.ManagerInterface): The provided resourcemanager data.
 //   - isReload (bool): A flag indicating whether isreload is enabled.
 //

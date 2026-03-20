@@ -12,10 +12,10 @@ import (
 // RedactingWriter is an io.Writer that redacts sensitive information from JSON logs.
 //
 // Summary: RedactingWriter is an io.Writer that redacts sensitive information from JSON logs.
-//
-// Summary: RedactingWriter is an io.Writer that redacts sensitive information from JSON logs.
 type RedactingWriter struct {
 	w io.Writer
+}
+
 // Write implements io.Writer.
 //
 // Summary: Write implements io.Writer.
@@ -28,10 +28,6 @@ type RedactingWriter struct {
 //   - err (error): An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:

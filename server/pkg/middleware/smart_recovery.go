@@ -20,13 +20,13 @@ import (
 // SmartRecoveryMiddleware handles automatic error recovery using LLM.
 //
 // Summary: SmartRecoveryMiddleware handles automatic error recovery using LLM.
-//
-// Summary: SmartRecoveryMiddleware handles automatic error recovery using LLM.
 type SmartRecoveryMiddleware struct {
 	config      *configv1.SmartRecoveryConfig
 	llmClient   llm.Client
 	toolManager tool.ManagerInterface
 	mu          sync.RWMutex
+}
+
 // NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
 //
 // Summary: NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
@@ -43,13 +43,13 @@ type SmartRecoveryMiddleware struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManager tool.ManagerInterface) *SmartRecoveryMiddleware {
 	return &SmartRecoveryMiddleware{
 		config:      config,
+		toolManager: toolManager,
+	}
+}
+
 // Execute executes the middleware logic.
 //
 // Summary: Execute executes the middleware logic.
@@ -62,12 +62,6 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 // Returns:
 //   - any: The resulting object or data structure.
 //   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Errors:
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.

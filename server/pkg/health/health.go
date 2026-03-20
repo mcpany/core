@@ -54,15 +54,11 @@ var (
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 	globalAlertConfigMu.Lock()
 	defer globalAlertConfigMu.Unlock()
 	globalAlertConfig = cfg
-// HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
-//
-// Summary: HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
+}
 
 // HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
 //
@@ -76,6 +72,10 @@ type HTTPServiceWithHealthCheck interface {
 	// GetHealthCheck returns the HTTP health check configuration for the service.
 	//
 	// Returns:
+	//   - *configv1.HttpHealthCheck: The health check configuration.
+	GetHealthCheck() *configv1.HttpHealthCheck
+}
+
 // NewChecker creates a new health checker for the given upstream service.
 //
 // Summary: NewChecker creates a new health checker for the given upstream service.
@@ -85,12 +85,6 @@ type HTTPServiceWithHealthCheck interface {
 //
 // Returns:
 //   - health.Checker: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Errors:
 //   - None.

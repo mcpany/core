@@ -18,12 +18,12 @@ import (
 // UpstreamWorker is a background worker that handles tool execution requests. It
 //
 // Summary: UpstreamWorker is a background worker that handles tool execution requests. It
+type UpstreamWorker struct {
 	bus         *bus.Provider
 	toolManager tool.ManagerInterface
 	wg          sync.WaitGroup
 }
 
-// NewUpstreamWorker creates a new UpstreamWorker.
 // NewUpstreamWorker creates a new UpstreamWorker.
 //
 // Summary: NewUpstreamWorker creates a new UpstreamWorker.
@@ -40,28 +40,12 @@ import (
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - *UpstreamWorker: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-// Start launches the worker in a new goroutine. It subscribes to tool execution
-//
-// Summary: Start launches the worker in a new goroutine. It subscribes to tool execution
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
+	return &UpstreamWorker{
+		bus:         bus,
+		toolManager: toolManager,
+	}
+}
 
 // Start launches the worker in a new goroutine. It subscribes to tool execution
 //
@@ -113,21 +97,19 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 		if err != nil {
 			metrics.IncrCounter([]string{"worker", "upstream", "request", "error"}, 1)
 		} else {
-// Stop waits for the worker to stop.
-//
-// Summary: Stop waits for the worker to stop.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+			metrics.IncrCounter([]string{"worker", "upstream", "request", "success"}, 1)
+		}
+		res.SetCorrelationID(req.CorrelationID())
+		if err := resultBus.Publish(ctx, req.CorrelationID(), res); err != nil {
+			log.Error("Failed to publish tool execution result", "error", err)
+		}
+	})
+
+	go func() {
+		defer w.wg.Done()
+		<-ctx.Done()
+		log.Info("Upstream worker stopping")
+		unsubscribe()
 	}()
 }
 

@@ -16,14 +16,14 @@ import (
 // LocalProvider provides access to the local filesystem.
 //
 // Summary: LocalProvider provides access to the local filesystem.
-//
-// Summary: LocalProvider provides access to the local filesystem.
 type LocalProvider struct {
 	fs           afero.Fs
 	rootPaths    map[string]string
 	allowedPaths []string
 	deniedPaths  []string
 	symlinkMode  configv1.FilesystemUpstreamService_SymlinkMode
+}
+
 // NewLocalProvider creates a new LocalProvider from the given configuration.
 //
 // Summary: NewLocalProvider creates a new LocalProvider from the given configuration.
@@ -43,16 +43,16 @@ type LocalProvider struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - *LocalProvider: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPaths, deniedPaths []string, symlinkMode configv1.FilesystemUpstreamService_SymlinkMode) *LocalProvider {
 	return &LocalProvider{
 		fs:           afero.NewOsFs(),
+		rootPaths:    rootPaths,
+		allowedPaths: allowedPaths,
+		deniedPaths:  deniedPaths,
+		symlinkMode:  symlinkMode,
+	}
+}
+
 // GetFs returns the underlying filesystem.
 //
 // Summary: GetFs returns the underlying filesystem.
@@ -68,26 +68,9 @@ func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPath
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// GetFs returns the underlying filesystem.
-//
-// Summary: GetFs returns the underlying filesystem.
-//
-// ResolvePath resolves the virtual path to a real path in the local filesystem.
-//
-// Summary: ResolvePath resolves the virtual path to a real path in the local filesystem.
-//
-// Parameters:
-//   - virtualPath (string): The textual representation of virtualpath.
-//
-// Returns:
-//   - string: The resulting text.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+func (p *LocalProvider) GetFs() afero.Fs {
+	return p.fs
+}
 
 // ResolvePath resolves the virtual path to a real path in the local filesystem.
 //
@@ -337,21 +320,16 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 	for _, part := range parts {
 		if part == "" || part == "." {
 			continue
-// Close closes the provider.
-//
-// Summary: Close closes the provider.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+		}
+		current = filepath.Join(current, part)
+		info, err := os.Lstat(current)
+		if err != nil {
+			if os.IsNotExist(err) {
+				return false, nil
+			}
+			return false, err
+		}
+		if info.Mode()&os.ModeSymlink != 0 {
 			return true, nil
 		}
 	}

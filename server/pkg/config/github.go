@@ -132,8 +132,6 @@ func isGitHubURL(rawURL string) bool {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (g *GitHub) ToRawContentURL() string {
 	return fmt.Sprintf("%s/%s/%s/%s/%s", g.rawContentURL, g.Owner, g.Repo, g.Ref, g.Path)
 }

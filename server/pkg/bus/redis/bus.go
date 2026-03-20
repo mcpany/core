@@ -17,10 +17,10 @@ import (
 // Bus is a Redis-backed implementation of the Bus interface.
 //
 // Summary: Bus is a Redis-backed implementation of the Bus interface.
-//
-// Summary: Bus is a Redis-backed implementation of the Bus interface.
 type Bus[T any] struct {
 	client *redis.Client
+}
+
 // New creates and initializes a new RedisBus.
 //
 // Summary: New creates and initializes a new RedisBus.
@@ -37,20 +37,20 @@ type Bus[T any] struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Returns:
-//   - *Bus[T]: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 	options := redis.Options{
 		Addr: "127.0.0.1:6379",
 	}
+	if redisConfig != nil {
+		if addr := redisConfig.GetAddress(); addr != "" {
+			options.Addr = addr
+		}
+		options.Password = redisConfig.GetPassword()
+		options.DB = int(redisConfig.GetDb())
+	}
+	return NewWithClient[T](redis.NewClient(&options)), nil
+}
+
 // NewWithClient creates a new RedisBus with an existing Redis client.
 //
 // Summary: NewWithClient creates a new RedisBus with an existing Redis client.
@@ -66,12 +66,12 @@ func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-	return NewWithClient[T](redis.NewClient(&options)), nil
+func NewWithClient[T any](client *redis.Client) *Bus[T] {
+	return &Bus[T]{
+		client: client,
+	}
 }
 
-// NewWithClient creates a new RedisBus with an existing Redis client.
-//
-// Summary: NewWithClient creates a new RedisBus with an existing Redis client.
 // Publish publishes a message to a Redis channel.
 //
 // Summary: Publish publishes a message to a Redis channel.
@@ -85,35 +85,6 @@ func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 //   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-//   - May modify internal state or perform external network calls.
-func NewWithClient[T any](client *redis.Client) *Bus[T] {
-	return &Bus[T]{
-		client: client,
-	}
-}
-
-// Publish publishes a message to a Redis channel.
-// Subscribe subscribes to a Redis channel.
-//
-// Summary: Subscribe subscribes to a Redis channel.
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - topic (string): The textual representation of topic.
-//   - handler (func(T)): The provided handler data.
-//
-// Returns:
-//   - unsubscribe (func()): The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
@@ -163,23 +134,17 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 		log := logging.GetLogger()
 		ch := pubsub.Channel()
 		for {
-// SubscribeOnce subscribes to a topic for a single message.
-//
-// Summary: SubscribeOnce subscribes to a topic for a single message.
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - topic (string): The textual representation of topic.
-//   - handler (func(T)): The provided handler data.
-//
-// Returns:
-//   - unsubscribe (func()): The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+			select {
+			case <-ctx.Done():
+				return
+			case msg := <-ch:
+				if msg == nil {
+					return
+				}
+				var message T
+				err := json.Unmarshal([]byte(msg.Payload), &message)
+				if err != nil {
+					log.Error("Failed to unmarshal message", "error", err)
 					continue
 				}
 

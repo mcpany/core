@@ -17,8 +17,6 @@ import (
 // Client is the interface for an LLM client.
 //
 // Summary: Client is the interface for an LLM client.
-//
-// Summary: Client is the interface for an LLM client.
 type Client interface {
 	// ChatCompletion sends a chat request to the LLM and returns the response.
 	//
@@ -39,54 +37,44 @@ type Client interface {
 	// Side Effects:
 	//   - Makes a network request to the LLM provider.
 	ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error)
-// ChatRequest represents a chat completion request.
-//
-// Summary: ChatRequest represents a chat completion request.
+}
 
 // ChatRequest represents a chat completion request.
 //
 // Summary: ChatRequest represents a chat completion request.
 type ChatRequest struct {
-// Message represents a chat message.
-//
-// Summary: Message represents a chat message.
+	Model    string    `json:"model"`
 	Messages []Message `json:"messages"`
 }
 
 // Message represents a chat message.
 //
-// ChatResponse represents a chat completion response.
-//
-// Summary: ChatResponse represents a chat completion response.
+// Summary: Message represents a chat message.
 type Message struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
 }
-// OpenAIClient implements Client for OpenAI.
-//
-// Summary: OpenAIClient implements Client for OpenAI.
+
 // ChatResponse represents a chat completion response.
 //
 // Summary: ChatResponse represents a chat completion response.
 type ChatResponse struct {
 	Content string `json:"content"`
 }
+
+// OpenAIClient implements Client for OpenAI.
+//
+// Summary: OpenAIClient implements Client for OpenAI.
+type OpenAIClient struct {
+	apiKey  string
+	baseURL string
+	client  *http.Client
+}
+
 // NewOpenAIClient creates a new OpenAIClient.
 //
 // Summary: NewOpenAIClient creates a new OpenAIClient.
 //
-// Parameters:
-//   - apiKey (string): The textual representation of apikey.
-//   - baseURL (string): The endpoint address.
-//
-// Returns:
-//   - *OpenAIClient: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Parameters:
 //   - apiKey (string): The textual representation of apikey.
 //   - baseURL (string): The endpoint address.
@@ -114,23 +102,21 @@ type openAIChatRequest struct {
 	Model    string    `json:"model"`
 	Messages []Message `json:"messages"`
 }
+
+type openAIChatResponse struct {
+	Choices []struct {
+		Message struct {
+			Content string `json:"content"`
+		} `json:"message"`
+	} `json:"choices"`
+	Error *struct {
+		Message string `json:"message"`
+	} `json:"error,omitempty"`
+}
+
 // ChatCompletion performs a chat completion request.
 //
 // Summary: ChatCompletion performs a chat completion request.
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - req (ChatRequest): The incoming request payload.
-//
-// Returns:
-//   - *ChatResponse: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Parameters:
 //   - ctx (context.Context): The cancellation and deadline context.

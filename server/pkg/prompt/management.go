@@ -82,12 +82,12 @@ type Manager struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - *Manager: The resulting object or data structure.
-//
+func NewManager() *Manager {
+	return &Manager{
+		prompts: xsync.NewMap[string, Prompt](),
+	}
+}
+
 // SetMCPServer provides the Manager with a reference to the MCP server.
 //
 // Summary: SetMCPServer provides the Manager with a reference to the MCP server.
@@ -103,32 +103,6 @@ type Manager struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - May modify internal state or perform external network calls.
-func NewManager() *Manager {
-	return &Manager{
-		prompts: xsync.NewMap[string, Prompt](),
-	}
-}
-// AddPrompt registers a new prompt with the manager.
-//
-// Summary: AddPrompt registers a new prompt with the manager.
-//
-// Parameters:
-//   - prompt (Prompt): The provided prompt data.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	pm.mu.Lock()
 	defer pm.mu.Unlock()
@@ -138,9 +112,6 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 // AddPrompt registers a new prompt with the manager.
 //
 // Summary: AddPrompt registers a new prompt with the manager.
-// UpdatePrompt updates an existing prompt in the manager.
-//
-// Summary: UpdatePrompt updates an existing prompt in the manager.
 //
 // Parameters:
 //   - prompt (Prompt): The provided prompt data.
@@ -153,49 +124,30 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (pm *Manager) AddPrompt(prompt Prompt) {
 	promptName := prompt.Prompt().Name
 	if existingPrompt, loaded := pm.prompts.LoadAndStore(promptName, prompt); loaded {
 		logging.GetLogger().Warn(fmt.Sprintf("Prompt with the same name already exists. Overwriting. promptName=%s, newPromptService=%s, existingPromptService=%s",
 			promptName,
-// GetPrompt retrieves a prompt from the manager by its name.
-//
-// Summary: GetPrompt retrieves a prompt from the manager by its name.
-//
-// Parameters:
-//   - name (string): The human-readable or system name.
-//
-// Returns:
-//   - Prompt: The resulting object or data structure.
-//   - bool: True if successful or valid, false otherwise.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+			prompt.Service(),
+			existingPrompt.Service(),
+		))
+	}
+	pm.mu.Lock()
+	pm.cachedPrompts = nil
+	pm.mu.Unlock()
+}
 
 // UpdatePrompt updates an existing prompt in the manager.
 //
 // Summary: UpdatePrompt updates an existing prompt in the manager.
 //
-// ListPrompts returns a slice containing all the prompts currently registered.
-//
-// Summary: ListPrompts returns a slice containing all the prompts currently registered.
-//
 // Parameters:
-//   - None.
+//   - prompt (Prompt): The provided prompt data.
 //
 // Returns:
-//   - []Prompt: The resulting object or data structure.
-//
-// Errors:
 //   - None.
 //
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Errors:
 //   - None.
 //
@@ -234,21 +186,14 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 // Summary: ListPrompts returns a slice containing all the prompts currently registered.
 //
 // Parameters:
-// ClearPromptsForService removes all prompts associated with a given service.
-//
-// Summary: ClearPromptsForService removes all prompts associated with a given service.
-//
-// Parameters:
-//   - serviceID (string): The textual representation of serviceid.
+//   - None.
 //
 // Returns:
-//   - None.
+//   - []Prompt: The resulting object or data structure.
 //
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Side Effects:
 //   - May modify internal state or perform external network calls.
 func (pm *Manager) ListPrompts() []Prompt {

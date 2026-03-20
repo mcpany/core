@@ -403,11 +403,6 @@ func (m *AuditMiddleware) Close() error {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
 	m.mu.RLock()
 	store := m.store

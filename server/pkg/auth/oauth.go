@@ -37,12 +37,6 @@ type OAuth2Authenticator struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2Authenticator, error) {
 	provider, err := oidc.NewProvider(ctx, config.IssuerURL)
 	if err != nil {
@@ -65,23 +59,17 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 		oidcConfig.SkipClientIDCheck = true
 	}
 
+	return &OAuth2Authenticator{
+		verifier:  provider.Verifier(oidcConfig),
+		audiences: audiences,
+	}, nil
+}
+
 // Authenticate validates the JWT from the Authorization header of the request.
 //
 // Summary: Authenticate validates the JWT from the Authorization header of the request.
 //
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - r (*http.Request): The provided r data.
-//
-// Returns:
-//   - context.Context: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - ctx (context.Context): The cancellation and deadline context.
 //   - r (*http.Request): The provided r data.
 //

@@ -21,12 +21,12 @@ import (
 // MockOAuth2Server serves as a mock OIDC/OAuth2 provider.
 //
 // Summary: MockOAuth2Server serves as a mock OIDC/OAuth2 provider.
-//
-// Summary: MockOAuth2Server serves as a mock OIDC/OAuth2 provider.
 type MockOAuth2Server struct {
 	*httptest.Server
 	PrivateKey *rsa.PrivateKey
 	ClientID   string
+}
+
 // NewMockOAuth2Server creates a new mock OAuth2 server. t is the t. Returns the result.
 //
 // Summary: NewMockOAuth2Server creates a new mock OAuth2 server. t is the t. Returns the result.
@@ -38,10 +38,6 @@ type MockOAuth2Server struct {
 //   - *MockOAuth2Server: The resulting object or data structure.
 //
 // Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - None.
 //
 // Side Effects:
@@ -112,6 +108,10 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 			"expires_in":   3600,
 		})
 	})
+
+	return mock
+}
+
 // NewIDToken permits generating custom tokens signed by this server. t is the t. claims is the claims. Returns the result.
 //
 // Summary: NewIDToken permits generating custom tokens signed by this server. t is the t. claims is the claims. Returns the result.
@@ -122,12 +122,6 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 //
 // Returns:
 //   - string: The resulting text.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Errors:
 //   - None.

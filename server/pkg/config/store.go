@@ -133,10 +133,10 @@ type yamlEngine struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Errors:
-//   - None.
-//
-// Side Effects:
+func (e *yamlEngine) SetSkipValidation(skip bool) {
+	e.skipValidation = skip
+}
+
 // SetIgnoreEnv sets whether to ignore environment variables.
 //
 // Summary: SetIgnoreEnv sets whether to ignore environment variables.
@@ -152,26 +152,14 @@ type yamlEngine struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - ignore (bool): A flag indicating whether ignore is enabled.
-//
-// Returns:
-//   - None.
+func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
+	e.ignoreEnv = ignore
+}
+
 // Unmarshal parses a YAML byte slice into a `proto.Message`.
 //
 // Summary: Unmarshal parses a YAML byte slice into a `proto.Message`.
 //
-// Parameters:
-//   - b ([]byte): The provided b data.
-//   - v (proto.Message): The provided v data.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Parameters:
 //   - b ([]byte): The provided b data.
 //   - v (proto.Message): The provided v data.
@@ -190,23 +178,21 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := yaml.Unmarshal(b, &yamlMap); err != nil {
 		// Enhance error message for common YAML mistakes
 		if strings.Contains(err.Error(), "found character that cannot start any token") {
+			if bytes.Contains(b, []byte("\t")) {
+				// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+
+				return fmt.Errorf("failed to unmarshal YAML: %w\n\nHint: YAML files cannot contain tabs. Please use spaces for indentation.", err) //nolint:revive // Long user-facing error message
+			}
+		}
+		return fmt.Errorf("failed to unmarshal YAML: %w", err)
+	}
+
+	return e.unmarshalInternal(yamlMap, v, b)
+}
+
 // UnmarshalFromMap populates the provided proto.Message from a raw map.
 //
 // Summary: UnmarshalFromMap populates the provided proto.Message from a raw map.
-//
-// Parameters:
-//   - yamlMap (map[string]interface{}): The textual representation of yamlmap.
-//   - v (proto.Message): The provided v data.
-//   - originalBytes ([]byte): The provided originalbytes data.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Parameters:
 //   - yamlMap (map[string]interface{}): The textual representation of yamlmap.
@@ -311,6 +297,20 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 	var canonicalMap map[string]interface{}
 	if err := json.Unmarshal(canonicalJSON, &canonicalMap); err != nil {
 		return fmt.Errorf("failed to unmarshal canonical json: %w", err)
+	}
+
+	if !e.skipValidation {
+		if err := ValidateConfigAgainstSchema(canonicalMap); err != nil {
+			return fmt.Errorf("schema validation failed: %w", err)
+		}
+	}
+
+	return nil
+}
+
+// textprotoEngine implements the Engine interface for textproto configuration files.
+type textprotoEngine struct{}
+
 // Unmarshal parses a textproto byte slice into a `proto.Message`.
 //
 // Summary: Unmarshal parses a textproto byte slice into a `proto.Message`.
@@ -327,29 +327,11 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Unmarshal parses a textproto byte slice into a `proto.Message`.
-//
-// Summary: Unmarshal parses a textproto byte slice into a `proto.Message`.
-//
-// Parameters:
-//   - b ([]byte): The provided b data.
-//   - v (proto.Message): The provided v data.
-// Unmarshal parses a JSON byte slice into a `proto.Message`.
-//
-// Summary: Unmarshal parses a JSON byte slice into a `proto.Message`.
-//
-// Parameters:
-//   - b ([]byte): The provided b data.
-//   - v (proto.Message): The provided v data.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
+	return prototext.Unmarshal(b, v)
+}
+
+// jsonEngine implements the Engine interface for JSON configuration files.
 type jsonEngine struct{}
 
 // Unmarshal parses a JSON byte slice into a `proto.Message`.
@@ -674,40 +656,24 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is missing", lineNum, varName)
 		// Write the original string to preserve structure
 		buf.Write(b[startIdx:j])
-// SetSkipValidation configures whether to skip schema validation during loading.
-//
-// Summary: SetSkipValidation configures whether to skip schema validation during loading.
-//
-// Parameters:
-//   - skip (bool): A flag indicating whether skip is enabled.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+		return j - startIdx
+	}
+
+	buf.WriteString(val)
+	return j - startIdx
+}
+
 // FileStore implements the `Store` interface for loading configurations from files.
 //
 // Summary: Loads configurations from the filesystem.
 type FileStore struct {
-// SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
-//
-// Summary: SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
-//
-// Parameters:
-//   - ignore (bool): A flag indicating whether ignore is enabled.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+	fs               afero.Fs
+	paths            []string
+	skipErrors       bool
+	IgnoreMissingEnv bool
+	skipValidation   bool
+}
+
 // SetSkipValidation configures whether to skip schema validation during loading.
 //
 // Summary: SetSkipValidation configures whether to skip schema validation during loading.
@@ -740,21 +706,19 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 // Errors:
 //   - None.
 //
-// HasConfigSources returns true if the store has configuration paths configured. Side Effects: - None.
-//
-// Summary: HasConfigSources returns true if the store has configuration paths configured. Side Effects: - None.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - bool: True if successful or valid, false otherwise.
-//
-// Errors:
-//   - None.
-//
 // Side Effects:
 //   - May modify internal state or perform external network calls.
+func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
+	s.IgnoreMissingEnv = ignore
+}
+
+// NewFileStore creates a new FileStore with the given filesystem and paths.
+//
+// Summary: Initializes a new FileStore.
+//
+// Parameters:
+//   - fs (afero.Fs): The filesystem to use.
+//   - paths ([]string): The list of paths to scan.
 //
 // Returns:
 //   - (*FileStore): A new instance of FileStore.
@@ -1369,21 +1333,19 @@ func suggestFix(unknownField string, root proto.Message) string {
 	}
 
 	bestMatch := ""
-// HasConfigSources returns true if any of the underlying stores have configuration sources. Side Effects: - None.
-//
-// Summary: HasConfigSources returns true if any of the underlying stores have configuration sources. Side Effects: - None.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - bool: True if successful or valid, false otherwise.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+	minDist := 100
+
+	for name := range candidates {
+		// ⚡ BOLT: Replaced inefficient local Levenshtein implementation with optimized utility function.
+		// Randomized Selection from Top 5 High-Impact Targets
+		dist := util.LevenshteinDistance(unknownField, name)
+		if dist < minDist {
+			minDist = dist
+			bestMatch = name
+		}
+	}
+
+	// Only suggest if it's reasonably close.
 	limit := len(unknownField) / 2
 
 	// For short strings, be strict to avoid garbage suggestions (e.g. xyz -> env)

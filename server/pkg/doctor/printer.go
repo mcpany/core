@@ -26,9 +26,6 @@ import (
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func PrintResults(w io.Writer, results []CheckResult) {
 	if w == nil {
 		w = os.Stdout

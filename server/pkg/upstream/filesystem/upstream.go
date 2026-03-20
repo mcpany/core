@@ -32,12 +32,12 @@ import (
 // Upstream implements the upstream.Upstream interface for filesystem services.
 //
 // Summary: Upstream implements the upstream.Upstream interface for filesystem services.
+type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer
 	checker health.Checker
 }
 
-// NewUpstream creates a new instance of FilesystemUpstream.
 // NewUpstream creates a new instance of FilesystemUpstream.
 //
 // Summary: NewUpstream creates a new instance of FilesystemUpstream.
@@ -53,12 +53,12 @@ import (
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - upstream.Upstream: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
+func NewUpstream() upstream.Upstream {
+	return &Upstream{
+		closers: make([]io.Closer, 0),
+	}
+}
+
 // Shutdown implements the upstream.Upstream interface.
 //
 // Summary: Shutdown implements the upstream.Upstream interface.
@@ -74,19 +74,19 @@ import (
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Parameters:
-//   - _ (context.Context): The provided _ data.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
+	defer u.mu.Unlock()
+	if u.checker != nil {
+		u.checker.Stop()
+	}
+	for _, c := range u.closers {
+		_ = c.Close()
+	}
+	u.closers = nil
+	return nil
+}
+
 // Register processes the configuration for a filesystem service.
 //
 // Summary: Register processes the configuration for a filesystem service.
@@ -96,20 +96,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The provided serviceconfig data.
 //   - toolManager (tool.ManagerInterface): The provided toolmanager data.
 //   - _ (prompt.ManagerInterface): The provided _ data.
-//   - _ (resource.ManagerInterface): The provided _ data.
-//   - _ (bool): A flag indicating whether _ is enabled.
-//
-// Returns:
-//   - string: The resulting text.
-//   - []*configv1.ToolDefinition: The resulting object or data structure.
-//   - []*configv1.ResourceDefinition: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - _ (resource.ManagerInterface): The provided _ data.
 //   - _ (bool): A flag indicating whether _ is enabled.
 //

@@ -28,8 +28,6 @@ import (
 // ProviderFactory is a function that creates an EmbeddingProvider.
 //
 // Summary: ProviderFactory is a function that creates an EmbeddingProvider.
-//
-// Summary: ProviderFactory is a function that creates an EmbeddingProvider.
 type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error)
 
 // CachingMiddleware is a tool execution middleware that provides caching
@@ -39,9 +37,7 @@ var (
 	metricCacheMisses = []string{"cache", "misses"}
 	metricCacheSkips  = []string{"cache", "skips"}
 	metricCacheErrors = []string{"cache", "errors"}
-// CachingMiddleware handles caching of tool execution results.
-//
-// Summary: CachingMiddleware handles caching of tool execution results.
+)
 
 // CachingMiddleware handles caching of tool execution results.
 //
@@ -51,6 +47,10 @@ type CachingMiddleware struct {
 	toolManager     tool.ManagerInterface
 	semanticCaches  sync.Map
 	initMu          sync.Mutex // Guards semantic cache initialization
+	providerFactory ProviderFactory
+	hasherPool      *sync.Pool
+}
+
 // NewCachingMiddleware creates a new CachingMiddleware. toolManager is the toolManager. Returns the result.
 //
 // Summary: NewCachingMiddleware creates a new CachingMiddleware. toolManager is the toolManager. Returns the result.
@@ -60,12 +60,6 @@ type CachingMiddleware struct {
 //
 // Returns:
 //   - *CachingMiddleware: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Errors:
 //   - None.
@@ -124,6 +118,12 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 
 			if providerType == "openai" {
 				return NewOpenAIEmbeddingProvider(apiKey, model), nil
+			}
+			return nil, fmt.Errorf("unknown provider: %s", providerType)
+		},
+	}
+}
+
 // SetProviderFactory allows overriding the default provider factory for testing. factory is the factory.
 //
 // Summary: SetProviderFactory allows overriding the default provider factory for testing. factory is the factory.
@@ -139,10 +139,10 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Returns:
-//   - None.
-//
-// Errors:
+func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
+	m.providerFactory = factory
+}
+
 // Execute executes the caching middleware. ctx is the context for the request. req is the request object. next is the next. Returns the result. Returns an error if the operation fails.
 //
 // Summary: Execute executes the caching middleware. ctx is the context for the request. req is the request object. next is the next. Returns the result. Returns an error if the operation fails.
@@ -151,16 +151,6 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 //   - ctx (context.Context): The cancellation and deadline context.
 //   - req (*tool.ExecutionRequest): The incoming request payload.
 //   - next (tool.ExecutionFunc): The provided next data.
-//
-// Returns:
-//   - any: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Returns:
 //   - any: The resulting object or data structure.
@@ -453,21 +443,19 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	var sb strings.Builder
 	// 32 is hex encoded length of 16 bytes
 	sb.Grow(len(req.ToolName) + 1 + 32)
+	sb.WriteString(req.ToolName)
+	sb.WriteByte(':')
+
+	var hexBuf [32]byte
+	encodedLen := hex.Encode(hexBuf[:], hashBytes)
+	sb.Write(hexBuf[:encodedLen])
+
+	return sb.String()
+}
+
 // Clear clears the cache. ctx is the context for the request. Returns an error if the operation fails.
 //
 // Summary: Clear clears the cache. ctx is the context for the request. Returns an error if the operation fails.
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Parameters:
 //   - ctx (context.Context): The cancellation and deadline context.

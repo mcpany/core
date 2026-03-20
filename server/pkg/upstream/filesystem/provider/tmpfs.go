@@ -12,10 +12,10 @@ import (
 // TmpfsProvider provides access to a temporary in-memory filesystem.
 //
 // Summary: TmpfsProvider provides access to a temporary in-memory filesystem.
-//
-// Summary: TmpfsProvider provides access to a temporary in-memory filesystem.
 type TmpfsProvider struct {
 	fs afero.Fs
+}
+
 // NewTmpfsProvider creates a new TmpfsProvider.
 //
 // Summary: NewTmpfsProvider creates a new TmpfsProvider.
@@ -31,12 +31,12 @@ type TmpfsProvider struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - None.
-//
-// Returns:
-//   - *TmpfsProvider: The resulting object or data structure.
-//
-// Errors:
+func NewTmpfsProvider() *TmpfsProvider {
+	return &TmpfsProvider{
+		fs: afero.NewMemMapFs(),
+	}
+}
+
 // GetFs returns the underlying filesystem.
 //
 // Summary: GetFs returns the underlying filesystem.
@@ -52,10 +52,10 @@ type TmpfsProvider struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-	}
+func (p *TmpfsProvider) GetFs() afero.Fs {
+	return p.fs
 }
 
-// GetFs returns the underlying filesystem.
 // ResolvePath resolves the virtual path to a real path.
 //
 // Summary: ResolvePath resolves the virtual path to a real path.
@@ -67,31 +67,6 @@ type TmpfsProvider struct {
 //   - string: The resulting text.
 //   - error: An error if the execution fails, otherwise nil.
 //
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-func (p *TmpfsProvider) GetFs() afero.Fs {
-	return p.fs
-}
-
-// ResolvePath resolves the virtual path to a real path.
-// Close closes the provider.
-//
-// Summary: Close closes the provider.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Errors:
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //

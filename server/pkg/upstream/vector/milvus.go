@@ -17,11 +17,11 @@ import (
 // MilvusClient implements VectorClient for Milvus.
 //
 // Summary: MilvusClient implements VectorClient for Milvus.
-//
-// Summary: MilvusClient implements VectorClient for Milvus.
 type MilvusClient struct {
 	config *configv1.MilvusVectorDB
 	client client.Client
+}
+
 // NewMilvusClient creates a new Milvus client.
 //
 // Summary: NewMilvusClient creates a new Milvus client.
@@ -34,10 +34,6 @@ type MilvusClient struct {
 //   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
@@ -78,6 +74,10 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 
 	return &MilvusClient{
 		config: config,
+		client: c,
+	}, nil
+}
+
 // Query searches for similar vectors.
 //
 // Summary: Query searches for similar vectors.
@@ -88,16 +88,6 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 //   - topK (int64): The numeric value for topk.
 //   - filter (map[string]interface{}): The textual representation of filter.
 //   - namespace (string): The human-readable or system name.
-//
-// Returns:
-//   - map[string]interface{}: The resulting text.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Returns:
 //   - map[string]interface{}: The resulting text.
@@ -209,24 +199,18 @@ func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, 
 					}
 				}
 			}
+			match["metadata"] = metadata
+			matches = append(matches, match)
+		}
+	}
+
+	return map[string]interface{}{
+		"matches": matches,
+	}, nil
+}
+
 // Upsert inserts or updates vectors.
 //
-// Summary: Upsert inserts or updates vectors.
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - vectors ([]map[string]interface{}): The textual representation of vectors.
-//   - namespace (string): The human-readable or system name.
-//
-// Returns:
-//   - map[string]interface{}: The resulting text.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Summary: Upsert inserts or updates vectors.
 //
 // Parameters:
@@ -430,25 +414,19 @@ func fillMetadataColumn(col entity.Column, i int, val interface{}) {
 		col.(*entity.ColumnFloat).Data()[i] = v
 	case entity.FieldTypeDouble:
 		var v float64
-// Delete removes vectors.
-//
-// Summary: Delete removes vectors.
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - ids ([]string): The textual representation of ids.
-//   - namespace (string): The human-readable or system name.
-//   - filter (map[string]interface{}): The textual representation of filter.
-//
-// Returns:
-//   - map[string]interface{}: The resulting text.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+		switch t := val.(type) {
+		case float64:
+			v = t
+		case float32:
+			v = float64(t)
+		}
+		col.(*entity.ColumnDouble).Data()[i] = v
+	case entity.FieldTypeBool:
+		var v bool
+		if b, ok := val.(bool); ok {
+			v = b
+		}
+		col.(*entity.ColumnBool).Data()[i] = v
 	}
 }
 
@@ -507,23 +485,17 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 				parts = append(parts, fmt.Sprintf("%s == \"%s\"", k, s))
 			} else {
 				parts = append(parts, fmt.Sprintf("%s == %v", k, v))
-// DescribeIndexStats returns statistics about the index.
-//
-// Summary: DescribeIndexStats returns statistics about the index.
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - _ (map[string]interface{}): The textual representation of _.
-//
-// Returns:
-//   - map[string]interface{}: The resulting text.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+			}
+		}
+		expr = strings.Join(parts, " && ")
+	default:
+		return nil, fmt.Errorf("must provide ids or filter")
+	}
+
+	partitionName := ""
+	if namespace != "" {
+		partitionName = namespace
+	}
 
 	err := c.client.Delete(ctx, c.config.GetCollectionName(), partitionName, expr)
 	if err != nil {

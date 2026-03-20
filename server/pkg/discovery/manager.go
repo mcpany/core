@@ -15,23 +15,23 @@ import (
 // ProviderStatus represents the status of a discovery provider.
 //
 // Summary: ProviderStatus represents the status of a discovery provider.
-//
-// Summary: ProviderStatus represents the status of a discovery provider.
 type ProviderStatus struct {
 	Name            string
 	Status          string // "OK", "ERROR"
 	LastError       string
 	LastRunAt       time.Time
 	DiscoveredCount int
-// Manager manages auto-discovery providers.
-//
-// Summary: Manager manages auto-discovery providers.
+}
 
 // Manager manages auto-discovery providers.
 //
 // Summary: Manager manages auto-discovery providers.
 type Manager struct {
 	providers []Provider
+	mu        sync.RWMutex
+	statuses  map[string]*ProviderStatus
+}
+
 // NewManager creates a new discovery manager.
 //
 // Summary: NewManager creates a new discovery manager.
@@ -47,12 +47,12 @@ type Manager struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+func NewManager() *Manager {
+	return &Manager{
+		statuses: make(map[string]*ProviderStatus),
+	}
+}
+
 // RegisterProvider registers a new provider.
 //
 // Summary: RegisterProvider registers a new provider.
@@ -68,31 +68,21 @@ type Manager struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (m *Manager) RegisterProvider(p Provider) {
 	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.providers = append(m.providers, p)
+	m.statuses[p.Name()] = &ProviderStatus{
+		Name:   p.Name(),
+		Status: "PENDING",
+	}
+}
+
 // Run runs all registered providers and returns the aggregated discovered services. It also updates the internal status of each provider.
 //
 // Summary: Run runs all registered providers and returns the aggregated discovered services. It also updates the internal status of each provider.
 //
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//
-// Returns:
-//   - []*configv1.UpstreamServiceConfig: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - ctx (context.Context): The cancellation and deadline context.
 //
 // Returns:
@@ -140,6 +130,16 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 				status.Status = "OK"
 				status.DiscoveredCount = len(services)
 				allServices = append(allServices, services...)
+			}
+			m.statuses[p.Name()] = status
+		}(p)
+	}
+
+	wg.Wait()
+
+	return allServices
+}
+
 // GetStatuses returns the current status of all providers.
 //
 // Summary: GetStatuses returns the current status of all providers.
@@ -155,37 +155,23 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - []*ProviderStatus: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (m *Manager) GetStatuses() []*ProviderStatus {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
+
+	statuses := make([]*ProviderStatus, 0, len(m.statuses))
+	for _, s := range m.statuses {
+		// Copy to avoid race conditions if caller modifies it (though we return pointers to structs created in Run)
+		// But map iteration order is random, maybe sort?
+		// For now just return list.
+		sCopy := *s
+		statuses = append(statuses, &sCopy)
+	}
+	return statuses
+}
+
 // GetProviderStatus returns the status of a specific provider.
 //
-// Summary: GetProviderStatus returns the status of a specific provider.
-//
-// Parameters:
-//   - name (string): The human-readable or system name.
-//
-// Returns:
-//   - *ProviderStatus: The resulting object or data structure.
-//   - bool: True if successful or valid, false otherwise.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Summary: GetProviderStatus returns the status of a specific provider.
 //
 // Parameters:

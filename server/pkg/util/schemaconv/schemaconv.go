@@ -16,8 +16,6 @@ import (
 // JSON schema types.
 //
 // Summary: JSON schema types.
-//
-// Summary: JSON schema types.
 const (
 	// TypeNumber represents a JSON number type.
 	TypeNumber = "number"
@@ -31,11 +29,13 @@ const (
 	TypeArray = "array"
 	// TypeString represents a JSON string type.
 	TypeString = "string"
+)
+
 // MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
 //
 // Summary: MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
+const MaxRecursionDepth = 10
 
-// MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
 // MethodDescriptorToProtoProperties converts the fields of a method's input
 //
 // Summary: MethodDescriptorToProtoProperties converts the fields of a method's input
@@ -52,26 +52,10 @@ const (
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Returns:
-//   - *structpb.Struct: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-// MethodOutputDescriptorToProtoProperties converts the fields of a method's
-//
-// Summary: MethodOutputDescriptorToProtoProperties converts the fields of a method's
-//
-// Parameters:
-//   - methodDesc (protoreflect.MethodDescriptor): The provided methoddesc data.
-//
-// Returns:
-//   - *structpb.Struct: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
+	return fieldsToProperties(methodDesc.Input().Fields(), 0)
+}
+
 // MethodOutputDescriptorToProtoProperties converts the fields of a method's
 //
 // Summary: MethodOutputDescriptorToProtoProperties converts the fields of a method's
@@ -166,9 +150,7 @@ func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]in
 	case protoreflect.EnumKind:
 		schema["type"] = TypeString
 		enumVals := field.Enum().Values()
-// ConfigParameter an interface for config parameter schemas.
-//
-// Summary: ConfigParameter an interface for config parameter schemas.
+		var values []interface{}
 		for i := 0; i < enumVals.Len(); i++ {
 			values = append(values, string(enumVals.Get(i).Name()))
 		}
@@ -177,9 +159,7 @@ func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]in
 		schema["type"] = TypeObject
 		nestedProps, err := fieldsToProperties(field.Message().Fields(), depth+1)
 		if err != nil {
-// McpFieldParameter an interface for McpField parameter schemas.
-//
-// Summary: McpFieldParameter an interface for McpField parameter schemas.
+			return nil, fmt.Errorf("failed to process nested message %s: %w", field.Name(), err)
 		}
 		schema["properties"] = nestedProps.AsMap()
 	}
@@ -203,23 +183,17 @@ type ConfigParameter interface {
 type McpFieldParameter interface {
 	// GetName returns the name of the parameter.
 	//
-// ConfigSchemaToProtoProperties converts a slice of parameter schema definitions
-//
-// Summary: ConfigSchemaToProtoProperties converts a slice of parameter schema definitions
-//
-// Parameters:
-//   - params ([]T): The provided params data.
-//
-// Returns:
-//   - *structpb.Struct: The resulting object or data structure.
-//   - []string: The resulting text.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+	// Returns:
+	//   - string: The name of the parameter.
+	GetName() string
+	// GetDescription returns the description of the parameter.
+	//
+	// Returns:
+	//   - string: The description of the parameter.
+	GetDescription() string
+	// GetType returns the type of the parameter.
+	//
+	// Returns:
 	//   - string: The type of the parameter.
 	GetType() string
 	// GetIsRepeated returns true if the parameter is a repeated field (array).
@@ -255,22 +229,16 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 		if paramSchema == nil {
 			continue
 		}
-// McpFieldsToProtoProperties converts a slice of McpField definitions into a
-//
-// Summary: McpFieldsToProtoProperties converts a slice of McpField definitions into a
-//
-// Parameters:
-//   - params ([]T): The provided params data.
-//
-// Returns:
-//   - *structpb.Struct: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+
+		if paramSchema.GetIsRequired() {
+			required = append(required, paramSchema.GetName())
+		}
+
+		typeStr := strings.ToLower(configv1.ParameterType_name[int32(paramSchema.GetType())])
+		if typeStr == "" {
+			typeStr = TypeString
+		}
+		paramStruct := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
 				"type":        structpb.NewStringValue(typeStr),
 				"description": structpb.NewStringValue(paramSchema.GetDescription()),

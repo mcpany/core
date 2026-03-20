@@ -18,11 +18,11 @@ import (
 // RootsTool implements the Tool interface for listing roots.
 //
 // Summary: RootsTool implements the Tool interface for listing roots.
+type RootsTool struct {
 	tool    *v1.Tool
 	mcpTool *mcp.Tool
 }
 
-// NewRootsTool creates a new instance of the RootsTool.
 // NewRootsTool creates a new instance of the RootsTool.
 //
 // Summary: NewRootsTool creates a new instance of the RootsTool.
@@ -31,13 +31,6 @@ import (
 //   - None.
 //
 // Returns:
-//   - *RootsTool: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - *RootsTool: The resulting object or data structure.
 //
 // Errors:
@@ -59,6 +52,13 @@ func NewRootsTool() *RootsTool {
 		ServiceId:   proto.String("builtin"),
 	}.Build()
 
+	mcpTool, _ := tool.ConvertProtoToMCPTool(t)
+	return &RootsTool{
+		tool:    t,
+		mcpTool: mcpTool,
+	}
+}
+
 // Tool returns the protobuf definition of the tool.
 //
 // Summary: Tool returns the protobuf definition of the tool.
@@ -74,10 +74,10 @@ func NewRootsTool() *RootsTool {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Tool returns the protobuf definition of the tool.
-//
-// Summary: Tool returns the protobuf definition of the tool.
-//
+func (t *RootsTool) Tool() *v1.Tool {
+	return t.tool
+}
+
 // MCPTool returns the MCP-compliant tool definition.
 //
 // Summary: MCPTool returns the MCP-compliant tool definition.
@@ -93,10 +93,10 @@ func NewRootsTool() *RootsTool {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+func (t *RootsTool) MCPTool() *mcp.Tool {
+	return t.mcpTool
+}
+
 // Execute executes the "mcp:list_roots" tool.
 //
 // Summary: Execute executes the "mcp:list_roots" tool.
@@ -110,39 +110,6 @@ func NewRootsTool() *RootsTool {
 //   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-func (t *RootsTool) MCPTool() *mcp.Tool {
-	return t.mcpTool
-}
-
-// Execute executes the "mcp:list_roots" tool.
-//
-// Summary: Execute executes the "mcp:list_roots" tool.
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-// GetCacheConfig returns the caching configuration for this tool.
-//
-// Summary: GetCacheConfig returns the caching configuration for this tool.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - *configv1.CacheConfig: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:

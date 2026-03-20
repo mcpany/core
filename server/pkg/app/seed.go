@@ -21,7 +21,6 @@ import (
 // SeedRequest defines the payload for seeding the database.
 //
 // Summary: SeedRequest defines the payload for seeding the database.
-// Summary: SeedRequest defines the payload for seeding the database.
 type SeedRequest struct {
 	ServicesRaw    []json.RawMessage `json:"upstream_services"`
 	CredentialsRaw []json.RawMessage `json:"credentials"`

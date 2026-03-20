@@ -23,30 +23,18 @@ import (
 // ClientFactory is a function that creates a VectorClient.
 //
 // Summary: ClientFactory is a function that creates a VectorClient.
-//
-// Summary: ClientFactory is a function that creates a VectorClient.
-// Upstream implements the upstream.Upstream interface for vector database services.
-//
-// Summary: Upstream implements the upstream.Upstream interface for vector database services.
+type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
 
 // Upstream implements the upstream.Upstream interface for vector database services.
 //
 // Summary: Upstream implements the upstream.Upstream interface for vector database services.
+type Upstream struct {
+	clientFactory ClientFactory
+}
+
 // NewUpstream creates a new instance of VectorUpstream.
 //
 // Summary: NewUpstream creates a new instance of VectorUpstream.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - upstream.Upstream: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Parameters:
 //   - None.
@@ -63,6 +51,18 @@ func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		clientFactory: defaultClientFactory,
 	}
+}
+
+func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error) {
+	if t := config.GetPinecone(); t != nil {
+		return NewPineconeClient(t)
+	}
+	if t := config.GetMilvus(); t != nil {
+		return NewMilvusClient(t)
+	}
+	return nil, fmt.Errorf("unsupported vector database type")
+}
+
 // Shutdown implements the upstream.Upstream interface.
 //
 // Summary: Shutdown implements the upstream.Upstream interface.
@@ -78,10 +78,10 @@ func NewUpstream() upstream.Upstream {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Summary: Shutdown implements the upstream.Upstream interface.
-//
-// Parameters:
+func (u *Upstream) Shutdown(_ context.Context) error {
+	return nil
+}
+
 // Register processes the configuration for a vector service. _ is an unused parameter. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
 // Summary: Register processes the configuration for a vector service. _ is an unused parameter. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
@@ -89,22 +89,6 @@ func NewUpstream() upstream.Upstream {
 // Parameters:
 //   - _ (context.Context): The provided _ data.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The provided serviceconfig data.
-//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
-//   - _ (prompt.ManagerInterface): The provided _ data.
-//   - _ (resource.ManagerInterface): The provided _ data.
-//   - _ (bool): A flag indicating whether _ is enabled.
-//
-// Returns:
-//   - string: The resulting text.
-//   - []*configv1.ToolDefinition: The resulting object or data structure.
-//   - []*configv1.ResourceDefinition: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - toolManager (tool.ManagerInterface): The provided toolmanager data.
 //   - _ (prompt.ManagerInterface): The provided _ data.
 //   - _ (resource.ManagerInterface): The provided _ data.
@@ -202,6 +186,22 @@ func (u *Upstream) Register(
 			continue
 		}
 
+		if err := toolManager.AddTool(callableTool); err != nil {
+			log.Error("Failed to add tool", "tool", toolName, "error", err)
+			continue
+		}
+
+		discoveredTools = append(discoveredTools, toolDef)
+	}
+
+	log.Info("Registered vector service", "serviceID", serviceID, "tools", len(discoveredTools))
+	return serviceID, discoveredTools, nil, nil
+}
+
+type vectorCallable struct {
+	handler func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
+}
+
 // Call executes the vector tool with the given arguments.
 //
 // Summary: Call executes the vector tool with the given arguments.
@@ -216,24 +216,6 @@ func (u *Upstream) Register(
 //
 // Errors:
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-//
-// Summary: Call executes the vector tool with the given arguments.
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - req (*tool.ExecutionRequest): The incoming request payload.
-//
-// Returns:
-//   - any: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-// Client interface for different vector DB implementations.
-//
-// Summary: Client interface for different vector DB implementations.
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.

@@ -17,21 +17,21 @@ import (
 // SessionState represents the shared state for a recursive context session.
 //
 // Summary: SessionState represents the shared state for a recursive context session.
-//
-// Summary: SessionState represents the shared state for a recursive context session.
 type SessionState struct {
 	ID        string                 `json:"id"`
 	Data      map[string]interface{} `json:"data"`
 	CreatedAt time.Time              `json:"created_at"`
 	ExpiresAt time.Time              `json:"expires_at"`
-// RecursiveContextManager manages the shared context sessions (Blackboard).
-//
-// Summary: RecursiveContextManager manages the shared context sessions (Blackboard).
+}
 
 // RecursiveContextManager manages the shared context sessions (Blackboard).
 //
 // Summary: RecursiveContextManager manages the shared context sessions (Blackboard).
 type RecursiveContextManager struct {
+	mu       sync.RWMutex
+	sessions map[string]*SessionState
+}
+
 // NewRecursiveContextManager initializes and returns a new RecursiveContextManager.
 //
 // Summary: NewRecursiveContextManager initializes and returns a new RecursiveContextManager.
@@ -47,12 +47,12 @@ type RecursiveContextManager struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+func NewRecursiveContextManager() *RecursiveContextManager {
+	return &RecursiveContextManager{
+		sessions: make(map[string]*SessionState),
+	}
+}
+
 // CreateSession generates a new recursive context session with the provided data and expiration time.
 //
 // Summary: CreateSession generates a new recursive context session with the provided data and expiration time.
@@ -62,13 +62,6 @@ type RecursiveContextManager struct {
 //   - ttl (time.Duration): The provided ttl data.
 //
 // Returns:
-//   - *SessionState: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - *SessionState: The resulting object or data structure.
 //
 // Errors:
@@ -93,6 +86,13 @@ func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl
 	// Simple cleanup of expired sessions
 	for k, v := range m.sessions {
 		if now.After(v.ExpiresAt) {
+			delete(m.sessions, k)
+		}
+	}
+
+	return session
+}
+
 // GetSession retrieves an active context session by its unique identifier.
 //
 // Summary: GetSession retrieves an active context session by its unique identifier.
@@ -109,35 +109,25 @@ func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Returns:
-//   - *SessionState: The resulting object or data structure.
-//   - bool: True if successful or valid, false otherwise.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
 	session, exists := m.sessions[id]
+	if !exists {
+		return nil, false
+	}
+	if time.Now().After(session.ExpiresAt) {
+		return nil, false
+	}
+	return session, true
+}
+
 // APIHandler constructs an HTTP handler function for managing Recursive Context Protocol endpoints.
 //
 // Summary: APIHandler constructs an HTTP handler function for managing Recursive Context Protocol endpoints.
 //
 // Parameters:
-//   - None.
-//
-// Returns:
-//   - http.HandlerFunc: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - None.
 //
 // Returns:
@@ -195,33 +185,29 @@ func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(session)
-// RecursiveContextKeyType is a custom type for context keys to avoid collisions.
-//
-// Summary: RecursiveContextKeyType is a custom type for context keys to avoid collisions.
+			return
 		}
 
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-// RecursiveContextDataKey is the key used to store the recursive context data in the request context.
-//
-// Summary: RecursiveContextDataKey is the key used to store the recursive context data in the request context.
+	}
 }
 
 // contextKey is a custom type for context keys to avoid collisions.
+
+
+// RecursiveContextKeyType is a custom type for context keys to avoid collisions.
+//
+// Summary: RecursiveContextKeyType is a custom type for context keys to avoid collisions.
+type RecursiveContextKeyType string
+
+const (
+// RecursiveContextDataKey is the key used to store the recursive context data in the request context.
+//
+// Summary: RecursiveContextDataKey is the key used to store the recursive context data in the request context.
+	RecursiveContextDataKey RecursiveContextKeyType = "recursive_context_data"
+)
+
 // HandleContext intercepts HTTP requests to inject recursive context state based on the X-MCP-Parent-Context-ID header.
-//
-// Summary: HandleContext intercepts HTTP requests to inject recursive context state based on the X-MCP-Parent-Context-ID header.
-//
-// Parameters:
-//   - next (http.Handler): The provided next data.
-//
-// Returns:
-//   - http.Handler: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Summary: HandleContext intercepts HTTP requests to inject recursive context state based on the X-MCP-Parent-Context-ID header.
 //

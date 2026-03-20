@@ -55,8 +55,6 @@ type Upstream struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -70,6 +68,8 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 		return nil
 	}
 	return nil
+}
+
 // Shutdown gracefully terminates the WebSocket upstream service by shutting down
 //
 // Summary: Shutdown gracefully terminates the WebSocket upstream service by shutting down
@@ -85,20 +85,20 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
 		if c, ok := u.checker.(interface{ Stop() }); ok {
 			c.Stop()
+		}
+	}
+	serviceID := u.serviceID
+	u.mu.Unlock()
+
+	u.poolManager.Deregister(serviceID)
+	return nil
+}
+
 // NewUpstream creates a new instance of WebsocketUpstream.
 //
 // Summary: NewUpstream creates a new instance of WebsocketUpstream.
@@ -114,35 +114,12 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
+func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
+	return &Upstream{
+		poolManager: poolManager,
+	}
 }
 
-// NewUpstream creates a new instance of WebsocketUpstream.
-//
-// Summary: NewUpstream creates a new instance of WebsocketUpstream.
-//
-// Register processes the configuration for a WebSocket service. It creates a
-//
-// Summary: Register processes the configuration for a WebSocket service. It creates a
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The provided serviceconfig data.
-//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
-//   - promptManager (prompt.ManagerInterface): The provided promptmanager data.
-//   - resourceManager (resource.ManagerInterface): The provided resourcemanager data.
-//   - isReload (bool): A flag indicating whether isreload is enabled.
-//
-// Returns:
-//   - string: The resulting text.
-//   - []*configv1.ToolDefinition: The resulting object or data structure.
-//   - []*configv1.ResourceDefinition: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Register processes the configuration for a WebSocket service. It creates a
 //
 // Summary: Register processes the configuration for a WebSocket service. It creates a

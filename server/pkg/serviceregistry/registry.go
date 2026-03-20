@@ -27,11 +27,10 @@ import (
 // ErrServiceAlreadyRegistered is returned when attempting to register a service that is already active.
 //
 // Summary: ErrServiceAlreadyRegistered is returned when attempting to register a service that is already active.
-//
-// Summary: ErrServiceAlreadyRegistered is returned when attempting to register a service that is already active.
+var ErrServiceAlreadyRegistered = errors.New("service already registered")
+
 // ServiceRegistryInterface defines the interface for a service registry.
 //
-// Summary: ServiceRegistryInterface defines the interface for a service registry.
 // Summary: ServiceRegistryInterface defines the interface for a service registry.
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
@@ -98,6 +97,7 @@ type ServiceRegistryInterface interface { //nolint:revive
 	//   - bool: True if an error is present, false otherwise.
 	GetServiceError(serviceID string) (string, bool)
 }
+
 // ServiceRegistry is the concrete implementation of ServiceRegistryInterface.
 //
 // Summary: ServiceRegistry is the concrete implementation of ServiceRegistryInterface.
@@ -134,11 +134,6 @@ type ServiceRegistry struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManager prompt.ManagerInterface, resourceManager resource.ManagerInterface, authManager *auth.Manager) *ServiceRegistry {
 	return &ServiceRegistry{
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
@@ -149,6 +144,11 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 		factory:         factory,
 		toolManager:     toolManager,
 		promptManager:   promptManager,
+		resourceManager: resourceManager,
+		authManager:     authManager,
+	}
+}
+
 // RegisterService handles the registration of a new upstream service.
 //
 // Summary: RegisterService handles the registration of a new upstream service.
@@ -168,6 +168,11 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
+func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error) {
+	r.mu.Lock()
+
+	serviceID, err := util.SanitizeServiceName(serviceConfig.GetName())
+	if err != nil {
 		r.mu.Unlock()
 		return "", nil, nil, fmt.Errorf("failed to generate service key: %w", err)
 	}
@@ -295,11 +300,6 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 // Summary: AddServiceInfo stores metadata about a service.
 //
 // Parameters:
-// AddServiceInfo stores metadata about a service.
-//
-// Summary: AddServiceInfo stores metadata about a service.
-//
-// Parameters:
 //   - serviceID (string): The textual representation of serviceid.
 //   - info (*tool.ServiceInfo): The provided info data.
 //
@@ -311,12 +311,12 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	r.serviceInfo[serviceID] = info
+}
+
 // GetServiceInfo retrieves the metadata for a registered service.
 //
 // Summary: GetServiceInfo retrieves the metadata for a registered service.
@@ -325,14 +325,6 @@ func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInf
 //   - serviceID (string): The textual representation of serviceid.
 //
 // Returns:
-//   - *tool.ServiceInfo: The resulting object or data structure.
-//   - bool: True if successful or valid, false otherwise.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - *tool.ServiceInfo: The resulting object or data structure.
 //   - bool: True if successful or valid, false otherwise.
 //
@@ -352,6 +344,14 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 	// Clone ServiceInfo to avoid modifying internal state
 	clonedInfo := *info // Shallow copy of struct
 	if info.Config != nil {
+		clonedConfig := proto.Clone(info.Config).(*config.UpstreamServiceConfig)
+		util.StripSecretsFromService(clonedConfig)
+		r.injectRuntimeInfo(clonedConfig)
+		clonedInfo.Config = clonedConfig
+	}
+	return &clonedInfo, true
+}
+
 // GetServiceConfig retrieves the configuration for a registered service.
 //
 // Summary: GetServiceConfig retrieves the configuration for a registered service.
@@ -368,35 +368,23 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Parameters:
-//   - serviceID (string): The textual representation of serviceid.
-//
-// Returns:
-//   - *config.UpstreamServiceConfig: The resulting object or data structure.
-//   - bool: True if successful or valid, false otherwise.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	serviceConfig, ok := r.serviceConfigs[serviceID]
+	if !ok {
+		return nil, false
+	}
+	cloned := proto.Clone(serviceConfig).(*config.UpstreamServiceConfig)
+	util.StripSecretsFromService(cloned)
+	r.injectRuntimeInfo(cloned)
+	return cloned, true
+}
+
 // UnregisterService removes a service from the registry.
 //
 // Summary: UnregisterService removes a service from the registry.
 //
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - serviceName (string): The human-readable or system name.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Parameters:
 //   - ctx (context.Context): The cancellation and deadline context.
 //   - serviceName (string): The human-readable or system name.
@@ -430,6 +418,18 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 		}
 		logging.GetLogger().Info("Upstream shutdown complete", "service", serviceName)
 		delete(r.upstreams, serviceID)
+	}
+
+	delete(r.serviceConfigs, serviceID)
+	delete(r.serviceInfo, serviceID)
+	delete(r.serviceErrors, serviceID)
+	r.toolManager.ClearToolsForService(serviceID)
+	r.promptManager.ClearPromptsForService(serviceID)
+	r.resourceManager.ClearResourcesForService(serviceID)
+	r.authManager.RemoveAuthenticator(serviceID)
+	return shutdownErr
+}
+
 // GetServiceError returns the last known error for a service.
 //
 // Summary: GetServiceError returns the last known error for a service.
@@ -446,32 +446,7 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-
-// GetServiceError returns the last known error for a service.
-//
-// Summary: GetServiceError returns the last known error for a service.
-//
-// Parameters:
-//   - serviceID (string): The textual representation of serviceid.
-//
-// Returns:
-//   - string: The resulting text.
-// StartHealthChecks initiates a background loop to periodically check the health of services.
-//
-// Summary: StartHealthChecks initiates a background loop to periodically check the health of services.
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - interval (time.Duration): The provided interval data.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	if err, ok := r.serviceErrors[serviceID]; ok {
@@ -545,21 +520,19 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 					// Use a short timeout for health checks
 					checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 					if err := checker.CheckHealth(checkCtx); err != nil {
-// Close gracefully shuts down the registry and all registered services.
-//
-// Summary: Close gracefully shuts down the registry and all registered services.
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+						errStr = err.Error()
+					}
+					cancel()
+				}
+
+				r.mu.Lock()
+				if errStr != "" {
+					r.healthErrors[j.id] = errStr
+				} else {
+					delete(r.healthErrors, j.id)
+				}
+				r.mu.Unlock()
+			}
 		}()
 	}
 
@@ -577,22 +550,14 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 // Summary: Close gracefully shuts down the registry and all registered services.
 //
 // Parameters:
-// GetAllServices returns a list of all registered services.
-//
-// Summary: GetAllServices returns a list of all registered services.
-//
-// Parameters:
-//   - None.
+//   - ctx (context.Context): The cancellation and deadline context.
 //
 // Returns:
-//   - []*config.UpstreamServiceConfig: The resulting object or data structure.
 //   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Side Effects:
 //   - May modify internal state or perform external network calls.
 func (r *ServiceRegistry) Close(ctx context.Context) error {

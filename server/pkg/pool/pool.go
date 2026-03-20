@@ -21,10 +21,7 @@ var (
 // ErrPoolClosed is returned when an operation is attempted on a closed pool.
 //
 // Summary: ErrPoolClosed is returned when an operation is attempted on a closed pool.
-//
-// ErrPoolFull is returned when the pool has reached its maximum capacity and
-//
-// Summary: ErrPoolFull is returned when the pool has reached its maximum capacity and
+	ErrPoolClosed = fmt.Errorf("pool has been closed")
 // ErrPoolFull is returned when the pool has reached its maximum capacity and
 //
 // Summary: ErrPoolFull is returned when the pool has reached its maximum capacity and

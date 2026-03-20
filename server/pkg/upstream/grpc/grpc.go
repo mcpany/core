@@ -39,6 +39,7 @@ import (
 // Upstream implements the upstream.Upstream interface for gRPC services.
 //
 // Summary: Upstream implements the upstream.Upstream interface for gRPC services.
+type Upstream struct {
 	poolManager     *pool.Manager
 	reflectionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]
 	toolManager     tool.ManagerInterface
@@ -47,7 +48,6 @@ import (
 	mu              sync.RWMutex
 }
 
-// CheckHealth performs a health check on the upstream service.
 // CheckHealth performs a health check on the upstream service.
 //
 // Summary: CheckHealth performs a health check on the upstream service.
@@ -63,10 +63,6 @@ import (
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -78,6 +74,10 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 			return fmt.Errorf("health check failed: %v", res)
 		}
 		return nil
+	}
+	return nil
+}
+
 // NewUpstream creates a new instance of Upstream.
 //
 // Summary: NewUpstream creates a new instance of Upstream.
@@ -93,18 +93,18 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Returns:
-//   - upstream.Upstream: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),
+	)
+	go cache.Start()
+
+	return &Upstream{
+		poolManager:     poolManager,
+		reflectionCache: cache,
+	}
+}
+
 // Shutdown gracefully terminates the gRPC upstream service by shutting down the
 //
 // Summary: Shutdown gracefully terminates the gRPC upstream service by shutting down the
@@ -120,21 +120,21 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Parameters:
-//   - _ (context.Context): The provided _ data.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
 		if c, ok := u.checker.(interface{ Stop() }); ok {
+			c.Stop()
+		}
+	}
+	serviceID := u.serviceID
+	u.mu.Unlock()
+
+	u.reflectionCache.Stop()
+	u.poolManager.Deregister(serviceID)
+	return nil
+}
+
 // Register handles the registration of a gRPC upstream service. It establishes a
 //
 // Summary: Register handles the registration of a gRPC upstream service. It establishes a
@@ -147,17 +147,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - resourceManager (resource.ManagerInterface): The provided resourcemanager data.
 //   - isReload (bool): A flag indicating whether isreload is enabled.
 //
-// Returns:
-//   - string: The resulting text.
-//   - []*configv1.ToolDefinition: The resulting object or data structure.
-//   - []*configv1.ResourceDefinition: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Returns:
 //   - string: The resulting text.
 //   - []*configv1.ToolDefinition: The resulting object or data structure.

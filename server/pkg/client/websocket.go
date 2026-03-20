@@ -13,10 +13,10 @@ import (
 // WebsocketClientWrapper wraps a *websocket.Conn to adapt it for use in a
 //
 // Summary: WebsocketClientWrapper wraps a *websocket.Conn to adapt it for use in a
-// Summary: WebsocketClientWrapper wraps a *websocket.Conn to adapt it for use in a
 type WebsocketClientWrapper struct {
 	Conn *websocket.Conn
 }
+
 // IsHealthy checks if the underlying WebSocket connection is still active. It sends a ping message with a short deadline to verify the connection's liveness.
 //
 // Summary: IsHealthy checks if the underlying WebSocket connection is still active. It sends a ping message with a short deadline to verify the connection's liveness.
@@ -32,13 +32,13 @@ type WebsocketClientWrapper struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 	// Send a ping to check the connection.
 	// A short deadline is used to prevent blocking.
 	err := w.Conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(time.Second*2))
+	return err == nil
+}
+
 // Close terminates the underlying WebSocket connection. Returns an error if the operation fails.
 //
 // Summary: Close terminates the underlying WebSocket connection. Returns an error if the operation fails.
@@ -49,11 +49,6 @@ func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 // Returns:
 //   - error: An error if the execution fails, otherwise nil.
 //
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Errors:
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //

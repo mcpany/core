@@ -13,13 +13,13 @@ import (
 // BundleLocalTransport implements mcp.Transport for running a bundle locally via exec.
 //
 // Summary: BundleLocalTransport implements mcp.Transport for running a bundle locally via exec.
-//
-// Summary: BundleLocalTransport implements mcp.Transport for running a bundle locally via exec.
 type BundleLocalTransport struct {
 	Command    string
 	Args       []string
 	Env        []string
 	WorkingDir string
+}
+
 // Connect establishes a connection to the local process.
 //
 // Summary: Connect establishes a connection to the local process.
@@ -32,10 +32,6 @@ type BundleLocalTransport struct {
 //   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:

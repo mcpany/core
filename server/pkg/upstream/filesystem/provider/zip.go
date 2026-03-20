@@ -18,11 +18,11 @@ import (
 // ZipProvider provides access to files within a zip archive.
 //
 // Summary: ZipProvider provides access to files within a zip archive.
-//
-// Summary: ZipProvider provides access to files within a zip archive.
 type ZipProvider struct {
 	fs     afero.Fs
 	closer *os.File
+}
+
 // NewZipProvider creates a new ZipProvider from the given configuration.
 //
 // Summary: NewZipProvider creates a new ZipProvider from the given configuration.
@@ -35,10 +35,6 @@ type ZipProvider struct {
 //   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
@@ -69,6 +65,10 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 
 	return &ZipProvider{
 		fs:     fs,
+		closer: f,
+	}, nil
+}
+
 // GetFs returns the underlying filesystem.
 //
 // Summary: GetFs returns the underlying filesystem.
@@ -84,10 +84,10 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Parameters:
-//   - None.
-//
+func (p *ZipProvider) GetFs() afero.Fs {
+	return p.fs
+}
+
 // ResolvePath resolves the virtual path to a real path in the zip.
 //
 // Summary: ResolvePath resolves the virtual path to a real path in the zip.
@@ -104,26 +104,7 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Summary: ResolvePath resolves the virtual path to a real path in the zip.
-//
-// Parameters:
-//   - virtualPath (string): The textual representation of virtualpath.
-//
-// Close closes the underlying zip file.
-//
-// Summary: Close closes the underlying zip file.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 	// For ZipFs, just clean the path. It's virtual (based on zip contents).
 	return filepath.Clean(virtualPath), nil
 }

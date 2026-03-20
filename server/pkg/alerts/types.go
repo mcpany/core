@@ -8,44 +8,26 @@ import "time"
 // Severity represents the severity level of an alert.
 //
 // Summary: Severity represents the severity level of an alert.
-//
-// Summary: Severity represents the severity level of an alert.
-// Status represents the status of an alert.
-//
-// Summary: Status represents the status of an alert.
+type Severity string
 
 // Status represents the status of an alert.
 //
+// Summary: Status represents the status of an alert.
+type Status string
+
+const (
 // SeverityCritical indicates a critical issue.
 //
 // Summary: SeverityCritical indicates a critical issue.
-type Status string
+	SeverityCritical Severity = "critical"
 // SeverityWarning indicates a warning.
 //
 // Summary: SeverityWarning indicates a warning.
-const (
+	SeverityWarning Severity = "warning"
 // SeverityInfo indicates an informational alert.
 //
 // Summary: SeverityInfo indicates an informational alert.
-//
-// Summary: SeverityCritical indicates a critical issue.
-// StatusActive indicates the alert is currently active.
-//
-// Summary: StatusActive indicates the alert is currently active.
-// SeverityWarning indicates a warning.
-// StatusAcknowledged indicates the alert has been acknowledged.
-//
-// Summary: StatusAcknowledged indicates the alert has been acknowledged.
-// Summary: SeverityWarning indicates a warning.
-// StatusResolved indicates the alert has been resolved.
-//
-// Summary: StatusResolved indicates the alert has been resolved.
-// SeverityInfo indicates an informational alert.
-//
-// Summary: SeverityInfo indicates an informational alert.
-// Alert represents a system alert.
-//
-// Summary: Alert represents a system alert.
+	SeverityInfo Severity = "info"
 
 // StatusActive indicates the alert is currently active.
 //
@@ -57,9 +39,7 @@ const (
 	StatusAcknowledged Status = "acknowledged"
 // StatusResolved indicates the alert has been resolved.
 //
-// AlertRule defines a condition for triggering an alert.
-//
-// Summary: AlertRule defines a condition for triggering an alert.
+// Summary: StatusResolved indicates the alert has been resolved.
 	StatusResolved Status = "resolved"
 )
 
@@ -72,9 +52,7 @@ type Alert struct {
 	Message   string    `json:"message"`
 	Severity  Severity  `json:"severity"`
 	Status    Status    `json:"status"`
-// AlertStats represents aggregated statistics for alerts.
-//
-// Summary: AlertStats represents aggregated statistics for alerts.
+	Service   string    `json:"service"`
 	Source    string    `json:"source"`
 	Timestamp time.Time `json:"timestamp"`
 }

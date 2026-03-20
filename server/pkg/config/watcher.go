@@ -48,8 +48,6 @@ type Watcher struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -189,21 +187,10 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 
 	<-w.done
 	return nil
+}
+
 // Close stops the file watcher and releases resources.
 //
-// Summary: Close stops the file watcher and releases resources.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Summary: Close stops the file watcher and releases resources.
 //
 // Parameters:

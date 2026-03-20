@@ -64,16 +64,16 @@ type Bus[T any] interface {
 // Provider is a thread-safe container for managing multiple, type-safe bus
 //
 // Summary: Provider is a thread-safe container for managing multiple, type-safe bus
+type Provider struct {
+	buses  *xsync.Map[string, any]
+	config *bus.MessageBus
+}
+
 // NewProviderHook is a test hook for overriding the NewProvider logic.
 //
 // Summary: NewProviderHook is a test hook for overriding the NewProvider logic.
 var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
-// NewProviderHook is a test hook for overriding the NewProvider logic.
-//
-// Summary: NewProviderHook is a test hook for overriding the NewProvider logic.
-//
-// Summary: NewProvider creates and returns a new Provider, which is used to manage
 // NewProvider creates and returns a new Provider, which is used to manage
 //
 // Summary: NewProvider creates and returns a new Provider, which is used to manage
@@ -86,10 +86,6 @@ var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 //   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
@@ -123,11 +119,15 @@ func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	default:
 		return nil, fmt.Errorf("unknown bus type")
 	}
+
+	return provider, nil
+}
+
 // GetBusHook is a test hook for overriding the bus retrieval logic.
 //
 // Summary: GetBusHook is a test hook for overriding the bus retrieval logic.
-	return provider, nil
-}
+var GetBusHook func(p *Provider, topic string) (any, error)
+
 // GetBus retrieves a bus for the given topic. If a bus for the given topic
 //
 // Summary: GetBus retrieves a bus for the given topic. If a bus for the given topic
@@ -136,15 +136,6 @@ func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 //   - p (*Provider): The provided p data.
 //   - topic (string): The textual representation of topic.
 //
-// Returns:
-//   - Bus[T]: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Returns:
 //   - Bus[T]: The resulting object or data structure.
 //   - error: An error if the execution fails, otherwise nil.

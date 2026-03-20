@@ -20,8 +20,6 @@ import (
 // ManagerInterface defines the interface for managing alerts.
 //
 // Summary: ManagerInterface defines the interface for managing alerts.
-//
-// Summary: ManagerInterface defines the interface for managing alerts.
 type ManagerInterface interface {
 	// ListAlerts returns a list of all alerts.
 	ListAlerts() []*Alert
@@ -53,9 +51,7 @@ type ManagerInterface interface {
 	UpdateRule(id string, rule *AlertRule) *AlertRule
 	// DeleteRule deletes an alert rule by its ID.
 	DeleteRule(id string) error
-// Manager implements ManagerInterface using in-memory storage.
-//
-// Summary: Manager implements ManagerInterface using in-memory storage.
+}
 
 // Manager implements ManagerInterface using in-memory storage.
 //
@@ -63,6 +59,10 @@ type ManagerInterface interface {
 type Manager struct {
 	mu         sync.RWMutex
 	alerts     map[string]*Alert
+	rules      map[string]*AlertRule
+	webhookURL string
+}
+
 // NewManager creates a new Manager and seeds it with initial data.
 //
 // Summary: NewManager creates a new Manager and seeds it with initial data.
@@ -72,12 +72,6 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Errors:
 //   - None.
@@ -101,6 +95,12 @@ func (m *Manager) seedData() {
 	m.CreateAlert(&Alert{ID: "AL-1022", Title: "Disk Space Low", Message: "Volume /data at 85%", Severity: SeverityWarning, Status: StatusAcknowledged, Service: "database-primary", Source: "Disk Monitor", Timestamp: now.Add(-45 * time.Minute)})
 	m.CreateAlert(&Alert{ID: "AL-1021", Title: "Connection Refused", Message: "Upstream connection failed", Severity: SeverityCritical, Status: StatusResolved, Service: "payment-provider", Source: "Connectivity Check", Timestamp: now.Add(-2 * time.Hour)})
 	m.CreateAlert(&Alert{ID: "AL-1020", Title: "New Service Deployed", Message: "Service 'search-v2' detected", Severity: SeverityInfo, Status: StatusResolved, Service: "discovery", Source: "Orchestrator", Timestamp: now.Add(-5 * time.Hour)})
+
+	// Seed Rules
+	m.CreateRule(&AlertRule{ID: "rule-1", Name: "High CPU", Metric: "cpu_usage", Operator: ">", Threshold: 90, Duration: "5m", Severity: SeverityCritical, Enabled: true, LastUpdated: now})
+	m.CreateRule(&AlertRule{ID: "rule-2", Name: "High Latency", Metric: "http_latency_p99", Operator: ">", Threshold: 1000, Duration: "1m", Severity: SeverityWarning, Enabled: true, LastUpdated: now})
+}
+
 // ListAlerts returns all alerts sorted by timestamp descending.
 //
 // Summary: ListAlerts returns all alerts sorted by timestamp descending.
@@ -116,20 +116,20 @@ func (m *Manager) seedData() {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Returns:
-//   - []*Alert: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (m *Manager) ListAlerts() []*Alert {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	list := make([]*Alert, 0, len(m.alerts))
 	for _, a := range m.alerts {
 		list = append(list, a)
+	}
+	// Sort by timestamp desc
+	sort.Slice(list, func(i, j int) bool {
+		return list[i].Timestamp.After(list[j].Timestamp)
+	})
+	return list
+}
+
 // GetAlert returns an alert by ID, or nil if not found.
 //
 // Summary: GetAlert returns an alert by ID, or nil if not found.
@@ -145,27 +145,15 @@ func (m *Manager) ListAlerts() []*Alert {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - id (string): The unique identifier.
-//
-// Returns:
-//   - *Alert: The resulting object or data structure.
-//
-// Errors:
+func (m *Manager) GetAlert(id string) *Alert {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.alerts[id]
+}
+
 // CreateAlert creates a new alert.
 //
 // Summary: CreateAlert creates a new alert.
-//
-// Parameters:
-//   - alert (*Alert): The provided alert data.
-//
-// Returns:
-//   - *Alert: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Parameters:
 //   - alert (*Alert): The provided alert data.
@@ -207,21 +195,19 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 			}
 			req.Header.Set("Content-Type", "application/json")
 
+			resp, err := http.DefaultClient.Do(req)
+			if err != nil {
+				logging.GetLogger().Error("failed to call webhook", "url", url, "error", err)
+				return
+			}
+			defer func() { _ = resp.Body.Close() }()
+		}(webhookURL, alert)
+	}
+
+	return alert
+}
+
 // GetAlertStats returns aggregated statistics for alerts.
-//
-// Summary: GetAlertStats returns aggregated statistics for alerts.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - *AlertStats: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Summary: GetAlertStats returns aggregated statistics for alerts.
 //
@@ -250,22 +236,20 @@ func (m *Manager) GetAlertStats() *AlertStats {
 		}
 
 		if a.Status == StatusActive {
-// UpdateAlert updates an existing alert.
-//
-// Summary: UpdateAlert updates an existing alert.
-//
-// Parameters:
-//   - id (string): The unique identifier.
-//   - alert (*Alert): The provided alert data.
-//
-// Returns:
-//   - *Alert: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+			if a.Severity == SeverityCritical {
+				stats.ActiveCritical++
+			} else if a.Severity == SeverityWarning {
+				stats.ActiveWarning++
+			}
+		}
+	}
+
+	// Mock MTTR for now as calculating true MTTR requires alert state transition history
+	stats.MTTR = "14m"
+
+	return stats
+}
+
 // UpdateAlert updates an existing alert.
 //
 // Summary: UpdateAlert updates an existing alert.
@@ -311,6 +295,22 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 			req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(body))
 			if err != nil {
 				logging.GetLogger().Error("failed to create webhook request", "error", err)
+				return
+			}
+			req.Header.Set("Content-Type", "application/json")
+
+			resp, err := http.DefaultClient.Do(req)
+			if err != nil {
+				logging.GetLogger().Error("failed to call webhook", "url", url, "error", err)
+				return
+			}
+			defer func() { _ = resp.Body.Close() }()
+		}(webhookURL, existing)
+	}
+
+	return existing
+}
+
 // GetWebhookURL returns the configured global webhook URL.
 //
 // Summary: GetWebhookURL returns the configured global webhook URL.
@@ -326,12 +326,12 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-	return existing
+func (m *Manager) GetWebhookURL() string {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.webhookURL
 }
 
-// GetWebhookURL returns the configured global webhook URL.
-//
-// Summary: GetWebhookURL returns the configured global webhook URL.
 // SetWebhookURL sets the configured global webhook URL.
 //
 // Summary: SetWebhookURL sets the configured global webhook URL.
@@ -347,12 +347,12 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-	return m.webhookURL
+func (m *Manager) SetWebhookURL(url string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.webhookURL = url
 }
 
-// SetWebhookURL sets the configured global webhook URL.
 // ListRules returns all rules.
 //
 // Summary: ListRules returns all rules.
@@ -368,19 +368,19 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - May modify internal state or perform external network calls.
-func (m *Manager) SetWebhookURL(url string) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	m.webhookURL = url
+func (m *Manager) ListRules() []*AlertRule {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	list := make([]*AlertRule, 0, len(m.rules))
+	for _, r := range m.rules {
+		list = append(list, r)
+	}
+	sort.Slice(list, func(i, j int) bool {
+		return list[i].Name < list[j].Name
+	})
+	return list
 }
 
-// ListRules returns all rules.
-//
-// Summary: ListRules returns all rules.
-//
-// Parameters:
-//   - None.
 // GetRule returns a rule by ID.
 //
 // Summary: GetRule returns a rule by ID.
@@ -396,12 +396,12 @@ func (m *Manager) SetWebhookURL(url string) {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-	for _, r := range m.rules {
-		list = append(list, r)
-	}
-	sort.Slice(list, func(i, j int) bool {
-		return list[i].Name < list[j].Name
-	})
+func (m *Manager) GetRule(id string) *AlertRule {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.rules[id]
+}
+
 // CreateRule creates a new rule.
 //
 // Summary: CreateRule creates a new rule.
@@ -416,34 +416,6 @@ func (m *Manager) SetWebhookURL(url string) {
 //   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-func (m *Manager) GetRule(id string) *AlertRule {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-	return m.rules[id]
-}
-
-// UpdateRule updates a rule.
-//
-// Summary: UpdateRule updates a rule.
-//
-// Parameters:
-//   - id (string): The unique identifier.
-//   - rule (*AlertRule): The provided rule data.
-//
-// Returns:
-//   - *AlertRule: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - May modify internal state or perform external network calls.
 func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 	m.mu.Lock()
@@ -462,21 +434,19 @@ func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 //
 // Parameters:
 //   - id (string): The unique identifier.
-// DeleteRule deletes a rule.
-//
-// Summary: DeleteRule deletes a rule.
-//
-// Parameters:
-//   - id (string): The unique identifier.
+//   - rule (*AlertRule): The provided rule data.
 //
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
+//   - *AlertRule: The resulting object or data structure.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - None.
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
+func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	existing, ok := m.rules[id]
 	if !ok {
 		return nil

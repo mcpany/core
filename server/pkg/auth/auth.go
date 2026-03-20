@@ -25,14 +25,8 @@ const (
 // UserContextKey is the context key for the user ID.
 //
 // Summary: UserContextKey is the context key for the user ID.
-//
-// ProfileIDContextKey is the context key for the profile ID.
-//
-// Summary: ProfileIDContextKey is the context key for the profile ID.
 	UserContextKey authContextKey = "user_id"
-// APIKeyContextKey is the context key for the API Key.
-//
-// Summary: APIKeyContextKey is the context key for the API Key.
+// ProfileIDContextKey is the context key for the profile ID.
 //
 // Summary: ProfileIDContextKey is the context key for the profile ID.
 	ProfileIDContextKey authContextKey = "profile_id"

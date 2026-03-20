@@ -25,8 +25,6 @@ import (
 // Tool implements the Tool interface for a tool that executes a SQL query.
 //
 // Summary: Tool implements the Tool interface for a tool that executes a SQL query.
-//
-// Summary: Tool implements the Tool interface for a tool that executes a SQL query.
 type Tool struct {
 	tool        *v1.Tool
 	mcpTool     *mcp.Tool
@@ -36,6 +34,8 @@ type Tool struct {
 	policies    []*tool.CompiledCallPolicy
 	callID      string
 	initError   error
+}
+
 // NewTool creates a new SQL Tool.
 //
 // Summary: NewTool creates a new SQL Tool.
@@ -55,13 +55,6 @@ type Tool struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - *Tool: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, policies []*configv1.CallPolicy, callID string) *Tool {
 	compiled, err := tool.CompileCallPolicies(policies)
 	to := &Tool{
@@ -70,6 +63,13 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 		callDef:  callDef,
 		policies: compiled,
 		callID:   callID,
+	}
+	if err != nil {
+		to.initError = fmt.Errorf("failed to compile call policies: %w", err)
+	}
+	return to
+}
+
 // Tool returns the protobuf definition of the tool.
 //
 // Summary: Tool returns the protobuf definition of the tool.
@@ -85,10 +85,10 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Tool returns the protobuf definition of the tool.
-//
-// Summary: Tool returns the protobuf definition of the tool.
-//
+func (t *Tool) Tool() *v1.Tool {
+	return t.tool
+}
+
 // MCPTool returns the MCP tool definition.
 //
 // Summary: MCPTool returns the MCP tool definition.
@@ -104,56 +104,23 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-func (t *Tool) Tool() *v1.Tool {
-	return t.tool
+func (t *Tool) MCPTool() *mcp.Tool {
+	t.mcpToolOnce.Do(func() {
+		var err error
+		t.mcpTool, err = tool.ConvertProtoToMCPTool(t.tool)
+		if err != nil {
+			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
+		}
+	})
+	return t.mcpTool
 }
 
-// MCPTool returns the MCP tool definition.
-//
-// Summary: MCPTool returns the MCP tool definition.
 // GetCacheConfig returns the cache configuration for the tool.
 //
 // Summary: GetCacheConfig returns the cache configuration for the tool.
 //
 // Parameters:
 //   - None.
-//
-// Returns:
-//   - *configv1.CacheConfig: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-func (t *Tool) MCPTool() *mcp.Tool {
-	t.mcpToolOnce.Do(func() {
-// Execute runs the SQL query with the provided inputs.
-//
-// Summary: Execute runs the SQL query with the provided inputs.
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - req (*tool.ExecutionRequest): The incoming request payload.
-//
-// Returns:
-//   - any: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Returns:
 //   - *configv1.CacheConfig: The resulting object or data structure.

@@ -13,15 +13,11 @@ import (
 // SimpleVectorStore is a naive in-memory vector store.
 //
 // Summary: SimpleVectorStore is a naive in-memory vector store.
-//
-// Summary: SimpleVectorStore is a naive in-memory vector store.
 type SimpleVectorStore struct {
 	mu         sync.RWMutex
 	items      map[string][]*VectorEntry
 	maxEntries int
-// VectorEntry represents a single entry in the vector store.
-//
-// Summary: VectorEntry represents a single entry in the vector store.
+}
 
 // VectorEntry represents a single entry in the vector store.
 //
@@ -33,6 +29,10 @@ type VectorEntry struct {
 	Result any
 	// ExpiresAt is the timestamp when this entry expires.
 	ExpiresAt time.Time
+	// Norm is the precomputed Euclidean norm of the vector.
+	Norm float32
+}
+
 // NewSimpleVectorStore creates a new SimpleVectorStore.
 //
 // Summary: NewSimpleVectorStore creates a new SimpleVectorStore.
@@ -48,32 +48,10 @@ type VectorEntry struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Summary: NewSimpleVectorStore creates a new SimpleVectorStore.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-// Add adds a new entry to the vector store.
-//
-// Summary: Add adds a new entry to the vector store.
-//
-// Parameters:
-//   - _ (context.Context): The provided _ data.
-//   - key (string): The textual representation of key.
-//   - vector ([]float32): The numeric value for vector.
-//   - result (any): The provided result data.
-//   - ttl (time.Duration): The provided ttl data.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+func NewSimpleVectorStore() *SimpleVectorStore {
+	return &SimpleVectorStore{
+		items:      make(map[string][]*VectorEntry),
+		maxEntries: 100, // Limit per key to prevent OOM
 	}
 }
 
@@ -100,25 +78,17 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-// Search searches for the most similar entry in the vector store for the given key and query vector.
-//
-// Summary: Search searches for the most similar entry in the vector store for the given key and query vector.
-//
-// Parameters:
-//   - _ (context.Context): The provided _ data.
-//   - key (string): The textual representation of key.
-//   - query ([]float32): The numeric value for query.
-//
-// Returns:
-//   - any: The resulting object or data structure.
-//   - float32: The calculated numeric value.
-//   - bool: True if successful or valid, false otherwise.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+	s.cleanup(key)
+
+	entries := s.items[key]
+	if len(entries) >= s.maxEntries {
+		// Evict oldest (FIFO)
+		entries = entries[1:]
+	}
+
+	// ⚡ BOLT: Normalize vector before storage to avoid Sqrt/Div in Search loop
+	// Randomized Selection from Top 5 High-Impact Targets
+	normalizedVector, norm := normalize(vector)
 
 	entry := &VectorEntry{
 		Vector:    normalizedVector,
@@ -154,22 +124,10 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 	defer s.mu.RUnlock()
 
 	entries, ok := s.items[key]
-// Prune removes expired entries from the vector store for the given key.
-//
-// Summary: Prune removes expired entries from the vector store for the given key.
-//
-// Parameters:
-//   - _ (context.Context): The provided _ data.
-//   - key (string): The textual representation of key.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+	if !ok {
+		return nil, 0, false
+	}
+
 	now := time.Now()
 	var bestResult any
 	var bestScore float32 = -1.0

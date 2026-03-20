@@ -20,8 +20,6 @@ const (
 // SkillFileName is the name of the main skill file.
 //
 // Summary: SkillFileName is the name of the main skill file.
-//
-// Summary: SkillFileName is the name of the main skill file.
 	SkillFileName = "SKILL.md"
 )
 
@@ -29,15 +27,17 @@ var (
 	// validNameRegex enforces the naming constraints from the spec.
 	// 1-64 chars, lowercase alphanumeric and hyphens. No start/end hyphen. No consecutive hyphens.
 	validNameRegex = regexp.MustCompile(`^[a-z0-9]([-a-z0-9]*[a-z0-9])?$`)
-// Manager handles the storage and retrieval of skills.
-//
-// Summary: Manager handles the storage and retrieval of skills.
+)
 
 // Manager handles the storage and retrieval of skills.
 //
 // Summary: Manager handles the storage and retrieval of skills.
 type Manager struct {
 	rootDir string
+	mu      sync.RWMutex
+	cache   []*Skill
+}
+
 // NewManager creates a new Skill Manager. rootDir is the directory where skills are stored.
 //
 // Summary: NewManager creates a new Skill Manager. rootDir is the directory where skills are stored.
@@ -54,15 +54,15 @@ type Manager struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func NewManager(rootDir string) (*Manager, error) {
 	if err := os.MkdirAll(rootDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create skill root directory: %w", err)
+	}
+	return &Manager{
+		rootDir: rootDir,
+	}, nil
+}
+
 // ListSkills returns all available skills. It scans the root directory for subdirectories containing SKILL.md.
 //
 // Summary: ListSkills returns all available skills. It scans the root directory for subdirectories containing SKILL.md.
@@ -71,14 +71,6 @@ func NewManager(rootDir string) (*Manager, error) {
 //   - None.
 //
 // Returns:
-//   - []*Skill: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - []*Skill: The resulting object or data structure.
 //   - error: An error if the execution fails, otherwise nil.
 //
@@ -119,6 +111,14 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 		if err != nil {
 			logging.GetLogger().Warn("Failed to load skill", "name", entry.Name(), "error", err)
 			continue
+		}
+		skills = append(skills, skill)
+	}
+
+	m.cache = skills
+	return skills, nil
+}
+
 // GetSkill retrieves a specific skill by name. name is the name of the resource. Returns the result. Returns an error if the operation fails.
 //
 // Summary: GetSkill retrieves a specific skill by name. name is the name of the resource. Returns the result. Returns an error if the operation fails.
@@ -135,27 +135,15 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Returns:
-//   - *Skill: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
+func (m *Manager) GetSkill(name string) (*Skill, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.loadSkill(name)
+}
+
 // CreateSkill creates a new skill. It ensures the name is valid and the directory doesn't already exist.
 //
 // Summary: CreateSkill creates a new skill. It ensures the name is valid and the directory doesn't already exist.
-//
-// Parameters:
-//   - skill (*Skill): The provided skill data.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Parameters:
 //   - skill (*Skill): The provided skill data.
@@ -184,22 +172,20 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 		return fmt.Errorf("skill already exists: %s", skill.Name)
 	}
 
+	if err := os.MkdirAll(skillDir, 0755); err != nil {
+		return fmt.Errorf("failed to create skill directory: %w", err)
+	}
+
+	// Create optional directories
+	for _, dir := range []string{"scripts", "references", "assets"} {
+		_ = os.Mkdir(filepath.Join(skillDir, dir), 0755)
+	}
+
+	return m.writeSkillFile(skillDir, skill)
+}
+
 // UpdateSkill updates an existing skill. If the name has changed, it renames the directory.
 //
-// Summary: UpdateSkill updates an existing skill. If the name has changed, it renames the directory.
-//
-// Parameters:
-//   - originalName (string): The human-readable or system name.
-//   - skill (*Skill): The provided skill data.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Summary: UpdateSkill updates an existing skill. If the name has changed, it renames the directory.
 //
 // Parameters:
@@ -231,21 +217,19 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 	if _, err := os.Stat(originalDir); os.IsNotExist(err) {
 		return fmt.Errorf("skill not found: %s", originalName)
 	}
-// DeleteSkill deletes a skill. name is the name of the resource. Returns an error if the operation fails.
-//
-// Summary: DeleteSkill deletes a skill. name is the name of the resource. Returns an error if the operation fails.
-//
-// Parameters:
-//   - name (string): The human-readable or system name.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+
+	// Handle rename
+	if originalName != skill.Name {
+		if _, err := os.Stat(newDir); err == nil {
+			return fmt.Errorf("destination skill already exists: %s", skill.Name)
+		}
+		if err := os.Rename(originalDir, newDir); err != nil {
+			return fmt.Errorf("failed to rename skill: %w", err)
+		}
+	}
+
+	return m.writeSkillFile(newDir, skill)
+}
 
 // DeleteSkill deletes a skill. name is the name of the resource. Returns an error if the operation fails.
 //
@@ -262,23 +246,21 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// SaveAsset saves an asset file (script, reference, etc.) for a skill. path is relative to the skill root (e.g. "scripts/myscript.py").
-//
-// Summary: SaveAsset saves an asset file (script, reference, etc.) for a skill. path is relative to the skill root (e.g. "scripts/myscript.py").
-//
-// Parameters:
-//   - skillName (string): The human-readable or system name.
-//   - relPath (string): The textual representation of relpath.
-//   - content ([]byte): The provided content data.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+func (m *Manager) DeleteSkill(name string) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	// Invalidate cache
+	m.cache = nil
+
+	skillDir := filepath.Join(m.rootDir, name)
+	if _, err := os.Stat(skillDir); os.IsNotExist(err) {
+		return fmt.Errorf("skill not found: %s", name)
+	}
+
+	// Remove the entire directory
+	return os.RemoveAll(skillDir)
+}
 
 // SaveAsset saves an asset file (script, reference, etc.) for a skill. path is relative to the skill root (e.g. "scripts/myscript.py").
 //

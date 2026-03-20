@@ -16,6 +16,8 @@ import (
 // Upstream defines the standard interface for all backend service integrations.
 //
 // Summary: Upstream defines the standard interface for all backend service integrations.
+type Upstream interface {
+	// Shutdown gracefully terminates the upstream service.
 	//
 	// Parameters:
 	//   - ctx (context.Context): The context for the request.
@@ -65,9 +67,8 @@ import (
 
 // HealthChecker is an optional interface that Upstreams can implement to provide
 //
-// HealthChecker is an optional interface that Upstreams can implement to provide
-//
 // Summary: HealthChecker is an optional interface that Upstreams can implement to provide
+type HealthChecker interface {
 	// CheckHealth performs a health check on the upstream service.
 	//
 	// Parameters:

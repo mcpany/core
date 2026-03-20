@@ -56,14 +56,14 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 // Upstream implements the upstream.Upstream interface for services that are
 //
 // Summary: Upstream implements the upstream.Upstream interface for services that are
+type Upstream struct {
+	poolManager *pool.Manager
 	serviceID   string
 	address     string
 	checker     health.Checker
 	mu          sync.RWMutex
 }
 
-// CheckHealth performs a health check on the upstream service.
-//
 // CheckHealth performs a health check on the upstream service.
 //
 // Summary: CheckHealth performs a health check on the upstream service.
@@ -79,6 +79,9 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
+func (u *Upstream) CheckHealth(ctx context.Context) error {
+	u.mu.RLock()
+	checker := u.checker
 	address := u.address
 	u.mu.RUnlock()
 
@@ -95,9 +98,6 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 	return util.CheckConnection(ctx, address)
 }
 
-// Shutdown gracefully terminates the HTTP upstream service by shutting down the
-//
-// Summary: Shutdown gracefully terminates the HTTP upstream service by shutting down the
 // Shutdown gracefully terminates the HTTP upstream service by shutting down the
 //
 // Summary: Shutdown gracefully terminates the HTTP upstream service by shutting down the
@@ -142,12 +142,12 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
+	return &Upstream{
+		poolManager: poolManager,
+	}
+}
+
 // Register processes the configuration for an HTTP service, creates a connection
 //
 // Summary: Register processes the configuration for an HTTP service, creates a connection
@@ -169,8 +169,6 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Errors:
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Side Effects:
 //   - May modify internal state or perform external network calls.
 func (u *Upstream) Register(

@@ -26,32 +26,16 @@ import (
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - string: The resulting text.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func Password(password string) (string, error) {
 	// Increase cost to 12 for better security (default is 10)
-// CheckPassword checks if a password matches a hash.
-//
-// Summary: CheckPassword checks if a password matches a hash.
-//
-// Parameters:
-//   - password (string): The textual representation of password.
-//   - hash (string): The textual representation of hash.
-//
-// Returns:
-//   - bool: True if successful or valid, false otherwise.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+	const cost = 12
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), cost)
+	if err != nil {
+		return "", fmt.Errorf("failed to hash password: %w", err)
+	}
+	return string(bytes), nil
+}
+
 // CheckPassword checks if a password matches a hash.
 //
 // Summary: CheckPassword checks if a password matches a hash.

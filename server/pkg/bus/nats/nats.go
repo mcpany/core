@@ -18,12 +18,12 @@ import (
 // Bus is a message bus implementation using NATS.
 //
 // Summary: Bus is a message bus implementation using NATS.
-//
-// Summary: Bus is a message bus implementation using NATS.
 type Bus[T any] struct {
 	nc     *natsgo.Conn
 	config *bus.NatsBus
 	s      *server.Server
+}
+
 // New creates and initializes a new NATS bus.
 //
 // Summary: New creates and initializes a new NATS bus.
@@ -33,13 +33,6 @@ type Bus[T any] struct {
 //
 // Returns:
 //   - *Bus[T]: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
@@ -81,6 +74,13 @@ func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 //   None.
 func (b *Bus[T]) Close() {
 	if b.nc != nil {
+		b.nc.Close()
+	}
+	if b.s != nil {
+		b.s.Shutdown()
+	}
+}
+
 // Publish sends a message to a NATS topic.
 //
 // Summary: Publish sends a message to a NATS topic.
@@ -98,31 +98,12 @@ func (b *Bus[T]) Close() {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Parameters:
-//   - _ (context.Context): The provided _ data.
-//   - topic (string): The textual representation of topic.
-//   - msg (T): The provided msg data.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Subscribe registers a handler for a NATS topic.
-//
-// Summary: Subscribe registers a handler for a NATS topic.
-//
-// Parameters:
-//   - _ (context.Context): The provided _ data.
-//   - topic (string): The textual representation of topic.
-//   - handler (func(T)): The provided handler data.
-//
-// Returns:
-//   - unsubscribe (func()): The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
+	data, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+	return b.nc.Publish(topic, data)
 }
 
 // Subscribe registers a handler for a NATS topic.
@@ -135,16 +116,6 @@ func (b *Bus[T]) Close() {
 //   - handler (func(T)): The provided handler data.
 //
 // Returns:
-// SubscribeOnce registers a one-time handler for a NATS topic.
-//
-// Summary: SubscribeOnce registers a one-time handler for a NATS topic.
-//
-// Parameters:
-//   - _ (context.Context): The provided _ data.
-//   - topic (string): The textual representation of topic.
-//   - handler (func(T)): The provided handler data.
-//
-// Returns:
 //   - unsubscribe (func()): The resulting object or data structure.
 //
 // Errors:
@@ -152,6 +123,11 @@ func (b *Bus[T]) Close() {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
+func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
+	sub, _ := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
+		var msg T
+		if err := json.Unmarshal(m.Data, &msg); err == nil {
+			handler(msg)
 		}
 	})
 	return func() {

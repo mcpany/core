@@ -8,99 +8,58 @@ const (
 // ContentTypeApplicationJSON defines the standard "application/json" content type.
 //
 // Summary: ContentTypeApplicationJSON defines the standard "application/json" content type.
-//
+	ContentTypeApplicationJSON = "application/json"
 // ContentTypeTextEventStream defines the standard "text/event-stream" content type.
 //
 // Summary: ContentTypeTextEventStream defines the standard "text/event-stream" content type.
-	ContentTypeApplicationJSON = "application/json"
+	ContentTypeTextEventStream = "text/event-stream"
 // HeaderMcpSessionID is the standard header for the MCP session ID.
 //
 // Summary: HeaderMcpSessionID is the standard header for the MCP session ID.
-//
+	HeaderMcpSessionID = "Mcp-Session-Id"
 // MethodConfigureCache is the MCP method for configuring the cache.
 //
 // Summary: MethodConfigureCache is the MCP method for configuring the cache.
-	ContentTypeTextEventStream = "text/event-stream"
+	MethodConfigureCache = "configure_cache"
 // OauthCallbackPath is the standard path for the OAuth2 callback.
 //
 // Summary: OauthCallbackPath is the standard path for the OAuth2 callback.
-//
+	OauthCallbackPath = "/v1/oauth2/callback"
 // DefaultOriginAllow is the default value for the Access-Control-Allow-Origin header.
 //
 // Summary: DefaultOriginAllow is the default value for the Access-Control-Allow-Origin header.
-	HeaderMcpSessionID = "Mcp-Session-Id"
+	DefaultOriginAllow = "*"
 // ToolNameServiceSeparator is the separator used to construct a fully qualified
 //
 // Summary: ToolNameServiceSeparator is the separator used to construct a fully qualified
-// Summary: MethodConfigureCache is the MCP method for configuring the cache.
+	ToolNameServiceSeparator = "."
 // MethodToolsCall is the standard MCP method for calling a tool.
 //
 // Summary: MethodToolsCall is the standard MCP method for calling a tool.
-// OauthCallbackPath is the standard path for the OAuth2 callback.
+	MethodToolsCall = "tools/call"
 // MethodToolsList is the standard MCP method for listing tools.
 //
 // Summary: MethodToolsList is the standard MCP method for listing tools.
-// Summary: OauthCallbackPath is the standard path for the OAuth2 callback.
+	MethodToolsList = "tools/list"
 // MethodPromptsList is the standard MCP method for listing prompts.
 //
 // Summary: MethodPromptsList is the standard MCP method for listing prompts.
-// DefaultOriginAllow is the default value for the Access-Control-Allow-Origin header.
+	MethodPromptsList = "prompts/list"
 // MethodPromptsGet is the standard MCP method for getting a prompt.
 //
 // Summary: MethodPromptsGet is the standard MCP method for getting a prompt.
-// Summary: DefaultOriginAllow is the default value for the Access-Control-Allow-Origin header.
-// MethodResourcesList is the standard MCP method for listing resources.
-//
-// Summary: MethodResourcesList is the standard MCP method for listing resources.
-// ToolNameServiceSeparator is the separator used to construct a fully qualified
-// MethodResourcesRead is the standard MCP method for reading a resource.
-//
-// Summary: MethodResourcesRead is the standard MCP method for reading a resource.
-// Summary: ToolNameServiceSeparator is the separator used to construct a fully qualified
-// MethodResourcesSubscribe is the standard MCP method for subscribing to a resource.
-//
-// Summary: MethodResourcesSubscribe is the standard MCP method for subscribing to a resource.
-// MethodToolsCall is the standard MCP method for calling a tool.
-// NotificationPromptsListChanged is the standard MCP notification for when the
-//
-// Summary: NotificationPromptsListChanged is the standard MCP notification for when the
-	MethodToolsCall = "tools/call"
-// NotificationResourcesListChanged is the standard MCP notification for when the
-//
-// Summary: NotificationResourcesListChanged is the standard MCP notification for when the
-// Summary: MethodToolsList is the standard MCP method for listing tools.
-// DefaultBindPort is the default port for the server to bind to.
-//
-// Summary: DefaultBindPort is the default port for the server to bind to.
-// MethodPromptsList is the standard MCP method for listing prompts.
-// DefaultMaxCommandOutputBytes is the default maximum size of the command output (stdout + stderr) in bytes.
-//
-// Summary: DefaultMaxCommandOutputBytes is the default maximum size of the command output (stdout + stderr) in bytes.
-	MethodPromptsList = "prompts/list"
-// MethodPromptsGet is the standard MCP method for getting a prompt.
-// DefaultMaxHTTPResponseBytes is the default maximum size of the HTTP response body in bytes.
-//
-// Summary: DefaultMaxHTTPResponseBytes is the default maximum size of the HTTP response body in bytes.
 	MethodPromptsGet = "prompts/get"
 // MethodResourcesList is the standard MCP method for listing resources.
-// ContextKeyRemoteAddr is the context key for the remote address.
 //
-// Summary: ContextKeyRemoteAddr is the context key for the remote address.
 // Summary: MethodResourcesList is the standard MCP method for listing resources.
 	MethodResourcesList = "resources/list"
 // MethodResourcesRead is the standard MCP method for reading a resource.
 //
-// CommandStatusSuccess represents the status for a successful command execution.
-//
-// Summary: CommandStatusSuccess represents the status for a successful command execution.
+// Summary: MethodResourcesRead is the standard MCP method for reading a resource.
 	MethodResourcesRead = "resources/read"
-// CommandStatusError represents the status for a failed command execution.
+// MethodResourcesSubscribe is the standard MCP method for subscribing to a resource.
 //
-// Summary: CommandStatusError represents the status for a failed command execution.
-//
-// CommandStatusTimeout represents the status for a command that timed out.
-//
-// Summary: CommandStatusTimeout represents the status for a command that timed out.
+// Summary: MethodResourcesSubscribe is the standard MCP method for subscribing to a resource.
 	MethodResourcesSubscribe = "resources/subscribe"
 // NotificationPromptsListChanged is the standard MCP notification for when the
 //

@@ -17,12 +17,12 @@ import (
 // AuditHandler is a slog.Handler that exports logs to audit sinks.
 //
 // Summary: AuditHandler is a slog.Handler that exports logs to audit sinks.
-//
-// Summary: AuditHandler is a slog.Handler that exports logs to audit sinks.
 type AuditHandler struct {
 	next   slog.Handler
 	config *configv1.AuditConfig
 	store  audit.Store
+}
+
 // NewAuditHandler creates a new AuditHandler.
 //
 // Summary: NewAuditHandler creates a new AuditHandler.
@@ -35,10 +35,6 @@ type AuditHandler struct {
 //   - *AuditHandler: The resulting object or data structure.
 //
 // Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - None.
 //
 // Side Effects:
@@ -83,6 +79,10 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to initialize audit handler store: %v\n", err)
 		return
+	}
+	h.store = store
+}
+
 // Enabled reports whether the handler handles records at the given level.
 //
 // Summary: Enabled reports whether the handler handles records at the given level.
@@ -99,10 +99,10 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Errors:
-//   - None.
-//
+func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
+	return h.next.Enabled(ctx, level)
+}
+
 // Handle handles the Record.
 //
 // Summary: Handle handles the Record.
@@ -119,16 +119,16 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 	// 1. Export the record
+	if err := h.Export(ctx, r); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to export audit log: %v\n", err)
+	}
+
+	// 2. Delegate to next handler
+	return h.next.Handle(ctx, r)
+}
+
 // WithAttrs returns a new generic Handler with the given attributes.
 //
 // Summary: WithAttrs returns a new generic Handler with the given attributes.
@@ -144,14 +144,14 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - attrs ([]slog.Attr): The provided attrs data.
-//
-// Returns:
-//   - slog.Handler: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
+func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+	return &AuditHandler{
+		next:   h.next.WithAttrs(attrs),
+		config: h.config,
+		store:  h.store,
+	}
+}
+
 // WithGroup returns a new generic Handler with the given group.
 //
 // Summary: WithGroup returns a new generic Handler with the given group.
@@ -167,30 +167,16 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Parameters:
-//   - name (string): The human-readable or system name.
-//
-// Returns:
-//   - slog.Handler: The resulting object or data structure.
-//
-// Errors:
+func (h *AuditHandler) WithGroup(name string) slog.Handler {
+	return &AuditHandler{
+		next:   h.next.WithGroup(name),
+		config: h.config,
+		store:  h.store,
+	}
+}
+
 // Export sends the log record to the configued sinks.
 //
-// Summary: Export sends the log record to the configued sinks.
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - r (slog.Record): The provided r data.
-//
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Summary: Export sends the log record to the configued sinks.
 //
 // Parameters:

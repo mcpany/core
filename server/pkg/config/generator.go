@@ -40,12 +40,12 @@ type Generator struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func NewGenerator() *Generator {
 	return &Generator{
 		Reader: bufio.NewReader(os.Stdin),
 	}
+}
+
 // Generate prompts the user for service details and returns the generated configuration as a byte slice.
 //
 // Summary: Generate prompts the user for service details and returns the generated configuration as a byte slice.
@@ -58,10 +58,6 @@ func NewGenerator() *Generator {
 //   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:

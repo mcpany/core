@@ -20,12 +20,12 @@ import (
 // PineconeClient implements VectorClient for Pinecone.
 //
 // Summary: PineconeClient implements VectorClient for Pinecone.
-//
-// Summary: PineconeClient implements VectorClient for Pinecone.
 type PineconeClient struct {
 	config  *configv1.PineconeVectorDB
 	client  *http.Client
 	baseURL string
+}
+
 // NewPineconeClient creates a new Pinecone client.
 //
 // Summary: NewPineconeClient creates a new Pinecone client.
@@ -38,10 +38,6 @@ type PineconeClient struct {
 //   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
@@ -122,6 +118,10 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 			return nil, fmt.Errorf("failed to unmarshal response: %w", err)
 		}
 	}
+
+	return result, nil
+}
+
 // Query searches for similar vectors.
 //
 // Summary: Query searches for similar vectors.
@@ -142,16 +142,6 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Returns:
-//   - map[string]interface{}: The resulting text.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	req := map[string]interface{}{
 		"vector":          vector,
@@ -159,6 +149,16 @@ func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64
 		"includeMetadata": true,
 		"includeValues": false,
 	}
+	if filter != nil {
+		req["filter"] = filter
+	}
+	if namespace != "" {
+		req["namespace"] = namespace
+	}
+
+	return c.doRequest(ctx, "POST", "/query", req)
+}
+
 // Upsert inserts or updates vectors.
 //
 // Summary: Upsert inserts or updates vectors.
@@ -177,36 +177,14 @@ func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Summary: Upsert inserts or updates vectors.
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - vectors ([]map[string]interface{}): The textual representation of vectors.
-//   - namespace (string): The human-readable or system name.
-//
-// Returns:
-//   - map[string]interface{}: The resulting text.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Delete removes vectors.
-//
-// Summary: Delete removes vectors.
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - ids ([]string): The textual representation of ids.
-//   - namespace (string): The human-readable or system name.
-//   - filter (map[string]interface{}): The textual representation of filter.
-//
-// Returns:
-//   - map[string]interface{}: The resulting text.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error) {
+	req := map[string]interface{}{
+		"vectors": vectors,
+	}
+	if namespace != "" {
+		req["namespace"] = namespace
+	}
+
 	return c.doRequest(ctx, "POST", "/vectors/upsert", req)
 }
 
@@ -226,23 +204,17 @@ func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64
 //
 // Errors:
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-// DescribeIndexStats returns statistics about the index.
-//
-// Summary: DescribeIndexStats returns statistics about the index.
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - filter (map[string]interface{}): The textual representation of filter.
-//
-// Returns:
-//   - map[string]interface{}: The resulting text.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
+func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error) {
+	req := map[string]interface{}{}
+	if len(ids) > 0 {
+		req["ids"] = ids
+	}
+	if filter != nil {
+		req["filter"] = filter
+	}
 	// "deleteAll" can only be used if ids and filter are empty
 	if len(ids) == 0 && filter == nil {
 		req["deleteAll"] = true

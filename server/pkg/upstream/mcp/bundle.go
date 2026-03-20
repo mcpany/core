@@ -26,8 +26,6 @@ import (
 // Manifest represents the structure of the manifest.json file in an MCP bundle.
 //
 // Summary: Manifest represents the structure of the manifest.json file in an MCP bundle.
-//
-// Summary: Manifest represents the structure of the manifest.json file in an MCP bundle.
 type Manifest struct {
 	// ManifestVersion is the version of the manifest format.
 	ManifestVersion string `json:"manifest_version"`
@@ -41,9 +39,7 @@ type Manifest struct {
 	Server ManifestServer `json:"server"`
 	// UserConfig contains default configuration for the user.
 	UserConfig json.RawMessage `json:"user_config"`
-// ManifestServer represents the server configuration in the manifest.
-//
-// Summary: ManifestServer represents the server configuration in the manifest.
+}
 
 // ManifestServer represents the server configuration in the manifest.
 //
@@ -53,9 +49,7 @@ type ManifestServer struct {
 	Type string `json:"type"`
 	// EntryPoint is the entry point script or command for the server.
 	EntryPoint string `json:"entry_point"`
-// ManifestMcpConfig represents the MCP configuration in the manifest.
-//
-// Summary: ManifestMcpConfig represents the MCP configuration in the manifest.
+	// McpConfig contains specific configuration for running the MCP server.
 	McpConfig ManifestMcpConfig `json:"mcp_config"`
 }
 

@@ -56,7 +56,6 @@ type OpenAPIUpstream struct { //nolint:revive
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - May modify internal state or perform external network calls.
 func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -67,6 +66,7 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	}
 	return nil
 }
+
 // NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
 //
 // Summary: NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
@@ -82,18 +82,18 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Returns:
-//   - upstream.Upstream: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func NewOpenAPIUpstream() upstream.Upstream {
 	cache := ttlcache.New[string, *openapi3.T](
 		ttlcache.WithTTL[string, *openapi3.T](5 * time.Minute),
 	)
+	go cache.Start()
+
+	return &OpenAPIUpstream{
+		openapiCache: cache,
+		httpClients:  make(map[string]*http.Client),
+	}
+}
+
 // Register processes an OpenAPI service configuration. It parses the OpenAPI specification, extracts the operations, converts them into tools, and registers them with the tool manager.
 //
 // Summary: Register processes an OpenAPI service configuration. It parses the OpenAPI specification, extracts the operations, converts them into tools, and registers them with the tool manager.
@@ -107,16 +107,6 @@ func NewOpenAPIUpstream() upstream.Upstream {
 //   - isReload (bool): A flag indicating whether isreload is enabled.
 //
 // Returns:
-//   - string: The resulting text.
-//   - []*configv1.ToolDefinition: The resulting object or data structure.
-//   - []*configv1.ResourceDefinition: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - string: The resulting text.
 //   - []*configv1.ToolDefinition: The resulting object or data structure.
 //   - []*configv1.ResourceDefinition: The resulting object or data structure.
@@ -297,22 +287,21 @@ func (u *OpenAPIUpstream) getHTTPClient(serviceID string) *http.Client {
 	}
 
 	u.httpClients[serviceID] = client
+	return client
+}
+
+// httpClientImpl is a simple wrapper around *http.Client that implements the
+// client.HTTPClient interface. This is used to adapt the standard library's
+// HTTP client for use in components that expect this interface.
+type httpClientImpl struct {
+	client *http.Client
+}
+
 // Do sends an HTTP request and returns an HTTP response, fulfilling the
 //
 // Summary: Do sends an HTTP request and returns an HTTP response, fulfilling the
 //
 // Parameters:
-//   - req (*http.Request): The incoming request payload.
-//
-// Returns:
-//   - *http.Response: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - req (*http.Request): The incoming request payload.
 //
 // Returns:

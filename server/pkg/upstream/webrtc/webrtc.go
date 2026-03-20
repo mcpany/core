@@ -34,13 +34,13 @@ type sanitizer func(string) (string, error)
 // Upstream implements the upstream.Upstream interface for services that
 //
 // Summary: Upstream implements the upstream.Upstream interface for services that
-// Summary: Upstream implements the upstream.Upstream interface for services that
 type Upstream struct {
 	poolManager       *pool.Manager
 	toolNameSanitizer sanitizer
 	checker           health.Checker
 	mu                sync.RWMutex
 }
+
 // CheckHealth performs a health check on the upstream service.
 //
 // Summary: CheckHealth performs a health check on the upstream service.
@@ -56,9 +56,6 @@ type Upstream struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -71,6 +68,9 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 		}
 		return nil
 	}
+	return nil
+}
+
 // Shutdown is a no-op for the WebRTC upstream, as connections are transient
 //
 // Summary: Shutdown is a no-op for the WebRTC upstream, as connections are transient
@@ -86,10 +86,6 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -97,6 +93,10 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 			c.Stop()
 		}
 	}
+	u.mu.Unlock()
+	return nil
+}
+
 // NewUpstream creates a new instance of WebrtcUpstream.
 //
 // Summary: NewUpstream creates a new instance of WebrtcUpstream.
@@ -112,13 +112,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Returns:
-//   - upstream.Upstream: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
+func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
+	return &Upstream{
+		poolManager:       poolManager,
+		toolNameSanitizer: util.SanitizeToolName,
+	}
+}
+
 // Register processes the configuration for a WebRTC service, creating and registering tools for each call definition specified in the configuration.
 //
 // Summary: Register processes the configuration for a WebRTC service, creating and registering tools for each call definition specified in the configuration.
@@ -131,17 +131,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - resourceManager (resource.ManagerInterface): The provided resourcemanager data.
 //   - isReload (bool): A flag indicating whether isreload is enabled.
 //
-// Returns:
-//   - string: The resulting text.
-//   - []*configv1.ToolDefinition: The resulting object or data structure.
-//   - []*configv1.ResourceDefinition: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Returns:
 //   - string: The resulting text.
 //   - []*configv1.ToolDefinition: The resulting object or data structure.

@@ -28,6 +28,7 @@ import (
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
+func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	if log == nil {
 		log = logging.GetLogger()
 	}

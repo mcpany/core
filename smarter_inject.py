@@ -1,5 +1,6 @@
 import json
 import re
+import os
 
 def infer_meaning(name, kind, params=None, is_error=False):
     # Try to make a meaningful, non-empty calorie description
@@ -178,8 +179,11 @@ with open('nodes.json', 'r') as f:
 from collections import defaultdict
 files = defaultdict(list)
 for node in nodes:
-    if node['file'].endswith('.go'):
-        files[node['file']].append(node)
+    # ONLY apply to server/pkg to be safe from Bazel and proto and UI issues
+    if node['file'].startswith('server/pkg') and node['file'].endswith('.go'):
+        # also ignore anything in proto
+        if "proto" not in node['file']:
+            files[node['file']].append(node)
 
 for file_path, file_nodes in files.items():
     process_file(file_path, file_nodes)

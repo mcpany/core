@@ -16,10 +16,10 @@ import (
 // A2ABridgeMiddleware represents the Agent-to-Agent (A2A) Bridge middleware.
 //
 // Summary: A2ABridgeMiddleware represents the Agent-to-Agent (A2A) Bridge middleware.
-// Summary: A2ABridgeMiddleware represents the Agent-to-Agent (A2A) Bridge middleware.
 type A2ABridgeMiddleware struct {
 	contextManager *RecursiveContextManager
 }
+
 // NewA2ABridgeMiddleware creates a new A2ABridgeMiddleware.
 //
 // Summary: NewA2ABridgeMiddleware creates a new A2ABridgeMiddleware.
@@ -35,12 +35,12 @@ type A2ABridgeMiddleware struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeMiddleware {
 	return &A2ABridgeMiddleware{
 		contextManager: contextManager,
+	}
+}
+
 // Execute processes the MCP request and intercepts A2A agent calls.
 //
 // Summary: Execute processes the MCP request and intercepts A2A agent calls.
@@ -55,11 +55,6 @@ func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeM
 //   - mcp.Result: The resulting object or data structure.
 //   - error: An error if the execution fails, otherwise nil.
 //
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Errors:
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //

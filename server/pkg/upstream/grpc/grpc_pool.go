@@ -46,13 +46,13 @@ type poolWithChecker[T pool.ClosableClient] struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
+func (p *poolWithChecker[T]) Close() error {
+	if p.checker != nil {
+		p.checker.Stop()
+	}
+	return p.Pool.Close()
+}
+
 // NewGrpcPool creates a new connection pool for gRPC clients.
 //
 // Summary: NewGrpcPool creates a new connection pool for gRPC clients.
@@ -70,11 +70,6 @@ type poolWithChecker[T pool.ClosableClient] struct {
 //   - pool.Pool[*client.GrpcClientWrapper]: The resulting object or data structure.
 //   - error: An error if the execution fails, otherwise nil.
 //
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Errors:
 //   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
 //

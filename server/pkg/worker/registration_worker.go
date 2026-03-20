@@ -22,13 +22,13 @@ import (
 // ServiceRegistrationWorker is a background worker responsible for handling
 //
 // Summary: ServiceRegistrationWorker is a background worker responsible for handling
+type ServiceRegistrationWorker struct {
 	bus             *bus.Provider
 	serviceRegistry serviceregistry.ServiceRegistryInterface
 	wg              sync.WaitGroup
 	retryDelay      time.Duration
 }
 
-// NewServiceRegistrationWorker creates a new ServiceRegistrationWorker.
 // NewServiceRegistrationWorker creates a new ServiceRegistrationWorker.
 //
 // Summary: NewServiceRegistrationWorker creates a new ServiceRegistrationWorker.
@@ -45,14 +45,14 @@ import (
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - *ServiceRegistrationWorker: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
+	return &ServiceRegistrationWorker{
+		bus:             bus,
+		serviceRegistry: serviceRegistry,
+		retryDelay:      5 * time.Second,
+	}
+}
+
 // SetRetryDelay sets the retry delay for failed registrations.
 //
 // Summary: SetRetryDelay sets the retry delay for failed registrations.
@@ -60,33 +60,6 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 // Parameters:
 //   - d (time.Duration): The provided d data.
 //
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-	}
-}
-
-// SetRetryDelay sets the retry delay for failed registrations.
-// Start launches the worker in a new goroutine. It subscribes to service
-//
-// Summary: Start launches the worker in a new goroutine. It subscribes to service
-//
-// Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Returns:
 //   - None.
 //
@@ -308,21 +281,19 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 				service, ok = w.serviceRegistry.GetServiceConfig(sanitized)
 			}
 		}
-// Stop waits for the worker to stop.
-//
-// Summary: Stop waits for the worker to stop.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+
+		var err error
+		if !ok {
+			err = fmt.Errorf("service %q not found", req.ServiceName)
+		}
+
+		res := &bus.ServiceGetResult{
+			Service: service,
+			Error:   err,
+		}
+
+		res.SetCorrelationID(req.CorrelationID())
+		if err := getResultBus.Publish(ctx, req.CorrelationID(), res); err != nil {
 			log.Error("Failed to publish get result", "error", err)
 		}
 	})

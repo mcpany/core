@@ -16,7 +16,6 @@ import (
 // Conn is an interface that represents a gRPC client connection.
 //
 // Summary: Conn is an interface that represents a gRPC client connection.
-// Summary: Conn is an interface that represents a gRPC client connection.
 type Conn interface {
 	grpc.ClientConnInterface
 	// Close closes the connection to the server.
@@ -28,9 +27,9 @@ type Conn interface {
 	// Returns the result.
 	GetState() connectivity.State
 }
+
 // GrpcClientWrapper wraps a `Conn` to adapt it to the
 //
-// Summary: GrpcClientWrapper wraps a `Conn` to adapt it to the
 // Summary: GrpcClientWrapper wraps a `Conn` to adapt it to the
 type GrpcClientWrapper struct {
 	Conn
@@ -38,6 +37,7 @@ type GrpcClientWrapper struct {
 	// checker is cached to avoid recreation overhead on every health check.
 	checker health.Checker
 }
+
 // NewGrpcClientWrapper creates a new GrpcClientWrapper. It accepts a shared health checker to avoid creating a new one for every client.
 //
 // Summary: NewGrpcClientWrapper creates a new GrpcClientWrapper. It accepts a shared health checker to avoid creating a new one for every client.
@@ -55,9 +55,6 @@ type GrpcClientWrapper struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, checker health.Checker) *GrpcClientWrapper {
 	// If no checker is provided, create a new one (backward compatibility or standalone usage).
 	if checker == nil {
@@ -67,6 +64,9 @@ func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, che
 		Conn:    conn,
 		config:  config,
 		checker: checker,
+	}
+}
+
 // IsHealthy checks if the underlying gRPC connection is in a usable state. It returns `true` if the connection's state is not `connectivity.Shutdown`, indicating that it is still active and can be used for new RPCs.
 //
 // Summary: IsHealthy checks if the underlying gRPC connection is in a usable state. It returns `true` if the connection's state is not `connectivity.Shutdown`, indicating that it is still active and can be used for new RPCs.
@@ -82,11 +82,6 @@ func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, che
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.GetState() == connectivity.Shutdown {
 		return false
@@ -95,6 +90,11 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 		return true
 	}
 	if w.checker == nil {
+		return true // No health check configured, assume healthy.
+	}
+	return w.checker.Check(ctx).Status == health.StatusUp
+}
+
 // Close terminates the underlying gRPC connection, releasing any associated resources.
 //
 // Summary: Close terminates the underlying gRPC connection, releasing any associated resources.
@@ -103,13 +103,6 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 //   - None.
 //
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:

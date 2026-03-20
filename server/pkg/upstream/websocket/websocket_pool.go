@@ -16,8 +16,8 @@ import (
 // Pool is a type alias for a pool of WebSocket client connections.
 //
 // Summary: Pool is a type alias for a pool of WebSocket client connections.
-// Summary: Pool is a type alias for a pool of WebSocket client connections.
 type Pool = pool.Pool[*client.WebsocketClientWrapper]
+
 // NewPool creates a new connection pool for WebSocket clients. It
 //
 // Summary: NewPool creates a new connection pool for WebSocket clients. It
@@ -29,13 +29,6 @@ type Pool = pool.Pool[*client.WebsocketClientWrapper]
 //
 // Returns:
 //   - Pool: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:

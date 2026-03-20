@@ -7,12 +7,12 @@ package terraform
 // ResourceMCPServer represents the configuration schema for an MCP Server resource
 //
 // Summary: ResourceMCPServer represents the configuration schema for an MCP Server resource
-// Summary: ResourceMCPServer represents the configuration schema for an MCP Server resource
 type ResourceMCPServer struct {
 	Name    string
 	Port    int
 	Enabled bool
 }
+
 // Schema returns the Terraform schema definition (Mock). Returns the result.
 //
 // Summary: Schema returns the Terraform schema definition (Mock). Returns the result.
@@ -25,9 +25,6 @@ type ResourceMCPServer struct {
 //
 // Errors:
 //   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
@@ -50,6 +47,9 @@ func Schema() map[string]interface{} {
 			"default":     true,
 			"description": "Whether the server is active",
 		},
+	}
+}
+
 // Create mimics the Create operation of a Terraform resource. _ is an unused parameter. Returns an error if the operation fails.
 //
 // Summary: Create mimics the Create operation of a Terraform resource. _ is an unused parameter. Returns an error if the operation fails.
@@ -65,11 +65,11 @@ func Schema() map[string]interface{} {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+func Create(_ *ResourceMCPServer) error {
+	// Simulate API call to provision resources
+	return nil
+}
+
 // Read mimics the Read operation. name is the name of the resource. Returns the result. Returns an error if the operation fails.
 //
 // Summary: Read mimics the Read operation. name is the name of the resource. Returns the result. Returns an error if the operation fails.
@@ -79,13 +79,6 @@ func Schema() map[string]interface{} {
 //
 // Returns:
 //   - *ResourceMCPServer: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 //   - error: An error if the execution fails, otherwise nil.
 //
 // Errors:

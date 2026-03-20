@@ -28,8 +28,6 @@ type activityEvent struct {
 // Manager handles topology state tracking.
 //
 // Summary: Manager handles topology state tracking.
-//
-// Summary: Manager handles topology state tracking.
 type Manager struct {
 	mu              sync.RWMutex
 	sessions        map[string]*SessionStats
@@ -39,9 +37,7 @@ type Manager struct {
 
 	activityCh chan activityEvent
 	shutdownCh chan struct{}
-// SessionStats contains statistics about a topology session.
-//
-// Summary: SessionStats contains statistics about a topology session.
+}
 
 // SessionStats contains statistics about a topology session.
 //
@@ -55,18 +51,14 @@ type SessionStats struct {
 	ErrorCount     int64
 	TotalBytes     int64
 	ServiceCounts  map[string]int64         // Per service request count
-// Stats aggregated metrics.
-//
-// Summary: Stats aggregated metrics.
+	ServiceErrors  map[string]int64         // Per service error count
 	ServiceLatency map[string]time.Duration // Per service latency
 }
 
 // Stats aggregated metrics.
 //
 // Summary: Stats aggregated metrics.
-// MinuteStats tracks stats for a single minute.
-//
-// Summary: MinuteStats tracks stats for a single minute.
+type Stats struct {
 	TotalRequests int64
 	AvgLatency    time.Duration
 	ErrorRate     float64
@@ -75,9 +67,7 @@ type SessionStats struct {
 // MinuteStats tracks stats for a single minute.
 //
 // Summary: MinuteStats tracks stats for a single minute.
-// ServiceTrafficStats tracks stats for a single service in a minute.
-//
-// Summary: ServiceTrafficStats tracks stats for a single service in a minute.
+type MinuteStats struct {
 	Requests     int64
 	Errors       int64
 	Latency      int64 // Total latency in ms
@@ -85,9 +75,7 @@ type SessionStats struct {
 	ServiceStats map[string]*ServiceTrafficStats
 }
 
-// TrafficPoint represents a data point for the traffic chart.
-//
-// Summary: TrafficPoint represents a data point for the traffic chart.
+// ServiceTrafficStats tracks stats for a single service in a minute.
 //
 // Summary: ServiceTrafficStats tracks stats for a single service in a minute.
 type ServiceTrafficStats struct {

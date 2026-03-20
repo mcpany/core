@@ -141,7 +141,6 @@ func BindServerFlags(cmd *cobra.Command) {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - May modify internal state or perform external network calls.
 func BindFlags(cmd *cobra.Command) {
 	BindRootFlags(cmd)
 	BindServerFlags(cmd)

@@ -36,10 +36,10 @@ type ConnectionFactory struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//   - *ConnectionFactory: The resulting object or data structure.
-//
-// Errors:
-//   - None.
+func NewConnectionFactory() *ConnectionFactory {
+	return &ConnectionFactory{}
+}
+
 // WithDialer sets a custom dialer function for the ConnectionFactory. This is
 //
 // Summary: WithDialer sets a custom dialer function for the ConnectionFactory. This is
@@ -55,10 +55,10 @@ type ConnectionFactory struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Returns:
-//   - None.
-//
+func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net.Conn, error)) {
+	f.dialer = dialer
+}
+
 // NewConnection establishes a new gRPC client connection to the specified
 //
 // Summary: NewConnection establishes a new gRPC client connection to the specified
@@ -67,15 +67,6 @@ type ConnectionFactory struct {
 //   - _ (context.Context): The provided _ data.
 //   - targetAddress (string): The textual representation of targetaddress.
 //
-// Returns:
-//   - *grpc.ClientConn: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Returns:
 //   - *grpc.ClientConn: The resulting object or data structure.
 //   - error: An error if the execution fails, otherwise nil.

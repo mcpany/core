@@ -13,11 +13,11 @@ import (
 // SessionRegistry manages the mapping between upstream MCP sessions and downstream tool sessions.
 //
 // Summary: SessionRegistry manages the mapping between upstream MCP sessions and downstream tool sessions.
-// Summary: SessionRegistry manages the mapping between upstream MCP sessions and downstream tool sessions.
 type SessionRegistry struct {
 	mu       sync.RWMutex
 	sessions map[mcp.Session]tool.Session
 }
+
 // NewSessionRegistry creates a new SessionRegistry.
 //
 // Summary: NewSessionRegistry creates a new SessionRegistry.
@@ -33,12 +33,12 @@ type SessionRegistry struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-//
-// Returns:
-//   - *SessionRegistry: The resulting object or data structure.
-//
-// Errors:
-//   - None.
+func NewSessionRegistry() *SessionRegistry {
+	return &SessionRegistry{
+		sessions: make(map[mcp.Session]tool.Session),
+	}
+}
+
 // Register registers a mapping between an upstream session and a downstream session.
 //
 // Summary: Register registers a mapping between an upstream session and a downstream session.
@@ -55,12 +55,12 @@ type SessionRegistry struct {
 //
 // Side Effects:
 //   - May modify internal state or perform external network calls.
-// Summary: Register registers a mapping between an upstream session and a downstream session.
-//
-// Parameters:
-//   - upstreamSession (mcp.Session): The provided upstreamsession data.
-//   - downstreamSession (tool.Session): The provided downstreamsession data.
-//
+func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSession tool.Session) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.sessions[upstreamSession] = downstreamSession
+}
+
 // Unregister removes the mapping for an upstream session.
 //
 // Summary: Unregister removes the mapping for an upstream session.
@@ -74,30 +74,6 @@ type SessionRegistry struct {
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - May modify internal state or perform external network calls.
-	defer r.mu.Unlock()
-	r.sessions[upstreamSession] = downstreamSession
-}
-
-// Unregister removes the mapping for an upstream session.
-//
-// Get retrieves the downstream session associated with an upstream session.
-//
-// Summary: Get retrieves the downstream session associated with an upstream session.
-//
-// Parameters:
-//   - upstreamSession (mcp.Session): The provided upstreamsession data.
-//
-// Returns:
-//   - tool.Session: The resulting object or data structure.
-//   - bool: True if successful or valid, false otherwise.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Side Effects:
 //   - May modify internal state or perform external network calls.
 func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {

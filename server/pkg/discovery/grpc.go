@@ -13,45 +13,14 @@ import (
 // GRPCProvider discovers services via gRPC reflection.
 //
 // Summary: GRPCProvider discovers services via gRPC reflection.
-//
-// Summary: GRPCProvider discovers services via gRPC reflection.
 type GRPCProvider struct {
 	Endpoint string // e.g., "localhost:50051"
-// Name returns the name of the provider.
-//
-// Summary: Name returns the name of the provider.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - string: The resulting text.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+}
 
 // Name returns the name of the provider.
 //
 // Summary: Name returns the name of the provider.
-// Discover attempts to find services and return their configurations.
 //
-// Summary: Discover attempts to find services and return their configurations.
-//
-// Parameters:
-//   - _ (context.Context): The provided _ data.
-//
-// Returns:
-//   - []*configv1.UpstreamServiceConfig: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
 // Parameters:
 //   - None.
 //
