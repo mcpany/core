@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Federated Vector Blackboard (FVB)**: (P0) Upgrade the "Shared KV Store" to a multi-modal vector database. Implement standardized embeddings for cross-framework memory sharing and use "Intent-Sealed Shards" to ensure agents only access memory relevant to their verified mission root.
+- **Attested Dynamic Discovery (ADD) Protocol**: (P0) A Zero-Trust gatekeeper for dynamic tool discovery. Require all dynamically discovered tools to carry a cryptographic signature of provenance and a "Behavioral Profile" pre-validated in a sandboxed "Ghost Shell."
+- **Multi-Modal Sanitization Engine (MMSE)**: (P0) Real-time semantic inspection of non-textual data. Integrate specialized, lightweight models to scan images, audio, and SVG metadata for adversarial perturbations or embedded prompt injections before they enter the agent's context window.
+
+### Priority Shifts
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving into the **Federated Vector Blackboard (FVB)** to support semantic search and multimodal embeddings.
+- **PNTD Discovery Provider**: (Re-affirmed P0) Evolving to support the new **Attested Dynamic Discovery (ADD) Protocol** requirements for dynamically discovered tools.
+
 ## Evolution: [2026-06-16] Updates
 
 ### Proposed Additions
