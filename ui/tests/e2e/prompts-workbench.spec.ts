@@ -32,14 +32,14 @@ test.describe('Prompts Workbench', () => {
     await page.goto('/prompts');
 
     // Check if the page title exists
-    await expect(page.locator('h3', { hasText: 'Prompt Library' })).toBeVisible();
+    await expect(page.locator('h2', { hasText: 'Prompts' })).toBeVisible();
 
     // Check for search input to ensure basic layout
     await expect(page.locator('input[placeholder="Search prompts..."]')).toBeVisible();
 
     // Handle potential empty state or populated list
     const noPrompts = page.getByText('No prompts found');
-    const firstPrompt = page.locator('div.flex.flex-col.p-2.gap-1 > button').first();
+    const firstPrompt = page.getByRole('button', { name: 'Inspect' }).first();
 
     // Wait for either no prompts functionality or the list to populate
     await Promise.race([
