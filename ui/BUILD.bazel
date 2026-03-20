@@ -8,8 +8,19 @@ load("@npm//ui:ts-proto/package_json.bzl", ts_proto_bin = "bin")
 load("@npm//ui:typescript/package_json.bzl", tsc_bin = "bin")
 load("@npm//ui:vite/package_json.bzl", vite_bin = "bin")
 load("@npm//ui:vitest/package_json.bzl", vitest_bin = "bin")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 load("//ui:playwright_tests.bzl", "define_playwright_tests")
 load("//ui:vitest_tests.bzl", "define_vitest_tests")
+
+# ---------------------------------------------------------------------------
+# OCI container image for the UI (cloud-native, Dockerfile-free).
+#
+# The image runs `vite preview` which serves the pre-built static SPA and
+# proxies all /api/v1, /mcpany., etc. paths to BACKEND_URL.
+# Scale both frontend and backend deployments independently in Kubernetes.
+# ---------------------------------------------------------------------------
 
 npm_link_all_packages(name = "node_modules")
 
@@ -24,19 +35,19 @@ filegroup(
     name = "srcs",
     srcs = glob(
         include = [
-            "src/**",
-            "index.html",
-            "vite.config.ts",
-            "package.json",
-            "tsconfig.json",
-            "postcss.config.mjs",
-            "tailwind.config.ts",
-            "components.json",
-            "vitest.config.mts",
-            "eslint.config.mjs",
             ".eslintrc.json",
+            "components.json",
+            "eslint.config.mjs",
+            "index.html",
+            "package.json",
             "playwright.config.ts",
             "playwright.screenshots.config.ts",
+            "postcss.config.mjs",
+            "src/**",
+            "tailwind.config.ts",
+            "tsconfig.json",
+            "vite.config.ts",
+            "vitest.config.mts",
         ],
         allow_empty = True,
         exclude = ["node_modules/**"],
@@ -139,17 +150,6 @@ tsc_bin.tsc_test(
 
 define_playwright_tests()
 
-# ---------------------------------------------------------------------------
-# OCI container image for the UI (cloud-native, Dockerfile-free).
-#
-# The image runs `vite preview` which serves the pre-built static SPA and
-# proxies all /api/v1, /mcpany., etc. paths to BACKEND_URL.
-# Scale both frontend and backend deployments independently in Kubernetes.
-# ---------------------------------------------------------------------------
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
-load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
-load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
-
 # Package the pre-built Vite dist into a tar layer.
 pkg_files(
     name = "ui_dist_files",
@@ -170,9 +170,9 @@ pkg_files(
 pkg_files(
     name = "ui_config_files",
     srcs = [
-        "vite.config.ts",
         "index.html",
         "package.json",
+        "vite.config.ts",
     ],
     prefix = "/app",
 )
@@ -180,8 +180,8 @@ pkg_files(
 pkg_tar(
     name = "ui_layer",
     srcs = [
-        ":ui_dist_files",
         ":ui_config_files",
+        ":ui_dist_files",
     ],
 )
 
