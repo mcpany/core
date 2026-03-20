@@ -11,13 +11,12 @@ repos:
     -   id: check-case-conflict
     -   id: check-json
     -   id: check-yaml
-        exclude: ^(.github/|k8s/helm/)
+        exclude: ^k8s/helm/
     -   id: detect-private-key
         exclude: ^server/tests/tls/
     -   id: end-of-file-fixer
         exclude: ^server/pkg/upstream/mcp/s1/manifest.json
     -   id: trailing-whitespace
-        exclude: ^.github/
 -   repo: local
     hooks:
     -   id: shellcheck
