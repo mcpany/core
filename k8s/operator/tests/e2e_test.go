@@ -48,7 +48,7 @@ func TestOperatorE2E(t *testing.T) {
 	// 3. Clean up existing cluster to ensure fresh state and free ports
 	if clusterExists(t, ctx, clusterName) {
 		t.Logf("Deleting existing cluster %s to ensure clean state...", clusterName)
-		runCommand(t, ctx, rootDir, "kind", "delete", "cluster", "--name", clusterName)
+		_ = runCommand(t, ctx, rootDir, "kind", "delete", "cluster", "--name", clusterName)
 	}
 
 	// 4. Get a free port for the host side of NodePort
@@ -138,10 +138,10 @@ nodes:
 		"--wait",
 		"--timeout", "10m",
 	); err != nil {
-		runCommand(t, context.Background(), rootDir, "kubectl", "get", "pods", "-n", namespace)
-		runCommand(t, context.Background(), rootDir, "kubectl", "get", "events", "-n", namespace)
-		runCommand(t, context.Background(), rootDir, "sh", "-c", "kubectl get pods -n "+namespace+" -o name | xargs -I {} kubectl describe pod {} -n "+namespace)
-		runCommand(t, context.Background(), rootDir, "sh", "-c", "kubectl get pods -n "+namespace+" -o name | xargs -I {} kubectl logs {} --all-containers -n "+namespace)
+		_ = runCommand(t, context.Background(), rootDir, "kubectl", "get", "pods", "-n", namespace)
+		_ = runCommand(t, context.Background(), rootDir, "kubectl", "get", "events", "-n", namespace)
+		_ = runCommand(t, context.Background(), rootDir, "sh", "-c", "kubectl get pods -n "+namespace+" -o name | xargs -I {} kubectl describe pod {} -n "+namespace)
+		_ = runCommand(t, context.Background(), rootDir, "sh", "-c", "kubectl get pods -n "+namespace+" -o name | xargs -I {} kubectl logs {} --all-containers -n "+namespace)
 		t.Fatalf("Failed to install helm chart: %v", err)
 	}
 
