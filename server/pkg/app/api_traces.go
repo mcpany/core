@@ -53,15 +53,7 @@ const (
 	statusError   = "error"
 )
 
-func toTrace(entry audit.Entry) *Trace {
-	// Generate deterministic ID based on content to prevent duplicates during history replay
-	data := fmt.Sprintf("%d-%s-%s-%s", entry.Timestamp.UnixNano(), entry.ToolName, entry.UserID, entry.ProfileID)
-	hash := sha256.Sum256([]byte(data))
-	traceID := hex.EncodeToString(hash[:])
-
-	// Span ID can be same or derived
-	spanID := traceID + "-0"
-
+func toSpan(entry audit.Entry) Span {
 	status := statusSuccess
 	if entry.Error != "" {
 		status = statusError
@@ -78,17 +70,14 @@ func toTrace(entry audit.Entry) *Trace {
 
 	var output map[string]any
 	if entry.Result != nil {
-		// entry.Result is already an interface{}, but if it's a map/struct it works.
-		// If it's a primitive, we might want to wrap it?
-		// For now assume map or convertible.
 		b, err := json.Marshal(entry.Result)
 		if err == nil {
 			_ = json.Unmarshal(b, &output)
 		}
 	}
 
-	span := Span{
-		ID:           spanID,
+	return Span{
+		ID:           entry.SpanID,
 		Name:         entry.ToolName,
 		Type:         "tool",
 		StartTime:    startTime,
@@ -97,16 +86,105 @@ func toTrace(entry audit.Entry) *Trace {
 		Input:        input,
 		Output:       output,
 		ErrorMessage: entry.Error,
+		Children:     []Span{},
+	}
+}
+
+func buildSpanTree(parentID string, entries []audit.Entry) []Span {
+	var children []Span
+	for _, e := range entries {
+		if e.ParentID == parentID {
+			span := toSpan(e)
+			span.Children = buildSpanTree(e.SpanID, entries)
+			children = append(children, span)
+		}
+	}
+	return children
+}
+
+func buildSingleTraceTree(traceID string, entries []audit.Entry) *Trace {
+	var rootEntry audit.Entry
+	var hasRoot bool
+	for _, e := range entries {
+		if e.ParentID == "" {
+			rootEntry = e
+			hasRoot = true
+			break
+		}
+	}
+
+	if !hasRoot {
+		if len(entries) > 0 {
+			rootEntry = entries[0]
+		} else {
+			return nil
+		}
+	}
+
+	rootSpan := toSpan(rootEntry)
+	rootSpan.Children = buildSpanTree(rootEntry.SpanID, entries)
+
+	status := statusSuccess
+	if rootEntry.Error != "" {
+		status = statusError
+	}
+
+	durationMs := rootEntry.DurationMs
+	if len(entries) > 1 {
+		// Calculate total duration as max end time minus min start time
+		minStart := rootSpan.StartTime
+		maxEnd := rootSpan.EndTime
+		for _, e := range entries {
+			span := toSpan(e)
+			if span.StartTime < minStart {
+				minStart = span.StartTime
+			}
+			if span.EndTime > maxEnd {
+				maxEnd = span.EndTime
+			}
+		}
+		durationMs = maxEnd - minStart
 	}
 
 	return &Trace{
 		ID:            traceID,
-		RootSpan:      span,
-		Timestamp:     entry.Timestamp.Format(time.RFC3339),
+		RootSpan:      rootSpan,
+		Timestamp:     rootEntry.Timestamp.Format(time.RFC3339),
 		TotalDuration: durationMs,
 		Status:        status,
-		Trigger:       "user", // Default to user for now
+		Trigger:       "user",
 	}
+}
+
+func buildTraceTrees(entries []audit.Entry) []*Trace {
+	// Group entries by TraceID
+	grouped := make(map[string][]audit.Entry)
+	for _, e := range entries {
+		// If TraceID is empty, generate a fallback ID
+		tID := e.TraceID
+		if tID == "" {
+			// Use fallback ID based on unique execution so traces don't group together unintentionally
+			data := fmt.Sprintf("%d-%s-%s-%s-%s", e.Timestamp.UnixNano(), e.ToolName, e.UserID, e.ProfileID, e.SpanID)
+			hash := sha256.Sum256([]byte(data))
+			tID = hex.EncodeToString(hash[:])
+		}
+
+		// If SpanID is empty, generate fallback based on trace ID
+		if e.SpanID == "" {
+			e.SpanID = tID + "-0"
+		}
+		grouped[tID] = append(grouped[tID], e)
+	}
+
+	var traces []*Trace
+	for traceID, group := range grouped {
+		trace := buildSingleTraceTree(traceID, group)
+		if trace != nil {
+			traces = append(traces, trace)
+		}
+	}
+
+	return traces
 }
 
 func (a *Application) handleTraces() http.HandlerFunc {
@@ -122,29 +200,46 @@ func (a *Application) handleTraces() http.HandlerFunc {
 		if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
 			history := a.standardMiddlewares.Audit.GetHistory()
 
+			var entries []audit.Entry
+			for _, item := range history {
+				if entry, ok := item.(audit.Entry); ok {
+					entries = append(entries, entry)
+				}
+			}
+
+			traces = buildTraceTrees(entries)
+
 			// ⚡ BOLT: Optimized trace retrieval
 			// Randomized Selection from Top 5 High-Impact Targets
-			// Only unmarshal the requested number of recent traces to save CPU and bandwidth.
+			// Only return the requested number of recent traces
 			limitStr := r.URL.Query().Get("limit")
-			limit := len(history)
+			limit := len(traces)
 			if limitStr != "" {
 				if parsed, err := strconv.Atoi(limitStr); err == nil && parsed > 0 {
 					limit = parsed
 				}
 			}
 
-			// Determine start index. History is chronological (oldest -> newest).
-			// We want the last `limit` items.
-			startIdx := 0
-			if len(history) > limit {
-				startIdx = len(history) - limit
+			// Sort by timestamp descending (newest first)
+			// (Assuming buildTraceTrees doesn't guarantee order, though map iteration is random)
+			for i := 0; i < len(traces); i++ {
+				for j := i + 1; j < len(traces); j++ {
+					// Use ascending check inside condition to push older items to the end
+					if traces[j].Timestamp > traces[i].Timestamp {
+						traces[i], traces[j] = traces[j], traces[i]
+					} else if traces[j].Timestamp == traces[i].Timestamp {
+						// Tie breaker on StartTime or Trace ID to be stable
+						if traces[j].RootSpan.StartTime > traces[i].RootSpan.StartTime {
+							traces[i], traces[j] = traces[j], traces[i]
+						} else if traces[j].RootSpan.StartTime == traces[i].RootSpan.StartTime && traces[j].ID > traces[i].ID {
+							traces[i], traces[j] = traces[j], traces[i]
+						}
+					}
+				}
 			}
 
-			// Iterate backwards from end to startIdx to return newest first
-			for i := len(history) - 1; i >= startIdx; i-- {
-				if entry, ok := history[i].(audit.Entry); ok {
-					traces = append(traces, toTrace(entry))
-				}
+			if len(traces) > limit {
+				traces = traces[:limit]
 			}
 		}
 
@@ -206,14 +301,16 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 			return conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
 		})
 
-		// Send history
+		// Build and send history
+		var entries []audit.Entry
 		for _, msg := range history {
-			entry, ok := msg.(audit.Entry)
-			if !ok {
-				continue
+			if entry, ok := msg.(audit.Entry); ok {
+				entries = append(entries, entry)
 			}
-			trace := toTrace(entry)
+		}
 
+		initialTraces := buildTraceTrees(entries)
+		for _, trace := range initialTraces {
 			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
 				logging.GetLogger().Error("failed to set write deadline", "error", err)
 				return
@@ -241,7 +338,33 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 				if !ok {
 					continue
 				}
-				trace := toTrace(entry)
+
+				// Rebuild the trace tree for this specific TraceID
+				// Fetch the latest history to get all spans for this trace
+				currentHistory := a.standardMiddlewares.Audit.GetHistory()
+				var traceEntries []audit.Entry
+				for _, hItem := range currentHistory {
+					if hEntry, hOk := hItem.(audit.Entry); hOk && hEntry.TraceID == entry.TraceID {
+						traceEntries = append(traceEntries, hEntry)
+					}
+				}
+
+				// Ensure the incoming entry is included in case it wasn't in history yet
+				found := false
+				for _, e := range traceEntries {
+					if e.SpanID == entry.SpanID {
+						found = true
+						break
+					}
+				}
+				if !found {
+					traceEntries = append(traceEntries, entry)
+				}
+
+				trace := buildSingleTraceTree(entry.TraceID, traceEntries)
+				if trace == nil {
+					continue
+				}
 
 				if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
 					logging.GetLogger().Error("failed to set write deadline", "error", err)

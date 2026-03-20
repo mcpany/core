@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/mcpany/core/server/pkg/tool"
 )
@@ -31,6 +32,8 @@ func TestHandleTraces_Limit(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to execute middleware: %v", err)
 		}
+		// Artificial delay so timestamps are distinctly different
+		time.Sleep(2 * time.Millisecond)
 	}
 
 	// Case 1: No limit (should return all 10, reversed?)
