@@ -17,6 +17,7 @@ import (
 )
 
 // DebugEntry represents a captured HTTP request/response.
+//
 type DebugEntry struct {
 	ID              string        `json:"id"`
 	TraceID         string        `json:"trace_id"`
@@ -34,6 +35,7 @@ type DebugEntry struct {
 }
 
 // Debugger monitors and records traffic for inspection.
+//
 type Debugger struct {
 	ring        *ring.Ring
 	mu          sync.RWMutex
@@ -44,10 +46,14 @@ type Debugger struct {
 }
 
 // NewDebugger creates a new Debugger middleware.
+//
+//
 // Parameters:
 //   - size: int. The number of recent requests to keep in memory.
+//
 // Returns:
 //   - *Debugger: The initialized debugger.
+//
 // Side Effects:
 //   - Starts a background goroutine to process debug entries.
 func NewDebugger(size int) *Debugger {
@@ -73,14 +79,29 @@ func (d *Debugger) process() {
 	close(d.done)
 }
 
-// Close stops the background processor.
-// Summary: Shuts down the debugger and releases resources.
+// Close stops the background processor. Summary: Shuts down the debugger and releases resources. Side Effects: - Closes the ingress channel. - Waits for the background processor to finish.
+//
 // Parameters:
+//   - None
+//
 // Returns:
+//   - None
+//
 // Errors:
+//   - None
+//
 // Side Effects:
-//   - Closes the ingress channel.
-//   - Waits for the background processor to finish.
+//   - None
+//
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (d *Debugger) Close() {
 	close(d.ingress)
 	<-d.done
@@ -96,11 +117,15 @@ type bodyLogWriter struct {
 }
 
 // Write writes the data to the connection and captures it for the log.
+//
+//
 // Parameters:
 //   - b: []byte. The data to write.
+//
 // Returns:
 //   - int: The number of bytes written.
 //   - error: An error if the write fails.
+//
 // Side Effects:
 //   - Writes to the underlying http.ResponseWriter.
 //   - Writes to the internal buffer for logging, truncating if necessary.
@@ -125,8 +150,11 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 }
 
 // WriteHeader sends an HTTP response header with the provided status code.
+//
+//
 // Parameters:
 //   - statusCode: int. The HTTP status code.
+//
 // Side Effects:
 //   - Sets the status code on the writer.
 //   - Writes the header to the underlying http.ResponseWriter.
@@ -146,10 +174,14 @@ type readCloserWrapper struct {
 }
 
 // Handler returns the http handler.
+//
+//
 // Parameters:
 //   - next: http.Handler. The next handler in the chain.
+//
 // Returns:
 //   - http.Handler: The wrapped handler.
+//
 // Side Effects:
 //   - Intercepts HTTP requests and responses.
 //   - Generates trace and span IDs if missing.
@@ -275,8 +307,11 @@ func isTextContent(contentType string) bool {
 }
 
 // Entries returns the last captured entries.
+//
+//
 // Returns:
 //   - []DebugEntry: A slice of the most recent captured requests and responses.
+//
 // Side Effects:
 //   - Acquires a read lock on the ring buffer.
 func (d *Debugger) Entries() []DebugEntry {
@@ -293,8 +328,11 @@ func (d *Debugger) Entries() []DebugEntry {
 }
 
 // APIHandler returns a http.HandlerFunc to view entries.
+//
+//
 // Returns:
 //   - http.HandlerFunc: The API handler function.
+//
 // Side Effects:
 //   - Encodes the entries to JSON and writes to the response.
 func (d *Debugger) APIHandler() http.HandlerFunc {

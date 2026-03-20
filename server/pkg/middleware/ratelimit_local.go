@@ -13,16 +13,21 @@ import (
 )
 
 // LocalLimiter is an in-memory implementation of Limiter.
+//
 type LocalLimiter struct {
 	*rate.Limiter
 }
 
 // Allow checks if the request is allowed (cost 1).
+//
+//
 // Parameters:
 //   - _: context.Context. Unused.
+//
 // Returns:
 //   - bool: True if allowed, false otherwise.
 //   - error: Always nil.
+//
 // Side Effects:
 //   - Consumes 1 token from the bucket if allowed.
 func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
@@ -30,12 +35,16 @@ func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 }
 
 // AllowN checks if the request is allowed with a specific cost.
+//
+//
 // Parameters:
 //   - _: context.Context. Unused.
 //   - n: int. The cost of the event.
+//
 // Returns:
 //   - bool: True if allowed, false otherwise.
 //   - error: Always nil.
+//
 // Side Effects:
 //   - Consumes n tokens from the bucket if allowed.
 func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
@@ -43,9 +52,12 @@ func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 }
 
 // Update updates the limiter configuration.
+//
+//
 // Parameters:
 //   - rps: float64. The new requests per second limit.
 //   - burst: int. The new burst size.
+//
 // Side Effects:
 //   - Modifies the underlying rate.Limiter state.
 func (l *LocalLimiter) Update(rps float64, burst int) {
@@ -59,9 +71,12 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 }
 
 // LocalStrategy implements RateLimitStrategy for local in-memory rate limiting.
+//
 type LocalStrategy struct{}
 
 // NewLocalStrategy creates a new LocalStrategy.
+//
+//
 // Returns:
 //   - *LocalStrategy: The initialized strategy.
 func NewLocalStrategy() *LocalStrategy {
@@ -69,15 +84,19 @@ func NewLocalStrategy() *LocalStrategy {
 }
 
 // Create creates a new LocalLimiter.
+//
+//
 // Parameters:
 //   - _: context.Context. Unused.
 //   - _: string. Unused (serviceID).
 //   - _: string. Unused (limitScopeKey).
 //   - _: string. Unused (partitionKey).
 //   - config: *configv1.RateLimitConfig. The rate limit configuration.
+//
 // Returns:
 //   - Limiter: The created LocalLimiter.
 //   - error: Always nil.
+//
 // Side Effects:
 //   - Sets a minimum burst of 1 if configured lower.
 func (s *LocalStrategy) Create(_ context.Context, _, _, _ string, config *configv1.RateLimitConfig) (Limiter, error) {

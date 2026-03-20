@@ -14,9 +14,12 @@ import (
 )
 
 // Watcher monitors configuration files for changes and triggers a reload.
+//
 // Summary: A file system watcher for configuration reloading.
+//
 // It watches the parent directory of specified files to handle atomic saves (rename/move)
 // commonly used by text editors.
+//
 // Fields:
 //   - watcher (*fsnotify.Watcher): The underlying fsnotify watcher.
 //   - done (chan bool): Channel to signal shutdown.
@@ -30,15 +33,33 @@ type Watcher struct {
 }
 
 // NewWatcher creates a new file watcher.
+//
 // Parameters:
 //   - None
+//
 // Returns:
 //   - *Watcher: The resulting *Watcher.
 //   - error: An error if the operation fails.
+//
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
+//
 // Side Effects:
 //   - None
+//
+// Summary: Initializes NewWatcher operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -52,14 +73,19 @@ func NewWatcher() (*Watcher, error) {
 }
 
 // Watch starts monitoring the specified configuration paths.
+//
 // Summary: Starts watching the specified paths for changes.
+//
 // Parameters:
 //   - paths ([]string): A slice of file or directory paths to watch.
 //   - reloadFunc (func()): The function to call when a change is detected.
+//
 // Returns:
 //   - error: An error if adding paths to the watcher fails.
+//
 // Errors:
 //   - Returns an error if adding a path to the watcher fails.
+//
 // Side Effects:
 //   - Starts a goroutine to process file events.
 //   - Registers directories with the OS watcher.
@@ -176,7 +202,23 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 }
 
 // Close stops the file watcher and releases resources.
+//
 // Parameters:
+//   - None.
+//
+// Summary: Executes Close operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (w *Watcher) Close() {
 	close(w.done)
 	_ = w.watcher.Close()

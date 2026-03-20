@@ -14,13 +14,16 @@ import (
 )
 
 // MockTool is a mock implementation of the tool.Tool interface for testing.
+//
 // Summary: Mock tool for unit testing.
 type MockTool struct {
 	ExecuteFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
 }
 
 // Tool returns a basic tool definition for the mock tool.
+//
 // Summary: Returns the tool definition.
+//
 // Returns:
 //   - *v1.Tool: A minimal tool definition.
 func (m *MockTool) Tool() *v1.Tool {
@@ -30,13 +33,17 @@ func (m *MockTool) Tool() *v1.Tool {
 }
 
 // Execute calls the mock ExecuteFunc if set, otherwise returns nil.
+//
 // Summary: Executes the mock tool logic.
+//
 // Parameters:
 //   - ctx: context.Context. The execution context.
 //   - req: *tool.ExecutionRequest. The tool execution request.
+//
 // Returns:
 //   - any: The result from ExecuteFunc.
 //   - error: The error from ExecuteFunc.
+//
 // Side Effects:
 //   - Invokes the injected ExecuteFunc.
 func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
@@ -47,7 +54,9 @@ func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any
 }
 
 // GetCacheConfig returns nil for the mock tool.
+//
 // Summary: Returns cache configuration (nil for mock).
+//
 // Returns:
 //   - *configv1.CacheConfig: Always nil.
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {

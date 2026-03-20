@@ -14,6 +14,7 @@ import (
 )
 
 // SystemStatusResponse represents the response from the system status API.
+//
 // Summary: Represents a SystemStatusResponse.
 type SystemStatusResponse struct {
 	UptimeSeconds     int64    `json:"uptime_seconds"`

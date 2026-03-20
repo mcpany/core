@@ -14,6 +14,7 @@ import (
 
 // TextTemplate provides a simple wrapper around Go's standard text/template
 // for rendering strings with dynamic data.
+//
 // Summary: High-performance template engine using fasttemplate.
 type TextTemplate struct {
 	template *fasttemplate.Template
@@ -24,14 +25,18 @@ type TextTemplate struct {
 }
 
 // NewTemplate parses a template string and creates a new TextTemplate.
+//
 // Summary: Initializes a new TextTemplate.
+//
 // Parameters:
 //   - templateString: string. The template source.
 //   - startTag: string. The start delimiter (e.g. "{{").
 //   - endTag: string. The end delimiter (e.g. "}}").
+//
 // Returns:
 //   - *TextTemplate: The parsed template.
 //   - error: An error if parsing fails.
+//
 // Side Effects:
 //   - Auto-detects if the template output is likely JSON to enable automatic escaping.
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
@@ -60,14 +65,19 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 
 // Render executes the template with the provided parameters and returns the
 // resulting string.
+//
 // Summary: Renders the template with data.
+//
 // Parameters:
 //   - params: map[string]any. The data map for variable substitution.
+//
 // Returns:
 //   - string: The rendered output.
 //   - error: An error if a key is missing or rendering fails.
+//
 // Errors:
 //   - Returns error if a required tag is missing in params.
+//
 // Side Effects:
 //   - Automatically escapes strings if the template is detected as JSON.
 func (t *TextTemplate) Render(params map[string]any) (string, error) {

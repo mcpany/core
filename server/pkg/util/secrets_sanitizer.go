@@ -8,7 +8,9 @@ import (
 )
 
 // StripSecretsFromService removes sensitive information from the service configuration.
+//
 // Summary: Removes sensitive information from service configuration.
+//
 // Parameters:
 //   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to strip secrets from.
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
@@ -60,7 +62,9 @@ func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 }
 
 // StripSecretsFromProfile removes sensitive information from the profile definition.
+//
 // Summary: Removes sensitive information from profile definition.
+//
 // Parameters:
 //   - profile (*configv1.ProfileDefinition): The profile definition to strip secrets from.
 func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
@@ -73,7 +77,9 @@ func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 }
 
 // StripSecretsFromCollection removes sensitive information from the service collection.
+//
 // Summary: Removes sensitive information from service collection.
+//
 // Parameters:
 //   - collection (*configv1.Collection): The service collection to strip secrets from.
 func StripSecretsFromCollection(collection *configv1.Collection) {
@@ -86,7 +92,9 @@ func StripSecretsFromCollection(collection *configv1.Collection) {
 }
 
 // StripSecretsFromAuth removes sensitive values from the authentication config.
+//
 // Summary: Removes sensitive values from authentication config.
+//
 // Parameters:
 //   - auth (*configv1.Authentication): The authentication configuration to strip secrets from.
 func StripSecretsFromAuth(auth *configv1.Authentication) {
@@ -301,7 +309,9 @@ func scrubSecretValue(sv *configv1.SecretValue) {
 }
 
 // HydrateSecretsInService populates the service configuration with resolved secret values.
+//
 // Summary: Populates service configuration with resolved secret values.
+//
 // Parameters:
 //   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to hydrate secrets into.
 //   - secrets (map[string]*configv1.SecretValue): A map of resolved secret values.

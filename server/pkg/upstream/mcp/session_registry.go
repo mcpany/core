@@ -12,6 +12,7 @@ import (
 
 // SessionRegistry manages the mapping between upstream MCP sessions and downstream tool sessions.
 // This allows requests from upstream (like sampling) to be routed to the correct downstream client.
+//
 // Summary: Represents a SessionRegistry.
 type SessionRegistry struct {
 	mu       sync.RWMutex
@@ -19,9 +20,26 @@ type SessionRegistry struct {
 }
 
 // NewSessionRegistry creates a new SessionRegistry.
+//
 // Returns:
 //   - *SessionRegistry: The result.
+//
 // Side Effects:
+//   - None.
+//
+// Summary: Initializes NewSessionRegistry operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewSessionRegistry() *SessionRegistry {
 	return &SessionRegistry{
 		sessions: make(map[mcp.Session]tool.Session),
@@ -29,11 +47,30 @@ func NewSessionRegistry() *SessionRegistry {
 }
 
 // Register registers a mapping between an upstream session and a downstream session.
+//
 // Parameters:
 //   - upstreamSession (mcp.Session): The parameter.
 //   - downstreamSession (tool.Session): The parameter.
+//
 // Returns:
+//   - None.
+//
 // Side Effects:
+//   - None.
+//
+// Summary: Executes Register operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSession tool.Session) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -41,10 +78,29 @@ func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSessio
 }
 
 // Unregister removes the mapping for an upstream session.
+//
 // Parameters:
 //   - upstreamSession (mcp.Session): The parameter.
+//
 // Returns:
+//   - None.
+//
 // Side Effects:
+//   - None.
+//
+// Summary: Executes Unregister operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -52,12 +108,30 @@ func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 }
 
 // Get retrieves the downstream session associated with an upstream session.
+//
 // Parameters:
 //   - upstreamSession (mcp.Session): The parameter.
+//
 // Returns:
 //   - tool.Session: The result.
 //   - bool: The result.
+//
 // Side Effects:
+//   - None.
+//
+// Summary: Retrieves Get operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (r *SessionRegistry) Get(upstreamSession mcp.Session) (tool.Session, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

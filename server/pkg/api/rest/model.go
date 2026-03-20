@@ -4,7 +4,9 @@
 package rest
 
 // ValidateConfigRequest represents the request body for config validation.
+//
 // Summary: Request payload for config validation.
+//
 // Parameters:
 //   - Content (string): The raw YAML/JSON content of the configuration file.
 type ValidateConfigRequest struct {
@@ -13,7 +15,9 @@ type ValidateConfigRequest struct {
 }
 
 // ValidateConfigResponse represents the response body for config validation.
+//
 // Summary: Response payload for config validation.
+//
 // Parameters:
 //   - Valid (bool): Indicates whether the configuration is valid.
 //   - Errors ([]string): A list of validation errors, if any.
@@ -25,7 +29,9 @@ type ValidateConfigResponse struct {
 }
 
 // ValidationResult represents the result of the validation logic.
+//
 // Summary: Internal result of validation logic.
+//
 // Parameters:
 //   - Valid (bool): True if the configuration is valid.
 //   - Errors ([]string): A list of error messages if validation failed.

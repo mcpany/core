@@ -15,6 +15,7 @@ import (
 )
 
 // Config defines the configuration for the GC Worker.
+//
 // Summary: Represents a Config.
 type Config struct {
 	Enabled  bool
@@ -24,20 +25,39 @@ type Config struct {
 }
 
 // Worker implements a background worker for garbage collection.
+//
 // Summary: Represents a Worker.
 type Worker struct {
 	config Config
 }
 
 // New creates a new GC Worker. config holds the configuration settings. Returns the result.
+//
 // Parameters:
 //   - config (Config): The config parameter.
+//
 // Returns:
 //   - *Worker: The resulting *Worker.
+//
 // Errors:
 //   - None
+//
 // Side Effects:
 //   - None
+//
+// Summary: Initializes New operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func New(config Config) *Worker {
 	if config.Interval <= 0 {
 		config.Interval = 1 * time.Hour // Default 1 hour
@@ -51,14 +71,32 @@ func New(config Config) *Worker {
 }
 
 // Start runs the GC worker in the background. It returns immediately and runs cleanup periodically until the context is canceled.
+//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
+//
 // Returns:
 //   - None
+//
 // Errors:
 //   - None
+//
 // Side Effects:
 //   - None
+//
+// Summary: Executes Start operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (w *Worker) Start(ctx context.Context) {
 	if !w.config.Enabled {
 		logging.GetLogger().Info("Global GC worker is disabled")

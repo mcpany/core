@@ -15,13 +15,17 @@ import (
 )
 
 // ContextOptimizer optimises the context size of responses.
+//
 type ContextOptimizer struct {
 	MaxChars int
 }
 
 // NewContextOptimizer creates a new ContextOptimizer.
+//
+//
 // Parameters:
 //   - maxChars: int. The maximum allowed number of characters for string values in the JSON response.
+//
 // Returns:
 //   - *ContextOptimizer: The initialized optimizer.
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
@@ -39,10 +43,14 @@ var bufferPool = sync.Pool{
 }
 
 // Handler returns the middleware handler.
+//
+//
 // Parameters:
 //   - next: http.Handler. The next handler in the chain.
+//
 // Returns:
 //   - http.Handler: The wrapped handler.
+//
 // Side Effects:
 //   - Buffers the entire response body.
 //   - Modifies the response body if it contains JSON strings exceeding MaxChars.
@@ -179,11 +187,15 @@ func (w *responseBuffer) checkBuffer() {
 }
 
 // Write writes the data to the buffer or the underlying ResponseWriter.
+//
+//
 // Parameters:
 //   - b: []byte. The data to write.
+//
 // Returns:
 //   - int: The number of bytes written.
 //   - error: An error if the write fails.
+//
 // Side Effects:
 //   - Appends to the body buffer if buffering is enabled.
 //   - Writes to the underlying ResponseWriter otherwise.
@@ -201,8 +213,11 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 }
 
 // WriteHeader captures the status code and decides whether to buffer based on headers.
+//
+//
 // Parameters:
 //   - statusCode: int. The HTTP status code.
+//
 // Side Effects:
 //   - Sets the internal status code.
 //   - Checks content-type headers to determine if buffering is needed.

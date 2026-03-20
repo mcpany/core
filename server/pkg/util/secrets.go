@@ -30,10 +30,13 @@ const maxSecretRecursionDepth = 10
 // ResolveSecret resolves a SecretValue configuration object into a concrete string value.
 // It handles various secret types including plain text, environment variables, file paths,
 // remote URLs, Vault, and AWS Secrets Manager.
+//
 // Summary: Resolves a secret configuration into a string value.
+//
 // Parameters:
 //   - ctx (context.Context): The context for the secret resolution.
 //   - secret (*configv1.SecretValue): The configuration object to resolve.
+//
 // Returns:
 //   - string: The resolved secret string.
 //   - error: An error if resolution fails.
@@ -297,11 +300,14 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 
 // ResolveSecretMap resolves a map of SecretValue objects and merges them with a map of plain strings.
 // If a key exists in both maps, the value from the secretMap (once resolved) takes precedence.
+//
 // Summary: Resolves a map of secrets and merges with plain values.
+//
 // Parameters:
 //   - ctx (context.Context): The context for the secret resolution.
 //   - secretMap (map[string]*configv1.SecretValue): A map of keys to SecretValue objects.
 //   - plainMap (map[string]string): A map of keys to plain string values.
+//
 // Returns:
 //   - map[string]string: A single map containing all keys with their resolved string values.
 //   - error: An error if any secret resolution fails.

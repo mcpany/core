@@ -12,6 +12,7 @@ import (
 )
 
 // Storage defines the interface for persisting configuration.
+//
 // Summary: Interface for backend storage operations.
 type Storage interface {
 	// Load retrieves the full server configuration.
@@ -37,6 +38,7 @@ type Storage interface {
 	//   - bool: True if sources exist.
 	//
 	// Side Effects:
+	//   - None.
 	HasConfigSources() bool
 
 	// SaveService saves a single upstream service configuration.

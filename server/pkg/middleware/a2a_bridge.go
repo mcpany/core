@@ -15,18 +15,34 @@ import (
 
 // A2ABridgeMiddleware represents the Agent-to-Agent (A2A) Bridge middleware.
 // It intercepts tool calls prefixed with "call_agent_" and bridges them to the A2A protocol.
+//
 type A2ABridgeMiddleware struct {
 	contextManager *RecursiveContextManager
 }
 
 // NewA2ABridgeMiddleware creates a new A2ABridgeMiddleware.
+//
 // Parameters:
 //   - contextManager (*RecursiveContextManager): The manager for A2A session tokens.
+//
 // Returns:
 //   - *A2ABridgeMiddleware: The newly created middleware.
+//
 // Errors:
+//   - None.
+//
 // Side Effects:
 //   - Allocates memory for the middleware struct.
+//
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeMiddleware {
 	return &A2ABridgeMiddleware{
 		contextManager: contextManager,
@@ -34,18 +50,32 @@ func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeM
 }
 
 // Execute processes the MCP request and intercepts A2A agent calls.
+//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - method (string): The MCP method being called.
 //   - req (mcp.Request): The incoming MCP request.
 //   - next (mcp.MethodHandler): The next handler in the middleware chain.
+//
 // Returns:
 //   - mcp.Result: The result of the request, either intercepted or from the next handler.
 //   - error: Any error that occurred during processing.
+//
 // Errors:
 //   - Returns errors from the next handler if the request is not intercepted.
+//
 // Side Effects:
 //   - May create a new session in the RecursiveContextManager if intercepted.
+//
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (m *A2ABridgeMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	if method != "tools/call" {
 		return next(ctx, method, req)

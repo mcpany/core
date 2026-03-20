@@ -23,6 +23,7 @@ import (
 // service registration requests. It listens for ServiceRegistrationRequest
 // messages on the event bus, processes them using the service registry, and
 // publishes the results as ServiceRegistrationResult messages.
+//
 // Summary: Represents a ServiceRegistrationWorker.
 type ServiceRegistrationWorker struct {
 	bus             *bus.Provider
@@ -32,11 +33,27 @@ type ServiceRegistrationWorker struct {
 }
 
 // NewServiceRegistrationWorker creates a new ServiceRegistrationWorker.
+//
 // Parameters:
 //   - bus: The event bus used for receiving requests and publishing results.
 //   - serviceRegistry: The registry that will handle the actual registration logic.
+//
 // Returns:
 //   - *ServiceRegistrationWorker: A new service registration worker.
+//
+// Summary: Initializes NewServiceRegistrationWorker operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
 	return &ServiceRegistrationWorker{
 		bus:             bus,
@@ -46,8 +63,23 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 }
 
 // SetRetryDelay sets the retry delay for failed registrations.
+//
 // Parameters:
 //   - d: The duration to wait before retrying.
+//
+// Summary: Updates SetRetryDelay operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 	w.retryDelay = d
 }
@@ -55,8 +87,23 @@ func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 // Start launches the worker in a new goroutine. It subscribes to service
 // registration requests on the event bus and will continue to process them
 // until the provided context is canceled.
+//
 // Parameters:
 //   - ctx: The context that controls the lifecycle of the worker.
+//
+// Summary: Executes Start operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "ServiceRegistrationWorker")
@@ -279,14 +326,32 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 }
 
 // Stop waits for the worker to stop.
+//
 // Parameters:
 //   - None
+//
 // Returns:
 //   - None
+//
 // Errors:
 //   - None
+//
 // Side Effects:
 //   - None
+//
+// Summary: Executes Stop operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (w *ServiceRegistrationWorker) Stop() {
 	w.wg.Wait()
 }

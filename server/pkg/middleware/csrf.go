@@ -14,16 +14,21 @@ import (
 )
 
 // CSRFMiddleware protects against Cross-Site Request Forgery attacks.
+//
 type CSRFMiddleware struct {
 	allowedOrigins map[string]bool
 	mu             sync.RWMutex
 }
 
 // NewCSRFMiddleware creates a new CSRFMiddleware.
+//
+//
 // Parameters:
 //   - allowedOrigins: []string. A list of origin strings (e.g., "https://example.com") allowed to make requests.
+//
 // Returns:
 //   - *CSRFMiddleware: The initialized middleware.
+//
 // Side Effects:
 //   - Populates the internal allowed origins map.
 func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
@@ -35,8 +40,11 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 }
 
 // Update updates the allowed origins.
+//
+//
 // Parameters:
 //   - origins: []string. The new list of allowed origins.
+//
 // Side Effects:
 //   - Replaces the existing allowed origins map in a thread-safe manner.
 func (m *CSRFMiddleware) Update(origins []string) {
@@ -49,10 +57,14 @@ func (m *CSRFMiddleware) Update(origins []string) {
 }
 
 // Handler returns the HTTP handler.
+//
+//
 // Parameters:
 //   - next: http.Handler. The next handler in the chain.
+//
 // Returns:
 //   - http.Handler: The wrapped handler.
+//
 // Side Effects:
 //   - Inspects Method, Headers, Origin, and Referer of incoming requests.
 //   - Blocks requests with 403 Forbidden if validation fails.

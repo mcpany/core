@@ -14,9 +14,12 @@ import (
 )
 
 // handleUserMe returns an HTTP handler for retrieving the current user's profile.
+//
 // Summary: Retrieves the authenticated user's profile.
+//
 // Parameters:
 //   - store: storage.Storage. The storage interface.
+//
 // Returns:
 //   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleUserMe(store storage.Storage) http.HandlerFunc {

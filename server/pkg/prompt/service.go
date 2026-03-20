@@ -14,6 +14,7 @@ import (
 // Service handles the business logic for the prompts feature. It provides
 // methods for listing available prompts and retrieving a specific prompt by
 // name.
+//
 // Summary: Represents a Service.
 type Service struct {
 	promptManager ManagerInterface
@@ -21,9 +22,12 @@ type Service struct {
 }
 
 // NewService creates and returns a new Service instance.
+//
 // Summary: Initializes a new Prompt Service.
+//
 // Parameters:
 //   - promptManager: ManagerInterface. The manager handling prompt lifecycle.
+//
 // Returns:
 //   - *Service: The initialized service.
 func NewService(promptManager ManagerInterface) *Service {
@@ -35,10 +39,14 @@ func NewService(promptManager ManagerInterface) *Service {
 }
 
 // SetMCPServer sets the MCP server instance for the service.
+//
 // Summary: Configures the underlying MCP server.
+//
 // Parameters:
 //   - mcpServer: *mcp.Server. The MCP server instance.
+//
 // Returns:
+//
 //	None.
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.mcpServer = mcpServer
@@ -54,10 +62,13 @@ func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 // }
 
 // ListPrompts handles the "prompts/list" MCP request.
+//
 // Summary: Lists all available prompts.
+//
 // Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - req: *mcp.ListPromptsRequest. The request object.
+//
 // Returns:
 //   - *mcp.ListPromptsResult: The list of prompts.
 //   - error: An error if the operation fails.
@@ -76,13 +87,17 @@ func (s *Service) ListPrompts(
 }
 
 // GetPrompt handles the "prompts/get" MCP request.
+//
 // Summary: Retrieves and executes a specific prompt.
+//
 // Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - req: *mcp.GetPromptRequest. The request containing the prompt name and arguments.
+//
 // Returns:
 //   - *mcp.GetPromptResult: The result of the prompt execution.
 //   - error: An error if the prompt is not found or execution fails.
+//
 // Throws/Errors:
 //   - ErrPromptNotFound: If the prompt does not exist.
 func (s *Service) GetPrompt(

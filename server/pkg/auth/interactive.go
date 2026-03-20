@@ -18,20 +18,38 @@ import (
 )
 
 // InitiateOAuth starts the OAuth2 flow for a given service or credential. It returns the authorization URL and the state parameter.
+//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - userID (string): The userID parameter.
 //   - serviceID (string): The serviceID parameter.
 //   - credentialID (string): The credentialID parameter.
 //   - redirectURL (string): The redirectURL parameter.
+//
 // Returns:
 //   - string: The resulting string.
 //   - string: The resulting string.
 //   - error: An error if the operation fails.
+//
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
+//
 // Side Effects:
 //   - None
+//
+// Summary: Executes InitiateOAuth operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credentialID, redirectURL string) (string, string, error) {
 	// Fix for unused userID:
 	_ = userID
@@ -111,6 +129,7 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 
 	if conf.Endpoint.AuthURL == "" {
 		if oauthConfig.GetIssuerUrl() != "" {
+			// TODO: Add OIDC discovery
 			return "", "", fmt.Errorf("OIDC discovery not implemented")
 		}
 		if conf.Endpoint.AuthURL == "" {
@@ -130,6 +149,7 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 }
 
 // HandleOAuthCallback handles the OAuth2 callback code exchange.
+//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - userID (string): The userID parameter.
@@ -137,12 +157,29 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 //   - credentialID (string): The credentialID parameter.
 //   - code (string): The code parameter.
 //   - redirectURL (string): The redirectURL parameter.
+//
 // Returns:
 //   - error: An error if the operation fails.
+//
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
+//
 // Side Effects:
 //   - None
+//
+// Summary: Executes HandleOAuthCallback operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, credentialID, code, redirectURL string) error {
 	am.mu.RLock()
 	storage := am.storage

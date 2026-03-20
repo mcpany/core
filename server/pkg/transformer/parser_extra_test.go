@@ -12,6 +12,7 @@ import (
 
 // TestTextParser_ParseJSON_MultipleMatches verifies the behavior when a JSONPath selector
 // matches multiple elements.
+//
 // CURRENT LIMITATION: The parser currently returns only the FIRST match, even if multiple
 // elements are selected. This test documents this behavior. If this behavior changes to
 // return a list, this test should be updated.
@@ -37,6 +38,7 @@ func TestTextParser_ParseJSON_MultipleMatches(t *testing.T) {
 
 // TestTextParser_ParseXML_MultipleMatches verifies the behavior when an XPath selector
 // matches multiple elements.
+//
 // CURRENT LIMITATION: The parser currently returns only the FIRST match.
 func TestTextParser_ParseXML_MultipleMatches(t *testing.T) {
 	parser := NewTextParser()
@@ -60,6 +62,7 @@ func TestTextParser_ParseXML_MultipleMatches(t *testing.T) {
 
 // TestTextParser_ParseText_MultipleMatches verifies the behavior when a Regex selector
 // matches multiple times.
+//
 // CURRENT LIMITATION: The parser currently returns only the FIRST match.
 func TestTextParser_ParseText_MultipleMatches(t *testing.T) {
 	parser := NewTextParser()

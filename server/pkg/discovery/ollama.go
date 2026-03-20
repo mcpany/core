@@ -18,6 +18,7 @@ import (
 )
 
 // Provider defines the interface for auto-discovering local services.
+//
 // Summary: Represents a Provider.
 type Provider interface {
 	// Name returns the name of the discovery provider.
@@ -28,6 +29,7 @@ type Provider interface {
 
 // OllamaProvider discovers local Ollama instances.
 // OllamaProvider is a provider that discovers local Ollama instances.
+//
 // Summary: Represents a OllamaProvider.
 type OllamaProvider struct {
 	Endpoint   string // e.g., "http://localhost:11434"
@@ -36,28 +38,64 @@ type OllamaProvider struct {
 }
 
 // Name returns the name of the provider.
+//
 // Parameters:
 //   - None
+//
 // Returns:
 //   - string: The resulting string.
+//
 // Errors:
 //   - None
+//
 // Side Effects:
 //   - None
+//
+// Summary: Executes Name operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (p *OllamaProvider) Name() string {
 	return "ollama"
 }
 
 // Discover attempts to find local Ollama instances and return them as tools.
+//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
+//
 // Returns:
 //   - []*configv1.UpstreamServiceConfig: The resulting []*configv1.UpstreamServiceConfig.
 //   - error: An error if the operation fails.
+//
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
+//
 // Side Effects:
 //   - None
+//
+// Summary: Executes Discover operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (p *OllamaProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	// ⚡ BOLT: Reuse http.Client to avoid socket exhaustion.
 	// Randomized Selection from Top 5 High-Impact Targets

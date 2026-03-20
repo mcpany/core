@@ -30,6 +30,7 @@ func TestHandleGetUserPreferences(t *testing.T) {
 			"theme": "dark",
 		},
 	}.Build()
+	_ = store.CreateUser(context.TODO(), user)
 
 	// Create request
 	req := httptest.NewRequest("GET", "/api/v1/user/preferences", nil)
@@ -83,6 +84,7 @@ func TestHandleUpdateUserPreferences(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	// Verify storage
+	user, err := store.GetUser(context.TODO(), "new-user")
 	assert.NoError(t, err)
 	assert.NotNil(t, user)
 	assert.Equal(t, "{}", user.GetPreferences()["dashboard-layout"])
