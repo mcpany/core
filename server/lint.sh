@@ -1,3 +1,0 @@
-#!/bin/bash
-GO111MODULE=off go get -u golang.org/x/lint/golint
-~/go/bin/golint ./...
