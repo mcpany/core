@@ -5,7 +5,7 @@
 
 
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, forwardRef } from "react";
 import { User } from "@proto/config/v1/user";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,7 @@ import {
     Eye
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Virtuoso } from "react-virtuoso";
 
 interface UserListProps {
     users: User[];
@@ -94,7 +95,7 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
     }
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 flex flex-col h-full">
             <div className="flex items-center justify-between">
                 <div className="relative w-full max-w-sm">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -107,108 +108,120 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                 </div>
             </div>
 
-            <div className="rounded-md border bg-background">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[250px]">User</TableHead>
-                            <TableHead>Roles</TableHead>
-                            <TableHead>Authentication</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {filteredUsers.length === 0 ? (
+            <div className="rounded-md border bg-background flex-1 flex flex-col min-h-[300px] overflow-hidden">
+                <div className="flex-1 flex flex-col">
+                    <Table className="w-full table table-fixed">
+                        <TableHeader className="w-full table table-fixed">
                             <TableRow>
-                                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
-                                    No users found.
-                                </TableCell>
+                                <TableHead className="w-[250px]">User</TableHead>
+                                <TableHead>Roles</TableHead>
+                                <TableHead>Authentication</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
-                        ) : (
-                            filteredUsers.map((user) => (
-                                <TableRow key={user.id} data-testid={`user-row-${user.id}`}>
-                                    <TableCell>
-                                        <div className="flex items-center gap-3">
-                                            <Avatar className="h-9 w-9 border">
-                                                <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                                                    {getInitials(user.id)}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <div className="flex flex-col">
-                                                <span className="font-medium text-sm">{user.id}</span>
-                                            </div>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex flex-wrap gap-1">
-                                            {user.roles?.map((role: string) => (
-                                                <Badge
-                                                    key={role}
-                                                    variant={role === "admin" ? "default" : "secondary"}
-                                                    className="capitalize"
-                                                >
-                                                    {role === "admin" && <ShieldAlert className="mr-1 h-3 w-3" />}
-                                                    {role === "viewer" && <Eye className="mr-1 h-3 w-3" />}
-                                                    {role === "editor" && <Pencil className="mr-1 h-3 w-3" />}
-                                                    {role}
-                                                </Badge>
-                                            ))}
-                                            {(!user.roles || user.roles.length === 0) && (
-                                                <span className="text-muted-foreground text-xs italic">No roles</span>
-                                            )}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                            {user.authentication?.apiKey || (user.authentication as any)?.api_key ? (
-                                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 border">
-                                                    <Key className="h-3.5 w-3.5 text-orange-500" />
-                                                    <span>API Key</span>
-                                                </div>
-                                            ) : user.authentication?.basicAuth || (user.authentication as any)?.basic_auth ? (
-                                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 border">
-                                                    <Lock className="h-3.5 w-3.5 text-blue-500" />
-                                                    <span>Password</span>
-                                                </div>
-                                            ) : (
-                                                <span className="text-muted-foreground italic">None configured</span>
-                                            )}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                                    <span className="sr-only">Open menu</span>
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem onClick={() => copyToClipboard(user.id)}>
-                                                    <Copy className="mr-2 h-4 w-4" />
-                                                    Copy ID
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem onClick={() => onEdit(user)}>
-                                                    <Pencil className="mr-2 h-4 w-4" />
-                                                    Edit
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem
-                                                    onClick={() => onDelete(user.id)}
-                                                    className="text-destructive focus:text-destructive"
-                                                >
-                                                    <Trash2 className="mr-2 h-4 w-4" />
-                                                    Delete
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
+                        </TableHeader>
+                    </Table>
+                    {filteredUsers.length === 0 ? (
+                        <Table className="w-full">
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={4} className="h-24 text-center text-muted-foreground border-0">
+                                        No users found.
                                     </TableCell>
                                 </TableRow>
-                            ))
-                        )}
-                    </TableBody>
-                </Table>
+                            </TableBody>
+                        </Table>
+                    ) : (
+                        <div className="flex-1 relative">
+                            {/* ⚡ BOLT: Implemented virtualization for user list to handle large user bases.
+                                Randomized Selection from Top 5 High-Impact Targets */}
+                            <Virtuoso
+                                style={{ height: '100%', width: '100%', position: 'absolute', inset: 0 }}
+                                data={filteredUsers}
+                                itemContent={(index, user) => (
+                                    <div className="flex w-full border-b transition-colors hover:bg-muted/50">
+                                        <div className="p-4 align-middle w-[250px] shrink-0">
+                                            <div className="flex items-center gap-3">
+                                                <Avatar className="h-9 w-9 border">
+                                                    <AvatarFallback className="bg-primary/10 text-primary font-medium">
+                                                        {getInitials(user.id)}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <div className="flex flex-col overflow-hidden">
+                                                    <span className="font-medium text-sm truncate">{user.id}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="p-4 align-middle flex-1 flex items-center">
+                                            <div className="flex flex-wrap gap-1">
+                                                {user.roles?.map((role: string) => (
+                                                    <Badge
+                                                        key={role}
+                                                        variant={role === "admin" ? "default" : "secondary"}
+                                                        className="capitalize"
+                                                    >
+                                                        {role === "admin" && <ShieldAlert className="mr-1 h-3 w-3" />}
+                                                        {role === "viewer" && <Eye className="mr-1 h-3 w-3" />}
+                                                        {role === "editor" && <Pencil className="mr-1 h-3 w-3" />}
+                                                        {role}
+                                                    </Badge>
+                                                ))}
+                                                {(!user.roles || user.roles.length === 0) && (
+                                                    <span className="text-muted-foreground text-xs italic">No roles</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="p-4 align-middle flex-1 flex items-center">
+                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                {user.authentication?.apiKey || (user.authentication as any)?.api_key ? (
+                                                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 border">
+                                                        <Key className="h-3.5 w-3.5 text-orange-500" />
+                                                        <span>API Key</span>
+                                                    </div>
+                                                ) : user.authentication?.basicAuth || (user.authentication as any)?.basic_auth ? (
+                                                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 border">
+                                                        <Lock className="h-3.5 w-3.5 text-blue-500" />
+                                                        <span>Password</span>
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-muted-foreground italic">None configured</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="p-4 align-middle text-right shrink-0 flex items-center justify-end">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                                        <span className="sr-only">Open menu</span>
+                                                        <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                    <DropdownMenuItem onClick={() => copyToClipboard(user.id)}>
+                                                        <Copy className="mr-2 h-4 w-4" />
+                                                        Copy ID
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem onClick={() => onEdit(user)}>
+                                                        <Pencil className="mr-2 h-4 w-4" />
+                                                        Edit
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        onClick={() => onDelete(user.id)}
+                                                        className="text-destructive focus:text-destructive"
+                                                    >
+                                                        <Trash2 className="mr-2 h-4 w-4" />
+                                                        Delete
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
+                                    </div>
+                                )}
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
             <div className="text-xs text-muted-foreground text-center">
                 Showing {filteredUsers.length} of {users.length} users
