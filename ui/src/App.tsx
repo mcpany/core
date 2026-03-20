@@ -37,7 +37,6 @@ const ServiceResourcePage = lazy(() => import("./app/service/[id]/resource/[name
 const ServiceToolPage = lazy(() => import("./app/service/[id]/tool/[name]/page"));
 const SettingsMiddlewarePage = lazy(() => import("./app/settings/middleware/page"));
 const SettingsPage = lazy(() => import("./app/settings/page"));
-const SettingsWebhooksPage = lazy(() => import("./app/settings/webhooks/page"));
 const SkillEditPage = lazy(() => import("./app/skills/[name]/edit/page"));
 const SkillNamePage = lazy(() => import("./app/skills/[name]/page"));
 const SkillCreatePage = lazy(() => import("./app/skills/create/page"));
@@ -101,7 +100,6 @@ export default function App() {
           <Route path="/service/:id/prompt/:name" element={<ServicePromptPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/settings/middleware" element={<SettingsMiddlewarePage />} />
-          <Route path="/settings/webhooks" element={<SettingsWebhooksPage />} />
           <Route path="/skills" element={<SkillsPage />} />
           <Route path="/skills/create" element={<SkillCreatePage />} />
           <Route path="/skills/:name" element={<SkillNamePage />} />

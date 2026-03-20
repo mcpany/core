@@ -1,6 +1,6 @@
 # Webhooks
 
-**Status:** Config-Driven (UI Planned)
+**Status:** Implemented
 
 ## Goal
 
@@ -8,7 +8,7 @@ Intercept and modify tool executions. Webhooks utilize CloudEvents for a standar
 
 ## Configuration
 
-Webhooks are currently configured via `config.yaml` under each upstream service as `pre_call_hooks` and `post_call_hooks`. The UI dashboard at `/webhooks` provides a preview of future management capabilities but is not yet fully functional for creating or modifying these hooks.
+Webhooks are configured via `config.yaml` under each upstream service as `pre_call_hooks` and `post_call_hooks`. The UI dashboard at `/webhooks` provides an interface for managing global webhook subscriptions and allows you to test webhook delivery manually.
 
 ### YAML Example
 
