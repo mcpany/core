@@ -86,7 +86,7 @@ export function AuditLogViewer() {
             // string tool_name = 2;
             // In JSON it will be `toolName`.
             setLogs(res.entries || []);
-        } catch (e) {
+        } catch (_e) {
             console.error("Failed to fetch audit logs", e);
         } finally {
             setLoading(false);
@@ -128,7 +128,7 @@ export function AuditLogViewer() {
         try {
             const obj = JSON.parse(jsonStr);
             return JSON.stringify(obj, null, 2);
-        } catch (e) {
+        } catch (_e) {
             return jsonStr;
         }
     };
@@ -341,7 +341,7 @@ export function AuditLogViewer() {
                                             if (!selectedLog.result) return {};
                                             try {
                                                 return JSON.parse(selectedLog.result);
-                                            } catch (e) {
+                                            } catch (_e) {
                                                 return selectedLog.result;
                                             }
                                         })()
