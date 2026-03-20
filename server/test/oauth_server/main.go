@@ -23,8 +23,6 @@ var (
 )
 
 // OAuthServer mocks an OAuth 2.0 Identity Provider.
-//
-// Summary: Represents the o auth server.
 type OAuthServer struct {
 	// PrivateKey is the RSA private key used for signing tokens.
 	PrivateKey *rsa.PrivateKey
@@ -113,10 +111,10 @@ func (s *OAuthServer) handleToken(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
-		"iss":   s.BaseURL,
-		"sub":   "test-user",
-		"aud":   "mcp-any-client",
-		"exp":   time.Now().Add(time.Hour).Unix(),
+		"iss": s.BaseURL,
+		"sub": "test-user",
+		"aud": "mcp-any-client",
+		"exp": time.Now().Add(time.Hour).Unix(),
 		"scope": "read write",
 	})
 

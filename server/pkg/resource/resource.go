@@ -27,40 +27,12 @@ type Resource interface {
 	//
 	// Returns:
 	//   - *mcp.Resource: The MCP resource definition.
-	//
-	// Summary: Resources.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	Resource() *mcp.Resource
 
 	// Service returns the ID of the service that provides this resource.
 	//
 	// Returns:
 	//   - string: The service ID.
-	//
-	// Summary: Services.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	Service() string
 
 	// Read retrieves the content of the resource.
@@ -71,20 +43,6 @@ type Resource interface {
 	// Returns:
 	//   - *mcp.ReadResourceResult: The content of the resource.
 	//   - error: An error if reading fails.
-	//
-	// Summary: Reads.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 
 	// Subscribe establishes a subscription to the resource, allowing for receiving updates.
@@ -94,20 +52,6 @@ type Resource interface {
 	//
 	// Returns:
 	//   - error: An error if subscription fails.
-	//
-	// Summary: Subscribes.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	Subscribe(ctx context.Context) error
 }
 
@@ -126,20 +70,6 @@ type ManagerInterface interface {
 	// Returns:
 	//   - Resource: The resource instance.
 	//   - bool: True if found, false otherwise.
-	//
-	// Summary: Gets resource.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	GetResource(uri string) (Resource, bool)
 
 	// AddResource adds a new resource to the manager.
@@ -149,20 +79,6 @@ type ManagerInterface interface {
 	//
 	// Returns:
 	//   None.
-	//
-	// Summary: Adds resource.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	AddResource(resource Resource)
 
 	// RemoveResource removes a resource from the manager by its URI.
@@ -172,40 +88,12 @@ type ManagerInterface interface {
 	//
 	// Returns:
 	//   None.
-	//
-	// Summary: Removes resource.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	RemoveResource(uri string)
 
 	// ListResources returns a slice of all resources currently in the manager.
 	//
 	// Returns:
 	//   - []Resource: A slice of resources.
-	//
-	// Summary: Lists resources.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	ListResources() []Resource
 
 	// OnListChanged registers a callback function to be called when the list of resources changes.
@@ -215,20 +103,6 @@ type ManagerInterface interface {
 	//
 	// Returns:
 	//   None.
-	//
-	// Summary: Ons list changed.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	OnListChanged(f func())
 
 	// ClearResourcesForService removes all resources associated with a given service ID.
@@ -238,20 +112,6 @@ type ManagerInterface interface {
 	//
 	// Returns:
 	//   None.
-	//
-	// Summary: Clears resources for service.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	ClearResourcesForService(serviceID string)
 }
 

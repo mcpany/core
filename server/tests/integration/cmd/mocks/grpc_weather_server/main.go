@@ -37,20 +37,6 @@ var weatherData = map[string]string{
 //
 // Returns the response.
 // Returns an error if the operation fails.
-//
-// Summary: Gets weather.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - Returns error upon failure.
-//
-// Side Effects:
-//   - Interacts with internal state.
 func (s *weatherServer) GetWeather(_ context.Context, in *weatherPb.GetWeatherRequest) (*weatherPb.GetWeatherResponse, error) {
 	slog.Info("grpc_weather_server: GetWeather called", "location", in.GetLocation())
 	weather, ok := weatherData[in.GetLocation()]
@@ -72,7 +58,7 @@ func main() {
 	var err error
 	for i := 0; i < 5; i++ {
 		var lc net.ListenConfig
-		lis, err = lc.Listen(context.Background(), "tcp", address)
+	lis, err = lc.Listen(context.Background(), "tcp", address)
 		if err == nil {
 			break
 		}

@@ -283,77 +283,21 @@ type Client interface {
 	// It accepts a context, a query vector, the number of results to return (topK),
 	// a metadata filter, and a namespace.
 	// It returns a map containing the search results or an error.
-	//
-	// Summary: Queries.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error)
 
 	// Upsert inserts or updates vectors in the database.
 	// It accepts a context, a list of vectors (each as a map), and a namespace.
 	// It returns a map containing the operation result (e.g., upserted count) or an error.
-	//
-	// Summary: Upserts.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error)
 
 	// Delete removes vectors from the database.
 	// It accepts a context, a list of IDs to delete, a namespace, and an optional metadata filter.
 	// It returns a map containing the operation result or an error.
-	//
-	// Summary: Deletes.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error)
 
 	// DescribeIndexStats retrieves statistics about the vector index.
 	// It accepts a context and an optional metadata filter.
 	// It returns a map containing the index statistics or an error.
-	//
-	// Summary: Describes index stats.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	DescribeIndexStats(ctx context.Context, filter map[string]interface{}) (map[string]interface{}, error)
 }
 

@@ -19,38 +19,10 @@ type Message interface {
 	// CorrelationID returns the unique identifier used to correlate messages.
 	//
 	// Returns the result.
-	//
-	// Summary: Correlations ID.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	CorrelationID() string
 	// SetCorrelationID sets the correlation identifier for the message.
 	//
 	// id is the unique identifier.
-	//
-	// Summary: Sets correlation ID.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	SetCorrelationID(id string)
 }
 

@@ -16,20 +16,6 @@ import (
 // t is the t.
 //
 // Returns the result.
-//
-// Summary: Builds everything server.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - Returns error upon failure.
-//
-// Side Effects:
-//   - Interacts with internal state.
 func BuildEverythingServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	args := []string{"@modelcontextprotocol/server-everything", "streamableHttp"}
@@ -45,20 +31,6 @@ func BuildEverythingServer(t *testing.T) *integration.ManagedProcess {
 // t is the t.
 // registrationClient is the registrationClient.
 // upstreamEndpoint is the upstreamEndpoint.
-//
-// Summary: Registers everything service.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - Returns error upon failure.
-//
-// Side Effects:
-//   - Interacts with internal state.
 func RegisterEverythingService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_everything_server_streamable"
 	integration.RegisterStreamableMCPService(t, registrationClient, serviceID, upstreamEndpoint, true, nil)

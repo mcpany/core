@@ -80,39 +80,11 @@ type HTTPServiceWithHealthCheck interface {
 	//
 	// Returns:
 	//   - string: The network address of the service.
-	//
-	// Summary: Gets address.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	GetAddress() string
 	// GetHealthCheck returns the HTTP health check configuration for the service.
 	//
 	// Returns:
 	//   - *configv1.HttpHealthCheck: The health check configuration.
-	//
-	// Summary: Gets health check.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	GetHealthCheck() *configv1.HttpHealthCheck
 }
 

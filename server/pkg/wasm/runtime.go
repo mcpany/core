@@ -22,40 +22,12 @@ type Runtime interface {
 	// Returns:
 	//   - Plugin: The instantiated plugin.
 	//   - error: An error if the operation fails.
-	//
-	// Summary: Loads plugin.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	LoadPlugin(ctx context.Context, bytecode []byte) (Plugin, error)
 
 	// Close closes the runtime and releases resources.
 	//
 	// Returns:
 	//   - error: An error if the operation fails.
-	//
-	// Summary: Closes.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	Close() error
 }
 
@@ -73,40 +45,12 @@ type Plugin interface {
 	// Returns:
 	//   - []byte: The result of the execution.
 	//   - error: An error if the operation fails.
-	//
-	// Summary: Executes.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	Execute(ctx context.Context, function string, args ...[]byte) ([]byte, error)
 
 	// Close closes the plugin instance.
 	//
 	// Returns:
 	//   - error: An error if the operation fails.
-	//
-	// Summary: Closes.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	Close() error
 }
 

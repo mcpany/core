@@ -22,40 +22,12 @@ type ManagerInterface interface {
 	//
 	// Parameters:
 	//   - prompt: Prompt. The prompt definition to add.
-	//
-	// Summary: Adds prompt.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	AddPrompt(prompt Prompt)
 
 	// UpdatePrompt updates an existing prompt.
 	//
 	// Parameters:
 	//   - prompt: Prompt. The prompt with updated information.
-	//
-	// Summary: Updates prompt.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	UpdatePrompt(prompt Prompt)
 
 	// GetPrompt retrieves a prompt by its name.
@@ -66,80 +38,24 @@ type ManagerInterface interface {
 	// Returns:
 	//   - Prompt: The prompt instance.
 	//   - bool: True if the prompt was found, false otherwise.
-	//
-	// Summary: Gets prompt.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	GetPrompt(name string) (Prompt, bool)
 
 	// ListPrompts returns all registered prompts.
 	//
 	// Returns:
 	//   - []Prompt: A slice of all registered prompts.
-	//
-	// Summary: Lists prompts.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	ListPrompts() []Prompt
 
 	// ClearPromptsForService removes all prompts associated with a specific service.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
-	//
-	// Summary: Clears prompts for service.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	ClearPromptsForService(serviceID string)
 
 	// SetMCPServer sets the MCP server provider.
 	//
 	// Parameters:
 	//   - mcpServer: MCPServerProvider. The provider interface.
-	//
-	// Summary: Sets MCP server.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	SetMCPServer(mcpServer MCPServerProvider)
 }
 

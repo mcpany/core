@@ -16,8 +16,6 @@ import (
 )
 
 // WebhookRequest matches the data payload sent by mcpany
-//
-// Summary: Represents the webhook request.
 type WebhookRequest struct {
 	Kind     int            `json:"kind"` // 1=PreCall, 2=PostCall
 	ToolName string         `json:"tool_name"`
@@ -25,8 +23,6 @@ type WebhookRequest struct {
 }
 
 // WebhookResponse matches the expected response data
-//
-// Summary: Represents the webhook response.
 type WebhookResponse struct {
 	Allowed bool    `json:"allowed"`
 	Status  *Status `json:"status,omitempty"`
@@ -34,8 +30,6 @@ type WebhookResponse struct {
 
 // Status represents the status of the webhook response.
 // It contains a code and a message.
-//
-// Summary: Represents the status.
 type Status struct {
 	Code    int32  `json:"code"`
 	Message string `json:"message"`
@@ -88,8 +82,8 @@ func validateHandler(w http.ResponseWriter, r *http.Request) {
 			// Also checking for " rm " in case of chained commands
 			cleaned := strings.TrimSpace(strVal)
 			if strings.HasPrefix(cleaned, "rm ") ||
-				cleaned == "rm" ||
-				strings.Contains(cleaned, " rm ") {
+			   cleaned == "rm" ||
+			   strings.Contains(cleaned, " rm ") {
 				allowed = false
 				message = fmt.Sprintf("Command contains restricted keyword 'rm' in input '%s'", k)
 				break

@@ -49,20 +49,6 @@ type ServiceRegistryInterface interface { //nolint:revive
 	//   - []*config.ToolDefinition: A list of discovered tools.
 	//   - []*config.ResourceDefinition: A list of discovered resources.
 	//   - error: An error if registration fails.
-	//
-	// Summary: Registers service.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error)
 
 	// UnregisterService removes a service from the registry.
@@ -75,20 +61,6 @@ type ServiceRegistryInterface interface { //nolint:revive
 	//
 	// Returns:
 	//   - error: An error if the service is not found or shutdown fails.
-	//
-	// Summary: Unregisters service.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	UnregisterService(ctx context.Context, serviceName string) error
 
 	// GetAllServices returns a list of all currently registered services.
@@ -96,20 +68,6 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// Returns:
 	//   - []*config.UpstreamServiceConfig: A list of service configurations.
 	//   - error: An error if retrieval fails (unlikely for in-memory registry).
-	//
-	// Summary: Gets all services.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	GetAllServices() ([]*config.UpstreamServiceConfig, error)
 
 	// GetServiceInfo retrieves the metadata for a service by its ID.
@@ -120,20 +78,6 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// Returns:
 	//   - *tool.ServiceInfo: The service metadata.
 	//   - bool: True if the service was found, false otherwise.
-	//
-	// Summary: Gets service info.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool)
 
 	// GetServiceConfig returns the configuration for a given service ID.
@@ -144,20 +88,6 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// Returns:
 	//   - *config.UpstreamServiceConfig: The service configuration.
 	//   - bool: True if the service was found, false otherwise.
-	//
-	// Summary: Gets service config.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool)
 
 	// GetServiceError returns the last known registration or health error for a service.
@@ -168,20 +98,6 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// Returns:
 	//   - string: The error message.
 	//   - bool: True if an error is present, false otherwise.
-	//
-	// Summary: Gets service error.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - Returns error upon failure.
-	//
-	// Side Effects:
-	//   - Interacts with internal state.
 	GetServiceError(serviceID string) (string, bool)
 }
 
