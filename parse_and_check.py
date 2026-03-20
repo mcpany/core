@@ -32,7 +32,7 @@ def process_file_go(filepath):
 
 all_missing = []
 for root, dirs, files in os.walk('.'):
-    if 'test' in root or 'vendor' in root or '.git' in root or 'ui' in root:
+    if 'vendor' in root or '.git' in root or 'ui' in root:
         continue
 
     for file in files:
