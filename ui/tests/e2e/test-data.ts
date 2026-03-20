@@ -273,6 +273,15 @@ export const seedWebhooks = async (requestContext?: APIRequestContext) => {
     // No-op
 };
 
+export const seedTraces = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const res = await context.post('/api/v1/debug/traces', { headers: HEADERS });
+    if (!res.ok()) {
+        const text = await res.text();
+        throw new Error(`Failed to seed traces: ${res.status()} ${text}`);
+    }
+};
+
 export const seedCollection = async (name?: string, requestContext?: APIRequestContext) => {
     if (!name) return;
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });

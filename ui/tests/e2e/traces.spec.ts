@@ -4,37 +4,12 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedGlobalState } from './test-data';
+import { seedGlobalState, seedTraces } from './test-data';
 
 test.describe('Trace Viewer', () => {
   test.beforeEach(async ({ page, request }) => {
-    // Mock Traces API for all tests in this suite.
-    // The app fetches /api/v1/traces (with the v1 prefix).
-    await page.route('**/api/v1/traces', async route => {
-      await route.fulfill({
-        json: [
-          {
-            id: 'trace-1',
-            rootSpan: {
-              id: 'span-1',
-              name: 'calculate_sum',
-              serviceName: 'Math',
-              type: 'tool',
-              status: 'success',
-              startTime: Date.now() - 150,
-              endTime: Date.now(),
-              children: [],
-            },
-            timestamp: new Date().toISOString(),
-            totalDuration: 150,
-            status: 'success',
-            trigger: 'user'
-          }
-        ]
-      });
-    });
-
     await seedGlobalState(request);
+    await seedTraces(request);
 
     await page.goto('/login');
     await page.waitForLoadState('networkidle');
@@ -70,10 +45,7 @@ test.describe('Trace Viewer', () => {
     await page.waitForSelector('text=Loading traces...', { state: 'detached' });
 
     // Check if list is populated (should have at least one trace from mock)
-    // Check if list is populated (should have at least one trace from mock)
-    // Use try/catch or flexible selector since mock data is random
-    // But our mock generator creates at least one calculate_sum
-    // Actually, let's just check for any trace item
+    // Check if list is populated
     const firstTrace = page.locator('button.flex.flex-col').first();
     await expect(firstTrace).toBeVisible();
 
@@ -120,8 +92,8 @@ test.describe('Trace Viewer', () => {
       await expect(page).toHaveURL(/\/playground.*/, { timeout: 5000 });
     } catch {
       console.log('Replay navigation timed out, forcing navigation');
-      // We know the mock data has calculate_sum
-      await page.goto('/playground?tool=calculate_sum&args=%7B%7D');
+      // Fallback navigation with a known seeded tool
+      await page.goto('/playground?tool=orchestrator-task&args=%7B%7D');
     }
     await expect(page).toHaveURL(/\/playground.*/);
 
