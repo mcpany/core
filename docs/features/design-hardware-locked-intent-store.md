@@ -9,14 +9,14 @@ MCP Any needs a mechanism to protect the core mission intent in a way that is re
 
 ## 2. Goals & Non-Goals
 *   **Goals:**
-*      Provide a hardware-backed (TPM/SEP) storage for mission-root intent strings.
-*      Generate cryptographic "Intent Proofs" that can be verified by downstream tools and agents.
-*      Ensure that "Mission-Root" intents cannot be overwritten without explicit, hardware-bound user re-attestation.
-*      Provide an API for subagents to retrieve (but not mutate) the hardware-locked intent.
+    *   Provide a hardware-backed (TPM/SEP) storage for mission-root intent strings.
+    *   Generate cryptographic "Intent Proofs" that can be verified by downstream tools and agents.
+    *   Ensure that "Mission-Root" intents cannot be overwritten without explicit, hardware-bound user re-attestation.
+    *   Provide an API for subagents to retrieve (but not mutate) the hardware-locked intent.
 *   **Non-Goals:**
-*      Storing high-frequency, transient conversation state (handled by the Blackboard).
-*      Performing full agent reasoning within the secure enclave.
-*      Replacing software-level policy engines (HLIS acts as the immutable anchor for those policies).
+    *   Storing high-frequency, transient conversation state (handled by the Blackboard).
+    *   Performing full agent reasoning within the secure enclave.
+    *   Replacing software-level policy engines (HLIS acts as the immutable anchor for those policies).
 
 ## 3. Critical User Journey (CUJ)
 *   **User Persona:** Enterprise Security Architect
@@ -41,12 +41,12 @@ MCP Any needs a mechanism to protect the core mission intent in a way that is re
         HLIS -- Valid/Invalid --> Policy
     ```
 *   **APIs / Interfaces:**
-*      `POST /v1/hlis/anchor`: Anchor a new mission-root intent. Requires hardware signature.
-*      `GET /v1/hlis/proof`: Retrieve a hardware-signed proof of the current mission intent.
-*      `internal: hlis.VerifyIntent(proof, intent)`: Kernel-level function to verify a proof.
+    *   `POST /v1/hlis/anchor`: Anchor a new mission-root intent. Requires hardware signature.
+    *   `GET /v1/hlis/proof`: Retrieve a hardware-signed proof of the current mission intent.
+    *   `internal: hlis.VerifyIntent(proof, intent)`: Kernel-level function to verify a proof.
 *   **Data Storage/State:**
-*      Intents are stored in hardware NVRAM or sealed within the Enclave's memory.
-*      Session keys are ephemeral and hardware-bound.
+    *   Intents are stored in hardware NVRAM or sealed within the Enclave's memory.
+    *   Session keys are ephemeral and hardware-bound.
 
 ## 5. Alternatives Considered
 *   **Software-Only Immutable Store**: Rejected because a root-level exploit on the host could still modify the intent in memory.
