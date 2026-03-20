@@ -3757,15 +3757,18 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 //nolint:gocyclo
 func checkUnquotedKeywords(val string, keywords []string) error {
 	for _, kw := range keywords {
-		// Basic check for keywords. If it contains the keyword anywhere, return an error.
-		// To be more precise, we check if it is surrounded by word boundaries.
 		idx := strings.Index(val, kw)
 		if idx != -1 {
-			// Check left boundary
 			leftOk := idx == 0 || !isWordChar(val[idx-1])
-			// Check right boundary
 			rightOk := idx+len(kw) == len(val) || !isWordChar(val[idx+len(kw)])
 			if leftOk && rightOk {
+				if idx > 0 {
+					lastChar := val[idx-1]
+					if lastChar == '$' || lastChar == '@' || lastChar == '%' || lastChar == '>' {
+						continue
+					}
+				}
+
 				return fmt.Errorf("interpreter injection detected: dangerous keyword %q found (unquoted)", kw)
 			}
 		}
