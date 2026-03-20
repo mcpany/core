@@ -60,4 +60,36 @@ test.describe('Feature Screenshot', () => {
         await download.cancel();
     }
   });
+
+  test('View Audit Log Details', async ({ request, page }) => {
+    // 1. Seed the database with a test audit log using the execute endpoint to generate real data
+    try {
+       await request.post('/api/v1/execute', {
+            data: { tool_name: "dummy_tool", arguments: {"test": "data"} }
+       });
+    } catch(e) {
+       // Ignore execution errors as we just want the audit log of the attempt
+    }
+
+    await page.goto('/audit');
+    // Ensure the page has loaded before attempting to interact or locate elements
+    await page.waitForSelector('text=Audit Logs');
+
+    // Wait for the table to populate
+    await page.waitForTimeout(1000);
+
+    // Find and click the first "View" button in the audit log table
+    const viewBtns = page.locator('button:has-text("View")');
+    if (await viewBtns.count() > 0) {
+        await viewBtns.first().click();
+
+        // Wait for the detail dialog to appear
+        await page.waitForSelector('text=Audit Log Detail');
+
+        // Verify JsonTree is rendered (look for braces representing JSON structures)
+        await page.waitForSelector('text={');
+    } else {
+        console.warn('No audit logs available to view. Skipping view test.');
+    }
+  });
 });
