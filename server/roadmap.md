@@ -1,3 +1,8 @@
+<!--
+Copyright (C) 2026 Author(s) of MCP Any
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Server Roadmap
 
 ## 1. Top Priorities: The Universal Agent Bus (New Strategic Focus)
@@ -673,12 +678,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Atomic Shard Lock-Manager**: Kernel-level lock manager for granular context streaming. (Added: 2026-06-03)
 *   **[P1] Zero-Latency Shard Prefetcher**: Speculative context loading based on real-time intent analysis. (Added: 2026-06-03)
 
-#### Upcoming (2026-06-18 Evolution)
-*   **[P0] Teammate Sovereignty Enforcer (TSE)**: Authoritative isolation kernel providing cryptographically bound isolation for parallel teams. (Added: 2026-06-18)
-*   **[P0] Request-Side Injection Shield (RSIS)**: Advanced scanning for AI-generated code to block request-side prompt injection. (Added: 2026-06-18)
-*   **[P1] HADM Discovery Provider**: Support for hardware-attested discovery manifests to lock capabilities to pre-declared missions. (Added: 2026-06-18)
-*   **[P0] Lock-Free Coordination Buffers**: High-performance, atomic coordination data structures for parallel teammate messaging. (Added: 2026-06-18)
-
 ### Upcoming: [2026-06-08]
 - **Atomic Reasoning Integrity (ARI) Validator**: (P0) Advanced security middleware for fragment-level semantic validation of shared teammate state. (Added: 2026-06-08)
 - **HAMM-Locked MLE Gateway**: (P0) Upgrade for the MLE Gateway to support "Hardware-Attested Mission Manifests" (Added: 2026-06-08).
@@ -759,3 +758,15 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+#### Upcoming (2026-06-18 Evolution)
+*   **[P0] Teammate Sovereignty Enforcer (TSE)**: Authoritative isolation kernel providing cryptographically bound isolation for parallel teams. (Added: 2026-06-18)
+*   **[P0] Request-Side Injection Shield (RSIS)**: Advanced scanning for AI-generated code to block request-side prompt injection. (Added: 2026-06-18)
+*   **[P1] HADM Discovery Provider**: Support for hardware-attested discovery manifests to lock capabilities to pre-declared missions. (Added: 2026-06-18)
+*   **[P0] Lock-Free Coordination Buffers**: High-performance, atomic coordination data structures for parallel teammate messaging. (Added: 2026-06-18)
+
+#### Upcoming (2026-06-18 Evolution)
+*   **[P0] Teammate Sovereignty Enforcer (TSE)**: Authoritative isolation kernel providing cryptographically bound isolation for parallel teams. (Added: 2026-06-18)
+*   **[P0] Request-Side Injection Shield (RSIS)**: Advanced scanning for AI-generated code to block request-side prompt injection. (Added: 2026-06-18)
+*   **[P1] HADM Discovery Provider**: Support for hardware-attested discovery manifests to lock capabilities to pre-declared missions. (Added: 2026-06-18)
+*   **[P0] Lock-Free Coordination Buffers**: High-performance, atomic coordination data structures for parallel teammate messaging. (Added: 2026-06-18)

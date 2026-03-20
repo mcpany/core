@@ -1,3 +1,8 @@
+<!--
+Copyright (C) 2026 Author(s) of MCP Any
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Strategic Vision: MCP Any
 
 ## Mission Statement
@@ -1045,7 +1050,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Reasoning-Aware Garbage Collection (R-GC)**: To neutralize "Speculative Overload," MCP Any will implement R-GC for the Speculative Branching Guard. This service automatically purges speculative context fragments that exhibit high reasoning entropy but low mission utility, preventing cognitive stall in deep swarms.
 - **Temporal Shard Jitter (TSJ) Injection**: To counter CVE-2026-62001, we are upgrading the ESB to include TSJ Injection. This layer will inject hardware-attested timing jitter into entangled state synchronization for non-primary mission-root requests, ensuring absolute temporal isolation in sharded meshes.
 
----
+## Strategic Evolution: [2026-06-18]
+### Focus: Teammate Sovereignty & Request-Side Injection Shielding
+**Context**: The official shift toward parallel teammate coordination (Claude Code Agent Teams) and the disclosure of Request-Side RCE vulnerabilities (CVE-2026-30741) confirm that **Identity** must be isolation-aware and **Inputs** must be sanitized at the reasoning boundary. As swarms move from sequential subagents to horizontal teams, the risk of "State Smearing" and "Request-Side Execution" demands a move toward hardware-locked teammate sovereignty and pre-execution code scanning.
+**Strategic Pivot**:
+- **Teammate Sovereignty Enforcer (TSE)**: MCP Any will evolve to act as the authoritative "Isolation Kernel" for parallel teams. We will implement TSE, providing cryptographically bound, mission-anchored isolation for every teammate in a mesh, ensuring that "State Smearing" is prevented at the transport and memory layers.
+- **Request-Side Injection Shield (RSIS)**: To neutralize CVE-2026-30741, we are upgrading the Injection-Shielding Middleware to include RSIS. This layer will perform real-time, semantic analysis of agent-generated code fragments *before* they are ingested or executed, specifically blocking "Request-Side" prompt injection patterns.
+- **Hardware-Attested Discovery Manifest (HADM)**: Supporting the Gemini CLI standard, we are mandating HADM for all A2A agent cards. Capabilities will remain cryptographically invisible until a hardware-bound handshake confirms that the discovery request aligns with a TPM-signed, pre-declared mission manifest.
+- **Lock-Free Coordination Buffers**: To solve the "Cognitive Stall" in parallel teams, MCP Any will implement lock-free, atomic coordination buffers. This service utilizes lock-free data structures for the shared task list and mailbox, ensuring that teammate coordination remains non-blocking as swarms scale horizontally.
 
 ## Strategic Evolution: [2026-06-18]
 ### Focus: Teammate Sovereignty & Request-Side Injection Shielding
