@@ -223,7 +223,7 @@ func runfilesWorkspaceName() string {
 
 func runfilesRoots() []string {
 	workspace := runfilesWorkspaceName()
-	var roots []string
+	roots := make([]string, 0, 2)
 	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
 		if base == "" {
 			continue
@@ -270,7 +270,7 @@ func isServerProjectRoot(dir string) bool {
 
 func symlinkIfPresent(src, dst string) error {
 	if _, err := os.Stat(src); err != nil {
-		return nil
+		return err
 	}
 	return os.Symlink(src, dst)
 }
@@ -508,7 +508,9 @@ func (mp *ManagedProcess) Start() error {
 			default:
 				mp.t.Logf("[%s] Process %s exited as expected (killed/interrupted).", mp.label, mp.cmd.Path)
 			}
-		} else {
+		return
+	}
+	if err == nil {
 			mp.t.Logf("[%s] Process %s exited successfully.", mp.label, mp.cmd.Path)
 		}
 	}()

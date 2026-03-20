@@ -12,7 +12,7 @@ package examples.userservice.v1;
 import "proto/mcp_options/v1/mcp_options.proto";
 import "google/protobuf/go_features.proto";
 
-option features.(pb.go).api_level = API_OPAQUE;
+
 
 option go_package = "github.com/mcpany/core/proto/examples/userservice/v1";
 
