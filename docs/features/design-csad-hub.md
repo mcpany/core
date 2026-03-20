@@ -46,7 +46,7 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 ## 7. Evolutionary Changelog
 * **2026-05-29:** Initial Document Creation.
 
-### Update: 2026-05-30 - Teammate Impersonation Signatures
+### Update: [2026-05-30] - Teammate Impersonation Signatures
 **Context:** Today's market sync revealed the emergence of "Teammate Impersonation" in horizontal meshes (Claude Code Agent Teams). Compromised teammates are injecting malicious instructions into the shared mailbox to bypass supervisor oversight.
 **Architecture Adjustment:**
 *   Implementing **Teammate Impersonation Signature Detection**. CSAD will now perform semantic analysis of inter-agent mailbox messages to detect "Instruction Splicing" and role-divergent commands.

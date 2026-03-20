@@ -49,7 +49,7 @@ The Active Subagent Reaper is a mandatory lifecycle management layer in MCP Any 
 ## 7. Evolutionary Changelog
 * **2026-04-03:** Initial Document Creation.
 
-### Update: 2026-04-04 - Lease-Bound Process Tree Isolation
+### Update: [2026-04-04] - Lease-Bound Process Tree Isolation
 **Context:** Today's market sync on "Cross-Framework State Leakage" highlights that WebSocket termination alone is insufficient if sub-processes (e.g., local python executors) remain active.
 **Architecture Adjustment:**
 * Extending the **Reaper Daemon** to track OS-level Process Groups (PGRPs) associated with a `Branch-Lease-ID`.

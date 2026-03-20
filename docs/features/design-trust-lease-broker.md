@@ -48,7 +48,7 @@ As agent swarms grow deeper and more autonomous, the "Attestation Tax"—the lat
 ## 7. Evolutionary Changelog
 * **2026-04-19:** Initial Document Creation.
 
-### Update: 2026-06-04 - Multi-Hop Persistence & ARL v3.0
+### Update: [2026-06-04] - Multi-Hop Persistence & ARL v3.0
 **Context:** Today's research revealed significant latency in deep swarms due to redundant handshakes and the emergence of high-frequency revocation requirements (ARL v3.0).
 **Architecture Adjustment:**
 * Introducing the **Multi-Hop Persistence Relay (MHPR)**: Trust leases are now propagation-aware, allowing hardware attestation to survive up to 5 delegation hops without re-signing.

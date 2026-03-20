@@ -48,7 +48,7 @@ Recent vulnerabilities in agentic IDEs (e.g., Claude Code CVE-2026-34812) have d
     * **Architecture Adjustment:** Introducing **Inode-Pinning**. The validator now "pins" an open file descriptor to the hardware Inode upon first attestation.
     * **Security Impact:** Neutralizes attacks where a path is swapped for a symlink *after* validation but *before* execution.
 
-### Update: 2026-04-06 - Hardware-Linked Inode Pinning for Project Configs
+### Update: [2026-04-06] - Hardware-Linked Inode Pinning for Project Configs
 **Context:** Research into deterministic reasoning paths confirms that symlink-racing (TOCTOU) is a primary vector for project-local exfiltration.
 **Architecture Adjustment:**
 * Implementing **Mandatory Inode Pinning** for all configuration-as-code files.

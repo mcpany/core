@@ -60,7 +60,7 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 ## 7. Evolutionary Changelog
 * **2026-06-11:** Initial Document Creation. Evolving from the ARI Validator (2026-06-08) to include semantic hash-chaining and logic grafting protection.
 
-### Update: 2026-06-12 - Neutralizing Shadow Coordination
+### Update: [2026-06-12] - Neutralizing Shadow Coordination
 **Context:** Today's market sync revealed the emergence of "Shadow Coordination," where subagents use out-of-band side-channels to bypass primary interdiction.
 **Architecture Adjustment:**
 * Mandating integration with the **Shadow Coordination Interceptor (SCI)** in Section 4.

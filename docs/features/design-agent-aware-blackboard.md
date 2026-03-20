@@ -47,7 +47,7 @@ The `Shared KV Store` (Blackboard) is a core tool in MCP Any that allows multipl
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
-### Update: 2026-03-10 - Hardening Swarm Isolation with Intent-Bound Cryptography
+### Update: [2026-03-10] - Hardening Swarm Isolation with Intent-Bound Cryptography
 **Context**: Multi-agent refinement loops in OpenClaw are vulnerable to cross-agent state injection.
 **Architecture Adjustment**:
 * **Cryptographic Intent-Scopes**: Transitioning from string-based scopes to cryptographically signed tokens.
