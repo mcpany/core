@@ -5,7 +5,7 @@
 
 
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import * as yaml from "js-yaml";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,7 +27,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Badge } from "@/components/ui/badge";
 
 interface BulkServiceImportProps {
     onImportSuccess: () => void;
@@ -86,7 +85,8 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
     const parseAndValidate = async () => {
         setParsingError(null);
         setIsValidating(true);
-        let parsedServices: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let parsedServices: any[] = [];
 
         try {
             if (inputType === "url") {
@@ -111,7 +111,8 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
             } else {
                 if (!jsonContent.trim()) throw new Error("Content is required.");
 
-                let data: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                let data: any;
                 try {
                     data = JSON.parse(jsonContent);
                 } catch (_e) {
