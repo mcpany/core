@@ -3,9 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { apiClient } from "@/lib/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,12 +20,12 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Download } from "lucide-react";
+import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Download, Terminal, Code } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
-import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
-import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
+import { RichResultViewer } from "@/components/tools/rich-result-viewer";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface AuditLogEntry {
     timestamp: string;
@@ -48,7 +46,6 @@ interface AuditLogEntry {
  * @returns The rendered AuditLogViewer component.
  */
 export function AuditLogViewer() {
-    SyntaxHighlighter.registerLanguage('json', json);
     const [logs, setLogs] = useState<AuditLogEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [exporting, setExporting] = useState(false);
@@ -74,15 +71,6 @@ export function AuditLogViewer() {
             if (endDate) filters.end_time = endDate.toISOString();
 
             const res = await apiClient.listAuditLogs(filters);
-            // Map snake_case to camelCase manually if needed, but assuming client returns what server sends.
-            // Server sends protobuf JSON which is camelCase by default for fields?
-            // Actually, grpc-gateway default uses snake_case for JSON unless configured otherwise.
-            // But I implemented manual marshalling in `server.go` using `AuditLogEntry` struct?
-            // No, I used `pb.AuditLogEntry`. Protobuf JSON serialization uses camelCase by default in Go (protojson).
-            // Let's assume camelCase.
-            // Wait, looking at `admin.proto`:
-            // string tool_name = 2;
-            // In JSON it will be `toolName`.
             setLogs(res.entries || []);
         } catch (e) {
             console.error("Failed to fetch audit logs", e);
@@ -121,19 +109,26 @@ export function AuditLogViewer() {
         }
     };
 
-    const formatJson = (jsonStr: string) => {
+    const parseJsonSafely = (jsonStr: string) => {
         if (!jsonStr) return null;
         try {
-            const obj = JSON.parse(jsonStr);
-            return JSON.stringify(obj, null, 2);
+            return JSON.parse(jsonStr);
         } catch (e) {
             return jsonStr;
         }
     };
 
+    const selectedLogArgs = useMemo(() => {
+        return selectedLog ? parseJsonSafely(selectedLog.arguments) : null;
+    }, [selectedLog]);
+
+    const selectedLogResult = useMemo(() => {
+        return selectedLog ? parseJsonSafely(selectedLog.result) : null;
+    }, [selectedLog]);
+
     return (
         <div className="space-y-4 h-full flex flex-col">
-            <Card className="flex-none">
+            <Card className="flex-none backdrop-blur-sm bg-background/50 border-muted">
                 <CardHeader className="pb-3">
                     <CardTitle>Filters</CardTitle>
                     <CardDescription>Search audit logs by tool, user, or date.</CardDescription>
@@ -219,7 +214,7 @@ export function AuditLogViewer() {
                 </CardContent>
             </Card>
 
-            <Card className="flex-1 flex flex-col overflow-hidden">
+            <Card className="flex-1 flex flex-col overflow-hidden backdrop-blur-sm bg-background/50 border-muted">
                 <CardContent className="p-0 flex-1 overflow-auto">
                     <Table>
                         <TableHeader>
@@ -233,107 +228,129 @@ export function AuditLogViewer() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {logs.length === 0 && !loading && (
+                            {loading ? (
+                                Array.from({ length: 5 }).map((_, i) => (
+                                    <TableRow key={i}>
+                                        <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                                        <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                                        <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                                        <TableCell><Skeleton className="h-4 w-12" /></TableCell>
+                                        <TableCell><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
+                                        <TableCell className="text-right"><Skeleton className="h-8 w-16 ml-auto" /></TableCell>
+                                    </TableRow>
+                                ))
+                            ) : logs.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
                                         No logs found.
                                     </TableCell>
                                 </TableRow>
+                            ) : (
+                                logs.map((log, i) => (
+                                    <TableRow key={i} className="hover:bg-muted/50 transition-colors">
+                                        <TableCell className="font-mono text-xs">
+                                            {new Date(log.timestamp).toLocaleString()}
+                                        </TableCell>
+                                        <TableCell className="font-medium">{log.toolName}</TableCell>
+                                        <TableCell>{log.userId || "-"}</TableCell>
+                                        <TableCell>{log.duration}</TableCell>
+                                        <TableCell>
+                                            {log.error ? (
+                                                <Badge variant="destructive" className="gap-1 shadow-sm">
+                                                    <AlertTriangle className="h-3 w-3" /> Error
+                                                </Badge>
+                                            ) : (
+                                                <Badge variant="outline" className="text-green-600 border-green-500/30 bg-green-500/10 shadow-sm">
+                                                    Success
+                                                </Badge>
+                                            )}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <Button variant="ghost" size="sm" onClick={() => setSelectedLog(log)}>
+                                                <Eye className="h-4 w-4 mr-1" /> View
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
                             )}
-                            {logs.map((log, i) => (
-                                <TableRow key={i}>
-                                    <TableCell className="font-mono text-xs">
-                                        {new Date(log.timestamp).toLocaleString()}
-                                    </TableCell>
-                                    <TableCell className="font-medium">{log.toolName}</TableCell>
-                                    <TableCell>{log.userId || "-"}</TableCell>
-                                    <TableCell>{log.duration}</TableCell>
-                                    <TableCell>
-                                        {log.error ? (
-                                            <Badge variant="destructive" className="gap-1">
-                                                <AlertTriangle className="h-3 w-3" /> Error
-                                            </Badge>
-                                        ) : (
-                                            <Badge variant="outline" className="text-green-500 border-green-500/50">
-                                                Success
-                                            </Badge>
-                                        )}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <Button variant="ghost" size="sm" onClick={() => setSelectedLog(log)}>
-                                            <Eye className="h-4 w-4 mr-1" /> View
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
                         </TableBody>
                     </Table>
                 </CardContent>
             </Card>
 
             <Dialog open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
-                <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle>Audit Log Detail</DialogTitle>
-                        <DialogDescription>
-                            Execution details for {selectedLog?.toolName} at {selectedLog && new Date(selectedLog.timestamp).toLocaleString()}
-                        </DialogDescription>
-                    </DialogHeader>
-                    {selectedLog && (
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4 text-sm">
+                <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-hidden flex flex-col p-0 border-muted bg-background/95 backdrop-blur-xl shadow-2xl">
+                    <div className="p-6 pb-2 border-b">
+                        <DialogHeader>
+                            <DialogTitle className="text-xl flex items-center gap-2">
+                                Audit Log Detail
+                            </DialogTitle>
+                            <DialogDescription>
+                                Execution details for <span className="font-semibold text-foreground">{selectedLog?.toolName}</span> at {selectedLog && new Date(selectedLog.timestamp).toLocaleString()}
+                            </DialogDescription>
+                        </DialogHeader>
+                        {selectedLog && (
+                            <div className="grid grid-cols-4 gap-4 text-sm mt-4 bg-muted/30 p-4 rounded-lg border border-border/50">
                                 <div>
-                                    <span className="font-semibold block text-muted-foreground">User ID</span>
+                                    <span className="font-semibold block text-muted-foreground text-xs uppercase tracking-wider mb-1">User ID</span>
                                     {selectedLog.userId || "N/A"}
                                 </div>
                                 <div>
-                                    <span className="font-semibold block text-muted-foreground">Profile ID</span>
+                                    <span className="font-semibold block text-muted-foreground text-xs uppercase tracking-wider mb-1">Profile ID</span>
                                     {selectedLog.profileId || "N/A"}
                                 </div>
                                 <div>
-                                    <span className="font-semibold block text-muted-foreground">Duration</span>
+                                    <span className="font-semibold block text-muted-foreground text-xs uppercase tracking-wider mb-1">Duration</span>
                                     {selectedLog.duration} ({selectedLog.durationMs}ms)
                                 </div>
                                 <div>
-                                    <span className="font-semibold block text-muted-foreground">Status</span>
-                                    {selectedLog.error ? <span className="text-red-500">Failed</span> : <span className="text-green-500">Success</span>}
+                                    <span className="font-semibold block text-muted-foreground text-xs uppercase tracking-wider mb-1">Status</span>
+                                    {selectedLog.error ? <span className="text-destructive font-medium flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> Failed</span> : <span className="text-green-600 font-medium">Success</span>}
                                 </div>
                             </div>
+                        )}
+                    </div>
 
-                            {selectedLog.error && (
-                                <div className="bg-red-900/20 border border-red-900/50 rounded-md p-3 text-red-200 text-sm">
-                                    <span className="font-semibold block mb-1">Error:</span>
-                                    {selectedLog.error}
+                    <ScrollArea className="flex-1 p-6">
+                        {selectedLog && (
+                            <div className="space-y-6">
+                                {selectedLog.error && (
+                                    <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-destructive text-sm shadow-sm">
+                                        <span className="font-semibold flex items-center gap-2 mb-2"><AlertTriangle className="h-4 w-4" /> Error Details</span>
+                                        <pre className="whitespace-pre-wrap font-mono text-xs">{selectedLog.error}</pre>
+                                    </div>
+                                )}
+
+                                <div>
+                                    <h4 className="text-sm font-semibold mb-3 flex items-center gap-2 text-primary">
+                                        <Code className="h-4 w-4" /> Arguments
+                                    </h4>
+                                    <div className="rounded-lg overflow-hidden border bg-card shadow-sm">
+                                        {selectedLogArgs ? (
+                                            <RichResultViewer result={selectedLogArgs} />
+                                        ) : (
+                                            <div className="p-4 text-sm text-muted-foreground">No arguments provided.</div>
+                                        )}
+                                    </div>
                                 </div>
-                            )}
 
-                            <div>
-                                <h4 className="text-sm font-medium mb-2">Arguments</h4>
-                                <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vs2015}
-                                        customStyle={{ margin: 0, fontSize: '12px' }}
-                                    >
-                                        {formatJson(selectedLog.arguments) || "{}"}
-                                    </SyntaxHighlighter>
+                                <div>
+                                    <h4 className="text-sm font-semibold mb-3 flex items-center gap-2 text-primary">
+                                        <Terminal className="h-4 w-4" /> Result
+                                    </h4>
+                                    <div className="rounded-lg overflow-hidden border bg-card shadow-sm">
+                                        {selectedLogResult !== null ? (
+                                            <RichResultViewer result={selectedLogResult} />
+                                        ) : selectedLog.error ? (
+                                            <div className="p-4 text-sm text-muted-foreground italic">Execution failed, no result.</div>
+                                        ) : (
+                                            <div className="p-4 text-sm text-muted-foreground italic">No result data.</div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-
-                            <div>
-                                <h4 className="text-sm font-medium mb-2">Result</h4>
-                                <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vs2015}
-                                        customStyle={{ margin: 0, fontSize: '12px', maxHeight: '300px' }}
-                                    >
-                                        {formatJson(selectedLog.result) || (selectedLog.error ? "null" : "{}")}
-                                    </SyntaxHighlighter>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                        )}
+                    </ScrollArea>
                 </DialogContent>
             </Dialog>
         </div>
