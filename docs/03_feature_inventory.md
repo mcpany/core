@@ -824,6 +824,18 @@
 ### Deprecations / Monitoring
 - **Framework-Specific Feedback Logs**: Monitoring for deprecation. Feedback should be normalized via the Unified Telemetry Bridge.
 
+## Evolution: [2026-03-20] Updates
+
+### Proposed Additions
+- **Hardware-Attested Mission Manifest (HAMM) Provider**: (P0) Authoritative service for enforcing TPM-signed, immutable capability manifests for subagent mission branches.
+- **Asynchronous Mailbox Sharding (AMS) Middleware**: (P0) Coordination service for horizontal swarms that hosts granular, task-bound mailbox shards to eliminate coordination locks.
+- **Mission-Root Budget Enforcer**: (P0) Resource management layer that enforces hardware-attested reasoning and token limits based on Claude Code "effort" and "maxTurns" patterns.
+- **A2A Multi-Channel Inbox Bridge**: (P1) Extension for the A2A Messaging Hub that facilitates secure coordination across 20+ messaging platforms with session-bound context preservation.
+
+### Priority Shifts
+- **A2A Messaging Hub**: (Re-affirmed P0) Now designated as the primary backend for the **A2A Multi-Channel Inbox Bridge**.
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving to support **AMS-compliant** granular state synchronization.
+
 ---
 
 ## Evolution: [2026-03-21] Updates

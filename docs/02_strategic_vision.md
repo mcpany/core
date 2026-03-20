@@ -557,6 +557,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Immutable State Trails**: Moving from "Shared State" to "Verifiable Lineage." Every change to the Blackboard (Shared KV Store) must be accompanied by a cryptographic proof of the agent's current "Intent Scope" and its parentage, creating an audit trail that resists "State Injection."
 - **Active UACO Bid Validation**: Instead of just facilitating bids, MCP Any will perform "Pre-Flight Profiling" on agents submitting UACO bids. If an agent's historical behavior or current "Skill Profile" doesn't align with the task card, the bid will be automatically quarantined.
 
+## Strategic Evolution: [2026-03-20]
+### Focus: Hardware-Attested Mission Manifests (HAMM) & Asynchronous Mailbox Sharding (AMS)
+**Context**: The emergence of "Process-Based Agency" in Claude Code and the consolidation of the OpenClaw "Gateway" architecture reveal that the "Universal Agent Bus" must now move from simple connectivity to **Active Mission Governance**. As swarms become more parallel and autonomous, the security frontier is no longer just the "tool," but the **Mission Manifest** that defines the agent's authorized capabilities before it even begins to reason. Simultaneously, the "Mailbox Lock" bottleneck in high-density teams confirms that teammate coordination must move from synchronous locks to **Asynchronous Mailbox Sharding**.
+**Strategic Pivot**:
+- **Hardware-Attested Mission Manifests (HAMM)**: MCP Any will evolve to act as the authoritative "Manifest Enforcer." We will implement HAMM, allowing users to define a TPM-signed, immutable list of authorized tools and capabilities for a specific mission branch. Subagents will be cryptographically restricted to this manifest, neutralizing "Privilege Escalation" through autonomous discovery.
+- **Asynchronous Mailbox Sharding (AMS)**: To resolve coordination bottlenecks in horizontal swarms (e.g., Claude Code Agent Teams), we are introducing AMS. This service will host granular, task-bound mailbox shards that allow parallel teammates to synchronize state without global coordination locks, ensuring non-blocking performance as swarms scale.
+- **Mission-Root Budget Enforcement**: Leveraging Claude Code's "effort" and "maxTurns" patterns, MCP Any will implement native support for "Mission Budgets." We will provide the infrastructure to enforce hardware-attested reasoning and token limits at the transport layer, ensuring that sub-missions cannot exceed parent-imposed constraints.
+- **A2A Multi-Channel Inbox Bridge**: Supporting the OpenClaw signature feature, MCP Any will act as a "Unified Inbox Hub." We will provide the secure coordination and translation layer for agents to handle messages from 20+ platforms simultaneously, ensuring context is preserved across disparate platform sessions.
+
 ---
 
 ## Strategic Evolution: [2026-03-21]

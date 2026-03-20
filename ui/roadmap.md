@@ -198,6 +198,12 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-03-20 Evolution)
+- [ ] **[P0] Mission Manifest Editor**: (2026-03-20) UI for defining and TPM-signing Hardware-Attested Mission Manifests (HAMM).
+- [ ] **[P0] Mailbox Shard Monitor**: (2026-03-20) Real-time visualization of task-bound mailbox shards and coordination throughput.
+- [ ] **[P0] Mission Budget Dashboard**: (2026-03-20) Visual tracker for reasoning effort, token limits, and `maxTurns` consumption per mission.
+- [ ] **[P1] Multi-Channel Inbox Hub**: (2026-03-20) Unified UI for managing and monitoring agent messages across 20+ platform channels.
+
 #### Upcoming (2026-03-17 Evolution)
 - [ ] **[P0] Local Security Violation Monitor**: (2026-03-17) Real-time visualization of blocked loopback requests and origin violations. (Added: 2026-03-17)
 - [ ] **[P0] Origin-Bound Session Manager**: (2026-03-17) UI for managing and reviewing session-to-origin bindings. (Added: 2026-03-17)
