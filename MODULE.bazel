@@ -307,3 +307,16 @@ buildbuddy = use_extension("@toolchains_buildbuddy//:extensions.bzl", "buildbudd
 
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(python_version = "3.12")
+
+pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+pip.parse(
+    hub_name = "cowsay_server_deps",
+    python_version = "3.12",
+    requirements_lock = "//server/tests/integration/cmd/mocks/python_cowsay_server:requirements_lock.txt",
+)
+pip.parse(
+    hub_name = "timeserver_deps",
+    python_version = "3.12",
+    requirements_lock = "//server/tests/integration/examples:requirements_lock.txt",
+)
+use_repo(pip, "cowsay_server_deps", "timeserver_deps")
