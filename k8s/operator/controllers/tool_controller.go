@@ -33,7 +33,7 @@ type ToolReconciler struct {
 //
 // Parameters:
 //   - ctx: context.Context. The context for the request.
-//   - req: ctrl.Request. The reconciliation request.
+//   - _: ctrl.Request. Unused.
 //
 // Returns:
 //   - ctrl.Result: The result of the reconciliation.

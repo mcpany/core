@@ -22,7 +22,7 @@ type server struct {
 
 // SayHello implements greeter.GreeterServer
 //
-// ctx is the context for the request.
+// _ is the context for the request (unused).
 // in is the request object.
 //
 // Returns the result.
