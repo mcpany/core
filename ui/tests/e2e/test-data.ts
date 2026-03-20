@@ -177,6 +177,25 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
         }
     ].map((user) => User.toJSON(User.fromJSON(user)));
 
+        const traces = [
+        {
+            id: 'trace-1',
+            rootSpan: {
+              id: 'span-1',
+              name: 'calculate_sum',
+              serviceName: 'Math',
+              type: 'tool',
+              status: 'success',
+              startTime: Date.now() - 150,
+              endTime: Date.now(),
+              children: [],
+            },
+            timestamp: new Date().toISOString(),
+            totalDuration: 150,
+            status: 'success',
+            trigger: 'user'
+        }
+    ];
     const seedRequest = {
         upstream_services: services,
         service_templates: templates,
