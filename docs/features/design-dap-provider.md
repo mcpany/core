@@ -46,13 +46,14 @@ The Deterministic Absence Proof (DAP) Provider in MCP Any will generate cryptogr
 * **Observability:** Failed absence checks (finding a forbidden file) trigger a "High-Severity Security Alert" in the UI.
 
 ## 7. Evolutionary Changelog
-* **2026-04-22:** Initial Document Creation.
-* **2026-04-26:** Update: Hardening against Ambient Context Pollution.
-    * **Context:** Market sync identified that subagents in shared swarms are prone to "Ambient Pollution" from unrelated config files.
-    * **Architecture Adjustment:** DAP Generator now supports "Scope-Pinning," where a DAP manifest can be cryptographically bound to a specific Mission Intent, preventing its reuse for unrelated agent boots.
-* **2026-05-09: Update - Addressing CVE-2026-25725 via Continuous Lifecycle Attestation**
-    * **Context:** Recent disclosures (CVE-2026-25725) prove that point-in-time absence proofs at boot are insufficient.
-    * **Architecture Adjustment:**
-        * Transitioning from point-in-time DAP to **Continuous Lifecycle Attestation (CLA)**.
-        * The DAP Provider now supports "Polling Attestation," where proofs of non-existence are re-verified and re-signed periodically during the agent session.
-    * **Security Impact:** Neutralizes exploits that attempt to inject configuration files *after* the initial boot process.
+
+*   **2026-04-22:** Initial Document Creation.
+*   **2026-04-26:** Update: Hardening against Ambient Context Pollution.
+    *   **Context:** Market sync identified that subagents in shared swarms are prone to "Ambient Pollution" from unrelated config files.
+    *   **Architecture Adjustment:** DAP Generator now supports "Scope-Pinning," where a DAP manifest can be cryptographically bound to a specific Mission Intent, preventing its reuse for unrelated agent boots.
+*   **2026-05-09:** Update: Transition to Continuous Lifecycle Attestation (CLA).
+    *   **Context:** CVE-2026-25725 proves that point-in-time DAP is insufficient against post-boot configuration creation.
+    *   **Architecture Adjustment:**
+        *   Introducing "Polling Attestation" in Section 4.
+        *   DAP Provider now performs background re-verification of "Absence Manifests" every 30 seconds during an active session.
+    *   **Security Impact:** Neutralizes "Rug Pull" attacks that attempt to create restricted files *after* the initial boot sequence has passed.

@@ -353,15 +353,15 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-09 Evolution)
+- [ ] **[P0] Context Sovereignty Dashboard**: Visualization of cryptographically bound memory shards and mission-root alignment. (Added: 2026-05-09)
+- [ ] **[P0] Continuous Attestation Monitor**: Real-time tracker for CLA polling and "Absence Manifest" re-verification status. (Added: 2026-05-09)
+- [ ] **[P1] Asynchronous RL Rollout View**: Live feed of multi-agent rollout collection for OpenClaw-RL synchronization. (Added: 2026-05-09)
+
 #### Upcoming (2026-05-08 Evolution)
 - [ ] **[P0] Context Sealing Auditor**: Visualization of cryptographically sealed context shards and exfiltration attempt alerts. (Added: 2026-05-08)
 - [ ] **[P0] Permission Enforcement Monitor**: Real-time tracker for DPG-blocked tool calls and project-local policy violations. (Added: 2026-05-08)
 - [ ] **[P1] RL Rollout Streamer**: Live feed of asynchronous RL feedback tokens and policy drift metrics. (Added: 2026-05-08)
-
-#### Upcoming (2026-05-09 Evolution)
-- [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable context strategies in OpenClaw v2026.3.7. (Added: 2026-05-09)
-- [ ] **[P0] Continuous Attestation Dashboard**: Real-time visualization of periodic environment integrity checks and CLA status. (Added: 2026-05-09)
-- [ ] **[P1] RL Rollout Stream Viewer**: Live telemetry feed for asynchronous RL rollout collection. (Added: 2026-05-09)
 
 #### Upcoming (2026-04-22 Evolution)
 - [ ] **[P0] A2A Replay Security Dashboard**: Visualize nonce status and replay attempt alerts in the A2A hub. (Added: 2026-04-22)

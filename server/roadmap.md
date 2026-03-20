@@ -434,6 +434,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
 *   **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-generated UI fragments (Added: 2026-04-23).
 
+#### Upcoming (2026-05-09 Evolution)
+*   **[P0] Pluggable Context Sovereignty Provider**: Implementation of Sovereignty-Aware Memory Shards for the OpenClaw ContextEngine. (Added: 2026-05-09)
+*   **[P0] Continuous Lifecycle Attestation (CLA) Middleware**: Background polling for "Absence Manifests" to prevent post-boot config injection. (Added: 2026-05-09)
+*   **[P1] Asynchronous RL Telemetry Collector**: Multi-agent rollout collection for OpenClaw-RL training synchronization. (Added: 2026-05-09)
+
 #### Upcoming (2026-05-02 Evolution)
 *   **[P0] Risk-Adaptive CQ Controller**: Dynamic policy engine for scaling quorum thresholds based on tool risk and reasoning confidence. (Added: 2026-05-02)
 *   **[P1] Reasoning-Responsive Rate Limiter (RRRL)**: Middleware to throttle tool execution based on real-time reasoning confidence scores. (Added: 2026-05-02)
@@ -510,11 +515,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Context Sealed-Fragment Hub**: Implementation of "Active Fragment Sealing" to protect context shards from semantic side-channel exfiltration (EchoLeak defense). (Added: 2026-05-08)
 *   **[P0] Deterministic Permission Guard (DPG)**: Kernel-level security middleware for non-bypassable enforcement of project-local "Deny" rules. (Added: 2026-05-08)
 *   **[P1] Asynchronous RL Rollout Collector**: Telemetry bridge for OpenClaw-RL v1.0, enabling high-frequency feedback collection for policy optimization. (Added: 2026-05-08)
-
-#### Upcoming (2026-05-09 Evolution)
-*   **[P0] OpenClaw ContextEngine Adapter**: Native host for pluggable context plugins to support OpenClaw v2026.3.7 requirements. (Added: 2026-05-09)
-*   **[P0] Continuous Lifecycle Attestation (CLA)**: Security provider for periodic re-verification of environment integrity and "non-existence proofs." (Added: 2026-05-09)
-*   **[P1] Asynchronous RL Rollout Collector**: Authoritative telemetry bridge for OpenClaw-RL v1.0 feedback loops. (Added: 2026-05-09)
 
 #### Upcoming (2026-04-22 Evolution)
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)

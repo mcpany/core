@@ -42,10 +42,11 @@ The release of OpenClaw v2026.3.7-beta.1's "ContextEngine" has introduced a stan
 * **Observability:** State mutations are logged in the Mission Audit Trail, including the ID of the plugin that performed the mutation.
 
 ## 7. Evolutionary Changelog
-* **2026-04-25:** Initial Document Creation.
-* **2026-05-09: Update - Aligning with OpenClaw v2026.3.7 Pluggable Architecture**
-    * **Context:** Today's market sync confirmed the release of OpenClaw v2026.3.7-beta.1 with the new ContextEngine.
-    * **Architecture Adjustment:**
-        * Implementing a "Sovereignty-Aware Memory Shard" model for the adapter to support the pluggable context architecture.
-        * Introducing "Intent-Aware Compression" as a default plugin strategy to prevent "Context Ghosting" in deep swarms.
-    * **Security Impact:** Ensures memory mutations are governed by the mission-root even when handled by external plugins.
+
+*   **2026-04-25:** Initial Document Creation.
+*   **2026-05-09:** Update: Implementing Sovereignty-Aware Memory Shards.
+    *   **Context:** Today's market sync revealed OpenClaw v2026.3.7's pluggable ContextEngine requires a deeper sovereignty layer to prevent "Context Splicing" during asynchronous handoffs.
+    *   **Architecture Adjustment:**
+        *   Introducing "Sovereignty-Aware Memory Shards" in Section 4.
+        *   Memory shards are now cryptographically bound to the mission-root and sanitized for privacy before entering the OpenClaw training loop.
+    *   **Security Impact:** Prevents "Intent Drift" where a subagent could inadvertently exfiltrate or pollute the parent's reasoning state.
