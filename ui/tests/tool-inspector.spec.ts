@@ -55,8 +55,8 @@ test('Tools page loads and inspector opens', async ({ page }) => {
 
   // The schema content from mock: { type: "object", properties: { location: { type: "string" } } }
   // We check for "location" property in the JSON view
-  await expect(page.locator('pre').filter({ hasText: /"location"/ })).toBeVisible();
-  await expect(page.locator('pre').filter({ hasText: /"type": "object"/ })).toBeVisible();
+  await expect(page.locator('div').filter({ hasText: /"location"/ })).toBeVisible();
+  await expect(page.locator('div').filter({ hasText: /"type": "object"/ })).toBeVisible();
 
   // Verify service name is shown in details (Scoped to the sheet)
   await expect(page.locator('div[role="dialog"]').getByText('weather-service')).toBeVisible();
