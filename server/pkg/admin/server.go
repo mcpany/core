@@ -52,10 +52,10 @@ type Server struct {
 //   - *Server: The resulting *Server.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 func NewServer(
 	cache *middleware.CachingMiddleware,
 	toolManager tool.ManagerInterface,
@@ -113,7 +113,7 @@ func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.C
 //   - Returns an error if internal components fail to retrieve service definitions.
 //
 // Side Effects:
-//   - None
+//   - None.
 func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb.ListServicesResponse, error) {
 	var services []*configv1.UpstreamServiceConfig
 	var serviceStates []*pb.ServiceState
@@ -174,7 +174,7 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 //   - Returns a "NotFound" error if the service ID is not registered in the system.
 //
 // Side Effects:
-//   - None
+//   - None.
 func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.GetServiceResponse, error) {
 	if s.serviceRegistry != nil {
 		cfg, ok := s.serviceRegistry.GetServiceConfig(req.GetServiceId())
@@ -231,7 +231,7 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 //   - Returns an error if internal components fail to aggregate tool definitions.
 //
 // Side Effects:
-//   - None
+//   - None.
 func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListToolsResponse, error) {
 	tools := s.toolManager.ListTools()
 	responseTools := make([]*mcprouterv1.Tool, 0, len(tools))
@@ -255,7 +255,7 @@ func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListT
 //   - Returns a "NotFound" error if the tool name does not exist in the active catalog.
 //
 // Side Effects:
-//   - None
+//   - None.
 func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetToolResponse, error) {
 	t, ok := s.toolManager.GetTool(req.GetToolName())
 	if !ok {
@@ -321,7 +321,7 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 //   - Returns an "Internal" error if the database read operation fails.
 //
 // Side Effects:
-//   - None
+//   - None.
 func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	user, err := s.storage.GetUser(ctx, req.GetUserId())
 	if err != nil {
@@ -350,7 +350,7 @@ func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUs
 //   - Returns an "Internal" error if the system cannot retrieve the users list from storage.
 //
 // Side Effects:
-//   - None
+//   - None.
 func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.ListUsersResponse, error) {
 	users, err := s.storage.ListUsers(ctx)
 	if err != nil {
@@ -431,21 +431,21 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 	return &pb.DeleteUserResponse{}, nil
 }
 
-// GetDiscoveryStatus returns the status of auto-discovery providers.
+// GetDiscoveryStatus queries all configured auto-discovery providers and aggregates their current operational statuses.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - _ (*pb.GetDiscoveryStatusRequest): The _ parameter.
+//   - _ (context.Context): The request context used for internal cancellation.
+//   - _ (*pb.GetDiscoveryStatusRequest): The empty request message.
 //
 // Returns:
-//   - *pb.GetDiscoveryStatusResponse: The resulting *pb.GetDiscoveryStatusResponse.
-//   - error: An error if the operation fails.
+//   - *pb.GetDiscoveryStatusResponse: A message containing an array of provider statuses and discovery counts.
+//   - error: Returns a gRPC status error if the discovery manager is unreachable.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns an "Internal" error if status aggregation fails unexpectedly.
 //
 // Side Effects:
-//   - None
+//   - None.
 func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusRequest) (*pb.GetDiscoveryStatusResponse, error) {
 	if s.discoveryManager == nil {
 		return &pb.GetDiscoveryStatusResponse{}, nil
@@ -468,21 +468,32 @@ func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusR
 	return pb.GetDiscoveryStatusResponse_builder{Providers: pbStatuses}.Build(), nil
 }
 
-// ListAuditLogs returns audit logs matching the filter.
+// ListAuditLogs fetches paginated and filtered audit log entries from the configured audit middleware storage.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*pb.ListAuditLogsRequest): The request object.
+//   - ctx (context.Context): The request context used for executing the log query.
+//   - req (*pb.ListAuditLogsRequest): The request object containing time bounds, filters, and pagination parameters.
 //
 // Returns:
-//   - *pb.ListAuditLogsResponse: The resulting *pb.ListAuditLogsResponse.
-//   - error: An error if the operation fails.
+//   - *pb.ListAuditLogsResponse: A message containing the requested array of formatted audit log entries.
+//   - error: Returns a gRPC status error if the query cannot be executed.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Returns a "FailedPrecondition" error if the audit middleware is not currently enabled.
+//   - Returns an "InvalidArgument" error if the provided time boundaries are malformed.
+//   - Returns an "Internal" error if the underlying log read operation fails.
 //
 // Side Effects:
-//   - None
+//   - None.
+//   - Permanently deletes a user record from the persistent database.
+//   - Modifies an existing user record in the persistent database.
+//   - Modifies the request's password hash in memory during processing.
+//   - None.
+//   - None.
+//   - None.
+//   - None.
+//   - None.
+//   - None.
 func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest) (*pb.ListAuditLogsResponse, error) {
 	if s.auditMiddleware == nil {
 		return nil, status.Error(codes.FailedPrecondition, "audit logging is not enabled")
