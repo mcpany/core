@@ -5,7 +5,7 @@
 
 
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, memo } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -48,6 +48,16 @@ export interface WidgetInstance {
     /** Whether the widget is currently hidden from view. */
     hidden?: boolean;
 }
+
+// ⚡ BOLT: [Render Optimization] Extract widget rendering into React.memo to prevent re-renders during drag/resize operations.
+// Randomized Selection from Top 5 High-Impact Targets (React/View)
+const MemoizedWidgetRenderer = memo(function MemoizedWidgetRenderer({ widget }: { widget: WidgetInstance }) {
+    const def = getWidgetDefinition(widget.type);
+    if (!def) return <div className="p-4 border border-dashed text-muted-foreground">Unknown Widget Type: {widget.type}</div>;
+
+    const Component = def.component;
+    return <Component />;
+});
 
 // Default widgets for a fresh dashboard
 const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
@@ -257,14 +267,6 @@ export function DashboardGrid() {
         );
     }
 
-    const renderWidget = (widget: WidgetInstance) => {
-        const def = getWidgetDefinition(widget.type);
-        if (!def) return <div className="p-4 border border-dashed text-muted-foreground">Unknown Widget Type: {widget.type}</div>;
-
-        const Component = def.component;
-        return <Component />;
-    };
-
     const getColSpan = (size: WidgetSize) => {
         switch (size) {
             case "full": return "col-span-12";
@@ -390,7 +392,7 @@ export function DashboardGrid() {
                                                 </DropdownMenu>
                                             </div>
 
-                                            {renderWidget(widget)}
+                                            <MemoizedWidgetRenderer widget={widget} />
                                         </div>
                                     )}
                                 </Draggable>
