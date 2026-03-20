@@ -85,6 +85,42 @@ func SeedStandardData(t *testing.T, serverInfo *MCPANYTestServerInfo) {
 	RegisterServiceViaAPI(t, serverInfo.RegistrationClient, reqTools)
 	t.Log("Seeded 'seed-tools' service.")
 
+	// Seed Payment Gateway and User Service for UI tests
+	paymentGatewayConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("Payment Gateway"),
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: proto.String("https://stripe.com"),
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name: proto.String("process_payment"),
+					Description: proto.String("Process a payment via Stripe."),
+					InputSchema: proto.String(`{"type":"object","properties":{"amount":{"type":"number","description":"Payment amount in cents"},"currency":{"type":"string","description":"Currency code (e.g., USD)"}},"required":["amount","currency"]}`),
+				}.Build(),
+			},
+		}.Build(),
+	}.Build()
+
+	reqPayment := apiv1.RegisterServiceRequest_builder{
+		Config: paymentGatewayConfig,
+	}.Build()
+
+	RegisterServiceViaAPI(t, serverInfo.RegistrationClient, reqPayment)
+	t.Log("Seeded 'Payment Gateway' service.")
+
+	userServiceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("User Service"),
+		GrpcService: configv1.GrpcUpstreamService_builder{
+			Address: proto.String("localhost:50051"),
+		}.Build(),
+	}.Build()
+
+	reqUser := apiv1.RegisterServiceRequest_builder{
+		Config: userServiceConfig,
+	}.Build()
+
+	RegisterServiceViaAPI(t, serverInfo.RegistrationClient, reqUser)
+	t.Log("Seeded 'User Service' service.")
+
 	// 4. Seed Traffic/History (Optional, via Debug Endpoint if needed)
 	// Example traffic data seeding
 	trafficData := []map[string]interface{}{
