@@ -20,7 +20,6 @@ bazel_dep(name = "rules_shell", version = "0.6.1")
 bazel_dep(name = "rules_nodejs", version = "6.7.3")
 bazel_dep(name = "aspect_rules_js", version = "3.0.3")
 bazel_dep(name = "aspect_rules_ts", version = "3.8.7")
-bazel_dep(name = "rules_proto", version = "7.1.0")
 bazel_dep(name = "toolchains_buildbuddy", version = "0.0.4")
 bazel_dep(name = "rules_python", version = "1.7.0")
 
@@ -55,6 +54,7 @@ go_deps.gazelle_override(
     build_file_generation = "off",
     path = "github.com/grpc-ecosystem/grpc-gateway/v2",
 )
+
 go_deps.module_override(
     patch_strip = 1,
     patches = [
@@ -144,7 +144,10 @@ use_repo(
     "in_gopkg_square_go_jose_v2",
     "in_gopkg_yaml_v2",
     "in_gopkg_yaml_v3",
+    "io_k8s_api",
+    "io_k8s_apimachinery",
     "io_k8s_client_go",
+    "io_k8s_sigs_controller_runtime",
     "io_k8s_sigs_yaml",
     "io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc",
     "io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp",
@@ -156,6 +159,7 @@ use_repo(
     "io_opentelemetry_go_otel_sdk",
     "io_opentelemetry_go_otel_sdk_metric",
     "org_golang_google_api",
+    "org_golang_google_genproto_googleapis_api",
     "org_golang_google_grpc",
     "org_golang_google_grpc_cmd_protoc_gen_go_grpc",
     "org_golang_google_protobuf",

@@ -1582,6 +1582,11 @@
 - **Reasoning-Aware Garbage Collection (R-GC) Manager**: (P1) Stability middleware for the Speculative Branching Guard that purges low-utility context fragments.
 - **Temporal Shard Jitter (TSJ) Injector**: (P0) Security extension for the ESB that injects hardware-attested timing jitter to neutralize CVE-2026-62001.
 
+### Priority Shifts
+
+- **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
+- **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
 ## Evolution: [2026-06-18] Updates
 
 ### Proposed Additions

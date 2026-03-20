@@ -37,8 +37,9 @@ func TestExampleConfigs(t *testing.T) {
 	stdioBinPath := filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool-bin")
 	if _, err := os.Stat(stdioBinPath); os.IsNotExist(err) {
 		t.Logf("Building missing stdio example binary: %s", stdioBinPath)
+		// Set GO111MODULE=off because we are building a simple main.go in a temp dir without a go.mod.
 		cmd := exec.Command("go", "build", "-o", stdioBinPath, filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool", "main.go"))
-		cmd.Env = append(os.Environ(), "GOCACHE="+filepath.Join(t.TempDir(), "gocache"))
+		cmd.Env = append(os.Environ(), "GOCACHE="+filepath.Join(t.TempDir(), "gocache"), "GO111MODULE=off")
 		cmd.Dir = runtimeRoot
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
