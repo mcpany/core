@@ -81,7 +81,7 @@ Follow these steps to get up and running with MCP Any immediately.
 ### Prerequisites
 
 *   [Go 1.23+](https://go.dev/doc/install) (for building from source)
-*   `make` (for build automation)
+*   [Bazel](https://bazel.build/install) (for build automation)
 *   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
 
 ### One-Shot Setup
@@ -91,9 +91,8 @@ The exact commands to clone, install dependencies, and run the app:
 ```bash
 git clone https://github.com/mcpany/core.git
 cd core
-make prepare
-make build
-./build/bin/server run --config-path server/config.minimal.yaml
+cd server
+go run cmd/server/main.go run --config-path config.minimal.yaml
 ```
 
 ### Hello World
@@ -125,7 +124,7 @@ We adhere to a strict development workflow to ensure code quality and maintainab
 ### Testing
 Run all unit and integration tests to ensure code correctness. We practice proactive testing and continuous integration.
 ```bash
-make test
+cd server && go test ./...
 ```
 
 ### Linting
@@ -137,19 +136,19 @@ See [AGENTS.md](server/AGENTS.md) for detailed coding and documentation guidelin
 
 To run linters:
 ```bash
-make lint
+cd server && golangci-lint run
 ```
 
 ### Building
 Compile the server binary and UI assets.
 ```bash
-make build
+cd server && bazel build //...
 ```
 
 ### Code Generation
 Regenerate Protocol Buffers and other auto-generated files if you modify `.proto` definitions.
 ```bash
-make gen
+cd proto && go build ./...
 ```
 
 ### UI Development
@@ -208,7 +207,7 @@ If you see this error, port 50050 is occupied.
 *   Or change port: `export MCPANY_MCP_LISTEN_ADDRESS=:50051`
 
 **"protoc not found" or build errors**
-Run `make prepare` to install all necessary toolchain dependencies into `build/env/bin`.
+Make sure you have installed protoc. For bazel you might want to run `bazel build //...` to install all necessary toolchain dependencies.
 
 ## Contributing
 
