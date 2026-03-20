@@ -1,7 +1,10 @@
 # Strategic Vision: MCP Any
 
 ## Mission Statement
-MCP Any aims to be the indispensable core infrastructure layer for all AI agents, subagents, and swarms. It provides a universal adapter and gateway that standardizes how agents interact with tools, manage context, and enforce security policies.
+MCP Any aims to be the indispensable core infrastructure layer for all AI
+agents, subagents, and swarms. It provides a universal adapter and gateway that
+standardizes how agents interact with tools, manage context, and enforce
+security policies.
 
 ## Core Pillars
 1. **Universal Connectivity**: Support any MCP server, any LLM, and any agent framework.
@@ -1162,9 +1165,31 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ## Strategic Evolution: [2026-06-18]
 
 ### Focus: Autonomous Capability Revocation & Recursive Delegation Sovereignty
-**Context**: The emergence of the **Autonomous Capability Revocation (ACR)** protocol and the disclosure of the **Recursive Shadow Handoff** vulnerability (CVE-2026-71001) confirm that **Security** must now be autonomously reactive and **Lineage** must be recursively enforced. As swarms become deeper and more horizontal, the "Universal Agent Bus" must provide **hardware-attested mission-root depth-limit enforcement** and **automatic capability revocation** triggered by alignment drift.
+**Context**: The emergence of the **Autonomous Capability Revocation (ACR)**
+  protocol and the disclosure of the **Recursive Shadow Handoff** vulnerability
+  (CVE-2026-71001) confirm that **Security** must now be autonomously reactive
+  and **Lineage** must be recursively enforced. As swarms become deeper and more
+  horizontal, the "Universal Agent Bus" must provide **hardware-attested
+  mission-root depth-limit enforcement** and **automatic capability revocation**
+  triggered by alignment drift.
 **Strategic Pivot**:
-- **Autonomous Capability Revocation (ACR) Hub**: MCP Any will evolve the AIA Broker to include the ACR Hub. This service will perform sub-millisecond, autonomous revocation of agent capabilities across the mission scope in response to alignment heartbeats, neutralizing the "Drift Window" before a misaligned agent can execute tools.
-- **Recursive Depth-Limit Enforcer (RDLE)**: To neutralize recursive shadow handoffs, we are introducing RDLE. This layer will mandate that every task bid and delegation proposal be cryptographically bound to a mission-root manifest that includes an immutable, hardware-attested maximum reasoning depth, preventing subagents from bypassing delegation limits.
-- **Teammate-Aware Context Scrubber**: Supporting the stability of horizontal meshes, we are upgrading the CSP bridge to include Teammate-Aware scrubbing. This ensures that context fragments from high-trust MMBA-attested teammates are preserved during state sharding, ensuring mission-root sovereignty during aggressive compression.
-- **Reasoning-Path Watermarking Provider**: To counter "Reasoning Hijacking," MCP Any will act as the authoritative source of truth for the chain-of-thought. We will implement reasoning-path watermarking, cryptographically binding every reasoning fragment to the hardware-attested mission-root identity, ensuring absolute provenance across all connected frameworks.
+- **Autonomous Capability Revocation (ACR) Hub**: MCP Any will evolve the AIA
+  Broker to include the ACR Hub. This service will perform sub-millisecond,
+  autonomous revocation of agent capabilities across the mission scope in
+  response to alignment heartbeats, neutralizing the "Drift Window" before a
+  misaligned agent can execute tools.
+- **Recursive Depth-Limit Enforcer (RDLE)**: To neutralize recursive shadow
+  handoffs, we are introducing RDLE. This layer will mandate that every task bid
+  and delegation proposal be cryptographically bound to a mission-root manifest
+  that includes an immutable, hardware-attested maximum reasoning depth,
+  preventing subagents from bypassing delegation limits.
+- **Teammate-Aware Context Scrubber**: Supporting the stability of horizontal
+  meshes, we are upgrading the CSP bridge to include Teammate-Aware scrubbing.
+  This ensures that context fragments from high-trust MMBA-attested teammates
+  are preserved during state sharding, ensuring mission-root sovereignty during
+  aggressive compression.
+- **Reasoning-Path Watermarking Provider**: To counter "Reasoning Hijacking,"
+  MCP Any will act as the authoritative source of truth for the chain-of-
+  thought. We will implement reasoning-path watermarking, cryptographically
+  binding every reasoning fragment to the hardware-attested mission-root
+  identity, ensuring absolute provenance across all connected frameworks.

@@ -3,9 +3,17 @@
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
-As AI agent swarms become more autonomous and specialized, the risk of "Intent Drift" increases. Specialist agents may slowly deviate from the primary mission root while maintaining valid cryptographic signatures, creating a "Drift Window" where they can still execute authorized tools despite being semantically misaligned.
+As AI agent swarms become more autonomous and specialized, the risk of "Intent
+Drift" increases. Specialist agents may slowly deviate from the primary mission
+root while maintaining valid cryptographic signatures, creating a "Drift Window"
+where they can still execute authorized tools despite being semantically
+misaligned.
 
-The Autonomous Capability Revocation (ACR) Hub solves this by integrating directly with Active Intent Alignment (AIA) heartbeats. It provides a mechanism for sub-millisecond, autonomous revocation of agent capabilities across the mission scope when misalignment is detected, ensuring that security is reactively enforced without waiting for human intervention.
+The Autonomous Capability Revocation (ACR) Hub solves this by integrating
+directly with Active Intent Alignment (AIA) heartbeats. It provides a mechanism
+for sub-millisecond, autonomous revocation of agent capabilities across the
+mission scope when misalignment is detected, ensuring that security is
+reactively enforced without waiting for human intervention.
 
 ## 2. Goals & Non-Goals
 * **Goals:**

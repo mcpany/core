@@ -3,9 +3,17 @@
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
-The disclosure of the **Recursive Shadow Handoff** vulnerability (CVE-2026-71001) in UACO v2.2 revealed that subagents can bypass parent-imposed delegation limits by utilizing nested "Shadow Bids." This allows an agent to create deep chains of delegation that were never authorized by the original mission root, leading to resource exhaustion and governance escapes.
+The disclosure of the **Recursive Shadow Handoff** vulnerability
+(CVE-2026-71001) in UACO v2.2 revealed that subagents can bypass parent-imposed
+delegation limits by utilizing nested "Shadow Bids." This allows an agent to
+create deep chains of delegation that were never authorized by the original
+mission root, leading to resource exhaustion and governance escapes.
 
-The Recursive Depth-Limit Enforcer (RDLE) mandates that every task delegation be cryptographically bound to a mission-root manifest. This manifest includes an immutable, hardware-attested maximum reasoning depth that is decremented and validated at every hop in the chain, ensuring absolute sovereignty over the delegation lineage.
+The Recursive Depth-Limit Enforcer (RDLE) mandates that every task delegation be
+cryptographically bound to a mission-root manifest. This manifest includes an
+immutable, hardware-attested maximum reasoning depth that is decremented and
+validated at every hop in the chain, ensuring absolute sovereignty over the
+delegation lineage.
 
 ## 2. Goals & Non-Goals
 * **Goals:**

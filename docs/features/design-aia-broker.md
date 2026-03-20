@@ -3,9 +3,17 @@
 **Created:** 2026-06-17
 
 ## 1. Context and Scope
-As agent swarms become more complex and multi-layered, the risk of "Semantic Drift" increases. Specialist agents, while remaining cryptographically valid, may slowly diverge from the primary mission intent during long reasoning loops. This "Intent Drift" can lead to unauthorized actions or inefficient resource consumption.
+As agent swarms become more complex and multi-layered, the risk of "Semantic
+Drift" increases. Specialist agents, while remaining cryptographically valid,
+may slowly diverge from the primary mission intent during long reasoning loops.
+This "Intent Drift" can lead to unauthorized actions or inefficient resource
+consumption.
 
-The Active Intent Alignment (AIA) Broker acts as the authoritative host for hardware-attested "Alignment Heartbeats." It periodically verifies that specialist agent reasoning traces remain semantically aligned with the mission-root intent, neutralizing cumulative drift and providing a foundation for autonomous capability revocation.
+The Active Intent Alignment (AIA) Broker acts as the authoritative host for
+hardware-attested "Alignment Heartbeats." It periodically verifies that
+specialist agent reasoning traces remain semantically aligned with the mission-
+root intent, neutralizing cumulative drift and providing a foundation for
+autonomous capability revocation.
 
 ## 2. Goals & Non-Goals
 * **Goals:**

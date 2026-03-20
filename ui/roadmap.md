@@ -593,7 +593,12 @@
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
 
 ### Upcoming: [2026-06-18]
-- [ ] **[P0] Autonomous Revocation Dashboard**: (2026-06-18) Real-time visualization of ACR events and blocked tool calls.
-- [ ] **[P0] Recursive Depth-Limit Monitor**: (2026-06-18) Visual indicator for mission-root depth token usage and RDLE violations.
-- [ ] **[P1] Context Compression Auditor**: (2026-06-18) UI for reviewing teammate-aware compression results and semantic scores.
-- [ ] **[P0] Reasoning Watermark Inspector**: (2026-06-18) Forensic tool for verifying Reasoning-Path watermarks and lineage.
+
+- [ ] **[P0] Autonomous Revocation Dashboard**: (2026-06-18) Real-time
+  visualization of ACR events and blocked tool calls.
+- [ ] **[P0] Recursive Depth-Limit Monitor**: (2026-06-18) Visual indicator for
+  mission-root depth token usage and RDLE violations.
+- [ ] **[P1] Context Compression Auditor**: (2026-06-18) UI for reviewing
+  teammate-aware compression results and semantic scores.
+- [ ] **[P0] Reasoning Watermark Inspector**: (2026-06-18) Forensic tool for
+  verifying Reasoning-Path watermarks and lineage.

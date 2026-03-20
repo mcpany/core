@@ -3,9 +3,17 @@
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
-As multi-agent swarms grow in depth and horizontal complexity, the risk of "Reasoning Hijacking" increases. A subagent may attempt to inject its own unauthorized logic into the parent's reasoning stream, leading to a loss of mission-root control. Current transport-layer security and binary handoffs are insufficient to protect the semantic integrity of the chain-of-thought.
+As multi-agent swarms grow in depth and horizontal complexity, the risk of
+"Reasoning Hijacking" increases. A subagent may attempt to inject its own
+unauthorized logic into the parent's reasoning stream, leading to a loss of
+mission-root control. Current transport-layer security and binary handoffs are
+insufficient to protect the semantic integrity of the chain-of-thought.
 
-The Reasoning-Path Watermarking Provider addresses this by cryptographically watermarking every step in an agent's reasoning process. These watermarks are bound to the hardware-attested mission-root identity, providing a non-repudiable and lineage-aware audit trail that ensures absolute provenance of the cognitive path.
+The Reasoning-Path Watermarking Provider addresses this by cryptographically
+watermarking every step in an agent's reasoning process. These watermarks are
+bound to the hardware-attested mission-root identity, providing a non-repudiable
+and lineage-aware audit trail that ensures absolute provenance of the cognitive
+path.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
