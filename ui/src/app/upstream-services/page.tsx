@@ -11,6 +11,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Plus, ChevronLeft } from "lucide-react";
 import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
     Sheet,
     SheetContent,
     SheetDescription,
@@ -49,6 +59,8 @@ export default function ServicesPage() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [serviceToDelete, setServiceToDelete] = useState<string | null>(null);
+  const [servicesToDelete, setServicesToDelete] = useState<string[]>([]);
   const { toast } = useToast();
 
   const fetchServices = useCallback(async () => {
@@ -103,15 +115,19 @@ export default function ServicesPage() {
     }
   }, [fetchServices, toast]);
 
-  const deleteService = useCallback(async (name: string) => {
-    if (!confirm(`Are you sure you want to delete service "${name}"?`)) return;
+  const deleteService = useCallback((name: string) => {
+    setServiceToDelete(name);
+  }, []);
+
+  const confirmDeleteService = useCallback(async () => {
+    if (!serviceToDelete) return;
 
     try {
-        await apiClient.unregisterService(name);
-        setServices(prev => prev.filter(s => s.name !== name));
+        await apiClient.unregisterService(serviceToDelete);
+        setServices(prev => prev.filter(s => s.name !== serviceToDelete));
         toast({
             title: "Service Deleted",
-            description: `Service ${name} has been removed.`
+            description: `Service ${serviceToDelete} has been removed.`
         });
     } catch (e) {
          console.error("Failed to delete service", e);
@@ -121,8 +137,10 @@ export default function ServicesPage() {
             title: "Error",
             description: "Failed to delete service."
         });
+    } finally {
+        setServiceToDelete(null);
     }
-  }, [fetchServices, toast]);
+  }, [serviceToDelete, fetchServices, toast]);
 
   const bulkToggleService = useCallback(async (names: string[], enabled: boolean) => {
     // Optimistic update
@@ -145,15 +163,19 @@ export default function ServicesPage() {
     }
   }, [fetchServices, toast]);
 
-  const bulkDeleteService = useCallback(async (names: string[]) => {
-    if (!confirm(`Are you sure you want to delete ${names.length} services?`)) return;
+  const bulkDeleteService = useCallback((names: string[]) => {
+    setServicesToDelete(names);
+  }, []);
+
+  const confirmBulkDeleteService = useCallback(async () => {
+    if (servicesToDelete.length === 0) return;
 
     try {
-        await Promise.all(names.map(name => apiClient.unregisterService(name)));
-        setServices(prev => prev.filter(s => !names.includes(s.name)));
+        await Promise.all(servicesToDelete.map(name => apiClient.unregisterService(name)));
+        setServices(prev => prev.filter(s => !servicesToDelete.includes(s.name)));
         toast({
             title: "Services Deleted",
-            description: `${names.length} services have been removed.`
+            description: `${servicesToDelete.length} services have been removed.`
         });
     } catch (e) {
          console.error("Failed to delete services", e);
@@ -163,8 +185,10 @@ export default function ServicesPage() {
             title: "Error",
             description: "Failed to delete some services."
         });
+    } finally {
+        setServicesToDelete([]);
     }
-  }, [fetchServices, toast]);
+  }, [servicesToDelete, fetchServices, toast]);
 
   const handleBulkEdit = useCallback(async (names: string[], updates: { tags?: string[] }) => {
     try {
@@ -485,6 +509,40 @@ export default function ServicesPage() {
             {renderSheetContent()}
         </SheetContent>
       </Sheet>
+
+      <AlertDialog open={!!serviceToDelete} onOpenChange={(open) => !open && setServiceToDelete(null)}>
+          <AlertDialogContent>
+              <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                      Are you sure you want to delete service "{serviceToDelete}"? This action cannot be undone.
+                  </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={confirmDeleteService} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Delete
+                  </AlertDialogAction>
+              </AlertDialogFooter>
+          </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={servicesToDelete.length > 0} onOpenChange={(open) => !open && setServicesToDelete([])}>
+          <AlertDialogContent>
+              <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                      Are you sure you want to delete {servicesToDelete.length} services? This action cannot be undone.
+                  </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={confirmBulkDeleteService} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Delete
+                  </AlertDialogAction>
+              </AlertDialogFooter>
+          </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

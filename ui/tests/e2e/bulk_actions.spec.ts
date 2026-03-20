@@ -7,40 +7,51 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Bulk Service Actions', () => {
 
-  test.beforeEach(async ({ page }) => {
-    // Mock services API
-    await page.route('**/api/v1/services', async route => {
-        await route.fulfill({
-            json: [
-                { name: "service-1", httpService: { address: "http://localhost:8001" }, disable: false, tags: ["prod"] },
-                { name: "service-2", httpService: { address: "http://localhost:8002" }, disable: true, tags: ["dev"] },
-                { name: "service-3", httpService: { address: "http://localhost:8003" }, disable: false, tags: ["prod"] }
-            ]
-        });
-    });
+  const testServices = [
+    { name: "service-1-bulk", http_service: { address: "http://localhost:8001" }, disable: false, tags: ["prod"] },
+    { name: "service-2-bulk", http_service: { address: "http://localhost:8002" }, disable: true, tags: ["dev"] },
+    { name: "service-3-bulk", http_service: { address: "http://localhost:8003" }, disable: false, tags: ["prod"] }
+  ];
 
-     // Mock doctor API
-    await page.route('**/doctor', async route => {
-        await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ status: 'healthy', checks: {} })
-        });
-    });
+  test.beforeEach(async ({ request }) => {
+    // Seed real services
+    for (const svc of testServices) {
+      // First try to delete in case it exists
+      await request.delete(`/api/v1/services/${svc.name}`).catch(() => {});
+
+      const res = await request.post('/api/v1/services', {
+        data: svc
+      });
+      expect(res.ok()).toBeTruthy();
+    }
+  });
+
+  test.afterEach(async ({ request }) => {
+    // Clean up
+    for (const svc of testServices) {
+      await request.delete(`/api/v1/services/${svc.name}`).catch(() => {});
+    }
   });
 
   test('should select all services and show bulk actions', async ({ page }) => {
     await page.goto('/upstream-services');
 
     // Wait for services to load
-    await expect(page.getByText('service-1')).toBeVisible();
+    await expect(page.getByText('service-1-bulk')).toBeVisible();
+
+    // Filter by tag so we only operate on our seeded test services to avoid interference
+    await page.getByPlaceholder('Filter by tag...').fill('prod');
+    // service-1 and service-3 have prod tag
+    await expect(page.getByText('service-1-bulk')).toBeVisible();
+    await expect(page.getByText('service-3-bulk')).toBeVisible();
+    await expect(page.getByText('service-2-bulk')).not.toBeVisible();
 
     // Check "Select All" checkbox using role
     const selectAllCheckbox = page.getByRole('checkbox', { name: 'Select all' });
     await selectAllCheckbox.check();
 
-    // Verify bulk action buttons appear
-    await expect(page.getByText('3 selected')).toBeVisible();
+    // Verify bulk action buttons appear (should be 2 because we filtered)
+    await expect(page.getByText('2 selected')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Enable' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Disable' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible();
@@ -48,74 +59,65 @@ test.describe('Bulk Service Actions', () => {
 
   test('should select individual services', async ({ page }) => {
      await page.goto('/upstream-services');
-     await expect(page.getByText('service-1')).toBeVisible();
+     await expect(page.getByText('service-1-bulk')).toBeVisible();
 
      // Select first service
-     await page.getByRole('checkbox', { name: 'Select service-1' }).check();
+     await page.getByRole('checkbox', { name: 'Select service-1-bulk' }).check();
 
      // Verify 1 selected
      await expect(page.getByText('1 selected')).toBeVisible();
 
      // Select second service
-     await page.getByRole('checkbox', { name: 'Select service-2' }).check();
+     await page.getByRole('checkbox', { name: 'Select service-2-bulk' }).check();
      await expect(page.getByText('2 selected')).toBeVisible();
   });
 
-  test('should toggle services', async ({ page }) => {
-      // Mock the toggle API
-      const toggleRequests: string[] = [];
-      await page.route('**/api/v1/services/*', async route => {
-          if (route.request().method() === 'PUT') {
-              toggleRequests.push(route.request().url());
-              await route.fulfill({ status: 200, json: {} });
-          } else {
-              await route.continue();
-          }
-      });
-
+  test('should toggle services', async ({ page, request }) => {
       await page.goto('/upstream-services');
-      await expect(page.getByText('service-1')).toBeVisible();
+      await expect(page.getByText('service-1-bulk')).toBeVisible();
 
       // Select service-1 and service-3
-      await page.getByRole('checkbox', { name: 'Select service-1' }).check();
-      await page.getByRole('checkbox', { name: 'Select service-3' }).check();
+      await page.getByRole('checkbox', { name: 'Select service-1-bulk' }).check();
+      await page.getByRole('checkbox', { name: 'Select service-3-bulk' }).check();
 
       // Click Disable
       await page.getByRole('button', { name: 'Disable' }).click();
 
-      // Verify requests
-      await expect.poll(() => toggleRequests.length).toBe(2);
-      expect(toggleRequests.some(url => url.includes('service-1'))).toBeTruthy();
-      expect(toggleRequests.some(url => url.includes('service-3'))).toBeTruthy();
+      // Verify requests to backend via real data check
+      await expect(page.getByText('Services Disabled')).toBeVisible();
+
+      const s1 = await request.get('/api/v1/services/service-1-bulk');
+      const s1Data = await s1.json();
+      expect(s1Data.service.disable).toBeTruthy();
+
+      const s3 = await request.get('/api/v1/services/service-3-bulk');
+      const s3Data = await s3.json();
+      expect(s3Data.service.disable).toBeTruthy();
   });
 
-    test('should delete services', async ({ page }) => {
-      // Mock the delete API
-      const deleteRequests: string[] = [];
-      await page.route('**/api/v1/services/*', async route => {
-          if (route.request().method() === 'DELETE') {
-            deleteRequests.push(route.request().url());
-            await route.fulfill({ status: 200 });
-          } else {
-            await route.continue();
-          }
-      });
-
-      // Handle confirm dialog
-      page.on('dialog', dialog => dialog.accept());
-
+  test('should delete services via bulk action', async ({ page, request }) => {
       await page.goto('/upstream-services');
-      await expect(page.getByText('service-1')).toBeVisible();
+      await expect(page.getByText('service-1-bulk')).toBeVisible();
 
-      // Select service-2
-      await page.getByRole('checkbox', { name: 'Select service-2' }).check();
+      // Select service-2-bulk
+      await page.getByRole('checkbox', { name: 'Select service-2-bulk' }).check();
 
-      // Click Delete
+      // Click Delete in Bulk Actions bar
       await page.getByRole('button', { name: 'Delete' }).click();
 
-      // Wait a bit for async calls
-      await expect.poll(() => deleteRequests.length).toBe(1);
-      expect(deleteRequests[0]).toContain('service-2');
+      // Ensure AlertDialog is visible
+      await expect(page.getByRole('heading', { name: 'Are you sure?' })).toBeVisible();
+      await expect(page.getByText('Are you sure you want to delete 1 services?')).toBeVisible();
+
+      // Confirm delete
+      await page.getByRole('button', { name: 'Delete' }).nth(1).click();
+
+      // Wait for success toast
+      await expect(page.getByText('Services Deleted')).toBeVisible();
+
+      // Verify request in backend
+      const res = await request.get('/api/v1/services/service-2-bulk');
+      expect(res.status()).toBe(404);
   });
 
 });
