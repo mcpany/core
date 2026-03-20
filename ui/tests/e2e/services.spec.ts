@@ -72,7 +72,7 @@ test.describe('Services Feature', () => {
     await expect(page.getByText('User Service')).toBeVisible();
 
     // Verify Toggle exists and is interactive
-    const paymentRow = page.locator('tr').filter({ hasText: 'Payment Gateway' });
+    await page.goto('/upstream-services'); await page.waitForTimeout(5000); const paymentRow = page.locator('tr').filter({ hasText: 'Payment Gateway' }); await paymentRow.first().waitFor({ state: 'visible' });
     const switchBtn = paymentRow.getByRole('switch');
     await expect(switchBtn).toBeVisible();
     await switchBtn.click();
@@ -111,20 +111,20 @@ test.describe('Services Feature', () => {
     await page.getByRole('button', { name: 'Cancel' }).click();
   });
 
-  test.skip('should render schema visualizer in service tools dialog', async ({ page }) => {
-    const paymentRow = page.locator('tr').filter({ hasText: 'Payment Gateway' });
+  test('should render schema visualizer in service tools dialog', async ({ page }) => {
+    await page.goto('/upstream-services'); await page.waitForTimeout(5000); const paymentRow = page.locator('tr').filter({ hasText: 'Payment Gateway' }); await paymentRow.first().waitFor({ state: 'visible' });
 
     // Click on the row to open details
-    await paymentRow.click();
+    await paymentRow.first().click();
 
     // Tools are now in the General tab by default
     await expect(page.getByText('Tools', { exact: true }).first()).toBeVisible();
 
     // Should render service detail content
-    await expect(page.locator('main')).toContainText('Payment Gateway');
+    await expect(page.getByRole('main').first()).toContainText('Payment Gateway');
 
     // Click View Schema button
-    await page.locator('button[title="View Schema"]').click();
+    const btn = page.getByRole('button', { name: 'View Schema' }); await btn.waitFor({ state: 'visible' }); await btn.first().click({ force: true });
 
     // The dialog should appear and it should have the visualizer table
     // we added SchemaVisualizer which renders a Table with headers "Property", "Type", "Description"
