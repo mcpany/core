@@ -3,9 +3,6 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
-- [ ] **[P0] Absence Proof (DAP) Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (CVE-2026-25725). (Added: 2026-05-03)
-- [ ] **[P1] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions. (Added: 2026-05-03)
-- [ ] **[P0] Intent-Scoped Recovery Explorer**: UI for visualizing and managing targeted environment rollbacks. (Added: 2026-05-03)
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)
@@ -285,6 +282,11 @@
 - [ ] **[P0] A2UI Secure Component Host**: Sandboxed rendering for agent-generated interactive fragments (Added: 2026-04-23).
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
+
+#### Upcoming (2026-05-03 Evolution)
+- [ ] **[P0] Intent-Scoped Recovery Monitor**: UI for visualizing targeted PLSS rollbacks and intent-branch health. (Added: 2026-05-03)
+- [ ] **[P0] Negative Attestation Dashboard**: Visual reviewer for signed "Non-Existence Proofs" and blocked configuration hooks. (Added: 2026-05-03)
+- [ ] **[P1] ContextEngine Sidecar Manager**: UI for managing framework-agnostic Context Sidecars and modular context plugins. (Added: 2026-05-03)
 
 #### Upcoming (2026-05-02 Evolution)
 - [ ] **[P0] Risk-Adaptive Quorum Visualizer**: Real-time monitor for AQT thresholds, tool risk scores, and reasoning confidence. (Added: 2026-05-02)

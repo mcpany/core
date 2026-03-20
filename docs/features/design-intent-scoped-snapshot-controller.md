@@ -1,46 +1,46 @@
 # Design Doc: Intent-Scoped Snapshot Controller
-
 **Status:** Draft
 **Created:** 2026-05-03
 
 ## 1. Context and Scope
-As agent swarms become more parallel and speculative, global environment rollbacks (via PLSS) are becoming too disruptive. A failure in one specialized intent branch should not force the entire swarm to lose progress. The Intent-Scoped Snapshot Controller extends the PLSS bridge to provide "targeted" rollbacks, ensuring environment resilience with minimal blast radius.
+As agent swarms grow in complexity, global environment rollbacks become increasingly disruptive. A single subagent failure currently triggers a full project-level revert, wiping out progress made by other healthy, concurrent intent branches. MCP Any needs a mechanism to perform targeted rollbacks that only affect the specific files and state associated with a failed intent.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Perform environment rollbacks restricted to a specific `mission_id` or `intent_id` branch.
-    * Integrate with the UACO v2.2 Intent Barrier Middleware to detect conflict-free snapshot boundaries.
-    * Support "Shadow-FS" path merging for speculative results.
+    * Implement a "Snapshot Controller" that tracks file changes per intent branch.
+    * Enable atomic rollbacks restricted to an intent-specific "Change Set."
+    * Integrate with the PLSS (Project-Local Snapshot Sync) bridge for efficient storage.
 * **Non-Goals:**
-    * Managing OS-level volume snapshots (delegated to the underlying PLSS bridge).
-    * Resolving semantic merge conflicts in shared files (delegated to the agent).
+    * This system WILL NOT provide a full version control system (like Git).
+    * It WILL NOT manage conflicts between overlapping intent branches (handled by the Parallel Intent Branch Manager).
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** High-Concurrency Swarm Architect
-* **Primary Goal:** Recover from a failed speculative file edit without interrupting three other parallel sub-intents.
+* **User Persona:** Local LLM Swarm Orchestrator
+* **Primary Goal:** Share secure context between 3 agents without exposing local env vars, and recover from a single agent's failure without affecting others.
 * **The Happy Path (Tasks):**
-    1. Sub-Intent B initiates a high-risk file transformation.
-    2. The Snapshot Controller creates an "Intent-Bound" snapshot of the affected filesystem region.
-    3. Sub-Intent B fails a security quorum or attestation check.
-    4. The Controller triggers an atomic rollback restricted to the paths modified by Sub-Intent B.
-    5. Parallel Sub-Intents A and C continue their work uninterrupted.
+    1. Orchestrator starts three parallel intent branches (A, B, C).
+    2. Intent Branch B fails a security quorum or tool execution.
+    3. The Snapshot Controller identifies the files modified by Branch B.
+    4. The system performs a targeted rollback of Branch B's changes.
+    5. Branches A and C continue execution without interruption or state loss.
 
 ## 4. Design & Architecture
 * **System Flow:**
-    `[Intent Event] -> [Path-Intent Tracker] -> [PLSS Proxy] -> [Shadow-FS Rollback]`
+    The Snapshot Controller hooks into the Shadow-FS and PLSS. Every file write is tagged with an `intent_id`.
 * **APIs / Interfaces:**
-    * `CreateIntentSnapshot(intent_id string, paths []string) (SnapshotID, error)`
-    * `RollbackIntent(intent_id string) error`
+    * `CreateSnapshot(intent_id)`: Initializes a tracking session for an intent.
+    * `RollbackIntent(intent_id)`: Reverts all changes tagged with the given ID.
+    * `CommitIntent(intent_id)`: Merges the changes into the host/main project state.
 * **Data Storage/State:**
-    Maintains a mapping of `intent_id` to modified `Inode` sets and `Shadow-FS` overlays.
+    Uses an internal SQLite "Intent Ledger" to track Hardware Inode mappings and file hashes per intent.
 
 ## 5. Alternatives Considered
-* **Global Rollback:** Simple but disruptive. Rejected for high-concurrency swarms.
-* **File-by-File Backup:** Inefficient for large directories. Rejected in favor of Inode-based tracking.
+* **Global LVM/ZFS Snapshots:** Rejected due to lack of granularity; cannot rollback specific files while keeping others.
+* **Git Branching:** Rejected as too slow and heavy for high-frequency subagent reasoning loops.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** Snapshot boundaries must be cryptographically bound to the signed intent to prevent "Snapshot Splicing."
-* **Observability:** Visualize rollback events in the "Swarm Rollback Dashboard."
+* **Security (Zero Trust):** The controller must verify the `intent_id` against the signed mission intent to prevent "Cross-Intent Poisoning."
+* **Observability:** Logs of all targeted rollbacks will be emitted to the mission audit trail.
 
 ## 7. Evolutionary Changelog
 * **2026-05-03:** Initial Document Creation.

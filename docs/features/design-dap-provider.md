@@ -50,6 +50,10 @@ The Deterministic Absence Proof (DAP) Provider in MCP Any will generate cryptogr
 * **2026-04-26:** Update: Hardening against Ambient Context Pollution.
     * **Context:** Market sync identified that subagents in shared swarms are prone to "Ambient Pollution" from unrelated config files.
     * **Architecture Adjustment:** DAP Generator now supports "Scope-Pinning," where a DAP manifest can be cryptographically bound to a specific Mission Intent, preventing its reuse for unrelated agent boots.
-* **2026-05-03:** Update: Mitigation for CVE-2026-25725 (Absence-as-Exploit).
-    * **Context:** CVE-2026-25725 confirmed that missing config files are a high-risk RCE vector.
-    * **Architecture Adjustment:** DAP Provider now mandates "Baseline Proofs" for all standard agent configuration paths (e.g., `.claude/settings.json`). If a file is missing, the DAP must include a signed cryptographic tombstone to prevent unauthorized creation during the session.
+
+### Update: 2026-05-03 - Negative Attestation for CVE-2026-25725
+**Context:** Recent ecosystem audits (Claude Code) confirmed that RCE is possible if `.claude/settings.json` is missing; the exploit pattern relies on the *absence* of a security-critical file to bypass checks.
+**Architecture Adjustment:**
+* Mandating "Negative Attestation" (signed cryptographic tombstones) for any restricted configuration path that is not present at boot.
+* Integrating the DAP Generator as a blocking prerequisite for the Pre-Flight Sandbox Validator.
+**Security Impact:** Prevents "Absence-as-Exploit" by providing a deterministic, signed proof that the environment remains in its attested "Clean State" throughout the mission lifecycle.

@@ -132,6 +132,8 @@
 - **RL Telemetry Provider**: (Promoted to P0) Now essential for providing high-frequency feedback tokens to OpenClaw-RL asynchronous training loops.
 - **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include DAP as a mandatory boot requirement for all compliant agent environments.
 
+---
+
 ## Evolution: [2026-04-22] Updates
 
 ### Proposed Additions
@@ -276,8 +278,8 @@
 
 ### Proposed Additions
 - **Pre-Flight Sandbox Validator**: (P0) Core security service that generates a "Full-State Manifest" before agent execution, addressing environment-escape vulnerabilities like CVE-2026-25725.
-- **Cross-Framework Skill Reputation Engine**: (P1) UAB-native middleware for sharing and validating tool reliability scores across agent swarms.
 - **Origin-Locked Session Bridge**: (P0) Hardened WebSocket/HTTP session manager that binds tokens to cryptographically verified origins.
+- **Cross-Framework Skill Reputation Engine**: (P1) UAB-native middleware for sharing and validating tool reliability scores across agent swarms.
 
 ### Priority Shifts
 - **Verified Skill Auction (VSA)**: (Re-affirmed P0) Expanded to integrate with the new Reputation Engine for real-time capability revoking.
@@ -368,7 +370,7 @@
 ---
 ---
 
-## Evolution: [2026-03-09] Updates
+## Strategic Evolution: [2026-03-09] Updates
 
 ### Proposed Additions
 - **Project Configuration Security Guard**: (P0) Validating proxy for project-local agent configurations (e.g., `.claude/settings.json`) to prevent RCE via malicious hooks.
@@ -634,7 +636,7 @@
 - **Atomic State Rollback Middleware**: (P0) Enables swarm-wide state checkpoints and rollbacks for the Blackboard and Context Shards.
 - **UACO-MAQ Consensus Gateway**: (P0) Support for UACO v1.9 Multi-Agent Quorum, allowing cross-framework approval tokens for high-risk actions.
 - **Session-Bound Fast-Path Attestation**: (P1) Hardware-accelerated attestation for sub-calls within a verified mission session.
-- **Context Smearing Scanner**: (P1) Binary-level inspection for BSH fragments to detect malicious "Ghost Fragments."
+- **Context Smearing Scanner**: (P1) Binary-level inspection for BSH fragments to detect "Ghost Fragments."
 
 ### Priority Shifts
 - **Consensus Tool Validation Gateway**: Re-affirmed as **P0**. Urgent need to align with UACO v1.9 MAQ.
@@ -667,6 +669,22 @@
 - **Shared KV Store (Blackboard)**: Re-affirmed as **P0**. Expanded to include support for "Branch-Aware State Isolation" and "Merge Conflict Resolution."
 - **UDP Beacon Discovery Listener**: Promoted from **P1** to **P0**. Essential prerequisite for the new Federated Discovery Quorum.
 - **Inode-Aware Symlink Validator**: Re-prioritized to **P0**. Critical for mitigating project-local exfiltration vectors.
+
+---
+
+## Evolution: 2026-04-01 Updates
+
+### Proposed Additions
+- **Reasoning-Bound Context Shifter**: (P0) Context management middleware that synchronizes dynamic shifting logic across frameworks.
+- **Path Normalization Engine (NaaS)**: (P0) Centralized service for OS-agnostic path normalization to prevent symlink and traversal escapes.
+- **Optimistic Capability Loading Middleware**: (P1) Predictive tool registry that handles Gemini-style optimistic loading with built-in TOCTOU protection.
+
+### Priority Shifts
+- **Inode-Aware Symlink Validator**: (Re-affirmed P0) Urgent requirement to address "Normalization Fatigue" in project-local config parsing.
+
+### Deprecations / Monitoring
+- **OS-Specific Path Joins**: Monitoring for deprecation in favor of the **Path Normalization Engine**.
+- **Static Discovery Quorums**: Moving toward **Optimistic Loading** with background attestation.
 
 ---
 
