@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-03-20] Updates
+
+### Proposed Additions
+- **Intent-Bound Memory Shards**: (P0) Cryptographically isolated memory regions within the Shared KV Store (Blackboard) to prevent "Memory Smearing" and "EchoLeak" exfiltration during multi-hop reasoning.
+- **Ephemeral Discovery Sandbox**: (P0) A zero-trust, isolated environment for all discovery-time execution (e.g., `discoveryCommand`) to neutralize "Ghost-Execution" exploits.
+- **Multimodal Inference-Time Sanitizer (MITS)**: (P0) Real-time sanitization of non-textual reasoning traces (SVG, CSS, audio metadata) using matured OpenClaw `ContextEngine` hooks to detect and neutralize "Context Smuggling" via polyglot payloads.
+
+### Priority Shifts
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Elevated to support **Intent-Bound Memory Shards** as the primary state persistence model.
+- **Semantic Integrity Bridge**: (Re-affirmed P0) Evolving into the **MITS** to support multimodal trace sanitization.
+- **Negative Discovery Attestation Provider**: (Re-affirmed P0) Designated as a critical component of the **Ephemeral Discovery Sandbox** for pre-flight safety proofs.
+
 ## Evolution: [2026-06-16] Updates
 
 ### Proposed Additions
