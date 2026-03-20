@@ -15,8 +15,9 @@ repos:
     -   id: detect-private-key
         exclude: ^server/tests/tls/
     -   id: end-of-file-fixer
-        exclude: ^server/pkg/upstream/mcp/s1/manifest.json
+        exclude: ^(server/pkg/upstream/mcp/s1/manifest.json|patches/|.github/|COVERAGE_INTERVENTION_REPORT.md|ui/Dockerfile.e2e)
     -   id: trailing-whitespace
+        exclude: ^(patches/|.github/)
 -   repo: local
     hooks:
     -   id: shellcheck
