@@ -197,7 +197,6 @@
 - [ ] **[P0] Local Trust Verification Dashboard**: (2026-04-05) UI for reviewing and signing local MCP server identity claims.
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
-
 #### Upcoming (2026-03-17 Evolution)
 - [ ] **[P0] Local Security Violation Monitor**: (2026-03-17) Real-time visualization of blocked loopback requests and origin violations. (Added: 2026-03-17)
 - [ ] **[P0] Origin-Bound Session Manager**: (2026-03-17) UI for managing and reviewing session-to-origin bindings. (Added: 2026-03-17)

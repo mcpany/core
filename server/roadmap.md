@@ -10,7 +10,6 @@
 ## 2. Updated Roadmap
 
 ### Status: Active Development
-
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
@@ -88,6 +87,11 @@
 *   **[P1] Unified RL Feedback Telemetry Bridge**: Middleware for collecting and normalizing conversation-feedback for RL-driven agents (e.g., OpenClaw-RL). (Added: 2026-03-19)
 *   **[P1] Enterprise Policy Sync Engine**: Service for synchronizing security policies and allowed-origins from a central management server. (Added: 2026-03-19)
 
+*   **[P0] Active Intent Alignment (AIA) Broker**: Authoritative alignment service issuing hardware-attested heartbeats. (Added: 2026-03-19)
+*   **[P0] UACO-Native Negotiation Hub**: Native implementation of UACO task bidding and stateful handoffs. (Added: 2026-03-19)
+*   **[P0] Multi-Modal Behavioral Attestation (MMBA)**: Advanced identity service anchoring profiles to multi-modal history. (Added: 2026-03-19)
+*   **[P1] Semantic State-Pinning (SSP)**: Attention governance middleware for mission-root fragment protection. (Added: 2026-03-19)
+*   **[P0] Temporal Shard Jitter (TSJ) Injector**: Security extension for the ESB to neutralize timing side-channels. (Added: 2026-03-19)
 #### Upcoming (2026-03-20 Evolution)
 *   **[P0] Ephemeral Workspace Trust Middleware**: Session-bound attestation service to translate desktop trust tokens for headless agents. (Added: 2026-03-20)
 *   **[P0] Blackboard Integrity Validator**: Cryptographic validation of state lineage for Shared KV Store operations. (Added: 2026-03-20)
@@ -100,19 +104,10 @@
 *   **[P1] DNS/ICMP Exfiltration Monitor**: L4 telemetry middleware to detect and block non-HTTP exfiltration attempts. (Added: 2026-03-21)
 *   **[P1] Hardware-Bound Trust Continuity**: TPM/Secure Enclave signatures to persist trust for verified headless agents. (Added: 2026-03-21)
 
-#### Upcoming (2026-03-17 Evolution)
-*   **[P0] Inter-Agent Mailbox Guard (IAMG)**: Mandatory mediation for teammate-to-teammate messaging with intent validation. (Added: 2026-03-17)
-*   **[P1] Verifiable RL Reward Provider**: Authoritative source for binary truth attestation to optimize RL reasoning loops. (Added: 2026-03-17)
-*   **[P0] Identity-Bound Discovery (IBD)**: Mission-token gated tool and capability discovery. (Added: 2026-03-17)
-
 #### Upcoming (2026-03-22 Evolution)
 *   **[P0] UACO Agentic SLA Middleware**: Enforcement of resource contracts (token budget, reasoning time) during task delegation. (Added: 2026-03-22)
 *   **[P0] Ghost Shell Execution Mode**: Isolated profiling environment for behavioral analysis of un-attested hooks. (Added: 2026-03-22)
 *   **[P1] Federated Policy Synchronizer**: Secure bus for synchronizing security guardrails across multiple MCP Any instances. (Added: 2026-03-22)
-
-#### Upcoming (2026-03-17 Evolution)
-*   **[P0] Local-Loopback Rate Limiter**: Mandatory throttling for all loopback traffic to neutralize browser-based brute-force attacks. (Added: 2026-03-17)
-*   **[P0] Origin-Locked Session Bridge**: Hardened session management binding tokens to cryptographically verified origins. (Added: 2026-03-17)
 
 #### Upcoming (2026-03-23 Evolution)
 *   **[P0] Proof-of-Intent (PoI) Validator**: Middleware implementing UACO v1.7 headers to bind tool calls to cryptographically signed intents. (Added: 2026-03-23)
@@ -753,10 +748,3 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
-
-#### Upcoming (2026-03-19 Evolution - Strategic Alignment)
-*   **[P0] Active Intent Alignment (AIA) Broker**: Authoritative alignment service issuing hardware-attested heartbeats. (Added: 2026-03-19)
-*   **[P0] UACO-Native Negotiation Hub**: Native implementation of UACO task bidding and stateful handoffs. (Added: 2026-03-19)
-*   **[P0] Multi-Modal Behavioral Attestation (MMBA)**: Advanced identity service anchoring profiles to multi-modal history. (Added: 2026-03-19)
-*   **[P1] Semantic State-Pinning (SSP)**: Attention governance middleware for mission-root fragment protection. (Added: 2026-03-19)
-*   **[P0] Temporal Shard Jitter (TSJ) Injector**: Security extension for the ESB to neutralize timing side-channels. (Added: 2026-03-19)

@@ -5,7 +5,6 @@
 - **HITL Middleware**: Suspension protocol for user approval flows.
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
-
 ## Evolution: [2026-06-16] Updates
 
 ### Proposed Additions
@@ -61,18 +60,6 @@
 ### Priority Shifts
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory DCG to counter CVE-2026-39102.
 - **`TeammateTool` Orchestration Adapter**: (Re-affirmed P0) Evolving to support ANB-native task auctions.
-
-## Evolution: [2026-05-23] Updates
-
-### Proposed Additions
-- **Local-Only WebSocket Auth (LOWA) Gateway**: (P0) A mandatory security layer for all local listeners that enforces session-bound authentication to neutralize "ClawJacked" style brute-force attacks.
-- **Teammate-to-Teammate (T2T) Encryption Bridge**: (P0) Infrastructure for secure, peer-to-peer mailbox messaging and task list synchronization between teammates from disparate frameworks.
-- **Mailbox Integrity Middleware**: (P0) Security extension for the T2T Bridge that validates inter-agent messages against the "Mission Root" intent to prevent malicious mailbox injection.
-- **Full-Mesh Discovery Auth Provider**: (P0) Advanced discovery service that mandates hardware-attested handshakes before revealing agent capability cards in a mesh environment.
-
-### Priority Shifts
-- **Inter-Agent Mailbox Guard (IAMG)**: (Evolved to Mailbox Integrity Middleware) Now designated as a mandatory requirement for all mesh-based teammate coordination.
-- **Origin-Locked Agent Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory session-bound LOWA authentication.
 
 ## Evolution: [2026-05-21] Updates
 
@@ -729,23 +716,6 @@
 
 ---
 
-## Evolution: [2026-03-14] Updates
-
-### Proposed Additions
-- **Same-Origin Policy (SOP) Enforcer for MCP**: (P0) Middleware that validates `Origin` and `Sec-Fetch-Site` headers for all local requests to prevent cross-site hijacking (CVE-2026-25253).
-- **Context Lifecycle Hooks**: (P1) Pluggable lifecycle hooks for context creation, compression, and retrieval, enabling custom "Intent-Preserving" strategies.
-- **Semantic Boundary Detector**: (P0) A specialized scanning module for the Prompt Path Protection middleware that detects malicious instructions hidden in multimodal metadata (SVG, CSS).
-- **Session-Resumption mTLS for Swarms**: (P1) Optimized mTLS transport that uses session tickets to reduce handshake latency in high-frequency A2A communication.
-
-### Priority Shifts
-- **OpenClaw ContextEngine Bridge**: Promoted to **P0**. Urgent need for interoperability to combat "Context Ghosting" in shared swarms.
-- **"Safe-by-Default" Network Hardening**: (Re-affirmed P0) Expanded to include mandatory browser-origin validation for all local listeners.
-
-### Deprecations / Monitoring
-- **Unvalidated Local WebSockets**: Monitoring for total deprecation. All local WebSocket connections must provide a valid, allow-listed `Origin` header.
-
----
-
 ## Evolution: [2026-03-15] Updates
 
 ### Proposed Additions
@@ -772,23 +742,6 @@
 
 ---
 
-## Evolution: [2026-03-17] Updates
-
-### Proposed Additions
-- **Local-Loopback Rate Limiter**: (P0) Mandatory rate limiting for all `127.0.0.1` and `::1` connections to prevent brute-force attacks on gateway credentials.
-- **Behavioral Skill Burn-In Sandbox**: (P1) An isolated environment where new skills are profiled for "Delayed Payload" behaviors before being promoted to "Trusted" status.
-- **UAB Authenticated Task Delegation Bridge**: (P0) Full implementation of UAB v1.2 "Authenticated Task Cards" for secure cross-framework delegation.
-- **Local Security Audit Log**: (P1) Detailed logging of all local connection attempts, including origin headers and authentication success/failure rates.
-
-### Priority Shifts
-- **Universal Agent Bus (UAB) Adapter**: Promoted to **P0**. Essential for cross-framework agentic coordination.
-- **Verified Skill Registry**: (Re-affirmed P0) Expanded to include Behavioral Profiling requirements.
-
-### Deprecations / Monitoring
-- **Unthrottled Local Access**: All local interfaces must now implement rate limiting. Unthrottled loopback access is now **Deprecated**.
-
----
-
 ## Evolution: [2026-03-18] Updates
 
 ### Proposed Additions
@@ -808,6 +761,16 @@
 
 ---
 
+### Proposed Additions
+- **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment service that issues hardware-attested heartbeats to ensure specialist agent reasoning traces remain mission-anchored.
+- **Multi-Modal Behavioral Attestation (MMBA) Provider**: (P0) Advanced identity service anchoring stylometric profiles to multi-modal trace history (SVG/Audio).
+- **UACO-Native Negotiation Hub**: (P0) Full implementation of UACO task bidding and stateful handoffs for cross-framework swarms.
+- **Semantic State-Pinning (SSP) Middleware**: (P1) Attention governance service that pins mission-critical fragments to high-priority attention tiers.
+- **Temporal Shard Jitter (TSJ) Injector**: (P0) Security extension for the ESB that injects hardware-attested timing jitter to neutralize CVE-2026-62001.
+
+### Priority Shifts
+- **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
+- **A2A Bridge**: (Promoted to P0) Evolving into the **UACO-Native Negotiation Hub** to support standardized task negotiation.
 ## Evolution: [2026-03-20] Updates
 
 ### Proposed Additions
@@ -1362,16 +1325,3 @@
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
 
 ---
-
-## Evolution: [2026-03-19] (Unique Discovery) Updates
-
-### Proposed Additions
-- **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment service that issues hardware-attested heartbeats to ensure specialist agent reasoning traces remain mission-anchored.
-- **Multi-Modal Behavioral Attestation (MMBA) Provider**: (P0) Advanced identity service anchoring stylometric profiles to multi-modal trace history (SVG/Audio).
-- **UACO-Native Negotiation Hub**: (P0) Full implementation of UACO task bidding and stateful handoffs for cross-framework swarms.
-- **Semantic State-Pinning (SSP) Middleware**: (P1) Attention governance service that pins mission-critical fragments to high-priority attention tiers.
-- **Temporal Shard Jitter (TSJ) Injector**: (P0) Security extension for the ESB that injects hardware-attested timing jitter to neutralize CVE-2026-62001.
-
-### Priority Shifts
-- **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
-- **A2A Bridge**: (Promoted to P0) Evolving into the **UACO-Native Negotiation Hub** to support standardized task negotiation.
