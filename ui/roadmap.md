@@ -367,8 +367,8 @@
 #### Upcoming (2026-05-18 Evolution)
 - [ ] **[P0] Mission-Root Persistence Monitor**: Real-time visual indicator for pinned intents and re-injection events (MRE defense). (Added: 2026-05-18)
 - [ ] **[P0] State Trust-Level Inspector**: Visual debugger for Blackboard data, highlighting origin framework trust-labels (STL). (Added: 2026-05-18)
-- [ ] **[P1] Wait-Graph Visualizer**: Interactive graph for identifying and debugging circular task dependencies in parallel teams. (Added: 2026-05-18)
-- [ ] **[P1] Intent-Weighted Compression Debugger**: UI for visualizing mission-anchored context summarization and token density. (Added: 2026-05-18)
+- [ ] **[P0] Wait-Graph Visualizer**: Interactive graph for identifying and debugging circular task dependencies in parallel teams. (Added: 2026-05-18)
+- [ ] **[P0] Intent-Weighted Compression Debugger**: UI for visualizing mission-anchored context summarization and token density. (Added: 2026-05-18)
 
 #### Upcoming (2026-05-17 Evolution)
 - [ ] **[P0] Teammate Orchestration Tree**: Visual hierarchical tracer for `TeammateTool` operations across heterogeneous swarms. (Added: 2026-05-17)
