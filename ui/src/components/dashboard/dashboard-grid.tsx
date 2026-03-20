@@ -32,6 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
+import { fetchWithAuth } from "@/lib/client";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
@@ -110,7 +111,7 @@ export function DashboardGrid() {
         const loadLayout = async () => {
             try {
                 // Fetch from API
-                const res = await fetch('/api/v1/user/preferences');
+                const res = await fetchWithAuth('/api/v1/user/preferences');
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data['dashboard-layout']) {
@@ -175,7 +176,7 @@ export function DashboardGrid() {
 
         const timer = setTimeout(async () => {
             try {
-                await fetch('/api/v1/user/preferences', {
+                await fetchWithAuth('/api/v1/user/preferences', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
