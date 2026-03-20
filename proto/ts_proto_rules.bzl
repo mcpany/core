@@ -19,7 +19,10 @@ Usage in a BUILD.bazel file:
 
 def _ts_proto_gen_impl(ctx):
     p_info = ctx.attr.proto[ProtoInfo]
-    direct_srcs = p_info.direct_sources
+    direct_srcs = [
+        src for src in p_info.direct_sources
+        if not src.path.startswith("external/protobuf")
+    ]
 
     if not direct_srcs:
         return [DefaultInfo(files = depset([]))]
@@ -59,25 +62,51 @@ def _ts_proto_gen_impl(ctx):
     # "bazel-out/<config>/bin" and declare_file("foo.ts") lands at
     # "bazel-out/<config>/bin/proto/api/v1/foo.ts" which matches
     # protoc's output of "{ts_proto_out}/proto/api/v1/foo.ts".
-    args.add("--ts_proto_out=" + ctx.bin_dir.path)
+    args.add("--ts_proto_out=out")
     args.add(
         "--ts_proto_opt=" +
         "esModuleInterop=true," +
         "forceLong=long," +
         "useOptionals=messages," +
+        "exportCommonjs=false," +
+        "importSuffix=.js," +
+        "useExactTypes=false," +
         "outputClientImpl=grpc-web",
     )
     for src in direct_srcs:
         args.add(src.path)
 
-    ctx.actions.run(
+    # Capture protoc output in a temporary directory within the sandbox, then
+    # move ONLY the explicitly declared output files to their final destinations.
+    # This prevents 'permission denied' when ts-proto tries to redundantly
+    # generate common types (like google/protobuf/*.ts) that are already
+    # provided by another rule.
+    script = """
+mkdir -p out
+{protoc} "$@"
+for out_file in {out_files}; do
+  # Determine path relative to bazel-out/.../bin/
+  # ctx.bin_dir.path is e.g. bazel-out/k8-fastbuild/bin
+  # ts_proto_out=out means files are at out/path/to/file.ts
+  # We need to find where each output file should go.
+  # The path of out_file in the sandbox is e.g. bazel-out/k8-fastbuild/bin/proto/bus/bus.ts
+  # and ts_proto_out=out puts them at out/proto/bus/bus.ts.
+  # So we need to strip ctx.bin_dir.path from out_file.path.
+  rel_out="${{out_file#$BAZEL_BINDIR/}}"
+  cp "out/$rel_out" "$out_file"
+done
+"""
+    ctx.actions.run_shell(
         mnemonic = "TsProtoGen",
         progress_message = "Generating TypeScript proto bindings for %s" % ctx.label,
         inputs = depset(transitive = [p_info.transitive_sources]),
         outputs = outputs,
-        executable = ctx.executable._protoc,
+        command = script.format(
+            protoc = ctx.executable._protoc.path,
+            out_files = " ".join([f.path for f in outputs]),
+        ),
         arguments = [args],
-        tools = [plugin],
+        tools = [ctx.executable._protoc, plugin],
         env = {"BAZEL_BINDIR": ctx.bin_dir.path},
     )
 
@@ -155,6 +184,9 @@ def _ts_wkt_gen_impl(ctx):
                 "esModuleInterop=true," +
                 "forceLong=long," +
                 "useOptionals=messages," +
+                "exportCommonjs=false," +
+                "importSuffix=.js," +
+                "useExactTypes=false," +
                 "outputClientImpl=grpc-web",
             )
             args.add(src.path)
