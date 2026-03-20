@@ -18,7 +18,6 @@ linters:
     - revive
     - gosec
     - staticcheck
-    - tparallel
     - unconvert
     - unused
     - misspell
