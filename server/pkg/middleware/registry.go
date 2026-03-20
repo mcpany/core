@@ -183,14 +183,15 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 //
 // Summary: Represents a StandardMiddlewares.
 type StandardMiddlewares struct {
-	Audit            *AuditMiddleware
-	GlobalRateLimit  *GlobalRateLimitMiddleware
-	ContextOptimizer *ContextOptimizer
-	Debugger         *Debugger
-	SmartRecovery    *SmartRecoveryMiddleware
-	RecursiveContext *RecursiveContextManager
-	A2ABridge        *A2ABridgeMiddleware
-	Cleanup          func() error
+	Audit                 *AuditMiddleware
+	GlobalRateLimit       *GlobalRateLimitMiddleware
+	ContextOptimizer      *ContextOptimizer
+	Debugger              *Debugger
+	SmartRecovery         *SmartRecoveryMiddleware
+	RecursiveContext      *RecursiveContextManager
+	A2ABridge             *A2ABridgeMiddleware
+	ActiveIntentAlignment *ActiveIntentAlignmentMiddleware
+	Cleanup               func() error
 }
 
 // InitStandardMiddlewares registers standard middlewares.
@@ -449,14 +450,26 @@ func InitStandardMiddlewares(
 		}
 	})
 
+	// Active Intent Alignment Middleware
+	// Initialize with a default or configured root secret. In production, this should come from a secure vault.
+	activeIntentAlignment := NewActiveIntentAlignmentMiddleware("default_mission_root_secret")
+	RegisterMCP("active_intent_alignment", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+		return func(next mcp.MethodHandler) mcp.MethodHandler {
+			return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+				return activeIntentAlignment.Execute(ctx, method, req, next)
+			}
+		}
+	})
+
 	return &StandardMiddlewares{
-		Audit:            audit,
-		GlobalRateLimit:  globalRateLimit,
-		ContextOptimizer: contextOptimizer,
-		Debugger:         debugger,
-		SmartRecovery:    smartRecovery,
-		RecursiveContext: recursiveContext,
-		A2ABridge:        a2aBridge,
-		Cleanup:          audit.Close,
+		Audit:                 audit,
+		GlobalRateLimit:       globalRateLimit,
+		ContextOptimizer:      contextOptimizer,
+		Debugger:              debugger,
+		SmartRecovery:         smartRecovery,
+		RecursiveContext:      recursiveContext,
+		A2ABridge:             a2aBridge,
+		ActiveIntentAlignment: activeIntentAlignment,
+		Cleanup:               audit.Close,
 	}, nil
 }
