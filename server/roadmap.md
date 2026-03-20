@@ -1470,7 +1470,7 @@ _None at this time._
 - **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative discovery gateway for
   hardware-attested tool capability card validation. (Added: 2026-06-14)
 
-### Upcoming: [2026-06-15] (Unknown)
+### Upcoming: [2026-06-15]
 
 - **Attention-Locked Context Sharding (ALCS)**: (P0) High-security attention
   governance middleware utilizing hardware-bound headers to "pin"

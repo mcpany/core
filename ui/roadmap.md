@@ -1168,7 +1168,7 @@
 - [ ] **[P0] Sovereign Discovery Console**: (2026-06-14) Authorization workspace
       for hardware-attested SDP validation of capability cards.
 
-### Upcoming: [2026-06-15] (Unknown)
+### Upcoming: [2026-06-15]
 
 - [ ] **[P0] Attention-Locked Shard Viewer**: (2026-06-15) Dashboard for
       monitoring hardware-protected fragments in the ALCS attention tier.
@@ -1177,7 +1177,7 @@
 - [ ] **[P1] Trust Persistence Monitor**: (2026-06-15) Visual tracker for MHPR
       trust-lease propagation and MSHE-latency gains.
 
-### Upcoming: [2026-06-15] - Part 2 (Unknown)
+### Upcoming: [2026-06-15] - Part 2
 
 - **ALCS Dashboard**: Real-time visualization of cognitive attention sharding
   and pinning across active swarms. (Added: 2026-06-15)
