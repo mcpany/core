@@ -91,7 +91,19 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
                 </div>
             );
         } catch (e) {
-            // Fallback to text if JSON parsing fails
+            // Fallback to syntax highlighting if JSON parsing fails
+            return (
+                <ScrollArea className="h-full">
+                    <ReactSyntaxHighlighter
+                        language="json"
+                        style={vs2015}
+                        customStyle={{ margin: 0, borderRadius: 0, height: "100%", fontSize: '0.875rem' }}
+                        showLineNumbers={true}
+                    >
+                        {text || ""}
+                    </ReactSyntaxHighlighter>
+                </ScrollArea>
+            );
         }
     }
 

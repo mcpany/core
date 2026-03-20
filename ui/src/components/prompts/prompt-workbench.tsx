@@ -430,7 +430,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                                                         )} />
                                                         {msg.role}
                                                      </div>
-                                                     <div className="bg-background border rounded-md p-3 text-sm">
+                                                     <div className="bg-background border rounded-md p-3 text-sm whitespace-pre-wrap font-mono">
                                                         <RichResultViewer result={msg.content?.type === 'text' ? msg.content.text : msg.content} />
                                                      </div>
                                                 </div>
