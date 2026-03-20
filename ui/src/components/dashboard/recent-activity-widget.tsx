@@ -40,16 +40,26 @@ const getDurationColor = (ms: number) => {
  * @returns The rendered component.
  */
 export function RecentActivityWidget() {
-  const [traces, setTraces] = useState<any[]>([]);
+  interface AuditLogEntry {
+      timestamp: string;
+      toolName: string;
+      userId: string;
+      profileId: string;
+      arguments: string;
+      result: string;
+      error: string;
+      duration: string;
+      durationMs: number;
+  }
+
+  const [logs, setLogs] = useState<AuditLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTraces = useCallback(async () => {
+  const fetchLogs = useCallback(async () => {
     try {
-      const data = await apiClient.getTraces({ limit: 5 });
-      // ⚡ BOLT: Explicitly slice data to prevent rendering thousands of items if backend ignores limit.
-      // Randomized Selection from Top 5 High-Impact Targets
-      setTraces(data?.slice(0, 5) || []);
+      const res = await apiClient.listAuditLogs({ limit: 5 });
+      setLogs(res.entries || []);
       setError(null);
     } catch (err) {
       console.error("Failed to load recent activity", err);
@@ -62,77 +72,80 @@ export function RecentActivityWidget() {
   // ⚡ BOLT: Smart polling using Page Visibility API.
   // Stops polling when the tab is hidden to save bandwidth and resources.
   // Randomized Selection from Top 5 High-Impact Targets
-  usePolling(fetchTraces, 5000);
+  usePolling(fetchLogs, 5000);
 
   // Initial fetch on mount
   useEffect(() => {
-      fetchTraces();
-  }, [fetchTraces]);
+      fetchLogs();
+  }, [fetchLogs]);
 
   return (
     <Card className="col-span-3 backdrop-blur-sm bg-background/50">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 border-b border-border/50 bg-muted/20 rounded-t-xl px-4 py-3">
         <div className="space-y-1">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
+            <CardTitle className="text-base font-semibold flex items-center gap-2 tracking-tight">
                 <Activity className="h-4 w-4 text-primary" />
                 Recent Activity
             </CardTitle>
-            <CardDescription>
-                Real-time monitor of tool executions.
+            <CardDescription className="text-xs">
+                Historical record of tool executions.
             </CardDescription>
         </div>
-        <Link to="/traces" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors">
-            View All <ArrowRight className="h-3 w-3" />
+        <Link to="/audit" className="text-xs font-medium text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors px-2 py-1 rounded-md hover:bg-muted">
+            View Audit Log <ArrowRight className="h-3 w-3" />
         </Link>
       </CardHeader>
-      <CardContent>
-        {loading && traces.length === 0 ? (
+      <CardContent className="p-0">
+        {loading && logs.length === 0 ? (
             <div className="flex items-center justify-center h-[200px] text-muted-foreground">
                 <Loader2 className="h-6 w-6 animate-spin mr-2" /> Loading activity...
             </div>
-        ) : error && traces.length === 0 ? (
+        ) : error && logs.length === 0 ? (
             <div className="flex items-center justify-center h-[200px] text-destructive">
                 {error}
             </div>
-        ) : traces.length === 0 ? (
+        ) : logs.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground">
                 <Clock className="h-8 w-8 mb-2 opacity-20" />
                 <p>No recent activity recorded.</p>
                 <p className="text-xs opacity-70 mt-1">Execute a tool to see it here.</p>
             </div>
         ) : (
-            <div className="space-y-4">
-                {traces.map((trace) => (
-                    <div key={trace.id} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
+            <div className="divide-y divide-border/50">
+                {logs.map((log, i) => {
+                    const status = log.error ? 'error' : 'success';
+                    return (
+                    <div key={`${log.timestamp}-${i}`} className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group">
                         <div className="flex items-center gap-4">
-                            <div className={cn("rounded-full p-2 bg-muted/50",
-                                trace.status === 'success' ? "text-green-500 bg-green-500/10" :
-                                trace.status === 'error' ? "text-red-500 bg-red-500/10" : "text-yellow-500"
+                            <div className={cn("rounded-full p-2 ring-1 ring-inset shadow-sm",
+                                status === 'success' ? "text-green-500 bg-green-500/10 ring-green-500/20" :
+                                "text-red-500 bg-red-500/10 ring-red-500/20"
                             )}>
-                                {trace.status === 'success' ? <CheckCircle2 className="h-4 w-4" /> :
-                                 trace.status === 'error' ? <XCircle className="h-4 w-4" /> : <Clock className="h-4 w-4" />}
+                                {status === 'success' ? <CheckCircle2 className="h-4 w-4" /> :
+                                 <XCircle className="h-4 w-4" />}
                             </div>
-                            <div className="space-y-1">
-                                <div className="text-sm font-medium leading-none flex items-center gap-2">
-                                    {trace.rootSpan.name.replace('POST /', '').replace('GET /', '')}
-                                    {trace.status === 'error' && (
-                                        <Badge variant="destructive" className="text-[10px] h-4 px-1">Failed</Badge>
+                            <div className="space-y-1.5">
+                                <div className="text-sm font-semibold leading-none flex items-center gap-2">
+                                    {log.toolName}
+                                    {status === 'error' && (
+                                        <Badge variant="destructive" className="text-[10px] h-4 px-1.5 font-medium tracking-wide">FAILED</Badge>
                                     )}
                                 </div>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <span>{formatTime(trace.timestamp)}</span>
-                                    <span>•</span>
-                                    <span className={getDurationColor(trace.totalDuration)}>{trace.totalDuration.toFixed(0)}ms</span>
+                                <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground/80">
+                                    <span>{formatTime(log.timestamp)}</span>
+                                    <span className="opacity-50">•</span>
+                                    <span className={cn("font-mono", getDurationColor(log.durationMs))}>{log.durationMs}ms</span>
+                                    {log.userId && (
+                                        <>
+                                            <span className="opacity-50">•</span>
+                                            <span className="truncate max-w-[100px]" title={log.userId}>{log.userId}</span>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </div>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
-                            <Link to={`/traces?id=${trace.id}`}>
-                                <ArrowRight className="h-4 w-4" />
-                            </Link>
-                        </Button>
                     </div>
-                ))}
+                )})}
             </div>
         )}
       </CardContent>
