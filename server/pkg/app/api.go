@@ -85,7 +85,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/settings", a.handleSettings(store))
 	mux.HandleFunc("/debug/auth-test", a.handleAuthTest())
 
-	mux.HandleFunc("/tools", a.handleTools())
+	mux.HandleFunc("/tools", a.handleTools(store))
 	mux.HandleFunc("/execute", a.handleExecute())
 
 	mux.HandleFunc("/prompts", a.handlePrompts())
@@ -746,7 +746,7 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 	}
 }
 
-func (a *Application) handleTools() http.HandlerFunc {
+func (a *Application) handleTools(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
@@ -757,10 +757,127 @@ func (a *Application) handleTools() http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(toolList)
+		case http.MethodPut:
+			var req struct {
+				Name    string `json:"name"`
+				Disable bool   `json:"disable"`
+			}
+			body, err := readBodyWithLimit(w, r, 1024*1024)
+			if err != nil {
+				return
+			}
+			if err := json.Unmarshal(body, &req); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			t, ok := a.ToolManager.GetTool(req.Name)
+			if !ok {
+				http.Error(w, "tool not found", http.StatusNotFound)
+				return
+			}
+
+			serviceID := t.Tool().GetServiceId()
+			service, err := store.GetService(r.Context(), serviceID)
+			if err != nil {
+				logging.GetLogger().Error("failed to get service for tool", "serviceID", serviceID, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+
+			if service == nil {
+				http.Error(w, "service not found", http.StatusNotFound)
+				return
+			}
+
+			err = a.setToolDisableFlag(service, req.Name, req.Disable)
+			if err != nil {
+				logging.GetLogger().Error("failed to update tool flag", "toolName", req.Name, "error", err)
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			if err := store.SaveService(r.Context(), service); err != nil {
+				logging.GetLogger().Error("failed to save service", "serviceID", serviceID, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after tool update", "error", err)
+			}
+
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("{}"))
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	}
+}
+
+func (a *Application) setToolDisableFlag(service *configv1.UpstreamServiceConfig, toolName string, disable bool) error {
+	var toolList []*configv1.ToolDefinition
+	switch cfg := service.GetServiceConfig().(type) {
+	case *configv1.UpstreamServiceConfig_McpService:
+		toolList = cfg.McpService.Tools
+	case *configv1.UpstreamServiceConfig_HttpService:
+		toolList = cfg.HttpService.Tools
+	case *configv1.UpstreamServiceConfig_GrpcService:
+		toolList = cfg.GrpcService.Tools
+	case *configv1.UpstreamServiceConfig_OpenapiService:
+		toolList = cfg.OpenapiService.Tools
+	case *configv1.UpstreamServiceConfig_CommandLineService:
+		toolList = cfg.CommandLineService.Tools
+	case *configv1.UpstreamServiceConfig_FilesystemService:
+		toolList = cfg.FilesystemService.Tools
+	case *configv1.UpstreamServiceConfig_VectorService:
+		toolList = cfg.VectorService.Tools
+	case *configv1.UpstreamServiceConfig_BrowserService:
+		toolList = cfg.BrowserService.Tools
+	case *configv1.UpstreamServiceConfig_SqlService:
+		toolList = cfg.SqlService.Tools
+	default:
+		return fmt.Errorf("unknown service config type")
+	}
+
+	found := false
+	for _, t := range toolList {
+		if t.GetName() == toolName {
+			t.Disable = disable
+			found = true
+			break
+		}
+	}
+
+	// Auto-discovered tools might not be in the list yet, so we append an override
+	if !found {
+		newTool := &configv1.ToolDefinition{
+			Name:    toolName,
+			Disable: disable,
+		}
+		switch cfg := service.GetServiceConfig().(type) {
+		case *configv1.UpstreamServiceConfig_McpService:
+			cfg.McpService.Tools = append(cfg.McpService.Tools, newTool)
+		case *configv1.UpstreamServiceConfig_HttpService:
+			cfg.HttpService.Tools = append(cfg.HttpService.Tools, newTool)
+		case *configv1.UpstreamServiceConfig_GrpcService:
+			cfg.GrpcService.Tools = append(cfg.GrpcService.Tools, newTool)
+		case *configv1.UpstreamServiceConfig_OpenapiService:
+			cfg.OpenapiService.Tools = append(cfg.OpenapiService.Tools, newTool)
+		case *configv1.UpstreamServiceConfig_CommandLineService:
+			cfg.CommandLineService.Tools = append(cfg.CommandLineService.Tools, newTool)
+		case *configv1.UpstreamServiceConfig_FilesystemService:
+			cfg.FilesystemService.Tools = append(cfg.FilesystemService.Tools, newTool)
+		case *configv1.UpstreamServiceConfig_VectorService:
+			cfg.VectorService.Tools = append(cfg.VectorService.Tools, newTool)
+		case *configv1.UpstreamServiceConfig_BrowserService:
+			cfg.BrowserService.Tools = append(cfg.BrowserService.Tools, newTool)
+		case *configv1.UpstreamServiceConfig_SqlService:
+			cfg.SqlService.Tools = append(cfg.SqlService.Tools, newTool)
+		}
+	}
+
+	return nil
 }
 
 func (a *Application) handleExecute() http.HandlerFunc {
