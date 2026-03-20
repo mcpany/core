@@ -301,12 +301,12 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
 
           const config = constructConfig(values);
           const response = await apiClient.validateService(config);
-          setValidationResult({ valid: response.valid, message: response instanceof Error ? e.message : 'Unknown error' });
+          setValidationResult({ valid: response.valid, message: response instanceof Error ? response.message : 'Unknown error' });
 
           if (response.valid) {
-              toast({ title: "Validation Successful", description: response instanceof Error ? e.message : 'Unknown error' });
+              toast({ title: "Validation Successful", description: response instanceof Error ? response.message : 'Unknown error' });
           } else {
-              toast({ variant: "destructive", title: "Validation Failed", description: response instanceof Error ? e.message : 'Unknown error' });
+              toast({ variant: "destructive", title: "Validation Failed", description: response instanceof Error ? response.message : 'Unknown error' });
           }
       } catch (error: any) {
           toast({ variant: "destructive", title: "Validation Error", description: error.message });
@@ -643,7 +643,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                                                 } catch (e: unknown) {
                                                     toast({
                                                         title: "Registration Failed",
-                                                        description: e instanceof Error ? e.message : 'Unknown error' || "Failed to save the service before authenticating.",
+                                                        description: e instanceof Error ? e.message : "Failed to save the service before authenticating.",
                                                         variant: "destructive"
                                                     });
                                                     return;
@@ -664,7 +664,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
 
                                         } catch (e: unknown) {
                                             console.error(e);
-                                            toast({ title: "Failed to Initiate OAuth", description: e instanceof Error ? e.message : 'Unknown error' || "Unknown error", variant: "destructive" });
+                                            toast({ title: "Failed to Initiate OAuth", description: e instanceof Error ? e.message : "Unknown error", variant: "destructive" });
                                         }
                                     }}
                                 >

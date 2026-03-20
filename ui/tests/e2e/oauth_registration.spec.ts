@@ -16,6 +16,22 @@ test.describe('Service Registration with OAuth', () => {
   });
 
   test('Registers a new service and initiates OAuth seamlessly', async ({ page }) => {
+
+    // Mock credentials response to include an OAuth credential
+    await page.route('/api/v1/credentials', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([{
+          id: "cred-123",
+          name: "Test OAuth Credential",
+          authentication: {
+            oauth2: { clientId: { value: "test" }, clientSecret: { value: "test" } }
+          }
+        }])
+      });
+    });
+
     await page.goto('/upstream-services');
     await page.waitForLoadState('networkidle');
 
@@ -30,25 +46,20 @@ test.describe('Service Registration with OAuth', () => {
     // Basic config
     await page.fill('input[name="name"]', 'e2e-oauth-service');
 
-    // Advanced JSON tab to inject OAuth
-    const advTab = page.getByRole('tab', { name: /Advanced \(JSON\)/i });
-    await advTab.click();
-
-    const textarea = page.getByLabel('Configuration JSON');
-    await textarea.fill(JSON.stringify({
-      name: 'e2e-oauth-service',
-      upstreamAuth: {
-        oauth2: { clientId: { value: "test-client" }, clientSecret: { value: "test-secret" } }
-      },
-      httpService: { address: 'http://example.com' }
-    }));
-
     // Switch to Auth tab
     const authTab = page.getByRole('tab', { name: /Authentication/i });
     await authTab.click();
 
+    // Wait for the credential to be loaded into the select
+    const selectTrigger = page.getByRole('combobox', { name: /Select credential.../i });
+    await selectTrigger.click();
+
+    const credOption = page.getByRole('option', { name: /Test OAuth Credential/i });
+    await credOption.click();
+
+    // Now the "Authenticate with Provider" button should be visible
     const authBtn = page.getByRole('button', { name: /Authenticate with Provider/i });
-    await expect(authBtn).toBeVisible();
+    await expect(authBtn).toBeVisible({ timeout: 5000 });
 
     // Trigger OAuth
     const registerPromise = page.waitForResponse(r => r.url().includes('/api/v1/services') && r.request().method() === 'POST');
