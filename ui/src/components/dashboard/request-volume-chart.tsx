@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { apiClient } from "@/lib/client";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { usePolling } from "@/hooks/use-polling";
-import { WidgetSkeleton } from "@/components/dashboard/widget-skeleton";
+import { WidgetSkeleton } from "./widget-skeleton";
 
 /**
  * RequestVolumeChart component.
