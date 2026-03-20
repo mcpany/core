@@ -15,5 +15,6 @@ Navigate to `/prompts`.
 ![Prompts List](screenshots/prompts_list.png)
 
 ### 2. Use Prompt
-Click **"Use Prompt"** on any item.
-This will redirect you to the **Playground**, pre-loading the selected prompt template and generating a form for its arguments.
+Select a prompt from the list to view it in the **Prompt Workbench**.
+Configure the required arguments and click **"Generate Preview"** to test it.
+From there, you can click **"Open in Playground"** to send the generated result to the Playground.
