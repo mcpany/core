@@ -13,7 +13,7 @@ The Hardware-Locked Coordination Handshake (HLCH) v1.0 standard has stabilized. 
 
 ## Vulnerability Alert: Side-Channel Collusion
 
-New reports indicate that "Side-Channel Collusion" is bypassing semantic interdiction via metadata tags.
+New reports indicate that "Side-Channel Collusion" is bypassing semantic interdiction via metadata tags and state headers.
 
 ## Industry Standard: Mesh-Resident Attestation (MRA)
 

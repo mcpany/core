@@ -576,12 +576,6 @@
 - [ ] **[P0] Shard Lock Visualizer**: Real-time dashboard for monitoring atomic locks and shard ownership. (Added: 2026-06-03)
 - [ ] **[P1] Prefetching Performance Overlay**: Visualization of speculative context hit/miss rates. (Added: 2026-06-03)
 
-### Upcoming: [2026-06-14]
-
-- [ ] **[P0] MRA Hash-Chain Auditor**: (2026-06-14) UI for verifying MRA hash-chains.
-- [ ] **[P0] Side-Channel Attack Heatmap**: (2026-06-14) Visualization of metadata entropy.
-- [ ] **[P1] Stylometric Consistency Monitor**: (2026-06-14) Dashboard for IDA signals.
-
 ### Upcoming: [2026-06-08]
 
 - [ ] **[P0] ARI Fragment Monitor**: (2026-06-08) Real-time visualization of fragment-level semantic validation events and blocked state-splicing attempts.
@@ -640,6 +634,12 @@
 - [ ] **[P0] MRA Attestation Dashboard**: (2026-06-12) UI for monitoring hardware-bound semantic hash generation and verification.
 - [ ] **[P1] Attention Gating Visualizer**: (2026-06-12) Dashboard showing real-time gating of subagent fragments based on parent attention levels.
 - [ ] **[P0] Coordination Handshake Debugger**: (2026-06-12) Forensic tool for visualizing hardware-locked handshake sequences.
+
+### Upcoming: [2026-06-14]
+
+- [ ] **[P0] MRA Hash-Chain Auditor**: (2026-06-14) UI for verifying MRA hash-chains.
+- [ ] **[P0] Side-Channel Attack Heatmap**: (2026-06-14) Visualization of metadata entropy.
+- [ ] **[P1] Stylometric Consistency Monitor**: (2026-06-14) Dashboard for IDA signals.
 
 ### Upcoming: [2026-06-13]
 

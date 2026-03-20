@@ -13,21 +13,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 2. **Zero Trust Security**: Granular, capability-based access control for all tool calls.
 3. **Context Persistence**: Shared state and context inheritance across agent swarms and execution environments.
 
-## Strategic Evolution: [2026-06-14]
-
-### Focus: Coordination Sovereignty and Side-Channel Immunity
-
-**Context**: IDA and shadow side-channels prove that behavioral stylometry and transport-layer security are no longer sufficient.
-
-**Strategic Pivot**:
-
-- **HLCH Mandate**: Mandatory hardware-locked coordination handshakes.
-- **MRA Lineage**: Anchor coordination to TPM-backed semantic hash-chaining.
-- **Side-Channel Immunity**: Multi-dimensional monitoring of coordination metadata.
-- **Coordination Sovereignty Controller**: Authoritative Coordination Guard.
-
----
-
 ## Strategic Evolution: [2026-05-23]
 
 ### Focus: Federated Swarm Identity & Mission-Root Sovereignty
@@ -1338,3 +1323,18 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Shadow Coordination Interceptor (SCI)**: To neutralize out-of-band collusion, we are upgrading the T2T Bridge to include the SCI. This service will perform multi-dimensional monitoring of coordination transport metadata, headers, and state-tags to detect and block hidden side-channel communications.
 - **Hardware-Locked Coordination Handshake**: Supporting "Coordination Sovereignty," we are mandating hardware-locked coordination handshakes. No state fragment or task bidding will be accepted unless it is cryptographically bound to a verified, hardware-attested session, ensuring that all coordination occurs within the verified mainline.
 - **Attention-Locked Context Windows**: Leveraging the HAAL standard, MCP Any will provide hardware-bound attention locking for mission-critical intent fragments, ensuring they remain "pinned" in the LLM context window despite high-entropy noise injections by subagents.
+
+---
+
+## Strategic Evolution: [2026-06-14]
+
+### Focus: Coordination Sovereignty and Side-Channel Immunity
+
+**Context**: IDA and shadow side-channels prove that behavioral stylometry and transport-layer security are no longer sufficient.
+
+**Strategic Pivot**:
+
+- **HLCH Mandate**: Mandatory hardware-locked coordination handshakes for the T2T Bridge.
+- **MRA Lineage**: Anchor coordination fragments to TPM-backed semantic hash-chains.
+- **Side-Channel Immunity**: Multi-dimensional monitoring of coordination metadata and state-tags.
+- **Coordination Sovereignty Controller**: Authoritative Coordination Guard for inter-agent communication.

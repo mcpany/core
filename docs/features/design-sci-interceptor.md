@@ -41,7 +41,9 @@ The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring 
 
 * **System Flow:**
 
-    ```mermaid
+
+```mermaid
+
     graph TD
         A[Subagent Coordination Request] --> B[T2T Bridge]
         B --> C[SCI Interceptor]
@@ -52,7 +54,8 @@ The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring 
         F -- No --> H[Forward to ARI Hub/Blackboard]
         I[MRA Metadata Signer] --> H
 
-    ```
+
+```
 
 * **APIs / Interfaces:**
     * `sci.ScanMetadata(sourceAgent, targetAgent, metadata) -> bool`: Scans a metadata fragment for shadow signals.

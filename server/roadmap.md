@@ -770,12 +770,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Atomic Shard Lock-Manager**: Kernel-level lock manager for granular context streaming. (Added: 2026-06-03)
 *   **[P1] Zero-Latency Shard Prefetcher**: Speculative context loading based on real-time intent analysis. (Added: 2026-06-03)
 
-### Upcoming: [2026-06-14]
-
-- **MRA-Backed Lineage Provider**: (P0) Security service utilizing hardware-bound MRA. (Added: 2026-06-14)
-- **Side-Channel Immunity Filter**: (P0) Advanced metadata scanning for the SCI interceptor. (Added: 2026-06-14)
-- **HLCH-Compliant Handshake Gateway**: (P0) Core security gateway for coordination. (Added: 2026-06-14)
-
 ### Upcoming: [2026-06-08]
 
 - **Atomic Reasoning Integrity (ARI) Validator**: (P0) Advanced security middleware for fragment-level semantic validation of shared teammate state. (Added: 2026-06-08)
@@ -836,6 +830,12 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Mesh-Resident Attestation (MRA) Provider**: (P0) Core security service utilizing hardware-bound (TPM) primitives to generate and verify collision-resistant semantic hashes for the ARI Hub. (Added: 2026-06-12)
 - **Dynamic Attention Gating (DAG) Middleware**: (P1) Stability middleware that dynamically "gates" subagent reasoning fragments based on parent attention-utilization to prevent REE. (Added: 2026-06-12)
 - **Hardware-Locked Coordination Handshake**: (P0) Mandatory hardware-locked handshake for all inter-agent coordination to ensure mission-root sovereignty. (Added: 2026-06-12)
+
+### Upcoming: [2026-06-14]
+
+- **MRA-Backed Lineage Provider**: (P0) Security service utilizing hardware-bound MRA. (Added: 2026-06-14)
+- **Side-Channel Immunity Filter**: (P0) Advanced metadata scanning for the SCI interceptor. (Added: 2026-06-14)
+- **HLCH-Compliant Handshake Gateway**: (P0) Core security gateway for coordination. (Added: 2026-06-14)
 
 ### Upcoming: [2026-06-13]
 
