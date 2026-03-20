@@ -38,7 +38,6 @@ type GlobalRateLimitMiddleware struct {
 
 // NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
 //
-//
 // Parameters:
 //   - config: *configv1.RateLimitConfig. The rate limit configuration settings.
 //
@@ -47,6 +46,7 @@ type GlobalRateLimitMiddleware struct {
 //
 // Side Effects:
 //   - Initializes internal caches for limiters.
+//
 // Summary: NewGlobalRateLimitMiddleware operation.
 func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {
 	return &GlobalRateLimitMiddleware{
@@ -57,13 +57,13 @@ func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateL
 
 // UpdateConfig updates the rate limit configuration safely.
 //
-//
 // Parameters:
 //   - config: *configv1.RateLimitConfig. The new configuration settings.
 //
 // Side Effects:
 //   - Acquires a lock to safely update the configuration.
 //   - Effectively changes rate limiting behavior for subsequent requests.
+//
 // Summary: UpdateConfig operation.
 func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
 	m.mu.Lock()
@@ -75,7 +75,6 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 }
 
 // Execute executes the rate limiting middleware.
-//
 //
 // Parameters:
 //   - ctx: context.Context. The request context.
@@ -93,6 +92,7 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 // Side Effects:
 //   - Records metrics for allowed and blocked requests.
 //   - May update the state of the rate limiter (e.g., consume tokens).
+//
 // Summary: Execute operation.
 func (m *GlobalRateLimitMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	m.mu.RLock()

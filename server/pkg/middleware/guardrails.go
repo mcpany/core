@@ -21,12 +21,12 @@ type GuardrailsConfig struct {
 
 // NewGuardrailsMiddleware creates a new Guardrails middleware.
 //
-//
 // Parameters:
 //   - config: GuardrailsConfig. The configuration for blocking patterns.
 //
 // Returns:
 //   - gin.HandlerFunc: The Gin middleware handler.
+//
 // Summary: NewGuardrailsMiddleware operation.
 func NewGuardrailsMiddleware(config GuardrailsConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {

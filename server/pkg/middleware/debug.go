@@ -26,7 +26,6 @@ import (
 // Side Effects:
 //   - None
 //
-//
 // Parameters:
 //
 // Returns:
@@ -35,6 +34,7 @@ import (
 //
 // Side Effects:
 //   - None.
+//
 // Summary: DebugMiddleware operation.
 func DebugMiddleware() mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {

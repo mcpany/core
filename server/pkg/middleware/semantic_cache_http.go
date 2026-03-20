@@ -29,7 +29,6 @@ type HTTPEmbeddingProvider struct {
 
 // NewHTTPEmbeddingProvider creates a new HTTPEmbeddingProvider.
 //
-//
 // Parameters:
 //   - url: string. The API endpoint URL.
 //   - headers: map[string]string. Custom HTTP headers to include in the request.
@@ -46,6 +45,7 @@ type HTTPEmbeddingProvider struct {
 //
 // Side Effects:
 //   - Compiles the body template.
+//
 // Summary: NewHTTPEmbeddingProvider operation.
 func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplateStr, responseJSONPath string) (*HTTPEmbeddingProvider, error) {
 	if url == "" {
@@ -68,7 +68,6 @@ func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplat
 
 // Embed generates an embedding for the given text.
 //
-//
 // Parameters:
 //   - ctx: context.Context. The request context.
 //   - text: string. The input text to embed.
@@ -86,6 +85,7 @@ func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplat
 //
 // Side Effects:
 //   - Makes an HTTP POST request to the configured URL.
+//
 // Summary: Embed operation.
 func (p *HTTPEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	// Simple template replacement.

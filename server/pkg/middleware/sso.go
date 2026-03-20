@@ -20,7 +20,6 @@ type SSOConfig struct {
 
 // SSOMiddleware creates a new SSO middleware.
 //
-//
 // Parameters:
 //   - config: SSOConfig. The configuration settings for SSO.
 //
@@ -31,6 +30,7 @@ type SSOConfig struct {
 //   - Inspects headers for authentication information.
 //   - Aborts the request with 401 Unauthorized if authentication is missing or invalid.
 //   - Sets "UserID" in the context on successful authentication.
+//
 // Summary: SSOMiddleware operation.
 func SSOMiddleware(config SSOConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {

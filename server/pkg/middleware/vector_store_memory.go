@@ -39,7 +39,6 @@ type VectorEntry struct {
 // Returns:
 //   - *SimpleVectorStore: A pointer to the newly created SimpleVectorStore.
 //
-//
 // Parameters:
 //
 // Returns:
@@ -48,6 +47,7 @@ type VectorEntry struct {
 //
 // Side Effects:
 //   - None.
+//
 // Summary: NewSimpleVectorStore operation.
 func NewSimpleVectorStore() *SimpleVectorStore {
 	return &SimpleVectorStore{
@@ -68,7 +68,6 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 // Returns:
 //   - error: An error if the operation fails (currently always nil).
 //
-//
 // Parameters:
 //
 // Returns:
@@ -77,6 +76,7 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 //
 // Side Effects:
 //   - None.
+//
 // Summary: Add operation.
 func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	s.mu.Lock()
@@ -116,7 +116,6 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 //   - float32: The similarity score (cosine similarity).
 //   - bool: True if a match was found, false otherwise.
 //
-//
 // Parameters:
 //
 // Returns:
@@ -125,6 +124,7 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 //
 // Side Effects:
 //   - None.
+//
 // Summary: Search operation.
 func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float32) (any, float32, bool) {
 	s.mu.RLock()
@@ -166,7 +166,6 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 // Parameters:
 //   - key: The key to prune entries for.
 //
-//
 // Parameters:
 //
 // Returns:
@@ -175,6 +174,7 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 //
 // Side Effects:
 //   - None.
+//
 // Summary: Prune operation.
 func (s *SimpleVectorStore) Prune(_ context.Context, key string) {
 	s.mu.Lock()

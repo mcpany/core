@@ -24,16 +24,15 @@ type RedisStrategy struct {
 
 // NewRedisStrategy creates a new RedisStrategy.
 //
-//
 // Returns:
 //   - *RedisStrategy: The initialized strategy.
+//
 // Summary: NewRedisStrategy operation.
 func NewRedisStrategy() *RedisStrategy {
 	return &RedisStrategy{}
 }
 
 // Create creates a new RedisLimiter.
-//
 //
 // Parameters:
 //   - _: context.Context. Unused.
@@ -51,6 +50,7 @@ func NewRedisStrategy() *RedisStrategy {
 //
 // Side Effects:
 //   - Establishes or reuses a Redis connection.
+//
 // Summary: Create operation.
 func (s *RedisStrategy) Create(_ context.Context, serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) (Limiter, error) {
 	if config.GetRedis() == nil {

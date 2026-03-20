@@ -32,7 +32,6 @@ type JSONRPCResponse struct {
 
 // JSONRPCComplianceMiddleware ensures that errors are returned as valid JSON-RPC responses.
 //
-//
 // Parameters:
 //   - next: http.Handler. The next handler in the chain.
 //
@@ -41,6 +40,7 @@ type JSONRPCResponse struct {
 //
 // Side Effects:
 //   - Intercepts and rewrites HTTP response bodies for error status codes.
+//
 // Summary: JSONRPCComplianceMiddleware operation.
 func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -97,9 +97,9 @@ type smartResponseWriter struct {
 
 // Header returns the header map that will be sent by WriteHeader.
 //
-//
 // Returns:
 //   - http.Header: The header map.
+//
 // Summary: Header operation.
 func (w *smartResponseWriter) Header() http.Header {
 	return w.header
@@ -107,9 +107,9 @@ func (w *smartResponseWriter) Header() http.Header {
 
 // WriteHeader sends an HTTP response header with the provided status code.
 //
-//
 // Parameters:
 //   - code: int. The HTTP status code.
+//
 // Summary: WriteHeader operation.
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
@@ -135,13 +135,13 @@ func (w *smartResponseWriter) WriteHeader(code int) {
 
 // Write writes the data to the connection as part of an HTTP reply.
 //
-//
 // Parameters:
 //   - b: []byte. The data to write.
 //
 // Returns:
 //   - int: The number of bytes written.
 //   - error: An error if the write fails.
+//
 // Summary: Write operation.
 func (w *smartResponseWriter) Write(b []byte) (int, error) {
 	if !w.committed {
@@ -181,10 +181,10 @@ func (w *smartResponseWriter) flushHeader() {
 
 // Flush implements http.Flusher to support streaming.
 //
-//
 // Returns:
 //
 //	None.
+//
 // Summary: Flush operation.
 func (w *smartResponseWriter) Flush() {
 	if w.passThrough {

@@ -46,7 +46,6 @@ type RecursiveContextManager struct {
 // Side Effects:
 //   - Allocates memory for the manager and its internal session map.
 //
-//
 // Parameters:
 //
 // Returns:
@@ -55,6 +54,7 @@ type RecursiveContextManager struct {
 //
 // Side Effects:
 //   - None.
+//
 // Summary: NewRecursiveContextManager operation.
 func NewRecursiveContextManager() *RecursiveContextManager {
 	return &RecursiveContextManager{
@@ -78,7 +78,6 @@ func NewRecursiveContextManager() *RecursiveContextManager {
 //   - Modifies the internal sessions map by adding a new session.
 //   - Performs a cleanup of expired sessions during insertion, removing them from the map.
 //
-//
 // Parameters:
 //
 // Returns:
@@ -87,6 +86,7 @@ func NewRecursiveContextManager() *RecursiveContextManager {
 //
 // Side Effects:
 //   - None.
+//
 // Summary: CreateSession operation.
 func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl time.Duration) *SessionState {
 	m.mu.Lock()
@@ -127,7 +127,6 @@ func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl
 // Side Effects:
 //   - None.
 //
-//
 // Parameters:
 //
 // Returns:
@@ -136,6 +135,7 @@ func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl
 //
 // Side Effects:
 //   - None.
+//
 // Summary: GetSession operation.
 func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 	m.mu.RLock()
@@ -166,7 +166,6 @@ func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 //   - Modifies the HTTP response writer based on the request logic, including sending JSON responses and error codes.
 //   - When processing a POST request, creates a new session in the manager.
 //
-//
 // Parameters:
 //
 // Returns:
@@ -175,6 +174,7 @@ func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 //
 // Side Effects:
 //   - None.
+//
 // Summary: APIHandler operation.
 func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -258,7 +258,6 @@ const (
 //   - Modifies the request context by injecting session data if a valid context ID is found.
 //   - Logs debug or warning messages depending on the presence and validity of the context session.
 //
-//
 // Parameters:
 //
 // Returns:
@@ -267,6 +266,7 @@ const (
 //
 // Side Effects:
 //   - None.
+//
 // Summary: HandleContext operation.
 func (m *RecursiveContextManager) HandleContext(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

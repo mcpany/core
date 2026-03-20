@@ -21,8 +21,8 @@ var (
 	// Define Prometheus metrics for general MCP protocol operations.
 	mcpOperationDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name: "mcp_operation_duration_seconds",
-			Help: "Histogram of MCP operation duration in seconds.",
+			Name:    "mcp_operation_duration_seconds",
+			Help:    "Histogram of MCP operation duration in seconds.",
 			Buckets: prometheus.DefBuckets,
 		},
 		[]string{"method", "status", "error_type"},
@@ -38,8 +38,8 @@ var (
 
 	mcpPayloadSizeBytes = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name: "mcp_payload_size_bytes",
-			Help: "Histogram of MCP payload size in bytes.",
+			Name:    "mcp_payload_size_bytes",
+			Help:    "Histogram of MCP payload size in bytes.",
 			Buckets: prometheus.ExponentialBuckets(100, 10, 6),
 		},
 		[]string{"method", "direction"}, // direction: request, response
@@ -68,7 +68,6 @@ var (
 // Side Effects:
 //   - None
 //
-//
 // Parameters:
 //
 // Returns:
@@ -77,6 +76,7 @@ var (
 //
 // Side Effects:
 //   - None.
+//
 // Summary: PrometheusMetricsMiddleware operation.
 func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 	registerProtocolMetricsOnce.Do(func() {
@@ -232,7 +232,6 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 // Returns:
 //   - int: The estimated token count.
 //
-//
 // Parameters:
 //
 // Returns:
@@ -241,6 +240,7 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 //
 // Side Effects:
 //   - None.
+//
 // Summary: CalculateToolResultTokens operation.
 func CalculateToolResultTokens(t tokenizer.Tokenizer, result any) int {
 	if result == nil {

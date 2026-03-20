@@ -42,7 +42,6 @@ type SmartRecoveryMiddleware struct {
 // Side Effects:
 //   - None
 //
-//
 // Parameters:
 //
 // Returns:
@@ -51,6 +50,7 @@ type SmartRecoveryMiddleware struct {
 //
 // Side Effects:
 //   - None.
+//
 // Summary: NewSmartRecoveryMiddleware operation.
 func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManager tool.ManagerInterface) *SmartRecoveryMiddleware {
 	return &SmartRecoveryMiddleware{
@@ -76,7 +76,6 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 // Side Effects:
 //   - None
 //
-//
 // Parameters:
 //
 // Returns:
@@ -85,6 +84,7 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 //
 // Side Effects:
 //   - None.
+//
 // Summary: Execute operation.
 func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if m.config == nil || !m.config.GetEnabled() {

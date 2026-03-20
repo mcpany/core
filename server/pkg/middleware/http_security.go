@@ -10,12 +10,12 @@ import (
 
 // HTTPSecurityHeadersMiddleware adds security headers to HTTP responses.
 //
-//
 // Parameters:
 //   - next: http.Handler. The next handler in the chain.
 //
 // Returns:
 //   - http.Handler: The wrapped handler that sets security headers.
+//
 // Summary: HTTPSecurityHeadersMiddleware operation.
 func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

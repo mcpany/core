@@ -49,7 +49,6 @@ type Debugger struct {
 
 // NewDebugger creates a new Debugger middleware.
 //
-//
 // Parameters:
 //   - size: int. The number of recent requests to keep in memory.
 //
@@ -58,6 +57,7 @@ type Debugger struct {
 //
 // Side Effects:
 //   - Starts a background goroutine to process debug entries.
+//
 // Summary: NewDebugger operation.
 func NewDebugger(size int) *Debugger {
 	d := &Debugger{
@@ -96,7 +96,6 @@ func (d *Debugger) process() {
 // Side Effects:
 //   - None
 //
-//
 // Parameters:
 //
 // Returns:
@@ -121,7 +120,6 @@ type bodyLogWriter struct {
 
 // Write writes the data to the connection and captures it for the log.
 //
-//
 // Parameters:
 //   - b: []byte. The data to write.
 //
@@ -132,6 +130,7 @@ type bodyLogWriter struct {
 // Side Effects:
 //   - Writes to the underlying http.ResponseWriter.
 //   - Writes to the internal buffer for logging, truncating if necessary.
+//
 // Summary: Write operation.
 func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	if !w.wroteHeader {
@@ -155,13 +154,13 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 
 // WriteHeader sends an HTTP response header with the provided status code.
 //
-//
 // Parameters:
 //   - statusCode: int. The HTTP status code.
 //
 // Side Effects:
 //   - Sets the status code on the writer.
 //   - Writes the header to the underlying http.ResponseWriter.
+//
 // Summary: WriteHeader operation.
 func (w *bodyLogWriter) WriteHeader(statusCode int) {
 	if w.wroteHeader {
@@ -180,7 +179,6 @@ type readCloserWrapper struct {
 
 // Handler returns the http handler.
 //
-//
 // Parameters:
 //   - next: http.Handler. The next handler in the chain.
 //
@@ -192,6 +190,7 @@ type readCloserWrapper struct {
 //   - Generates trace and span IDs if missing.
 //   - Captures request and response bodies (truncated).
 //   - Sends debug entries to the ingress channel.
+//
 // Summary: Handler operation.
 func (d *Debugger) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -314,12 +313,12 @@ func isTextContent(contentType string) bool {
 
 // Entries returns the last captured entries.
 //
-//
 // Returns:
 //   - []DebugEntry: A slice of the most recent captured requests and responses.
 //
 // Side Effects:
 //   - Acquires a read lock on the ring buffer.
+//
 // Summary: Entries operation.
 func (d *Debugger) Entries() []DebugEntry {
 	d.mu.RLock()
@@ -336,12 +335,12 @@ func (d *Debugger) Entries() []DebugEntry {
 
 // APIHandler returns a http.HandlerFunc to view entries.
 //
-//
 // Returns:
 //   - http.HandlerFunc: The API handler function.
 //
 // Side Effects:
 //   - Encodes the entries to JSON and writes to the response.
+//
 // Summary: APIHandler operation.
 func (d *Debugger) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {

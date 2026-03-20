@@ -65,7 +65,6 @@ type CachingMiddleware struct {
 // Side Effects:
 //   - None
 //
-//
 // Parameters:
 //
 // Returns:
@@ -74,6 +73,7 @@ type CachingMiddleware struct {
 //
 // Side Effects:
 //   - None.
+//
 // Summary: NewCachingMiddleware operation.
 func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
 	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
@@ -147,7 +147,6 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 // Side Effects:
 //   - None
 //
-//
 // Parameters:
 //
 // Returns:
@@ -156,6 +155,7 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 //
 // Side Effects:
 //   - None.
+//
 // Summary: SetProviderFactory operation.
 func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 	m.providerFactory = factory
@@ -178,7 +178,6 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 // Side Effects:
 //   - None
 //
-//
 // Parameters:
 //
 // Returns:
@@ -187,6 +186,7 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 //
 // Side Effects:
 //   - None.
+//
 // Summary: Execute operation.
 func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := tool.GetFromContext(ctx)
@@ -494,7 +494,6 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 // Side Effects:
 //   - None
 //
-//
 // Parameters:
 //
 // Returns:
@@ -503,6 +502,7 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 //
 // Side Effects:
 //   - None.
+//
 // Summary: Clear operation.
 func (m *CachingMiddleware) Clear(ctx context.Context) error {
 	return m.cache.Clear(ctx)

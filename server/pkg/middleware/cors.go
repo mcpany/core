@@ -19,9 +19,9 @@ import (
 // interception and does not handle HTTP CORS headers.
 // HTTP CORS is handled by the dedicated HTTP middleware in cors_http.go.
 //
-//
 // Returns:
 //   - (mcp.Middleware): The middleware function.
+//
 // Summary: CORSMiddleware operation.
 func CORSMiddleware() mcp.Middleware {
 	// Log a warning once when the middleware is created to inform the user.

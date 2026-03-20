@@ -324,6 +324,7 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 //
 // Side Effects:
 //   - Scans the entire audit_logs table.
+//
 // Parameters:
 //   - None
 func (s *SQLiteAuditStore) Verify() (bool, error) {

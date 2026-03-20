@@ -47,7 +47,6 @@ var (
 //   - name (string): The name of the resource.
 //   - factory (Factory): The factory.
 //
-//
 // Parameters:
 //
 // Returns:
@@ -56,6 +55,7 @@ var (
 //
 // Side Effects:
 //   - None.
+//
 // Summary: Register operation.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
@@ -69,7 +69,6 @@ func Register(name string, factory Factory) {
 //   - name (string): The name of the resource.
 //   - factory (MCPFactory): The factory.
 //
-//
 // Parameters:
 //
 // Returns:
@@ -78,6 +77,7 @@ func Register(name string, factory Factory) {
 //
 // Side Effects:
 //   - None.
+//
 // Summary: RegisterMCP operation.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
@@ -93,7 +93,6 @@ func RegisterMCP(name string, factory MCPFactory) {
 // Returns:
 //   - ([]func(http.Handler) http.Handler): The result.
 //
-//
 // Parameters:
 //
 // Returns:
@@ -102,6 +101,7 @@ func RegisterMCP(name string, factory MCPFactory) {
 //
 // Side Effects:
 //   - None.
+//
 // Summary: GetHTTPMiddlewares operation.
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
 	globalRegistry.mu.RLock()
@@ -134,7 +134,6 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 // Returns:
 //   - ([]func(mcp.MethodHandler) mcp.MethodHandler): The result.
 //
-//
 // Parameters:
 //
 // Returns:
@@ -143,6 +142,7 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 //
 // Side Effects:
 //   - None.
+//
 // Summary: GetMCPMiddlewares operation.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
@@ -197,7 +197,6 @@ type StandardMiddlewares struct {
 // Returns:
 //   - (*StandardMiddlewares): The result.
 //   - (error): An error if the operation fails.
-//
 //
 // Parameters:
 //

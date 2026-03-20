@@ -30,7 +30,6 @@ import (
 //   - Logs request start and end.
 //   - Updates metrics.
 //
-//
 // Parameters:
 //
 // Returns:
@@ -39,6 +38,7 @@ import (
 //
 // Side Effects:
 //   - None.
+//
 // Summary: LoggingMiddleware operation.
 func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	if log == nil {
