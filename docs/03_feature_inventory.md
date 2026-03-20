@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-06-14] Updates
+
+### Proposed Additions
+- **Attention-Locked Routing Hub (ALRH)**: (P0) Advanced security middleware for the ISD and DAG components that performs real-time, mission-anchored attention analysis and prioritization.
+- **MDRA-Native Attestation Bridge**: (P0) Unified trust service that aggregates hardware, behavioral, and lineage attestation into a single, low-jitter token to neutralize coordination drift.
+- **Three-Factor Agency Gateway**: (P0) Advanced A2A handshake gateway mandating a unified MDRA token before capability discovery or high-trust tool execution.
+- **Physical-Layer Side-Channel Shield**: (P1) Resource-aware noise injection for isolated transport channels to prevent hardware-level agent collusion (e.g., thermal/fan-based side-channels).
+
+### Priority Shifts
+- **Dynamic Attention Gating (DAG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ALRH** integration for mission-anchored attention governance.
+- **Hardware-Locked Coordination Handshake**: (Re-affirmed P0) Designated as the primary enforcement point for **MDRA-compliant** mesh coordination.
+
 ## Evolution: [2026-06-08] Updates
 
 ### Proposed Additions
@@ -1312,8 +1324,6 @@
 ### Priority Shifts
 - **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Designated as the primary enforcement mechanism for **Attention-Locked Context Windows**.
 - **Mesh-Resident Attestation (MRA) Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SCI-compliant** metadata signing.
-
-## Evolution: [2026-06-14] Updates
 
 ### Proposed Additions
 - **Attention-Locked Routing Hub (ALRH)**: (P0) Advanced security middleware for the ISD and DAG components that performs real-time, mission-anchored attention analysis and prioritization.
