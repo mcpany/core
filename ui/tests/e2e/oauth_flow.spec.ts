@@ -94,10 +94,10 @@ test.describe('OAuth Flow Integration', () => {
     await page.getByPlaceholder('e.g. My Postgres DB').fill('OAuth Test Service');
     await page.getByRole('button', { name: 'Next', exact: true }).click({ force: true });
 
-    // Step 2: Parameters (Skip or click Next)
+    // Step 2: Parameters
     await page.getByRole('button', { name: 'Next', exact: true }).click({ force: true });
 
-    // Step 3: Webhooks (Skip or click Next)
+    // Step 3: Webhooks
     await page.getByRole('button', { name: 'Next', exact: true }).click({ force: true });
 
     // Step 4: Authentication
