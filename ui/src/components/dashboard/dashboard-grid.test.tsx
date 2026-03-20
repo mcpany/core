@@ -7,11 +7,6 @@ import { render, screen, fireEvent, waitFor, act } from "@testing-library/react"
 import { DashboardGrid } from "./dashboard-grid";
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 
-// Mock next/link to avoid Vite resolution errors during test
-vi.mock('next/link', () => ({
-  default: ({ children, href }: { children: React.ReactNode, href: string }) => <a href={href}>{children}</a>
-}));
-
 // Mock next/navigation for NetworkGraphFlow and other components
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
