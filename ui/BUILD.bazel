@@ -163,7 +163,9 @@ pkg_files(
 pkg_files(
     name = "ui_node_modules_files",
     srcs = [":node_modules"],
+    include_runfiles = True,
     prefix = "/app/node_modules",
+    strip_prefix = "node_modules",
 )
 
 # Static config files required by `vite preview` at runtime.
