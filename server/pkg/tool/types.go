@@ -89,12 +89,40 @@ type Tool interface {
 	//
 	// Returns:
 	//   - *v1.Tool: The protobuf tool definition.
+	//
+	// Summary: Tools.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	Tool() *v1.Tool
 
 	// MCPTool returns the MCP tool definition.
 	//
 	// Returns:
 	//   - *mcp.Tool: The MCP tool definition.
+	//
+	// Summary: Mcps tool.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	MCPTool() *mcp.Tool
 
 	// Execute runs the tool with the provided context and request, returning
@@ -182,6 +210,20 @@ type ServiceRegistry interface {
 	// Returns:
 	//   - Tool: The tool instance if found.
 	//   - bool: True if the tool exists, false otherwise.
+	//
+	// Summary: Gets tool.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	GetTool(toolName string) (Tool, bool)
 
 	// GetServiceInfo retrieves metadata for a service.
@@ -192,6 +234,20 @@ type ServiceRegistry interface {
 	// Returns:
 	//   - *ServiceInfo: The service metadata info if found.
 	//   - bool: True if the service exists, false otherwise.
+	//
+	// Summary: Gets service info.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
 }
 
@@ -254,6 +310,20 @@ type Callable interface {
 	// Returns:
 	//   - any: The result of the execution.
 	//   - error: An error if the operation fails.
+	//
+	// Summary: Calls.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	Call(ctx context.Context, req *ExecutionRequest) (any, error)
 }
 
@@ -325,6 +395,20 @@ func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 type PreCallHook interface {
 	// ExecutePre runs the hook. It returns an action (Allow/Deny),
 	// a potentially modified request (or nil if unchanged), and an error.
+	//
+	// Summary: Executes pre.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	ExecutePre(ctx context.Context, req *ExecutionRequest) (Action, *ExecutionRequest, error)
 }
 
@@ -334,6 +418,20 @@ type PreCallHook interface {
 type PostCallHook interface {
 	// ExecutePost runs the hook. It returns the potentially modified result
 	// (or original if unchanged) and an error.
+	//
+	// Summary: Executes post.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	ExecutePost(ctx context.Context, req *ExecutionRequest, result any) (any, error)
 }
 

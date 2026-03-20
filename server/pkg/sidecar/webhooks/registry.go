@@ -25,6 +25,20 @@ type Handler interface {
 	//
 	// Side Effects:
 	//   - Writes the response to the response writer.
+	//
+	// Summary: Handles.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	Handle(w http.ResponseWriter, r *http.Request)
 }
 

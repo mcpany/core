@@ -28,18 +28,60 @@ type Prompt interface {
 	//
 	// Returns:
 	//   - *mcp.Prompt: The MCP prompt definition.
+	//
+	// Summary: Prompts.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	Prompt() *mcp.Prompt
 
 	// Service returns the ID of the service that provides this prompt.
 	//
 	// Returns:
 	//   - string: The service ID.
+	//
+	// Summary: Services.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	Service() string
 
 	// Definition returns the raw configuration definition of the prompt.
 	//
 	// Returns:
 	//   - *configv1.PromptDefinition: The prompt definition.
+	//
+	// Summary: Definitions.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	Definition() *configv1.PromptDefinition
 
 	// Get executes the prompt with the provided arguments.
@@ -51,6 +93,20 @@ type Prompt interface {
 	// Returns:
 	//   - *mcp.GetPromptResult: The result of the prompt execution.
 	//   - error: An error if the operation fails.
+	//
+	// Summary: Gets.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error)
 }
 
@@ -64,6 +120,20 @@ type MCPServerProvider interface {
 	//
 	// Returns:
 	//   - *mcp.Server: The MCP server instance.
+	//
+	// Summary: Servers.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	Server() *mcp.Server
 }
 

@@ -27,6 +27,20 @@ import (
 type UpstreamAuthenticator interface {
 	// Authenticate modifies the given HTTP request to add authentication
 	// information, such as headers or basic auth credentials.
+	//
+	// Summary: Authenticates.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	Authenticate(req *http.Request) error
 }
 

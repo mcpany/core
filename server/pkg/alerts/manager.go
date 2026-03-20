@@ -22,34 +22,202 @@ import (
 // Summary: Represents a ManagerInterface.
 type ManagerInterface interface {
 	// ListAlerts returns a list of all alerts.
+	//
+	// Summary: Lists alerts.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	ListAlerts() []*Alert
 	// GetAlert retrieves an alert by its ID.
+	//
+	// Summary: Gets alert.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	GetAlert(id string) *Alert
 	// CreateAlert creates a new alert.
+	//
+	// Summary: Creates alert.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	CreateAlert(alert *Alert) *Alert
 	// UpdateAlert updates an existing alert.
+	//
+	// Summary: Updates alert.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	UpdateAlert(id string, alert *Alert) *Alert
 	// GetAlertStats returns aggregated statistics for alerts.
+	//
+	// Summary: Gets alert stats.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	GetAlertStats() *AlertStats
 
 	// Webhooks
 
 	// GetWebhookURL returns the configured global webhook URL.
+	//
+	// Summary: Gets webhook URL.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	GetWebhookURL() string
 	// SetWebhookURL sets the configured global webhook URL.
+	//
+	// Summary: Sets webhook URL.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	SetWebhookURL(url string)
 
 	// Rules
 
 	// ListRules returns a list of all alert rules.
+	//
+	// Summary: Lists rules.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	ListRules() []*AlertRule
 	// GetRule retrieves an alert rule by its ID.
+	//
+	// Summary: Gets rule.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	GetRule(id string) *AlertRule
 	// CreateRule creates a new alert rule.
+	//
+	// Summary: Creates rule.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	CreateRule(rule *AlertRule) *AlertRule
 	// UpdateRule updates an existing alert rule.
+	//
+	// Summary: Updates rule.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	UpdateRule(id string, rule *AlertRule) *AlertRule
 	// DeleteRule deletes an alert rule by its ID.
+	//
+	// Summary: Deletes rule.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	DeleteRule(id string) error
 }
 

@@ -53,6 +53,20 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
+	//
+	// Summary: Lists tools.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	ListTools(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error)
 	// ListPrompts lists the prompts available in the session.
 	//
@@ -61,6 +75,20 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
+	//
+	// Summary: Lists prompts.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	ListPrompts(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error)
 	// ListResources lists the resources available in the session.
 	//
@@ -69,6 +97,20 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
+	//
+	// Summary: Lists resources.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	ListResources(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error)
 	// GetPrompt retrieves a prompt from the session.
 	//
@@ -77,6 +119,20 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
+	//
+	// Summary: Gets prompt.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	GetPrompt(ctx context.Context, params *mcp.GetPromptParams) (*mcp.GetPromptResult, error)
 	// ReadResource reads a resource from the session.
 	//
@@ -85,6 +141,20 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
+	//
+	// Summary: Reads resource.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	ReadResource(ctx context.Context, params *mcp.ReadResourceParams) (*mcp.ReadResourceResult, error)
 	// CallTool calls a tool in the session.
 	//
@@ -93,10 +163,38 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
+	//
+	// Summary: Calls tool.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error)
 	// Close closes the session.
 	//
 	// Returns an error if the operation fails.
+	//
+	// Summary: Closes.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	Close() error
 }
 

@@ -22,8 +22,36 @@ import (
 // Summary: Represents a Provider.
 type Provider interface {
 	// Name returns the name of the discovery provider.
+	//
+	// Summary: Names.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	Name() string
 	// Discover attempts to find services and return their configurations.
+	//
+	// Summary: Discovers.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 }
 
