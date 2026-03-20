@@ -8,7 +8,7 @@
 
 ### 2. Gemini CLI: Protocol-Agnostic Discovery (PAD) v2
 **Finding:** Gemini CLI's discovery layer has been upgraded to PAD v2, natively supporting UACO v3.3 capability beacons. Agents can now "hear" tool advertisements across network boundaries and perform hardware-attested handshakes without pre-configured endpoint lists.
-**Impact:** Enables truly dynamic swarm formation and eliminates "Discovery Silos," positioning Gemini sebagai leader in zero-config agentic meshes.
+**Impact:** Enables truly dynamic swarm formation and eliminates "Discovery Silos," positioning Gemini as the leader in zero-config agentic meshes.
 
 ### 3. Claude Code: Recursive Attestation (v3.2.0)
 **Finding:** Claude Code v3.2.0 mandates "Recursive Attestation" for all sub-delegations. Every subagent must provide a TPM-signed attestation not only for itself but for any sub-spawns it creates, forming an unbroken "Attestation Chain."
