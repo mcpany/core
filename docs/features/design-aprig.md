@@ -55,3 +55,7 @@ MCP Any needs to act as the final gate for any tool call that generates or modif
 
 ## 7. Evolutionary Changelog
 *   **2026-05-28:** Initial Document Creation.
+*   **2026-06-18:** **Update: Resolving AI-Generated PR Vulnerability Gap**.
+    *   **Context:** Recent market sync revealed an 87% vulnerability rate in agent-generated pull requests.
+    *   **Architecture Adjustment:** Upgrading APRIG to mandate the **Autonomous Code-Integrity Quorum (ACIQ)**. Code-modifying tool calls now require hardware-attested, multi-agent signatures before execution.
+    *   **Security Impact:** Prevents "Single-Agent Compromise" from weaponizing the repository.

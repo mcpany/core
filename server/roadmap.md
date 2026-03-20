@@ -753,3 +753,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+### Upcoming: [2026-06-18]
+- **[P0] OpenShell Runtime Adapter**: Authoritative "Policy Translator" for NVIDIA OpenShell, mapping mission intents to OS-enforced guardrails (Added: 2026-06-18).
+- **[P0] Autonomous Code-Integrity Quorum (ACIQ)**: Mandatory multi-agent signature requirement for all code-modifying tool calls (Added: 2026-06-18).
+- **[P1] Narrow-Agency Coordination Hub**: Sub-millisecond handoff optimization for "Boring Architecture" constellations (Added: 2026-06-18).
+- **[P1] Policy-to-Guardrail Compiler**: Native compiler for translating high-level policies into hardware-attested OpenShell manifests (Added: 2026-06-18).

@@ -1360,3 +1360,15 @@
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **OpenShell Runtime Adapter**: (P0) Authoritative adapter for NVIDIA OpenShell-compliant runtimes, translating mission-root intents into enforceable runtime guardrails.
+- **Autonomous Code-Integrity Quorum (ACIQ)**: (P0) Security middleware mandating hardware-attested, multi-agent quorums for all code-modifying tool calls.
+- **Narrow-Agency Coordination Hub**: (P1) Performance optimization for the UAB to support sub-millisecond handoffs in "Boring Architecture" constellations.
+- **Policy-to-Guardrail Compiler**: (P1) Security utility that compiles mission-root policies into hardware-attested runtime constraints for enforced isolation.
+
+### Priority Shifts
+- **Autonomous PR Integrity Gate (APRIG)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ACIQ** integration to counter high vulnerability rates in AI-generated code.
+- **Isolated Named-Pipe Transport Middleware**: (Re-affirmed P0) Designated as the primary transport for **Narrow-Agency** constellations.

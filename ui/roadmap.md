@@ -591,3 +591,6 @@
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
+- [ ] **[P0] OpenShell Policy Manager**: (2026-06-18) UI for reviewing, compiling, and pushing mission-root policies to OpenShell runtimes.
+- [ ] **[P0] Code-Integrity Quorum Console**: (2026-06-18) multi-agent authorization workspace for code-modifying tool calls and ACIQ attestation status.
+- [ ] **[P1] Narrow-Agency Performance Monitor**: (2026-06-18) Real-time visualization of sub-millisecond handoffs in modular agent constellations.
