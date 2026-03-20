@@ -751,9 +751,25 @@ func (a *Application) handleTools() http.HandlerFunc {
 		switch r.Method {
 		case http.MethodGet:
 			tools := a.ToolManager.ListTools()
-			var toolList []*mcp.Tool
+			var toolList []map[string]any
 			for _, t := range tools {
-				toolList = append(toolList, t.MCPTool())
+				mcpTool := t.MCPTool()
+				if mcpTool == nil {
+					continue
+				}
+				toolMap := map[string]any{
+					"name":        mcpTool.Name,
+					"description": mcpTool.Description,
+					"inputSchema": mcpTool.InputSchema,
+				}
+				if v1Tool := t.Tool(); v1Tool != nil {
+					toolMap["service_id"] = v1Tool.GetServiceId()
+				}
+				toolList = append(toolList, toolMap)
+			}
+			// Ensure we return an empty array instead of null when no tools exist
+			if toolList == nil {
+				toolList = make([]map[string]any, 0)
 			}
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(toolList)

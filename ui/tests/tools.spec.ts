@@ -81,6 +81,33 @@ test.describe('Tool Exploration', () => {
         await expect(page.getByText('Echoes back input').first()).toBeVisible({ timeout: 20000 });
     });
 
+    test('should correctly group tools by service', async ({ page }) => {
+        await page.goto('/tools');
+
+        // Wait/Reload loop for async backend registration
+        for (let i = 0; i < 10; i++) {
+            try {
+                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                break;
+            } catch (e) {
+                await page.reload();
+                await page.waitForLoadState('networkidle');
+                await page.waitForTimeout(1000);
+            }
+        }
+        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+
+        // Change grouping to "service"
+        await page.getByRole('combobox', { name: 'Group By' }).click();
+        await page.getByRole('option', { name: 'Group by Service' }).click();
+
+        // Verify that the Payment Gateway service grouping header is visible
+        await expect(page.getByRole('button', { name: 'Payment Gateway' })).toBeVisible({ timeout: 5000 });
+
+        // Verify that the User Service grouping header is visible
+        await expect(page.getByRole('button', { name: 'User Service' })).toBeVisible({ timeout: 5000 });
+    });
+
     test('should allow inspecting a tool', async ({ page }) => {
         await page.goto('/tools');
 
