@@ -7,12 +7,14 @@
 
 import { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FileJson, Table as TableIcon, Terminal, FileText } from "lucide-react";
+import { FileJson, Table as TableIcon, Terminal, FileText, ArrowUpDown } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { DataTable } from "@/components/ui/data-table";
+import { ColumnDef } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
 
 interface RichResultViewerProps {
     result: any;
@@ -129,9 +131,10 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return !mcpContent && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
     }, [content, mcpContent]);
 
-    // Get columns for table
-    const columns = useMemo(() => {
-        if (!isTableEligible) return [];
+    // Get columns for data table
+    const columns = useMemo<ColumnDef<any>[]>(() => {
+        if (!isTableEligible || !Array.isArray(content)) return [];
+
         // aggregate all keys from all objects to handle sparse data
         const keys = new Set<string>();
         // Limit rows scanned for columns to avoid perf issues on huge datasets
@@ -140,15 +143,30 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                 Object.keys(item).forEach(k => keys.add(k));
             }
         });
-        return Array.from(keys);
-    }, [content, isTableEligible]);
 
-    const renderCell = (value: any) => {
-        if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
-        if (typeof value === 'object') return <span className="font-mono text-xs text-muted-foreground truncate max-w-[200px] block" title={JSON.stringify(value)}>{JSON.stringify(value)}</span>;
-        if (typeof value === 'boolean') return <span className={value ? "text-green-500 font-medium" : "text-red-500 font-medium"}>{String(value)}</span>;
-        return <span className="truncate max-w-[300px] block" title={String(value)}>{String(value)}</span>;
-    }
+        return Array.from(keys).map((key) => ({
+            accessorKey: key,
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        className="h-8 p-0 text-xs font-semibold hover:bg-transparent"
+                    >
+                        {key}
+                        <ArrowUpDown className="ml-2 h-3 w-3" />
+                    </Button>
+                );
+            },
+            cell: ({ row }) => {
+                const value = row.getValue(key);
+                if (value === null || value === undefined) return <span className="text-muted-foreground italic">-</span>;
+                if (typeof value === 'object') return <span className="font-mono text-[10px] text-muted-foreground block truncate" title={JSON.stringify(value)}>{JSON.stringify(value)}</span>;
+                if (typeof value === 'boolean') return <span className={value ? "text-green-500 font-medium" : "text-red-500 font-medium"}>{String(value)}</span>;
+                return <span className="block truncate" title={String(value)}>{String(value)}</span>;
+            },
+        }));
+    }, [content, isTableEligible]);
 
     const defaultTab = mcpContent ? "rendered" : (isTableEligible ? "table" : "json");
 
@@ -186,29 +204,8 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             )}
 
             {isTableEligible && (
-                <TabsContent value="table" className="border rounded-md">
-                    <ScrollArea className="h-[400px]">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    {columns.map(col => (
-                                        <TableHead key={col} className="whitespace-nowrap">{col}</TableHead>
-                                    ))}
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {content.map((row: any, i: number) => (
-                                    <TableRow key={i}>
-                                        {columns.map(col => (
-                                            <TableCell key={col} className="py-2">
-                                                {renderCell(row[col])}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </ScrollArea>
+                <TabsContent value="table" className="h-[400px] mt-2">
+                    <DataTable columns={columns} data={content} />
                 </TabsContent>
             )}
 
