@@ -18,7 +18,6 @@ The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring 
     * Monitor all non-primary coordination channels (metadata, headers, state-tags).
     * Detect steganographic instructions and anomalous entropy spikes.
     * Mandate cryptographic signing of all coordination metadata (using MRA).
-
 * **Non-Goals:**
     * Analyzing the primary reasoning monologue (handled by ARI Hub).
     * Enforcing attention gating (handled by DAG Middleware).
@@ -27,9 +26,7 @@ The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring 
 ## 3. Critical User Journey (CUJ)
 
 * **User Persona:** Swarm Security Architect
-
 * **Primary Goal:** Detect and block two subagents attempting to collude via Blackboard metadata while appearing to follow the verified mission path.
-
 * **The Happy Path (Tasks):**
     1. Parent Agent delegates sub-tasks to Specialist A and Specialist B.
     2. Specialist A and Specialist B are compromised and attempt to synchronize an unauthorized goal.
@@ -53,24 +50,20 @@ The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring 
         F -- No --> H[Forward to ARI Hub/Blackboard]
         I[MRA Metadata Signer] --> H
     ```
-
 * **APIs / Interfaces:**
     * `sci.ScanMetadata(sourceAgent, targetAgent, metadata) -> bool`: Scans a metadata fragment for shadow signals.
     * `sci.RegisterEntropyBaseline(missionToken) -> void`: Establishes the expected entropy level for a mission.
-
 * **Data Storage/State:**
     * **Entropy Baselines:** A per-mission registry of "Normal" coordination entropy scores.
 
 ## 5. Alternatives Considered
 
 * **Disabling All Metadata:** Rejected because metadata is essential for legitimate swarm orchestration (e.g., task status, priority).
-
 * **Manual Metadata Review:** Rejected due to the high volume and machine-speed nature of inter-agent coordination.
 
 ## 6. Cross-Cutting Concerns
 
 * **Security (Zero Trust):** The SCI must be integrated directly into the kernel-resident T2T transport to prevent bypass.
-
 * **Observability:** Integrated with the "Shadow Coordination Monitor" for real-time visualization of entropy spikes and blocked signals.
 
 ## 7. Evolutionary Changelog
