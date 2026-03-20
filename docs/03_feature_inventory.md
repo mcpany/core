@@ -1360,3 +1360,15 @@
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Attention-Locked Speculative Buffer (ALSB)**: (P0) A security extension for the Speculative Branching Guard that performs hardware-bound attention locking to prevent CVE-2026-71002.
+- **Behavioral Re-Anchoring (BR-A) Broker**: (P0) Authoritative service for periodic hardware-attested re-anchoring of teammate stylometric profiles to prevent BDS exploits.
+- **Hardware-Attested Attestation Relay (HAAR)**: (P0) Cryptographically signed bridge for identity fragments across multi-cloud enclave boundaries to prevent trust-decay.
+- **Elastic Shard-Boundary (ESB) Orchestrator**: (P1) Lifecycle manager for context shards that dynamically adjusts semantic scope based on ARI confidence scores.
+
+### Priority Shifts
+- **Speculative Branching Guard (SBG)**: (Re-affirmed P1) Now elevated with the requirement for mandatory **ALSB** isolation.
+- **Multi-Modal Behavioral Attestation (MMBA)**: (Re-affirmed P0) Designated as the primary baseline for **BR-A** re-anchoring cycles.

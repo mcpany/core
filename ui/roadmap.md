@@ -591,3 +591,9 @@
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
+
+### Upcoming: [2026-06-18]
+- [ ] **[P0] Attention Hijacking Alert Center**: (2026-06-18) Real-time monitor for blocked speculative pre-fetch attempts and attention-locked buffer violations.
+- [ ] **[P0] Stylometric Re-Anchoring Console**: (2026-06-18) UI for orchestrating and approving periodic hardware-attested behavioral re-anchoring cycles.
+- [ ] **[P0] Multi-Cloud Trust Relay Monitor**: (2026-06-18) Visual status indicator for cross-enclave identity relay and HAAR trust strength metrics.
+- [ ] **[P1] Elastic Shard Visualizer**: (2026-06-18) Interactive Gantt-style chart showing dynamic shard boundary adjustments and ARI confidence overlays.

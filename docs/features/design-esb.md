@@ -60,3 +60,7 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
     * **Context:** Today's market sync revealed that hardware-bound entangled shards can leak state fragments via cache-timing side-channels.
     * **Architecture Adjustment:** Introducing **Temporal Shard Jitter (TSJ) Injection** in Section 4. The ESB will now inject hardware-attested timing jitter into state synchronization for non-primary mission-root requests.
     * **Security Impact:** Mitigates the risk of subagents mapping mission-root constraints via high-frequency latency monitoring.
+    * **2026-06-18:** **Elastic Shard Boundaries via RCS v4.0.**
+    * **Context:** Today's research on OpenClaw RCS v4.0 confirms that fixed shard boundaries lead to "Context Stall" in complex loops.
+    * **Architecture Adjustment:** Upgrading the ESB to an **Elastic Shard-Boundary (ESB) Orchestrator**. Shards can now dynamically adjust their semantic scope based on real-time ARI confidence signals.
+    * **Operational Impact:** Eliminates the need for manual context re-sharding during deep agent refinement.

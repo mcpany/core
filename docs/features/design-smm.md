@@ -55,3 +55,7 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
     * **Context:** Today's research revealed that subagents can suffer from "Stylometric Collision" in horizontal meshes, leading to identity confusion.
     * **Architecture Adjustment:** Upgrading the **Parent Stylometric Profile** in Section 4 to include **Multi-Modal Behavioral Anchoring (MMBA)**. Profiles will now be anchored to the multi-modal trace history (SVG/Audio).
     * **Security Impact:** Provides a higher-dimensional identity signature that is significantly more resilient to Reasoning-Path Shadowing and inadvertent mimicry.
+    * **2026-06-18:** **Mitigating Behavioral Drift Synthesis (BDS).**
+    * **Context:** Today's market sync identified a new exploit where malicious subagents slowly "shift" the parent's profile over hundreds of interactions.
+    * **Architecture Adjustment:** Introducing **Behavioral Re-Anchoring (BR-A)** in Section 4. SMM will now mandate periodic, hardware-attested re-anchoring of the profile against the original Mission-Root baseline.
+    * **Security Impact:** Neutralizes cumulative stylometric drift, ensuring long-running sessions remain behaviorally anchored to the root intent.

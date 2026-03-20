@@ -753,3 +753,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+### Upcoming: [2026-06-18]
+- **Attention-Locked Speculative Buffer (ALSB)**: (P0) Hardware-bound isolation for speculative context to prevent attention hijacking (CVE-2026-71002) (Added: 2026-06-18).
+- **Behavioral Re-Anchoring (BR-A) Broker**: (P0) Mandate periodic hardware-attested stylometric re-anchoring to neutralize BDS exploits (Added: 2026-06-18).
+- **Hardware-Attested Attestation Relay (HAAR)**: (P0) Universal relay for maintaining hardware-bound trust strength across multi-cloud enclaves (Added: 2026-06-18).
+- **Elastic Shard-Boundary (ESB) Orchestrator**: (P1) Implementation of OpenClaw RCS v4.0 dynamic context sharding for deep swarm stability (Added: 2026-06-18).
