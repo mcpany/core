@@ -25,8 +25,8 @@ test.describe('Rich Result Viewer', () => {
             'call1': {
               args: [
                 JSON.stringify([
-                  { name: 'Alice', role: 'Admin', id: 1 },
-                  { name: 'Bob', role: 'User', id: 2 }
+                  { name: 'Alice', role: 'Admin', id: 1, config: { theme: 'dark', verified: true } },
+                  { name: 'Bob', role: 'User', id: 2, config: { theme: 'light', verified: false } }
                 ])
               ]
             }
@@ -76,6 +76,21 @@ test.describe('Rich Result Viewer', () => {
     await expect(table.getByText('Alice')).toBeVisible();
     await expect(table.getByText('Bob')).toBeVisible();
     await expect(table.getByText('Admin')).toBeVisible();
+
+    // Verify rich cell badge is rendered instead of raw JSON dump
+    const richCellBadge = table.getByText('2 keys').first();
+    await expect(richCellBadge).toBeVisible();
+
+    // Click the badge to open the popover
+    await richCellBadge.click();
+
+    // Verify the popover content (JSON view) contains the nested data
+    const popover = page.getByRole('dialog');
+    await expect(popover.getByText('dark')).toBeVisible();
+    await expect(popover.getByText('verified')).toBeVisible();
+
+    // Close the popover by clicking outside or pressing Escape
+    await page.keyboard.press('Escape');
 
     // Switch to JSON tab
     // Note: There might be multiple "JSON" tabs (one for schema, one for args, one for result)
