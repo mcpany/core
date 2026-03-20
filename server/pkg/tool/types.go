@@ -48,6 +48,7 @@ const (
 	redactedPlaceholder = "[REDACTED]"
 
 	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
+	// Summary: Defines HealthStatusUnhealthy.
 	HealthStatusUnhealthy = "unhealthy"
 
 	gitCommand = "git"
@@ -385,6 +386,20 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 //
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
+//
+// Summary: Executes Tool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *GRPCTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -395,6 +410,20 @@ func (t *GRPCTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Summary: Executes MCPTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *GRPCTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -410,6 +439,20 @@ func (t *GRPCTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
+//
+// Summary: Retrieves GetCacheConfig operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -658,6 +701,20 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 //
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
+//
+// Summary: Executes Tool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *HTTPTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -668,6 +725,20 @@ func (t *HTTPTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Summary: Executes MCPTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *HTTPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -683,6 +754,20 @@ func (t *HTTPTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
+//
+// Summary: Retrieves GetCacheConfig operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1365,6 +1450,20 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 //
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
+//
+// Summary: Executes Tool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *MCPTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -1375,6 +1474,20 @@ func (t *MCPTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Summary: Executes MCPTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *MCPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1390,6 +1503,20 @@ func (t *MCPTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
+//
+// Summary: Retrieves GetCacheConfig operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1607,6 +1734,20 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 //
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
+//
+// Summary: Executes Tool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *OpenAPITool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -1617,6 +1758,20 @@ func (t *OpenAPITool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Summary: Executes MCPTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *OpenAPITool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1632,6 +1787,20 @@ func (t *OpenAPITool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
+//
+// Summary: Retrieves GetCacheConfig operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1966,6 +2135,20 @@ func NewLocalCommandTool(
 //
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
+//
+// Summary: Executes Tool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *LocalCommandTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -1976,6 +2159,20 @@ func (t *LocalCommandTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Summary: Executes MCPTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1991,6 +2188,20 @@ func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
+//
+// Summary: Retrieves GetCacheConfig operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil
@@ -2158,9 +2369,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		allowedEnvVars := []string{"PATH", "HOME", "USER", "SHELL", "TMPDIR", "SYSTEMROOT", "WINDIR"}
 		for _, key := range allowedEnvVars {
 			if val, ok := os.LookupEnv(key); ok {
-				// ⚡ BOLT: Replaced fmt.Sprintf with string concatenation for environment variables to avoid reflection overhead during frequent tool execution.
-				// Randomized Selection from Top 5 High-Impact Targets (Memory/Allocations)
-				env = append(env, key+"="+val)
+				env = append(env, fmt.Sprintf("%s=%s", key, val))
 			}
 		}
 	}
@@ -2177,7 +2386,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 
 	for k, v := range resolvedServiceEnv {
-		env = append(env, k+"="+v)
+		env = append(env, fmt.Sprintf("%s=%s", k, v))
 	}
 
 	for _, param := range t.callDefinition.GetParameters() {
@@ -2188,7 +2397,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
 			secrets = append(secrets, secretValue)
-			env = append(env, name+"="+secretValue)
+			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
 			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
@@ -2211,7 +2420,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			}
 
 			if safeForEnv {
-				env = append(env, name+"="+valStr)
+				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 			}
 
 			// Sentinel Security Update: Add sensitive inputs to the redactor's secret list
@@ -2281,7 +2490,13 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		var result map[string]interface{}
 		if err := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
 			<-stderrDone
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, redactor.Redact(stderrBuf.String()))
+			// 🛡️ Sentinel Security Update: Prevent Information Leakage
+			// Do not leak raw stderr to the client. Log it server-side instead.
+			redactedStderr := redactor.Redact(stderrBuf.String())
+			if redactedStderr != "" {
+				logging.GetLogger().WarnContext(ctx, "JSON CLI command failed with stderr", "tool", t.tool.GetName(), "stderr", redactedStderr)
+			}
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w", err)
 		}
 		return result, nil
 	}
@@ -2338,6 +2553,20 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 //
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
+//
+// Summary: Executes Tool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *CommandTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -2348,6 +2577,20 @@ func (t *CommandTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Summary: Executes MCPTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *CommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -2363,6 +2606,20 @@ func (t *CommandTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
+//
+// Summary: Retrieves GetCacheConfig operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil
@@ -2526,7 +2783,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		allowedEnvVars := []string{"PATH", "HOME", "USER", "SHELL", "TMPDIR", "SYSTEMROOT", "WINDIR"}
 		for _, key := range allowedEnvVars {
 			if val, ok := os.LookupEnv(key); ok {
-				env = append(env, key+"="+val)
+				env = append(env, fmt.Sprintf("%s=%s", key, val))
 			}
 		}
 	}
@@ -2543,7 +2800,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	for k, v := range resolvedServiceEnv {
-		env = append(env, k+"="+v)
+		env = append(env, fmt.Sprintf("%s=%s", k, v))
 	}
 
 	if ce := t.service.GetContainerEnvironment(); ce != nil {
@@ -2555,7 +2812,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			secrets = append(secrets, v)
 		}
 		for k, v := range resolvedContainerEnv {
-			env = append(env, k+"="+v)
+			env = append(env, fmt.Sprintf("%s=%s", k, v))
 		}
 	}
 
@@ -2567,16 +2824,11 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
 			secrets = append(secrets, secretValue)
-			env = append(env, name+"="+secretValue)
+			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
-			if err := checkForPathTraversal(valStr); err != nil {
+			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
-			}
-			if !isDocker {
-				if err := checkForLocalFileAccess(valStr); err != nil {
-					return nil, fmt.Errorf("parameter %q: %w", name, err)
-				}
 			}
 			// Sentinel Security: For shell commands, we only add environment variables if they are safe
 			// for unquoted use. If they contain dangerous characters, we omit them from the environment
@@ -2595,7 +2847,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			}
 
 			if safeForEnv {
-				env = append(env, name+"="+valStr)
+				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 			}
 
 			// Sentinel Security Update: Add sensitive inputs to the redactor's secret list
@@ -2665,7 +2917,13 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		var result map[string]interface{}
 		if err := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
 			<-stderrDone
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, redactor.Redact(stderrBuf.String()))
+			// 🛡️ Sentinel Security Update: Prevent Information Leakage
+			// Do not leak raw stderr to the client. Log it server-side instead.
+			redactedStderr := redactor.Redact(stderrBuf.String())
+			if redactedStderr != "" {
+				logging.GetLogger().WarnContext(ctx, "JSON CLI command failed with stderr", "tool", t.tool.GetName(), "stderr", redactedStderr)
+			}
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w", err)
 		}
 		return result, nil
 	}
@@ -2731,6 +2989,20 @@ type threadSafeBuffer struct {
 // Returns:
 //   - n: The number of bytes written.
 //   - err: An error if one occurred.
+//
+// Summary: Updates Write operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()
@@ -2741,6 +3013,20 @@ func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 //
 // Returns:
 //   - string: The contents of the buffer.
+//
+// Summary: Executes String operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (tsb *threadSafeBuffer) String() string {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()

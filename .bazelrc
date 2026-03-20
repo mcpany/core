@@ -1,6 +1,7 @@
 # Bazel configuration for MCP Any
 
-# build --config=remote
+build --config=remote
+test --config=remote
 
 # Enable disk cache for fast incremental builds
 build --disk_cache=~/.cache/bazel-disk-cache
@@ -96,6 +97,8 @@ common:buildbuddy-official --remote_executor=grpcs://onehumancorp.buildbuddy.io
 common:buildbuddy-official --remote_cache_compression
 common:buildbuddy-official --jobs=200
 common:buildbuddy-official --remote_local_fallback
+# Default read-only key
+common:buildbuddy-official --remote_header=x-buildbuddy-api-key=vGFjlQg7X49NwoQHAfRW
 
 # Set buildbuddy as the default configuration for all builds
 build:remote --config=buildbuddy-official

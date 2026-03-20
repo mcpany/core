@@ -43,6 +43,7 @@ mcpany.db
 .audits/
 .audit/
 *.txt
+!**/requirements_lock.txt
 
 # Lint reports
 lint_report.*

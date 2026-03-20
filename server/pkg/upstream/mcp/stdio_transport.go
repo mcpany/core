@@ -19,6 +19,8 @@ import (
 
 // StdioTransport implements mcp.Transport for a local command,
 // capturing stderr to provide better error messages on failure.
+//
+// Summary: Represents a StdioTransport.
 type StdioTransport struct {
 	Command *exec.Cmd
 }
@@ -34,6 +36,20 @@ type StdioTransport struct {
 //
 // Errors:
 //   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Connect operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -110,6 +126,20 @@ type stdioConn struct {
 //
 // Errors:
 //   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Retrieves Read operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -213,6 +243,20 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 //
 // Side Effects:
 //   - None.
+//
+// Summary: Updates Write operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -262,6 +306,20 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 //
 // Side Effects:
 //   - None.
+//
+// Summary: Executes Close operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (c *stdioConn) Close() error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -281,6 +339,20 @@ func (c *stdioConn) Close() error {
 //
 // Returns:
 //   - string: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes SessionID operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
