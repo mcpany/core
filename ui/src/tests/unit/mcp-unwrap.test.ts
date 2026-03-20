@@ -3,8 +3,50 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { deepParseJson } from '@/lib/mcp-unwrap';
+import { unwrapMcpResult, deepParseJson } from '@/lib/mcp-unwrap';
 import { describe, it, expect } from 'vitest';
+
+describe('unwrapMcpResult', () => {
+    it('returns the full object and does not strip properties if content is an array but it retains outer properties', () => {
+        const input = {
+            content: [
+                {
+                    type: 'text',
+                    text: '{"value": "Version 1"}'
+                }
+            ],
+            isError: false,
+            value: "Version 1"
+        };
+        const expected = {
+            content: [
+                {
+                    type: 'text',
+                    text: '{"value": "Version 1"}'
+                }
+            ],
+            isError: false,
+            value: "Version 1"
+        };
+        // It shouldn't strip the outer wrapper, because the output would lose the isError flag and value field
+        expect(unwrapMcpResult(input)).toEqual(expected);
+    });
+
+    it('returns the inner parsed json if it was a plain CallToolResult with only content', () => {
+        const input = {
+            content: [
+                {
+                    type: 'text',
+                    text: '{"value": "Version 1"}'
+                }
+            ]
+        };
+        const expected = {
+            value: 'Version 1'
+        };
+        expect(unwrapMcpResult(input)).toEqual(expected);
+    });
+});
 
 describe('deepParseJson', () => {
     it('parses a simple JSON string into an object', () => {

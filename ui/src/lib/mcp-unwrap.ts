@@ -16,6 +16,22 @@ export function unwrapMcpResult(result: any): any {
     // Unwrap CallToolResult structure
     if (result && typeof result === 'object' && Array.isArray(result.content)) {
         content = result.content;
+
+        // Check if there are other properties besides content and isError
+        // If there are only standard wrapper properties (like isError), we consider it fully wrappable.
+        // If it has non-standard properties, we might still want to unwrap content, but the caller
+        // (like diff viewer) needs to see the full structure if it has extra data.
+        const keys = Object.keys(result);
+        const hasExtraKeys = keys.some(k => k !== 'content' && k !== 'isError');
+
+        if (hasExtraKeys) {
+            // If it has extra keys (like "value" in the diff-feature.png), it means the result IS NOT
+            // just a simple wrapper. So we should NOT strip the content wrapper. We should return the
+            // original result, but let deepParseJson handle deep stringified JSONs.
+            // However, we want deepParseJson to parse it.
+            // deepParseJson handles nested objects, so if we return result, deepParseJson WILL parse it.
+            return result;
+        }
     }
 
     // Handle Command Output wrapper
@@ -61,6 +77,8 @@ export function unwrapMcpResult(result: any): any {
         }
     }
 
+    // If we originally found a clean CallToolResult but couldn't unwrap its inner array to a single JSON object,
+    // we should still return the content array (which is what the old logic did) so it gets unwrapped.
     return content;
 }
 
