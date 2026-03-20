@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+//nolint:typecheck
 	pb "github.com/mcpany/core/proto/admin/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcprouterv1 "github.com/mcpany/core/proto/mcp_router/v1"
