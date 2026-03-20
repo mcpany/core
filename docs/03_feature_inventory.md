@@ -18,6 +18,18 @@
 - **Active Intent Alignment (AIA) Broker**: (Evolved to AIA Hub) Now designated as the primary "Alignment Anchor" for all connected agents.
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SEF-compliant** trace analysis.
 
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Active Intent Alignment (AIA) Hub**: (P0) Advanced alignment service that issues hardware-attested heartbeats to ensure specialist agent reasoning traces remain mission-anchored.
+- **Trace-Aware Identity (TAI) Bridge**: (P0) Identity service that binds teammate actions to their unique reasoning lineage and the hardware-attested mission-root.
+- **Mesh-Resident Reasoning-GC**: (P1) Decentralized stability middleware for horizontal meshes that purges redundant context fragments.
+- **Semantic Entropy Filter (SEF)**: (P0) Security middleware for the T2T Bridge that detects and blocks malicious "Trace-Injection" patterns in sharded caches.
+
+### Priority Shifts
+- **Active Intent Alignment (AIA) Broker**: (Evolved to AIA Hub) Now designated as the primary "Alignment Anchor" for all connected agents.
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SEF-compliant** trace analysis.
+
 ## Evolution: [2026-06-17] Updates
 
 ### Proposed Additions

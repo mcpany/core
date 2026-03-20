@@ -17,6 +17,7 @@
 * **[P1] Mesh-Resident Reasoning-GC**: Decentralized stability middleware for purging redundant reasoning fragments from shared mesh memory. (Added: 2026-06-18)
 * **[P0] Semantic Entropy Filter (SEF)**: Transport-level security middleware for detecting "Trace-Injection" patterns in sharded caches. (Added: 2026-06-18)
 
+
 ### Upcoming: [2026-06-17]
 - **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment service issuing hardware-attested heartbeats for mission-anchored reasoning (Added: 2026-06-17).
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
