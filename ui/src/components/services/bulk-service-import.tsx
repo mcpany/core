@@ -26,10 +26,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 
 interface BulkServiceImportProps {
     onImportSuccess: () => void;
@@ -116,11 +114,11 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                 let data: any;
                 try {
                     data = JSON.parse(jsonContent);
-                } catch (e) {
+                } catch (_e) {
                     // Try YAML
                     try {
                         data = yaml.load(jsonContent);
-                    } catch (yamlErr) {
+                    } catch (_yamlErr) {
                         throw new Error("Failed to parse input as JSON or YAML.");
                     }
                 }
@@ -144,7 +142,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
             // Trigger async validation for each
             validateItems(initialItems);
 
-        } catch (e: any) {
+        } catch (_e: any) {
             setParsingError(e.message || "Failed to parse input.");
             setIsValidating(false);
         }
@@ -180,7 +178,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                          validatedItems[index].selected = false;
                      }
                 }
-            } catch (e: any) {
+            } catch (_e: any) {
                 validatedItems[index].validationStatus = "invalid";
                 validatedItems[index].validationMessage = e.message;
                 validatedItems[index].selected = false;
@@ -252,7 +250,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                 await apiClient.registerService(item.config);
                 results[originalIndex].importStatus = "success";
                 successCount++;
-            } catch (e: any) {
+            } catch (_e: any) {
                 results[originalIndex].importStatus = "error";
                 results[originalIndex].importError = e.message;
                 failureCount++;
