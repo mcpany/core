@@ -18,6 +18,7 @@ interface KeyValueEditorProps {
 }
 
 interface KeyValuePair {
+    id: string;
     key: string;
     value: string;
 }
@@ -30,7 +31,7 @@ export function KeyValueEditor({ initialValues, onChange, keyPlaceholder = "Key"
 
     useEffect(() => {
         if (initialValues) {
-            setPairs(Object.entries(initialValues).map(([key, value]) => ({ key, value })));
+            setPairs(Object.entries(initialValues).map(([key, value]) => ({ id: crypto.randomUUID(), key, value })));
         } else {
             setPairs([]);
         }
@@ -47,7 +48,7 @@ export function KeyValueEditor({ initialValues, onChange, keyPlaceholder = "Key"
     };
 
     const addPair = () => {
-        const newPairs = [...pairs, { key: "", value: "" }];
+        const newPairs = [...pairs, { id: crypto.randomUUID(), key: "", value: "" }];
         setPairs(newPairs);
         // Do not update parent on add, wait for input
     };
@@ -72,7 +73,9 @@ export function KeyValueEditor({ initialValues, onChange, keyPlaceholder = "Key"
     return (
         <div className="space-y-2">
             {pairs.map((pair, index) => (
-                <div key={index} className="flex items-center gap-2">
+                // ⚡ BOLT: [Render Optimization] Replaced array index keys with stable unique IDs to prevent unnecessary DOM re-mounts and state loss during list mutations.
+                // Randomized Selection from Top 5 High-Impact Targets
+                <div key={pair.id} className="flex items-center gap-2">
                     <Input
                         placeholder={keyPlaceholder}
                         value={pair.key}
