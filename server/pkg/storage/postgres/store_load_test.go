@@ -17,6 +17,19 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// TestStore_Load validates the behavior of the Store.Load method.
+//
+// Parameters:
+//   - t (*testing.T): The testing context.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func TestStore_Load(t *testing.T) {
 	t.Run("Happy Path", func(t *testing.T) {
 		db, mock, err := sqlmock.New(sqlmock.MatchExpectationsInOrder(false))
