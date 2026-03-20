@@ -210,6 +210,24 @@ func init() {
 }`,
 			"npx -y @modelcontextprotocol/server-cloudflare",
 		),
+		mkTemplate(
+			"swarm-orchestrator",
+			"Swarm Orchestrator (Premium)",
+			`{
+  "type": "object",
+  "title": "Swarm Orchestrator Configuration",
+  "properties": {
+    "MAX_QPS": {
+      "type": "string",
+      "title": "Max Queries Per Second",
+      "description": "Simulated upper bound of traffic (e.g. 5000).",
+      "default": "5000"
+    }
+  },
+  "required": ["MAX_QPS"]
+}`,
+			"npx -y @mcpany/swarm-load-test-generator ${MAX_QPS}",
+		),
 	}
 
 	BuiltinServiceTemplates = []*configv1.ServiceTemplate{
@@ -356,6 +374,27 @@ func init() {
 				UpstreamAuth: configv1.Authentication_builder{
 					Oauth2: configv1.OAuth2Auth_builder{
 						Scopes: proto.String("read:jira-work,write:jira-work"),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("swarm-monitor"),
+			Name:        proto.String("Enterprise Swarm Monitor"),
+			Description: proto.String("Premium traffic injection for heat-mapped Agent Flow."),
+			Icon:        proto.String("activity"),
+			Tags:        []string{"monitoring", "enterprise", "premium"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("swarm-monitor"),
+				McpService: configv1.McpUpstreamService_builder{
+					HttpConnection: configv1.McpStreamableHttpConnection_builder{
+						HttpAddress: proto.String("https://api.swarm-metrics.example.com"),
+					}.Build(),
+					ToolAutoDiscovery: proto.Bool(true),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					Oauth2: configv1.OAuth2Auth_builder{
+						Scopes: proto.String("read:metrics,write:telemetry"),
 					}.Build(),
 				}.Build(),
 			}.Build(),
