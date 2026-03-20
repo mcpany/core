@@ -553,7 +553,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Strategic Pivot**:
 - **Cognitive Integrity Broker**: MCP Any will evolve the Blackboard into a "Versioning State Hub." We will provide the infrastructure for ASH by supporting atomic rollbacks and alignment heartbeats, ensuring that agent swarms remain bound to their root mission intent.
 - **Distributed Trust Lease Broker**: We are adopting the UACO v2.5 LFTA model as a core infrastructure utility. MCP Any will act as a broker for time-bound, hardware-attested leases, allowing agents to execute bursts of tool calls with sub-millisecond security validation.
-- **Deep Packet Enforcement (DPPE)**: To counter CVE-2026-31042, we are expanding the "Validating Proxy" to perform L4 inspection of DNS and ICMP traffic, neutralizing "Binary Smuggling" exfiltration attempts.
+- **Deep Packet Enforcement (DPPE)**: To combat CVE-2026-31042, we are expanding the "Validating Proxy" to perform L4 inspection of DNS and ICMP traffic, neutralizing "Binary Smuggling" exfiltration attempts.
 
 ## Strategic Evolution: [2026-04-18]
 ### Focus: Foundation-Neutral Governance & Resident Sandbox Integrity
