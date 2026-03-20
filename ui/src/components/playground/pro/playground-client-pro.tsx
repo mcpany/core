@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 
 import { ToolSidebar } from "./tool-sidebar";
 import { ChatMessage, Message } from "./chat-message";
+import { InlineToolForm } from "./inline-tool-form";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 
@@ -82,6 +83,7 @@ export function PlaygroundClientPro() {
   const { toast } = useToast();
 
   const [mode, setMode] = useState<"console" | "runner">("console");
+  const [activeInlineTool, setActiveInlineTool] = useState<ToolDefinition | null>(null);
 
   const currentTokens = useMemo(() => estimateTokens(input), [input]);
   const historyTokens = useMemo(() => estimateMessageTokens(displayMessages), [displayMessages]);
@@ -161,9 +163,9 @@ export function PlaygroundClientPro() {
   };
 
   const selectSuggestion = (tool: ToolDefinition) => {
-      setToolToConfigure(tool);
-      setMode("runner");
+      setActiveInlineTool(tool);
       setShowSuggestions(false);
+      setInput(""); // Clear input as we are moving to the wizard
   };
 
   const handleReplay = (toolName: string, args: Record<string, unknown>) => {
@@ -209,6 +211,10 @@ export function PlaygroundClientPro() {
           timestamp: new Date(),
       }]);
 
+      await executeAndAppendResult(toolName, toolArgs);
+  };
+
+  const executeAndAppendResult = async (toolName: string, toolArgs: Record<string, unknown>) => {
       try {
           const result = await apiClient.executeTool({
               name: toolName,
@@ -255,6 +261,29 @@ export function PlaygroundClientPro() {
       } finally {
           setIsLoading(false);
       }
+  };
+
+  const handleInlineSubmit = async (toolName: string, toolArgs: Record<string, unknown>) => {
+      const userMsg: Message = {
+          id: Date.now().toString(),
+          type: "user",
+          content: `${toolName} ${JSON.stringify(toolArgs)}`,
+          timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, userMsg]);
+      setIsLoading(true);
+      setActiveInlineTool(null);
+
+      setMessages(prev => [...prev, {
+          id: Date.now().toString() + "-tool",
+          type: "tool-call",
+          toolName: toolName,
+          toolArgs: toolArgs,
+          timestamp: new Date(),
+      }]);
+
+      await executeAndAppendResult(toolName, toolArgs);
   };
 
   const handleExportHistory = () => {
@@ -455,7 +484,17 @@ export function PlaygroundClientPro() {
                         </div>
 
                         {/* Input Area */}
-                        <div className="p-4 bg-background border-t">
+                        <div className="p-4 bg-background border-t relative z-20">
+                            {activeInlineTool && (
+                                <div className="absolute bottom-full left-0 w-full px-4 pb-2">
+                                    <InlineToolForm
+                                        tool={activeInlineTool}
+                                        onSubmit={handleInlineSubmit}
+                                        onCancel={() => setActiveInlineTool(null)}
+                                        isLoading={isLoading}
+                                    />
+                                </div>
+                            )}
                             <div className="max-w-4xl mx-auto flex gap-3 relative">
                                 <div className="flex-1 relative">
                                     <Input
