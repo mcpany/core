@@ -11,12 +11,6 @@
 
 ### Status: Active Development
 
-#### Upcoming (2026-06-07 Evolution)
-*   **[P0] Recursive Mission Attestation (RMA) Provider**: Authoritative hardware-attested mission token issuer for recursive sub-missions. (Added: 2026-06-07)
-*   **[P0] Context-Aware Shard Isolation (CASI) Middleware**: Semantic isolation of mailbox shards to prevent cross-teammate state pollution. (Added: 2026-06-07)
-*   **[P1] CFIB Auction Bridge**: Orchestration bridge for cross-framework intent bidding between Gemini HAIL and OpenClaw SRM. (Added: 2026-06-07)
-*   **[P0] Mission-Receipt Logging Service**: Cryptographic audit trail for mission receipts to prevent shadow delegations. (Added: 2026-06-07)
-
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
@@ -129,6 +123,12 @@
 *   **[P0] Relational PoI Enforcement**: Advanced intent-chain validation to prevent "Context-Mirroring" attacks. (Added: 2026-03-24)
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral profiling of un-attested configuration hooks. (Added: 2026-03-24)
 *   **[P1] BSH State Differential Sync**: Optimized binary state transfer that only sends deltas between agent handoffs. (Added: 2026-03-24)
+
+#### Upcoming (2026-06-07 Evolution)
+*   **[P0] Recursive Mission Attestation (RMA) Provider**: Authoritative hardware-attested mission token issuer for recursive sub-missions. (Added: 2026-06-07)
+*   **[P0] Context-Aware Shard Isolation (CASI) Middleware**: Semantic isolation of mailbox shards to prevent cross-teammate state pollution. (Added: 2026-06-07)
+*   **[P1] CFIB Auction Bridge**: Orchestration bridge for cross-framework intent bidding between Gemini HAIL and OpenClaw SRM. (Added: 2026-06-07)
+*   **[P0] Mission-Receipt Logging Service**: Cryptographic audit trail for mission receipts to prevent shadow delegations. (Added: 2026-06-07)
 
 #### Upcoming (2026-03-25 Evolution)
 *   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary context handoffs. (Added: 2026-03-25)
@@ -289,6 +289,7 @@ These features represent the next logical steps for the product, focusing on Ent
 ### Healthy Areas
 
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
+- **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
 
 #### Upcoming (2026-03-18 Evolution)
