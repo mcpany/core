@@ -513,17 +513,10 @@
 - [ ] **[P0] Shard Lock Visualizer**: Real-time dashboard for monitoring atomic locks and shard ownership. (Added: 2026-06-03)
 - [ ] **[P1] Prefetching Performance Overlay**: Visualization of speculative context hit/miss rates. (Added: 2026-06-03)
 
-### Upcoming: [2026-06-08]
-- [ ] **[P0] ARI Fragment Monitor**: (2026-06-08) Real-time visualization of fragment-level semantic validation events and blocked state-splicing attempts.
-- [ ] **[P0] HAMM Manifest Reviewer**: (2026-06-08) UI for reviewing pre-declared hardware-attested mission manifests before sub-mission execution.
-- [ ] **[P1] Graceful Decay Indicator**: (2026-06-08) Visual status widget for monitoring mission sovereignty decay and re-attestation windows.
-- [ ] **[P0] Fragment Sovereignty Auditor**: (2026-06-08) Security dashboard for verifying ARI-attestation status across the teammate mesh.
-
-### Upcoming: [2026-06-07]
-- **Semantic Shadowing Dashboard**: (P0) A behavioral security workspace for the AID Hub that visualizes stylometric and contextual consistency alerts.
-- **Mission-Locked Execution (MLE) Visualizer**: (P0) Security UI for viewing and auditing cryptographically locked tool calls and their mission-root lineage.
-- **STR-Native Discovery Status**: (P1) Real-time monitor for "Sovereign Tool Registry" behavioral manifests and TPM-attestation events.
-- **Ephemeral Mission Root Monitor**: (P1) Lifecycle manager UI for monitoring the temporal sovereignty of mission-root tokens.
+### Upcoming: [2026-06-04]
+- **Speculative Sanitization Dashboard**: Visualization of neutralized speculative poisoned fragments and their sources.
+- **Mission-Root Gravity Status**: Real-time monitoring of "Semantic Drift" and mission-root anchoring across agent teammate shards.
+- **Multi-Hop Trust Persistence Monitor**: Detailed view of hardware-attested trust leases and their propagation across deep swarms.
 
 ### Upcoming: [2026-06-05]
 - **Intent-Splicing Audit Log**: (P0) Forensic UI for reviewing deconstructed inter-agent messages and splicing attempts.
@@ -531,15 +524,22 @@
 - **HAIL Lineage Tracer**: (P0) Visual debugger for hardware-attested intent lineage (HAIL), mapping tool calls to root mission intents.
 - **Synthetic Policy Workspace**: (P1) Interactive environment for reviewing and approving mesh-synthesized security policies.
 
-### Upcoming: [2026-06-04]
-- **Speculative Sanitization Dashboard**: Visualization of neutralized speculative poisoned fragments and their sources.
-- **Mission-Root Gravity Status**: Real-time monitoring of "Semantic Drift" and mission-root anchoring across agent teammate shards.
-- **Multi-Hop Trust Persistence Monitor**: Detailed view of hardware-attested trust leases and their propagation across deep swarms.
-
 ### Upcoming: [2026-06-06]
 - **Intent-Splicing Audit Log**: (P0) Real-time visualization of semantically deconstructed inter-agent messages and blocked splicing attempts.
 - **CGC Lifecycle Manager**: (P0) Security dashboard for monitoring capability garbage collection and identifying "Ghost Agents."
 - **MRLA Handshake Debugger**: (P0) Forensic UI for visualizing A2A discovery handshakes and mission-root lineage proofs.
+
+### Upcoming: [2026-06-07]
+- **Semantic Shadowing Dashboard**: (P0) A behavioral security workspace for the AID Hub that visualizes stylometric and contextual consistency alerts.
+- **Mission-Locked Execution (MLE) Visualizer**: (P0) Security UI for viewing and auditing cryptographically locked tool calls and their mission-root lineage.
+- **STR-Native Discovery Status**: (P1) Real-time monitor for "Sovereign Tool Registry" behavioral manifests and TPM-attestation events.
+- **Ephemeral Mission Root Monitor**: (P1) Lifecycle manager UI for monitoring the temporal sovereignty of mission-root tokens.
+
+### Upcoming: [2026-06-08]
+- [ ] **[P0] ARI Fragment Monitor**: (2026-06-08) Real-time visualization of fragment-level semantic validation events and blocked state-splicing attempts.
+- [ ] **[P0] HAMM Manifest Reviewer**: (2026-06-08) UI for reviewing pre-declared hardware-attested mission manifests before sub-mission execution.
+- [ ] **[P1] Graceful Decay Indicator**: (2026-06-08) Visual status widget for monitoring mission sovereignty decay and re-attestation windows.
+- [ ] **[P0] Fragment Sovereignty Auditor**: (2026-06-08) Security dashboard for verifying ARI-attestation status across the teammate mesh.
 
 ### Upcoming: [2026-06-09]
 - **Mesh-Resident Lineage Tracker**: (P0) Visualizer for auditing hardware-attested reasoning chains across multi-hop delegations. (Added: 2026-06-09)
@@ -574,17 +574,17 @@
 - [ ] **[P0] Attention-Locked Shard Viewer**: (2026-06-14) Dashboard for monitoring hardware-protected fragments in the ALCS attention tier.
 - [ ] **[P0] Sovereign Discovery Console**: (2026-06-14) Authorization workspace for hardware-attested SDP validation of capability cards.
 
-### Upcoming: [2026-06-16]
-- [ ] **[P0] Entanglement Shard Monitor**: (2026-06-16) Real-time visualization of cryptographically entangled state fragments.
-- [ ] **[P0] Stylometric Mimicry Dashboard**: (2026-06-16) Security workspace for visualizing stylometric consistency alerts.
-- [ ] **[P1] Speculative Branching Visualizer**: (2026-06-16) Visual tracker for "Shadow Branches" and attention leakage alerts.
-- [ ] **[P0] MRKE Key Rotation Widget**: (2026-06-16) Status indicator for hardware-bound session key rotation.
-
 ### Upcoming: [2026-06-15]
 - [ ] **[P0] Intent-Resumption Dashboard**: (2026-06-15) Visualizer for monitoring "Intent-Resumption Token" issuance and handoff latency.
 - [ ] **[P0] Side-Channel Timing Heatmap**: (2026-06-15) Real-time monitor of ASLM timing jitter and blocked shard-collision probes.
 - [ ] **[P1] Attention-Locked Telemetry Viewer**: (2026-06-15) Security UI for reviewing sanitized reasoning traces and attention-mapping redactions.
 - [ ] **[P0] WASM-Hook Safety Reporter**: (2026-06-15) UI for viewing behavioral profiling results for un-attested configuration hooks.
+
+### Upcoming: [2026-06-16]
+- [ ] **[P0] Entanglement Shard Monitor**: (2026-06-16) Real-time visualization of cryptographically entangled state fragments.
+- [ ] **[P0] Stylometric Mimicry Dashboard**: (2026-06-16) Security workspace for visualizing stylometric consistency alerts.
+- [ ] **[P1] Speculative Branching Visualizer**: (2026-06-16) Visual tracker for "Shadow Branches" and attention leakage alerts.
+- [ ] **[P0] MRKE Key Rotation Widget**: (2026-06-16) Status indicator for hardware-bound session key rotation.
 
 ### Upcoming: [2026-06-17]
 - [ ] **[P0] Active Intent Alignment Monitor**: (2026-06-17) Visual indicator for AIA heartbeat status and semantic drift alerts.
