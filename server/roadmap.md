@@ -673,6 +673,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Atomic Shard Lock-Manager**: Kernel-level lock manager for granular context streaming. (Added: 2026-06-03)
 *   **[P1] Zero-Latency Shard Prefetcher**: Speculative context loading based on real-time intent analysis. (Added: 2026-06-03)
 
+#### Upcoming (2026-06-18 Evolution)
+*   **[P0] Teammate Sovereignty Enforcer (TSE)**: Authoritative isolation kernel providing cryptographically bound isolation for parallel teams. (Added: 2026-06-18)
+*   **[P0] Request-Side Injection Shield (RSIS)**: Advanced scanning for AI-generated code to block request-side prompt injection. (Added: 2026-06-18)
+*   **[P1] HADM Discovery Provider**: Support for hardware-attested discovery manifests to lock capabilities to pre-declared missions. (Added: 2026-06-18)
+*   **[P0] Lock-Free Coordination Buffers**: High-performance, atomic coordination data structures for parallel teammate messaging. (Added: 2026-06-18)
+
 ### Upcoming: [2026-06-08]
 - **Atomic Reasoning Integrity (ARI) Validator**: (P0) Advanced security middleware for fragment-level semantic validation of shared teammate state. (Added: 2026-06-08)
 - **HAMM-Locked MLE Gateway**: (P0) Upgrade for the MLE Gateway to support "Hardware-Attested Mission Manifests" (Added: 2026-06-08).
