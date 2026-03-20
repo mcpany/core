@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 /**
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -5,7 +6,7 @@
 
 
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import * as yaml from "js-yaml";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
