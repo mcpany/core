@@ -18,15 +18,20 @@ vi.mock('react-virtuoso', () => ({
   TableVirtuoso: (props: any) => {
     const { data, itemContent, components, context } = props;
     const TableRow = components?.TableRow || 'tr';
+    const EmptyPlaceholder = components?.EmptyPlaceholder;
     return (
       <table>
-        <tbody>
-          {data.map((item: any, index: number) => (
-            <TableRow key={index} item={item} context={context}>
-              {itemContent(index, item)}
-            </TableRow>
-          ))}
-        </tbody>
+        {data && data.length > 0 ? (
+          <tbody>
+            {data.map((item: any, index: number) => (
+              <TableRow key={index} item={item} context={context}>
+                {itemContent(index, item)}
+              </TableRow>
+            ))}
+          </tbody>
+        ) : (
+          EmptyPlaceholder ? <EmptyPlaceholder /> : null
+        )}
       </table>
     );
   }
