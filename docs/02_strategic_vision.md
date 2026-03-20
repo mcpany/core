@@ -18,7 +18,7 @@ security policies.
 
 ## Strategic Evolution: [2026-05-23]
 
-### Focus: Federated Swarm Identity & Mission-Root Sovereignty (2026-05-23)
+### Focus: Federated Swarm Identity & Mission-Root Sovereignty
 
 **Context**: The emergence of "Intent Leakage" via high-frequency reasoning
 traces and the persistent "Identity Spoofing" in heterogeneous meshes (Claude
@@ -47,7 +47,7 @@ persists across all connected frameworks. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-24]
 
-### Focus: Active Negotiation Brokering & Differential Context Sovereignty (2026-05-24)
+### Focus: Active Negotiation Brokering & Differential Context Sovereignty
 
 **Context**: The emergence of "Dynamic Task-Capability Bidding" (DTCB) and the
 disclosure of the "Context-Dump" exploit (CVE-2026-39102) reveal that the
@@ -79,7 +79,7 @@ the shared teammate mailbox. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-30]
 
-### Focus: Hardware-Attested Mesh Identity & Non-Blocking Coordination (2026-05-30)
+### Focus: Hardware-Attested Mesh Identity & Non-Blocking Coordination
 
 **Context**: The emergence of horizontal swarms (Claude Code Agent Teams) and
 the shift toward hardware-bound local sovereignty (OpenClaw) reveal that
@@ -109,9 +109,9 @@ Mesh Governance. **Strategic Pivot**:
 
 ---
 
-## Strategic Evolution: [2026-05-23] (II)
+## Strategic Evolution: [2026-05-23] (2)
 
-### Focus: Local Zero-Trust (LOWA) & Peer-to-Peer Agent Orchestration (2026-05-23)
+### Focus: Local Zero-Trust (LOWA) & Peer-to-Peer Agent Orchestration
 
 **Context**: The disclosure of "ClawJacked" (CVE-2026-25253) proves that
 "Implicit Local Trust" for loopback WebSocket traffic is a critical failure
@@ -140,7 +140,7 @@ teammate communication. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-21]
 
-### Focus: Reasoning Stability & Temporal Integrity (2026-05-21)
+### Focus: Reasoning Stability & Temporal Integrity
 
 **Context**: The GA release of Policy-Bound Reasoning (PBR) and the disclosure
 of "Reasoning Timing Attacks" (RTA) confirm that the "Universal Agent Bus" must
@@ -172,7 +172,7 @@ mission-root anchor. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-20]
 
-### Focus: Cognitive Path Governance & Multi-modal Integrity (2026-05-20)
+### Focus: Cognitive Path Governance & Multi-modal Integrity
 
 **Context**: The introduction of "Policy-Bound Reasoning" (PBR) by major model
 providers and the discovery of "Context Smuggling" in multi-modal traces
@@ -204,7 +204,7 @@ conflicting intents in decentralized swarms. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-19]
 
-### Focus: Cognitive Truth & Hardware-Attested Snapshot Integrity (HASS) (2026-05-19)
+### Focus: Cognitive Truth & Hardware-Attested Snapshot Integrity (HASS)
 
 **Context**: The emergence of "Reasoning Hijacking" via monologue injection and
 the persistent "Namespace Collision" in heterogeneous swarms confirm that
@@ -236,7 +236,7 @@ environment recovery. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-18]
 
-### Focus: Contextual Integrity & Deadlock-Resilient Orchestration (2026-05-18)
+### Focus: Contextual Integrity & Deadlock-Resilient Orchestration
 
 **Context**: The emergence of "Mission Root Exhaustion" (MRE) and
 "Protocol-Agnostic State Injection" (PASI) proves that securing the transport
@@ -270,7 +270,7 @@ Pivot**:
 
 ## Strategic Evolution: [2026-05-17]
 
-### Focus: Cross-Framework Swarm Orchestration & Transport-Layer Session Integrity (2026-05-17)
+### Focus: Cross-Framework Swarm Orchestration & Transport-Layer Session Integrity
 
 **Context**: The official launch of Claude Code "Agent Teams" and the
 stabilization of OpenClaw's `ContextEngine` v2026.3.7 signal a transition from
@@ -304,7 +304,7 @@ bound to the transport session itself. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-16]
 
-### Focus: Reasoning-Level Consensus & Transport-Session Binding (2026-05-16)
+### Focus: Reasoning-Level Consensus & Transport-Session Binding
 
 **Context**: The emergence of "Reasoning Quorum" (RQ) and the discovery of "Team
 Ghosting" in named pipes confirm that security must now move from the tool-call
@@ -335,7 +335,7 @@ cryptographically bound to active sessions. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-15]
 
-### Focus: Discovery-Phase Sovereignty & Consensus-Based Task Attestation (2026-05-15)
+### Focus: Discovery-Phase Sovereignty & Consensus-Based Task Attestation
 
 **Context**: The rise of "Agentic Social Engineering" and the emergence of
 "Protocol-Neutral Task Discovery" (PNTD) mark a critical shift in the Universal
@@ -365,7 +365,7 @@ sovereignty of the tool discovery phase. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-14]
 
-### Focus: Pluggable Context Sovereignty & Swarm-Speed Identity Defense (2026-05-14)
+### Focus: Pluggable Context Sovereignty & Swarm-Speed Identity Defense
 
 **Context**: The maturation of OpenClaw's `ContextEngine` and the rise of "AI
 Swarm Attacks" (Hivenets) mark a shift from linear agent security to
@@ -396,7 +396,7 @@ hardware-attested identity and state orchestration. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-13]
 
-### Focus: Mandatory Loopback-to-Pipe Migration & Pre-Execution Injection Shielding (2026-05-13)
+### Focus: Mandatory Loopback-to-Pipe Migration & Pre-Execution Injection Shielding
 
 **Context**: The disclosure of "ClawdBot" unauthenticated loopback
 vulnerabilities (port 18789) and the Cyera report on Gemini CLI prompt/command
@@ -422,7 +422,7 @@ shielding. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-12]
 
-### Focus: Routing Isolation Sovereignty & Port-Free Transport (2026-05-12)
+### Focus: Routing Isolation Sovereignty & Port-Free Transport
 
 **Context**: The GSA-2026-OPENCLAW-ROUTING advisory and the subsequent industry
 pivot confirm that local network port exposure is a critical vulnerability for
@@ -445,7 +445,7 @@ filesystem for absolute isolation. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-11]
 
-### Focus: Discovery-Phase Sovereignty & Parallel Team Coordination (2026-05-11)
+### Focus: Discovery-Phase Sovereignty & Parallel Team Coordination
 
 **Context**: The disclosure of CVE-2026-0628 and the rise of "Ghost-Execution"
 via discovery commands confirm that the tool discovery phase is the new critical
@@ -473,7 +473,7 @@ coordination and state consistency must be managed at sub-millisecond latency.
 
 ## Strategic Evolution: [2026-05-10]
 
-### Focus: Task-Bound Discovery Isolation & Continuous Negative Attestation (2026-05-10)
+### Focus: Task-Bound Discovery Isolation & Continuous Negative Attestation
 
 **Context**: The Gemini CLI "Ghost-Execution" via discovery commands and Claude
 Code's "Shadow-Sandbox" escape (CVE-2026-25725) prove that the "Pre-Flight"
@@ -500,7 +500,7 @@ Pivot**:
 
 ## Strategic Evolution: [2026-05-09]
 
-### Focus: Shadow-Subagent Lineage & Hardware-Locked Permission Hardening (2026-05-09)
+### Focus: Shadow-Subagent Lineage & Hardware-Locked Permission Hardening
 
 **Context**: The emergence of "Shadow Subagent" spawns in OpenClaw (context
 contamination) and the shift toward Continuous Project Configuration Protection
@@ -526,7 +526,7 @@ complete parentage of every request and the real-time state of the environment.
 
 ## Strategic Evolution: [2026-05-08]
 
-### Focus: Active Fragment Sealing & Deterministic Permission Guarding (2026-05-08)
+### Focus: Active Fragment Sealing & Deterministic Permission Guarding
 
 **Context**: The discovery of "EchoLeak" (context exfiltration via semantic
 side-channels) and the persistent "Permission Bypass" failures in production
@@ -553,7 +553,7 @@ for real-time agent optimization. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-07]
 
-### Focus: Distributed Supervisor Meshes & SDK Boundary Enforcement (2026-05-07)
+### Focus: Distributed Supervisor Meshes & SDK Boundary Enforcement
 
 **Context**: The enterprise pivot from pilot projects to production swarms
 (approaching 40% of apps by 2026) has exposed the "Supervisor Bottleneck."
@@ -580,7 +580,7 @@ Pivot**:
 
 ## Strategic Evolution: [2026-05-06]
 
-### Focus: Origin-Locked Agency & Intent-Sealed Memory (2026-05-06)
+### Focus: Origin-Locked Agency & Intent-Sealed Memory
 
 **Context**: The "ClawJacked" (CVE-2026-25253) exploit proves that implicit
 local trust is a catastrophic failure point when browser-based attackers can
@@ -604,7 +604,7 @@ swarm divergence and knowledge loss. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-05]
 
-### Focus: Reasoning-Aware Memory Segmentation (RAMS) (2026-05-05)
+### Focus: Reasoning-Aware Memory Segmentation (RAMS)
 
 **Context**: OpenClaw's prototyping of "Intent-Bound Memory Isolation" and the
 emergence of "Recursive Context Splicing" (RCS) exploits reveal that shared
@@ -628,7 +628,7 @@ Smearing" and "Ghost Fragment" injection demand a move from simple isolation to
 
 ## Strategic Evolution: [2026-05-04]
 
-### Focus: Semantic Integrity & Kernel-Bound Intent Persistence (2026-05-04)
+### Focus: Semantic Integrity & Kernel-Bound Intent Persistence
 
 **Context**: The release of OpenClaw's "Semantic Garbage Collection" (SGC) and
 the discovery of "Recursive Intent Poisoning" (RIP) mark a shift from simple
@@ -652,7 +652,7 @@ path-based validation is no longer sufficient. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-03]
 
-### Focus: Deadlock-Resilient Attestation & Hierarchical Lease Enforcement (2026-05-03)
+### Focus: Deadlock-Resilient Attestation & Hierarchical Lease Enforcement
 
 **Context**: The emergence of "Attestation Deadlocks" in OpenClaw swarms and the
 release of the UACO v3.2 "Hierarchical Intent Leases" (HIL) draft mark a shift
@@ -675,7 +675,7 @@ by depth-aware hardware attestation. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-02]
 
-### Focus: Risk-Adaptive Quorums & Deterministic Environment Recovery (2026-05-02)
+### Focus: Risk-Adaptive Quorums & Deterministic Environment Recovery
 
 **Context**: The introduction of OpenClaw's "Adaptive Quorum Thresholds" (AQT)
 and Claude Code's "Deterministic Sandbox Recovery" (DSR) signals a move toward
@@ -702,7 +702,7 @@ dynamic system that scales with risk, while environment resilience is becoming
 
 ## Strategic Evolution: [2026-05-01]
 
-### Focus: Collective Reasoning Integrity & Adaptive Swarm Governance (2026-05-01)
+### Focus: Collective Reasoning Integrity & Adaptive Swarm Governance
 
 **Context**: The release of OpenClaw's "Contextual Quorum" (CQ) and Gemini CLI's
 "Adaptive Intent Budgeting" (AIB) signals a shift toward collective,
@@ -727,7 +727,7 @@ the fluctuating reasoning effort of deep agent chains. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-30]
 
-### Focus: Mesh-Aware Intelligence & Kernel-Bound Persistence (2026-04-30)
+### Focus: Mesh-Aware Intelligence & Kernel-Bound Persistence
 
 **Context**: The release of OpenClaw v2026.4.1 (Mesh-Aware Context) and the
 emergence of "Symlink-to-Inode Racing" (SIR) exploits mark a shift from linear
@@ -751,7 +751,7 @@ multi-swarm negotiations. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-29]
 
-### Focus: Lifecycle-Bound Agency & PII-Sovereign Context (2026-04-29)
+### Focus: Lifecycle-Bound Agency & PII-Sovereign Context
 
 **Context**: The maturation of OpenClaw's pluggable "ContextEngine" and the
 ongoing "BoryptGrab" crisis mark a shift from point-in-time privilege to
@@ -776,7 +776,7 @@ loop. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-28]
 
-### Focus: Ephemeral Agency & Virtualized Sovereignty (2026-04-28)
+### Focus: Ephemeral Agency & Virtualized Sovereignty
 
 **Context**: The "BoryptGrab" security crisis and the emergence of Purdue's
 "De-biometricization" system signal a move toward "Ephemeral Agency." We must
@@ -799,7 +799,7 @@ loop. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-27]
 
-### Focus: Adaptive Anchor Governance & Revocable Trust Continuity (2026-04-27)
+### Focus: Adaptive Anchor Governance & Revocable Trust Continuity
 
 **Context**: The introduction of OpenClaw v2026.3.9's "Adaptive Anchor Pruning"
 and Gemini CLI's LFTA v2.1 "Attestation Revocation Lists" signals a transition
@@ -822,7 +822,7 @@ real-time across deep swarms. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-26]
 
-### Focus: Multi-Hop Trust Persistence & Cognitive Sovereignty Consolidation (2026-04-26)
+### Focus: Multi-Hop Trust Persistence & Cognitive Sovereignty Consolidation
 
 **Context**: The maturation of OpenClaw's "Cognitive Anchoring" and the
 standardization of Gemini CLI's LFTA v2.0 trust leases signal a move toward
@@ -845,7 +845,7 @@ Lineage" that survives deep multi-hop delegation without strength degradation.
 
 ## Strategic Evolution: [2026-04-25]
 
-### Focus: Pluggable Context Sovereignty & Authenticated A2A Handshake Consolidation (2026-04-25)
+### Focus: Pluggable Context Sovereignty & Authenticated A2A Handshake Consolidation
 
 **Context**: The acceleration of OpenClaw's `ContextEngine` adoption and the
 stabilization of Gemini CLI v0.33.0's A2A auth suite demand that MCP Any matures
@@ -868,7 +868,7 @@ support long-running agent reasoning sessions. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-24]
 
-### Focus: Pluggable Context Sovereignty & Authenticated A2A Handshakes (2026-04-24)
+### Focus: Pluggable Context Sovereignty & Authenticated A2A Handshakes
 
 **Context**: The release of OpenClaw's matured `ContextEngine` and Gemini CLI
 v0.33.0's A2A authentication suite signals a transition from
@@ -893,7 +893,7 @@ inter-agent discovery process against unauthenticated capability claims.
 
 ## Strategic Evolution: [2026-04-23]
 
-### Focus: Deterministic Lifecycle Attestation & Pluggable Context Governance (2026-04-23)
+### Focus: Deterministic Lifecycle Attestation & Pluggable Context Governance
 
 **Context**: The stabilization of OpenClaw's pluggable `ContextEngine` and the
 disclosure of CVE-2026-25725 (Claude Code sandbox escape) mark a shift from
@@ -918,7 +918,7 @@ environment throughout their entire reasoning cycle. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-22]
 
-### Focus: Cognitive Sovereignty & Negative Trust Architectures (2026-04-22)
+### Focus: Cognitive Sovereignty & Negative Trust Architectures
 
 **Context**: The emergence of "Cognitive Sovereignty" within the Sovereign Agent
 Collective and the discovery of "Replay-as-Delegation" attacks signal a move
@@ -943,7 +943,7 @@ Pivot**:
 
 ## Strategic Evolution: [2026-04-12]
 
-### Focus: Secure A2A Interoperability & Deterministic Environment Integrity (2026-04-12)
+### Focus: Secure A2A Interoperability & Deterministic Environment Integrity
 
 **Context**: The official transition of the A2A protocol to the Linux Foundation
 and the disclosure of CVE-2026-25725 (Claude Code sandbox escape) mark a
@@ -966,7 +966,7 @@ utility, and environment integrity is now the primary security frontier.
 
 ## Strategic Evolution: [2026-04-11]
 
-### Focus: Standardized Agent Interoperability & Deterministic Environment Integrity (2026-04-11)
+### Focus: Standardized Agent Interoperability & Deterministic Environment Integrity
 
 **Context**: The maturation of the A2A protocol as a universal messaging tier
 and the persistent threats from configuration-based vulnerabilities
@@ -991,7 +991,7 @@ communication and the environmental foundation upon which agents operate.
 
 ## Strategic Evolution: [2026-04-10]
 
-### Focus: Deterministic Environment Integrity & Active Context Governance (2026-04-10)
+### Focus: Deterministic Environment Integrity & Active Context Governance
 
 **Context**: Claude Code's response to CVE-2026-25725 and the stabilization of
 OpenClaw's `ContextEngine` mark a shift from "Reactive Defense" to
@@ -1014,7 +1014,7 @@ through it. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-09]
 
-### Focus: Collective Skill Defense & Deterministic Environment Integrity (2026-04-09)
+### Focus: Collective Skill Defense & Deterministic Environment Integrity
 
 **Context**: Recent sandbox escapes (CVE-2026-25725) and the rise of
 "Inference-Time Exploitation" prove that individual agent sandboxing and static
@@ -1035,7 +1035,7 @@ the environment itself. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-07]
 
-### Focus: Collective Skill Defense & Social-Aware Security Boundaries (2026-04-07)
+### Focus: Collective Skill Defense & Social-Aware Security Boundaries
 
 **Context**: The "ClawHavoc" registry compromise and the Moltbook data breach
 prove that individual agent security is insufficient. We are entering the era of
@@ -1060,7 +1060,7 @@ communication channels. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-14]
 
-### Focus: Browser-Origin Validation & Intent-Preserving Context (2026-03-14)
+### Focus: Browser-Origin Validation & Intent-Preserving Context
 
 **Context**: The OpenClaw security crisis (CVE-2026-25253) reveals that "Local
 Trust" is a flawed assumption when browser-based attacks can bridge the gap.
@@ -1084,7 +1084,7 @@ Pivot**:
 
 ## Strategic Evolution: [2026-02-23]
 
-### Focus: Standardized Context Inheritance & Multi-Env Bridging (2026-02-23)
+### Focus: Standardized Context Inheritance & Multi-Env Bridging
 
 **Context**: Today's research highlights a major gap in how subagents inherit
 parent context and how agents bridge the gap between cloud sandboxes (e.g.,
@@ -1102,7 +1102,7 @@ Anthropic's) and local tools. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-02-24]
 
-### Focus: Standardizing Multi-Agent Coordination & Heterogeneous Transport (2026-02-24)
+### Focus: Standardizing Multi-Agent Coordination & Heterogeneous Transport
 
 **Context**: Today's findings show that as agents become more specialized
 (OpenClaw's multi-agent refinement) and transport layers more varied (Claude's
@@ -1123,7 +1123,7 @@ coordination hub. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-02-25]
 
-### Focus: On-Demand Tool Discovery & Supply Chain Integrity (2026-02-25)
+### Focus: On-Demand Tool Discovery & Supply Chain Integrity
 
 **Context**: Recent breakthroughs in Claude Code (MCP Tool Search) and the
 "Clinejection" supply chain attack have shifted the landscape. Agents now need
@@ -1144,7 +1144,7 @@ within a verified security perimeter. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-02-26]
 
-### Focus: Federated Agency & A2A Interoperability (2026-02-26)
+### Focus: Federated Agency & A2A Interoperability
 
 **Context**: As agent ecosystems mature, the bottleneck is no longer
 "Model-to-Tool" (MCP) but "Agent-to-Agent" (A2A) and "Node-to-Node"
@@ -1165,7 +1165,7 @@ agentic communications. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-02-28]
 
-### Focus: Safe-by-Default Infrastructure & A2A Mesh Maturity (2026-02-28)
+### Focus: Safe-by-Default Infrastructure & A2A Mesh Maturity
 
 **Context**: The "8,000 Exposed Servers" crisis and the "Clawdbot" incident have
 proven that "Ease of Use" cannot come at the cost of "Default Security."
@@ -1188,7 +1188,7 @@ coordinate. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-09]
 
-### Focus: Project-Local Configuration Security & Intent-Bound Isolation (2026-03-09)
+### Focus: Project-Local Configuration Security & Intent-Bound Isolation
 
 **Context**: Today's findings reveal a critical vulnerability pattern where
 agents automatically ingest "hooks" from project-local configuration files
@@ -1213,7 +1213,7 @@ specialized agents. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-10]
 
-### Focus: Universal Configuration Governance & Swarm Hardening (2026-03-10)
+### Focus: Universal Configuration Governance & Swarm Hardening
 
 **Context**: Today's analysis of CVE-2025-59536 (Claude Code) and OpenClaw's
 refinement loops confirms that "Configuration-as-Execution" is the primary new
@@ -1238,7 +1238,7 @@ cross-agent state injection. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-11]
 
-### Focus: Attested Configurations & Exfiltration-Resistant Transport (2026-03-11)
+### Focus: Attested Configurations & Exfiltration-Resistant Transport
 
 **Context**: Research into CVE-2026-21852 reveals that "Base URL Hijacking" is a
 catastrophic new vector for API key exfiltration. This reinforces the need for
@@ -1263,7 +1263,7 @@ only sanitizes hooks but also forces all agent outbound traffic through an
 
 ## Strategic Evolution: [2026-03-12]
 
-### Focus: Zero-Trust Skill Orchestration & Air-Gapped Transport Compatibility (2026-03-12)
+### Focus: Zero-Trust Skill Orchestration & Air-Gapped Transport Compatibility
 
 **Context**: The "ClawHavoc" malicious skill crisis and the persistent proxy
 failures in cloud-first CLIs (Gemini) demonstrate that the agent ecosystem is
@@ -1287,7 +1287,7 @@ must bridge this gap by providing a verified sanctuary for agent execution.
 
 ## Strategic Evolution: [2026-03-13]
 
-### Focus: Modular Context Interop & Prompt Path Defense (2026-03-13)
+### Focus: Modular Context Interop & Prompt Path Defense
 
 **Context**: The release of OpenClaw's ContextEngine and the rise of "Prompt
 Path" (indirect injection) attacks mark a shift from "Access Control" to
@@ -1306,9 +1306,9 @@ _data_ flowing through them to prevent agent hijacking. **Strategic Pivot**:
 
 ---
 
-## Strategic Evolution: [2026-03-14] (II)
+## Strategic Evolution: [2026-03-14] (2)
 
-### Focus: Browser-Origin Validation & Intent-Preserving Context (2026-03-14 - Part 2)
+### Focus: Browser-Origin Validation & Intent-Preserving Context (2)
 
 **Context**: The OpenClaw security crisis (CVE-2026-25253) reveals that "Local
 Trust" is a flawed assumption when browser-based attacks can bridge the gap.
@@ -1332,7 +1332,7 @@ Pivot**:
 
 ## Strategic Evolution: [2026-03-15]
 
-### Focus: Recursive Loop Protection & Cryptographic Identity Provenance (2026-03-15)
+### Focus: Recursive Loop Protection & Cryptographic Identity Provenance
 
 **Context**: The "M2M Loop" (Spiral of Death) vulnerability and the discovery of
 Subagent Identity Spoofing (CVE-2026-28190) mark the next frontier of agentic
@@ -1354,7 +1354,7 @@ simple request validation to "Relational Integrity." **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-17]
 
-### Focus: Hardened Local Sovereignty & Local Zero Trust (2026-03-17)
+### Focus: Hardened Local Sovereignty & Local Zero Trust
 
 **Context**: The disclosure of CVE-2026-25253 (OpenClaw Token Exfiltration) and
 the Oasis Security report confirm that "Implicit Local Trust" is a catastrophic
@@ -1375,9 +1375,9 @@ agent control planes. **Strategic Pivot**:
 
 ---
 
-## Strategic Evolution: [2026-03-17] (III)
+## Strategic Evolution: [2026-03-17] (2)
 
-### Focus: Swarm Messaging Integrity & Verifiable Reward Infrastructure (2026-03-17)
+### Focus: Swarm Messaging Integrity & Verifiable Reward Infrastructure
 
 **Context**: The rapid adoption of "Agent Teams" (Claude Code) and the pivot to
 "RL-driven Reasoning" (DeepSeek/OpenClaw) confirm that the "Universal Agent Bus"
@@ -1408,7 +1408,7 @@ that optimizes their reasoning. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-16]
 
-### Focus: Zero-Trust Local Transport & Cross-Framework Relational Integrity (2026-03-16)
+### Focus: Zero-Trust Local Transport & Cross-Framework Relational Integrity
 
 **Context**: The OpenClaw security crisis (CVE-2026-25253) has fundamentally
 shifted the "Local Trust" paradigm. Implicit trust of localhost is no longer
@@ -1430,9 +1430,9 @@ Any matures from a tool gateway into a secure, cross-framework Relational Hub.
 
 ---
 
-## Strategic Evolution: [2026-03-17] (IV)
+## Strategic Evolution: [2026-03-17] (3)
 
-### Focus: Local Zero-Trust & Behavioral Skill Attestation (2026-03-17)
+### Focus: Local Zero-Trust & Behavioral Skill Attestation
 
 **Context**: The Oasis Security report on OpenClaw's loopback vulnerability and
 the "Delayed Payload" tactics in ClawHavoc skills demonstrate that the "Local
@@ -1455,7 +1455,7 @@ Intranet" is the new frontier for AI agent exploits. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-18]
 
-### Focus: Holistic Local Zero-Trust & Lineage-Aware Orchestration (2026-03-18)
+### Focus: Holistic Local Zero-Trust & Lineage-Aware Orchestration
 
 **Context**: Today's findings from the OpenClaw (CVE-2026-25253) and Claude Code
 (RCE/Exfiltration) post-mortems confirm that "Local Trust" is dead. The
@@ -1477,7 +1477,7 @@ project-local files as untrusted inputs. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-19]
 
-### Focus: Standardized Task Negotiation & RL-Ready Telemetry (2026-03-19)
+### Focus: Standardized Task Negotiation & RL-Ready Telemetry
 
 **Context**: The maturation of the Universal Agent Coordination Protocol (UACO)
 and the release of OpenClaw-RL v1 signal a shift from simple tool execution to
@@ -1502,7 +1502,7 @@ model. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-20]
 
-### Focus: Dynamic Attestation & Immutable State Trails (2026-03-20)
+### Focus: Dynamic Attestation & Immutable State Trails
 
 **Context**: Today's findings show that the "Implicit Local Trust" era is
 officially over. Both OpenClaw and Claude Code are moving toward session-bound,
@@ -1528,7 +1528,7 @@ validation. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-21]
 
-### Focus: Adaptive Trust Orchestration & Content-Addressable Config Integrity (2026-03-21)
+### Focus: Adaptive Trust Orchestration & Content-Addressable Config Integrity
 
 **Context**: The "Headless Handoff" crisis in OpenClaw v1.6 and the discovery of
 "Binary Smuggling" (CVE-2026-31042) reveal that ephemeral trust must be bridged,
@@ -1557,7 +1557,7 @@ delegation. **Strategic Pivot**:
 
 ## Strategic Evolution: 2026-03-22
 
-### Focus: Agentic SLAs & Federated Governance Synchronization (2026-03-21)
+### Focus: Agentic SLAs & Federated Governance Synchronization
 
 **Context**: The move toward multi-agent "Deterministic Reasoning" and the
 proliferation of MCP Any nodes across enterprise environments require a shift
@@ -1581,7 +1581,7 @@ real-time. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-23]
 
-### Focus: Intent Integrity & Binary State Handoffs (2026-03-23)
+### Focus: Intent Integrity & Binary State Handoffs
 
 **Context**: Today's findings show a shift from simple "Access Control" to
 "Intent Integrity." The emergence of "Context-Mirroring" attacks and the
@@ -1602,7 +1602,7 @@ and performant orchestration layer. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-24]
 
-### Focus: Relational Intent Integrity & Binary State Efficiency (2026-03-24)
+### Focus: Relational Intent Integrity & Binary State Efficiency
 
 **Context**: Today's findings emphasize that the "Identity-Only" security model
 is failing against "Context-Mirroring" (CVE-2026-34015). Simultaneously, the
@@ -1626,7 +1626,7 @@ longer a viable transport for inter-agent state. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-25]
 
-### Focus: Recursive Intent Integrity & WASM-Bound Binary State (2026-03-25)
+### Focus: Recursive Intent Integrity & WASM-Bound Binary State
 
 **Context**: Today's leak of UACO v1.8 and the OpenClaw v2.5 roadmap mark a
 shift toward "Active State Governance." As agent swarms grow deeper, the risk of
@@ -1651,7 +1651,7 @@ evolve from a passive validator to an active, sandboxed state mediator.
 
 ## Strategic Evolution: [2026-03-26]
 
-### Focus: Modular Context Interop & Recursive Intent Integrity (2026-03-26)
+### Focus: Modular Context Interop & Recursive Intent Integrity
 
 **Context**: The emergence of OpenClaw's ContextEngine and the UACO v1.8 RID
 draft marks a shift toward "Pluggable Governance." Agents now require
@@ -1672,7 +1672,7 @@ recursive delegations. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-27]
 
-### Focus: Sharded Context Lifecycles & Consensus-Based Governance (2026-03-27)
+### Focus: Sharded Context Lifecycles & Consensus-Based Governance
 
 **Context**: Today's findings on OpenClaw's Live Context Sharding and Claude
 Code's Consensus-Based Tool Validation signal a shift toward "Micro-State" and
@@ -1697,7 +1697,7 @@ _transfer_ of state, but its granular _lifecycle_ and _collective validation_.
 
 ## Strategic Evolution: [2026-04-08]
 
-### Focus: Immutable Environment Guarding & Reputation-Bound Capability (2026-04-08)
+### Focus: Immutable Environment Guarding & Reputation-Bound Capability
 
 **Context**: The disclosure of CVE-2026-25725 (Claude Code) proves that "Partial
 Sandboxing" is a critical failure point. If an agent can influence the
@@ -1724,7 +1724,7 @@ Spoofing," where tools manipulate the agent's reasoning. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-31]
 
-### Focus: Parallel Intent Integrity & Path-Agnostic Boundary Enforcement (2026-03-31)
+### Focus: Parallel Intent Integrity & Path-Agnostic Boundary Enforcement
 
 **Context**: Today's findings on OpenClaw's Parallel Sub-Intents and the Claude
 Code Symlink vulnerability (CVE-2026-34812) reveal a fundamental shift in the
@@ -1749,7 +1749,7 @@ data structures cannot be weaponized against the host. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-28]
 
-### Focus: Swarm Sanity & Fast-Path Attestation (2026-03-28)
+### Focus: Swarm Sanity & Fast-Path Attestation
 
 **Context**: Today's findings on Atomic State Rollbacks (ASR) and the UACO v1.9
 Multi-Agent Quorum (MAQ) draft confirm that "Swarm Sanity" is the new
@@ -1775,7 +1775,7 @@ state-management layer. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-29]
 
-### Focus: Proactive State Alignment & Relational Intent Scoping (2026-03-29)
+### Focus: Proactive State Alignment & Relational Intent Scoping
 
 **Context**: Today's findings on OpenClaw's Proactive State Alignment (PSA) and
 the UACO v2.0 draft for Relational Intent Scoping (RIS) mark a shift from
@@ -1800,7 +1800,7 @@ multi-dimensional and non-reusable. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-03-30]
 
-### Focus: Self-Correction Governance & Beacon-Based Discovery (2026-03-30)
+### Focus: Self-Correction Governance & Beacon-Based Discovery
 
 **Context**: The emergence of "Cognitive Lock" in OpenClaw v2.6 and the "Ghost
 Fragment Mutation" (GFM) exploit demonstrate that autonomy without strict
@@ -1825,7 +1825,7 @@ boundary enforcement is a liability. Additionally, the shift toward push-based
 
 ## Strategic Evolution: 2026-04-01
 
-### Focus: Reasoning-Bound Context Integrity & Path Normalization Governance (2026-03-30)
+### Focus: Reasoning-Bound Context Integrity & Path Normalization Governance
 
 **Context**: Today's findings on "Reasoning-Bound Context Shifting" (OpenClaw)
 and "Normalization Fatigue" (Claude Code CVE-2026-34812) reveal that security
@@ -1848,7 +1848,7 @@ the reasoning state_. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-02]
 
-### Focus: Speculative Safety & Hardware-Bound Integrity (2026-04-02)
+### Focus: Speculative Safety & Hardware-Bound Integrity
 
 **Context**: Today's findings on "Branch Contamination" (OpenClaw) and
 "Inode-Pinning" (Claude Code) signal a move toward more rigid, hardware-linked
@@ -1872,7 +1872,7 @@ demands a "Transactional" approach to agentic state. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-03]
 
-### Focus: Active Lifecycle Governance & Metadata Integrity (2026-04-03)
+### Focus: Active Lifecycle Governance & Metadata Integrity
 
 **Context**: Today's findings on "Ghost Reasoning" (OpenClaw) and
 "Metadata-Layer Context Poisoning" (Claude Code CVE-2026-42001) confirm that
@@ -1900,7 +1900,7 @@ injection vector. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-06-08]
 
-### Focus: Atomic Reasoning Integrity (ARI) & Hardware-Locked Mission Manifests (HAMM) (2026-06-08)
+### Focus: Atomic Reasoning Integrity (ARI) & Hardware-Locked Mission Manifests (HAMM)
 
 **Context**: The emergence of "Teammate State-Splicing" in horizontal meshes and
 the transition to the HAMM standard (Gemini CLI v0.38.0) confirm that
@@ -1935,7 +1935,7 @@ Pivot**:
 
 ## Strategic Evolution: [2026-06-07]
 
-### Focus: Cognitive Shadowing Defense & Mission-Locked Sovereignty (2026-06-07)
+### Focus: Cognitive Shadowing Defense & Mission-Locked Sovereignty
 
 **Context**: The emergence of "Semantic Shadowing" (mimicry-based intent
 hijacking) and the rise of "Temporal Session Decay" in deep swarms prove that
@@ -1971,7 +1971,7 @@ Pivot**:
 
 ## Strategic Evolution: [2026-06-05]
 
-### Focus: Intent-Splicing Defense & Recursive Accountability (2026-06-05)
+### Focus: Intent-Splicing Defense & Recursive Accountability
 
 **Context**: The emergence of "Intent-Splicing" (OpenClaw v3.0.0-rc1) and the
 persistence of "Capability Squatting" due to accountability debt reveal that
@@ -2003,7 +2003,7 @@ toward active semantic deconstruction. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-04]
 
-### Focus: Negotiation Integrity & Verified Metadata Lineage (2026-04-04)
+### Focus: Negotiation Integrity & Verified Metadata Lineage
 
 **Context**: Today's findings reveal that "Swarm Negotiation Exhaustion" and
 "Metadata Context Poisoning" are the primary bottlenecks for mature agent
@@ -2028,7 +2028,7 @@ infrastructure layer. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-05]
 
-### Focus: RL-Ready Infrastructure & Attested Context Hubs (2026-04-05)
+### Focus: RL-Ready Infrastructure & Attested Context Hubs
 
 **Context**: Today's findings on OpenClaw-RL v1 and Claude Code's security
 hardening (CVE-2025-59536) mark a shift from simple "Agent Serving" to "Agent
@@ -2053,7 +2053,7 @@ Pivot**:
 
 ## Strategic Evolution: [2026-04-06]
 
-### Focus: Structural Integrity & Deterministic State Binding (2026-04-06)
+### Focus: Structural Integrity & Deterministic State Binding
 
 **Context**: Today's findings on "Metadata Context Poisoning" and TOCTOU
 configuration races mark a shift from protecting the _execution_ to protecting
@@ -2078,7 +2078,7 @@ context are immutable and verified from start to finish. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-14]
 
-### Focus: Pluggable Context Interoperability & Verifiable Task Delegation (2026-04-14)
+### Focus: Pluggable Context Interoperability & Verifiable Task Delegation
 
 **Context**: The stabilization of OpenClaw's `ContextEngine` and the completion
 of the A2A governance transition mark a shift from "Infrastructure Connectivity"
@@ -2103,7 +2103,7 @@ a weaponized input. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-13]
 
-### Focus: Open Governance Interoperability & Deterministic Environment Integrity (2026-04-13)
+### Focus: Open Governance Interoperability & Deterministic Environment Integrity
 
 **Context**: The completion of the A2A protocol's transition to the Linux
 Foundation and the release of the "CLAW-10" Enterprise Evaluation Matrix confirm
@@ -2126,7 +2126,7 @@ rigorous attestation for security. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-21]
 
-### Focus: Agentic UI Orchestration & Deterministic Absence Proofs (2026-04-21)
+### Focus: Agentic UI Orchestration & Deterministic Absence Proofs
 
 **Context**: The emergence of the A2UI protocol and the disclosure of
 "Absence-as-Exploit" vectors (CVE-2026-25725) signal a move toward "Visual
@@ -2151,7 +2151,7 @@ configuration injection. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-20]
 
-### Focus: Cognitive Resilience & Multi-Dimensional Attestation (2026-04-20)
+### Focus: Cognitive Resilience & Multi-Dimensional Attestation
 
 **Context**: Today's synthesis of the OpenClaw "M2M Loop" crisis and the
 successful transition of the A2A protocol to the Linux Foundation confirms that
@@ -2175,7 +2175,7 @@ just a gateway. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-19]
 
-### Focus: Cognitive Integrity & Distributed Trust Leases (2026-04-19)
+### Focus: Cognitive Integrity & Distributed Trust Leases
 
 **Context**: The emergence of "Autonomous Self-Healing" (ASH) in OpenClaw v2.8
 and the introduction of "Trust Leases" (LFTA) in UACO v2.5 signal a shift from
@@ -2198,7 +2198,7 @@ risk of "Cognitive Drift" must be managed at the infrastructure layer.
 
 ## Strategic Evolution: [2026-04-18]
 
-### Focus: Foundation-Neutral Governance & Resident Sandbox Integrity (2026-04-18)
+### Focus: Foundation-Neutral Governance & Resident Sandbox Integrity
 
 **Context**: The transition of OpenClaw to an independent foundation and the
 maturation of Claude Code's "Sandbox Persistence Proofs" mark a definitive shift
@@ -2221,7 +2221,7 @@ lifecycle of the mission. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-17]
 
-### Focus: Intent Integrity Arbitration & Leased Trust Orchestration (2026-04-17)
+### Focus: Intent Integrity Arbitration & Leased Trust Orchestration
 
 **Context**: Today's findings reveal that "Intent Smuggling" is the primary
 exploit vector for dynamic swarms, while the "Attestation Tax" is the primary
@@ -2246,7 +2246,7 @@ agency. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-16]
 
-### Focus: Reactive Intent Governance & Self-Healing Swarm Integrity (2026-04-16)
+### Focus: Reactive Intent Governance & Self-Healing Swarm Integrity
 
 **Context**: The emergence of "Reactive Intent" (RI) and "Sandbox Persistence
 Proofs" marks a shift from static pre-execution attestation to dynamic,
@@ -2270,7 +2270,7 @@ proof of environment integrity. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-04-15]
 
-### Focus: Universal Context Interoperability & Hardware-Locked Environment Integrity (2026-04-15)
+### Focus: Universal Context Interoperability & Hardware-Locked Environment Integrity
 
 **Context**: The stabilization of OpenClaw's `ContextEngine` and the persistence
 of "Clone-and-Execute" RCE vulnerabilities (CVE-2026-25725) mark a definitive
@@ -2294,7 +2294,7 @@ environmental attacks. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-25]
 
-### Focus: Reasoning-Budget Sovereignty & Asynchronous Mailbox Sharding (2026-05-25)
+### Focus: Reasoning-Budget Sovereignty & Asynchronous Mailbox Sharding
 
 **Context**: The emergence of "Reasoning-Budget Hijacking" (RBH) via spoofed ARE
 headers and the persistent "Mailbox Lock" bottlenecks in high-density Claude
@@ -2325,7 +2325,7 @@ as swarms scale horizontally. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-26]
 
-### Focus: Federated Governance Neutrality & Non-Blocking Teammate Coordination (2026-05-26)
+### Focus: Federated Governance Neutrality & Non-Blocking Teammate Coordination
 
 **Context**: The maturation of the OpenClaw Foundation and the emergence of
 "Mailbox Lock" in horizontal swarms (Claude Code Agent Teams) mark a shift from
@@ -2354,7 +2354,7 @@ asynchronous, sharded state synchronization. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-27]
 
-### Focus: Sovereign Mesh Identity (SMI) & Fragment-Aware Mailbox Isolation (2026-05-27)
+### Focus: Sovereign Mesh Identity (SMI) & Fragment-Aware Mailbox Isolation
 
 **Context**: The launch of the SMI standard and the emergence of "State
 Splicing" vulnerabilities in horizontal swarms confirm that **Identity** must be
@@ -2384,7 +2384,7 @@ agency. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-05-28]
 
-### Focus: Command Traceability Attestation & Autonomous PR Integrity Quorums (2026-05-28)
+### Focus: Command Traceability Attestation & Autonomous PR Integrity Quorums
 
 **Context**: The emergence of "Traceability Debt" in deep swarms and the high
 vulnerability rate (87%) in agent-generated pull requests (as reported by DryRun
@@ -2413,7 +2413,7 @@ Security) reveal that infrastructure must move beyond transport security to
 
 ## Strategic Evolution: [2026-05-29]
 
-### Focus: Collective Swarm Anomaly Detection & Cross-Mesh Command Sovereignty (2026-05-29)
+### Focus: Collective Swarm Anomaly Detection & Cross-Mesh Command Sovereignty
 
 **Context**: The rise of "Hivenet" swarm attacks and the maturation of
 horizontal "Agent Teams" (Claude Code) confirm that individual agent security is
@@ -2445,7 +2445,7 @@ framework boundaries. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-06-01]
 
-### Focus: Machine-Speed Mesh Sovereignty & Adaptive Context Orchestration (2026-06-01)
+### Focus: Machine-Speed Mesh Sovereignty & Adaptive Context Orchestration
 
 **Context**: The 2026 Armis Cyberwarfare Report and the maturation of OpenClaw's
 "ContextEngine" lifecycle reveal that the "Universal Agent Bus" must now move
@@ -2481,7 +2481,7 @@ and Verification.
 
 ## Strategic Evolution: [2026-05-31]
 
-### Focus: Lock-Free Mesh Coordination & Sharded Mailbox Sovereignty (2026-05-31)
+### Focus: Lock-Free Mesh Coordination & Sharded Mailbox Sovereignty
 
 **Context**: The emergence of horizontal teammate coordination in "Agent Teams"
 (Claude Code) and the stabilization of "Distributed Capability Bidding" (Gemini)
@@ -2514,7 +2514,7 @@ sharded, lock-free state synchronization. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-06-02]
 
-### Focus: Cognitive Path Sovereignty & Mesh-Bound Context Efficiency (2026-06-02)
+### Focus: Cognitive Path Sovereignty & Mesh-Bound Context Efficiency
 
 **Context**: The emergence of "Spectral Reasoning" side-channel attacks and the
 stabilization of the "Context Sovereignty Protocol" (CSP v1.0) confirm that
@@ -2545,7 +2545,7 @@ Streaming." **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-06-03]
 
-### Focus: Unified Reasoning Translation & Atomic Shard Synchronization (2026-06-03)
+### Focus: Unified Reasoning Translation & Atomic Shard Synchronization
 
 **Context**: The emergence of "Shard-Collision" vulnerabilities in parallel
 teams (Claude Code) and the fragmenting of hardware attestation formats (Gemini
@@ -2574,7 +2574,7 @@ active **Speculative State Prefetching**. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-06-04]
 
-### Focus: Speculative Intent Integrity & Multi-Hop Attestation Persistence (2026-06-04)
+### Focus: Speculative Intent Integrity & Multi-Hop Attestation Persistence
 
 **Context**: The emergence of "Speculative Fragment Poisoning" (SFP) and the
 "Multi-Hop Handshake Fatigue" in deep swarms (A->B->C) reveal that security must
@@ -2607,7 +2607,7 @@ hardware-attested trust must survive beyond a single hop. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-06-06]
 
-### Focus: Cognitive Sovereignty via Active Intent Deconstruction (2026-06-06)
+### Focus: Cognitive Sovereignty via Active Intent Deconstruction
 
 **Context**: The disclosure of "Semantic Splicing" and the emergence of
 "Capability Squatting" in horizontal meshes (Claude Code teammates vs. OpenClaw
@@ -2638,7 +2638,7 @@ lifecycle** that persists across all connected frameworks. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-06-09]
 
-### Focus: Recursive Mission Sovereignty (RMS) & Active Attention Governance (2026-06-09)
+### Focus: Recursive Mission Sovereignty (RMS) & Active Attention Governance
 
 **Context**: The emergence of "Recursive Mesh Hijacking" in deep agent chains
 and the disclosure of the "Context-Window Flooding" (CWF) exploit in parallel
@@ -2671,7 +2671,7 @@ context window. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-06-10]
 
-### Focus: Semantic Layer-7 Inspection & Mission-Root Environment Sovereignty (2026-06-10)
+### Focus: Semantic Layer-7 Inspection & Mission-Root Environment Sovereignty
 
 **Context**: The emergence of "Reasoning Entropy Exhaustion" (REE) and "Identity
 Leakage via Process Environment" (ILPE) confirm that protecting the context
@@ -2703,7 +2703,7 @@ Attestation** (CFIA). **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-06-11]
 
-### Focus: Active Reasoning Interdiction (ARI) & Hardware-Attested Attention Governance (2026-06-11)
+### Focus: Active Reasoning Interdiction (ARI) & Hardware-Attested Attention Governance
 
 **Context**: The emergence of "Logic Grafting"—where malicious subagents append
 plausible but unauthorized reasoning paths to shared shards—and the escalation
@@ -2737,7 +2737,7 @@ across all coordination fragments. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-06-12]
 
-### Focus: Shadow Coordination Defense & Hardware-Bound Coordination Sovereignty (2026-06-12)
+### Focus: Shadow Coordination Defense & Hardware-Bound Coordination Sovereignty
 
 **Context**: The emergence of "Shadow Coordination"—where malicious subagents
 utilize out-of-band side-channels (e.g., Blackboard metadata or tool-output
@@ -2771,7 +2771,7 @@ transition to hardware-accelerated, collision-resistant semantic hash-chaining.
 
 ## Strategic Evolution: [2026-06-13]
 
-### Focus: Attention Sovereignty & Side-Channel Immunity (2026-06-13)
+### Focus: Attention Sovereignty & Side-Channel Immunity
 
 **Context**: The discovery of **Reasoning Entropy Exhaustion (REE)** and the
 emergence of **Shadow Coordination (SC)** side-channels prove that attention
@@ -2802,7 +2802,7 @@ and **Hardware-Locked Attention Governance**. **Strategic Pivot**:
 
 ## Strategic Evolution: [2026-06-14]
 
-### Focus: Structural Metadata Sanitization & Multi-Hop Persistence (2026-06-14)
+### Focus: Structural Metadata Sanitization & Multi-Hop Persistence
 
 **Context**: The discovery of **Shadow-Discovery via Metadata Injection (SDMI)**
 and the emergence of **Multi-Swarm Handshake Exhaustion (MSHE)** signal a
@@ -2834,39 +2834,6 @@ trust can scale across deep, multi-framework swarms without "Cognitive Stall."
   "shadowed" by malicious SDMI-compliant subagents.
 
 ## Strategic Evolution: [2026-06-15]
-
-### Focus: Attention-Bound Sovereignty & Structural Metadata Governance (2026-06-15)
-
-**Context**: The emergence of **Shadow-Discovery via Metadata Injection (SDMI)**
-and the persistent risk of **Reasoning Entropy Exhaustion (REE)** confirm that
-infrastructure must move beyond transport security to **Cognitive Sovereignty**.
-As agents become more autonomous, their reasoning can be hijacked via the
-documentation layer (metadata) or evicted via noise injection (attention).
-Simultaneously, the latency of high-security handshakes in deep swarms leads to
-**Multi-Swarm Handshake Exhaustion (MSHE)**, demanding a reconcile between
-Zero-Trust and performance. **Strategic Pivot**:
-
-- **Structural Metadata Sanitization (SMS)**: MCP Any will evolve to treat all
-  tool schemas, descriptions, and examples as untrusted, high-entropy content.
-  We will implement the SMS, performing real-time semantic deconstruction of
-  discovery-time metadata to detect and block SDMI instruction injection before
-  they reach the agent reasoning loop.
-- **Attention-Locked Context Sharding (ALCS)**: To neutralize REE attacks, we
-  are introducing ALCS. This layer will utilize hardware-bound attention-locking
-  headers to "pin" mission-critical intent and lineage fragments at the LLM
-  attention layer, ensuring they cannot be evicted by high-entropy noise
-  injected by subagents.
-- **Sovereign Discovery Proxy (SDP)**: To counter discovery hijacking and supply
-  chain compromises, we are mandating the use of the SDP. This authoritative
-  gateway will perform hardware-attested validation of all tool capability cards
-  before they are exposed to the "Discovery Bus," ensuring that high-trust tools
-  cannot be "shadowed" by malicious SDMI-compliant subagents.
-- **Multi-Hop Persistence Relay (MHPR)**: Supporting the performance of deep
-  swarms, MCP Any will implement MHPR. This allows hardware-attested trust
-  leases to persist across multiple delegation hops, neutralizing "Handshake
-  Exhaustion" without degrading the security posture.
-
-## Strategic Evolution: [2026-06-15] (2)
 
 ### Focus: Attention-Bound Sovereignty & Structural Metadata Governance
 

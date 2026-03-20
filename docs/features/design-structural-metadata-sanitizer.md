@@ -90,16 +90,6 @@ layer.
 - **2026-06-14:** Initial Document Creation. Addressing the Shadow-Discovery via
   Metadata Injection (SDMI) vulnerability.
 
-### Update: [2026-06-15] - Addressing Cross-Framework SDMI Persistence
-
-**Context:** Today's research reveals that SDMI fragments can persist across
-framework handoffs (e.g., OpenClaw -> Claude Code) if the structural metadata is
-not recursively re-sanitized. **Design Adjustment:** Mandating **Recursive
-Metadata Attestation** in Section 4. Sanitized schemas must now carry a
-"Sanitization Proof" that is validated by the recipient framework's SMS bridge.
-**Security Impact:** Neutralizes "Registry-to-Registry" propagation of malicious
-instructions in heterogeneous swarms.
-
 ### Update: [2026-06-15] - Mitigating SDMI and Reasoning Hijacking
 
 **Context:** Today's market sync identified Shadow-Discovery via Metadata

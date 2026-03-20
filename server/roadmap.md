@@ -14,7 +14,7 @@
 
 ## 2. Updated Roadmap
 
-### Status: Active Development (Unknown)
+### Status: Active Development
 
 #### Upcoming (2026-02-23 Evolution)
 
@@ -196,7 +196,7 @@
 - **[P1] Hardware-Bound Trust Continuity**: TPM/Secure Enclave signatures to
   persist trust for verified headless agents. (Added: 2026-03-21)
 
-#### Upcoming (2026-03-17 Evolution) (I)
+#### Upcoming (2026-03-17 Evolution) (2)
 
 - **[P0] Inter-Agent Mailbox Guard (IAMG)**: Mandatory mediation for
   teammate-to-teammate messaging with intent validation. (Added: 2026-03-17)
@@ -214,7 +214,7 @@
 - **[P1] Federated Policy Synchronizer**: Secure bus for synchronizing security
   guardrails across multiple MCP Any instances. (Added: 2026-03-22)
 
-#### Upcoming (2026-03-17 Evolution) (II)
+#### Upcoming (2026-03-17 Evolution) (3)
 
 - **[P0] Local-Loopback Rate Limiter**: Mandatory throttling for all loopback
   traffic to neutralize browser-based brute-force attacks. (Added: 2026-03-17)
@@ -526,11 +526,11 @@ command to generate a scaffold `config.yaml` based on a list of desired services
 
 ## 3. Codebase Health
 
-### Critical Areas (Refactoring Needed) (Unknown)
+### Critical Areas (Refactoring Needed)
 
 _None at this time._
 
-### Warning Areas (Unknown)
+### Warning Areas
 
 1.  **UI Component Duplication**: Some UI components in `ui/src/components` seem
     to have overlapping responsibilities (e.g., multiple "detail" views). A UI
@@ -538,7 +538,7 @@ _None at this time._
 2.  **Test Coverage gaps**: While core logic is tested, cloud providers (S3/GCS)
     and some new UI features lack comprehensive integration tests.
 
-### Healthy Areas (Unknown)
+### Healthy Areas
 
 - **Core Middleware Pipeline**: The middleware architecture is robust and
   extensible.
@@ -1325,7 +1325,7 @@ _None at this time._
 - **[P1] Zero-Latency Shard Prefetcher**: Speculative context loading based on
   real-time intent analysis. (Added: 2026-06-03)
 
-### Upcoming: [2026-06-08] (Unknown)
+### Upcoming: [2026-06-08]
 
 - **Atomic Reasoning Integrity (ARI) Validator**: (P0) Advanced security
   middleware for fragment-level semantic validation of shared teammate state.
@@ -1337,7 +1337,7 @@ _None at this time._
 - **Fragment-Level Sovereignty Attestation**: (P0) Advanced security service
   mandating ARI-attestation for A2A teammates. (Added: 2026-06-08)
 
-### Upcoming: [2026-06-07] (Unknown)
+### Upcoming: [2026-06-07]
 
 - **Semantic Shadowing Mitigator (SSM)**: (P0) A behavioral security middleware
   for the AID Hub performing stylometric and contextual consistency checks to
@@ -1351,7 +1351,7 @@ _None at this time._
 - **Temporal Sovereignty Controller**: (P1) Lifecycle management service
   implementing "Ephemeral Mission Roots" to prevent long-term session hijacking.
 
-### Upcoming: [2026-06-05] (Unknown)
+### Upcoming: [2026-06-05]
 
 - **Intent-Splicing Detector (ISD)**: (P0) Structural validation middleware for
   the Semantic Integrity Bridge to prevent malicious instruction splicing in
@@ -1365,7 +1365,7 @@ _None at this time._
 - **Synthetic Policy Synthesizer**: (P1) Experimental mesh-local policy
   generation service backed by hardware attestation.
 
-### Upcoming: [2026-06-04] (Unknown)
+### Upcoming: [2026-06-04]
 
 - **Pre-Commit Speculative Sanitizer (PCSS)**: Mandatory security middleware for
   the Speculative Execution Guard to neutralize "Speculative Fragment
@@ -1378,7 +1378,7 @@ _None at this time._
 - **Sub-Millisecond ARL Synchronizer**: High-speed listener for the LFTA ARL
   Middleware to support ARL v3.0 synchronization in sub-100ms intervals.
 
-### Upcoming: [2026-06-06] (Unknown)
+### Upcoming: [2026-06-06]
 
 - **[P0] Active Intent-Deconstruction (AID) Hub**: Advanced security middleware
   extension for real-time deconstruction and structural validation of all
@@ -1391,7 +1391,7 @@ _None at this time._
 - **[P0] MRLA Gateway**: Advanced A2A handshake gateway mandating proof of
   mission-root lineage before capability discovery.
 
-### Upcoming: [2026-06-09] (Unknown)
+### Upcoming: [2026-06-09]
 
 - **Recursive Integrity Verification (RIV) Provider**: (P0) Advanced security
   service facilitating lineage-aware proofs across multi-hop delegations.
@@ -1402,7 +1402,7 @@ _None at this time._
 - **Ephemeral Credential Manager (ECM)**: (P1) Lifecycle extension for the EPM
   that issues task-specific, mission-bound JWT tokens. (Added: 2026-06-09)
 
-### Upcoming: [2026-06-10] (Unknown)
+### Upcoming: [2026-06-10]
 
 - **Layer-7 Semantic Inspection Hub (L7SIH)**: (P0) Advanced security middleware
   for the ISD Hub performing real-time, high-entropy semantic analysis of
@@ -1414,7 +1414,7 @@ _None at this time._
   hardware-attested identity fragments and their environmental bounds. (Added:
   2026-06-10)
 
-### Upcoming: [2026-06-11] (Unknown)
+### Upcoming: [2026-06-11]
 
 - **Active Reasoning Interdiction (ARI) Hub**: (P0) Authoritative reasoning
   validator utilizing semantic hash-chaining to detect and block Logic Grafting.
@@ -1429,7 +1429,7 @@ _None at this time._
   mandating hardware-attested, hash-chained reasoning lineages for all high-risk
   actions. (Added: 2026-06-11)
 
-### Upcoming: [2026-06-12] (Unknown)
+### Upcoming: [2026-06-12]
 
 - **Shadow Coordination Interceptor (SCI)**: (P0) Advanced security middleware
   for the T2T Bridge that monitors non-primary channels (metadata, tags) for
@@ -1444,7 +1444,7 @@ _None at this time._
   handshake for all inter-agent coordination to ensure mission-root sovereignty.
   (Added: 2026-06-12)
 
-### Upcoming: [2026-06-13] (Unknown)
+### Upcoming: [2026-06-13]
 
 - **Shadow Coordination Interceptor (SCI)**: (P0) Authoritative transport-level
   security service for the T2T Bridge that monitors metadata and state-tags to
@@ -1457,7 +1457,7 @@ _None at this time._
   primary enforcement point for **Attention Sovereignty** and **Side-Channel
   Immunity**.
 
-### Upcoming: [2026-06-14] (Unknown)
+### Upcoming: [2026-06-14]
 
 - **Structural Metadata Sanitizer (SMS)**: (P0) Real-time semantic
   deconstruction of discovery metadata to neutralize SDMI instructions. (Added:
@@ -1471,17 +1471,6 @@ _None at this time._
   hardware-attested tool capability card validation. (Added: 2026-06-14)
 
 ### Upcoming: [2026-06-15]
-
-- **Attention-Locked Context Sharding (ALCS)**: (P0) High-security attention
-  governance middleware utilizing hardware-bound headers to "pin"
-  mission-critical fragments. (Added: 2026-06-15)
-- **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative gateway for the
-  Discovery Bus that performs hardware-attested validation of tool capability
-  cards. (Added: 2026-06-15)
-- **Multi-Hop Persistence Relay (MHPR)**: (P1) Trust-lease propagation service
-  to neutralize MSHE-driven cognitive stall in deep swarms. (Added: 2026-06-15)
-
-### Upcoming: [2026-06-15] (2)
 
 - **Attention-Locked Context Sharding (ALCS)**: (P0) High-security attention
   governance middleware utilizing hardware-bound headers to "pin"

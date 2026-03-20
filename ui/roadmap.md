@@ -2,7 +2,7 @@
 
 ## Status: Active Development
 
-### Universal Agent Bus (New Strategic Priorities) (Unknown)
+### Universal Agent Bus (New Strategic Priorities)
 
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and
       session tokens across agent swarms. (Added: 2026-02-23)
@@ -100,7 +100,7 @@
 - [ ] **[P2] Cost & metrics Dashboard**: Real-time visualization of token usage,
       costs, and tool performance metrics (P95 latency).
 
-### Existing Planned Features (Unknown)
+### Existing Planned Features
 
 - [ ] **Advanced Service Configuration & Sharing**:
   - [x] Visual editor for detailed service configuration (Connection, Auth,
@@ -1048,7 +1048,7 @@
 - [ ] **[P1] Prefetching Performance Overlay**: Visualization of speculative
       context hit/miss rates. (Added: 2026-06-03)
 
-### Upcoming: [2026-06-08] (Unknown)
+### Upcoming: [2026-06-08]
 
 - [ ] **[P0] ARI Fragment Monitor**: (2026-06-08) Real-time visualization of
       fragment-level semantic validation events and blocked state-splicing
@@ -1061,7 +1061,7 @@
 - [ ] **[P0] Fragment Sovereignty Auditor**: (2026-06-08) Security dashboard for
       verifying ARI-attestation status across the teammate mesh.
 
-### Upcoming: [2026-06-07] (Unknown)
+### Upcoming: [2026-06-07]
 
 - **Semantic Shadowing Dashboard**: (P0) A behavioral security workspace for the
   AID Hub that visualizes stylometric and contextual consistency alerts.
@@ -1073,7 +1073,7 @@
 - **Ephemeral Mission Root Monitor**: (P1) Lifecycle manager UI for monitoring
   the temporal sovereignty of mission-root tokens.
 
-### Upcoming: [2026-06-05] (Unknown)
+### Upcoming: [2026-06-05]
 
 - **Intent-Splicing Audit Log**: (P0) Forensic UI for reviewing deconstructed
   inter-agent messages and splicing attempts.
@@ -1084,7 +1084,7 @@
 - **Synthetic Policy Workspace**: (P1) Interactive environment for reviewing and
   approving mesh-synthesized security policies.
 
-### Upcoming: [2026-06-04] (Unknown)
+### Upcoming: [2026-06-04]
 
 - **Speculative Sanitization Dashboard**: Visualization of neutralized
   speculative poisoned fragments and their sources.
@@ -1093,7 +1093,7 @@
 - **Multi-Hop Trust Persistence Monitor**: Detailed view of hardware-attested
   trust leases and their propagation across deep swarms.
 
-### Upcoming: [2026-06-06] (Unknown)
+### Upcoming: [2026-06-06]
 
 - **Intent-Splicing Audit Log**: (P0) Real-time visualization of semantically
   deconstructed inter-agent messages and blocked splicing attempts.
@@ -1102,7 +1102,7 @@
 - **MRLA Handshake Debugger**: (P0) Forensic UI for visualizing A2A discovery
   handshakes and mission-root lineage proofs.
 
-### Upcoming: [2026-06-09] (Unknown)
+### Upcoming: [2026-06-09]
 
 - **Mesh-Resident Lineage Tracker**: (P0) Visualizer for auditing
   hardware-attested reasoning chains across multi-hop delegations. (Added:
@@ -1112,7 +1112,7 @@
 - **Ephemeral Credential Vault**: (P1) UI for managing task-specific JWTs and
   mission-bound credential lifetimes. (Added: 2026-06-09)
 
-### Upcoming: [2026-06-10] (Unknown)
+### Upcoming: [2026-06-10]
 
 - [ ] **[P0] L7 Semantic Inspection Monitor**: (P0) Real-time visualization of
       high-entropy semantic validation events and REE neutralization. (Added:
@@ -1124,7 +1124,7 @@
       and auditing the hardware-attested Mission-Root Attestation Registry.
       (Added: 2026-06-10)
 
-### Upcoming: [2026-06-11] (Unknown)
+### Upcoming: [2026-06-11]
 
 - [ ] **[P0] ARI Lineage Visualizer**: (P0) Real-time visualization of semantic
       hash-chains and logic grafting alerts in shared shards. (Added:
@@ -1137,7 +1137,7 @@
       the hardware-attested reasoning lineage of high-risk actions. (Added:
       2026-06-11)
 
-### Upcoming: [2026-06-12] (Unknown)
+### Upcoming: [2026-06-12]
 
 - [ ] **[P0] Shadow Coordination Monitor**: (2026-06-12) Real-time visualization
       of anomalous entropy in non-primary coordination channels.
@@ -1148,7 +1148,7 @@
 - [ ] **[P0] Coordination Handshake Debugger**: (2026-06-12) Forensic tool for
       visualizing hardware-locked handshake sequences.
 
-### Upcoming: [2026-06-13] (Unknown)
+### Upcoming: [2026-06-13]
 
 - [ ] **[P0] Shadow Coordination Monitor**: (Re-affirmed P0) Enhanced dashboard
       for real-time visualization of entropy spikes in T2T transport metadata.
@@ -1157,7 +1157,7 @@
 - [ ] **[P0] Hardware-Locked Coordination Debugger**: (2026-06-13) UI for
       reviewing hardware-bound session tokens and blocked out-of-band handoffs.
 
-### Upcoming: [2026-06-14] (Unknown)
+### Upcoming: [2026-06-14]
 
 - [ ] **[P0] Metadata Poisoning Guard**: (2026-06-14) UI for reviewing sanitized
       tool definitions and blocked SDMI instruction fragments.
@@ -1169,22 +1169,6 @@
       for hardware-attested SDP validation of capability cards.
 
 ### Upcoming: [2026-06-15]
-
-- [ ] **[P0] Attention-Locked Shard Viewer**: (2026-06-15) Dashboard for
-      monitoring hardware-protected fragments in the ALCS attention tier.
-- [ ] **[P0] Sovereign Discovery Console**: (2026-06-15) Authorization workspace
-      for hardware-attested SDP validation of capability cards.
-- [ ] **[P1] Trust Persistence Monitor**: (2026-06-15) Visual tracker for MHPR
-      trust-lease propagation and MSHE-latency gains.
-
-### Upcoming: [2026-06-15] - Part 2
-
-- **ALCS Dashboard**: Real-time visualization of cognitive attention sharding
-  and pinning across active swarms. (Added: 2026-06-15)
-- **SDP Policy Editor**: Hardware-attested UI for managing trust-lease
-  propagation rules across deep agentic sub-graphs. (Added: 2026-06-15)
-
-### Upcoming: [2026-06-15] (2)
 
 - **ALCS Dashboard**: Real-time visualization of cognitive attention sharding
   and pinning across active swarms. (Added: 2026-06-15)
