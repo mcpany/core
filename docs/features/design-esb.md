@@ -1,11 +1,14 @@
 # Design Doc: Entangled State Broker (ESB)
+
 **Status:** Draft
 **Created:** 2026-06-16
 
 ## 1. Context and Scope
+
 As agent swarms move toward high-frequency state sharing via sharded meshes, the risk of "Context Poisoning" and unauthorized state mutation by specialist subagents has reached a critical level. Current "Passive Sanitization" models are insufficient against sub-millisecond MTTC (Mean Time To Compromise). MCP Any needs a proactive mechanism to ensure that state fragments remain cryptographically bound to the mission-root intent, preventing any ingestion of unauthorized state.
 
 ## 2. Goals & Non-Goals
+
 * **Goals:**
     * Provide hardware-attested "Entanglement Shards" for inter-teammate coordination.
     * Cryptographically bind state fragments to the mission-root intent.
@@ -16,6 +19,7 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
     * Managing long-term archival of state fragments.
 
 ## 3. Critical User Journey (CUJ)
+
 * **User Persona:** Local LLM Swarm Orchestrator (e.g., Claude Code Team Lead)
 * **Primary Goal:** Share high-frequency state fragments between 5 specialized teammates without risking mission-root contamination.
 * **The Happy Path (Tasks):**
@@ -27,6 +31,7 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
     6. The parent reasoning engine automatically rolls back the mission branch before re-ingesting the poisoned state.
 
 ## 4. Design & Architecture
+
 * **System Flow:**
     ```mermaid
     graph TD
@@ -39,6 +44,7 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
         TPM -->|Valid| Commit[Commit Mutation]
         TPM -->|Invalid| Alert[Trigger Shard Corruption Signal]
     ```
+
 * **APIs / Interfaces:**
     * `POST /v1/entanglement/init`: Initialize mission-bound entanglement keys.
     * `POST /v1/entanglement/shard/mount`: Request a cryptographically entangled state shard.
@@ -47,14 +53,17 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
     * Shards are stored in a memory-mapped, zero-copy buffer with hardware-bound integrity tags (MACs).
 
 ## 5. Alternatives Considered
+
 * **Full State Encryption:** Rejected due to the prohibitive latency of per-call decryption in high-density meshes.
 * **Passive Semantic Scanning:** Rejected as it cannot detect "Low-and-Slow" semantic drift before ingestion.
 
 ## 6. Cross-Cutting Concerns
+
 * **Security (Zero Trust):** All entanglement keys are hardware-bound and session-specific. "Shard Corruption" signals are non-maskable.
 * **Observability:** Real-time monitoring of "Entanglement Drift" and "Corruption Events" via the Mesh-Resident Lineage Tracker.
 
 ## 7. Evolutionary Changelog
+
 * **2026-06-16:** Initial Document Creation.
 * **2026-06-17:** **Resolving Enclave-Timing Leakage (CVE-2026-62001).**
     * **Context:** Today's market sync revealed that hardware-bound entangled shards can leak state fragments via cache-timing side-channels.
@@ -62,8 +71,10 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
     * **Security Impact:** Mitigates the risk of subagents mapping mission-root constraints via high-frequency latency monitoring.
 
 ### Update: 2026-03-19 - Mandatory TSJ Injection for Cross-Mission Sync
+
 **Context:** Today's market sync revealed that hardware-bound entangled shards can leak state fragments via cache-timing side-channels.
 **Architecture Adjustment:**
+
 * Transitioning TSJ Injection from optional to mandatory for all cross-mission synchronization requests.
 * Introducing hardware-attested "Jitter Proofs" to ensure the jitter is not being suppressed by compromised host environments.
 **Security Impact:** Neutralizes the "Enclave-Timing Mapping" exploit pattern in deep swarms.
