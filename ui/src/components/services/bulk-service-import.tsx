@@ -142,7 +142,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
             // Trigger async validation for each
             validateItems(initialItems);
 
-        } catch (_e: any) {
+        } catch (e: any) {
             setParsingError(e.message || "Failed to parse input.");
             setIsValidating(false);
         }
@@ -178,7 +178,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                          validatedItems[index].selected = false;
                      }
                 }
-            } catch (_e: any) {
+            } catch (e: any) {
                 validatedItems[index].validationStatus = "invalid";
                 validatedItems[index].validationMessage = e.message;
                 validatedItems[index].selected = false;
@@ -250,7 +250,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                 await apiClient.registerService(item.config);
                 results[originalIndex].importStatus = "success";
                 successCount++;
-            } catch (_e: any) {
+            } catch (e: any) {
                 results[originalIndex].importStatus = "error";
                 results[originalIndex].importError = e.message;
                 failureCount++;
