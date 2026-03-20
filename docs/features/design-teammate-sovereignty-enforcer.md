@@ -8,15 +8,16 @@ SPDX-License-Identifier: Apache-2.0
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
-With the transition of Claude Code and other frameworks to "Agent Teams," multiple agents now work in parallel on the same mission. Today's market sync revealed that these parallel teammates often share too much context or can be coerced into "State Smearing," where one teammate's lower-trust output pollutes the high-trust reasoning of another.
+With the transition of Claude Code and other frameworks to "Agent Teams," multiple agents now work in parallel on the same mission. Today's market sync revealed that these parallel teammates often share too much context or can be coerced into "State Smearing," where one teammate's lower-trust output pollutes the high-trust reasoning of another. Additionally, the emergence of "Logic Bombs" in agent-generated code (CVE-2026-30741) requires that teammate isolation extends to the reasoning path itself.
 
-The Teammate Sovereignty Enforcer (TSE) provides a kernel-level isolation layer within MCP Any. It ensures that every teammate in a swarm operates within a cryptographically isolated "Sovereignty Shard," preventing unauthorized state access and cross-teammate impersonation.
+The Teammate Sovereignty Enforcer (TSE) provides a kernel-level isolation layer within MCP Any. It ensures that every teammate in a swarm operates within a cryptographically isolated "Sovereignty Shard," preventing unauthorized state access, cross-teammate impersonation, and un-sanitized logic propagation.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
     * Provide cryptographically bound isolation for parallel teammates within a single mission.
     * Enforce "Auth-at-the-Pipe" for inter-agent communication using kernel-level named pipes.
     * Bind teammate identities to hardware-attested (TPM) mission-root tokens.
+    * Integrate with the Logic-Sovereignty Validator (LSV) to detect cross-shard logic poisoning.
     * Automatically revoke all teammate-specific capabilities upon task completion.
 * **Non-Goals:**
     * Replacing the primary mission-root security policy.
@@ -68,3 +69,8 @@ The Teammate Sovereignty Enforcer (TSE) provides a kernel-level isolation layer 
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.
+### Update: 2026-06-18 - Logic-Path Interdiction Integration
+**Context:** Today's research revealed a surge in "Logic Bombs" injected via Request-Side prompt injection (CVE-2026-30741).
+**Architecture Adjustment:** * Mandatory integration with the Logic-Sovereignty Validator (LSV) in Section 2 and 4.
+* Introducing "Logic-Aware Shard Guards" to prevent un-attested reasoning fragments from being shared between teammates.
+**Security Impact:** Prevents "Refinement Drift" and ensures that malicious logic from a single teammate cannot compromise the mission-root audit trace.

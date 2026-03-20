@@ -28,3 +28,22 @@ SPDX-License-Identifier: Apache-2.0
 - **Teammate Isolation:** Parallel agents in a team often lack cryptographically bound isolation, leading to "State Smearing."
 - **Coordination Latency:** Lock-based coordination in shared mailboxes is causing "Cognitive Stall" in deep swarms.
 - **Request-Side Exploitation:** Prompt injection is moving from "Goal Hijacking" to "Direct RCE" via un-sanitized code generation.
+
+## Late-Breaking Findings (2026-06-18)
+
+### 1. Agent Swarms: Multi-Agent Request-Side Logic Verification (RSLV)
+**Update**: The latest "Auto-GPT v3" and "CrewAI Enterprise" releases have introduced RSLV. This layer performs semantic validation of the *reasoning path* before a subagent is allowed to generate its final output.
+**Strategic Move**: This moves beyond simple output sanitization to "Pre-Thought Governance."
+
+### 2. Security: AI-Generated Pull Request "Logic Bombs"
+**Update**: DryRun Security reports a 15% increase in "Logic Bombs" hidden within agent-generated code changes. These are specifically designed to bypass traditional linters and only trigger under specific mission-root state conditions.
+**Vulnerability**: CVE-2026-30741 in OpenClaw is being actively weaponized to inject these logic bombs via "Request-Side" prompt injection.
+
+### 3. Discovery: Shadow Capability Beaconing
+**Update**: Unauthenticated MCP servers are broadcasting "Capability Beacons" on local networks, attempting to lure agents into ingesting malicious tool schemas.
+**Implications**: Mandates hardware-attested discovery manifests (HADM) to ensure only pre-declared mission tools are discovered.
+
+## Additional Pain Points (Late)
+1. **Refinement Drift**: Agents in parallel teams are diverging from the mission root during long-running refinement loops.
+2. **Logic Exhaustion**: Multi-hop delegations (A->B->C) are losing the "Security Context" of the original mission root, leading to un-sanitized code commits.
+3. **Attestation Tax**: High-frequency teammate coordination is suffering from the latency of repeated hardware handshakes.
