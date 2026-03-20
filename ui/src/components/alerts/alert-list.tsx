@@ -5,7 +5,7 @@
 
 
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CheckCircle2, AlertCircle, AlertTriangle, Search, Filter, MoreHorizontal, Clock, RefreshCw, Activity, Loader2 } from "lucide-react";
 import {
   DropdownMenu,
@@ -37,6 +38,7 @@ import { Alert, Severity, AlertStatus } from "./types";
 import { formatDistanceToNow } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
+import { cn } from "@/lib/utils";
 
 /**
  * AlertList component.
@@ -48,6 +50,7 @@ export function AlertList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSeverity, setFilterSeverity] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [selectedAlerts, setSelectedAlerts] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
   const fetchAlerts = async () => {
@@ -85,6 +88,11 @@ export function AlertList() {
     });
   }, [alerts, searchQuery, filterSeverity, filterStatus]);
 
+  useEffect(() => {
+    // Reset selection when filters change
+    setSelectedAlerts(new Set());
+  }, [filteredAlerts]);
+
   const handleStatusChange = async (id: string, newStatus: AlertStatus) => {
     try {
         const updated = await apiClient.updateAlertStatus(id, newStatus);
@@ -102,6 +110,48 @@ export function AlertList() {
         });
     }
   };
+
+  const handleBulkStatusChange = async (newStatus: AlertStatus) => {
+    const alertIds = Array.from(selectedAlerts);
+    try {
+      await Promise.all(alertIds.map(id => apiClient.updateAlertStatus(id, newStatus)));
+      setAlerts(prev => prev.map(a => alertIds.includes(a.id) ? { ...a, status: newStatus } : a));
+      setSelectedAlerts(new Set());
+      toast({
+        title: "Alerts Updated",
+        description: `${alertIds.length} alerts marked as ${newStatus}`,
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Bulk Update Error",
+        description: "Failed to update some alerts.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSelectAll = useCallback((checked: boolean) => {
+    if (checked) {
+      setSelectedAlerts(new Set(filteredAlerts.map(a => a.id)));
+    } else {
+      setSelectedAlerts(new Set());
+    }
+  }, [filteredAlerts]);
+
+  const handleSelectOne = useCallback((id: string, checked: boolean) => {
+    setSelectedAlerts(prev => {
+        const newSelected = new Set(prev);
+        if (checked) {
+          newSelected.add(id);
+        } else {
+          newSelected.delete(id);
+        }
+        return newSelected;
+    });
+  }, []);
+
+  const isAllSelected = filteredAlerts.length > 0 && selectedAlerts.size === filteredAlerts.length;
 
   const getSeverityBadge = (severity: Severity) => {
     switch (severity) {
@@ -122,7 +172,20 @@ export function AlertList() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 relative">
+      {selectedAlerts.size > 0 && (
+        <div className="flex items-center gap-2 p-2 bg-muted/40 rounded-md animate-in fade-in slide-in-from-top-1 duration-200 sticky top-0 z-10 backdrop-blur-md border">
+          <span className="text-sm text-muted-foreground mr-2 font-medium px-2">{selectedAlerts.size} selected</span>
+          <div className="h-4 w-px bg-border mx-1" />
+          <Button size="sm" variant="ghost" onClick={() => handleBulkStatusChange('acknowledged')} className="h-8 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-100 dark:hover:bg-yellow-900/20">
+            <AlertTriangle className="mr-2 h-4 w-4" /> Acknowledge
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => handleBulkStatusChange('resolved')} className="h-8 text-green-600 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/20">
+            <CheckCircle2 className="mr-2 h-4 w-4" /> Resolve
+          </Button>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
         <div className="relative w-full sm:w-96">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -172,6 +235,14 @@ export function AlertList() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[30px] pr-0">
+                <Checkbox
+                  checked={isAllSelected}
+                  onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                  aria-label="Select all"
+                  className="translate-y-[2px]"
+                />
+              </TableHead>
               <TableHead className="w-[100px]">Severity</TableHead>
               <TableHead className="w-[100px]">Status</TableHead>
               <TableHead>Summary</TableHead>
@@ -183,7 +254,7 @@ export function AlertList() {
           <TableBody>
             {loading && alerts.length === 0 ? (
                  <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                         <div className="flex items-center justify-center gap-2">
                             <Loader2 className="h-4 w-4 animate-spin" />
                             Loading alerts...
@@ -192,13 +263,21 @@ export function AlertList() {
                 </TableRow>
             ) : filteredAlerts.length === 0 ? (
                 <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                         No alerts match your filters.
                     </TableCell>
                 </TableRow>
             ) : (
                 filteredAlerts.map((alert) => (
-                <TableRow key={alert.id} className="group">
+                <TableRow key={alert.id} className={cn("group", selectedAlerts.has(alert.id) ? "bg-muted/50" : "")}>
+                    <TableCell className="pr-0">
+                      <Checkbox
+                        checked={selectedAlerts.has(alert.id)}
+                        onCheckedChange={(checked) => handleSelectOne(alert.id, !!checked)}
+                        aria-label={`Select alert ${alert.id}`}
+                        className="translate-y-[2px]"
+                      />
+                    </TableCell>
                     <TableCell>{getSeverityBadge(alert.severity)}</TableCell>
                     <TableCell>
                     <div className="flex items-center gap-2" title={alert.status}>
