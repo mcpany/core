@@ -41,11 +41,11 @@ func TestWordTokenizer(t *testing.T) {
 	}{
 		{"", 0},
 		{"hello", 1},
-		{"hello world", 2}, // 2 * 1.3 = 2.6 -> 2
+		{"hello world", 2},             // 2 * 1.3 = 2.6 -> 2
 		{"this is a test sentence", 6}, // 5 * 1.3 = 6.5 -> 6
-		{"hello 🌍", 2}, // 2 * 1.3 = 2.6 -> 2 (ASCII + Emoji)
-		{"你好 世界", 2}, // 2 * 1.3 = 2.6 -> 2 (Chinese + Space + Chinese)
-		{"hello\tworld\n", 2}, // ASCII whitespace
+		{"hello 🌍", 2},                 // 2 * 1.3 = 2.6 -> 2 (ASCII + Emoji)
+		{"你好 世界", 2},                   // 2 * 1.3 = 2.6 -> 2 (Chinese + Space + Chinese)
+		{"hello\tworld\n", 2},          // ASCII whitespace
 	}
 
 	for _, tt := range tests {
@@ -98,11 +98,11 @@ func TestCountTokensInValue_Word(t *testing.T) {
 		{"int", 12345, 1},
 		{"bool", true, 1},
 		{"nil", nil, 1},
-		{"string", "hello world", 2}, // "hello world" -> 2 words * 1.3 -> 2
-		{"slice", []interface{}{1, "hello"}, 1 + 1}, // 1 (int) + 1 (hello)
-		{"map", map[string]interface{}{"a": 1}, 1 + 1}, // "a" (1) + 1 (int)
+		{"string", "hello world", 2},                        // "hello world" -> 2 words * 1.3 -> 2
+		{"slice", []interface{}{1, "hello"}, 1 + 1},         // 1 (int) + 1 (hello)
+		{"map", map[string]interface{}{"a": 1}, 1 + 1},      // "a" (1) + 1 (int)
 		{"string_slice", []string{"hello", "world"}, 1 + 1}, // 1 + 1
-		{"string_map", map[string]string{"a": "b"}, 1 + 1}, // "a"(1) + "b"(1)
+		{"string_map", map[string]string{"a": "b"}, 1 + 1},  // "a"(1) + "b"(1)
 	}
 
 	for _, tt := range tests {
@@ -271,7 +271,7 @@ func TestCountTokensInValue_Coverage(t *testing.T) {
 		// B -> D
 		// C -> D
 		// Should count D twice (expanded).
-		d := &ExportedStruct{Name: "D", Age: 1} // "D"(1) + "1"(1) = 2 tokens
+		d := &ExportedStruct{Name: "D", Age: 1}         // "D"(1) + "1"(1) = 2 tokens
 		b := &struct{ Child *ExportedStruct }{Child: d} // 2 tokens
 		c := &struct{ Child *ExportedStruct }{Child: d} // 2 tokens
 		a := &struct{ Left, Right interface{} }{Left: b, Right: c}
@@ -310,10 +310,10 @@ func TestWordTokenizer_Branches(t *testing.T) {
 		want  int
 	}{
 		{"  hello  ", 1}, // Leading/trailing whitespace
-		{"a\tb", 2}, // Tab
-		{"a\r\nb", 2}, // CR LF
-		{"a \x00 b", 3}, // Control char \x00
-		{"a\u00A0b", 2}, // NBSP (non-ASCII space)
+		{"a\tb", 2},      // Tab
+		{"a\r\nb", 2},    // CR LF
+		{"a \x00 b", 3},  // Control char \x00
+		{"a\u00A0b", 2},  // NBSP (non-ASCII space)
 	}
 
 	for _, tt := range tests {
@@ -345,7 +345,7 @@ func TestErrorPropagation(t *testing.T) {
 		}
 
 		// Struct with cycle (field)
-		type S struct { Field interface{} }
+		type S struct{ Field interface{} }
 		st := S{Field: node}
 		if _, err := CountTokensInValue(tokenizer, st); err == nil {
 			t.Error("Expected error from struct with cycle")
@@ -369,7 +369,7 @@ func TestErrorPropagation(t *testing.T) {
 		}
 
 		// Struct with cycle (field)
-		type S struct { Field interface{} }
+		type S struct{ Field interface{} }
 		st := S{Field: node}
 		if _, err := CountTokensInValue(tokenizer, st); err == nil {
 			t.Error("Expected error from struct with cycle")
@@ -410,12 +410,12 @@ func TestFloatConsistency(t *testing.T) {
 	// We expect the token count to match the standard JSON string representation,
 	// which avoids scientific notation for these ranges (unlike strconv %v).
 	tests := []struct {
-		val float64
+		val  float64
 		want int
 	}{
-		{1234567.0, 1}, // "1234567" -> 7 chars -> 1.75 -> 1 token (Changed from 3)
-		{9999999.0, 1}, // "9999999" -> 7 chars -> 1.75 -> 1 token (Changed from 3)
-		{10000000.0, 2}, // "10000000" -> 8 chars -> 2 tokens (Changed from 1: "1e+07" was 5 chars)
+		{1234567.0, 1},   // "1234567" -> 7 chars -> 1.75 -> 1 token (Changed from 3)
+		{9999999.0, 1},   // "9999999" -> 7 chars -> 1.75 -> 1 token (Changed from 3)
+		{10000000.0, 2},  // "10000000" -> 8 chars -> 2 tokens (Changed from 1: "1e+07" was 5 chars)
 		{123456789.0, 2}, // "123456789" -> 9 chars -> 2.25 -> 2 tokens (Changed from 3)
 	}
 
@@ -530,22 +530,22 @@ func TestSimpleTokenizeInt64(t *testing.T) {
 	}{
 		{"fast_path_positive", 100, 1},
 		{"fast_path_negative", -100, 1},
-		{"exactly_fast_path_max", 9999999, 1}, // 7 digits
-		{"1e7", 10000000, 2}, // 8 digits -> len=8 -> 2 tokens
-		{"1e8", 100000000, 2}, // 9 digits -> 2 tokens
-		{"1e9", 1000000000, 2}, // 10 digits -> 2 tokens
-		{"1e10", 10000000000, 2}, // 11 digits -> 2 tokens
-		{"1e11", 100000000000, 3}, // 12 digits -> 3 tokens
-		{"1e12", 1000000000000, 3}, // 13 digits -> 3 tokens
-		{"1e13", 10000000000000, 3}, // 14 digits -> 3 tokens
-		{"1e14", 100000000000000, 3}, // 15 digits -> 3 tokens
-		{"1e15", 1000000000000000, 4}, // 16 digits -> 4 tokens
-		{"1e16", 10000000000000000, 4}, // 17 digits -> 4 tokens
-		{"1e17", 100000000000000000, 4}, // 18 digits -> 4 tokens
-		{"1e18", 1000000000000000000, 4}, // 19 digits -> 4 tokens
-		{"max_int64", 9223372036854775807, 4}, // 19 digits -> 4 tokens
+		{"exactly_fast_path_max", 9999999, 1},  // 7 digits
+		{"1e7", 10000000, 2},                   // 8 digits -> len=8 -> 2 tokens
+		{"1e8", 100000000, 2},                  // 9 digits -> 2 tokens
+		{"1e9", 1000000000, 2},                 // 10 digits -> 2 tokens
+		{"1e10", 10000000000, 2},               // 11 digits -> 2 tokens
+		{"1e11", 100000000000, 3},              // 12 digits -> 3 tokens
+		{"1e12", 1000000000000, 3},             // 13 digits -> 3 tokens
+		{"1e13", 10000000000000, 3},            // 14 digits -> 3 tokens
+		{"1e14", 100000000000000, 3},           // 15 digits -> 3 tokens
+		{"1e15", 1000000000000000, 4},          // 16 digits -> 4 tokens
+		{"1e16", 10000000000000000, 4},         // 17 digits -> 4 tokens
+		{"1e17", 100000000000000000, 4},        // 18 digits -> 4 tokens
+		{"1e18", 1000000000000000000, 4},       // 19 digits -> 4 tokens
+		{"max_int64", 9223372036854775807, 4},  // 19 digits -> 4 tokens
 		{"min_int64", -9223372036854775808, 5}, // 20 digits -> 5 tokens
-		{"negative_large", -10000000, 2}, // 9 digits (incl sign) -> 2 tokens
+		{"negative_large", -10000000, 2},       // 9 digits (incl sign) -> 2 tokens
 		{"edge_1", 9, 1},
 		{"edge_2", 99, 1},
 		{"edge_3", 999, 1},
@@ -640,16 +640,16 @@ func TestCountSliceInterfaceSimple(t *testing.T) {
 	}{
 		{"empty", []interface{}{}, 0},
 		{"mixed_primitive", []interface{}{
-			"hello world", // len=11 -> 2
-			float64(42.0), // int path -> 42 -> 1
+			"hello world",   // len=11 -> 2
+			float64(42.0),   // int path -> 42 -> 1
 			float64(3.1415), // float path -> "3.1415" (6 chars) -> 1
-			int(100), // 1
-			int64(200), // 1
-			true, // 1
-			nil, // 1
+			int(100),        // 1
+			int64(200),      // 1
+			true,            // 1
+			nil,             // 1
 		}, 8},
 		{"nested_slice", []interface{}{
-			"test", // 1
+			"test",                  // 1
 			[]interface{}{"nested"}, // 1
 		}, 2},
 		{"nested_map", []interface{}{
@@ -770,7 +770,6 @@ func TestCountTokensReflectSliceCoverage(t *testing.T) {
 	}
 }
 
-
 type errTokenizer struct{}
 
 func (e errTokenizer) CountTokens(s string) (int, error) {
@@ -858,22 +857,22 @@ func TestSimpleTokenizeInt64Coverage(t *testing.T) {
 	}{
 		{"fast_path_positive", 100, 1},
 		{"fast_path_negative", -100, 1},
-		{"exactly_fast_path_max", 9999999, 1}, // 7 digits
-		{"1e7", 10000000, 2}, // 8 digits -> len=8 -> 2 tokens
-		{"1e8", 100000000, 2}, // 9 digits -> 2 tokens
-		{"1e9", 1000000000, 2}, // 10 digits -> 2 tokens
-		{"1e10", 10000000000, 2}, // 11 digits -> 2 tokens
-		{"1e11", 100000000000, 3}, // 12 digits -> 3 tokens
-		{"1e12", 1000000000000, 3}, // 13 digits -> 3 tokens
-		{"1e13", 10000000000000, 3}, // 14 digits -> 3 tokens
-		{"1e14", 100000000000000, 3}, // 15 digits -> 3 tokens
-		{"1e15", 1000000000000000, 4}, // 16 digits -> 4 tokens
-		{"1e16", 10000000000000000, 4}, // 17 digits -> 4 tokens
-		{"1e17", 100000000000000000, 4}, // 18 digits -> 4 tokens
-		{"1e18", 1000000000000000000, 4}, // 19 digits -> 4 tokens
-		{"max_int64", 9223372036854775807, 4}, // 19 digits -> 4 tokens
+		{"exactly_fast_path_max", 9999999, 1},  // 7 digits
+		{"1e7", 10000000, 2},                   // 8 digits -> len=8 -> 2 tokens
+		{"1e8", 100000000, 2},                  // 9 digits -> 2 tokens
+		{"1e9", 1000000000, 2},                 // 10 digits -> 2 tokens
+		{"1e10", 10000000000, 2},               // 11 digits -> 2 tokens
+		{"1e11", 100000000000, 3},              // 12 digits -> 3 tokens
+		{"1e12", 1000000000000, 3},             // 13 digits -> 3 tokens
+		{"1e13", 10000000000000, 3},            // 14 digits -> 3 tokens
+		{"1e14", 100000000000000, 3},           // 15 digits -> 3 tokens
+		{"1e15", 1000000000000000, 4},          // 16 digits -> 4 tokens
+		{"1e16", 10000000000000000, 4},         // 17 digits -> 4 tokens
+		{"1e17", 100000000000000000, 4},        // 18 digits -> 4 tokens
+		{"1e18", 1000000000000000000, 4},       // 19 digits -> 4 tokens
+		{"max_int64", 9223372036854775807, 4},  // 19 digits -> 4 tokens
 		{"min_int64", -9223372036854775808, 5}, // 20 digits -> 5 tokens
-		{"negative_large", -10000000, 2}, // 9 digits (incl sign) -> 2 tokens
+		{"negative_large", -10000000, 2},       // 9 digits (incl sign) -> 2 tokens
 		{"edge_1", 9, 1},
 		{"edge_2", 99, 1},
 		{"edge_3", 999, 1},
@@ -961,7 +960,7 @@ func TestSimpleTokenizeInt64Coverage4(t *testing.T) {
 		{"zero", 0, 1},
 		{"single_positive", 5, 1},
 		{"single_negative", -5, 1},
-		{"exactly_fast_path_max_plus_one", 10000000, 2}, // len 8 -> /4 = 2
+		{"exactly_fast_path_max_plus_one", 10000000, 2},   // len 8 -> /4 = 2
 		{"exactly_fast_path_min_minus_one", -10000001, 2}, // len 9 -> /4 = 2
 		{"max_default", 9223372036854775807, 4},
 		{"negative_max_default", -9223372036854775807, 5},
