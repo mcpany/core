@@ -41,7 +41,7 @@ test.describe('Rich Result Viewer', () => {
     await request.delete(`/api/v1/services/${serviceName}`).catch(() => { });
   });
 
-  test.skip('Tool Inspector renders rich table result for complex data', async ({ page }) => {
+  test('Tool Inspector renders rich table result for complex data', async ({ page }) => {
     await page.goto('/tools');
 
     // Search for the test tool

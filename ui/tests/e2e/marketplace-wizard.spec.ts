@@ -94,7 +94,7 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     });
   });
 
-  test.skip('Complete CUJ: Create Config -> Instantiate -> Manage', async ({ page }) => {
+  test('Complete CUJ: Create Config -> Instantiate -> Manage', async ({ page }) => {
     // 1. Navigate to Marketplace
     await page.goto('/marketplace');
     await expect(page.getByText('Marketplace', { exact: true }).first()).toBeVisible();
