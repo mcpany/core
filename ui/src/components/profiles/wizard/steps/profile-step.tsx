@@ -37,14 +37,18 @@ export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) 
     setSubmitting(true);
     try {
       // 1. Ensure all services are updated/registered with latest config (names, auth tokens)
-      for (const svc of services) {
-        try {
-          await apiClient.getService(svc.instanceName);
-          await apiClient.updateService({ ...svc.config, id: svc.instanceName, name: svc.instanceName });
-        } catch {
-          await apiClient.registerService({ ...svc.config, id: svc.instanceName, name: svc.instanceName });
-        }
-      }
+      // ⚡ BOLT: [Network/IO] Parallelized sequential network requests to improve profile creation time.
+      // Randomized Selection from Top 5 High-Impact Targets
+      await Promise.all(
+        services.map(async (svc) => {
+          try {
+            await apiClient.getService(svc.instanceName);
+            await apiClient.updateService({ ...svc.config, id: svc.instanceName, name: svc.instanceName });
+          } catch {
+            await apiClient.registerService({ ...svc.config, id: svc.instanceName, name: svc.instanceName });
+          }
+        })
+      );
 
       // 2. Create Profile
       const serviceConfig: Record<string, any> = {};
