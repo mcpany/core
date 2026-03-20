@@ -129,10 +129,7 @@ fi
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    # Increase GC frequency and reduce concurrency to stay within CI memory limits.
-    # GOGC=20 makes the garbage collector run more often, reducing peak memory usage.
-    # We also use a concurrency value of 1 to minimize memory footprint.
-    GOGC=20 "$GOLANGCI_LINT_BIN" run --timeout 20m --concurrency 1 --fix \
+    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
         ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
     echo "    golangci-lint OK."
 else
