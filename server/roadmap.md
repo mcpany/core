@@ -736,18 +736,6 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Locked Context Sharding (ALCS)**: (P0) Hardware-protected pinning of mission-critical fragments to prevent noise-driven eviction. (Added: 2026-06-14)
 - **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative discovery gateway for hardware-attested tool capability card validation. (Added: 2026-06-14)
 
-### Upcoming: [2026-06-19]
-- [ ] **[P0] HAIL Lineage Mint**: (2026-06-19) Authoritative security service for generating TPM-signed "Reasoning Fragments" to link sub-instructions back to the mission root.
-- [ ] **[P0] Attention-Locking Middleware**: (2026-06-19) Implementation of `x-gemini-attention-lock` compatibility to protect mission-root anchors from REE.
-- [ ] **[P0] Sovereign Shard Controller**: (2026-06-19) Advanced coordination service enforcing intent-bound isolation for lock-free teammate shards.
-- [ ] **[P0] Stylometric Verification Hub**: (2026-06-19) Behavioral security service performing real-time stylometric analysis to verify the author of reasoning fragments.
-
-### Upcoming: [2026-06-18]
-- **[P0] Hardware-Locked Attention Governance (HLAG) Provider**: Authoritative attention guard using hardware-bound headers for Mission-Root pinning (REE defense). (Added: 2026-06-18)
-- **[P0] Lock-Free Mesh Coordination (LFMC) Hub**: Coordination service implementing CRDT-based task list synchronization for non-blocking parallel teammates. (Added: 2026-06-18)
-- **[P0] Shadow Coordination Interceptor (SCI)**: Security middleware for the T2T Bridge monitoring transport metadata for out-of-band collusion. (Added: 2026-06-18)
-- **[P1] Temporal Side-Channel Mitigator (TSCM)**: Advanced security middleware injecting timing jitter into shard-level lock responses (Spectral Reasoning defense). (Added: 2026-06-18)
-
 ### Upcoming: [2026-06-16]
 - **[P0] Entangled State Broker (ESB)**: Authoritative coordination for "Entanglement Shards" bound to mission-root intent. (Added: 2026-06-16)
 - **[P0] Stylometric Mimicry Mitigator (SMM)**: Real-time stylometric analysis of inter-agent messages to detect reasoning-path shadowing. (Added: 2026-06-16)
@@ -759,6 +747,18 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Side-Channel Timing Mitigator (SCTM)**: (P0) Advanced security middleware for the ASLM that injects hardware-attested timing jitter to neutralize shard-collision timing attacks. (Added: 2026-06-15)
 - **Attention-Locked Telemetry Proxy**: (P1) Authoritative telemetry sanitizer for Gemini-compliant reasoning traces, ensuring attention-mapping privacy during RL feedback export. (Added: 2026-06-15)
 - **WASM-Hook Behavioral Profiler**: (P0) Mandatory extension for the SMS that performs sandboxed profiling of AI-generated configuration hooks to counter PR "Logic Bombs." (Added: 2026-06-15)
+
+### Upcoming: [2026-06-19]
+- **HAIL Lineage Provider**: (P0) Authoritative security service for TPM-signed reasoning fragment generation (Added: 2026-06-19).
+- **Attention-Locking Middleware**: (P0) Implementation of `x-gemini-attention-lock` for mission-root pinning (Added: 2026-06-19).
+- **Sovereign Shard Controller**: (P0) Intent-bound isolation for lock-free teammate shards to prevent semantic smearing (Added: 2026-06-19).
+- **Stylometric Verification Hub**: (P0) Behavioral security service for real-time authorship verification of reasoning traces (Added: 2026-06-19).
+
+### Upcoming: [2026-06-18]
+- **Hardware-Locked Attention Governance (HLAG) Provider**: (P0) Authoritative attention guard using hardware-bound headers for Mission-Root pinning (Added: 2026-06-18).
+- **Lock-Free Mesh Coordination (LFMC) Hub**: (P0) Coordination service implementing CRDT-based task list synchronization for non-blocking coordination (Added: 2026-06-18).
+- **Shadow Coordination Interceptor (SCI)**: (P0) Security middleware for the T2T Bridge monitoring transport metadata (Added: 2026-06-18).
+- **Temporal Side-Channel Mitigator (TSCM)**: (P1) Advanced security middleware injecting timing jitter into shard-level lock responses (Added: 2026-06-18).
 
 ### Upcoming: [2026-06-17]
 - **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment service issuing hardware-attested heartbeats for mission-anchored reasoning (Added: 2026-06-17).

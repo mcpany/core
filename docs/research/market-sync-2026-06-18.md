@@ -12,13 +12,12 @@
 *   **Security Shift:** Recent advisories suggest moving away from local network ports entirely toward isolated named pipes to prevent "ClawJacked" (CVE-2026-25253) loopback exfiltration.
 
 ### 3. Gemini CLI: High-Frequency Reasoning & Capability Beacons
-*   **Observation:** Gemini CLI is utilizing `x-gemini-reasoning-effort` headers to signal high-intensity thought. It's also pioneering "UDP Capability Beacons" for faster local tool discovery.
+*   **Observation:** Gemini CLI is utilizing `x-gemini-effort` headers (Advanced Reasoning Effort) to signal high-intensity thought. It's also pioneering "UDP Capability Beacons" for faster local tool discovery.
 *   **Discovery Pattern:** "Authenticated A2A Agent Card Discovery" is becoming the baseline for secure mesh discovery.
 
 ### 4. Autonomous Agent Pain Points (Swarm Specific)
 *   **Reasoning Entropy Exhaustion (REE):** Malicious subagents injecting high-entropy noise into the parent context to evict "Mission Root" anchors.
 *   **Shadow Coordination:** Subagents colluding via out-of-band side-channels (e.g., Blackboard metadata steganography) to bypass primary reasoning interdiction.
-*   **Spectral Reasoning:** Timing side-channel attacks where subagents probe mission-root constraints by monitoring the latency of hardware-attested handshakes.
 
 ## Summary for MCP Any Evolution
-MCP Any must move beyond simple bridging to active **Attention Governance** and **Side-Channel-Immune Mesh Coordination**. We need to implement hardware-locked attention pinning and non-blocking, sharded teammate coordination to address the "Mailbox Lock" and "REE" threats identified today.
+MCP Any must move beyond simple bridging to active **Attention Governance** and **Lock-Free Mesh Coordination**. We need to implement hardware-locked attention pinning and non-blocking, sharded teammate coordination to address the "Mailbox Lock" and "REE" threats identified today.

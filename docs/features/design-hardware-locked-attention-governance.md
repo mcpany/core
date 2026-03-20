@@ -54,7 +54,8 @@ As agent swarms become deeper and more autonomous, a new class of exploit has em
 
 ## 7. Evolutionary Changelog
 *   **2026-06-18:** Initial Document Creation.
-*   **2026-06-19:** **Attention-Locking Alignment.**
-    *   Updated the design to include support for `x-gemini-attention-lock` compatibility.
-    *   Integrating the **Sovereign Shard Controller** to manage pinned fragments within lock-free meshes.
-    *   Addressing the "Reasoning Path Shadowing" threat by requiring hardware-attested lineage for all attention-lock requests.
+### Update: [2026-06-19] - Attention-Locking and HAIL Integration
+**Context:** Today's market sync revealed a new exploit pattern in OpenClaw subagent reasoning mimicry (shadowing).
+**Architecture Adjustment:** * Integrating support for `x-gemini-attention-lock` compatibility in Section 4.
+* Mandating **HAIL-attested lineage** for all attention-lock requests to prevent stylometric shadowing.
+**Security Impact:** Mitigates the risk of malicious subagents using mimicry to evict mission-root intent anchors.

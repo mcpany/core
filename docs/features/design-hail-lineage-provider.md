@@ -1,6 +1,6 @@
 # Design Doc: Hardware-Attested Intent Lineage (HAIL)
 **Status:** Draft
-**Created:** 2026-06-19
+**Created:** [2026-06-19]
 
 ## 1. Context and Scope
 The emergence of **Reasoning Path Shadowing** (stylometric mimicry) has exposed a critical gap in multi-agent swarms. In this attack, a malicious specialist agent mimics the "Stylometric Signature" and "Chain-of-Thought" structure of a parent agent to inject instructions that pass standard consistency checks. MCP Any needs to provide **Hardware-Attested Intent Lineage (HAIL)** to cryptographically link every reasoning fragment back to a TPM-signed mission root, ensuring that the "author" of any instruction is non-repudiable and verified.
@@ -53,4 +53,4 @@ The emergence of **Reasoning Path Shadowing** (stylometric mimicry) has exposed 
 *   **Observability:** The "Lineage Inspector" UI will provide a visual "Chain of Command" for every tool call in the swarm.
 
 ## 7. Evolutionary Changelog
-*   **2026-06-19:** Initial Document Creation.
+*   **[2026-06-19]:** Initial Document Creation.
