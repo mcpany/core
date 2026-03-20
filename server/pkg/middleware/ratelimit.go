@@ -30,7 +30,6 @@ var metricRateLimitRequestsTotal = []string{"rate_limit", "requests_total"}
 
 // RateLimitMiddleware is a tool execution middleware that provides rate limiting
 // functionality for upstream services.
-//
 // Summary: Middleware for rate limiting tool execution.
 type RateLimitMiddleware struct {
 	toolManager tool.ManagerInterface
@@ -42,17 +41,13 @@ type RateLimitMiddleware struct {
 }
 
 // Option defines a functional option for RateLimitMiddleware.
-//
 // Summary: Functional option for RateLimitMiddleware.
 type Option func(*RateLimitMiddleware)
 
 // WithTokenizer sets a custom tokenizer for the middleware.
-//
 // Summary: Configures a custom tokenizer.
-//
 // Parameters:
 //   - t (tokenizer.Tokenizer): The tokenizer to use.
-//
 // Returns:
 //   - (Option): The configured option.
 func WithTokenizer(t tokenizer.Tokenizer) Option {
@@ -62,13 +57,10 @@ func WithTokenizer(t tokenizer.Tokenizer) Option {
 }
 
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
-//
 // Summary: Initializes the rate limit middleware.
-//
 // Parameters:
 //   - toolManager (tool.ManagerInterface): The tool manager.
 //   - opts (...Option): Optional configuration settings.
-//
 // Returns:
 //   - (*RateLimitMiddleware): The initialized middleware.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
@@ -94,18 +86,14 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 }
 
 // Execute executes the rate limiting middleware.
-//
 // Summary: Executes rate limiting logic before passing to the next handler.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - req (*tool.ExecutionRequest): The execution request.
 //   - next (tool.ExecutionFunc): The next handler.
-//
 // Returns:
 //   - (any): The result of the execution.
 //   - (error): An error if the limit is exceeded or the operation fails.
-//
 // Side Effects:
 //   - Checks against rate limits in memory or Redis.
 //   - Increments counters.
