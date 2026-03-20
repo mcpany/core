@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { JsonView } from "@/components/ui/json-view";
 
 interface SmartPayloadViewerProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any;
     title?: string;
     icon?: React.ReactNode;
@@ -55,6 +56,7 @@ export function SmartPayloadViewer({ data, title = "Payload", icon = <Code class
 
     const meta = extractMeta();
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const renderKeyValue = (key: string, value: any, depth = 0) => {
         const isObj = typeof value === 'object' && value !== null;
         return (
