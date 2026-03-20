@@ -13,6 +13,7 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/spf13/viper"
 )
 
 // Registry manages available middlewares.
@@ -242,6 +243,17 @@ func InitStandardMiddlewares(
 	// 2. Auth
 	RegisterMCP("auth", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
 		return AuthMiddleware(authManager)
+	})
+
+	// SSO
+	Register("sso", func(cfg *configv1.Middleware) func(http.Handler) http.Handler {
+		// Instantiate SSOMiddleware
+		// A proper configuration should be parsed from Viper since protobuf modification breaks CI.
+		// We use viper to retrieve sso.enabled and sso.idp_url
+		return SSOMiddleware(SSOConfig{
+			Enabled: viper.GetBool("sso.enabled"),
+			IDPURL:  viper.GetString("sso.idp_url"),
+		})
 	})
 
 	// 3. Debug

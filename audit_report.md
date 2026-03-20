@@ -21,6 +21,7 @@ The backend infrastructure and core UI capabilities are correctly implemented an
 | `server/docs/features/kafka.md` | Aligned | None | `server/pkg/bus/kafka/kafka.go` correctly implements the Kafka Bus for `message_bus` configs. |
 | `server/docs/features/prompts/README.md` | Aligned | None | `prompts/get` API and `upstream_services.http_service.prompts` are correctly mapped in `prompt/service.go`. |
 | `server/docs/features/skill_manager.md` | Aligned | None | `server/pkg/skill/manager.go` properly validates names (regex 1-64 chars) and prevents path traversal for assets. |
+| `server/docs/features/sso.md` | Roadmap Debt | Fixed | Engineered `net/http` middleware implementation for SSO in `server/pkg/middleware/sso.go` and `server/pkg/middleware/sso_test.go` supporting `X-MCP-Identity` and Bearer Tokens, dropping the legacy `gin` dependency, and added it to the active standard middlewares registry in `server/pkg/middleware/registry.go` using `viper`. |
 
 ## Remediation Log
 
@@ -29,7 +30,7 @@ The backend infrastructure and core UI capabilities are correctly implemented an
     *   `ui/docs/features/tool_analytics.md`: Updated the tab name from "Performance & Analytics" in the "Tool Inspector" to "Analytics" in the "Tool Runner". Corrected metric labels from "Avg Latency" to "Avg Latency (50)" and "Error Count" to "Error Count (50)".
 
 *   **Case B (Roadmap Debt - Code is Missing/Broken):**
-    *   None found in the selected 10 files. All core features described in the sampled docs have been fully engineered and integrated into the codebase with corresponding tests (`manager_test.go`, `debugger_test.go`, etc.).
+    *   `server/docs/features/sso.md`: The `server/pkg/middleware/sso.go` file contained an incorrect/broken implementation relying on `gin` rather than the system's native `net/http` standard. The solution was fully engineered according to the spec, unit tests were written in `server/pkg/middleware/sso_test.go`, and the new module was registered in `server/pkg/middleware/registry.go`.
 
 ## Security Scrub
 This report contains NO Personally Identifiable Information (PII), sensitive secrets, or internal IP addresses.
