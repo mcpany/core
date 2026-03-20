@@ -350,9 +350,6 @@ importers:
       patch-package:
         specifier: ^8.0.1
         version: 8.0.1
-      playwright:
-        specifier: ^1.58.0
-        version: 1.58.2
       prop-types:
         specifier: 15.8.1
         version: 15.8.1
@@ -513,6 +510,9 @@ importers:
       jsdom:
         specifier: ^27.4.0
         version: 27.4.0
+      playwright:
+        specifier: 1.58.0
+        version: 1.58.0
       postcss:
         specifier: ^8
         version: 8.5.8
@@ -5954,18 +5954,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright-core@1.58.2:
-    resolution: {integrity: sha512-yZkEtftgwS8CsfYo7nm0KE8jsvm6i/PTgVtB8DL726wNf6H2IMsDuxCpJj59KDaxCtSnrWan2AeDqM7JBaultg==}
-    engines: {node: '>=18'}
-    hasBin: true
-
   playwright@1.58.0:
     resolution: {integrity: sha512-2SVA0sbPktiIY/MCOPX8e86ehA/e+tDNq+e5Y8qjKYti2Z/JG7xnronT/TXTIkKbYGWlCbuucZ6dziEgkoEjQQ==}
-    engines: {node: '>=18'}
-    hasBin: true
-
-  playwright@1.58.2:
-    resolution: {integrity: sha512-vA30H8Nvkq/cPBnNw4Q8TWz1EJyqgpuinBcHET0YVJVFldr8JDNiU9LaWAE1KqSkRYazuaBhTpB5ZzShOezQ6A==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -13773,17 +13763,9 @@ snapshots:
 
   playwright-core@1.58.0: {}
 
-  playwright-core@1.58.2: {}
-
   playwright@1.58.0:
     dependencies:
       playwright-core: 1.58.0
-    optionalDependencies:
-      fsevents: 2.3.2
-
-  playwright@1.58.2:
-    dependencies:
-      playwright-core: 1.58.2
     optionalDependencies:
       fsevents: 2.3.2
 

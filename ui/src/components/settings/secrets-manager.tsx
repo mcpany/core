@@ -6,41 +6,34 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-    Plus,
-    Trash2,
-    Eye,
-    EyeOff,
-    Copy,
-    Key,
-    Shield,
-    Search,
-    RefreshCw
-} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Key, Plus, Trash2, Shield, Eye, EyeOff, RefreshCw, Search, Copy } from "lucide-react";
+import { apiClient } from "@/lib/client";
 import { useToast } from "@/hooks/use-toast";
-import { apiClient, SecretDefinition } from "@/lib/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
+
+interface SecretDefinition {
+    id: string;
+    name: string;
+    key: string;
+    provider: string;
+}
 
 /**
  * SecretsManager component.
@@ -49,32 +42,38 @@ import { apiClient, SecretDefinition } from "@/lib/client";
 export function SecretsManager() {
     const [secrets, setSecrets] = useState<SecretDefinition[]>([]);
     const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState("");
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
     const { toast } = useToast();
 
-    // Form state
+    // Selected state for bulk actions
+    const [selectedSecrets, setSelectedSecrets] = useState<Set<string>>(new Set());
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    // New secret state
     const [newSecretName, setNewSecretName] = useState("");
     const [newSecretKey, setNewSecretKey] = useState("");
     const [newSecretValue, setNewSecretValue] = useState("");
-    const [newSecretProvider, setNewSecretProvider] = useState<string>("custom");
+    const [newSecretProvider, setNewSecretProvider] = useState("custom");
 
     useEffect(() => {
-        loadSecrets();
+        fetchSecrets();
     }, []);
 
-    const loadSecrets = async () => {
+    const fetchSecrets = async () => {
         setLoading(true);
         try {
             const data = await apiClient.listSecrets();
-            setSecrets(data);
-        } catch (error) {
-            console.error("Failed to load secrets", error);
-            toast({
-                title: "Error",
-                description: "Failed to load secrets.",
-                variant: "destructive",
-            });
+            if (Array.isArray(data)) {
+                 setSecrets(data);
+            } else if (data && Array.isArray(data.secrets)) {
+                setSecrets(data.secrets);
+            } else {
+                setSecrets([]);
+            }
+        } catch (e) {
+            console.error(e);
+            toast({ title: "Error", description: "Failed to load secrets", variant: "destructive" });
         } finally {
             setLoading(false);
         }
@@ -82,58 +81,68 @@ export function SecretsManager() {
 
     const handleSaveSecret = async () => {
         if (!newSecretName || !newSecretKey || !newSecretValue) {
-            toast({
-                title: "Validation Error",
-                description: "All fields are required.",
-                variant: "destructive",
-            });
+            toast({ title: "Error", description: "Name, key, and value are required.", variant: "destructive" });
             return;
         }
 
         try {
-            const newSecret: SecretDefinition = {
-                id: Math.random().toString(36).substring(7),
+            await apiClient.createSecret({
                 name: newSecretName,
                 key: newSecretKey,
                 value: newSecretValue,
-                provider: newSecretProvider as any,
-                createdAt: new Date().toISOString(),
-                lastUsed: "Never"
-            };
-
-            await apiClient.saveSecret(newSecret);
-
-            toast({
-                title: "Success",
-                description: "Secret saved successfully.",
+                provider: newSecretProvider
             });
-
+            toast({ title: "Success", description: "Secret created." });
             setIsAddDialogOpen(false);
             resetForm();
-            loadSecrets();
-        } catch (_error) {
-            toast({
-                title: "Error",
-                description: "Failed to save secret.",
-                variant: "destructive",
-            });
+            fetchSecrets();
+        } catch (e) {
+            console.error(e);
+            toast({ title: "Error", description: "Failed to create secret", variant: "destructive" });
         }
     };
 
     const handleDeleteSecret = async (id: string) => {
         try {
             await apiClient.deleteSecret(id);
+            toast({ title: "Success", description: "Secret deleted." });
+
+            // Remove from selection if selected
+            setSelectedSecrets(prev => {
+                const next = new Set(prev);
+                next.delete(id);
+                return next;
+            });
+
+            fetchSecrets();
+        } catch (e) {
+            console.error(e);
+            toast({ title: "Error", description: "Failed to delete secret", variant: "destructive" });
+        }
+    };
+
+    const handleBulkDelete = async () => {
+        if (selectedSecrets.size === 0) return;
+        setIsDeleting(true);
+
+        try {
+            // Call API concurrently for all selected secrets
+            const promises = Array.from(selectedSecrets).map(id => apiClient.deleteSecret(id));
+            await Promise.all(promises);
+
             toast({
                 title: "Success",
-                description: "Secret deleted successfully.",
+                description: `${selectedSecrets.size} secret(s) deleted.`
             });
-            loadSecrets();
-        } catch (_error) {
-            toast({
-                title: "Error",
-                description: "Failed to delete secret.",
-                variant: "destructive",
-            });
+            setSelectedSecrets(new Set());
+            fetchSecrets();
+        } catch (e) {
+            console.error(e);
+            toast({ title: "Error", description: "Failed to delete one or more secrets.", variant: "destructive" });
+            // Even if one fails, we should refresh to get the current state
+            fetchSecrets();
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -144,17 +153,35 @@ export function SecretsManager() {
         setNewSecretProvider("custom");
     };
 
-    const safeSecrets = Array.isArray(secrets) ? secrets : [];
-    const filteredSecrets = safeSecrets.filter(s =>
+    const filteredSecrets = secrets.filter(s =>
         s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         s.key.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    const isAllSelected = filteredSecrets.length > 0 && selectedSecrets.size === filteredSecrets.length;
+
+    const toggleSelectAll = (checked: boolean) => {
+        if (checked) {
+            setSelectedSecrets(new Set(filteredSecrets.map(s => s.id)));
+        } else {
+            setSelectedSecrets(new Set());
+        }
+    };
+
+    const toggleSelect = (id: string, checked: boolean) => {
+        setSelectedSecrets(prev => {
+            const next = new Set(prev);
+            if (checked) next.add(id);
+            else next.delete(id);
+            return next;
+        });
+    };
+
     return (
-        <div className="space-y-4 h-full flex flex-col">
+        <div className="flex flex-col h-full space-y-4 max-w-5xl mx-auto w-full">
             <div className="flex items-center justify-between">
                 <div>
-                    <h3 className="text-lg font-medium">API Keys & Secrets</h3>
+                    <h2 className="text-2xl font-bold tracking-tight">Secrets Vault</h2>
                     <p className="text-sm text-muted-foreground">
                         Manage secure credentials for your upstream services.
                     </p>
@@ -226,16 +253,33 @@ export function SecretsManager() {
             </div>
 
             <Card className="flex-1 flex flex-col overflow-hidden bg-background/50 backdrop-blur-sm border-muted/50">
-                <CardHeader className="p-4 border-b bg-muted/20">
+                <CardHeader className="p-4 border-b bg-muted/20 flex flex-row items-center justify-between space-y-0">
                      <div className="relative">
                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
                             placeholder="Search secrets..."
-                            className="pl-8 bg-background max-w-sm"
+                            className="pl-8 bg-background w-[300px]"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
+                    {selectedSecrets.size > 0 && (
+                        <div className="flex items-center gap-4 bg-muted/50 px-4 py-1.5 rounded-md border border-muted/80 animate-in fade-in duration-200">
+                            <span className="text-sm font-medium text-muted-foreground">
+                                {selectedSecrets.size} selected
+                            </span>
+                            <Button
+                                variant="destructive"
+                                size="sm"
+                                className="h-7 text-xs"
+                                onClick={handleBulkDelete}
+                                disabled={isDeleting}
+                            >
+                                {isDeleting ? <RefreshCw className="mr-2 h-3 w-3 animate-spin" /> : <Trash2 className="mr-2 h-3 w-3" />}
+                                Bulk Delete
+                            </Button>
+                        </div>
+                    )}
                 </CardHeader>
                 <CardContent className="p-0 flex-1 overflow-hidden">
                     <ScrollArea className="h-full">
@@ -249,11 +293,35 @@ export function SecretsManager() {
                                 <p>No secrets found.</p>
                             </div>
                         ) : (
-                            <div className="divide-y">
-                                {filteredSecrets.map((secret) => (
-                                    <SecretItem key={secret.id} secret={secret} onDelete={handleDeleteSecret} />
-                                ))}
-                            </div>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="hover:bg-transparent">
+                                        <TableHead className="w-[40px] pl-4">
+                                            <Checkbox
+                                                checked={isAllSelected}
+                                                onCheckedChange={(checked) => toggleSelectAll(!!checked)}
+                                                aria-label="Select all secrets"
+                                            />
+                                        </TableHead>
+                                        <TableHead>Name</TableHead>
+                                        <TableHead>Provider</TableHead>
+                                        <TableHead>Key (Env Var)</TableHead>
+                                        <TableHead>Value</TableHead>
+                                        <TableHead className="text-right pr-4">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {filteredSecrets.map((secret) => (
+                                        <SecretItemRow
+                                            key={secret.id}
+                                            secret={secret}
+                                            isSelected={selectedSecrets.has(secret.id)}
+                                            onToggleSelect={(checked) => toggleSelect(secret.id, checked)}
+                                            onDelete={handleDeleteSecret}
+                                        />
+                                    ))}
+                                </TableBody>
+                            </Table>
                         )}
                     </ScrollArea>
                 </CardContent>
@@ -263,13 +331,19 @@ export function SecretsManager() {
 }
 
 /**
- * SecretItem component.
- * @param props - The component props.
- * @param props.secret - The secret property.
- * @param props.onDelete - The onDelete property.
- * @returns The rendered component.
+ * SecretItemRow component for Table rendering.
  */
-function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: (id: string) => void }) {
+function SecretItemRow({
+    secret,
+    isSelected,
+    onToggleSelect,
+    onDelete
+}: {
+    secret: SecretDefinition;
+    isSelected: boolean;
+    onToggleSelect: (checked: boolean) => void;
+    onDelete: (id: string) => void;
+}) {
     const [revealedValue, setRevealedValue] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
@@ -318,34 +392,38 @@ function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: 
     };
 
     return (
-        <div className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group">
-            <div className="flex items-center gap-4">
-                <div className="bg-primary/10 p-2 rounded-full text-primary">
-                    <Key className="h-4 w-4" />
+        <TableRow data-state={isSelected ? "selected" : undefined} className="group">
+            <TableCell className="pl-4">
+                <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={(checked) => onToggleSelect(!!checked)}
+                    aria-label={`Select ${secret.name}`}
+                />
+            </TableCell>
+            <TableCell className="font-medium">
+                <div className="flex items-center gap-2">
+                    <Key className="h-4 w-4 text-primary opacity-70" />
+                    {secret.name}
                 </div>
-                <div>
-                    <div className="flex items-center gap-2">
-                        <h4 className="font-medium text-sm">{secret.name}</h4>
-                        <Badge variant="outline" className="text-[10px] h-5 font-mono">
-                            {secret.provider}
-                        </Badge>
-                    </div>
-                    <div className="text-xs text-muted-foreground font-mono mt-1">
-                        {secret.key}
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 bg-muted/50 rounded-md px-2 py-1 border font-mono text-xs w-[200px] justify-between">
-                    <span className="truncate">
+            </TableCell>
+            <TableCell>
+                <Badge variant="outline" className="text-[10px] h-5 font-mono capitalize">
+                    {secret.provider}
+                </Badge>
+            </TableCell>
+            <TableCell>
+                <span className="text-xs font-mono text-muted-foreground">{secret.key}</span>
+            </TableCell>
+            <TableCell>
+                <div className="flex items-center gap-2 bg-muted/30 rounded-md px-2 py-1 border font-mono text-xs w-[180px] justify-between">
+                    <span className="truncate text-muted-foreground">
                         {loading ? <RefreshCw className="h-3 w-3 animate-spin" /> :
-                            revealedValue ? revealedValue : "•".repeat(24)}
+                            revealedValue ? revealedValue : "••••••••••••••••••••••••"}
                     </span>
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-4 w-4 hover:bg-transparent"
+                        className="h-5 w-5 hover:bg-muted"
                         onClick={handleReveal}
                         disabled={loading}
                         aria-label={revealedValue ? "Hide secret" : "Show secret"}
@@ -353,13 +431,17 @@ function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: 
                         {revealedValue ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                     </Button>
                 </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleCopy} disabled={loading} aria-label="Copy secret">
-                    <Copy className="h-4 w-4 text-muted-foreground" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive hover:bg-destructive/10" onClick={() => onDelete(secret.id)} aria-label="Delete secret">
-                    <Trash2 className="h-4 w-4" />
-                </Button>
-            </div>
-        </div>
+            </TableCell>
+            <TableCell className="text-right pr-4">
+                <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleCopy} disabled={loading} aria-label="Copy secret">
+                        <Copy className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive hover:bg-destructive/10" onClick={() => onDelete(secret.id)} aria-label="Delete secret">
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                </div>
+            </TableCell>
+        </TableRow>
     );
 }
