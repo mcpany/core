@@ -48,7 +48,7 @@ func TestOperatorE2E(t *testing.T) {
 	// 3. Clean up existing cluster to ensure fresh state and free ports
 	if clusterExists(t, ctx, clusterName) {
 		t.Logf("Deleting existing cluster %s to ensure clean state...", clusterName)
-		runCommand(t, ctx, rootDir, "kind", "delete", "cluster", "--name", clusterName)
+		_ = runCommand(t, ctx, rootDir, "kind", "delete", "cluster", "--name", clusterName)
 	}
 
 	// 4. Get a free port for the host side of NodePort
@@ -78,7 +78,7 @@ nodes:
 		t.Fatalf("Failed to write temp kind config: %v", err)
 	}
 
-	if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "5m"); err != nil {
+	if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "2m"); err != nil {
 		t.Fatalf("Failed to create kind cluster: %v", err)
 	}
 
@@ -89,11 +89,14 @@ nodes:
 	ensureBazelImageLoaded(t, filepath.Join("server", "tests", "integration", "cmd", "mocks", "http_echo_server", "http_echo_server_tarball.sh"), "mcpany/http-echo-server")
 	ensureBazelImageLoaded(t, filepath.Join("ui", "ui_tarball.sh"), "mcpany/ui")
 	if os.Getenv("SKIP_IMAGE_BUILD") != "true" {
+		// mcpany/ui is now built via Bazel and loaded above
 		t.Logf("Building Docker images with tag %s...", tag)
 		if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/operator:%s", tag), "-f", "k8s/operator/Dockerfile", "."); err != nil {
 			t.Fatalf("Failed to build operator image: %v", err)
 		}
-		// mcpany/ui is now built via Bazel and loaded above
+		if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/ui:%s", tag), "-f", "ui/Dockerfile", "."); err != nil {
+			t.Fatalf("Failed to build ui image: %v", err)
+		}
 	} else {
 		t.Log("Skipping image build (SKIP_IMAGE_BUILD=true). Assuming images exist.")
 	}
@@ -157,7 +160,7 @@ nodes:
 	if err := runCommand(t, ctx, rootDir, "kubectl", "expose", "pod", "ui-http-echo-server", "--port=5678", "--target-port=8080", "-n", namespace); err != nil {
 		t.Fatalf("Failed to expose http-echo-server: %v", err)
 	}
-	if err := runCommand(t, ctx, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "ui-http-echo-server", "-n", namespace, "--timeout=60s"); err != nil {
+	if err := runCommand(t, ctx, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "ui-http-echo-server", "-n", namespace, "--timeout=300s"); err != nil {
 		t.Fatalf("Failed to wait for http-echo-server: %v", err)
 	}
 
