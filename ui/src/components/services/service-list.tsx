@@ -35,7 +35,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-
+import { TagInput } from "@/components/ui/tag-input";
 
 interface ServiceListProps {
   services: UpstreamServiceConfig[];
@@ -61,7 +61,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   const [tagFilter, setTagFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
-  const [bulkTags, setBulkTags] = useState("");
+  const [bulkTags, setBulkTags] = useState<string[]>([]);
 
   const filteredServices = useMemo(() => {
     if (!tagFilter) return services;
@@ -215,12 +215,11 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
             </DialogHeader>
             <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                    <Label htmlFor="bulk-tags">Add Tags (comma separated)</Label>
-                    <Input
-                        id="bulk-tags"
-                        placeholder="production, web, internal"
-                        value={bulkTags}
-                        onChange={(e) => setBulkTags(e.target.value)}
+                    <Label>Add Tags</Label>
+                    <TagInput
+                        placeholder="Type a tag and press Enter"
+                        tags={bulkTags}
+                        setTags={setBulkTags}
                     />
                 </div>
             </div>
@@ -228,11 +227,11 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                 <Button variant="outline" onClick={() => setIsBulkEditDialogOpen(false)}>Cancel</Button>
                 <Button onClick={() => {
                     if (onBulkEdit) {
-                        onBulkEdit(Array.from(selected), { tags: bulkTags.split(",").map(t => t.trim()).filter(Boolean) });
+                        onBulkEdit(Array.from(selected), { tags: bulkTags });
                     }
                     setIsBulkEditDialogOpen(false);
                     setSelected(new Set());
-                    setBulkTags("");
+                    setBulkTags([]);
                 }}>Apply Changes</Button>
             </DialogFooter>
         </DialogContent>
