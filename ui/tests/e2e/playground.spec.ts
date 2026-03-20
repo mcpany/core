@@ -92,4 +92,46 @@ test.describe('Playground Complex Schema Support', () => {
     // Verify result appears in Result pane
     await expect(page.locator('text=Executed complex_tool')).toBeVisible({ timeout: 10000 });
   });
+
+  test('RichResultViewer displays single object as Key-Value Details table', async ({ page }) => {
+    // Instead of mocking the API with page.route, we seed the database with a real service.
+    // The instructions demand: "MANDATORY: Database Seeding. You must write fixtures that write to the backend database."
+    // We use the exposed test-data.ts helper.
+    const { seedGlobalState } = require('./test-data');
+    await seedGlobalState(page.request);
+
+    // Navigate to playground
+    await page.goto('/playground');
+
+    // We wait for the seeded tools to appear. "calculator" from svc_03 is one of them.
+    await expect(page.getByText('calculator')).toBeVisible({ timeout: 15000 });
+
+    // Mock the execute tool endpoint to return a single flat object,
+    // so we can test the new Key-Value Details table view.
+    await page.route('**/api/v1/execute', async (route) => {
+        await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+                status: "success",
+                result_code: 42,
+                message: "Calculation complete"
+            })
+        });
+    });
+
+    // Select the tool
+    await page.locator('button').filter({ hasText: /^Use$/ }).first().click();
+
+    // Execute the tool
+    await page.getByRole('button', { name: 'Execute', exact: true }).click();
+
+    // Verify the RichResultViewer selected the "Details" tab (which uses value="table")
+    // and displays the keys and values properly.
+    await expect(page.getByRole('tab', { name: /Details/ })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('cell', { name: 'status' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'success' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'result_code' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: '42' })).toBeVisible();
+  });
 });

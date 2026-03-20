@@ -4,9 +4,10 @@
  */
 
 import { request, APIRequestContext } from '@playwright/test';
-import { ServiceTemplate } from '../../../proto/config/v1/service_template';
-import { UpstreamServiceConfig } from '../../../proto/config/v1/upstream_service';
-import { User } from '../../../proto/config/v1/user';
+// Use any instead of importing protobufs which fails Playwright compilation
+type ServiceTemplate = any;
+type UpstreamServiceConfig = any;
+type User = any;
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
@@ -103,7 +104,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-    ].map((service) => UpstreamServiceConfig.toJSON(UpstreamServiceConfig.fromJSON(service)));
+    ].map((service) => service);
 
     const templates = [
         {
@@ -160,7 +161,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-    ].map((template) => ServiceTemplate.toJSON(ServiceTemplate.fromJSON(template)));
+    ].map((template) => template);
 
     const users = [
         {
@@ -175,7 +176,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             roles: ["admin"],
             profile_ids: ["dev", "prod"]
         }
-    ].map((user) => User.toJSON(User.fromJSON(user)));
+    ].map((user) => user);
 
     const seedRequest = {
         upstream_services: services,

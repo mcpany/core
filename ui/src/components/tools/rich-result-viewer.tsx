@@ -129,6 +129,10 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return !mcpContent && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
     }, [content, mcpContent]);
 
+    const isKeyValueEligible = useMemo(() => {
+        return !mcpContent && !isTableEligible && content && typeof content === 'object' && !Array.isArray(content);
+    }, [content, mcpContent, isTableEligible]);
+
     // Get columns for table
     const columns = useMemo(() => {
         if (!isTableEligible) return [];
@@ -150,20 +154,20 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return <span className="truncate max-w-[300px] block" title={String(value)}>{String(value)}</span>;
     }
 
-    const defaultTab = mcpContent ? "rendered" : (isTableEligible ? "table" : "json");
+    const defaultTab = mcpContent ? "rendered" : (isTableEligible || isKeyValueEligible ? "table" : "json");
 
     return (
         <Tabs defaultValue={defaultTab} className="w-full">
             <div className="flex items-center justify-between mb-2">
-                <TabsList>
+                <TabsList className="bg-background/50 backdrop-blur-sm border shadow-sm">
                     {mcpContent && (
                         <TabsTrigger value="rendered" className="flex items-center gap-2">
                             <FileText className="h-4 w-4" /> Rendered
                         </TabsTrigger>
                     )}
-                    {isTableEligible && (
+                    {(isTableEligible || isKeyValueEligible) && (
                         <TabsTrigger value="table" className="flex items-center gap-2">
-                            <TableIcon className="h-4 w-4" /> Table
+                            <TableIcon className="h-4 w-4" /> {isTableEligible ? 'Table' : 'Details'}
                         </TabsTrigger>
                     )}
                     <TabsTrigger value="json" className="flex items-center gap-2">
@@ -178,7 +182,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             </div>
 
             {mcpContent && (
-                <TabsContent value="rendered" className="border rounded-md bg-card">
+                <TabsContent value="rendered" className="border rounded-xl bg-card shadow-sm backdrop-blur-sm bg-background/50 overflow-hidden">
                     <ScrollArea className="h-[400px]">
                         <McpContentRenderer content={mcpContent} />
                     </ScrollArea>
@@ -186,21 +190,21 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             )}
 
             {isTableEligible && (
-                <TabsContent value="table" className="border rounded-md">
+                <TabsContent value="table" className="border rounded-xl shadow-sm backdrop-blur-sm bg-background/50 overflow-hidden">
                     <ScrollArea className="h-[400px]">
                         <Table>
-                            <TableHeader>
+                            <TableHeader className="bg-muted/50">
                                 <TableRow>
                                     {columns.map(col => (
-                                        <TableHead key={col} className="whitespace-nowrap">{col}</TableHead>
+                                        <TableHead key={col} className="whitespace-nowrap font-semibold">{col}</TableHead>
                                     ))}
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {content.map((row: any, i: number) => (
-                                    <TableRow key={i}>
+                                    <TableRow key={i} className="hover:bg-muted/30">
                                         {columns.map(col => (
-                                            <TableCell key={col} className="py-2">
+                                            <TableCell key={col} className="py-3">
                                                 {renderCell(row[col])}
                                             </TableCell>
                                         ))}
@@ -212,13 +216,40 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                 </TabsContent>
             )}
 
-            <TabsContent value="json">
-                <JsonView data={content} maxHeight={400} defaultExpandedLevel={2} />
+            {isKeyValueEligible && (
+                <TabsContent value="table" className="border rounded-xl shadow-sm backdrop-blur-sm bg-background/50 overflow-hidden">
+                    <ScrollArea className="h-[400px]">
+                        <Table>
+                            <TableHeader className="bg-muted/50">
+                                <TableRow>
+                                    <TableHead className="w-1/3 font-semibold">Key</TableHead>
+                                    <TableHead className="font-semibold">Value</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {Object.entries(content).map(([key, value], i: number) => (
+                                    <TableRow key={i} className="hover:bg-muted/30">
+                                        <TableCell className="py-3 font-medium text-muted-foreground">{key}</TableCell>
+                                        <TableCell className="py-3">{renderCell(value)}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </ScrollArea>
+                </TabsContent>
+            )}
+
+            <TabsContent value="json" className="border rounded-xl shadow-sm backdrop-blur-sm bg-background/50 overflow-hidden">
+                <div className="p-1">
+                    <JsonView data={content} maxHeight={400} defaultExpandedLevel={2} />
+                </div>
             </TabsContent>
 
             {isExtracted && (
-                <TabsContent value="raw">
-                    <JsonView data={result} maxHeight={400} />
+                <TabsContent value="raw" className="border rounded-xl shadow-sm backdrop-blur-sm bg-background/50 overflow-hidden">
+                    <div className="p-1">
+                        <JsonView data={result} maxHeight={400} />
+                    </div>
                 </TabsContent>
             )}
         </Tabs>
