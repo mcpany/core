@@ -571,7 +571,6 @@
 - [ ] **[P0] Side-Channel Attack Heatmap**: (2026-06-14) Real-time visualization of anomalous entropy in coordination metadata and state-tags.
 - [ ] **[P1] Stylometric Consistency Monitor**: (2026-06-14) Behavioral dashboard for tracking identity-decay signals and stylometric mimicry attempts.
 
-
 ### Upcoming: [2026-06-14]
 - [ ] **[P0] MRA Hash-Chain Auditor**: (2026-06-14) Security UI for visualizing and verifying Mesh-Resident Attestation hash-chains for coordination fragments.
 - [ ] **[P0] Side-Channel Attack Heatmap**: (2026-06-14) Real-time visualization of anomalous entropy in coordination metadata and state-tags.

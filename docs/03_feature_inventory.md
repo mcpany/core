@@ -1317,7 +1317,6 @@
 - **Shadow Coordination Interceptor (SCI)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Side-Channel Immunity** filtering.
 - **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Now elevated with the requirement for **MRA-backed hash-chaining**.
 
-
 ## Evolution: [2026-06-14] Updates
 
 ### Proposed Additions
