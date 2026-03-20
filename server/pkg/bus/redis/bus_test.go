@@ -545,7 +545,7 @@ func TestBus_Subscribe_HandlerPanic(t *testing.T) {
 		if len(handlerCalled) == 1 {
 			panic("handler panic")
 		}
-		if len(handlerCalled) == 2 { assert.Equal(t, "second message", msg) }
+		assert.Equal(t, "second message", msg)
 	})
 	defer unsub()
 
