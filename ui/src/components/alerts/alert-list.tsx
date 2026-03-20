@@ -5,7 +5,7 @@
 
 
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -48,6 +49,7 @@ export function AlertList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSeverity, setFilterSeverity] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
   const fetchAlerts = async () => {
@@ -85,6 +87,58 @@ export function AlertList() {
     });
   }, [alerts, searchQuery, filterSeverity, filterStatus]);
 
+  // Reset selection when filter parameters change
+  useEffect(() => {
+    setSelected(new Set());
+  }, [searchQuery, filterSeverity, filterStatus]);
+
+  const handleSelectAll = useCallback((checked: boolean) => {
+    if (checked) {
+      setSelected(new Set(filteredAlerts.map(a => a.id)));
+    } else {
+      setSelected(new Set());
+    }
+  }, [filteredAlerts]);
+
+  const handleSelectOne = useCallback((id: string, checked: boolean) => {
+    setSelected(prev => {
+        const newSelected = new Set(prev);
+        if (checked) {
+          newSelected.add(id);
+        } else {
+          newSelected.delete(id);
+        }
+        return newSelected;
+    });
+  }, []);
+
+  const handleBulkStatusChange = async (newStatus: AlertStatus) => {
+    try {
+      const selectedIds = Array.from(selected);
+      const updatedAlerts = await Promise.all(
+        selectedIds.map(id => apiClient.updateAlertStatus(id, newStatus))
+      );
+      setAlerts(prev => prev.map(a => {
+        const updated = updatedAlerts.find(u => u.id === a.id);
+        return updated ? updated : a;
+      }));
+      setSelected(new Set());
+      toast({
+        title: "Bulk Update Successful",
+        description: `${selectedIds.length} alerts marked as ${newStatus}.`,
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Bulk Update Failed",
+        description: "Failed to update some alerts.",
+        variant: "destructive",
+      });
+      // Optionally re-fetch to ensure consistency if partial failure
+      fetchAlerts();
+    }
+  };
+
   const handleStatusChange = async (id: string, newStatus: AlertStatus) => {
     try {
         const updated = await apiClient.updateAlertStatus(id, newStatus);
@@ -120,6 +174,8 @@ export function AlertList() {
       default: return <Activity className="h-4 w-4 text-muted-foreground" />;
     }
   };
+
+  const isAllSelected = filteredAlerts.length > 0 && selected.size === filteredAlerts.length;
 
   return (
     <div className="space-y-4">
@@ -168,10 +224,31 @@ export function AlertList() {
         </div>
       </div>
 
+      {selected.size > 0 && (
+          <div className="flex items-center gap-2 p-2 bg-muted/40 rounded-md animate-in fade-in slide-in-from-top-1 duration-200 sticky top-0 z-10 backdrop-blur-md border">
+              <span className="text-sm text-muted-foreground mr-2 font-medium px-2">{selected.size} selected</span>
+              <div className="h-4 w-px bg-border mx-1" />
+              <Button size="sm" variant="ghost" onClick={() => handleBulkStatusChange('acknowledged')} className="h-8 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-100 dark:hover:bg-yellow-900/20">
+                  <AlertTriangle className="mr-2 h-4 w-4" /> Acknowledge
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => handleBulkStatusChange('resolved')} className="h-8 text-green-600 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/20">
+                  <CheckCircle2 className="mr-2 h-4 w-4" /> Resolve
+              </Button>
+          </div>
+      )}
+
       <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[30px] pr-0">
+                 <Checkbox
+                    checked={isAllSelected}
+                    onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                    aria-label="Select all"
+                    className="translate-y-[2px]"
+                  />
+              </TableHead>
               <TableHead className="w-[100px]">Severity</TableHead>
               <TableHead className="w-[100px]">Status</TableHead>
               <TableHead>Summary</TableHead>
@@ -183,7 +260,7 @@ export function AlertList() {
           <TableBody>
             {loading && alerts.length === 0 ? (
                  <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                         <div className="flex items-center justify-center gap-2">
                             <Loader2 className="h-4 w-4 animate-spin" />
                             Loading alerts...
@@ -192,13 +269,21 @@ export function AlertList() {
                 </TableRow>
             ) : filteredAlerts.length === 0 ? (
                 <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                         No alerts match your filters.
                     </TableCell>
                 </TableRow>
             ) : (
                 filteredAlerts.map((alert) => (
                 <TableRow key={alert.id} className="group">
+                    <TableCell className="pr-0">
+                       <Checkbox
+                          checked={selected.has(alert.id)}
+                          onCheckedChange={(checked) => handleSelectOne(alert.id, !!checked)}
+                          aria-label={`Select alert ${alert.id}`}
+                          className="translate-y-[2px]"
+                       />
+                    </TableCell>
                     <TableCell>{getSeverityBadge(alert.severity)}</TableCell>
                     <TableCell>
                     <div className="flex items-center gap-2" title={alert.status}>

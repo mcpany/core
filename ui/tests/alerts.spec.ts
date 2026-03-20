@@ -88,4 +88,56 @@ test.describe('Alerts Page', () => {
     // Verify status changes to "resolved"
     await expect(row.getByText('resolved')).toBeVisible();
   });
+
+  test('should bulk acknowledge alerts', async ({ page, request }) => {
+    // Seed real data alerts for the test
+    const alert1Response = await request.post('/api/v1/alerts', {
+      data: {
+        title: 'Bulk Test Alert 1',
+        message: 'This is a test alert for bulk actions',
+        service: 'test-service',
+        severity: 'warning',
+        status: 'active',
+      }
+    });
+    expect(alert1Response.ok()).toBeTruthy();
+
+    const alert2Response = await request.post('/api/v1/alerts', {
+      data: {
+        title: 'Bulk Test Alert 2',
+        message: 'This is a second test alert for bulk actions',
+        service: 'test-service',
+        severity: 'warning',
+        status: 'active',
+      }
+    });
+    expect(alert2Response.ok()).toBeTruthy();
+
+    await page.goto('/alerts');
+
+    // Type in search box to isolate our seeded alerts
+    const searchBox = page.locator('input[placeholder="Search alerts by title, message, service..."]');
+    await searchBox.fill('Bulk Test Alert');
+
+    // Find our specific rows
+    const row1 = page.getByRole('row').filter({ hasText: 'Bulk Test Alert 1' });
+    const row2 = page.getByRole('row').filter({ hasText: 'Bulk Test Alert 2' });
+
+    await expect(row1).toBeVisible();
+    await expect(row2).toBeVisible();
+
+    // Check their individual checkboxes
+    await row1.getByRole('checkbox').click();
+    await row2.getByRole('checkbox').click();
+
+    // Verify the bulk action bar appears with correct text
+    await expect(page.getByText('2 selected')).toBeVisible();
+
+    // Click Acknowledge on the bulk action bar
+    await page.getByRole('button', { name: 'Acknowledge' }).click();
+
+    // Verify the status for both changed to acknowledged
+    await expect(row1.getByText('acknowledged')).toBeVisible();
+    await expect(row2.getByText('acknowledged')).toBeVisible();
+  });
 });
