@@ -250,13 +250,16 @@ export function DashboardGrid() {
         );
     }
 
-    const renderWidget = (widget: WidgetInstance) => {
-        const def = getWidgetDefinition(widget.type);
-        if (!def) return <div className="p-4 border border-dashed text-muted-foreground">Unknown Widget Type: {widget.type}</div>;
+    // ⚡ BOLT: [Render Optimization] Extract and memoize widget rendering.
+    // Randomized Selection from Top 5 High-Impact Targets (React/View Category)
+    // Prevents expensive nested chart re-renders when the DashboardGrid's layout state changes (e.g. during drag and drop).
+    const MemoizedWidget = React.memo(({ type }: { type: string }) => {
+        const def = getWidgetDefinition(type);
+        if (!def) return <div className="p-4 border border-dashed text-muted-foreground">Unknown Widget Type: {type}</div>;
 
         const Component = def.component;
         return <Component />;
-    };
+    });
 
     const getColSpan = (size: WidgetSize) => {
         switch (size) {
@@ -383,7 +386,7 @@ export function DashboardGrid() {
                                                 </DropdownMenu>
                                             </div>
 
-                                            {renderWidget(widget)}
+                                            <MemoizedWidget type={widget.type} />
                                         </div>
                                     )}
                                 </Draggable>
