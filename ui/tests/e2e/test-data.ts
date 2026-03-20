@@ -1,13 +1,12 @@
 /**
- * Copyright 2025 Author(s) of MCP Any
+ * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import { request, APIRequestContext } from '@playwright/test';
-import { ServiceTemplate } from '@proto/config/v1/service_template';
-import { UpstreamServiceConfig } from '@proto/config/v1/upstream_service';
-import { User } from '@proto/config/v1/user';
 
+// Instead of importing @proto/* types (which breaks Bazel Playwright runs since they strip TS),
+// we use any type here to define our seed request safely.
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const ECHO_SERVER_BASE_URL = process.env.UI_HTTP_ECHO_BASE_URL || 'http://ui-http-echo-server:5678';
@@ -103,7 +102,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-    ].map((service) => UpstreamServiceConfig.toJSON(UpstreamServiceConfig.fromJSON(service)));
+    ];
 
     const templates = [
         {
@@ -160,7 +159,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-    ].map((template) => ServiceTemplate.toJSON(ServiceTemplate.fromJSON(template)));
+    ];
 
     const users = [
         {
@@ -168,14 +167,13 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             authentication: {
                 basic_auth: {
                     username: "e2e-admin-core",
-                    // hash for "password" (bcrypt cost 12)
                     password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a"
                 }
             },
             roles: ["admin"],
             profile_ids: ["dev", "prod"]
         }
-    ].map((user) => User.toJSON(User.fromJSON(user)));
+    ];
 
     const seedRequest = {
         upstream_services: services,
@@ -211,33 +209,27 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
     }
 };
 
-// Backward compatibility wrappers to ensure other tests don't break
 export const seedServices = async (requestContext?: APIRequestContext) => {
-    // Calling seedGlobalState ensures services are present.
     await seedGlobalState(requestContext);
 };
 
 export const seedUser = async (requestContext: APIRequestContext | undefined, username: string) => {
-    // We create a specific user if requested, in addition to the core user.
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const user = {
         id: username,
         authentication: {
             basic_auth: {
                 username: username,
-                password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a" // password
+                password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a"
             }
         },
-        roles: ["admin"], // Default to admin for e2e tests
+        roles: ["admin"],
         profile_ids: ["dev"]
     };
 
     try {
         const res = await context.post('/api/v1/users', { data: user, headers: HEADERS });
-        if (!res.ok() && res.status() !== 409) { // Ignore conflict if user exists
-            // If user creation fails, we might create it via seed?
-            // But seed clears everything.
-            // If this is called AFTER seedGlobalState, it adds a user.
+        if (!res.ok() && res.status() !== 409) {
             console.log(`Failed to create user ${username}: ${res.status()}`);
         }
     } catch (e) {
@@ -245,33 +237,13 @@ export const seedUser = async (requestContext: APIRequestContext | undefined, us
     }
 };
 
-export const cleanupServices = async (requestContext?: APIRequestContext) => {
-    // No-op
-};
-
-export const cleanupUser = async (requestContext: APIRequestContext | undefined, username: string) => {
-    // No-op
-};
-
-export const seedProfiles = async (requestContext?: APIRequestContext) => {
-    // Included in seedGlobalState (empty profiles list currently, but we can add if needed)
-};
-
-export const cleanupProfiles = async (requestContext?: APIRequestContext) => {
-    // No-op
-};
-
-export const seedPrompts = async (requestContext?: APIRequestContext) => {
-    // No-op
-};
-
-export const cleanupPrompts = async (requestContext?: APIRequestContext) => {
-    // No-op
-};
-
-export const seedWebhooks = async (requestContext?: APIRequestContext) => {
-    // No-op
-};
+export const cleanupServices = async (requestContext?: APIRequestContext) => {};
+export const cleanupUser = async (requestContext: APIRequestContext | undefined, username: string) => {};
+export const seedProfiles = async (requestContext?: APIRequestContext) => {};
+export const cleanupProfiles = async (requestContext?: APIRequestContext) => {};
+export const seedPrompts = async (requestContext?: APIRequestContext) => {};
+export const cleanupPrompts = async (requestContext?: APIRequestContext) => {};
+export const seedWebhooks = async (requestContext?: APIRequestContext) => {};
 
 export const seedCollection = async (name?: string, requestContext?: APIRequestContext) => {
     if (!name) return;
@@ -308,6 +280,5 @@ export const cleanupCollection = async (name?: string, requestContext?: APIReque
     try {
         await context.delete(`/api/v1/collections/${name}`, { headers: HEADERS });
     } catch (e) {
-        // Ignore cleanup errors (collection may not exist)
     }
 };

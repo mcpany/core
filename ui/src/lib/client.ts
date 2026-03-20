@@ -2545,3 +2545,15 @@ export const apiClient = {
         return {};
     }
 };
+// Additional methods to restore what I overwrote
+Object.assign(apiClient, {
+    getDiscoveryStatus: async (): Promise<any[]> => {
+        const res = await fetchWithAuth('/api/v1/discovery/status');
+        if (!res.ok) throw new Error('Failed to fetch discovery status');
+        return res.json();
+    },
+    triggerDiscovery: async (): Promise<void> => {
+        const res = await fetchWithAuth('/api/v1/discovery/trigger', { method: 'POST' });
+        if (!res.ok) throw new Error('Failed to trigger discovery');
+    }
+});
