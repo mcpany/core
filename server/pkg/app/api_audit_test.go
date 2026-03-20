@@ -175,3 +175,96 @@ func TestHandleAuditLogs(t *testing.T) {
 	assert.Equal(t, "tool-1", entries[0].ToolName)
 	assert.Equal(t, "user-1", entries[0].UserID)
 }
+
+func TestHandleAuditLogs_Errors(t *testing.T) {
+	app := NewApplication()
+	mockStore := new(MockAuditStore)
+
+	// Initialize middleware
+	auditConfig := &configv1.AuditConfig{}
+	auditConfig.SetEnabled(true)
+	am, err := middleware.NewAuditMiddleware(auditConfig)
+	require.NoError(t, err)
+	am.SetStore(mockStore)
+
+	app.standardMiddlewares = &middleware.StandardMiddlewares{
+		Audit: am,
+	}
+
+	tests := []struct {
+		name           string
+		method         string
+		url            string
+		mockSetup      func()
+		expectedStatus int
+	}{
+		{
+			name:           "MethodNotAllowed",
+			method:         http.MethodPost,
+			url:            "/audit/logs",
+			mockSetup:      func() {},
+			expectedStatus: http.StatusMethodNotAllowed,
+		},
+		{
+			name:           "InvalidStartTime",
+			method:         http.MethodGet,
+			url:            "/audit/logs?start_time=invalid",
+			mockSetup:      func() {},
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name:           "InvalidEndTime",
+			method:         http.MethodGet,
+			url:            "/audit/logs?end_time=invalid",
+			mockSetup:      func() {},
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name:           "InvalidLimit",
+			method:         http.MethodGet,
+			url:            "/audit/logs?limit=invalid",
+			mockSetup:      func() {},
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name:           "InvalidOffset",
+			method:         http.MethodGet,
+			url:            "/audit/logs?offset=invalid",
+			mockSetup:      func() {},
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name:   "StoreError",
+			method: http.MethodGet,
+			url:    "/audit/logs",
+			mockSetup: func() {
+				mockStore.On("Read", mock.Anything, mock.Anything).Return([]audit.Entry{}, assert.AnError).Once()
+			},
+			expectedStatus: http.StatusInternalServerError,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.mockSetup()
+			req := httptest.NewRequest(tt.method, tt.url, nil)
+			w := httptest.NewRecorder()
+
+			app.handleAuditLogs(w, req)
+
+			assert.Equal(t, tt.expectedStatus, w.Code)
+		})
+	}
+
+	t.Run("NotConfigured", func(t *testing.T) {
+		app.standardMiddlewares.Audit = nil
+		req := httptest.NewRequest(http.MethodGet, "/audit/logs", nil)
+		w := httptest.NewRecorder()
+
+		app.handleAuditLogs(w, req)
+
+		assert.Equal(t, http.StatusServiceUnavailable, w.Code)
+		// Restore middleware
+		app.standardMiddlewares.Audit = am
+	})
+}
