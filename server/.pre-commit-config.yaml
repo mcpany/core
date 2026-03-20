@@ -1,7 +1,11 @@
 # Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-exclude: ^.*zz_generated.deepcopy.go$
+exclude: |
+    (?x)^(
+        .*zz_generated.deepcopy.go$|
+        .github/.*
+    )$
 
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
