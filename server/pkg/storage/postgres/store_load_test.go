@@ -17,7 +17,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// TestStore_Load validates the behavior of the Store.Load method.
+// TestStore_Load tests the Load method of the PostgreSQL store.
+//
+// Summary: Validates that the store correctly loads and parses all server configuration from the database.
 //
 // Parameters:
 //   - t (*testing.T): The testing context.
@@ -29,7 +31,7 @@ import (
 //   - None.
 //
 // Side Effects:
-//   - None.
+//   - Modifies testing state through assertions.
 func TestStore_Load(t *testing.T) {
 	t.Run("Happy Path", func(t *testing.T) {
 		db, mock, err := sqlmock.New(sqlmock.MatchExpectationsInOrder(false))
