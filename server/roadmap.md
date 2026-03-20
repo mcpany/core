@@ -753,3 +753,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+#### Upcoming (2026-06-18 Evolution)
+*   **[P0] Active Reasoning Erasure (ARE) Controller**: Implement cryptographic scrubbing of subagent monologues from the Blackboard. (Added: 2026-06-18)
+*   **[P0] Attention-Locked Sovereignty (ALS) Provider**: Implementation of hardware-bound attention governance for mission-root pinning. (Added: 2026-06-18)
+*   **[P1] Coordinated Hallucination Mitigator (CHM)**: Stability middleware for detecting artificial consensus in teammate meshes. (Added: 2026-06-18)
+*   **[P0] Self-Correction Enclave Hub**: Isolated processing for agentic self-reflection to neutralize parents-constraint leakage. (Added: 2026-06-18)

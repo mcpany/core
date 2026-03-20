@@ -1360,3 +1360,15 @@
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Active Reasoning Erasure (ARE) Controller**: (P0) Authoritative coordination service for cryptographically scrubbing subagent monologues from the Blackboard upon task completion.
+- **Attention-Locked Sovereignty (ALS) Provider**: (P0) Hardware-bound attention governance service mandating ALS-locking headers for mission-root intents.
+- **Coordinated Hallucination Mitigator (CHM)**: (P1) Stability middleware performing semantic entropy analysis of teammate consensus to detect "Artificial Agreements."
+- **Self-Correction Enclave Hub**: (P0) Isolation service for processing agentic self-reflection monologues to neutralize parent-constraint leakage (CVE-2026-71002).
+
+### Priority Shifts
+- **Active Intent Alignment (AIA) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **CHM-compliant** consensus validation.
+- **Structural Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving to support **Reflection-aware** metadata deconstruction.

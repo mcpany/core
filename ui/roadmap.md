@@ -591,3 +591,9 @@
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
+
+### Upcoming: [2026-06-18]
+- [ ] **[P0] Active Reasoning Erasure Monitor**: (2026-06-18) Visual indicator for subagent monologue scrubbing and hardware-attested erasure receipts.
+- [ ] **[P0] Attention Sovereignty Dashboard**: (2026-06-18) Real-time visualization of ALS-locked intents and attention-utilization tiers.
+- [ ] **[P1] Coordinated Hallucination Alerts**: (2026-06-18) Real-time monitor for teammate consensus entropy and artificial agreement detection.
+- [ ] **[P0] Self-Correction Enclave Viewer**: (2026-06-18) Secure UI for monitoring isolated reflection fragments and parentage-leakage alerts.
