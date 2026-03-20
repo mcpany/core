@@ -3068,8 +3068,6 @@ func prettyPrint(input []byte, contentType string) string {
 		encoder := xml.NewEncoder(&buf)
 		encoder.Indent("", "  ")
 
-		var stack []string
-
 		// Attempt to decode and re-encode to format
 		for {
 			token, err := decoder.Token()
