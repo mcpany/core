@@ -753,3 +753,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+### Upcoming: [2026-06-18]
+- **Mission-Constraint Inheritance (MCI) Provider**: (P0) Authoritative service for hardware-attested inheritance and enforcement of mission-root constraints across subagent branches. (Added: 2026-06-18)
+- **Mesh-Level Telemetry Sanitization (MLTS)**: (P0) Privacy middleware for real-time semantic scrubbing of inter-agent coordination traces. (Added: 2026-06-18)
+- **Reasoning-Trace Provenance (RTP) Auditor**: (P0) Verification service for cryptographically signed reasoning provenance tokens. (Added: 2026-06-18)
+- **Lock-Free Mesh Coordination (LFMC) Buffer**: (P1) High-performance coordination buffer for high-frequency state synchronization. (Added: 2026-06-18)

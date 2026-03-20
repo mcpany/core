@@ -1044,3 +1044,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Multi-Modal Behavioral Attestation (MMBA)**: Supporting the sovereignty of the teammate mesh, we are introducing MMBA. This anchors the agent's stylometric profile to its multi-modal trace history (SVG/Audio), providing a higher-dimensional identity signature that is resilient to reasoning-path shadowing.
 - **Reasoning-Aware Garbage Collection (R-GC)**: To neutralize "Speculative Overload," MCP Any will implement R-GC for the Speculative Branching Guard. This service automatically purges speculative context fragments that exhibit high reasoning entropy but low mission utility, preventing cognitive stall in deep swarms.
 - **Temporal Shard Jitter (TSJ) Injection**: To counter CVE-2026-62001, we are upgrading the ESB to include TSJ Injection. This layer will inject hardware-attested timing jitter into entangled state synchronization for non-primary mission-root requests, ensuring absolute temporal isolation in sharded meshes.
+
+---
+
+## Strategic Evolution: [2026-06-18]
+### Focus: Mission-Constraint Inheritance & Mesh-Level Telemetry Sanitization
+**Context**: The emergence of "Constraint Drift" in deep delegations and the disclosure of "Trace Leakage" via inter-agent coordination prove that static attestation is no longer sufficient for swarm sovereignty. We must now protect the **inheritance of constraints** and ensure that **mesh-level telemetry** is sanitized at the source. Simultaneously, "Coordination Stall" in high-density meshes confirms that infrastructure must move toward lock-free, resident coordination buffers.
+**Strategic Pivot**:
+- **Mission-Constraint Inheritance (MCI) Provider**: MCP Any will evolve to act as the authoritative "Constraint Root." We will implement the MCI Provider, facilitating the hardware-attested inheritance and enforcement of parent mission-root constraints across all subagent branches, neutralizing autonomous divergence.
+- **Mesh-Level Telemetry Sanitization (MLTS) Middleware**: To neutralize "Trace Leakage," we are introducing MLTS. This layer will perform real-time, semantic scrubbing of PII and sensitive intent-fragments from inter-agent coordination traces before they reach external reasoning engines.
+- **Reasoning-Trace Provenance (RTP) Auditor**: Supporting the non-repudiation of agent actions, MCP Any will implement the RTP Auditor. This service will verify cryptographically signed provenance tokens for every reasoning fragment, providing an immutable audit trail back to the hardware-attested user session.
+- **Lock-Free Mesh Coordination (LFMC) Buffer**: To counter "Coordination Stall," we are upgrading the ASLM to support LFMC. This service will utilize mesh-resident, lock-free coordination buffers for high-frequency state synchronization, ensuring non-blocking performance in horizontal teammate teams.

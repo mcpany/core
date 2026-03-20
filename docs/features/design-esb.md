@@ -60,3 +60,10 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
     * **Context:** Today's market sync revealed that hardware-bound entangled shards can leak state fragments via cache-timing side-channels.
     * **Architecture Adjustment:** Introducing **Temporal Shard Jitter (TSJ) Injection** in Section 4. The ESB will now inject hardware-attested timing jitter into state synchronization for non-primary mission-root requests.
     * **Security Impact:** Mitigates the risk of subagents mapping mission-root constraints via high-frequency latency monitoring.
+
+### Update: 2026-06-18 - Addressing Coordination Stall
+**Context:** Today's market sync revealed that high-frequency state synchronization across sharded mailboxes is causing kernel-level contention on Atomic Shard Locks.
+**Architecture Adjustment:**
+* Introducing **Lock-Free Mesh Coordination (LFMC) Buffers** in Section 4.
+* The ESB will now utilize mesh-resident, lock-free coordination buffers for high-priority state synchronization, bypassing synchronous ASLM locks where semantic ordering is handled by the mission-root sequencer.
+**Security Impact:** Enhances swarm stability and prevents "Coordination-as-DoS" attacks where malicious subagents attempt to stall the mesh by flooding the lock manager.

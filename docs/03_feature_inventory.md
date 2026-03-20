@@ -1360,3 +1360,15 @@
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Mission-Constraint Inheritance (MCI) Provider**: (P0) Authoritative service for hardware-attested inheritance and enforcement of mission-root constraints across subagent branches.
+- **Mesh-Level Telemetry Sanitization (MLTS) Middleware**: (P0) Privacy middleware for real-time semantic scrubbing of inter-agent coordination traces before cloud export.
+- **Reasoning-Trace Provenance (RTP) Auditor**: (P0) Verification service for cryptographically signed reasoning provenance tokens back to hardware-attested user sessions.
+- **Lock-Free Mesh Coordination (LFMC) Buffer**: (P1) High-performance coordination buffer for high-frequency state synchronization without kernel-level lock contention.
+
+### Priority Shifts
+- **Atomic Shard Lock-Manager (ASLM)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **LFMC** support to mitigate coordination stall.
+- **Structural Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving to support **MCI-compliant** constraint validation during the discovery phase.
