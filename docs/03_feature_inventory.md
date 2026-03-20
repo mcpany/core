@@ -1234,9 +1234,6 @@
 ## Evolution: [2026-06-07] Updates
 
 ### Proposed Additions
-- **Recursive Mission Attestation (RMA) Provider**: (P0) Authoritative issuer for hardware-attested, recursive mission tokens ensuring intent alignment across multi-hop delegations.
-- **Context-Aware Shard Isolation (CASI) Middleware**: (P0) Security extension for SMS and FAMI providers performing real-time semantic analysis to isolate teammates within active task shards.
-- **CFIB Auction Bridge**: (P1) Advanced orchestration service facilitating cross-framework task auctions by translating HAIL and SRM tokens into unified bids.
 - **Mission-Receipt Logging Service**: (P0) Hardware-bound audit service for cryptographically logging recursive mission tokens and delegation chains.
 
 ### Priority Shifts
