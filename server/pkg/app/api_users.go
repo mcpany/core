@@ -47,7 +47,7 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
 			// ⚡ BOLT: Pre-allocate buffer to prevent O(N) reallocations during JSON array construction.
-			// Randomized Selection from Top 5 High-Impact Targets
+			// Randomized Selection from Top 5 High-Impact Targets.
 			buf := make([]byte, 0, len(users)*256+2)
 			buf = append(buf, '[')
 			for i, u := range users {
