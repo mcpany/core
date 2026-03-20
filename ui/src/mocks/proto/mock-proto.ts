@@ -5,26 +5,36 @@
 
 /**
  * Mock class for GrpcWebImpl used in tests.
+ *
+ * Summary: Mock GrpcWebImpl.
  */
 export class GrpcWebImpl { }
 
 /**
  * Mock class for RegistrationServiceClientImpl used in tests.
+ *
+ * Summary: Mock RegistrationServiceClientImpl.
  */
 export class RegistrationServiceClientImpl { }
 
 /**
  * Mock constant for HttpUpstreamService used in tests.
+ *
+ * Summary: Mock HttpUpstreamService.
  */
 export const HttpUpstreamService = {};
 
 /**
  * Mock constant for ServiceProvenance used in tests.
+ *
+ * Summary: Mock ServiceProvenance.
  */
 export const ServiceProvenance = {};
 
 /**
  * Mock enum for CallPolicy_Action used in tests.
+ *
+ * Summary: Mock CallPolicy_Action.
  */
 export enum CallPolicy_Action {
   ALLOW = 0,
@@ -35,6 +45,8 @@ export enum CallPolicy_Action {
 
 /**
  * Mock enum for ExportPolicy_Action used in tests.
+ *
+ * Summary: Mock ExportPolicy_Action.
  */
 export enum ExportPolicy_Action {
   EXPORT = 0,
@@ -43,36 +55,50 @@ export enum ExportPolicy_Action {
 
 /**
  * Mock type placeholders for policy-related proto messages.
+ *
+ * Summary: Mock CallPolicy.
  */
 export const CallPolicy = {};
 
 /**
  * Mock type for CallPolicyRule used in tests.
+ *
+ * Summary: Mock CallPolicyRule.
  */
 export const CallPolicyRule = {};
 
 /**
  * Mock type for ExportPolicy used in tests.
+ *
+ * Summary: Mock ExportPolicy.
  */
 export const ExportPolicy = {};
 
 /**
  * Mock type for ExportRule used in tests.
+ *
+ * Summary: Mock ExportRule.
  */
 export const ExportRule = {};
 
 /**
  * Mock constant for ProfileDefinition used in tests.
+ *
+ * Summary: Mock ProfileDefinition.
  */
 export const ProfileDefinition = {};
 
 /**
  * Mock constant for ToolDefinition used in tests.
+ *
+ * Summary: Mock ToolDefinition.
  */
 export const ToolDefinition = {};
 
 /**
  * Mock enum for HttpCallDefinition_HttpMethod used in tests.
+ *
+ * Summary: Mock HttpCallDefinition_HttpMethod.
  */
 export enum HttpCallDefinition_HttpMethod {
   HTTP_METHOD_UNSPECIFIED = 0,
@@ -85,6 +111,8 @@ export enum HttpCallDefinition_HttpMethod {
 
 /**
  * Mock enum for OutputTransformer_OutputFormat used in tests.
+ *
+ * Summary: Mock OutputTransformer_OutputFormat.
  */
 export enum OutputTransformer_OutputFormat {
   JSON = 0,
@@ -96,11 +124,15 @@ export enum OutputTransformer_OutputFormat {
 
 /**
  * Mock interface/type for HttpCallDefinition used in tests.
+ *
+ * Summary: Mock HttpCallDefinition.
  */
 export const HttpCallDefinition = {};
 
 /**
  * Mock enum for ParameterType used in tests.
+ *
+ * Summary: Mock ParameterType.
  */
 export enum ParameterType {
   STRING = 0,
@@ -113,35 +145,49 @@ export enum ParameterType {
 
 /**
  * Mock type for InputTransformer used in tests.
+ *
+ * Summary: Mock InputTransformer.
  */
 export const InputTransformer = {};
 
 /**
  * Mock type for OutputTransformer used in tests.
+ *
+ * Summary: Mock OutputTransformer.
  */
 export const OutputTransformer = {};
 
 /**
  * Mock type for HttpParameterMapping used in tests.
+ *
+ * Summary: Mock HttpParameterMapping.
  */
 export const HttpParameterMapping = {};
 
 /**
  * Mock type for ResourceDefinition used in tests.
+ *
+ * Summary: Mock ResourceDefinition.
  */
 export const ResourceDefinition = {};
 
 /**
  * Mock type for PromptDefinition used in tests.
+ *
+ * Summary: Mock PromptDefinition.
  */
 export const PromptDefinition = {};
 
 /**
  * Mock type for Credential used in tests.
+ *
+ * Summary: Mock Credential.
  */
 export const Credential = {};
 
 /**
  * Mock type for Authentication used in tests.
+ *
+ * Summary: Mock Authentication.
  */
 export const Authentication = {};
