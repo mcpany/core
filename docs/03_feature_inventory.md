@@ -1305,6 +1305,31 @@
 - **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MRA-compliant** hash-chaining to counter spoofing.
 - **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Designated as the primary integration point for the **SCI** to neutralize shadow coordination.
 
+## Evolution: [2026-06-14] Updates
+
+### Proposed Additions
+- **MRA-Backed Lineage Provider**: (P0) Advanced security service utilizing Mesh-Resident Attestation to anchor reasoning fragments to local hardware hash-chains.
+- **Side-Channel Immunity Filter**: (P0) Transport-level security component for the SCI interceptor that scans coordination metadata for steganographic instructions.
+- **HLCH-Compliant Handshake Gateway**: (P0) Core security service mandating hardware-locked sessions for all inter-agent coordination fragments.
+- **Identity-Decay Detector**: (P1) Behavioral monitoring service for the AID Hub that performs stylometric consistency checks to neutralize long-term mimicry.
+
+### Priority Shifts
+- **Shadow Coordination Interceptor (SCI)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Side-Channel Immunity** filtering.
+- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Now elevated with the requirement for **MRA-backed hash-chaining**.
+
+
+## Evolution: [2026-06-14] Updates
+
+### Proposed Additions
+- **MRA-Backed Lineage Provider**: (P0) Advanced security service utilizing Mesh-Resident Attestation to anchor reasoning fragments to local hardware hash-chains.
+- **Side-Channel Immunity Filter**: (P0) Transport-level security component for the SCI interceptor that scans coordination metadata for steganographic instructions.
+- **HLCH-Compliant Handshake Gateway**: (P0) Core security service mandating hardware-locked sessions for all inter-agent coordination fragments.
+- **Identity-Decay Detector**: (P1) Behavioral monitoring service for the AID Hub that performs stylometric consistency checks to neutralize long-term mimicry.
+
+### Priority Shifts
+- **Shadow Coordination Interceptor (SCI)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Side-Channel Immunity** filtering.
+- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Now elevated with the requirement for **MRA-backed hash-chaining**.
+
 ## Evolution: [2026-06-13] Updates
 
 ### Proposed Additions
@@ -1315,27 +1340,3 @@
 ### Priority Shifts
 - **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Designated as the primary enforcement mechanism for **Attention-Locked Context Windows**.
 - **Mesh-Resident Attestation (MRA) Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SCI-compliant** metadata signing.
-
-## Evolution: [2026-06-14] Updates
-
-### Proposed Additions
-- **MRA-Backed Lineage Provider**: (P0) Advanced extension for the ARI Hub that anchors every coordination fragment to a TPM-backed semantic hash-chain.
-- **HLCH-Compliant T2T Bridge**: (P0) Transition to mandatory Hardware-Locked Coordination Handshakes for all inter-teammate coordination to neutralize Identity-Decay.
-- **Side-Channel Immunity Filter**: (P1) Metadata-aware interceptor for the T2T bridge that detects and blocks "Dormant" coordination instructions in shadow channels.
-- **Attention Sovereignty Hub**: (P0) Stability middleware that performs real-time entropy analysis and gating to prevent mission-root eviction during REE attacks.
-
-### Priority Shifts
-- **Shadow Coordination Interceptor (SCI)**: (Re-affirmed P0) Elevated with the requirement for mandatory **MRA-compliant** metadata signing.
-- **Hardware-Locked Coordination Handshake**: (Re-affirmed P0) Designated as the mandatory standard for all horizontal teammate swarms.
-
-## Evolution: [2026-06-14] Updates
-
-### Proposed Additions
-- **MRA-Backed Lineage Provider**: (P0) Advanced extension for the ARI Hub that anchors every coordination fragment to a TPM-backed semantic hash-chain.
-- **HLCH-Compliant T2T Bridge**: (P0) Transition to mandatory Hardware-Locked Coordination Handshakes for all inter-teammate coordination to neutralize Identity-Decay.
-- **Side-Channel Immunity Filter**: (P1) Metadata-aware interceptor for the T2T bridge that detects and blocks "Dormant" coordination instructions in shadow channels.
-- **Attention Sovereignty Hub**: (P0) Stability middleware that performs real-time entropy analysis and gating to prevent mission-root eviction during REE attacks.
-
-### Priority Shifts
-- **Shadow Coordination Interceptor (SCI)**: (Re-affirmed P0) Elevated with the requirement for mandatory **MRA-compliant** metadata signing.
-- **Hardware-Locked Coordination Handshake**: (Re-affirmed P0) Designated as the mandatory standard for all horizontal teammate swarms.
