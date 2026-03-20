@@ -10,6 +10,18 @@ import { AnalyticsDashboard } from '../../components/stats/analytics-dashboard';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { apiClient } from '@/lib/client';
 
+vi.mock('@/hooks/use-polling', () => ({
+    usePolling: (callback: () => void, delay: number | null) => {
+        // immediately invoke the callback for tests that rely on data loading on mount
+        // without waiting for interval to fire, to mimic the original `fetchDashboardData()`
+        React.useEffect(() => {
+            if (delay !== null) {
+                callback();
+            }
+        }, [callback, delay]);
+    }
+}));
+
 // Mock Recharts
 vi.mock('recharts', async () => {
     const actual = await vi.importActual('recharts');

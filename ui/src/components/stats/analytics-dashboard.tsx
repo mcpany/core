@@ -5,7 +5,8 @@
 
 
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { usePolling } from "@/hooks/use-polling";
 import {
     Area,
     AreaChart,
@@ -72,9 +73,7 @@ export function AnalyticsDashboard() {
     const [toolUsageMap, setToolUsageMap] = useState<Record<string, ToolAnalytics>>({});
     const [isMounted, setIsMounted] = useState(false);
 
-    useEffect(() => {
-        setIsMounted(true);
-        const fetchDashboardData = async () => {
+    const fetchDashboardData = useCallback(async () => {
             try {
                 const [traffic, topTools, toolsResponse, toolUsageStats] = await Promise.all([
                     apiClient.getDashboardTraffic(),
@@ -133,12 +132,16 @@ export function AnalyticsDashboard() {
             } catch (error) {
                 console.error("Failed to fetch dashboard data", error);
             }
-        };
-
-        fetchDashboardData();
-        const interval = setInterval(fetchDashboardData, 30000);
-        return () => clearInterval(interval);
     }, [timeRange]);
+
+    useEffect(() => {
+        setIsMounted(true);
+        fetchDashboardData();
+    }, [fetchDashboardData]);
+
+    // ⚡ BOLT: [Render Optimization] Use usePolling hook instead of raw setInterval
+    // Randomized Selection from Top 5 High-Impact Targets
+    usePolling(fetchDashboardData, 30000);
 
     const { totalRequests, avgLatency, errorCount, errorRate, avgRps } = useMemo(() => {
         // ⚡ BOLT: Memoized traffic stats calculation to prevent re-render waste.
