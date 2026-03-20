@@ -4,9 +4,9 @@
  */
 
 import { request, APIRequestContext } from '@playwright/test';
-import { ServiceTemplate } from '../../../proto/config/v1/service_template';
-import { UpstreamServiceConfig } from '../../../proto/config/v1/upstream_service';
-import { User } from '../../../proto/config/v1/user';
+//
+//
+//
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
@@ -36,7 +36,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
         },
         {
             id: "svc_02",
-            name: "User Service",
+            name: "any Service",
             version: "v1.0",
             http_service: {
                 address: "http://localhost:50051", // Dummy address
@@ -103,7 +103,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-    ].map((service) => UpstreamServiceConfig.toJSON(UpstreamServiceConfig.fromJSON(service)));
+    ].map((service) => any.toJSON(any.fromJSON(service)));
 
     const templates = [
         {
@@ -160,7 +160,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-    ].map((template) => ServiceTemplate.toJSON(ServiceTemplate.fromJSON(template)));
+    ].map((template) => any.toJSON(any.fromJSON(template)));
 
     const users = [
         {
@@ -175,7 +175,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             roles: ["admin"],
             profile_ids: ["dev", "prod"]
         }
-    ].map((user) => User.toJSON(User.fromJSON(user)));
+    ].map((user) => any.toJSON(any.fromJSON(user)));
 
     const seedRequest = {
         upstream_services: services,
@@ -217,7 +217,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
     await seedGlobalState(requestContext);
 };
 
-export const seedUser = async (requestContext: APIRequestContext | undefined, username: string) => {
+export const seedany = async (requestContext: APIRequestContext | undefined, username: string) => {
     // We create a specific user if requested, in addition to the core user.
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const user = {
@@ -249,7 +249,7 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const cleanupUser = async (requestContext: APIRequestContext | undefined, username: string) => {
+export const cleanupany = async (requestContext: APIRequestContext | undefined, username: string) => {
     // No-op
 };
 
