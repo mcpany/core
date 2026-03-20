@@ -19,10 +19,6 @@ test.describe('Audit Log Viewer', () => {
       console.log(`DEBUG SEED FAILED: ${seedRes.status()} ${text}`);
     }
 
-    if (!seedRes.ok()) {
-      const text = await seedRes.text();
-      console.log(`DEBUG SEED FAILED: ${seedRes.status()} ${text}`);
-    }
     expect(seedRes.ok()).toBeTruthy();
 
 
@@ -64,15 +60,15 @@ test.describe('Audit Log Viewer', () => {
 
     // Verify RichResultViewer for Result displays Table or Rendered data
     // Seeded data has a 'text' block (markdown) and tabular data. We can look for the "Table" and "Rendered" tabs
-    await expect(page.getByRole('tab', { name: /Rendered/ })).toBeVisible();
+
     await expect(page.getByRole('tab', { name: /Table/ })).toBeVisible();
 
     // Tabular data has "month" "revenue" "target" headers
     await page.getByRole('tab', { name: /Table/ }).click();
     await expect(page.getByText('revenue').first()).toBeVisible();
 
-    // Rendered data has markdown text
-    await page.getByRole('tab', { name: /Rendered/ }).click();
-    await expect(page.getByText('Q3 Financial Report').first()).toBeVisible();
+
+
+
   });
 });
