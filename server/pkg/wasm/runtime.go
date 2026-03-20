@@ -67,13 +67,13 @@ type MockRuntime struct{}
 // Summary: Initializes NewMockRuntime operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - The result of the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - An error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -94,13 +94,13 @@ func NewMockRuntime() *MockRuntime {
 // Summary: Executes LoadPlugin operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - The result of the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - An error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -119,13 +119,13 @@ func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, er
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - The result of the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - An error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -152,13 +152,13 @@ type MockPlugin struct{}
 // Summary: Executes Execute operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - The result of the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - An error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -177,13 +177,13 @@ func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - The result of the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - An error if the operation fails.
 //
 // Side Effects:
 //   - None.

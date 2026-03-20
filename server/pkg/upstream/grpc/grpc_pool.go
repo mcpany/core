@@ -42,13 +42,13 @@ type poolWithChecker[T pool.ClosableClient] struct {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - The result of the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - An error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -88,13 +88,13 @@ func (p *poolWithChecker[T]) Close() error {
 // Summary: Initializes NewGrpcPool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - The result of the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - An error if the operation fails.
 //
 // Side Effects:
 //   - None.
