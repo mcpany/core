@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Code, Table as TableIcon, Image as ImageIcon, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
-import { unwrapMcpResult } from "@/lib/mcp-unwrap";
+import { unwrapMcpResult, deepParseJson } from "@/lib/mcp-unwrap";
 
 /**
  * Props for the SmartResultRenderer component.
@@ -64,7 +64,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
             content = content.content;
         }
 
-        return content;
+        return deepParseJson(content);
     }, [result]);
 
     const fullyUnwrapped = useMemo(() => unwrapMcpResult(result), [result]);
@@ -138,15 +138,29 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
 
         return (
             <div className="flex flex-col gap-4 p-4 border rounded-md bg-muted/10">
-                {mcpContent.map((item, idx) => (
-                    <div key={idx} className="flex flex-col gap-2">
-                        {item.type === 'text' && (
-                            <div className="whitespace-pre-wrap font-mono text-sm bg-muted/30 p-3 rounded-md border border-white/5">
-                                {item.text}
-                            </div>
-                        )}
-                        {item.type === 'image' && item.data && (
-                            <div className="flex flex-col gap-1 items-start">
+                {mcpContent.map((item, idx) => {
+                    let parsedText = null;
+                    if (item.type === 'text' && item.text) {
+                        try {
+                            const p = deepParseJson(item.text);
+                            if (typeof p === 'object' && p !== null) {
+                                parsedText = p;
+                            }
+                        } catch (e) {}
+                    }
+                    return (
+                        <div key={idx} className="flex flex-col gap-2">
+                            {item.type === 'text' && (
+                                <div className="whitespace-pre-wrap font-mono text-sm bg-muted/30 p-3 rounded-md border border-white/5">
+                                    {parsedText ? (
+                                        <JsonView data={parsedText} maxHeight={400} />
+                                    ) : (
+                                        item.text
+                                    )}
+                                </div>
+                            )}
+                            {item.type === 'image' && item.data && (
+                                <div className="flex flex-col gap-1 items-start">
                                 <img
                                     src={`data:${item.mimeType || 'image/png'};base64,${item.data}`}
                                     alt="Tool Result"
@@ -164,7 +178,8 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                             </div>
                         )}
                     </div>
-                ))}
+                    );
+                })}
             </div>
         );
     };
