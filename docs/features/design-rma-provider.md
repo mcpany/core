@@ -3,64 +3,55 @@
 **Created:** 2026-06-07
 
 ## 1. Context and Scope
-As AI agent swarms evolve from linear handoffs to complex, recursive sub-mission hierarchies, the risk of "Intent Hijacking" increases. A subagent, several hops away from the user's original intent, may be coerced or hallucinate a "forked" mission that contradicts parent constraints. Transport-layer security (mTLS) and session-bound tokens only verify *who* is talking, not *what* they are authorized to do in the context of the global mission.
+As agent swarms become more complex and multi-layered, the risk of "Intent Hijacking"--where a subagent or tool call diverges from the original user mission--increases significantly. Current session-bound tokens only verify the *identity* of the caller, not the *alignment* of the specific sub-task with the root mission.
 
-The RMA Provider solves this by issuing hardware-attested, recursive "Mission Receipts." Each receipt cryptographically binds a sub-mission to its parent intent, creating a verifiable chain of sovereignty that can be audited at any tool call or delegation hop.
+MCP Any needs a mechanism to issue and verify hardware-attested, recursive mission tokens. This ensures that every subagent spawn and tool call carries a "Mission Receipt" that can be traced back to the user's cryptographically signed root intent.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Issue hardware-attested (TPM/Secure Enclave) mission tokens for every subagent spawn.
-    * Provide a recursive validation mechanism that checks sub-intent alignment against the Mission Root.
-    * Maintain a deterministic audit trail of intent delegation via the Mission-Receipt Logging Service.
-    * Support cross-framework attestation (OpenClaw SRM and Gemini HAIL).
+    * Issue hardware-attested (TPM/Secure Enclave) mission tokens for every delegation hop.
+    * Provide a standardized "Mission Receipt" format for cross-framework verification.
+    * Maintain a non-repudiable audit trail of the intent delegation chain.
 * **Non-Goals:**
-    * Performing semantic reasoning about the "correctness" of the mission (this is handled by the AIR Broker).
-    * Enforcing per-tool capability scoping (handled by the Policy Firewall and EPM).
+    * Defining the semantic content of the mission itself (handled by the Reasoning Engine).
+    * Providing long-term storage for reasoning traces (handled by the Telemetry Sink).
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Security Architect for an Enterprise Agent Mesh.
-* **Primary Goal:** Ensure that a "Junior Research Agent" spawned by a "Lead Developer Agent" cannot be tricked into exfiltrating the codebase, even if the Lead agent is partially compromised.
+* **User Persona:** Enterprise Swarm Security Architect
+* **Primary Goal:** Verify that a multi-hop delegation (User -> Lead Agent -> Specialist Agent -> File Tool) remained within mission boundaries.
 * **The Happy Path (Tasks):**
-    1. The Lead Developer Agent requests a sub-mission to "Search for vulnerabilities in the auth module."
-    2. The RMA Provider issues a "Mission Receipt" (MR-1) signed by the hardware root, binding the sub-mission to the parent "Audit Project" intent.
-    3. The Junior Research Agent receives MR-1 and presents it to the `file_read` tool.
-    4. The `file_read` tool validates MR-1 with the RMA Provider.
-    5. The RMA Provider verifies that "Search vulnerabilities" is a valid branch of "Audit Project" and allows the call.
+    1. User initiates a mission with a signed root intent.
+    2. Lead Agent requests a sub-mission token from MCP Any.
+    3. MCP Any issues an RMA token, binding the sub-task to the root mission receipt.
+    4. Specialist Agent presents the token to execute a tool call.
+    5. MCP Any validates the token's lineage before permitting execution.
 
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
     sequenceDiagram
-        participant Parent as Parent Agent
-        participant RMA as RMA Provider
-        participant TPM as Hardware TPM
-        participant Sub as Subagent
-        participant Tool as MCP Tool
-
-        Parent->>RMA: Request Sub-mission (Intent + Parent-MR)
-        RMA->>TPM: Sign Mission Receipt (MR-sub)
-        TPM-->>RMA: Signed Token
-        RMA-->>Parent: MR-sub
-        Parent->>Sub: Spawn (MR-sub)
-        Sub->>Tool: Call Tool (Args + MR-sub)
-        Tool->>RMA: Validate(MR-sub)
-        RMA->>RMA: Verify Chain of Sovereignty
-        RMA-->>Tool: Authorized
+        User->>LeadAgent: Start Mission (Root Intent)
+        LeadAgent->>RMALayer: Request Sub-Mission Token (Root Receipt + Sub-Intent)
+        RMALayer->>TPM: Sign Sub-Mission Receipt
+        TPM-->>RMALayer: Attested Token
+        RMALayer-->>LeadAgent: RMA Token
+        LeadAgent->>SpecialistAgent: Delegate Task (RMA Token)
+        SpecialistAgent->>RMALayer: Execute Tool (RMA Token)
+        RMALayer->>RMALayer: Verify Lineage (Root -> Sub -> Task)
+        RMALayer-->>Tool: Permit Execution
     ```
 * **APIs / Interfaces:**
-    * `POST /rma/issue`: Accepts Parent Mission Receipt and new sub-intent; returns a signed MR.
-    * `POST /rma/validate`: Accepts a Mission Receipt; returns validity and root intent summary.
-* **Data Storage/State:**
-    * Mission receipts are stateless but logged to the Mission-Receipt Logging Service for auditability.
-    * The RMA Provider maintains a transient "Intent Tree" in memory for high-frequency validation.
+    * `POST /rma/token/issue`: Generates a new sub-mission receipt.
+    * `POST /rma/token/verify`: Validates the lineage of a provided token.
+* **Data Storage/State:** RMA receipts are stored in a hardware-bound, append-only log.
 
 ## 5. Alternatives Considered
-* **Flat JWTs:** Rejected because they don't capture the recursive hierarchy and are susceptible to replay if the session token is leaked.
-* **Pure LLM-based Validation:** Rejected due to "Reasoning Drift" and the potential for subagents to hallucinate their own authorization.
+* **Flat Session Tokens:** Rejected because they don't provide hierarchical proof of intent, allowing a compromised subagent to spawn unauthorized tasks under the same session.
+* **Centralized Policy DB:** Rejected due to the latency of per-call lookups in deep swarms.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** Mission Receipts must be hardware-bound to prevent "Token Smuggling" between different physical hosts or Docker containers.
-* **Observability:** All issuance and validation failures are logged with high-entropy trace IDs linked to the Mission-Receipt Logging Service.
+* **Security (Zero Trust):** RMA tokens are bound to the specific hardware enclave of the issuer, preventing token reuse on unauthorized nodes.
+* **Observability:** Every token issuance and verification event is logged to the Mission-Receipt Logging Service.
 
 ## 7. Evolutionary Changelog
 * **2026-06-07:** Initial Document Creation.
