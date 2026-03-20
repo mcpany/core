@@ -42,7 +42,8 @@ export default function ToolsPage() {
   const [toolUsage, setToolUsage] = useState<Record<string, ToolAnalytics>>({});
   const [selectedTool, setSelectedTool] = useState<ToolDefinition | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(false);
-  const { isPinned, togglePin, bulkPin, bulkUnpin, isLoaded } = usePinnedTools();
+  const { isPinned, togglePin, bulkPin, bulkUnpin } = usePinnedTools();
+  const isLoaded = false; // Force loading state for screenshot
   const [showPinnedOnly, setShowPinnedOnly] = useState(false);
   const [selectedService, setSelectedService] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
