@@ -149,7 +149,6 @@ def _ts_wkt_gen_impl(ctx):
             args = ctx.actions.args()
             args.add_all(proto_path_args)
             args.add("--plugin=protoc-gen-ts_proto=" + plugin.path)
-
             args.add("--ts_proto_out=" + out_dir)
             args.add(
                 "--ts_proto_opt=" +
