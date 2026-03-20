@@ -476,3 +476,283 @@ func TestCountTokensInValueSimpleFast(t *testing.T) {
 		})
 	}
 }
+
+func TestCountWordsInValueFast(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   interface{}
+		want    int
+		handled bool
+	}{
+		{"string", "hello world", 2, true},
+		{"int", 42, 1, true},
+		{"int64", int64(42), 1, true},
+		{"float64", float64(42.5), 1, true},
+		{"bool", true, 1, true},
+		{"nil", nil, 1, true},
+		{"[]string", []string{"hello world", "foo"}, 3, true},
+		{"[]int", []int{1, 2, 3}, 3, true},
+		{"[]int64", []int64{1, 2, 3}, 3, true},
+		{"[]float64", []float64{1.1, 2.2, 3.3}, 3, true},
+		{"[]bool", []bool{true, false, true}, 3, true},
+		{"map[string]string", map[string]string{"key": "value string"}, 3, true}, // 1 + 2
+		{"map[string]int", map[string]int{"key": 42}, 2, true},                   // 1 + 1
+		{"map[string]int64", map[string]int64{"key": 42}, 2, true},               // 1 + 1
+		{"map[string]float64", map[string]float64{"key": 42.5}, 2, true},         // 1 + 1
+		{"map[string]bool", map[string]bool{"key": true}, 2, true},               // 1 + 1
+		{"unhandled", struct{}{}, 0, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, handled := countWordsInValueFast(tt.input)
+			if handled != tt.handled {
+				t.Errorf("countWordsInValueFast() handled = %v, want %v", handled, tt.handled)
+			}
+			if got != tt.want {
+				t.Errorf("countWordsInValueFast() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSimpleTokenizeInt64(t *testing.T) {
+	tests := []struct {
+		name  string
+		input int64
+		want  int
+	}{
+		{"small positive", 42, 1},
+		{"small negative", -42, 1},
+		{"large positive", 10000000000, 2}, // len 11, 11/4=2 (integer division)
+		{"large negative", -10000000000, 3}, // len 12, 12/4=3
+		{"huge positive", 1000000000000000000, 4}, // len 19
+		{"huge negative", -1000000000000000000, 5}, // len 20
+		{"min int64", -9223372036854775808, 5}, // special case
+		{"max int64", 9223372036854775807, 4},
+		{"< 100", 99, 1},
+		{"< 1000", 999, 1},
+		{"< 10000", 9999, 1},
+		{"< 100000", 99999, 1},
+		{"< 1000000", 999999, 1},
+		{"< 10000000", 9999999, 1},
+		{"< 100000000", 99999999, 2},
+		{"< 1000000000", 999999999, 2},
+		{"< 10000000000", 9999999999, 2},
+		{"< 100000000000", 99999999999, 2},
+		{"< 1000000000000", 999999999999, 3},
+		{"< 10000000000000", 9999999999999, 3},
+		{"< 100000000000000", 99999999999999, 3},
+		{"< 1000000000000000", 999999999999999, 3},
+		{"< 10000000000000000", 9999999999999999, 4},
+		{"< 100000000000000000", 99999999999999999, 4},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := simpleTokenizeInt64(tt.input)
+			if got != tt.want {
+				t.Errorf("simpleTokenizeInt64() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCountSliceInterfaceSimple(t *testing.T) {
+	st := NewSimpleTokenizer()
+	visited := make(map[uintptr]bool)
+
+	// Test empty slice
+	emptySlice := []interface{}{}
+	got, err := countSliceInterfaceSimple(st, emptySlice, visited)
+	if err != nil {
+		t.Errorf("countSliceInterfaceSimple() error = %v", err)
+	}
+	if got != 0 {
+		t.Errorf("countSliceInterfaceSimple() got = %v, want %v", got, 0)
+	}
+
+	// Test basic slice
+	slice := []interface{}{"hello", 42, true}
+	got, err = countSliceInterfaceSimple(st, slice, visited)
+	if err != nil {
+		t.Errorf("countSliceInterfaceSimple() error = %v", err)
+	}
+	if got != 3 { // hello (1 token), 42 (1 token), true (1 token) -> 3 tokens
+		t.Errorf("countSliceInterfaceSimple() got = %v, want %v", got, 3)
+	}
+
+	// Test nested slice and other types
+	nestedSlice := []interface{}{
+		"world",
+		float64(42.0),
+		float64(42.5),
+		int64(42),
+		nil,
+		[]interface{}{"nested"},
+		map[string]interface{}{"key": "value"},
+	}
+	got, err = countSliceInterfaceSimple(st, nestedSlice, visited)
+	if err != nil {
+		t.Errorf("countSliceInterfaceSimple() error = %v", err)
+	}
+	if got != 8 { // world(1), 42.0(1), 42.5(1), 42(1), nil(1), nested(1), map(2) -> 8
+		t.Errorf("countSliceInterfaceSimple() got = %v, want %v", got, 8)
+	}
+
+	// Test cycle detection
+	cyclicSlice := make([]interface{}, 1)
+	cyclicSlice[0] = cyclicSlice
+	_, err = countSliceInterfaceSimple(st, cyclicSlice, visited)
+	if err == nil || !strings.Contains(err.Error(), "cycle detected") {
+		t.Errorf("countSliceInterfaceSimple() expected cycle error, got %v", err)
+	}
+}
+
+func TestCountTokensReflectMapStructSlice(t *testing.T) {
+	st := NewSimpleTokenizer()
+
+	tests := []struct {
+		name    string
+		input   interface{}
+		wantMin int // We just want to ensure it counts things and doesn't panic
+	}{
+		{
+			"reflect map",
+			map[int]int{1: 2, 3: 4}, // Non-string keys force reflect map path
+			4,
+		},
+		{
+			"reflect struct",
+			struct {
+				A string
+				B int
+				C bool
+			}{A: "hello", B: 42, C: true},
+			3,
+		},
+		{
+			"reflect slice",
+			[]int8{1, 2, 3}, // forces reflect slice path
+			3,
+		},
+		{
+			"reflect array",
+			[3]int{1, 2, 3}, // forces reflect array path
+			3,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := CountTokensInValue(st, tt.input)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if got < tt.wantMin {
+				t.Errorf("got = %v, want >= %v", got, tt.wantMin)
+			}
+		})
+	}
+}
+
+func TestReflectCycles(t *testing.T) {
+	st := NewSimpleTokenizer()
+	// Map cycle
+	m := make(map[string]interface{})
+	m["self"] = m
+	_, err := CountTokensInValue(st, m)
+	if err == nil || !strings.Contains(err.Error(), "cycle") {
+		t.Errorf("expected map cycle error, got: %v", err)
+	}
+}
+
+func TestCountTokensReflectSliceAndMapDetailed(t *testing.T) {
+	st := NewSimpleTokenizer()
+
+	tests := []struct {
+		name    string
+		input   interface{}
+	}{
+		{
+			"reflect slice strings",
+			[]string{"hello", "world"}, // Handled in fast path usually, but let's test a custom type
+		},
+		{
+			"reflect slice custom string",
+			[]MyString{"hello", "world"},
+		},
+		{
+			"reflect map string keys",
+			map[string]MyString{"key": "value"},
+		},
+		{
+			"reflect map string keys string values",
+			map[string]string{"key": "value"},
+		},
+		{
+			"reflect map int keys bool values",
+			map[int]bool{1: true, 2: false},
+		},
+		{
+			"reflect map int keys float values",
+			map[int]float64{1: 1.1, 2: 2.2},
+		},
+		{
+			"reflect map int keys int values",
+			map[int]int{1: 1, 2: 2},
+		},
+		{
+			"reflect map string keys interface values",
+			map[string]interface{}{"key": 1},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := CountTokensInValue(st, tt.input)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		})
+	}
+}
+
+type MyString string
+
+
+func TestCountSliceInterfaceRaw(t *testing.T) {
+	st := NewWordTokenizer()
+
+	tests := []struct {
+		name    string
+		input   []interface{}
+	}{
+		{"empty", []interface{}{}},
+		{"string", []interface{}{"hello world"}},
+		{"int", []interface{}{42}},
+		{"int64", []interface{}{int64(42)}},
+		{"float64", []interface{}{42.5}},
+		{"bool", []interface{}{true}},
+		{"nil", []interface{}{nil}},
+		{"nested", []interface{}{[]interface{}{"hello world"}}},
+		{"map", []interface{}{map[string]interface{}{"key": "value"}}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := CountTokensInValue(st, tt.input)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		})
+	}
+
+	// Test cycle
+	cyclicSlice := make([]interface{}, 1)
+	cyclicSlice[0] = cyclicSlice
+	_, err := CountTokensInValue(st, cyclicSlice)
+	if err == nil || !strings.Contains(err.Error(), "cycle") {
+		t.Errorf("expected cycle error, got: %v", err)
+	}
+}
