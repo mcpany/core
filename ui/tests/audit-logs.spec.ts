@@ -4,9 +4,10 @@
  */
 
 
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import * as path from 'path';
 import * as fs from 'fs';
+import { seedServices } from './e2e/test-data';
 
 test.describe('Feature Screenshot', () => {
     // Enabled audit screenshots
@@ -15,7 +16,7 @@ test.describe('Feature Screenshot', () => {
     // Use test-results directory which is writable in CI
     const auditDir = path.join(process.cwd(), 'test-results/artifacts/audit/ui', date);
 
-    test.beforeAll(async () => {
+    test.beforeAll(async ({ request }) => {
         try {
             if (!fs.existsSync(auditDir)) {
                 fs.mkdirSync(auditDir, { recursive: true });
@@ -23,7 +24,47 @@ test.describe('Feature Screenshot', () => {
         } catch (e) {
             console.warn('Failed to create audit directory:', e);
         }
+
+        // Seed services to ensure echo_tool is available
+        await seedServices(request);
+
+        // Execute echo_tool to generate an audit log entry
+        await request.post('/api/v1/execute', {
+            data: {
+                name: 'echo_tool',
+                arguments: { test: 123 }
+            }
+        });
     });
+
+  test('View Audit Log Details', async ({ page }) => {
+    await page.goto('/audit');
+    await page.waitForSelector('text=Audit Logs');
+
+    // Wait for the echo_tool log entry to appear
+    const toolCell = page.locator('td', { hasText: 'echo_tool' }).first();
+    await toolCell.waitFor({ state: 'visible' });
+
+    // Click "View" on the log entry row
+    const row = page.locator('tr').filter({ has: toolCell });
+    await row.locator('button', { hasText: 'View' }).click();
+
+    // Verify dialog appears
+    await expect(page.locator('h2', { hasText: 'Audit Log Detail' })).toBeVisible();
+
+    // Verify Arguments section is using JsonView (which renders a container with class names containing react-json-view or similar, or we can check for text)
+    // We expect the JSON keys to be visible
+    await expect(page.locator('h4', { hasText: 'Arguments' })).toBeVisible();
+    // JsonView renders standard keys. Let's look for "test"
+    await expect(page.getByText('"test"').first()).toBeVisible();
+
+    // Verify Result section is using RichResultViewer
+    // For echo_tool it might return { "test": 123 } inside result
+    await expect(page.locator('h4', { hasText: 'Result' })).toBeVisible();
+    // RichResultViewer uses Tabs (JSON, Raw Output, Table, etc depending on content).
+    // Let's verify that the JSON tab from RichResultViewer is present
+    await expect(page.getByRole('tab', { name: 'JSON' })).toBeVisible();
+  });
 
   test('Capture Logs', async ({ page }) => {
     await page.goto('/logs');
