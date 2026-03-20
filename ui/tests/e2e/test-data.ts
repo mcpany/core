@@ -311,3 +311,28 @@ export const cleanupCollection = async (name?: string, requestContext?: APIReque
         // Ignore cleanup errors (collection may not exist)
     }
 };
+
+export const seedSkill = async (name?: string, requestContext?: APIRequestContext) => {
+    if (!name) return;
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    try {
+        const res = await context.post('/api/v1/skills', {
+            data: {
+                skill: {
+                    name,
+                    description: `Test skill: ${name}`,
+                    instructions: "These are the instructions.",
+                    allowedTools: ["tool1", "tool2"],
+                    assets: ["script.py"]
+                }
+            },
+            headers: HEADERS,
+        });
+        if (!res.ok()) {
+            const text = await res.text();
+            console.log(`seedSkill: POST /api/v1/skills => ${res.status()} ${text}`);
+        }
+    } catch (e) {
+        console.log(`seedSkill failed: ${e}`);
+    }
+};
