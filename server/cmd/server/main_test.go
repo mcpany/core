@@ -704,6 +704,7 @@ global_settings:
 	}
 }
 
+// TestInitCmd tests the init command.
 func TestInitCmd(t *testing.T) {
 	// Change working directory to a temp dir so we don't pollute the actual project
 	tmpDir := t.TempDir()
