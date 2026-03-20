@@ -177,10 +177,27 @@ export function useTraces(options: UseTracesOptions = {}) {
         };
     }, []);
 
-    const clearTraces = () => setTraces([]);
+    const clearTraces = async () => {
+        try {
+            const token = localStorage.getItem('mcp_auth_token');
+            const headers: Record<string, string> = {};
+            if (token) {
+                headers['Authorization'] = `Basic ${token}`;
+            }
+            const res = await fetch('/api/v1/traces/clear', { method: 'POST', headers });
+            if (!res.ok) {
+                console.error("Failed to clear traces on backend");
+            }
+        } catch (e) {
+            console.error("Failed to call clear traces endpoint", e);
+        }
+        setTraces([]);
+        bufferRef.current = [];
+    };
 
     const refresh = () => {
         setTraces([]);
+        bufferRef.current = [];
         connect();
     };
 

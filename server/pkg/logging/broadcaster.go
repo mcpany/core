@@ -296,3 +296,23 @@ func (b *Broadcaster) Hydrate(messages []any) {
 		}
 	}
 }
+
+// ClearHistory clears the current log history.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - Clears the history buffer.
+func (b *Broadcaster) ClearHistory() {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.head = 0
+	b.full = false
+}

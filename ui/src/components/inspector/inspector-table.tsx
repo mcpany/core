@@ -128,12 +128,43 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
             Randomized Selection from Top 5 High-Impact Targets
         */}
         {traces.length === 0 && !loading ? (
-             <div className="flex items-center justify-center h-24 text-muted-foreground text-sm">
-                No traces found.
+             <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-muted-foreground">
+                <Terminal className="h-12 w-12 text-muted-foreground/30 mb-4" />
+                <p className="text-lg font-medium">No traces found</p>
+                <p className="text-sm">Traces will appear here when tools are executed.</p>
              </div>
         ) : loading && traces.length === 0 ? (
-             <div className="flex items-center justify-center h-24 text-muted-foreground text-sm">
-                Loading traces...
+             <div className="w-full flex flex-col h-full overflow-hidden">
+                 <div className="border-b bg-muted/20 px-4 py-3 flex text-sm font-medium text-muted-foreground sticky top-0">
+                     <div className="w-[180px]">Timestamp</div>
+                     <div className="w-[50px]">Type</div>
+                     <div className="flex-1">Method / Name</div>
+                     <div className="w-[100px]">Status</div>
+                     <div className="w-[100px] text-right">Duration</div>
+                 </div>
+                 <div className="flex-1 overflow-auto">
+                     {Array.from({ length: 15 }).map((_, i) => (
+                         <div key={i} className="flex px-4 py-3 border-b items-center gap-4">
+                             <div className="w-[180px]">
+                                 <div className="h-4 bg-muted rounded w-24 mb-2 animate-pulse"></div>
+                                 <div className="h-3 bg-muted rounded w-16 animate-pulse"></div>
+                             </div>
+                             <div className="w-[50px]">
+                                 <div className="h-4 w-4 bg-muted rounded-full animate-pulse"></div>
+                             </div>
+                             <div className="flex-1 flex flex-col gap-2">
+                                 <div className="h-4 bg-muted rounded w-48 animate-pulse"></div>
+                                 <div className="h-3 bg-muted rounded w-32 animate-pulse"></div>
+                             </div>
+                             <div className="w-[100px]">
+                                 <div className="h-5 bg-muted rounded-full w-16 animate-pulse"></div>
+                             </div>
+                             <div className="w-[100px] flex justify-end">
+                                 <div className="h-4 bg-muted rounded w-12 animate-pulse"></div>
+                             </div>
+                         </div>
+                     ))}
+                 </div>
              </div>
         ) : (
             <TableVirtuoso

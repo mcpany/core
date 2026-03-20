@@ -420,3 +420,24 @@ func generateMockTrace() Trace {
 		},
 	}
 }
+
+func (a *Application) handleClearTraces() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodDelete && r.Method != http.MethodPost {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
+			a.standardMiddlewares.Audit.ClearHistory()
+		}
+
+		a.seededTracesMu.Lock()
+		a.seededTraces = nil
+		a.seededTracesMu.Unlock()
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(map[string]bool{"success": true})
+	}
+}

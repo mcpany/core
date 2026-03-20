@@ -409,3 +409,16 @@ func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
 	m.writeLog(ctx, store, entry)
 	return nil
 }
+
+// ClearHistory clears the broadcast history.
+//
+// Summary: Clears the audit history from the broadcaster.
+//
+// Returns:
+//   - None.
+//
+// Side Effects:
+//   - Clears the history buffer.
+func (m *AuditMiddleware) ClearHistory() {
+	m.broadcaster.ClearHistory()
+}
