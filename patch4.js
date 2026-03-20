@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 const fs = require('fs');
 
 const file = 'ui/tests/e2e/user_management.spec.ts';
