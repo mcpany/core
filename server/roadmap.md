@@ -14,10 +14,10 @@
 
 #### Upcoming (2026-06-14 Evolution)
 
-*   **[P0] Attention-Locked Routing Hub (ALRH)**: Authoritative coordination middleware performing real-time attention analysis. (Added: 2026-06-14)
-*   **[P0] MDRA Attestation Bridge**: Unified security service for MDRA-compliant attestation merging. (Added: 2026-06-14)
-*   **[P1] Three-Factor Agency Gateway**: Multi-factor authentication hub for autonomous handoffs. (Added: 2026-06-14)
-*   **[P0] Side-Channel Shield**: gRPC metadata scrubbing for shadow coordination defense. (Added: 2026-06-14)
+*   **[P0] Attention-Locked Routing Hub (ALRH)**: Authoritative coordination middleware performing real-time attention analysis.
+*   **[P0] MDRA Attestation Bridge**: Unified security service for MDRA-compliant attestation merging.
+*   **[P1] Three-Factor Agency Gateway**: Multi-factor authentication hub for autonomous handoffs.
+*   **[P0] Side-Channel Shield**: gRPC metadata scrubbing for shadow coordination defense.
 
 #### Upcoming (2026-02-23 Evolution)
 
