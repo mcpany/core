@@ -597,9 +597,3 @@
 - [ ] **[P0] Attention Sovereignty Monitor**: (2026-06-18) Real-time tracker for ALCP-pinned fragments and CWF noise levels.
 - [ ] **[P0] SMI Identity Relay Monitor**: (2026-06-18) Real-time status indicator for cross-cloud SMI identity fragment persistence.
 - [ ] **[P1] Coordination Fatigue Visualizer**: (2026-06-18) Dashboard showing off-model coordination throughput vs. on-model token savings.
-
-### Upcoming: [2026-06-18]
-- [ ] **[P0] Reasoning Budget Dashboard**: (2026-06-18) Real-time visualization of subagent token leases and ARE budget consumption.
-- [ ] **[P0] Attention Sovereignty Monitor**: (2026-06-18) Real-time tracker for ALCP-pinned fragments and CWF noise levels.
-- [ ] **[P0] SMI Identity Relay Monitor**: (2026-06-18) Real-time status indicator for cross-cloud SMI identity fragment persistence.
-- [ ] **[P1] Coordination Fatigue Visualizer**: (2026-06-18) Dashboard showing off-model coordination throughput vs. on-model token savings.

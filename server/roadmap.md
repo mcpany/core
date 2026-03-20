@@ -759,9 +759,3 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Attention-Locked Context Pinning (ALCP)**: Advanced security middleware utilizing hardware-bound attention headers to protect mission-critical intent fragments from CWF. (Added: 2026-06-18)
 *   **[P0] Sovereign Mesh Identity (SMI) Relay**: Federated identity service providing hardware-attested identity fragments that persist across local and multi-cloud environments. (Added: 2026-06-18)
 *   **[P1] AMS-Native Coordination Gateway**: Scaling extension for the T2T Bridge that hosts granular, task-bound mailbox shards to eliminate "Coordination Fatigue." (Added: 2026-06-18)
-
-#### Upcoming (2026-06-18 Evolution)
-*   **[P0] Reasoning-Budget Firewall (RBF)**: Authoritative economic gatekeeper enforcing mission-root authorized quotas on subagent reasoning intensity (ARE). (Added: 2026-06-18)
-*   **[P0] Attention-Locked Context Pinning (ALCP)**: Advanced security middleware utilizing hardware-bound attention headers to protect mission-critical intent fragments from CWF. (Added: 2026-06-18)
-*   **[P0] Sovereign Mesh Identity (SMI) Relay**: Federated identity service providing hardware-attested identity fragments that persist across local and multi-cloud environments. (Added: 2026-06-18)
-*   **[P1] AMS-Native Coordination Gateway**: Scaling extension for the T2T Bridge that hosts granular, task-bound mailbox shards to eliminate "Coordination Fatigue." (Added: 2026-06-18)
