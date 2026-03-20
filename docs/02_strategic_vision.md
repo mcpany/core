@@ -28,6 +28,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-30]
+### Focus: Hardware-Attested Mesh Identity & Non-Blocking Coordination
+**Context**: The emergence of horizontal swarms (Claude Code Agent Teams) and the shift toward hardware-bound local sovereignty (OpenClaw) reveal that **Identity** must now be mesh-resident and **Coordination** must be lock-free. The risk of T2T (Teammate-to-Teammate) impersonation and the latency of "Mailbox Locks" confirm that infrastructure must move beyond simple bridging to active Mesh Governance.
+**Strategic Pivot**:
+- **Mesh-Resident Identity Attestation**: MCP Any will evolve to act as the authoritative "Mesh Identity Root." We will implement hardware-attested, session-bound identity tokens that allow teammates (Claude, OpenClaw, AutoGen) to securely verify each other's lineage and mission-bound authority within the horizontal mesh.
+- **Asynchronous Mailbox Sharding (AMS)**: To neutralize "Mailbox Lock" bottlenecks, we are introducing AMS. This service will host granular, task-bound mailbox shards that allow parallel teammates to synchronize state without global coordination locks, ensuring non-blocking performance.
+- **HAMS (Hardware-Attested Mesh Snapshot)**: Supporting the stability of deep meshes, MCP Any will implement HAMS. This provides a cryptographically signed snapshot of the entire mesh state, ensuring mission-root consistency across heterogeneous framework boundaries.
+- **T2T Verification Middleware**: To counter "Teammate Impersonation," we are upgrading the Mailbox Integrity Middleware. This layer will mandate cryptographically signed mailbox requests, validating every inter-teammate instruction against the mission root and its authorized role in the shared task list.
+
+---
+
 ## Strategic Evolution: [2026-05-23]
 ### Focus: Local Zero-Trust (LOWA) & Peer-to-Peer Agent Orchestration
 **Context**: The disclosure of "ClawJacked" (CVE-2026-25253) proves that "Implicit Local Trust" for loopback WebSocket traffic is a critical failure point. Simultaneously, the rise of Claude Code's "Agent Teams" signals a shift toward horizontal (mesh) collaboration. The "Universal Agent Bus" must now act as the secure, authenticated bridge for both local control and peer-to-peer teammate communication.

@@ -639,6 +639,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Trace-Aware Identity Propagation (TAIP)**: Extension for SMI Relay ensuring hardware-attested identities carry full lineage metadata. (Added: 2026-05-28)
 *   **[P1] Reasoning-Effort Attribution Middleware**: Resource management service cryptographically attributing token/compute usage to specific mission-root branches. (Added: 2026-05-28)
 
+#### Upcoming (2026-05-30 Evolution)
+*   **[P0] T2T Identity Rotation Provider**: Hardware-attested session-bound identity rotation to neutralize teammate impersonation. (Added: 2026-05-30)
+*   **[P0] Teammate Task-List Arbiter**: Lock-free asynchronous task-claiming logic to resolve horizontal coordination bottlenecks. (Added: 2026-05-30)
+*   **[P1] Hardware-Attested Mesh Snapshot (HAMS)**: Stability service for cryptographically signed snapshots of the entire mesh state. (Added: 2026-05-30)
+
 #### Upcoming (2026-05-29 Evolution)
 *   **[P0] Collective Swarm Anomaly Detection (CSAD) Hub**: Cross-agent behavioral analysis middleware to detect "Hivenet" swarm attacks. (Added: 2026-05-29)
 *   **[P0] Cross-Mesh Command Sovereignty (CMCS) Provider**: Hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms. (Added: 2026-05-29)
