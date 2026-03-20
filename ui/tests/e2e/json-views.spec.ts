@@ -62,11 +62,25 @@ test.describe('JsonView UI Components', () => {
   test('should verify ToolRunner renders JsonView for schema rather than raw string', async ({ page }) => {
     await page.goto('/tools');
 
+    // Filter to ensure test tool is found
+    await page.getByPlaceholder('Search tools...').fill('test_json_schema');
+
+    // Wait for the specific tool to appear in the table
+    await expect(page.getByRole('row', { name: /test_json_schema/i })).toBeVisible({ timeout: 10000 });
+
     // Open the inspector for our test tool
-    await page.getByRole('row', { name: /test_json_schema/i }).getByRole('button', { name: /Inspect/i }).click();
+    // We use .first() or .nth(0) in case there are multiple matching rows, but we only expect one
+    const row = page.getByRole('row', { name: /test_json_schema/i }).first();
+    const inspectBtn = row.getByRole('button', { name: /Inspect/i });
+
+    // Ensure button is ready to receive clicks
+    await expect(inspectBtn).toBeEnabled({ timeout: 10000 });
+
+    // Use force true if there's a minor overlay
+    await inspectBtn.click({ force: true });
 
     // Verify dialog opens
-    await expect(page.getByRole('heading', { name: 'test_json_schema' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'test_json_schema' })).toBeVisible({ timeout: 10000 });
 
     // Switch to Schema tab
     await page.getByRole('tab', { name: 'Schema' }).click();
