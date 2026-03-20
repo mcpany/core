@@ -1,10 +1,13 @@
 # MCP Any UI
 
-The **MCP Any UI** provides a modern, interactive dashboard for managing your MCP Any server. It allows you to visualize the network topology, monitor metrics (latency, QPS), and manage services, tools, and resources.
+The **MCP Any UI** provides a modern, interactive dashboard for managing your
+MCP Any server. It allows you to visualize the network topology, monitor metrics
+(latency, QPS), and manage services, tools, and resources.
 
 ## 🚀 Getting Started
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is a [Next.js](https://nextjs.org/) project bootstrapped with
+[`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ### Prerequisites
 
@@ -14,12 +17,14 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 ### Installation
 
 1.  Navigate to the `ui` directory:
-    ```bash
+
+````bash
     cd ui
     ```
 
 2.  Install dependencies:
-    ```bash
+
+```bash
     npm install
     # or
     yarn install
@@ -31,6 +36,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 First, run the development server:
 
+
 ```bash
 npm run dev
 # or
@@ -39,11 +45,13 @@ yarn dev
 pnpm dev
 # or
 bun dev
-```
+````
 
-Open [http://localhost:9002](http://localhost:9002) with your browser to see the result.
+Open [http://localhost:9002](http://localhost:9002) with your browser to see the
+result.
 
-You can start editing the page by modifying `src/app/page.tsx`. The page auto-updates as you edit the file.
+You can start editing the page by modifying `src/app/page.tsx`. The page
+auto-updates as you edit the file.
 
 ### Testing
 
@@ -64,12 +72,14 @@ npx playwright test
 
 - **Network Topology**: Visualize your MCP ecosystem.
 - **Service Management**: Add, edit, and monitor upstream services.
-- **[Interactive Playground](docs/playground.md)**: Test tools with auto-generated forms supporting complex schemas.
+- **[Interactive Playground](docs/playground.md)**: Test tools with
+  auto-generated forms supporting complex schemas.
 - **Observability**: Real-time metrics and logs.
 
 ## 📚 Learn More
 
 To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
+  features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
