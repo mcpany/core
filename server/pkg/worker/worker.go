@@ -63,19 +63,22 @@ func (w *Worker) Start(ctx context.Context) {
 	go w.startToolExecutionWorker(ctx)
 }
 
-// Stop stops the worker and cleans up resources. Summary: Stops the worker. Side Effects: - Waits for pending jobs. - Unsubscribes from the bus.
+// Stop stops the worker and cleans up resources.
+//
+// Summary: Stops the worker instance.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - Waits for pending jobs to finish.
+//   - Unsubscribes from the message bus.
 func (w *Worker) Stop() {
 	w.wg.Wait() // Wait for the subscription to be set up
 	w.mu.Lock()
