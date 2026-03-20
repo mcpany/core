@@ -49,8 +49,7 @@ issues:
       linters:
         - "revive"
       text: "var-naming: avoid meaningless package names"
-    - text: "could not import github.com/mcpany/core/proto/"
-      linters:
+    - linters:
         - typecheck
   skip-files:
     - '.*\.pb\.go$'
