@@ -28,7 +28,7 @@
 *   There is a growing demand for "Deterministic Reasoning" in swarms. Enterprises are looking for Agentic SLAs that guarantee resource limits, response times, and "Reasoning Provenance" for every task card.
 
 ### Ghost Shell Profiling
-*   A new technique for handling un-attested hooks. Instead of blocking them, they are executed in a "Ghost Shell"—a highly instrumented, network-isolated container that profiles the hook's behavior without exposing the host.
+*   A new technique for handling un-attested hooks. Instead of blocking them, they are executed in a "Ghost Shell"--a highly instrumented, network-isolated container that profiles the hook's behavior without exposing the host.
 
 ### Federated Governance Sync
 *   As organizations deploy multiple MCP Any nodes, the need for a "Global Policy Synchronizer" has become critical to ensure consistent security guardrails across the entire fleet.
