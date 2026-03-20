@@ -1,3 +1,4 @@
+cat << 'INNER_EOF' > server/pkg/app/seed.go
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
@@ -287,3 +288,4 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 	}
 	return nil
 }
+INNER_EOF

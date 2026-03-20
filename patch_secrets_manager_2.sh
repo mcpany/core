@@ -1,0 +1,1 @@
+sed -i 's/import { Plus, Shield, Search, Key, RefreshCw, Eye, EyeOff, Copy, Trash2 } from "lucide-react";/import { Plus, Shield, Search, Key, RefreshCw, Eye, EyeOff, Copy, Trash2, ShieldAlert } from "lucide-react";\nimport { Checkbox } from "\@\/components\/ui\/checkbox";/g' ui/src/components/settings/secrets-manager.tsx

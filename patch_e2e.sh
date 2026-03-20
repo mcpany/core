@@ -1,3 +1,4 @@
+cat << 'INNER_EOF' > ui/tests/e2e/settings.spec.ts
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -24,7 +25,7 @@ test.describe('Settings & Secrets', () => {
             name: "OpenAI Prod",
             key: "OPENAI_API_KEY",
             provider: "openai",
-            createdAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
             value: "sk-real-data-test"
           },
           {
@@ -32,7 +33,7 @@ test.describe('Settings & Secrets', () => {
             name: "Anthropic Dev",
             key: "ANTHROPIC_API_KEY",
             provider: "anthropic",
-            createdAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
             value: "sk-ant-test"
           }
         ]
@@ -89,3 +90,4 @@ test.describe('Settings & Secrets', () => {
     await expect(page.getByText('No secrets found.')).toBeVisible();
   });
 });
+INNER_EOF

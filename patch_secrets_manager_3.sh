@@ -1,3 +1,4 @@
+cat << 'INNER_EOF' > ui/src/components/settings/secrets-manager.tsx
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -415,3 +416,4 @@ function SecretItem({
         </div>
     );
 }
+INNER_EOF

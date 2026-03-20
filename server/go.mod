@@ -1,8 +1,6 @@
 module github.com/mcpany/core/server
 
-go 1.24.0
-
-toolchain go1.24.11
+go 1.26.1
 
 replace github.com/mcpany/core => ../
 
@@ -207,6 +205,7 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/matryer/is v1.4.1 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/mcpany/core/proto v0.0.0-20260320061350-c0660ac799db // indirect
 	github.com/milvus-io/milvus-proto/go-api/v2 v2.4.10-0.20240819025435-512e3b98866a // indirect
 	github.com/minio/highwayhash v1.0.3 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
@@ -292,3 +291,5 @@ require (
 	modernc.org/memory v1.11.0 // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
 )
+
+replace github.com/mcpany/core/proto => ../proto
