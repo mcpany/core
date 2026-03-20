@@ -6,7 +6,6 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
-
 ## Evolution: [2026-06-18] Updates
 
 ### Proposed Additions
