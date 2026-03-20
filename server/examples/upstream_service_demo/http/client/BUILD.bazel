@@ -3,12 +3,8 @@ load("@rules_go//go:def.bzl", "go_binary", "go_library")
 go_library(
     name = "client_lib",
     srcs = ["main.go"],
-    importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/grpc/client",
+    importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/http/client",
     visibility = ["//visibility:private"],
-    deps = [
-        "//server/examples/upstream_service_demo/grpc/greeter_server/proto",
-        "@org_golang_google_grpc//:grpc",
-    ],
 )
 
 go_binary(
