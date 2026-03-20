@@ -125,14 +125,13 @@ echo "==> Generating Go Protos for golangci-lint..."
 export PATH="$PROJECT_ROOT/build/env/bin:$PATH"
 if [[ -x "$PROJECT_ROOT/build/env/bin/protoc" ]]; then
     cd "$PROJECT_ROOT"
-    protoc --proto_path=. \
+    find proto -name "*.proto" -not -path "proto/third_party/*" -not -path "proto/google/*" -print0 | xargs -0 protoc --proto_path=. \
            --proto_path=build/grpc-gateway \
            --proto_path=build/googleapis \
            --go_out=. \
            --go_opt=module=github.com/mcpany/core \
            --go-grpc_out=. \
-           --go-grpc_opt=module=github.com/mcpany/core \
-           $(find proto -name "*.proto" -not -path "proto/third_party/*" -not -path "proto/google/*") || true
+           --go-grpc_opt=module=github.com/mcpany/core || true
 fi
 
 echo "==> Running golangci-lint..."

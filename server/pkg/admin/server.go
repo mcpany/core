@@ -485,15 +485,6 @@ func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusR
 //
 // Side Effects:
 //   - None.
-//   - Permanently deletes a user record from the persistent database.
-//   - Modifies an existing user record in the persistent database.
-//   - Modifies the request's password hash in memory during processing.
-//   - None.
-//   - None.
-//   - None.
-//   - None.
-//   - None.
-//   - None.
 func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest) (*pb.ListAuditLogsResponse, error) {
 	if s.auditMiddleware == nil {
 		return nil, status.Error(codes.FailedPrecondition, "audit logging is not enabled")
