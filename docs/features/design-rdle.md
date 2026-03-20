@@ -23,17 +23,20 @@ delegation lineage.
     * Support "Emergency Depth Expansion" via hardware-attested HITL approval.
 * **Non-Goals:**
     * Restricting parallel branching (RDLE focuses on chain depth, not breadth).
-    * Managing per-agent token budgets (handled by the Reasoning-Budget Firewall).
+    * Managing per-agent token budgets (handled by the Reasoning-Budget
+      Firewall).
 
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Local LLM Swarm Orchestrator
-* **Primary Goal:** Prevent a specialized subagent from spawning unauthorized sub-subagents beyond a safe limit.
+* **Primary Goal:** Prevent a specialized subagent from spawning unauthorized
+  sub-subagents beyond a safe limit.
 * **The Happy Path (Tasks):**
     1. The mission root is initialized with a `max_depth: 3` token.
     2. Agent A (Depth 1) delegates a task to Agent B (Depth 2).
     3. Agent B attempts to delegate a complex sub-task to Agent C (Depth 3).
     4. Agent C attempts to spawn Agent D (Depth 4).
-    5. The RDLE intercepts the UACO bid from Agent C and detects that the requested depth exceeds the hardware-attested manifest limit.
+    5. The RDLE intercepts the UACO bid from Agent C and detects that the
+requested depth exceeds the hardware-attested manifest limit.
     6. The delegation is blocked, and the violation is logged.
 
 ## 4. Design & Architecture
@@ -54,18 +57,28 @@ delegation lineage.
         UACO_Bus --> RDLE Middleware
     ```
 * **APIs / Interfaces:**
-    * `UACO Headers`: Addition of `X-UAB-Mission-Depth` and `X-UAB-Depth-Signature`.
-    * `POST /v1/rdle/validate`: Internal endpoint for validating delegation proposals.
+    * `UACO Headers`: Addition of `X-UAB-Mission-Depth` and `X-UAB-Depth-
+      Signature`.
+    * `POST /v1/rdle/validate`: Internal endpoint for validating delegation
+      proposals.
 * **Data Storage/State:**
-    * Mission manifests are stored in a hardware-locked (TPM-backed) SQLite shard to prevent depth tampering.
+    * Mission manifests are stored in a hardware-locked (TPM-backed) SQLite
+      shard to prevent depth tampering.
 
 ## 5. Alternatives Considered
-* **Parent-Only Enforcement:** Rejected because a compromised parent could simply misreport the depth to its children. Only mission-root manifest binding ensures integrity.
-* **TTL-Based Limits:** Rejected because task execution time does not strictly correlate with reasoning depth; depth is the more accurate security boundary for swarms.
+* **Parent-Only Enforcement:** Rejected because a compromised parent could
+  simply misreport the depth to its children. Only mission-root manifest
+  binding ensures integrity.
+* **TTL-Based Limits:** Rejected because task execution time does not strictly
+  correlate with reasoning depth; depth is the more accurate security boundary
+  for swarms.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** Depth tokens are hardware-attested to prevent forging. Any attempt to "reuse" a depth token across different mission branches is detected via the Recursive Context Protocol.
-* **Observability:** Current delegation depth is visualized in the "Recursive Loop Heatmap" and "Subagent Lineage Explorer."
+* **Security (Zero Trust):** Depth tokens are hardware-attested to prevent
+  forging. Any attempt to "reuse" a depth token across different mission
+  branches is detected via the Recursive Context Protocol.
+* **Observability:** Current delegation depth is visualized in the "Recursive
+  Loop Heatmap" and "Subagent Lineage Explorer."
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.

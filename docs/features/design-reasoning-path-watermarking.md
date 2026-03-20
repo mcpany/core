@@ -19,22 +19,30 @@ path.
 * **Goals:**
     * Implement a system for cryptographically watermarking reasoning fragments.
     * Bind watermarks to hardware-attested mission-root session tokens.
-    * Provide a validation utility for verifying the integrity and lineage of a reasoning chain.
-    * Ensure watermarks are resilient to common context compression and sharding techniques.
+    * Provide a validation utility for verifying the integrity and lineage of a
+      reasoning chain.
+    * Ensure watermarks are resilient to common context compression and sharding
+      techniques.
 * **Non-Goals:**
-    * Modifying the underlying LLM weights (watermarking occurs at the infrastructure/proxy layer).
-    * Enforcing reasoning policies (watermarking provides the provenance for enforcement).
+    * Modifying the underlying LLM weights (watermarking occurs at the
+      infrastructure/proxy layer).
+    * Enforcing reasoning policies (watermarking provides the provenance for
+      enforcement).
 
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Swarm Governance Auditor
-* **Primary Goal:** Verify that a tool call was initiated by a legitimate reasoning sequence originating from the mission root.
+* **Primary Goal:** Verify that a tool call was initiated by a legitimate
+  reasoning sequence originating from the mission root.
 * **The Happy Path (Tasks):**
     1. An agent generates a reasoning fragment.
     2. The fragment is intercepted by the Watermarking Provider.
-    3. The Provider appends a hardware-attested cryptographic watermark bound to the mission-root ID.
+    3. The Provider appends a hardware-attested cryptographic watermark bound to
+the mission-root ID.
     4. The fragment is propagated through the mesh.
-    5. A downstream specialist agent or tool gateway receives the fragment and validates the watermark signature against the mission root.
-    6. If valid, the fragment is accepted as authentic; if missing or invalid, it is flagged as unauthorized.
+    5. A downstream specialist agent or tool gateway receives the fragment and
+validates the watermark signature against the mission root.
+    6. If valid, the fragment is accepted as authentic; if missing or invalid,
+it is flagged as unauthorized.
 
 ## 4. Design & Architecture
 * **System Flow:**
@@ -54,12 +62,18 @@ path.
     * Watermark metadata is stored alongside reasoning traces in the Blackboard.
 
 ## 5. Alternatives Considered
-* **Plaintext Header Metadata:** Rejected because it is easily spoofed by compromised agents.
-* **Full Chain-of-Thought Encryption:** Rejected due to the performance overhead and the need for some transparency for intermediate alignment checks. Watermarking provides a balance of integrity and observability.
+* **Plaintext Header Metadata:** Rejected because it is easily spoofed by
+  compromised agents.
+* **Full Chain-of-Thought Encryption:** Rejected due to the performance overhead
+  and the need for some transparency for intermediate alignment checks.
+  Watermarking provides a balance of integrity and observability.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** The watermarking logic relies on hardware-attested identity to ensure that only authorized agents can apply mission-root watermarks.
-* **Observability:** Watermarks are visualized in the "Mesh-Resident Lineage Tracker," allowing users to audit the authenticity of the reasoning chain.
+* **Security (Zero Trust):** The watermarking logic relies on hardware-attested
+  identity to ensure that only authorized agents can apply mission-root
+  watermarks.
+* **Observability:** Watermarks are visualized in the "Mesh-Resident Lineage
+  Tracker," allowing users to audit the authenticity of the reasoning chain.
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.
