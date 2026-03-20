@@ -592,9 +592,9 @@
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
 
-#### Upcoming (2026-03-19 Evolution - Phase 2)
-- [ ] **[P0] Active Intent Alignment Monitor**: (2026-03-19) Visual indicator for AIA heartbeat status.
-- [ ] **[P0] UACO Negotiation Workspace**: (2026-03-19) Dashboard for monitoring agent task bidding.
-- [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-03-19) UI for visualizing MMBA-anchored profiles.
-- [ ] **[P1] Attention Priority Dashboard**: (2026-03-19) Visualization of SSP-pinned fragments.
-- [ ] **[P0] Temporal Jitter Security Hub**: (2026-03-19) UI for monitoring TSJ-injected synchronization.
+#### Upcoming (2026-03-19 Evolution - Strategic Alignment)
+- [ ] **[P0] Active Intent Alignment Monitor**: (2026-03-19) Visual indicator for AIA heartbeat status and semantic drift alerts.
+- [ ] **[P0] UACO Negotiation Workspace**: (2026-03-19) Interactive dashboard for monitoring agent task bidding and handoffs.
+- [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-03-19) Security workspace for visualizing MMBA-anchored stylometric profiles.
+- [ ] **[P1] Attention Priority Dashboard**: (2026-03-19) Visualization of SSP-pinned fragments and attention utility scores.
+- [ ] **[P0] Temporal Jitter Security Hub**: (2026-03-19) UI for monitoring TSJ-injected state synchronization.
