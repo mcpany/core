@@ -7,7 +7,8 @@ import React from 'react';
 import { useWizard } from '../wizard-context';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Code } from 'lucide-react';
+import * as yaml from 'js-yaml';
 
 /**
  * StepReview.
@@ -26,11 +27,14 @@ export function StepReview({ onComplete }: { onComplete: (config: any) => void }
             </div>
 
             <div className="space-y-2">
-                 <h3 className="font-medium">Spec Preview</h3>
-                 <div className="rounded-md overflow-hidden border">
+                 <div className="flex items-center gap-2 mb-2">
+                     <Code className="h-4 w-4 text-muted-foreground" />
+                     <h3 className="font-medium">Spec Preview</h3>
+                 </div>
+                 <div className="rounded-md overflow-hidden border bg-[#1e1e1e]">
                      <ScrollArea className="max-h-[300px]">
-                         <pre className="p-4 text-xs font-mono bg-[#1e1e1e] text-gray-200 whitespace-pre-wrap break-all">
-                             {JSON.stringify(config, null, 2)}
+                         <pre className="p-4 text-xs font-mono text-[#ce9178] whitespace-pre-wrap break-all">
+                             {yaml.dump(config, { indent: 2, skipInvalid: true })}
                          </pre>
                      </ScrollArea>
                  </div>
