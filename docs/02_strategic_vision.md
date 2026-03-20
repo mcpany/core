@@ -9,7 +9,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 3. **Context Persistence**: Shared state and context inheritance across agent swarms and execution environments.
 
 ---
----
 
 ## Strategic Evolution: [2026-05-16]
 ### Focus: Hardware-Locked Intent Sovereignty & Secure Swarm Coordination
@@ -323,7 +322,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
 
----
 ---
 
 ## Strategic Evolution: [2026-03-09]
