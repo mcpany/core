@@ -21,6 +21,6 @@ interface JsonViewerProps {
  */
 export default function JsonViewer({ data }: JsonViewerProps) {
   return (
-    <JsonView data={data} />
+    <JsonView data={data} smartTable={true} />
   );
 }
