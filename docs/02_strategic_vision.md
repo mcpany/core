@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-01]
+### Focus: Kernel-Aware Agency & Multi-Tenant Cognitive Isolation
+**Context**: The emergence of "BoryptKernel" and "Swarm-in-the-Middle" (SitM) attacks marks a transition into the "Kernel-as-a-Sandbox" era. Security must move from user-space fsnotify to Kernel-level Inode hooks. Simultaneously, the rise of "Reasoning Leakage" in large enterprises demands a formal "Multi-Tenant" isolation model for cognitive state.
+**Strategic Pivot**:
+- **Kernel-Level Inode Watcher (KLIW)**: We are integrating with OpenClaw's kernel-hooking module. MCP Any will perform "Kernel-Enforced Attestation," protecting project configurations even if user-space monitoring is compromised.
+- **Cognitive Multi-Tenant Orchestrator**: To prevent reasoning leakage, we are implementing a "Cognitive Isolation Layer." Every agent or mission will operate in a cryptographically isolated "Monologue Vault," ensuring that tool-level caching or shared memory cannot lead to cross-mission data exfiltration.
+- **Holistic SitM Detection**: Leveraging UAB v2.4 signatures, we are introducing a "Semantic Chain Integrity" validator. MCP Any will monitor the "Intent Integral" across agent swarms to detect the subtle reasoning drift characteristic of SitM attacks.
+
 ## Strategic Evolution: [2026-04-30]
 ### Focus: Swarm-Resilient Attestation & Socket-Level Defense
 **Context**: The "BoryptGrab" evolution into Reverse SSH payloads and the discovery of "Cascading Reasoning Failures" in deep swarms mark a shift toward "Transactional Infrastructure." It is no longer enough to attest at the agent level; we must attest at the *transactional* level (socket, token, reasoning step) to ensure that the infrastructure itself is not weaponized against the host.

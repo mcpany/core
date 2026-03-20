@@ -322,3 +322,8 @@
 - [ ] **[P0] A2A Replay Security Dashboard**: Visualize nonce status and replay attempt alerts in the A2A hub. (Added: 2026-04-22)
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)
 - [ ] **[P1] Encrypted Monologue Explorer**: Secure UI fragment for user-authorized decryption and review of subagent reasoning. (Added: 2026-04-22)
+
+#### Upcoming (2026-05-01 Evolution)
+- [ ] **[P0] Kernel Security Dashboard**: Real-time monitor of pinned Inodes and kernel-level violation alerts. (Added: 2026-05-01)
+- [ ] **[P0] SitM Intent Explorer**: Visual debugger for monitoring the "Semantic Integral" and intent-chain drift alerts. (Added: 2026-05-01)
+- [ ] **[P1] Multi-Tenant Monologue Vault**: UI for managing and reviewing cryptographically isolated subagent monologues. (Added: 2026-05-01)

@@ -56,3 +56,10 @@ MCP Any needs a defense-in-depth mechanism that monitors the socket-level behavi
 
 ## 7. Evolutionary Changelog
 * **2026-04-30:** Initial Document Creation. Addressing the evolution of BoryptGrab Reverse SSH payloads.
+
+### Update: 2026-05-01 - Mitigating Swarm-in-the-Middle (SitM)
+**Context:** Today's research revealed that "Swarm-in-the-Middle" (SitM) attacks use legitimate tool-call sockets to introduce gradual "Reasoning Drift" across the agent chain.
+**Architecture Adjustment:**
+- Integrating the "Holistic SitM Integrity Validator" into the Interception Proxy.
+- Monitoring the "Semantic Integral" over the socket-level JSON-RPC traffic to detect anomalous intent divergence during multi-agent handoffs.
+**Security Impact:** Neutralizes SitM attacks that rely on subtler reasoning manipulation rather than direct out-of-band tunnel establishment.

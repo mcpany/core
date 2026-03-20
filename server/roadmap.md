@@ -474,3 +474,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
 *   **[P1] Cognitive Fragment Reconciler**: Background service for synchronizing encrypted monologues across agent sessions. (Added: 2026-04-22)
+
+#### Upcoming (2026-05-01 Evolution)
+*   **[P0] Kernel-Level Inode Watcher (KLIW)**: High-priority security middleware integrating with OpenClaw v2026.4.1 kernel-level hooking. (Added: 2026-05-01)
+*   **[P0] Holistic SitM Integrity Validator**: Core security service evaluating the "Semantic Delta" across the entire A2A intent chain. (Added: 2026-05-01)
+*   **[P1] Cognitive Multi-Tenant Orchestrator**: Isolation service managing cryptographically separated "Monologue Vaults." (Added: 2026-05-01)

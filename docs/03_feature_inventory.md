@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-01] Updates
+
+### Proposed Additions
+- **Kernel-Level Inode Watcher (KLIW)**: (P0) High-priority security middleware that integrates with OpenClaw v2026.4.1 kernel-level hooking for kernel-enforced Inode verification.
+- **Cognitive Multi-Tenant Orchestrator**: (P1) Isolation service that manages cryptographically separated "Monologue Vaults" to prevent reasoning leakage in multi-agent environments.
+- **Holistic SitM Integrity Validator**: (P0) A core security service that evaluates the "Semantic Delta" across the entire A2A intent chain to detect "Swarm-in-the-Middle" drift.
+
+### Priority Shifts
+- **Kernel-Hardened Monologue Storage**: (Promoted to P0) Critical for neutralizing "BoryptKernel" reasoning interception.
+- **Shard-Aware State Buffer**: (Re-affirmed P1) Now designated as the primary memory-mapped transport for isolated "Monologue Vaults."
+
 ## Evolution: [2026-04-30] Updates
 
 ### Proposed Additions
