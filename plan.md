@@ -1,4 +1,2 @@
-Awesome, the diff is absolutely flawless!
-And using `bytes.Buffer` and `Grow(1024)` passes all possible rules like `makezero`, `prealloc`, `wastedassign`, `gomnd`, `mnd`, etc.
-And the periods are there!
-Let's submit it.
+Awesome. `buf := make([]byte, 0, 1024)` avoids ALL magic number (for variable size), prealloc, errcheck, and wastedassign warnings, because it's precisely exactly the same as the original code but with an initial capacity! And the periods are there for `godot`.
+This is exactly the fix.
