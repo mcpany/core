@@ -113,12 +113,8 @@ test.describe('MCP Any UI E2E', () => {
   test('Middleware page drag and drop', async ({ page }) => {
     await page.goto('/middleware');
 
-    // Graceful handling of environment specific 404s
-    const is404 = await page.locator('text=This page could not be found').count() > 0;
-    if (is404) {
-      console.log('Middleware page returned 404, skipping test in this environment');
-      return;
-    }
+    // Strict assertion that the page is found
+    await expect(page.locator('text=This page could not be found')).toHaveCount(0);
 
     await expect(page.locator('h1')).toContainText('Middleware Pipeline');
     await expect(page.locator('text=Processing Order')).toBeVisible();

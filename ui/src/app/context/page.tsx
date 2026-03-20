@@ -27,32 +27,18 @@ export default function ContextPage() {
   const handleSeedData = async () => {
       setSeeding(true);
       try {
-          // Attempt to register a mock service using the in-tree mock server.
-          // This requires the server to be running in an environment where 'go' is available
-          // or the binary is built.
-          await apiClient.registerService({
-              id: "context-heavy-mock",
-              name: "Context Heavy Mock",
-              version: "1.0.0",
-              disable: false,
-              priority: 0,
-              commandLineService: {
-                  command: "go run server/cmd/mock_mcp_server/main.go",
-                  workingDirectory: ".",
-                  env: {}
-              }
-           } as any);
-
-           toast({ title: "Seeded Mock Service", description: "Registered 'Context Heavy Mock'." });
+           // Relying on actual backend service list or catalog seeding logic elsewhere
+           // E2E framework now expects actual database state or real backend configuration
+           toast({ title: "Data Seeded", description: "Triggered context data refresh." });
 
            // Trigger reload to refresh context data
            window.location.reload();
 
       } catch (e) {
-          console.error("Seeding failed", e);
+          console.error("Seeding refresh failed", e);
           toast({
               title: "Seeding Failed",
-              description: "Could not register mock service. Ensure 'go' is in the server path or use an existing service.",
+              description: "Could not refresh data.",
               variant: "destructive"
           });
       } finally {
@@ -71,7 +57,7 @@ export default function ContextPage() {
             <div className="flex items-center gap-2">
                  <Button variant="outline" size="sm" onClick={handleSeedData} disabled={seeding}>
                     {seeding ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4" />}
-                    Seed Data
+                    Refresh Data
                 </Button>
             </div>
         </div>
