@@ -393,14 +393,24 @@ func checkOpenAPIService(ctx context.Context, s *configv1.OpenapiUpstreamService
 }
 
 func checkSQLService(ctx context.Context, s *configv1.SqlUpstreamService) CheckResult {
-	if strings.Contains(s.GetDsn(), "${") {
+	dsn := s.GetDsn()
+	if s.GetSecretDsn() != nil {
+		resolvedDsn, err := util.ResolveSecret(ctx, s.GetSecretDsn())
+		if err != nil {
+			return CheckResult{
+				Status:  StatusWarning,
+				Message: fmt.Sprintf("Failed to resolve secret DSN: %v", err),
+			}
+		}
+		dsn = resolvedDsn
+	} else if strings.Contains(dsn, "${") {
 		return CheckResult{
 			Status:  StatusWarning,
 			Message: "Cannot validate SQL connection with secret variables in DSN",
 		}
 	}
 
-	db, err := sql.Open(s.GetDriver(), s.GetDsn())
+	db, err := sql.Open(s.GetDriver(), dsn)
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,

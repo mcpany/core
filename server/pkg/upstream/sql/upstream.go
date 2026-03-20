@@ -106,8 +106,17 @@ func (u *Upstream) Register(
 		_ = u.db.Close()
 	}
 
+	dsn := sqlConfig.GetDsn()
+	if sqlConfig.GetSecretDsn() != nil {
+		resolvedDsn, err := util.ResolveSecret(ctx, sqlConfig.GetSecretDsn())
+		if err != nil {
+			return "", nil, nil, fmt.Errorf("failed to resolve secret dsn: %w", err)
+		}
+		dsn = resolvedDsn
+	}
+
 	var err error
-	u.db, err = sql.Open(sqlConfig.GetDriver(), sqlConfig.GetDsn())
+	u.db, err = sql.Open(sqlConfig.GetDriver(), dsn)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to open database: %w", err)
 	}

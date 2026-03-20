@@ -21,6 +21,51 @@ func TestValidateSQLService_MissingValidation(t *testing.T) {
 		shouldFail          bool // If true, we expect validation to fail.
 	}{
 		{
+			name: "invalid sql service - empty dsn and secret_dsn",
+			config: func() *configv1.McpAnyServerConfig {
+				sqlSvc := configv1.SqlUpstreamService_builder{
+					Driver: proto.String("postgres"),
+				}.Build()
+
+				svc := configv1.UpstreamServiceConfig_builder{
+					Name:       proto.String("sql-empty-dsn"),
+					SqlService: sqlSvc,
+				}.Build()
+
+				return configv1.McpAnyServerConfig_builder{
+					UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
+				}.Build()
+			}(),
+			expectedErrorString: "service \"sql-empty-dsn\": sql service has empty dsn and secret_dsn\n\t-> Fix: Set the 'dsn' or 'secret_dsn' (Data Source Name) field with connection details.",
+			shouldFail:          true,
+		},
+		{
+			name: "valid sql service - secret_dsn",
+			config: func() *configv1.McpAnyServerConfig {
+				sqlSvc := configv1.SqlUpstreamService_builder{
+					Driver: proto.String("postgres"),
+					SecretDsn: configv1.SecretValue_builder{
+						EnvironmentVariable: proto.String("MY_DB_DSN"),
+					}.Build(),
+					Calls: map[string]*configv1.SqlCallDefinition{
+						"my-query": configv1.SqlCallDefinition_builder{
+							Query: proto.String("SELECT * FROM users"),
+						}.Build(),
+					},
+				}.Build()
+
+				svc := configv1.UpstreamServiceConfig_builder{
+					Name:       proto.String("sql-secret-dsn"),
+					SqlService: sqlSvc,
+				}.Build()
+
+				return configv1.McpAnyServerConfig_builder{
+					UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
+				}.Build()
+			}(),
+			shouldFail: false,
+		},
+		{
 			name: "invalid sql service - call with empty query",
 			config: func() *configv1.McpAnyServerConfig {
 				sqlSvc := configv1.SqlUpstreamService_builder{

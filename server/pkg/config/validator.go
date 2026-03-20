@@ -898,10 +898,10 @@ func validateSQLService(sqlService *configv1.SqlUpstreamService) error {
 			Suggestion: "Set the 'driver' field (e.g., 'postgres', 'mysql', 'sqlite3').",
 		}
 	}
-	if sqlService.GetDsn() == "" {
+	if sqlService.GetDsn() == "" && sqlService.GetSecretDsn() == nil {
 		return &ActionableError{
-			Err:        fmt.Errorf("sql service has empty dsn"),
-			Suggestion: "Set the 'dsn' (Data Source Name) field with connection details.",
+			Err:        fmt.Errorf("sql service has empty dsn and secret_dsn"),
+			Suggestion: "Set the 'dsn' or 'secret_dsn' (Data Source Name) field with connection details.",
 		}
 	}
 

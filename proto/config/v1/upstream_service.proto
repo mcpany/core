@@ -357,6 +357,8 @@ message SqlUpstreamService {
   string dsn = 2;
   // A map of call definitions, keyed by their unique ID.
   map<string, SqlCallDefinition> calls = 3;
+  // A secret representation of the DSN, preferred over the plain text `dsn` field.
+  SecretValue secret_dsn = 4 [json_name = "secret_dsn"];
 }
 
 // FilesystemUpstreamService defines a service that exposes a local filesystem safely.
