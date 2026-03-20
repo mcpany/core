@@ -8,7 +8,7 @@ executors:
   default-executor:
     docker:
       - image: cimg/go:1.24
-    resource_class: large
+    resource_class: xlarge
 
 commands:
   check-skip:
@@ -59,6 +59,8 @@ jobs:
             export PATH=$PWD/build/env/bin:$PATH
             # Ensure go toolchain matches the requirements
             export GOTOOLCHAIN=auto
+            export GOGC=50
+            export GOMEMLIMIT=4GiB
             make lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
