@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 /**
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -28,6 +27,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
 
 interface BulkServiceImportProps {
     onImportSuccess: () => void;
@@ -86,7 +86,6 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
     const parseAndValidate = async () => {
         setParsingError(null);
         setIsValidating(true);
-
         let parsedServices = [] as UpstreamServiceConfig[];
 
         try {
@@ -105,13 +104,12 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                             specUrl: importUrl,
                             tools: [], resources: [], calls: {}, prompts: []
                         }
-                    }];
+                    } as unknown as UpstreamServiceConfig];
                 } else {
                     parsedServices = Array.isArray(data) ? data : (data.services || [data as unknown as UpstreamServiceConfig]);
                 }
             } else {
                 if (!jsonContent.trim()) throw new Error("Content is required.");
-
 
                 let data = null as unknown as { services?: UpstreamServiceConfig[], openapi?: boolean, swagger?: boolean, info?: { title: string } };
                 try {
@@ -145,7 +143,8 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
             validateItems(initialItems);
 
         } catch (err: unknown) {
-            setParsingError((err as Error).message || "Failed to parse input.");
+            const e = err as Error;
+            setParsingError(e.message || "Failed to parse input.");
             setIsValidating(false);
         }
     };
@@ -181,8 +180,9 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                      }
                 }
             } catch (err: unknown) {
+            const e = err as Error;
                 validatedItems[index].validationStatus = "invalid";
-                validatedItems[index].validationMessage = (err as Error).message;
+                validatedItems[index].validationMessage = e.message;
                 validatedItems[index].selected = false;
             }
         }));
@@ -253,8 +253,9 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                 results[originalIndex].importStatus = "success";
                 successCount++;
             } catch (err: unknown) {
+            const e = err as Error;
                 results[originalIndex].importStatus = "error";
-                results[originalIndex].importError = (err as Error).message;
+                results[originalIndex].importError = e.message;
                 failureCount++;
             }
 
