@@ -758,3 +758,10 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+#### Upcoming (2026-06-18 Evolution)
+*   **[P0] Teammate Sovereignty Enforcer (TSE)**: Authoritative isolation kernel providing cryptographically bound isolation for parallel teams. (Added: 2026-06-18)
+*   **[P0] Logic-Sovereignty Validator (LSV)**: Real-time semantic deconstruction of reasoning paths to detect "Logic Bombs" and mission drift. (Added: 2026-06-18)
+*   **[P0] Request-Side Injection Shield (RSIS)**: Advanced scanning for AI-generated code to block request-side prompt injection (CVE-2026-30741). (Added: 2026-06-18)
+*   **[P1] HADM Discovery Provider**: Support for hardware-attested discovery manifests to lock capabilities to pre-declared missions. (Added: 2026-06-18)
+*   **[P0] Lock-Free Coordination Buffers**: High-performance, atomic coordination data structures for parallel teammate messaging. (Added: 2026-06-18)

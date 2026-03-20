@@ -596,3 +596,9 @@ SPDX-License-Identifier: Apache-2.0
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
+
+- [ ] **[P0] Teammate Isolation Monitor**: (2026-06-18) Visual indicator for cryptographically bound isolation across parallel teammate sessions.
+- [ ] **[P0] Logic-Sovereignty Path Tracer**: (2026-06-18) Visual debugger for reasoning paths, highlighting detected "Logic Bombs" and mission drift.
+- [ ] **[P0] Request-Side Injection Alerts**: (2026-06-18) Real-time notification and code-diff viewer for blocked request-side injection attempts (CVE-2026-30741).
+- [ ] **[P1] HADM Manifest Viewer**: (2026-06-18) Security UI for reviewing pre-declared hardware-attested discovery manifests.
+- [ ] **[P0] Parallel Coordination Status**: (2026-06-18) Real-time throughput and latency monitor for lock-free coordination buffers.
