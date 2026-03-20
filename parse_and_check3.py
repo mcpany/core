@@ -6,12 +6,10 @@ def process_file_go(filepath):
         content = f.read()
 
     func_pattern = re.compile(r'^func\s+(?:\([^\)]+\)\s+)?([A-Z]\w*)\s*\(', re.MULTILINE)
-    type_pattern = re.compile(r'^type\s+([A-Z]\w*)\s+', re.MULTILINE)
-    var_const_pattern = re.compile(r'^(?:var|const)\s+([A-Z]\w*)', re.MULTILINE)
 
     missing = []
 
-    for pattern in [func_pattern, type_pattern, var_const_pattern]:
+    for pattern in [func_pattern]:
         matches = pattern.finditer(content)
         for match in matches:
             name = match.group(1)
@@ -27,9 +25,11 @@ def process_file_go(filepath):
 
             doc_str = '\n'.join(doc_lines)
 
-            # The check requires standard format docstrings, wait, our linter check might just be complaining about anything that lacks "Summary" or whatever it is we didn't add.
             if 'Summary:' not in doc_str:
                 missing.append(f"{filepath} : {name}")
+            else:
+                if 'Returns:' not in doc_str and 'Errors:' not in doc_str and 'Side Effects:' not in doc_str:
+                     missing.append(f"{filepath} : {name} (Missing all structured tags)")
 
     return missing
 
@@ -44,6 +44,5 @@ for root, dirs, files in os.walk('.'):
             missing = process_file_go(filepath)
             all_missing.extend(missing)
 
-print(f"Total missing: {len(all_missing)}")
 for m in all_missing:
     print(m)

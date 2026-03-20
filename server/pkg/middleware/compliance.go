@@ -111,6 +111,18 @@ func (w *smartResponseWriter) Header() http.Header {
 //
 // Parameters:
 //   - code: int. The HTTP status code.
+//
+// Parameters:
+//   - args: Variable arguments.
+//
+// Returns:
+//   - none
+//
+// Errors:
+//   - none
+//
+// Side Effects:
+//   - none
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
 		return

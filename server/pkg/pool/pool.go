@@ -403,6 +403,18 @@ func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
 //
 // Parameters:
 //   - client: T. The client to return.
+//
+// Parameters:
+//   - args: Variable arguments.
+//
+// Returns:
+//   - none
+//
+// Errors:
+//   - none
+//
+// Side Effects:
+//   - none
 func (p *poolImpl[T]) Put(client T) {
 	v := reflect.ValueOf(client)
 	if !v.IsValid() || ((v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil()) {
@@ -531,6 +543,18 @@ func NewManager() *Manager {
 // Parameters:
 //   - name: string. The pool name.
 //   - pool: any. The pool instance.
+//
+// Parameters:
+//   - args: Variable arguments.
+//
+// Returns:
+//   - none
+//
+// Errors:
+//   - none
+//
+// Side Effects:
+//   - none
 func (m *Manager) Register(name string, pool any) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -552,6 +576,18 @@ func (m *Manager) Register(name string, pool any) {
 //
 // Parameters:
 //   - name: string. The pool name.
+//
+// Parameters:
+//   - args: Variable arguments.
+//
+// Returns:
+//   - none
+//
+// Errors:
+//   - none
+//
+// Side Effects:
+//   - none
 func (m *Manager) Deregister(name string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

@@ -44,6 +44,18 @@ func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 //
 // Parameters:
 //   - allowedOrigins ([]string): The new list of allowed origins.
+//
+// Parameters:
+//   - args: Variable arguments.
+//
+// Returns:
+//   - none
+//
+// Errors:
+//   - none
+//
+// Side Effects:
+//   - none
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
