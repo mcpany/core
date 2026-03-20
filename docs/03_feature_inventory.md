@@ -1231,15 +1231,6 @@
 - **Speculative Execution Guard**: (Re-affirmed P0) Now elevated with the requirement for mandatory **PCSS** to counter speculative fragment poisoning.
 - **Live Context Sharding Middleware**: (Re-affirmed P0) Now elevated with the requirement for **MRG** to maintain mission-root sovereignty in horizontal meshes.
 
-## Evolution: [2026-06-07] Updates
-
-### Proposed Additions
-- **Mission-Receipt Logging Service**: (P0) Hardware-bound audit service for cryptographically logging recursive mission tokens and delegation chains.
-
-### Priority Shifts
-- **Sharded Mailbox Sovereignty (SMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **CASI** to prevent horizontal shard pollution.
-- **Active Negotiation Broker (ANB)**: (Re-affirmed P0) Evolving to support the new **CFIB-v1** bidding protocol for heterogeneous swarms.
-
 ## Evolution: [2026-06-06] Updates
 
 ### Proposed Additions
