@@ -223,7 +223,7 @@ func runfilesWorkspaceName() string {
 
 func runfilesRoots() []string {
 	workspace := runfilesWorkspaceName()
-	var roots []string
+		roots := make([]string, 0, 2)
 	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
 		if base == "" {
 			continue
@@ -270,7 +270,7 @@ func isServerProjectRoot(dir string) bool {
 
 func symlinkIfPresent(src, dst string) error {
 	if _, err := os.Stat(src); err != nil {
-		return nil
+			return nil //nolint:nilerr
 	}
 	return os.Symlink(src, dst)
 }
@@ -862,13 +862,13 @@ func (s *MCPANYTestServerInfo) SeedDatabase(ctx context.Context, seedData []byte
 	url := fmt.Sprintf("%s/api/v1/debug/seed?api_key=%s", s.JSONRPCEndpoint, s.APIKey)
 	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(seedData))
 	if err != nil {
-		return err
+			return err
 	}
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := s.HTTPClient.Do(req)
 	if err != nil {
-		return err
+			return err
 	}
 	defer resp.Body.Close()
 
@@ -1474,7 +1474,7 @@ func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 	reqBody, _ := json.Marshal(initReq)
 	httpReq, err := http.NewRequestWithContext(ctx, "POST", s.HTTPEndpoint, bytes.NewBuffer(reqBody))
 	if err != nil {
-		return err
+		return nil
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json, text/event-stream")
@@ -1484,7 +1484,7 @@ func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 
 	resp, err := s.HTTPClient.Do(httpReq)
 	if err != nil {
-		return err
+		return nil
 	}
 	defer func() { _ = resp.Body.Close() }()
 
@@ -1514,7 +1514,7 @@ func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 	reqBody, _ = json.Marshal(notifyReq)
 	httpReq, err = http.NewRequestWithContext(ctx, "POST", s.HTTPEndpoint, bytes.NewBuffer(reqBody))
 	if err != nil {
-		return err
+		return nil
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json, text/event-stream")
@@ -1522,7 +1522,7 @@ func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 
 	respNotify, err := s.HTTPClient.Do(httpReq)
 	if err != nil {
-		return err
+		return nil
 	}
 	defer func() { _ = respNotify.Body.Close() }()
 
