@@ -55,3 +55,9 @@ As agent swarms grow in depth and complexity, the overhead of transferring massi
         * **Context**: OpenClaw v2.5 and UACO v1.8 emphasize the risk of "Binary Context Poisoning" in deep swarms.
         * **Architecture Adjustment**: Integrated a pluggable WASM sandbox into the BSH handoff flow. Binary buffers are now validated against a signed Protobuf schema within the sandbox before being mapped to the target agent.
         * **Security Impact**: Neutralizes "State Injection" attacks while maintaining the performance benefits of Zero-Copy transport.
+
+    ### Update: [2026-04-30] - SHT Momentum Integration
+    **Context:** OpenClaw v2026.4.0 introduces Stateful Handoff Tokens (SHT) to preserve "Reasoning Momentum" in ephemeral swarms.
+    **Architecture Adjustment:** * Extending the BSH Gateway to accept SHT as a primary handshake method.
+    * Implementing tokenized state resume for sub-millisecond specialist spawning.
+    **Security Impact:** Mitigates "SHT Spoofing" by enforcing cryptographic provenance on the reasoning momentum chain.
