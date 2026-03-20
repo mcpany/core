@@ -64,11 +64,6 @@ func TestWaitForText(t *testing.T) {
 func TestDockerHelpers(t *testing.T) {
 	t.Parallel()
 
-	if !IsDockerSocketAccessible() {
-		t.Log("Docker is not fully accessible (e.g. overlayfs issues in sandbox), skipping actual container creation.")
-		return
-	}
-
 	// Test StartDockerContainer
 	imageName := "alpine:latest"
 	containerName := fmt.Sprintf("mcpany-test-container-%d", time.Now().UnixNano())
