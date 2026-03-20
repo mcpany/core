@@ -45,9 +45,9 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 
 ## 7. Evolutionary Changelog
 * **2026-05-29:** Initial Document Creation.
-* **2026-05-30:** Addressing Semantic Drift in Anomaly Signaling.
-    * **Context:** Today's market sync revealed "Context Shadowing" as a new exploit pattern where subagents bypass detection by injecting high-priority semantic fragments.
-    * **Architecture Adjustment:**
-        * Integrating the Intent Hierarchy Enforcer (IHE) into the Pattern Matcher.
-        * Detection logic now weights tool call metadata based on the "Mission Root" anchor priority.
-    * **Security Impact:** Prevents low-trust subagents from masking "Hivenet" probe patterns by overriding shared state instructions.
+
+### Update: 2026-05-30 - Addressing Semantic Drift in Anomaly Signaling
+**Context:** Today's market sync revealed "Context Shadowing" as a new exploit pattern where subagents bypass detection by injecting high-priority semantic fragments.
+**Architecture Adjustment:** * Integrating the Intent Hierarchy Enforcer (IHE) into the Pattern Matcher.
+* Detection logic now weights tool call metadata based on the "Mission Root" anchor priority.
+**Security Impact:** Prevents low-trust subagents from masking "Hivenet" probe patterns by overriding shared state instructions.
