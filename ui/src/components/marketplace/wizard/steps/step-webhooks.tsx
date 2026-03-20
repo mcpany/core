@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus, Trash2, Webhook } from "lucide-react";
+import { WizardWebhook } from "../wizard-context";
 
 /**
  * StepWebhooks component.
@@ -19,16 +20,16 @@ export function StepWebhooks() {
   const { config } = state;
 
   const addWebhook = (type: 'preCallHooks' | 'postCallHooks') => {
-      const newHook = {
+      const newHook: WizardWebhook = {
           name: `webhook-${Date.now()}`,
           webhook: {
               url: "https://",
               timeout: "5s",
               webhookSecret: ""
           }
-      } as any;
+      };
 
-      const hooks = config[type] ? [...config[type]] : [];
+      const hooks = (config[type] as WizardWebhook[]) ? [...(config[type] as WizardWebhook[])] : [];
       hooks.push(newHook);
 
       updateConfig({
@@ -37,7 +38,7 @@ export function StepWebhooks() {
   };
 
   const removeWebhook = (type: 'preCallHooks' | 'postCallHooks', index: number) => {
-      const hooks = config[type] ? [...config[type]] : [];
+      const hooks = (config[type] as WizardWebhook[]) ? [...(config[type] as WizardWebhook[])] : [];
       hooks.splice(index, 1);
       updateConfig({
           [type]: hooks
@@ -45,17 +46,17 @@ export function StepWebhooks() {
   };
 
   const updateWebhook = (type: 'preCallHooks' | 'postCallHooks', index: number, field: string, value: string) => {
-      const hooks = config[type] ? [...config[type]] : [];
-      const hook = { ...(hooks[index] as unknown as Record<string, unknown>) };
+      const hooks = (config[type] as WizardWebhook[]) ? [...(config[type] as WizardWebhook[])] : [];
+      const hook = { ...hooks[index] };
 
       if (field === 'name') {
           hook.name = value;
       } else {
-           const currentWebhook = hook.webhook || { url: "", webhookSecret: "" };
-           hook.webhook = { ...currentWebhook, [field]: value } as any;
+           const currentWebhook = hook.webhook || { url: "", webhookSecret: "", timeout: "" };
+           hook.webhook = { ...currentWebhook, [field]: value };
       }
 
-      hooks[index] = hook as any;
+      hooks[index] = hook;
       updateConfig({
           [type]: hooks
       });
@@ -73,7 +74,7 @@ export function StepWebhooks() {
           </p>
 
           <div className="space-y-4">
-              {config.preCallHooks?.map((hook: any, idx: number) => (
+              {(config.preCallHooks as WizardWebhook[])?.map((hook: WizardWebhook, idx: number) => (
                   <Card key={idx}>
                       <CardContent className="pt-6 grid gap-4">
                           <div className="flex justify-between items-start">
@@ -133,7 +134,7 @@ export function StepWebhooks() {
               Webhooks executed after the upstream service call. Can be used for logging or result transformation.
           </p>
            <div className="space-y-4">
-              {config.postCallHooks?.map((hook: any, idx: number) => (
+              {(config.postCallHooks as WizardWebhook[])?.map((hook: WizardWebhook, idx: number) => (
                   <Card key={idx}>
                       <CardContent className="pt-6 grid gap-4">
                           <div className="flex justify-between items-start">
@@ -220,7 +221,7 @@ export function StepWebhooks() {
                           val._processed_at = new Date().toISOString();
                           val._transformed = true;
                           if (config.preCallHooks?.length) {
-                              val._hooks_applied = config.preCallHooks.map((h: any) => h.name);
+                              val._hooks_applied = (config.preCallHooks as WizardWebhook[]).map((h: WizardWebhook) => h.name);
                           }
                           if (outputEl) outputEl.textContent = JSON.stringify(val, null, 2);
                       } catch (e) {
