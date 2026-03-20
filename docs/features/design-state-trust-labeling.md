@@ -3,7 +3,7 @@
 **Created:** 2026-05-19
 
 ## 1. Context and Scope
-As AI agent swarms evolve from single-framework to heterogeneous "Agent Teams" (e.g., combining Claude Code, OpenClaw, and Gemini CLI), they are increasingly vulnerable to **Protocol-Agnostic State Injection (PASI)**. This occursss when an agent ingests state from a lower-trust origin and propagates it into a high-trust reasoning loop. The STL Provider solves this by cryptographically tagging every data fragment in the Shared KV Store (Blackboard) with its framework origin and trust level.
+As AI agent swarms evolve from single-framework to heterogeneous "Agent Teams" (e.g., combining Claude Code, OpenClaw, and Gemini CLI), they are increasingly vulnerable to **Protocol-Agnostic State Injection (PASI)**. This occurs when an agent ingests state from a lower-trust origin and propagates it into a high-trust reasoning loop. The STL Provider solves this by cryptographically tagging every data fragment in the Shared KV Store (Blackboard) with its framework origin and trust level.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
