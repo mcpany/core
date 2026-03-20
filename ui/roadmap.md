@@ -591,3 +591,9 @@
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
+
+### Upcoming: [2026-06-18]
+- [ ] **[P0] Mesh Identity Registry Viewer**: (2026-06-18) Authoritative UI for reviewing and auditing hardware-attested identities in the MRAR.
+- [ ] **[P0] Attention Gating Dashboard**: (2026-06-18) Real-time visualization of parent attention-utilization and subagent gating events.
+- [ ] **[P0] Metadata Purity Inspector**: (2026-06-18) Forensic UI for inspecting blackboard metadata for branch-collision and intent-leakage markers.
+- [ ] **[P0] Coordination Handshake Debugger**: (2026-06-18) Security workspace for visualizing hardware-locked session attestation sequences.

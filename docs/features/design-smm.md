@@ -55,3 +55,10 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
     * **Context:** Today's research revealed that subagents can suffer from "Stylometric Collision" in horizontal meshes, leading to identity confusion.
     * **Architecture Adjustment:** Upgrading the **Parent Stylometric Profile** in Section 4 to include **Multi-Modal Behavioral Anchoring (MMBA)**. Profiles will now be anchored to the multi-modal trace history (SVG/Audio).
     * **Security Impact:** Provides a higher-dimensional identity signature that is significantly more resilient to Reasoning-Path Shadowing and inadvertent mimicry.
+
+### Update: 2026-06-18 - Dynamic Attention Gating Integration
+**Context:** Today's research disclosed REE (Reasoning Entropy Exhaustion) as a major bottleneck for stylized reasoning verification.
+**Architecture Adjustment:**
+* Integrating the **Dynamic Attention Gating (DAG)** middleware into the SMM verification loop.
+* The SMM will now prioritize stylometric analysis of high-entropy fragments that have been "gated" as high-utility by the DAG.
+**Security Impact:** Reduces the stylometric verification surface while maintaining mission-root sovereignty during noise injection.

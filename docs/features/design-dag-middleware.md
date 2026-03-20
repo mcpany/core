@@ -59,3 +59,9 @@ The Dynamic Attention Gating (DAG) Middleware acts as a cognitive stability laye
 
 ## 7. Evolutionary Changelog
 * **2026-06-13:** Initial Document Creation. Introducing Dynamic Attention Gating to counter Reasoning Entropy Exhaustion (REE) attacks.
+* **2026-06-18:** **Mission-Utility Gating & Attention-Locked Fragments.**
+    * **Context:** Today's research revealed the need for more granular gating based on "Mission Utility" scores and the implementation of "Attention-Locked" headers to preserve cognitive sovereignty.
+    * **Architecture Adjustment:**
+        * Upgrading the **Attention Impact Scorer** in Section 4 to include **Mission Utility** scoring.
+        * Introducing mandatory **Attention-Locked Headers** for mission-critical intent fragments, cryptographically bound to the mission-root identity.
+    * **Security Impact:** Prevents "Cognitive Blinding" by ensuring that only high-utility subagent reasoning can impact the parent's attention window.

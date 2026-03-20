@@ -1044,3 +1044,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Multi-Modal Behavioral Attestation (MMBA)**: Supporting the sovereignty of the teammate mesh, we are introducing MMBA. This anchors the agent's stylometric profile to its multi-modal trace history (SVG/Audio), providing a higher-dimensional identity signature that is resilient to reasoning-path shadowing.
 - **Reasoning-Aware Garbage Collection (R-GC)**: To neutralize "Speculative Overload," MCP Any will implement R-GC for the Speculative Branching Guard. This service automatically purges speculative context fragments that exhibit high reasoning entropy but low mission utility, preventing cognitive stall in deep swarms.
 - **Temporal Shard Jitter (TSJ) Injection**: To counter CVE-2026-62001, we are upgrading the ESB to include TSJ Injection. This layer will inject hardware-attested timing jitter into entangled state synchronization for non-primary mission-root requests, ensuring absolute temporal isolation in sharded meshes.
+
+---
+
+## Strategic Evolution: [2026-06-18]
+### Focus: Attestation Registries & Dynamic Attention Governance
+**Context**: The launch of OpenClaw's MRAR and the disclosure of the "Intent-Mirroring Collision" (CVE-2026-73101) prove that **Identity** must be anchored to the environment and **Attention** must be dynamically gated to prevent cognitive blindness. As swarms become more parallel and speculative, the risk of "Branch Metadata Leakage" demands that the Universal Agent Bus moves from data isolation to **Metadata-Layer Purity**.
+**Strategic Pivot**:
+- **Mesh-Resident Attestation Registry (MRAR)**: MCP Any will evolve to act as the authoritative "Mesh Identity Registry." We will implement MRAR, managing hardware-attested identity fragments and their environmental bounds to ensure that high-trust identities remain anchored to the verified mission root.
+- **Dynamic Attention Gating (DAG) Middleware**: To neutralize REE (Reasoning Entropy Exhaustion), we are introducing DAG. This layer will dynamically "gate" subagent reasoning fragments based on real-time parent attention-utilization, preventing "Cognitive Blinding" by high-entropy noise.
+- **Hardware-Locked Coordination Handshake**: Supporting the sovereignty of sharded meshes, we are mandating hardware-locked handshakes for all inter-agent coordination. No task bidding or state fragment will be accepted unless it is cryptographically bound to a verified, hardware-attested coordination session.
+- **Metadata-Layer Branch Purity**: To counter CVE-2026-73101, we are upgrading the Speculative Branching Guard (SBG). This layer will now enforce "Metadata Purity," ensuring that attention maps and reasoning traces are isolated at the blackboard metadata level to prevent cross-branch intent leakage.
