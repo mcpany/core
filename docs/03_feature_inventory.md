@@ -1349,18 +1349,6 @@
 - **Atomic Shard Lock-Manager (ASLM)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SCTM** integration to counter timing-based side-channel attacks.
 - **Structural Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving to support the new **WASM-Hook Behavioral Profiling** requirement.
 
-## Evolution: [2026-06-18] Updates
-
-### Proposed Additions
-- **Cognitive Domain Broker (CDB)**: (P0) A security extension for the Shared KV Store that partitions state into isolated "Cognitive Domains" to prevent cross-specialist pollution.
-- **Neural Fingerprint Provider (NFP)**: (P0) Advanced identity service that generates hardware-attested stylometric hashes of an agent's reasoning style.
-- **Budget-Signature Enforcement (BSE) Middleware**: (P0) A security gate mandating HITL or Auditor signatures for all "Emergency ARE" budget overrides to prevent token siphoning.
-- **Speculative Intent Bundling (SIB) Proxy**: (P1) High-speed coordination middleware for validating and processing predicted sub-intent batches.
-
-### Priority Shifts
-- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Now elevated with the requirement for **CDB-compliant** domain isolation.
-- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **BSE** integration to counter token siphoning.
-
 ## Evolution: [2026-06-17] Updates
 
 ### Proposed Additions

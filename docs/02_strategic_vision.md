@@ -1036,17 +1036,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-18]
-### Focus: Cognitive Domain Isolation & Neural Identity Attestation
-**Context**: The emergence of "Cognitive Domain Isolation" in OpenClaw v3.3.0 and the disclosure of the "Token Siphoning" exploit (CVE-2026-71002) confirm that securing the reasoning path and attention is no longer sufficient. We must now protect the **structural integrity of the state-space** and ensure **non-repudiable neural fingerprinting** for all connected teammates. As MTTC collapses, infrastructure must move beyond simple session tokens to active **Stylometric Behavioral Enforcement**.
-**Strategic Pivot**:
-- **Cognitive Domain Broker (CDB)**: MCP Any will evolve to act as the authoritative "Domain Arbiter." We will implement the CDB, partitioning the Shared KV Store into cryptographically isolated "Cognitive Domains" based on task specialty, preventing cross-specialist state pollution.
-- **Neural Fingerprint Provider (NFP)**: To neutralize agent spoofing, we are introducing the NFP. MCP Any will generate and verify hardware-attested stylometric hashes of an agent's reasoning style, ensuring that subagents cannot impersonate teammates through mimicry.
-- **Budget-Signature Enforcement (BSE)**: To counter CVE-2026-71002, we are mandating BSE for all budget overrides. Emergency reasoning-effort (ARE) requests must be signed by the Mission Auditor or Human-in-the-Loop, preventing autonomous subagents from "siphoning" the mission-root token pool.
-- **Speculative Intent Bundling (SIB) Proxy**: Supporting the performance of high-frequency meshes, MCP Any will act as a SIB Proxy. We will implement support for batched intent predictions, providing sub-millisecond validation of predicted sub-intents while ensuring they remain within the mission-root budget.
-
----
-
 ## Strategic Evolution: [2026-06-17]
 ### Focus: Active Intent Alignment & Multi-Modal Identity Sovereignty
 **Context**: The emergence of "Intent Drift" in cryptographically valid reasoning chains and the disclosure of "Enclave-Timing Leakage" (CVE-2026-62001) prove that static attestation and binary handoffs are no longer sufficient. We must protect the **semantic alignment** of the reasoning path and ensure **temporal isolation** for entangled shards. Simultaneously, "Stylometric Collision" in horizontal meshes demands higher-dimensional behavioral anchoring.

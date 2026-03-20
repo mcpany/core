@@ -748,11 +748,6 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Locked Telemetry Proxy**: (P1) Authoritative telemetry sanitizer for Gemini-compliant reasoning traces, ensuring attention-mapping privacy during RL feedback export. (Added: 2026-06-15)
 - **WASM-Hook Behavioral Profiler**: (P0) Mandatory extension for the SMS that performs sandboxed profiling of AI-generated configuration hooks to counter PR "Logic Bombs." (Added: 2026-06-15)
 
-### Upcoming: [2026-06-18]
-- **Cognitive Domain Broker (CDB)**: (P0) Implementation of state-space isolation for the Shared KV Store. (Added: 2026-06-18)
-- **Neural Fingerprint Provider (NFP)**: (P0) Hardware-attested stylometric identity verification. (Added: 2026-06-18)
-- **Budget-Signature Enforcement (BSE)**: (P0) Mandatory HITL/Auditor signatures for all "Emergency ARE" overrides. (Added: 2026-06-18)
-
 ### Upcoming: [2026-06-17]
 - **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment service issuing hardware-attested heartbeats for mission-anchored reasoning (Added: 2026-06-17).
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).

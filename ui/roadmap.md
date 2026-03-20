@@ -586,11 +586,6 @@
 - [ ] **[P1] Attention-Locked Telemetry Viewer**: (2026-06-15) Security UI for reviewing sanitized reasoning traces and attention-mapping redactions.
 - [ ] **[P0] WASM-Hook Safety Reporter**: (2026-06-15) UI for viewing behavioral profiling results for un-attested configuration hooks.
 
-### Upcoming: [2026-06-18]
-- [ ] **[P0] Cognitive Domain Explorer**: (2026-06-18) Visual manager for Isolated Cognitive Domains and specialist state shards.
-- [ ] **[P0] Neural Fingerprint Monitor**: (2026-06-18) Security UI for tracking stylometric identity alignment and spoofing alerts.
-- [ ] **[P0] Budget Override Workspace**: (2026-06-18) Multi-signature approval interface for Emergency ARE requests (BSE compliance).
-
 ### Upcoming: [2026-06-17]
 - [ ] **[P0] Active Intent Alignment Monitor**: (2026-06-17) Visual indicator for AIA heartbeat status and semantic drift alerts.
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
