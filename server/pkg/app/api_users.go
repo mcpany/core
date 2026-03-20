@@ -214,14 +214,7 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 				}
 			}
 
-			if user.GetId() != "" && user.GetId() != id {
-				http.Error(w, "id mismatch", http.StatusBadRequest)
-				return
-			}
-			user.SetId(id)
-
 			// Sentinel Security Update: Prevent Privilege Escalation (IDOR)
-			// Non-admin users cannot change their own roles.
 			// Fetch existing user to enforce this policy.
 			existingUser, err := store.GetUser(r.Context(), id)
 			if err != nil {
@@ -234,9 +227,13 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 				return
 			}
 
+			// Enforce the user's ID matches the requested URL parameter ID precisely
+			user.SetId(existingUser.GetId())
+
 			if !isAdmin {
 				// Prevent non-admin users from escalating their privileges by restoring their original roles
 				user.SetRoles(existingUser.GetRoles())
+				user.SetProfileIds(existingUser.GetProfileIds())
 			}
 
 			if err := hashUserPassword(r.Context(), &user, store, existingUser); err != nil {

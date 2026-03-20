@@ -119,4 +119,69 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 			}
 		}
 	})
+
+	t.Run("Victim Spoofs JSON payload to update Admin", func(t *testing.T) {
+		// Create admin user to update
+		admin := configv1.User_builder{Id: proto.String("admin-user"), Roles: []string{"admin"}}.Build()
+		require.NoError(t, store.CreateUser(context.Background(), admin))
+
+		// Attacker bypasses URL check by using their own URL but updating the admin in the JSON body
+		payload := map[string]interface{}{
+			"id": "admin-user",
+			"preferences": map[string]string{
+				"hacked": "true",
+			},
+		}
+		body, _ := json.Marshal(payload)
+
+		req := httptest.NewRequest(http.MethodPut, "/users/victim-user", bytes.NewReader(body))
+		ctx := auth.ContextWithUser(req.Context(), "victim-user")
+		ctx = auth.ContextWithRoles(ctx, []string{"user"})
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
+
+		// Wait, if it gets "id mismatch", it's 400 Bad Request.
+		// If it's properly patched, we should not see "hacked" in admin user.
+		adminUser, _ := store.GetUser(context.Background(), "admin-user")
+		val, exists := adminUser.GetPreferences()["hacked"]
+		if exists && val == "true" {
+			t.Logf("VULNERABILITY REPRODUCED: Victim overwrote Admin's profile via JSON body spoofing.")
+			t.Fail()
+			assert.Fail(t, "IDOR via JSON Injection found!")
+		}
+	})
+
+	t.Run("Victim Elevates Own Profile IDs", func(t *testing.T) {
+		// Attempt to update own profile and inject "admin-profile"
+		payload := map[string]interface{}{
+			"user": map[string]interface{}{
+				"id": "victim-user",
+				"profile_ids": []string{"admin-profile"},
+			},
+		}
+		body, _ := json.Marshal(payload)
+
+		req := httptest.NewRequest(http.MethodPut, "/users/victim-user", bytes.NewReader(body))
+		ctx := auth.ContextWithUser(req.Context(), "victim-user")
+		ctx = auth.ContextWithRoles(ctx, []string{"user"})
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		updatedUser, err := store.GetUser(context.Background(), "victim-user")
+		require.NoError(t, err)
+
+		for _, pid := range updatedUser.GetProfileIds() {
+			if pid == "admin-profile" {
+				t.Logf("VULNERABILITY REPRODUCED: User 'victim-user' escalated privileges to 'admin-profile'.")
+				t.Fail()
+				assert.Fail(t, "Profile Escalation Vulnerability found!")
+			}
+		}
+	})
 }
