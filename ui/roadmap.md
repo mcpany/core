@@ -365,6 +365,12 @@
 - [ ] **[P1] Multi-modal Trace Debugger**: Forensic UI for analyzing visual and auditory traces for injection patterns. (Added: 2026-05-16)
 - [ ] **[P0] Identity-Bound Discovery Explorer**: Mission-token gated browser for discovered tools and peers. (Added: 2026-05-16)
 
+#### Upcoming (2026-05-16 Evolution)
+- [ ] **[P0] Hardware-Locked Intent Monitor**: Real-time visualization of HLIS-anchored mission intents and attestation status. (Added: 2026-05-16)
+- [ ] **[P0] Secure Coordination Stream**: Visual audit trail for cryptographically signed teammate-to-teammate messages. (Added: 2026-05-16)
+- [ ] **[P1] Multi-modal Trace Debugger**: Forensic UI for analyzing visual and auditory traces for injection patterns. (Added: 2026-05-16)
+- [ ] **[P0] Identity-Bound Discovery Explorer**: Mission-token gated browser for discovered tools and peers. (Added: 2026-05-16)
+
 #### Upcoming (2026-05-15 Evolution)
 - [ ] **[P0] Consensus Attestation Workspace**: Security UI for orchestrating multi-agent approval quorums for high-risk delegations. (Added: 2026-05-15)
 - [ ] **[P1] PNTD Registry Explorer**: Unified browser for discovering capabilities across MCP, gRPC, and UACO via the universal discovery bus. (Added: 2026-05-15)
