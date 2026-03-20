@@ -542,7 +542,7 @@ func TestBus_Subscribe_HandlerPanic(t *testing.T) {
 
 	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
 		handlerCalled <- true
-		if len(handlerCalled) == 1 {
+		if msg == "first message" {
 			panic("handler panic")
 		}
 		assert.Equal(t, "second message", msg)

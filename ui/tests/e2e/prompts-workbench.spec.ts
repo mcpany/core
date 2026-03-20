@@ -1,3 +1,4 @@
+import { seedGlobalState } from './test-data';
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -9,6 +10,7 @@ import { seedPrompts, cleanupPrompts, seedUser, cleanupUser } from './test-data'
 
 test.describe('Prompts Workbench', () => {
   test.beforeEach(async ({ page, request }) => {
+    await seedGlobalState(request);
       await seedPrompts(request);
       await seedUser(request, "e2e-admin-prompts");
 

@@ -1,3 +1,4 @@
+import { seedGlobalState } from './test-data';
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -10,6 +11,7 @@ test.describe('Dashboard Real Data', () => {
     test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ request, page }) => {
+    await seedGlobalState(request);
         await seedCollection('mcpany-system', request);
         await seedUser(request, "e2e-admin-dashboard");
         // Login

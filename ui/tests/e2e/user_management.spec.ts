@@ -1,3 +1,4 @@
+import { seedGlobalState } from './test-data';
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -8,6 +9,7 @@ import { seedUser, cleanupUser, seedProfiles, cleanupProfiles } from '../e2e/tes
 
 test.describe('User Management', () => {
     test.beforeEach(async ({ request, page }) => {
+    await seedGlobalState(request);
         await cleanupUser(request, "test-api-user").catch(() => { });
         await seedProfiles(request);
         await seedUser(request, "e2e-admin-users");

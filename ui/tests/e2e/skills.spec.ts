@@ -1,3 +1,4 @@
+import { seedGlobalState } from './test-data';
 /**
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -8,6 +9,7 @@ import { seedServices, seedUser, seedProfiles, cleanupServices, cleanupUser, cle
 
 test.describe('Agent Skills', () => {
   test.beforeEach(async ({ page, request }) => {
+    await seedGlobalState(request);
     await seedServices(request);
     await seedProfiles(request);
     await seedUser(request, "e2e-admin-skills");

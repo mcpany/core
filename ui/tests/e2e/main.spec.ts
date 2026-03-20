@@ -30,7 +30,7 @@ test.describe('MCP Any UI E2E', () => {
 
   test.afterEach(async ({ request }) => {
     // Seeding clears data, so explicit cleanup is less critical but good practice if needed.
-    // await cleanupServices(request);
+    await cleanupServices(request);
   });
 
   test('should navigate to dashboard and show metrics', async ({ page }) => {
