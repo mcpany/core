@@ -6,7 +6,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Inspector Page', () => {
-  test('should allow seeding a trace from backend and viewing it', async ({ page }) => {
+  test('should allow seeding a trace from backend and viewing it', async ({ page, request }) => {
     // Navigate to the Inspector page
     await page.goto('/inspector');
 
@@ -38,5 +38,53 @@ test.describe('Inspector Page', () => {
 
     // Check that we see some details of the trace
     await expect(sheet.locator('text=orchestrator-task').first()).toBeVisible();
+  });
+
+  test('should render smart table for traces with array of objects payload', async ({ page, request }) => {
+    // Seed a trace with array of objects in output
+    const traceName = `smart-table-trace-${Date.now()}`;
+    const traceData = {
+      name: traceName,
+      type: "tool",
+      status: "success",
+      input: { "query": "test" },
+      output: [
+        { id: 1, user: "Alice", role: "admin" },
+        { id: 2, user: "Bob", role: "user" }
+      ]
+    };
+
+    const response = await request.post('/api/v1/debug/traces', {
+      data: traceData
+    });
+    expect(response.ok()).toBeTruthy();
+
+    await page.goto('/inspector');
+    await expect(page.getByRole('heading', { name: 'Inspector' })).toBeVisible();
+    await page.waitForTimeout(1000);
+
+    const row = page.locator(`text=${traceName}`).first();
+    await expect(row).toBeVisible({ timeout: 10000 });
+
+    await row.click();
+
+    const sheet = page.getByRole('dialog');
+    await expect(sheet).toBeVisible();
+
+    // Verify smart table tab/view is visible inside the payload section
+    // 'Table' button/tab is rendered by JsonView when smartTable is enabled and data is compatible
+    const tableButton = sheet.locator('button', { hasText: 'Table' }).first();
+    await expect(tableButton).toBeVisible();
+
+    // Switch to table view
+    await tableButton.click();
+
+    // Verify table contents
+    const table = sheet.getByRole('table').first();
+    await expect(table).toBeVisible();
+    await expect(table.locator('text=Alice')).toBeVisible();
+    await expect(table.locator('text=Bob')).toBeVisible();
+    await expect(table.locator('text=admin')).toBeVisible();
+    await expect(table.locator('text=user')).toBeVisible();
   });
 });
