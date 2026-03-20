@@ -89,11 +89,12 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 		// Attempt to update own profile and inject "admin" role
 		payload := map[string]interface{}{
 			"user": map[string]interface{}{
-				"id": "victim-user",
+				"id":    "victim-user",
 				"roles": []string{"admin"}, // <--- Privilege Escalation attempt
 			},
 		}
-		body, _ := json.Marshal(payload)
+		body, err := json.Marshal(payload)
+		require.NoError(t, err)
 
 		req := httptest.NewRequest(http.MethodPut, "/users/victim-user", bytes.NewReader(body))
 		// Simulate Authenticated User: victim-user
@@ -132,7 +133,8 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 				"hacked": "true",
 			},
 		}
-		body, _ := json.Marshal(payload)
+		body, err := json.Marshal(payload)
+		require.NoError(t, err)
 
 		req := httptest.NewRequest(http.MethodPut, "/users/victim-user", bytes.NewReader(body))
 		ctx := auth.ContextWithUser(req.Context(), "victim-user")
@@ -144,7 +146,8 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 
 		// Wait, if it gets "id mismatch", it's 400 Bad Request.
 		// If it's properly patched, we should not see "hacked" in admin user.
-		adminUser, _ := store.GetUser(context.Background(), "admin-user")
+		adminUser, err := store.GetUser(context.Background(), "admin-user")
+		require.NoError(t, err)
 		val, exists := adminUser.GetPreferences()["hacked"]
 		if exists && val == "true" {
 			t.Logf("VULNERABILITY REPRODUCED: Victim overwrote Admin's profile via JSON body spoofing.")
@@ -157,11 +160,12 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 		// Attempt to update own profile and inject "admin-profile"
 		payload := map[string]interface{}{
 			"user": map[string]interface{}{
-				"id": "victim-user",
+				"id":          "victim-user",
 				"profile_ids": []string{"admin-profile"},
 			},
 		}
-		body, _ := json.Marshal(payload)
+		body, err := json.Marshal(payload)
+		require.NoError(t, err)
 
 		req := httptest.NewRequest(http.MethodPut, "/users/victim-user", bytes.NewReader(body))
 		ctx := auth.ContextWithUser(req.Context(), "victim-user")
