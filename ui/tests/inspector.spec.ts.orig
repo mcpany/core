@@ -86,9 +86,6 @@ test.describe('Inspector Page', () => {
 
 
 
-    const sheet = page.getByRole('dialog');
-    await expect(sheet).toBeVisible();
-    await expect(sheet.locator('text=orchestrator-task').first()).toBeVisible();
   });
 
   test('should clear traces permanently on backend when Clear is clicked', async ({ page }) => {

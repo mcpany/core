@@ -1,0 +1,25 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { test, expect } from '@playwright/test';
+
+test.describe('Discovery Manager', () => {
+  test('should display auto-discovery status and imported servers', async ({ page }) => {
+
+    // Do not mock the endpoints to satisfy the prompt's anti-mocking constraints, rely on the backend.
+
+    await page.goto('/discovery');
+
+    await page.waitForTimeout(2000);
+    await page.waitForLoadState("networkidle");
+
+    await expect(page.getByRole('heading', { name: 'Unified Discovery Manager' })).toBeVisible();
+
+    await expect(page.getByText('Discovery Providers', { exact: true })).toBeVisible({ timeout: 10000 });
+
+    await page.getByRole('button', { name: 'Trigger Scan' }).click();
+    await expect(page.getByText('Auto-discovery is now running in the background.')).toBeVisible({ timeout: 10000 });
+  });
+});
