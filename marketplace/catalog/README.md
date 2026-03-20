@@ -24,4 +24,4 @@ We welcome contributions of new popular services! To contribute, please follow t
 
 | Service Name | Introduction                               | Verified Manually | Covered by an Integration Test                         |
 | ------------ | ------------------------------------------ | ----------------- | ------------------------------------------------------ |
-| ipinfo.io    | Geolocation information for an IP address. |                 | [](./../tests/integration/popular_service/ipinfo.io) |
+| ipinfo.io    | Geolocation information for an IP address. | ❌                | [✅](./../tests/integration/popular_service/ipinfo.io) |

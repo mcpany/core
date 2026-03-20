@@ -17,6 +17,7 @@
 *   **[P1] Three-Factor Agency Gateway**: Multi-factor authentication hub for autonomous handoffs. (Added: 2026-06-14)
 *   **[P0] Side-Channel Shield**: gRPC metadata scrubbing for shadow coordination defense. (Added: 2026-06-14)
 
+
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.

@@ -661,7 +661,6 @@
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
 ---
-
 ---
 
 ## Evolution: [2026-03-09] Updates

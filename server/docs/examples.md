@@ -1,4 +1,4 @@
-#  Examples
+# 🧪 Examples
 
 This document provides examples of how to use the MCP Any. It includes instructions on how to run the example services and how to interact with the server.
 

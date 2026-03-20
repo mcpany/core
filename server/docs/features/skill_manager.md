@@ -15,15 +15,12 @@ Skills are stored as directories containing a `SKILL.md` file. Each skill define
 The `SKILL.md` file uses YAML frontmatter followed by the skill content/instructions.
 
 ```markdown
-
 ---
-
 description: "A skill that does something useful"
 inputs:
   - name: "param1"
     description: "The first parameter"
     required: true
-
 ---
 
 # Instructions
@@ -37,12 +34,12 @@ Skills are stored in a root directory (configurable).
 
 ```text
 skills/
-   my-skill/
-      SKILL.md
-      assets/
-      scripts/
-   another-skill/
-       SKILL.md
+  ├── my-skill/
+  │   ├── SKILL.md
+  │   ├── assets/
+  │   └── scripts/
+  └── another-skill/
+      └── SKILL.md
 ```
 
 ## Constraints

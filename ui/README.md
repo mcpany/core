@@ -2,7 +2,7 @@
 
 The **MCP Any UI** provides a modern, interactive dashboard for managing your MCP Any server. It allows you to visualize the network topology, monitor metrics (latency, QPS), and manage services, tools, and resources.
 
-##  Getting Started
+## 🚀 Getting Started
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
@@ -53,21 +53,21 @@ Run the end-to-end tests with Playwright:
 npx playwright test
 ```
 
-##  Project Structure
+## 📂 Project Structure
 
 - **`src/app`**: Next.js App Router pages and layouts.
 - **`src/components`**: Reusable UI components (shadcn/ui, custom components).
 - **`src/lib`**: Utility functions and client SDKs.
 - **`docs`**: Documentation for UI features.
 
-##  Features
+## ✨ Features
 
 - **Network Topology**: Visualize your MCP ecosystem.
 - **Service Management**: Add, edit, and monitor upstream services.
 - **[Interactive Playground](docs/playground.md)**: Test tools with auto-generated forms supporting complex schemas.
 - **Observability**: Real-time metrics and logs.
 
-##  Learn More
+## 📚 Learn More
 
 To learn more about Next.js, take a look at the following resources:
 

@@ -3,7 +3,7 @@
 **Created:** 2026-04-27
 
 ## 1. Context and Scope
-As AI agent swarms grow in complexity and reasoning depth, they often suffer from "Semantic Drift"--a phenomenon where subagents lose sight of the primary mission intent as they descend into recursive task execution. OpenClaw v2026.3.8 introduced "Cognitive Anchoring" to mitigate this by pinning high-level mission goals within the context engine.
+As AI agent swarms grow in complexity and reasoning depth, they often suffer from "Semantic Drift"—a phenomenon where subagents lose sight of the primary mission intent as they descend into recursive task execution. OpenClaw v2026.3.8 introduced "Cognitive Anchoring" to mitigate this by pinning high-level mission goals within the context engine.
 
 MCP Any, as the universal infrastructure layer, must provide a standardized way to host and manage these anchors across disparate agent frameworks. The Cognitive Anchor Manager (CAM) will act as an extension of the ContextEngine Adapter, ensuring that mission-root intents remain immutable and persistent throughout the multi-agent reasoning lifecycle.
 

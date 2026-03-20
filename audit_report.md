@@ -35,5 +35,4 @@ The backend infrastructure and core UI capabilities are correctly implemented an
 This report contains NO Personally Identifiable Information (PII), sensitive secrets, or internal IP addresses.
 
 ---
-
 *Audit performed by L7 Principal Software Engineer.*
