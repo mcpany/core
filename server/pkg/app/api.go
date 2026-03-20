@@ -834,6 +834,12 @@ func (a *Application) setToolDisableFlag(service *configv1.UpstreamServiceConfig
 		toolList = cfg.VectorService.Tools
 	case *configv1.UpstreamServiceConfig_BrowserService:
 		toolList = cfg.BrowserService.Tools
+	case *configv1.UpstreamServiceConfig_WebsocketService:
+		toolList = cfg.WebsocketService.Tools
+	case *configv1.UpstreamServiceConfig_WebrtcService:
+		toolList = cfg.WebrtcService.Tools
+	case *configv1.UpstreamServiceConfig_GraphqlService:
+		toolList = cfg.GraphqlService.Tools
 	case *configv1.UpstreamServiceConfig_SqlService:
 		toolList = cfg.SqlService.Tools
 	default:
@@ -872,6 +878,12 @@ func (a *Application) setToolDisableFlag(service *configv1.UpstreamServiceConfig
 			cfg.VectorService.Tools = append(cfg.VectorService.Tools, newTool)
 		case *configv1.UpstreamServiceConfig_BrowserService:
 			cfg.BrowserService.Tools = append(cfg.BrowserService.Tools, newTool)
+		case *configv1.UpstreamServiceConfig_WebsocketService:
+			cfg.WebsocketService.Tools = append(cfg.WebsocketService.Tools, newTool)
+		case *configv1.UpstreamServiceConfig_WebrtcService:
+			cfg.WebrtcService.Tools = append(cfg.WebrtcService.Tools, newTool)
+		case *configv1.UpstreamServiceConfig_GraphqlService:
+			cfg.GraphqlService.Tools = append(cfg.GraphqlService.Tools, newTool)
 		case *configv1.UpstreamServiceConfig_SqlService:
 			cfg.SqlService.Tools = append(cfg.SqlService.Tools, newTool)
 		}
