@@ -152,7 +152,7 @@ func TestAuthorizationBypass(t *testing.T) {
 		if err == nil {
 			t.Log("VULNERABILITY CONFIRMED: GetPrompt allowed access to restricted service")
 			// Fail the test if we expect it to be fixed, or assert nil if confirming vulnerability
-			// assert.Fail(t, "Should return error access denied")
+			assert.Fail(t, "Should return error access denied")
 		} else {
 			assert.ErrorContains(t, err, "access denied")
 		}
@@ -167,7 +167,7 @@ func TestAuthorizationBypass(t *testing.T) {
 		// Currently: It will succeed (nil error)
 		if err == nil {
 			t.Log("VULNERABILITY CONFIRMED: ReadResource allowed access to restricted service")
-			// assert.Fail(t, "Should return error access denied")
+			assert.Fail(t, "Should return error access denied")
 		} else {
 			assert.ErrorContains(t, err, "access denied")
 		}

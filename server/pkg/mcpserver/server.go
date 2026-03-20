@@ -491,7 +491,7 @@ func (s *Server) GetPrompt(
 	profileID, _ := auth.ProfileIDFromContext(ctx)
 	if profileID != "" {
 		serviceID := p.Service()
-		if serviceID != "" && !s.toolManager.IsServiceAllowed(serviceID, profileID) {
+		if !s.toolManager.IsServiceAllowed(serviceID, profileID) {
 			logging.GetLogger().Warn("Access denied to prompt by profile", "promptName", req.Params.Name, "profileID", profileID)
 			return nil, fmt.Errorf("access denied to prompt %q", req.Params.Name)
 		}
@@ -566,7 +566,7 @@ func (s *Server) ReadResource(
 	profileID, _ := auth.ProfileIDFromContext(ctx)
 	if profileID != "" {
 		serviceID := r.Service()
-		if serviceID != "" && !s.toolManager.IsServiceAllowed(serviceID, profileID) {
+		if !s.toolManager.IsServiceAllowed(serviceID, profileID) {
 			logging.GetLogger().Warn("Access denied to resource by profile", "resourceURI", req.Params.URI, "profileID", profileID)
 			return nil, fmt.Errorf("access denied to resource %q", req.Params.URI)
 		}
@@ -718,7 +718,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	}
 
 	profileID, _ := auth.ProfileIDFromContext(ctx)
-	if profileID != "" && serviceID != "" {
+	if profileID != "" {
 		if !s.toolManager.IsServiceAllowed(serviceID, profileID) {
 			logging.GetLogger().Warn("Access denied to tool by profile", "toolName", req.ToolName, "profileID", profileID)
 			return nil, fmt.Errorf("access denied to tool %q", req.ToolName)
