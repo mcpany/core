@@ -20,7 +20,7 @@ test.describe('Service Registration with OAuth', () => {
     await page.waitForLoadState('networkidle');
 
     // Find the add service button. Depending on the page, it might be an icon button.
-    const addBtn = page.getByRole('button', { name: /Register Service/i });
+    const addBtn = page.getByRole('button', { name: /Add Service/i });
     await addBtn.click();
 
     // Select Custom Service template
