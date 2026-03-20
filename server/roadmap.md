@@ -765,3 +765,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Semantic Entanglement Sanitizer (SES)**: (P0) High-entropy semantic analyzer for entangled state shards (Added: 2026-06-18).
 - **Logic-Grafting Interceptor (LGI)**: (P0) Advanced security extension for the ARI Hub to counter CVE-2026-71002 (Added: 2026-06-18).
 - **Hardware-Locked Monotonic Re-Attestation Provider**: (P0) Authoritative security service mandating TPM-bound counters for mission continuity (Added: 2026-06-18).
+
+### Upcoming: [2026-06-19]
+- **Context-File Integrity Attestation (CFIA)**: (P0) Implement hardware-attested, hash-based signatures for all project-local context files to prevent deceptive context injections.
+- **Attention-Locked Tooling (ALT)**: (P0) Middleware to interdict high-risk tool calls when they are primarily driven by un-attested injected context.
+- **Semantic Lineage Tracking**: (P1) Cryptographically signed "Chain of Reason" verifying tool call lineage back to mission-root intent.
