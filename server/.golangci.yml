@@ -51,6 +51,7 @@ issues:
       text: "var-naming: avoid meaningless package names"
   skip-files:
     - '.*\.pb\.go$'
+    - '.*\.pb\.gw\.go$'
     - lll
     - funlen
     - wsl
