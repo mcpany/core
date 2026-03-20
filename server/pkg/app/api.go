@@ -85,7 +85,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/settings", a.handleSettings(store))
 	mux.HandleFunc("/debug/auth-test", a.handleAuthTest())
 
-	mux.HandleFunc("/tools", a.handleTools())
+	mux.HandleFunc("/tools", a.handleTools(store))
 	mux.HandleFunc("/execute", a.handleExecute())
 
 	mux.HandleFunc("/prompts", a.handlePrompts())
@@ -737,7 +737,7 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 	}
 }
 
-func (a *Application) handleTools() http.HandlerFunc {
+func (a *Application) handleTools(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
@@ -748,6 +748,141 @@ func (a *Application) handleTools() http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(toolList)
+		case http.MethodPut:
+			type ToolStatusRequest struct {
+				Name    string `json:"name"`
+				Disable bool   `json:"disable"`
+			}
+			var req ToolStatusRequest
+			body, err := readBodyWithLimit(w, r, 1024*1024)
+			if err != nil {
+				return
+			}
+			if err := json.Unmarshal(body, &req); err != nil {
+				http.Error(w, "invalid request body", http.StatusBadRequest)
+				return
+			}
+			if req.Name == "" {
+				http.Error(w, "tool name is required", http.StatusBadRequest)
+				return
+			}
+
+			t, found := a.ToolManager.GetTool(req.Name)
+			if !found {
+				http.NotFound(w, r)
+				return
+			}
+
+			serviceID := t.Tool().GetServiceId()
+			if serviceID == "" {
+				http.Error(w, "tool does not have an associated service ID", http.StatusInternalServerError)
+				return
+			}
+
+			svc, err := store.GetService(r.Context(), serviceID)
+			if err != nil {
+				logging.GetLogger().Error("failed to get service for tool status update", "service", serviceID, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			if svc == nil {
+				// Try fetching by service Info name as fallback
+				if info, foundInfo := a.ToolManager.GetServiceInfo(serviceID); foundInfo && info.Config != nil {
+					svc, err = store.GetService(r.Context(), info.Config.GetName())
+					if err != nil {
+						logging.GetLogger().Error("failed to get service for tool status update (fallback)", "service", info.Config.GetName(), "error", err)
+						http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+						return
+					}
+				}
+				if svc == nil {
+					http.Error(w, "associated service not found", http.StatusNotFound)
+					return
+				}
+			}
+
+			foundToolInConfig := false
+			updateToolsList := func(tools []*configv1.ToolDefinition) {
+				for _, tDef := range tools {
+					if tDef.GetName() == req.Name {
+						tDef.SetDisable(req.Disable)
+						foundToolInConfig = true
+					}
+				}
+			}
+
+			if svc.GetMcpService() != nil {
+				updateToolsList(svc.GetMcpService().GetTools())
+			}
+			if svc.GetHttpService() != nil {
+				updateToolsList(svc.GetHttpService().GetTools())
+			}
+			if svc.GetGrpcService() != nil {
+				updateToolsList(svc.GetGrpcService().GetTools())
+			}
+			if svc.GetOpenapiService() != nil {
+				updateToolsList(svc.GetOpenapiService().GetTools())
+			}
+			if svc.GetCommandLineService() != nil {
+				updateToolsList(svc.GetCommandLineService().GetTools())
+			}
+			if svc.GetFilesystemService() != nil {
+				updateToolsList(svc.GetFilesystemService().GetTools())
+			}
+			if svc.GetVectorService() != nil {
+				updateToolsList(svc.GetVectorService().GetTools())
+			}
+			if svc.GetWebsocketService() != nil {
+				updateToolsList(svc.GetWebsocketService().GetTools())
+			}
+			if svc.GetWebrtcService() != nil {
+				updateToolsList(svc.GetWebrtcService().GetTools())
+			}
+			// SqlUpstreamService does not have Tools field
+
+			if !foundToolInConfig {
+				tDef := configv1.ToolDefinition_builder{}.Build()
+				tDef.SetName(req.Name)
+				tDef.SetDisable(req.Disable)
+
+				if svc.GetMcpService() != nil {
+					svc.GetMcpService().SetTools(append(svc.GetMcpService().GetTools(), tDef))
+				} else if svc.GetOpenapiService() != nil {
+					svc.GetOpenapiService().SetTools(append(svc.GetOpenapiService().GetTools(), tDef))
+				} else if svc.GetHttpService() != nil {
+					svc.GetHttpService().SetTools(append(svc.GetHttpService().GetTools(), tDef))
+				} else if svc.GetGrpcService() != nil {
+					svc.GetGrpcService().SetTools(append(svc.GetGrpcService().GetTools(), tDef))
+				} else if svc.GetCommandLineService() != nil {
+					svc.GetCommandLineService().SetTools(append(svc.GetCommandLineService().GetTools(), tDef))
+				} else if svc.GetFilesystemService() != nil {
+					svc.GetFilesystemService().SetTools(append(svc.GetFilesystemService().GetTools(), tDef))
+				} else if svc.GetVectorService() != nil {
+					svc.GetVectorService().SetTools(append(svc.GetVectorService().GetTools(), tDef))
+				} else if svc.GetWebsocketService() != nil {
+					svc.GetWebsocketService().SetTools(append(svc.GetWebsocketService().GetTools(), tDef))
+				} else if svc.GetWebrtcService() != nil {
+					svc.GetWebrtcService().SetTools(append(svc.GetWebrtcService().GetTools(), tDef))
+				}
+			}
+
+			if err := store.SaveService(r.Context(), svc); err != nil {
+				logging.GetLogger().Error("failed to save service after tool status update", "service", svc.GetName(), "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after tool status update", "error", err)
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
+				"name":    req.Name,
+				"disable": req.Disable,
+			})
+
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
