@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/subtle"
+	"crypto/sha256"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
@@ -1812,7 +1813,9 @@ func (a *Application) runServerMode(
 					}
 				}
 
-				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) == 1 {
+				hashReq := sha256.Sum256([]byte(requestKey))
+				hashKey := sha256.Sum256([]byte(apiKey))
+				if subtle.ConstantTimeCompare(hashReq[:], hashKey[:]) == 1 {
 					isAuthenticated = true
 				} else {
 					// Global auth configured but failed.
@@ -2474,7 +2477,9 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 					}
 				}
 
-				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) == 1 {
+				hashReq := sha256.Sum256([]byte(requestKey))
+				hashKey := sha256.Sum256([]byte(apiKey))
+				if subtle.ConstantTimeCompare(hashReq[:], hashKey[:]) == 1 {
 					authenticated = true
 					// Inject API Key into context if needed
 					ctx = auth.ContextWithAPIKey(ctx, requestKey)

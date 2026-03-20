@@ -7,6 +7,7 @@ package auth
 import (
 	"context"
 	"crypto/subtle"
+	"crypto/sha256"
 	"fmt"
 	"net/http"
 	"strings"
@@ -191,7 +192,9 @@ func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request)
 		receivedKey = r.Header.Get(a.ParamName)
 	}
 
-	if subtle.ConstantTimeCompare([]byte(receivedKey), []byte(a.Value)) == 1 {
+	h1 := sha256.Sum256([]byte(receivedKey))
+	h2 := sha256.Sum256([]byte(a.Value))
+	if subtle.ConstantTimeCompare(h1[:], h2[:]) == 1 {
 		return ContextWithAPIKey(ctx, receivedKey), nil
 	}
 	return ctx, fmt.Errorf("unauthorized")
@@ -243,7 +246,9 @@ func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) 
 
 	usernameMatch := true
 	if a.Username != "" {
-		if subtle.ConstantTimeCompare([]byte(user), []byte(a.Username)) != 1 {
+		h1 := sha256.Sum256([]byte(user))
+		h2 := sha256.Sum256([]byte(a.Username))
+		if subtle.ConstantTimeCompare(h1[:], h2[:]) != 1 {
 			usernameMatch = false
 		}
 	}
@@ -302,7 +307,9 @@ func (a *TrustedHeaderAuthenticator) Authenticate(ctx context.Context, r *http.R
 	}
 	// If HeaderValue is set, it must match.
 	if a.HeaderValue != "" {
-		if subtle.ConstantTimeCompare([]byte(val), []byte(a.HeaderValue)) != 1 {
+		h1 := sha256.Sum256([]byte(val))
+		h2 := sha256.Sum256([]byte(a.HeaderValue))
+		if subtle.ConstantTimeCompare(h1[:], h2[:]) != 1 {
 			return ctx, fmt.Errorf("unauthorized")
 		}
 	}
@@ -443,7 +450,9 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 		if receivedKey == "" {
 			return ctx, fmt.Errorf("unauthorized")
 		}
-		if subtle.ConstantTimeCompare([]byte(receivedKey), []byte(am.apiKey)) != 1 {
+		h1 := sha256.Sum256([]byte(receivedKey))
+		h2 := sha256.Sum256([]byte(am.apiKey))
+		if subtle.ConstantTimeCompare(h1[:], h2[:]) != 1 {
 			return ctx, fmt.Errorf("unauthorized")
 		}
 		ctx = ContextWithAPIKey(ctx, receivedKey)
