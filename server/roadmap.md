@@ -1,5 +1,4 @@
 <!-- markdownlint-disable MD013 MD024 MD032 MD004 -->
-
 # Server Roadmap
 
 ## 1. Top Priorities: The Universal Agent Bus (New Strategic Focus)
@@ -1098,3 +1097,11 @@ These features represent the next logical steps for the product, focusing on Ent
 * **[P0] Atomic Teammate Handshake (ATH) Gateway**: Mandatory identity exchange before teammate task delegation in horizontal teams. (Added: 2026-05-29)
 
 * **[P0] Mesh-Bound Context Sovereignty Bridge**: Semantic fragment analysis across teammate boundaries for horizontal team stability. (Added: 2026-05-29)
+
+#### Upcoming (2026-06-02 Evolution)
+
+* **[P0] Execution Lineage Binding (ELB)**: Cryptographic binding of system-level tool calls to full reasoning lineages for auditability. (Added: 2026-06-02)
+
+* **[P0] Execution Attestation Provider**: Authoritative local service for issuing hardware-attested "Execution Receipts" for sandboxed tool calls. (Added: 2026-06-02)
+
+* **[P0] Mesh Mailbox Sovereignty (MMS)**: Hardened T2T bridge support for sharded, lock-free mailboxes with identity rotation. (Added: 2026-06-02)

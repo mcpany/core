@@ -1,5 +1,4 @@
 <!-- markdownlint-disable MD013 MD024 MD032 MD004 -->
-
 # UI Roadmap
 
 ## Status: Active Development
@@ -883,3 +882,11 @@
 - [ ] **[P0] Teammate Handshake Monitor**: Real-time status indicator for ATH identity exchange in horizontal swarms. (Added: 2026-05-29)
 
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
+
+#### Upcoming (2026-06-02 Evolution)
+
+- [ ] **[P1] AVQ Governance Interface**: Advanced orchestration workspace for monitoring and configuring multi-agent verification quorums. (Added: 2026-06-02)
+
+- [ ] **[P0] Execution Lineage Inspector**: Forensic UI for visualizing the hardware-attested reasoning path for system-level tool calls. (Added: 2026-06-02)
+
+- [ ] **[P0] Sovereign Receipt Vault**: UI for reviewing and exporting cryptographically signed execution receipts for compliance audits. (Added: 2026-06-02)

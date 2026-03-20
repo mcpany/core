@@ -1,5 +1,4 @@
 <!-- markdownlint-disable MD013 MD024 MD032 MD004 -->
-
 # Feature Inventory: MCP Any
 
 ## Current Backlog (P0/P1)
@@ -1670,3 +1669,21 @@
 - **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
 
 - **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
+
+## Evolution: [2026-06-02] Updates
+
+### Proposed Additions
+
+- **Autonomous Verification Quorum (AVQ) Hub**: (P0) Distributed security middleware facilitating hardware-attested, multi-agent validation of tool results to bridge the "Delegation Gap."
+
+- **Execution Lineage Binding (ELB) Middleware**: (P0) Security extension for the SRM Provider that cryptographically binds system-level tool calls to their full reasoning lineage.
+
+- **Execution Attestation Provider**: (P0) Authoritative local service that issues hardware-attested "Execution Receipts" for all tool calls within a verified sandbox.
+
+- **AVQ Governance Interface**: (P1) Advanced orchestration workspace for monitoring, auditing, and configuring multi-agent verification quorums.
+
+### Priority Shifts
+
+- **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Execution Lineage Binding**.
+
+- **T2T Encryption Bridge**: (Re-affirmed P0) Evolving to support **Mesh Mailbox Sovereignty (MMS)** with hardware-bound identity rotation.
