@@ -32,6 +32,8 @@ const (
 
 // String returns the string representation of the severity.
 //
+// Summary: Returns the string representation of the severity.
+//
 // Parameters:
 //   - None.
 //
@@ -74,6 +76,8 @@ type Result struct {
 
 // String returns the string representation of the result.
 //
+// Summary: Returns a formatted string representation of the linting result.
+//
 // Parameters:
 //   - None.
 //
@@ -108,6 +112,8 @@ type Linter struct {
 
 // NewLinter creates a new Linter instance.
 //
+// Summary: Creates and initializes a new Linter instance.
+//
 // Parameters:
 //   - cfg (*configv1.McpAnyServerConfig): The server configuration to be linted.
 //
@@ -124,6 +130,8 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 }
 
 // Run executes all linting checks.
+//
+// Summary: Executes all configured linting checks on the server configuration.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
