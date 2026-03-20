@@ -62,7 +62,7 @@ func (a *Application) handleWebhookDetail() http.HandlerFunc {
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(wh)
 		case http.MethodPut:
-			wh, ok := a.WebhooksManager.GetWebhook(id)
+			_, ok := a.WebhooksManager.GetWebhook(id)
 			if !ok {
 				http.NotFound(w, r)
 				return

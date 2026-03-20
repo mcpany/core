@@ -78,7 +78,7 @@ export function UserSheet({ open, onOpenChange, user, onSave }: UserSheetProps) 
             if (user) {
                 form.reset({
                     id: user.id,
-                    role: user.roles[0] || "viewer",
+                    role: (user.roles[0] as "admin" | "editor" | "viewer") || "viewer",
                     authType: user.authentication?.apiKey || (user.authentication as any)?.api_key ? "api_key" : "password",
                     password: "",
                 });
