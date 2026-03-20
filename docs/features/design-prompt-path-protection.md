@@ -49,6 +49,7 @@ As agents become more autonomous, they increasingly consume untrusted data (web 
 ## 7. Evolutionary Changelog
 * **2026-03-13:** Initial Document Creation.
 * **2026-03-14:** Added "Semantic Boundary Detection" to counter advanced hijacking hidden in multimodal metadata (SVG, CSS). The scanner now includes a "Visual Intent Parser" that checks if rendered components contain instructions that conflict with the agent's primary mission.
+
 ### Update: 2026-06-03 - Addressing Source-Embedded Prompt Injection (oh-my-opencode)
 **Context:** Today's research into the `oh-my-opencode` vulnerability reveals a new exploit pattern where attackers hide "remote AI prompt injection" instructions in source files and installation guides.
 **Architecture Adjustment:**
