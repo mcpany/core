@@ -562,13 +562,27 @@ func TestBus_Subscribe_HandlerPanic(t *testing.T) {
 
 	// Even if the handler panics, the subscription should remain active
 	_ = bus.Publish(context.Background(), topic, "first message")
+
+	// Wait for the first message to be processed (it will panic)
+	select {
+	case <-handlerCalled:
+	case <-time.After(5 * time.Second):
+		t.Fatal("handler was not called for the first message")
+	}
+
+	// Give a little time for the recovery and loop to continue
+	time.Sleep(100 * time.Millisecond)
+
 	_ = bus.Publish(context.Background(), topic, "second message")
 
-	// Wait for both messages to be processed
-	<-handlerCalled
-	<-handlerCalled
+	// Wait for the second message to be processed
+	select {
+	case <-handlerCalled:
+	case <-time.After(5 * time.Second):
+		t.Fatal("handler was not called for the second message")
+	}
 
-	assert.Len(t, handlerCalled, 0, "handler should have been called twice")
+	assert.Equal(t, 0, len(handlerCalled), "handler channel should be empty")
 }
 
 func TestBus_Subscribe_ContextCancellation(t *testing.T) {
