@@ -49,21 +49,33 @@ func ReadLastNLines(path string, n int) ([][]byte, error) {
 		return nil, nil
 	}
 
-	var lines [][]byte
-
 	// If file is small, just read it all
 	if filesize < 64*1024 { // 64KB arbitrarily small enough to read fully
 		scanner := bufio.NewScanner(f)
+
+		// ⚡ BOLT: Optimized ring buffer for small files to prevent O(N) allocations.
+		// Randomized Selection from Top 5 High-Impact Targets
+		var ring [][]byte
+		count := 0
+
 		for scanner.Scan() {
 			b := scanner.Bytes()
 			tmp := make([]byte, len(b))
 			copy(tmp, b)
-			lines = append(lines, tmp)
+
+			if count < n {
+				ring = append(ring, tmp)
+			} else {
+				ring[count%n] = tmp
+			}
+			count++
 		}
-		if len(lines) > n {
-			return lines[len(lines)-n:], nil
+
+		if count <= n {
+			return ring, nil
 		}
-		return lines, nil
+
+		return append(ring[count%n:], ring[:count%n]...), nil
 	}
 
 	// Seek backwards
