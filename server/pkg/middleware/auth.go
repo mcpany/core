@@ -55,6 +55,16 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 				}
 			}
 
+			// Special handling for resources/read
+			if method == consts.MethodResourcesRead {
+				if r, ok := req.(*mcp.ReadResourceRequest); ok && r != nil && r.Params != nil {
+					// We expect resource URIs to start with the service ID scheme (e.g. "service://...")
+					if before, _, found := strings.Cut(r.Params.URI, "://"); found {
+						serviceID = before
+					}
+				}
+			}
+
 			// Fallback to method-based extraction if serviceID not yet found
 			if serviceID == "" {
 				// Extract serviceID from the method. Assuming the format is "service.method".
