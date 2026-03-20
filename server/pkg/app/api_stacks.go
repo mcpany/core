@@ -84,7 +84,7 @@ func (a *Application) getStackConfig(w http.ResponseWriter, r *http.Request, sto
 	// Clean up empty fields if necessary, or let YAML handle it.
 	// We might want to remove "name" if it's redundant with ID, but keeping it is fine.
 
-	yamlBytes, err := yaml.Marshal(jsonObj)
+	yamlBytes, err := yaml.v3.Marshal(jsonObj)
 	if err != nil {
 		logging.GetLogger().Error("failed to marshal stack to yaml", "id", stackID, "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -105,7 +105,7 @@ func (a *Application) saveStackConfig(w http.ResponseWriter, r *http.Request, st
 
 	// YAML -> Map -> JSON -> Proto
 	var yamlObj map[string]interface{}
-	if err := yaml.Unmarshal(body, &yamlObj); err != nil {
+	if err := yaml.v3.Unmarshal(body, &yamlObj); err != nil {
 		http.Error(w, "Invalid YAML: "+err.Error(), http.StatusBadRequest)
 		return
 	}
