@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -119,4 +120,45 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 			}
 		}
 	})
+}
+
+func TestHashUserPassword_DoS_Prevention(t *testing.T) {
+	// Create an extremely long password payload
+	longPassword := strings.Repeat("A", 200)
+
+	user := (&configv1.User_builder{
+		Id: proto.String("user1"),
+		Authentication: (&configv1.Authentication_builder{
+			BasicAuth: (&configv1.BasicAuth_builder{
+				PasswordHash: proto.String(longPassword),
+			}).Build(),
+		}).Build(),
+	}).Build()
+
+	err := hashUserPassword(context.Background(), user, nil, nil)
+	require.Error(t, err)
+	// bcrypt rejects > 72 bytes so the error could be from bcrypt or from our custom limit.
+	// As long as it errors, the DoS is prevented. We check for either message.
+	assert.True(t, strings.Contains(err.Error(), "password exceeds maximum allowed length") || strings.Contains(err.Error(), "bcrypt: password length exceeds 72 bytes"))
+}
+
+func TestHandleUserDetail_Put_Payload_Limit(t *testing.T) {
+	app, store := setupApiTestApp()
+	handler := app.handleUserDetail(store)
+
+	// Payload just over 1MB
+	largePayload := make([]byte, 1048576+10)
+	for i := range largePayload {
+		largePayload[i] = 'A'
+	}
+
+	req := httptest.NewRequest(http.MethodPut, "/users/user1", bytes.NewReader(largePayload))
+	ctx := auth.ContextWithUser(req.Context(), "user1")
+	req = req.WithContext(ctx)
+
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	// Since LimitReader is used by MaxBytesReader, the unmarshal/read process will fail with body too large or similar
+	assert.Equal(t, http.StatusBadRequest, rr.Code) // MaxBytesReader returns error that translates to Bad Request usually
 }

@@ -6,6 +6,7 @@ package app
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -185,6 +186,8 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 			writeJSON(w, http.StatusOK, util.SanitizeUser(user))
 
 		case http.MethodPut:
+			// Limit 1MB
+			r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 			// Expect wrapper { user: ... }
 			body, err := io.ReadAll(r.Body)
 			if err != nil {
@@ -313,6 +316,11 @@ func hashUserPassword(ctx context.Context, user *configv1.User, store storage.St
 		// We verify if it is already a bcrypt hash to avoid double hashing, although UI sends plain text.
 		// Bcrypt hashes start with $2a$, $2b$, $2y$ and are 60 chars long.
 		if plain != "" {
+			// Sentinel Security Update: Prevent bcrypt DoS by enforcing a strict max length
+			if len(plain) > 128 {
+				return fmt.Errorf("password exceeds maximum allowed length of 128 characters")
+			}
+
 			if len(plain) == 60 && strings.HasPrefix(plain, "$2") {
 				// It looks like a hash, keep it.
 				return nil
