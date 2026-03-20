@@ -10,8 +10,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
----
-
 ## Strategic Evolution: [2026-05-15]
 ### Focus: Mission-Root Continuity & Zero-Click Discovery Defense
 **Context**: The release of OpenClaw v2026.5.2's "Mission-Root Attestation" and the emergence of "Capability Beacon Storms" (Discovery DoS) signal a move toward harder boundary enforcement at the start of the agent lifecycle. As swarms become heterogeneous, the UAB must ensure that mission intent is immutable and that the "Discovery-Phase" is protected from machine-speed flooding.
@@ -20,6 +18,8 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Capability Beacon Firewall (CBF)**: To neutralize "Discovery DoS" attacks, we are introducing the CBF. MCP Any will implement sub-millisecond, rate-limited ingestion of reactive discovery beacons. Beacons from un-attested or high-frequency sources will be automatically throttled or quarantined before they can reach the agent's reasoning loop.
 - **Semantic Quota Enforcement**: Aligning with Gemini CLI's update, we are introducing "Semantic Quotas." MCP Any will dynamically adjust the available tool set and execution priority based on the real-time "Semantic Risk" of the mission, preventing agents from exhausting their quota on low-value/high-risk actions.
 - **Ephemeral Branch Orchestrator**: Supporting Claude Code's isolation model, MCP Any will act as the "Branch Mediator." We will provide the non-blocking infrastructure to manage disposable "Task Branches" and facilitate the "Peer Review" attestation required for state merging in parallel swarms.
+
+---
 
 ## Strategic Evolution: [2026-05-14]
 ### Focus: Pluggable Context Sovereignty & Swarm-Speed Identity Defense
