@@ -2543,5 +2543,23 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to trigger discovery');
         return {};
+    },
+
+    /**
+     * Seeds live traffic data points.
+     *
+     * @param points - The array of live traffic data points.
+     * @returns A promise that resolves when seeding is complete.
+     * @throws {Error} If seeding fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/debug/seed_live_traffic.
+     */
+    seedLiveTrafficData: async (points: any[]) => {
+        const res = await fetchWithAuth('/api/v1/debug/seed_live_traffic', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(points)
+        });
+        if (!res.ok) throw new Error('Failed to seed live traffic data');
     }
 };

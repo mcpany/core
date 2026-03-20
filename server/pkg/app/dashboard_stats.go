@@ -669,3 +669,29 @@ func isHealthy(status string) bool {
 	s := strings.ToLower(status)
 	return s == "healthy" || s == "up" || s == "serving"
 }
+
+// handleDebugSeedLiveTraffic seeds the live data flow points.
+func (a *Application) handleDebugSeedLiveTraffic() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		if a.TopologyManager == nil {
+			http.Error(w, "Topology manager not initialized", http.StatusServiceUnavailable)
+			return
+		}
+
+		var points []topology.LiveTrafficSeedPoint
+		if err := json.NewDecoder(r.Body).Decode(&points); err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
+		a.TopologyManager.SeedLiveTraffic(points)
+
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("OK"))
+	}
+}

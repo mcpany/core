@@ -591,3 +591,5 @@
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
+### Upcoming: [2026-06-25]
+- **[P0] Live Data Flow Visualizer**: Premium "Portainer for MCP" data flow visualizer with zero jank animation for God-Mode traffic inspection. (Added: 2026-06-25)
