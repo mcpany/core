@@ -5,7 +5,8 @@
 
 
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { usePolling } from "@/hooks/use-polling";
 import {
     Area,
     AreaChart,
@@ -72,73 +73,75 @@ export function AnalyticsDashboard() {
     const [toolUsageMap, setToolUsageMap] = useState<Record<string, ToolAnalytics>>({});
     const [isMounted, setIsMounted] = useState(false);
 
+    const fetchDashboardData = useCallback(async () => {
+        try {
+            const [traffic, topTools, toolsResponse, toolUsageStats] = await Promise.all([
+                apiClient.getDashboardTraffic(),
+                apiClient.getTopTools(),
+                apiClient.listTools().catch(() => ({ tools: [] })),
+                apiClient.getToolUsage().catch(() => [])
+            ]);
+            setTrafficData(traffic || []);
+
+            // Format tool usage data
+            const formattedTools = (topTools || []).map((t: any, index: number) => ({
+                name: t.name,
+                value: t.count,
+                color: COLORS[index % COLORS.length]
+            }));
+            setToolUsageData(formattedTools);
+
+            const usageMap: Record<string, ToolAnalytics> = {};
+            (toolUsageStats || []).forEach((s: ToolAnalytics) => {
+                usageMap[`${s.name}@${s.serviceId}`] = s;
+            });
+            setToolUsageMap(usageMap);
+
+            // Calculate Context Usage
+            const allTools: ToolDefinition[] = toolsResponse.tools || [];
+            setTools(allTools);
+            let totalTokens = 0;
+            const serviceMap: Record<string, number> = {};
+            const toolTokens: { name: string, tokens: number, service: string }[] = [];
+
+            allTools.forEach(tool => {
+                // Estimate tokens for the tool definition
+                const json = JSON.stringify(tool);
+                const tokens = estimateTokens(json);
+                totalTokens += tokens;
+
+                const serviceId = tool.serviceId || "Unknown";
+                serviceMap[serviceId] = (serviceMap[serviceId] || 0) + tokens;
+
+                toolTokens.push({ name: tool.name, tokens, service: serviceId });
+            });
+
+            setContextTotal(totalTokens);
+
+            // Format for Pie Chart
+            const serviceUsage = Object.entries(serviceMap).map(([name, value], index) => ({
+                name,
+                value,
+                color: COLORS[index % COLORS.length]
+            })).sort((a, b) => b.value - a.value);
+            setContextByService(serviceUsage);
+
+            // Top heaviest tools
+            setHeaviestTools(toolTokens.sort((a, b) => b.tokens - a.tokens).slice(0, 10));
+
+        } catch (error) {
+            console.error("Failed to fetch dashboard data", error);
+        }
+    }, [timeRange]);
+
     useEffect(() => {
         setIsMounted(true);
-        const fetchDashboardData = async () => {
-            try {
-                const [traffic, topTools, toolsResponse, toolUsageStats] = await Promise.all([
-                    apiClient.getDashboardTraffic(),
-                    apiClient.getTopTools(),
-                    apiClient.listTools().catch(() => ({ tools: [] })),
-                    apiClient.getToolUsage().catch(() => [])
-                ]);
-                setTrafficData(traffic || []);
-
-                // Format tool usage data
-                const formattedTools = (topTools || []).map((t: any, index: number) => ({
-                    name: t.name,
-                    value: t.count,
-                    color: COLORS[index % COLORS.length]
-                }));
-                setToolUsageData(formattedTools);
-
-                const usageMap: Record<string, ToolAnalytics> = {};
-                (toolUsageStats || []).forEach((s: ToolAnalytics) => {
-                    usageMap[`${s.name}@${s.serviceId}`] = s;
-                });
-                setToolUsageMap(usageMap);
-
-                // Calculate Context Usage
-                const allTools: ToolDefinition[] = toolsResponse.tools || [];
-                setTools(allTools);
-                let totalTokens = 0;
-                const serviceMap: Record<string, number> = {};
-                const toolTokens: { name: string, tokens: number, service: string }[] = [];
-
-                allTools.forEach(tool => {
-                    // Estimate tokens for the tool definition
-                    const json = JSON.stringify(tool);
-                    const tokens = estimateTokens(json);
-                    totalTokens += tokens;
-
-                    const serviceId = tool.serviceId || "Unknown";
-                    serviceMap[serviceId] = (serviceMap[serviceId] || 0) + tokens;
-
-                    toolTokens.push({ name: tool.name, tokens, service: serviceId });
-                });
-
-                setContextTotal(totalTokens);
-
-                // Format for Pie Chart
-                const serviceUsage = Object.entries(serviceMap).map(([name, value], index) => ({
-                    name,
-                    value,
-                    color: COLORS[index % COLORS.length]
-                })).sort((a, b) => b.value - a.value);
-                setContextByService(serviceUsage);
-
-                // Top heaviest tools
-                setHeaviestTools(toolTokens.sort((a, b) => b.tokens - a.tokens).slice(0, 10));
-
-            } catch (error) {
-                console.error("Failed to fetch dashboard data", error);
-            }
-        };
-
         fetchDashboardData();
-        const interval = setInterval(fetchDashboardData, 30000);
-        return () => clearInterval(interval);
-    }, [timeRange]);
+    }, [fetchDashboardData]);
+
+    // ⚡ BOLT: [Render Optimization] Use usePolling hook instead of raw setInterval
+    // Randomized Selection from Top 5 High-Impact Targets (Network/I/O)
+    usePolling(fetchDashboardData, 30000);
 
     const { totalRequests, avgLatency, errorCount, errorRate, avgRps } = useMemo(() => {
         // ⚡ BOLT: Memoized traffic stats calculation to prevent re-render waste.
