@@ -52,7 +52,7 @@ describe("ProfileEditor", () => {
 
         expect(screen.getByText("Create New Profile")).toBeInTheDocument();
         await waitFor(() => expect(apiClient.listServices).toHaveBeenCalled());
-        expect(screen.getByText("service-a")).toBeInTheDocument();
+        await waitFor(() => expect(screen.getByText("service-a")).toBeInTheDocument());
     });
 
     it("allows adding and removing tags and updates service selection", async () => {
