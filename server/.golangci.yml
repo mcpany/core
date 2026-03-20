@@ -1,9 +1,13 @@
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
+service:
+  golangci-lint-version: v1.64.5 # Ensure compatibility
+
 run:
   timeout: 5m
   tests: false
+  go: '1.26.1'
 
 linters:
   enable:
