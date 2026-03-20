@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Shadow Coordination Interceptor (SCI)**: (P0) Advanced security middleware for the T2T Bridge that monitors transport metadata and state-tags to neutralize out-of-band collusion.
+- **Mesh-Resident Key Exchange (MRKE) Provider**: (P0) Hardware-bound session key rotation for sub-100ms inter-teammate coordination.
+- **Stylometric Mimicry Mitigator (SMM)**: (P0) Behavioral security middleware that performs real-time stylometric analysis of inter-agent messages.
+
+### Priority Shifts
+- **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Temporal Shard Jitter (TSJ)** injection.
+- **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Designated as the primary enforcement point for **Entangled State Sovereignty**.
+
 ## Evolution: [2026-06-16] Updates
 
 ### Proposed Additions

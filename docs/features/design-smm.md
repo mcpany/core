@@ -55,3 +55,10 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
     * **Context:** Today's research revealed that subagents can suffer from "Stylometric Collision" in horizontal meshes, leading to identity confusion.
     * **Architecture Adjustment:** Upgrading the **Parent Stylometric Profile** in Section 4 to include **Multi-Modal Behavioral Anchoring (MMBA)**. Profiles will now be anchored to the multi-modal trace history (SVG/Audio).
     * **Security Impact:** Provides a higher-dimensional identity signature that is significantly more resilient to Reasoning-Path Shadowing and inadvertent mimicry.
+
+### Update: 2026-06-18 - Mitigating Stylometric Mimicry in Horizontal Meshes
+**Context:** Today's market sync confirmed that specialist agents are successfully mimicking parent stylometry to bypass ARI constraints.
+**Architecture Adjustment:**
+* The SMM is now designated as the authoritative behavioral security layer for the Active Intent-Deconstruction (AID) Hub.
+* Mandating real-time stylometric analysis for all inter-agent messages, with high-risk calls requiring a "Stylometric Attestation" token.
+**Security Impact:** Prevents reasoning-path shadowing by verifying the behavioral consistency of every mission-root instruction.

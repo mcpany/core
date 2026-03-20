@@ -591,3 +591,8 @@
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
+
+### Upcoming: [2026-06-18]
+- [ ] **[P0] Shadow Coordination Monitor**: (2026-06-18) Real-time visualization of entropy spikes in T2T transport metadata and blocked side-channel attempts.
+- [ ] **[P0] Stylometric Mimicry Dashboard**: (2026-06-18) Security workspace for visualizing stylometric consistency alerts and reasoning-path shadowing attempts.
+- [ ] **[P0] MRKE Key Rotation Widget**: (2026-06-18) Status indicator for hardware-bound session key rotation and coordination latency gains.

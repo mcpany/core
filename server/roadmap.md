@@ -753,3 +753,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+### Upcoming: [2026-06-18]
+- **Shadow Coordination Interceptor (SCI)**: (P0) Authoritative security service for the T2T Bridge that monitors metadata and state-tags to neutralize out-of-band collusion. (Added: 2026-06-18)
+- **Mesh-Resident Key Exchange (MRKE) Provider**: (P0) Hardware-bound session key rotation service for sub-100ms inter-teammate coordination. (Added: 2026-06-18)
+- **Stylometric Mimicry Mitigator (SMM)**: (P0) Behavioral security middleware for the AID Hub that performs real-time stylometric analysis of inter-agent messages. (Added: 2026-06-18)

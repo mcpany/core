@@ -66,3 +66,10 @@ The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring 
 * SMS and SCI will now support "Leased Metadata Signatures."
 * Instead of re-signing per-hop, metadata can carry a hardware-attested lease that persists across verified teammate handoffs, managed by the new MHPR (Multi-Hop Persistence Relay).
 **Security Impact:** Reduces "Cognitive Stall" by 40% in deep delegations while maintaining hardware-bound provenance for coordination fragments.
+
+### Update: 2026-06-18 - Neutralizing Shadow Coordination Side-Channels
+**Context:** Today's market sync revealed the emergence of "Shadow Coordination" side-channels using transport metadata to bypass ARI hubs.
+**Architecture Adjustment:**
+* The SCI will now perform multi-dimensional monitoring of all coordination transport metadata (Headers, Tags, Subprotocols).
+* Introducing an "Entropy & Pattern Analyzer" (EPA) to detect steganographic instructions in gRPC/WebSocket metadata.
+**Security Impact:** Immunizes the coordination transport against out-of-band collusion and prevents subagent instruction smuggling.
