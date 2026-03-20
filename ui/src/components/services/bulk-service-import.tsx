@@ -103,11 +103,11 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                         openapiService: {
                             address: importUrl,
                             specUrl: importUrl,
-                            tools: [], resources: [], calls: [], prompts: []
+                            tools: [], resources: [], calls: {}, prompts: []
                         }
                     }];
                 } else {
-                    parsedServices = Array.isArray(data) ? data : (data.services || [data]);
+                    parsedServices = Array.isArray(data) ? data : (data.services || [data as unknown as UpstreamServiceConfig]);
                 }
             } else {
                 if (!jsonContent.trim()) throw new Error("Content is required.");
@@ -126,7 +126,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                 }
 
                 if (!data) throw new Error("Parsed content is empty.");
-                parsedServices = Array.isArray(data) ? data : (data.services || [data]);
+                parsedServices = Array.isArray(data) ? data : (data.services || [data as unknown as UpstreamServiceConfig]);
             }
 
             if (!parsedServices.length) throw new Error("No services found in input.");
