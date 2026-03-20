@@ -8,9 +8,9 @@ go_library(
     srcs = [
         "doctor.go",
         "import.go",
+        "init.go",
         "main.go",
         "tool.go",
-        "init.go",
     ],
     importpath = "github.com/mcpany/core/server/cmd/mcpctl",
     visibility = ["//visibility:private"],
@@ -36,10 +36,10 @@ go_test(
     srcs = [
         "doctor_test.go",
         "import_test.go",
+        "init_test.go",
         "main_test.go",
         "tool_test.go",
         "validate_test.go",
-        "init_test.go",
     ],
     embed = [":mcpctl_lib"],
     deps = [
