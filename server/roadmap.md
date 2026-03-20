@@ -17,6 +17,12 @@
 *   **[P1] CFIB Auction Bridge**: Orchestration bridge for cross-framework intent bidding between Gemini HAIL and OpenClaw SRM. (Added: 2026-06-07)
 *   **[P0] Mission-Receipt Logging Service**: Cryptographic audit trail for mission receipts to prevent shadow delegations. (Added: 2026-06-07)
 
+#### Upcoming (2026-06-07 Evolution)
+*   **[P0] Recursive Mission Attestation (RMA) Provider**: Authoritative hardware-attested mission token issuer for recursive sub-missions. (Added: 2026-06-07)
+*   **[P0] Context-Aware Shard Isolation (CASI) Middleware**: Semantic isolation of mailbox shards to prevent cross-teammate state pollution. (Added: 2026-06-07)
+*   **[P1] CFIB Auction Bridge**: Orchestration bridge for cross-framework intent bidding between Gemini HAIL and OpenClaw SRM. (Added: 2026-06-07)
+*   **[P0] Mission-Receipt Logging Service**: Cryptographic audit trail for mission receipts to prevent shadow delegations. (Added: 2026-06-07)
+
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.

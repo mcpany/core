@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-06-07] Updates
+
+### Proposed Additions
+- **Recursive Mission Attestation (RMA) Provider**: (P0) Authoritative issuer for hardware-attested, recursive mission tokens ensuring intent alignment across multi-hop delegations.
+- **Context-Aware Shard Isolation (CASI) Middleware**: (P0) Security extension for SMS and FAMI providers performing real-time semantic analysis to isolate teammates within active task shards.
+- **CFIB Auction Bridge**: (P1) Advanced orchestration service facilitating cross-framework task auctions by translating HAIL and SRM tokens into unified bids.
+- **Mission-Receipt Logging Service**: (P0) Hardware-bound audit service for cryptographically logging recursive mission tokens and delegation chains.
+
+### Priority Shifts
+- **Sharded Mailbox Sovereignty (SMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **CASI** to prevent horizontal shard pollution.
+- **Active Negotiation Broker (ANB)**: (Re-affirmed P0) Evolving to support the new **CFIB-v1** bidding protocol for heterogeneous swarms.
+
 ## Evolution: [2026-05-23] Updates
 
 ### Proposed Additions
