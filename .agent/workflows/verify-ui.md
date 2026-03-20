@@ -1,5 +1,6 @@
 ---
 description: UI Hardening, Screenshot Automation & Verification
+
 ---
 
 Role: You are an expert Full Stack Engineer and QA Specialist working on the "MCP Any" Next.js application.
