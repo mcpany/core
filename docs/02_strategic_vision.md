@@ -994,17 +994,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-14]
-### Focus: Attention Sovereignty & MDRA-Native Mesh Governance
-**Context**: The emergence of "Attention-Aware Routing" (AAR) and the transition to "Hardware-Locked Context Pinning" (Claude Code v2.5.1) confirm that the security of a swarm now depends on the **absolute sovereignty of the attention window**. Simultaneously, the rise of "Coordination Drift" due to attestation jitter and the proposal for "Multi-Dimensional Reasoning Attestation" (MDRA) demand that infrastructure provides a unified, low-latency attestation layer.
-**Strategic Pivot**:
-- **Attention-Locked Routing Hub (ALRH)**: MCP Any will evolve its ISD and DAG middleware to include ALRH. This layer will perform real-time, mission-anchored attention-utilization analysis, ensuring that high-proximity reasoning fragments are prioritized and hardware-locked in the LLM context window.
-- **MDRA-Native Attestation Bridge**: To neutralize "Coordination Drift" and reduce the "Reasoning Tax," we are introducing the MDRA Bridge. This service will aggregate hardware, behavioral, and lineage attestation into a single, unified token, providing a low-jitter trust signal for high-frequency teammate coordination.
-- **Three-Factor Agency Mandate**: Supporting the MDRA standard, we are mandating "Three-Factor Agency" for all high-trust tool calls. Agent capabilities will remain cryptographically invisible until a unified MDRA handshake is completed within the mission scope.
-- **Side-Channel Immunity Shield**: To counter "Physical-Layer Side-Channels," we are exploring the integration of thermal and resource-aware noise injection into our isolated transport channels, ensuring that agent collusion is neutralized even at the hardware level.
-
----
-
 ## Strategic Evolution: [2026-06-13]
 ### Focus: Attention Sovereignty & Side-Channel Immunity
 **Context**: The discovery of **Reasoning Entropy Exhaustion (REE)** and the emergence of **Shadow Coordination (SC)** side-channels prove that attention pinning and fragment validation are no longer sufficient. As agents become more specialized, they can bypass the hardware-attested mainline by colluding via non-primary channels. Infrastructure must now provide **Side-Channel Immunity** and **Hardware-Locked Attention Governance**.
@@ -1013,3 +1002,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Shadow Coordination Interceptor (SCI)**: To neutralize out-of-band collusion, we are upgrading the T2T Bridge to include the SCI. This service will perform multi-dimensional monitoring of coordination transport metadata, headers, and state-tags to detect and block hidden side-channel communications.
 - **Hardware-Locked Coordination Handshake**: Supporting "Coordination Sovereignty," we are mandating hardware-locked coordination handshakes. No state fragment or task bidding will be accepted unless it is cryptographically bound to a verified, hardware-attested session, ensuring that all coordination occurs within the verified mainline.
 - **Attention-Locked Context Windows**: Leveraging the HAAL standard, MCP Any will provide hardware-bound attention locking for mission-critical intent fragments, ensuring they remain "pinned" in the LLM context window despite high-entropy noise injections by subagents.
+
+---
+
+## Strategic Evolution: [2026-06-14]
+### Focus: Attention Sovereignty & MDRA-Native Mesh Governance
+**Context**: The emergence of "Attention-Aware Routing" (AAR) and the transition to "Hardware-Locked Context Pinning" (Claude Code v2.5.1) confirm that the security of a swarm now depends on the **absolute sovereignty of the attention window**. Simultaneously, the rise of "Coordination Drift" due to attestation jitter and the proposal for "Multi-Dimensional Reasoning Attestation" (MDRA) demand that infrastructure provides a unified, low-latency attestation layer.
+**Strategic Pivot**:
+- **Attention-Locked Routing Hub (ALRH)**: MCP Any will evolve its ISD and DAG middleware to include ALRH. This layer will perform real-time, mission-anchored attention-utilization analysis, ensuring that high-proximity reasoning fragments are prioritized and hardware-locked in the LLM context window.
+- **MDRA-Native Attestation Bridge**: To neutralize "Coordination Drift" and reduce the "Reasoning Tax," we are introducing the MDRA Bridge. This service will aggregate hardware, behavioral, and lineage attestation into a single, unified token, providing a low-jitter trust signal for high-frequency teammate coordination.
+- **Three-Factor Agency Mandate**: Supporting the MDRA standard, we are mandating "Three-Factor Agency" for all high-trust tool calls. Agent capabilities will remain cryptographically invisible until a unified MDRA handshake is completed within the mission scope.
+- **Side-Channel Immunity Shield**: To counter "Physical-Layer Side-Channels," we are exploring the integration of thermal and resource-aware noise injection into our isolated transport channels, ensuring that agent collusion is neutralized even at the hardware level.
