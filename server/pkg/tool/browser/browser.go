@@ -107,6 +107,7 @@ func (b *Provider) ToolDefinition() map[string]interface{} {
 	}
 }
 
+// runPlaywright is a variable to allow mocking in tests.
 var runPlaywright = playwright.Run
 
 // playwrightFetcher is the production PageFetcher that uses playwright-go.
