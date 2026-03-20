@@ -1,3 +1,4 @@
+import { JsonView } from "@/components/ui/json-view";
 /**
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -584,9 +585,9 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                         <h3 className="text-sm font-medium">Current Configuration</h3>
                         {form.watch("upstreamAuth") ? (
                             <div className="text-sm border p-2 rounded">
-                                <pre className="whitespace-pre-wrap break-all">
-                                    {JSON.stringify(form.watch("upstreamAuth"), null, 2)}
-                                </pre>
+                                <div className="p-0 m-0">
+                                    <JsonView data={form.watch("upstreamAuth")} className="border-0 bg-transparent p-0" />
+                                </div>
                                 <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => form.setValue("upstreamAuth", undefined)}>Clear Authentication</Button>
                             </div>
                         ) : (

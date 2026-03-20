@@ -1,3 +1,4 @@
+import { JsonView } from "@/components/ui/json-view";
 /**
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -425,7 +426,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                       </TabsContent>
                       <TabsContent value="json" className="flex-1 overflow-hidden rounded-md border bg-muted/50 mt-0">
                         <ScrollArea className="h-full w-full p-4">
-                            <pre className="text-xs font-mono">{JSON.stringify(tool.inputSchema, null, 2)}</pre>
+                            <div className="p-0 m-0"><JsonView data={tool.inputSchema} className="border-0 bg-transparent p-0" /></div>
                         </ScrollArea>
                       </TabsContent>
                     </Tabs>
