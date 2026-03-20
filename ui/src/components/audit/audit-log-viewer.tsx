@@ -15,10 +15,15 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { Search, Eye, Download } from "lucide-react";
+import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Download } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { JsonView } from "@/components/ui/json-view";
 import { RichResultViewer } from "@/components/tools/rich-result-viewer";
