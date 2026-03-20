@@ -21,6 +21,7 @@ import { useTraces } from "@/hooks/use-traces";
 import { apiClient } from "@/lib/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo } from "react";
+import { Download } from "lucide-react";
 
 /**
  * InspectorPage component.
@@ -34,6 +35,7 @@ export default function InspectorPage() {
       isPaused,
       setIsPaused,
       clearTraces,
+      deleteTraces,
       refresh
   } = useTraces();
   const { toast } = useToast();
@@ -43,6 +45,9 @@ export default function InspectorPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+
+  // Selection State
+  const [selectedTraceIds, setSelectedTraceIds] = useState<string[]>([]);
 
   const handleSeedTrace = async () => {
       setSeeding(true);
@@ -56,6 +61,30 @@ export default function InspectorPage() {
       } finally {
           setSeeding(false);
       }
+  };
+
+  const handleBulkDelete = async () => {
+      try {
+          await apiClient.deleteTraces(selectedTraceIds);
+          deleteTraces(selectedTraceIds);
+          toast({ title: "Traces Deleted", description: `Deleted ${selectedTraceIds.length} trace(s).` });
+          setSelectedTraceIds([]);
+      } catch (e) {
+          toast({ title: "Deletion Failed", variant: "destructive", description: String(e) });
+      }
+  };
+
+  const handleBulkExport = () => {
+      const selected = traces.filter(t => selectedTraceIds.includes(t.id));
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(selected, null, 2));
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", `traces-export-${Date.now()}.json`);
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+      toast({ title: "Export Successful", description: `Exported ${selected.length} trace(s).` });
+      setSelectedTraceIds([]);
   };
 
   const filteredTraces = useMemo(() => {
@@ -178,8 +207,27 @@ export default function InspectorPage() {
           </div>
       </div>
 
+      {selectedTraceIds.length > 0 && (
+          <div className="flex items-center justify-between bg-primary/10 border border-primary/20 p-2 rounded-lg animate-in fade-in slide-in-from-top-2">
+              <span className="text-sm font-medium ml-2 text-primary">{selectedTraceIds.length} trace(s) selected</span>
+              <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={handleBulkExport} className="bg-background">
+                      <Download className="mr-2 h-4 w-4" /> Export JSON
+                  </Button>
+                  <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
+                      <Trash2 className="mr-2 h-4 w-4" /> Delete Selected
+                  </Button>
+              </div>
+          </div>
+      )}
+
       <div className="flex-1 min-h-0">
-        <InspectorTable traces={filteredTraces} loading={loading && traces.length === 0} />
+        <InspectorTable
+            traces={filteredTraces}
+            loading={loading && traces.length === 0}
+            selectedTraceIds={selectedTraceIds}
+            onSelectionChange={setSelectedTraceIds}
+        />
       </div>
     </div>
   );

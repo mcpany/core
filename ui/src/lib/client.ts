@@ -2124,6 +2124,20 @@ export const apiClient = {
     },
 
     /**
+     * Deletes seeded traces from the backend.
+     * @param ids - The IDs of the traces to delete.
+     */
+    deleteTraces: async (ids: string[]) => {
+        const res = await fetchWithAuth('/api/v1/debug/traces/delete', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids })
+        });
+        if (!res.ok) throw new Error('Failed to delete traces');
+        return res.json();
+    },
+
+    /**
      * Updates an alert status.
      *
      * Summary: Updates alert status.

@@ -24,6 +24,7 @@ import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database, ChevronRig
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { TableVirtuoso } from "react-virtuoso";
+import { Checkbox } from "@/components/ui/checkbox";
 
 /**
  * Props for the InspectorTable component.
@@ -37,6 +38,14 @@ interface InspectorTableProps {
    * Whether the table is currently loading data.
    */
   loading?: boolean;
+  /**
+   * Array of selected trace IDs.
+   */
+  selectedTraceIds?: string[];
+  /**
+   * Callback when trace selection changes.
+   */
+  onSelectionChange?: (ids: string[]) => void;
 }
 
 /**
@@ -87,7 +96,7 @@ interface VisibleRow {
  * @param props.loading - Whether the data is loading.
  * @returns The rendered table component.
  */
-export function InspectorTable({ traces, loading }: InspectorTableProps) {
+export function InspectorTable({ traces, loading, selectedTraceIds = [], onSelectionChange }: InspectorTableProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
   const [expandedSpans, setExpandedSpans] = useState<Set<string>>(new Set());
 
@@ -119,6 +128,33 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
       traces.forEach(trace => addSpan(trace, trace.rootSpan, 0));
       return rows;
   }, [traces, expandedSpans]);
+
+  const allSelected = useMemo(() => {
+    return traces.length > 0 && selectedTraceIds.length === traces.length;
+  }, [traces, selectedTraceIds]);
+
+  const toggleSelectAll = () => {
+    if (onSelectionChange) {
+      if (allSelected) {
+        onSelectionChange([]);
+      } else {
+        onSelectionChange(traces.map(t => t.id));
+      }
+    }
+  };
+
+  const toggleSelectRow = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    if (onSelectionChange) {
+      const next = new Set(selectedTraceIds);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      onSelectionChange(Array.from(next));
+    }
+  };
 
   return (
     <>
@@ -154,6 +190,15 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                 }}
                 fixedHeaderContent={() => (
                     <TableRow>
+                    {onSelectionChange && (
+                        <TableHead className="w-[40px] bg-card z-10 text-center">
+                            <Checkbox
+                                checked={allSelected}
+                                onCheckedChange={toggleSelectAll}
+                                aria-label="Select all"
+                            />
+                        </TableHead>
+                    )}
                     <TableHead className="w-[180px] bg-card z-10">Timestamp</TableHead>
                     <TableHead className="w-[50px] bg-card z-10">Type</TableHead>
                     <TableHead className="bg-card z-10">Method / Name</TableHead>
@@ -163,6 +208,19 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                 )}
                 itemContent={(index, row: VisibleRow) => (
                     <>
+                    {onSelectionChange && (
+                        <TableCell onClick={(e) => toggleSelectRow(e, row.trace.id)} className="text-center w-[40px] align-middle">
+                            {row.depth === 0 ? (
+                                <Checkbox
+                                    checked={selectedTraceIds.includes(row.trace.id)}
+                                    onCheckedChange={() => {}}
+                                    onClick={(e) => toggleSelectRow(e as any, row.trace.id)}
+                                    aria-label={`Select trace ${row.trace.id}`}
+                                    data-testid={`checkbox-${row.trace.id}`}
+                                />
+                            ) : null}
+                        </TableCell>
+                    )}
                     <TableCell className="font-mono text-xs text-muted-foreground">
                         {row.depth === 0 ? (
                             <>
