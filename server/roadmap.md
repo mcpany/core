@@ -753,3 +753,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+### Upcoming: [2026-06-18]
+- **Asynchronous Intent Consistency (AIC) Broker**: (P0) Non-blocking intent synchronization using CRDTs for sharded meshes. (Added: 2026-06-18)
+- **Attention-Locked Persistence (ALP) Provider**: (P0) Hardware-bound storage for mission-root anchors outside the primary attention buffer. (Added: 2026-06-18)
+- **Hardware-Locked Persistence (HLP) Enforcer**: (P0) Kernel-level inode-binding for agent-generated filesystem hooks. (Added: 2026-06-18)
+- **Recursive Lineage Verification (RLV)**: (P0) Mandatory mission-root ancestry proof for every coordination fragment to prevent re-parenting. (Added: 2026-06-18)

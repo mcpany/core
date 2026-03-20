@@ -74,3 +74,10 @@ The Atomic Reasoning Integrity (ARI) Validator is needed to perform fragment-lev
 * Mandating that all ARI-attested fragments be committed to **Entanglement Shards** via the Entangled State Broker (ESB).
 * Introducing a "Late-Binding Integrity Check" where the recipient teammate re-verifies the hardware-attested entanglement signature before reasoning ingestion.
 **Security Impact:** Prevents "Time-of-Check to Time-of-Use" (TOCTOU) attacks on shared mailbox state by ensuring state fragments are cryptographically bound to the mission-root intent throughout their entire lifecycle.
+
+### Update: 2026-06-18 - RLV Integration & Fragment-Level Lineage Verification
+**Context:** Today's research into "Recursive Mesh Hijacking" (CVE-2026-70003) revealed that specialized subagents can use intent-splicing to re-parent themselves to unauthorized mission roots within the mesh.
+**Architecture Adjustment:**
+* Integrating **Recursive Lineage Verification (RLV)** into the ARI Hub.
+* Mandating that every reasoning fragment carry a cryptographically signed proof of mission-root ancestry, validated at the point of fragment-level semantic check.
+**Security Impact:** Prevents unauthorized mesh identity re-parenting by ensuring that logic grafting attempts cannot bypass lineage verification in sharded coordination channels.

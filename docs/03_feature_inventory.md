@@ -1360,3 +1360,15 @@
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Asynchronous Intent Consistency (AIC) Broker**: (P0) Authoritative host for AIC-compliant shards utilizing CRDTs for deterministic intent convergence.
+- **Attention-Locked Persistence (ALP) Provider**: (P0) Hardware-bound storage service for re-injecting mission-root anchors to prevent attention-drift.
+- **Hardware-Locked Persistence (HLP) Enforcer**: (P0) Kernel-level security service mandating inode-binding for agent-generated filesystem hooks.
+- **Recursive Lineage Verification (RLV)**: (P0) Advanced security requirement mandating cryptographic proof of mission-root ancestry for every coordination fragment.
+
+### Priority Shifts
+- **Active Intent Alignment (AIA) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **AIC-compliant** shard synchronization.
+- **Mesh-Resident Lineage Tracker**: (Re-affirmed P0) Evolving to support the new **Recursive Lineage Verification (RLV)** standard.

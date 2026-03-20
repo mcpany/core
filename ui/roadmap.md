@@ -591,3 +591,9 @@
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
+
+### Upcoming: [2026-06-18]
+- [ ] **[P0] AIC Convergence Dashboard**: (2026-06-18) Real-time visualization of CRDT-based intent convergence and fragment churn.
+- [ ] **[P0] Attention Persistence Monitor**: (2026-06-18) Visual indicator for hardware-locked anchors and attention-drift alerts.
+- [ ] **[P0] HLP Integrity Hub**: (2026-06-18) Forensic UI for reviewing kernel-level inode-binding status for configuration hooks.
+- [ ] **[P0] Recursive Lineage Explorer**: (2026-06-18) Interactive graph for auditing multi-hop mission-root ancestry across fragments.

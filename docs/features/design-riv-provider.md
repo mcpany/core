@@ -59,3 +59,11 @@ The Recursive Integrity Verification (RIV) Provider is needed to establish a cry
 
 ## 7. Evolutionary Changelog
 * **2026-06-09:** Initial Document Creation.
+
+### Update: 2026-06-18 - RLV Integration & Ancestral Lineage Validation
+**Context:** The disclosure of "Recursive Mesh Hijacking" (CVE-2026-70003) proves that current lineage proofs can be bypassable if an agent can re-parent itself to a higher-trust root within the same mesh.
+**Architecture Adjustment:**
+* Introducing **Recursive Lineage Verification (RLV)** in Section 4.
+* RIV proofs must now include a hardware-attested hash of the **entire ancestral path**, not just the immediate parent.
+* Mandating that RLV validation occurs at every coordination fragment, neutralizing the ability of specialists to forge ancestry during intent-splicing.
+**Security Impact:** Provides absolute cryptographic isolation between divergent mission roots, even when operating within the same hardware-enclave mesh.

@@ -59,3 +59,10 @@ The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-bl
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+
+### Update: 2026-06-18 - AIC Integration & Deterministic Convergence
+**Context:** Today's research into "Asynchronous Intent Consistency" (AIC) confirms that horizontal meshes require a unified consistency model that extends beyond task claiming to the underlying intent fragments.
+**Architecture Adjustment:**
+* Upgrading the LFMA to act as the primary host for the **Asynchronous Intent Consistency (AIC) Broker**.
+* Expanding the CRDT logic to support **Intent-Bound Fragments**, ensuring that local intent updates merge deterministically into the mission-root without coordination locks.
+**Performance Impact:** Reduces the "Convergence Window" risk by providing a hardware-accelerated merge path for high-frequency intent fragments, ensuring mesh stability even during rapid sub-mission expansion.
