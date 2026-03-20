@@ -3,15 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { User } from "@proto/config/v1/user";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { User } from "@proto/config/v1/user";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
     Sheet,
     SheetContent,
@@ -23,23 +19,36 @@ import {
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
-    FormDescription
 } from "@/components/ui/form";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RotateCw, Copy, Check, Key, Lock, ShieldAlert, Eye, Pencil } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Key, Lock, ShieldAlert, Pencil, Eye, Copy, Check, RotateCw } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+const userSchema = z.object({
+    id: z.string().min(3, "Username must be at least 3 characters").max(50),
+    role: z.enum(["admin", "editor", "viewer"]),
+    authType: z.enum(["password", "api_key"]),
+    password: z.string().optional()
+}).refine(data => {
+    if (data.authType === "password" && !data.password) {
+        return false;
+    }
+    return true;
+}, {
+    message: "Password is required for password authentication",
+    path: ["password"]
+});
+
+type UserFormValues = z.infer<typeof userSchema>;
 
 interface UserSheetProps {
     open: boolean;
@@ -48,48 +57,24 @@ interface UserSheetProps {
     onSave: (user: Partial<User>, password?: string, apiKey?: string) => Promise<void>;
 }
 
-const userSchema = z.object({
-    id: z.string().min(3, "Username must be at least 3 characters").max(50, "Username too long").regex(/^[a-zA-Z0-9_-]+$/, "Username can only contain letters, numbers, underscores, and dashes"),
-    role: z.string().min(1, "Role is required"),
-    authType: z.enum(["password", "api_key"]),
-    password: z.string().optional(),
-});
-
-type UserValues = z.infer<typeof userSchema>;
-
-/**
- * UserSheet component.
- * Renders a sheet for creating or editing a user.
- *
- * @param props - The component props.
- * @param props.open - Whether the sheet is open.
- * @param props.onOpenChange - Callback when the sheet open state changes.
- * @param props.user - The user object to edit, or null for creating a new user.
- * @param props.onSave - Callback when the user is saved.
- * @returns The rendered UserSheet component.
- */
 export function UserSheet({ open, onOpenChange, user, onSave }: UserSheetProps) {
-    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [generatedKey, setGeneratedKey] = useState("");
     const [copied, setCopied] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { toast } = useToast();
 
-    const form = useForm<UserValues>({
+    const form = useForm<UserFormValues>({
         resolver: zodResolver(userSchema),
         defaultValues: {
             id: "",
             role: "viewer",
             authType: "password",
             password: "",
-        },
+        }
     });
-
-    const authType = form.watch("authType");
 
     useEffect(() => {
         if (open) {
-            setGeneratedKey("");
-            setCopied(false);
             if (user) {
                 form.reset({
                     id: user.id,
@@ -105,68 +90,62 @@ export function UserSheet({ open, onOpenChange, user, onSave }: UserSheetProps) 
                     password: "",
                 });
             }
+            setGeneratedKey("");
+            setCopied(false);
         }
     }, [open, user, form]);
 
+    const authType = form.watch("authType");
+
     const generateApiKey = () => {
-        const array = new Uint8Array(24);
-        window.crypto.getRandomValues(array);
-        const key = "mcp_sk_" + Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
+        const prefix = "sk-";
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let key = prefix;
+        for (let i = 0; i < 32; i++) {
+            key += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
         setGeneratedKey(key);
-        form.setValue("password", ""); // Clear password if switching
+        setCopied(false);
+        // We do NOT set form value, API key is handled separately in onSave
     };
 
     const copyKey = () => {
         navigator.clipboard.writeText(generatedKey);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
-        toast({
-            description: "API Key copied to clipboard",
-        });
+        toast({ title: "Copied to clipboard" });
     };
 
-    const onSubmit = async (data: UserValues) => {
+    const onSubmit = async (data: UserFormValues) => {
         setIsSubmitting(true);
         try {
-            // Validation Logic
+            let pwd = undefined;
+            let key = undefined;
+
             if (data.authType === "password") {
-                if (!user && !data.password) {
-                    form.setError("password", { message: "Password is required for new users" });
+                if (data.password) {
+                    pwd = data.password;
+                } else if (!user) {
+                    toast({ variant: "destructive", title: "Password required" });
                     setIsSubmitting(false);
                     return;
                 }
-                if (data.password && data.password.length < 8) {
-                    form.setError("password", { message: "Password must be at least 8 characters" });
+            } else if (data.authType === "api_key") {
+                if (generatedKey) {
+                    key = generatedKey;
+                } else if (!user) {
+                    toast({ variant: "destructive", title: "API Key required", description: "Generate a key first" });
                     setIsSubmitting(false);
                     return;
-                }
-            } else {
-                // API Key
-                if (!user && !generatedKey) {
-                     toast({
-                         variant: "destructive",
-                         title: "API Key Required",
-                         description: "Please generate an API Key for the new user."
-                     });
-                     setIsSubmitting(false);
-                     return;
                 }
             }
 
-            const userUpdate: Partial<User> = {
+            await onSave({
                 id: data.id,
                 roles: [data.role],
-            };
-
-            await onSave(userUpdate, data.password, generatedKey);
-            onOpenChange(false);
-        } catch (error) {
-            console.error(error);
-             toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Failed to save user."
-            });
+            }, pwd, key);
+        } catch (e) {
+            // Error handled by parent
         } finally {
             setIsSubmitting(false);
         }
@@ -176,14 +155,14 @@ export function UserSheet({ open, onOpenChange, user, onSave }: UserSheetProps) 
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent className="sm:max-w-md overflow-y-auto">
                 <SheetHeader>
-                    <SheetTitle>{user ? "Edit User" : "Add New User"}</SheetTitle>
+                    <SheetTitle>{user ? "Edit User" : "Add User"}</SheetTitle>
                     <SheetDescription>
-                        {user ? "Update user details and permissions." : "Create a new user to access the platform."}
+                        {user ? "Modify user settings and permissions." : "Create a new user to access the system."}
                     </SheetDescription>
                 </SheetHeader>
 
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-6">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-6">
                         <FormField
                             control={form.control}
                             name="id"
@@ -191,10 +170,10 @@ export function UserSheet({ open, onOpenChange, user, onSave }: UserSheetProps) 
                                 <FormItem>
                                     <FormLabel>Username</FormLabel>
                                     <FormControl>
-                                        <Input disabled={!!user} placeholder="jdoe" {...field} />
+                                        <Input placeholder="jdoe" {...field} disabled={!!user} />
                                     </FormControl>
                                     <FormDescription>
-                                        Unique identifier for the user.
+                                        Unique identifier for the user. Cannot be changed later.
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
