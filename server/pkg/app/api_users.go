@@ -150,8 +150,8 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 //   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := strings.TrimPrefix(r.URL.Path, "/users/")
-		if id == "" {
+		id := r.URL.Path[strings.LastIndex(r.URL.Path, "/")+1:]
+		if id == "" || id == "users" {
 			http.Error(w, "id required", http.StatusBadRequest)
 			return
 		}
@@ -237,6 +237,7 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 			if !isAdmin {
 				// Prevent non-admin users from escalating their privileges by restoring their original roles
 				user.SetRoles(existingUser.GetRoles())
+				user.Roles = existingUser.GetRoles()
 			}
 
 			if err := hashUserPassword(r.Context(), &user, store, existingUser); err != nil {
