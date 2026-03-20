@@ -1,3 +1,8 @@
+<!--
+Copyright 2026 Author(s) of MCP Any
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Design Doc: Hardware-Locked Coordination Handshake (HLCH)
 **Status:** Draft
 **Created:** 2026-06-14
