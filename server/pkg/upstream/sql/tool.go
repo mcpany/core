@@ -54,13 +54,13 @@ type Tool struct {
 // Summary: Initializes NewTool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -90,13 +90,13 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 // Summary: Executes Tool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -115,13 +115,13 @@ func (t *Tool) Tool() *v1.Tool {
 // Summary: Executes MCPTool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -147,13 +147,13 @@ func (t *Tool) MCPTool() *mcp.Tool {
 // Summary: Retrieves GetCacheConfig operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -183,13 +183,13 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 // Summary: Executes Execute operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

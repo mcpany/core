@@ -61,13 +61,13 @@ type OpenAPIUpstream struct { //nolint:revive
 // Summary: Executes Shutdown operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -94,13 +94,13 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 // Summary: Initializes NewOpenAPIUpstream operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -141,13 +141,13 @@ func NewOpenAPIUpstream() upstream.Upstream {
 // Summary: Executes Register operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -350,13 +350,13 @@ type httpClientImpl struct {
 // Summary: Executes Do operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

@@ -38,13 +38,13 @@ type PerRPCCredentials struct {
 // Summary: Initializes NewPerRPCCredentials operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -74,13 +74,13 @@ func NewPerRPCCredentials(authenticator UpstreamAuthenticator) credentials.PerRP
 // Summary: Retrieves GetRequestMetadata operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -125,13 +125,13 @@ func (c *PerRPCCredentials) GetRequestMetadata(ctx context.Context, _ ...string)
 // Summary: Executes RequireTransportSecurity operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

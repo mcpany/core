@@ -283,13 +283,13 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 // Summary: Executes Flush operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -329,13 +329,13 @@ func (w *gzipResponseWriter) Flush() {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

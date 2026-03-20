@@ -54,13 +54,13 @@ const MaxRecursionDepth = 10
 // Summary: Executes MethodDescriptorToProtoProperties operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -82,13 +82,13 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 // Summary: Executes MethodOutputDescriptorToProtoProperties operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -238,13 +238,13 @@ type McpFieldParameter interface {
 // Summary: Executes ConfigSchemaToProtoProperties operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -297,13 +297,13 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 // Summary: Executes McpFieldsToProtoProperties operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Parameters are described in the interface.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected interface result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

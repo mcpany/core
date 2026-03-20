@@ -118,7 +118,7 @@ Ask your agent:
 
 The agent will use the `get_weather` tool exposed by MCP Any (configured in `config.minimal.yaml`) to fetch the simulated data.
 
-## Developer Workflow
+## Development
 
 We adhere to a strict development workflow to ensure code quality and maintainability.
 
