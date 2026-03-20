@@ -1,8 +1,4 @@
-# Copyright 2026 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
-
 # Design Doc: Hardware-Locked Coordination Handshake (HLCH)
-
 **Status:** Draft
 **Created:** 2026-06-14
 
@@ -15,9 +11,8 @@ As agent swarms transition to long-running horizontal meshes, they are becoming 
 * **Goals:**
     * Implement a mandatory HLCH-compliant handshake.
     * Bind every coordination fragment to a hardware-attested session token.
-
 * **Non-Goals:**
-    * Replacing transport-level encryption (TLS/mTLS).
+    * Replacing transport-level encryption.
 
 ## 3. Critical User Journey (CUJ)
 

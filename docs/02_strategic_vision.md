@@ -1,6 +1,3 @@
-# Copyright 2026 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
-
 # Strategic Vision: MCP Any
 
 ## Mission Statement
@@ -1228,7 +1225,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: IDA and shadow side-channels prove that behavioral stylometry and transport-layer security are no longer sufficient.
 
 **Strategic Pivot**:
-
 - **HLCH Mandate**: Mandatory hardware-locked coordination handshakes for the T2T Bridge.
 - **MRA Lineage**: Anchor coordination fragments to TPM-backed semantic hash-chains.
 - **Side-Channel Immunity**: Multi-dimensional monitoring of coordination metadata and state-tags.
