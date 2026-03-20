@@ -159,7 +159,7 @@ func buildTraceTrees(entries []audit.Entry) []*Trace {
 		// If TraceID is empty, generate a fallback ID
 		tID := e.TraceID
 		if tID == "" {
-			// For testing without TraceID injection, use a fallback based on unique execution so they don't group together unintentionally
+			// Use fallback ID based on unique execution so traces don't group together unintentionally
 			data := fmt.Sprintf("%d-%s-%s-%s-%s", e.Timestamp.UnixNano(), e.ToolName, e.UserID, e.ProfileID, e.SpanID)
 			hash := sha256.Sum256([]byte(data))
 			tID = hex.EncodeToString(hash[:])
@@ -264,7 +264,8 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 		if a.standardMiddlewares == nil || a.standardMiddlewares.Audit == nil {
 			// If audit is disabled, just close or keep open but send nothing?
 			// Better to send a close message.
-			_ = conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Audit disabled"), time.Now().Add(time.Second))
+			closeMsg := websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Audit disabled")
+			_ = conn.WriteControl(websocket.CloseMessage, closeMsg, time.Now().Add(time.Second))
 			return
 		}
 
