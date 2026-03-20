@@ -10,7 +10,8 @@ import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, Laz
 import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
 import { QuickActionsWidget } from "@/components/dashboard/quick-actions-widget";
 import { NetworkGraphWidget } from "@/components/dashboard/network-graph-widget";
-import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Share2, ClipboardCheck } from "lucide-react";
+import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Share2, ClipboardCheck, LayoutGrid } from "lucide-react";
+import { ServiceGalleryWidget } from "@/components/dashboard/service-gallery-widget";
 
 /**
  * Defines the possible sizes for a dashboard widget.
@@ -44,6 +45,14 @@ export interface WidgetDefinition {
  * This list determines what widgets are available to add to the dashboard.
  */
 export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
+    {
+        type: "service-gallery",
+        title: "Service Gallery",
+        description: "Visual grid of connected upstream services and their status.",
+        defaultSize: "full",
+        component: ServiceGalleryWidget,
+        icon: LayoutGrid,
+    },
     {
         type: "metrics",
         title: "Metrics Overview",
