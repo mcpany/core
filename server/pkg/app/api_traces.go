@@ -238,13 +238,6 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 
 func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		defer func() {
-			if rec := recover(); rec != nil {
-				logging.GetLogger().Error("PANIC in handleDebugSeedTraces", "panic", rec)
-				panic(rec) // re-panic to let recovery middleware catch it, but log it first
-			}
-		}()
-
 		if r.Method != http.MethodPost {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return

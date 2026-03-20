@@ -15,15 +15,10 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
-    DialogHeader,
-    DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Download } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Search, Eye, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { JsonView } from "@/components/ui/json-view";
 import { RichResultViewer } from "@/components/tools/rich-result-viewer";
@@ -67,7 +62,7 @@ export function AuditLogViewer() {
     const fetchLogs = useCallback(async () => {
         setLoading(true);
         try {
-            const filters: any = {
+            const filters: Record<string, string | number> = {
                 limit: 50,
                 offset: 0
             };
@@ -101,7 +96,7 @@ export function AuditLogViewer() {
     const handleExport = async () => {
         setExporting(true);
         try {
-            const filters: any = {};
+            const filters: Record<string, string | number> = {};
             if (toolName) filters.tool_name = toolName;
             if (userId) filters.user_id = userId;
             if (startDate) filters.start_time = startDate.toISOString();
@@ -112,11 +107,12 @@ export function AuditLogViewer() {
                 title: "Export Successful",
                 description: "Audit logs have been exported.",
             });
-        } catch (e: any) {
+        } catch (e: unknown) {
             console.error("Failed to export audit logs", e);
+            const msg = e instanceof Error ? e.message : "Failed to export audit logs.";
             toast({
                 title: "Export Failed",
-                description: e.message || "Failed to export audit logs.",
+                description: msg,
                 variant: "destructive",
             });
         } finally {
@@ -124,14 +120,17 @@ export function AuditLogViewer() {
         }
     };
 
-    const parseJsonOrReturn = (jsonStr: any) => {
+    const parseJsonOrReturn = (jsonStr: unknown) => {
         if (!jsonStr) return null;
         if (typeof jsonStr === 'object') return jsonStr;
-        try {
-            return JSON.parse(jsonStr);
-        } catch (e) {
-            return jsonStr;
+        if (typeof jsonStr === 'string') {
+            try {
+                return JSON.parse(jsonStr);
+            } catch (_e) {
+                return jsonStr;
+            }
         }
+        return jsonStr;
     };
 
     return (
