@@ -52,7 +52,7 @@ window.ResizeObserver = vi.fn().mockImplementation(() => ({
 describe('PlaygroundClientPro', () => {
   it('renders correctly', () => {
       render(<PlaygroundClientPro />);
-      expect(screen.getByText('Console')).toBeInTheDocument();
+      expect(screen.getByText('Playground')).toBeInTheDocument();
   });
 
   it('imports history when file is selected', async () => {
