@@ -4,6 +4,7 @@
 package app
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -242,15 +243,16 @@ func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request,
 	w.Header().Set("Content-Type", "application/json")
 	// ⚡ BOLT: Pre-allocate buffer to prevent O(N) reallocations during JSON array construction.
 	// Randomized Selection from Top 5 High-Impact Targets.
-	buf := make([]byte, 0, len(services)*256+2)
-	buf = append(buf, '[')
+	var buf bytes.Buffer
+	buf.Grow(1024)
+	buf.WriteByte('[')
 	opts := protojson.MarshalOptions{UseProtoNames: true, EmitUnpopulated: false}
 	// Sort services for consistent output
 	// (Optional but good for tests)
 
 	for i, svc := range services {
 		if i > 0 {
-			buf = append(buf, ',')
+			buf.WriteByte(',')
 		}
 		b, err := opts.Marshal(svc)
 		if err != nil {
@@ -298,10 +300,10 @@ func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request,
 			}
 		}
 
-		buf = append(buf, b...)
+		buf.Write(b)
 	}
-	buf = append(buf, ']')
-	_, _ = w.Write(buf)
+	buf.WriteByte(']')
+	_, _ = w.Write(buf.Bytes())
 }
 
 func (a *Application) handleCreateService(w http.ResponseWriter, r *http.Request, store storage.Storage) {
@@ -868,17 +870,18 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 			opts := protojson.MarshalOptions{UseProtoNames: true}
 			// ⚡ BOLT: Pre-allocate buffer to prevent O(N) reallocations during JSON array construction.
 			// Randomized Selection from Top 5 High-Impact Targets.
-			buf := make([]byte, 0, len(secrets)*256+2)
-			buf = append(buf, '[')
+			var buf bytes.Buffer
+			buf.Grow(1024)
+			buf.WriteByte('[')
 			for i, s := range secrets {
 				if i > 0 {
-					buf = append(buf, ',')
+					buf.WriteByte(',')
 				}
 				b, _ := opts.Marshal(s)
-				buf = append(buf, b...)
+				buf.Write(b)
 			}
-			buf = append(buf, ']')
-			_, _ = w.Write(buf)
+			buf.WriteByte(']')
+			_, _ = w.Write(buf.Bytes())
 
 		case http.MethodPost:
 			var secret configv1.Secret
@@ -1046,17 +1049,18 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 			opts := protojson.MarshalOptions{UseProtoNames: true}
 			// ⚡ BOLT: Pre-allocate buffer to prevent O(N) reallocations during JSON array construction.
 			// Randomized Selection from Top 5 High-Impact Targets.
-			buf := make([]byte, 0, len(profiles)*256+2)
-			buf = append(buf, '[')
+			var buf bytes.Buffer
+			buf.Grow(1024)
+			buf.WriteByte('[')
 			for i, p := range profiles {
 				if i > 0 {
-					buf = append(buf, ',')
+					buf.WriteByte(',')
 				}
 				b, _ := opts.Marshal(p)
-				buf = append(buf, b...)
+				buf.Write(b)
 			}
-			buf = append(buf, ']')
-			_, _ = w.Write(buf)
+			buf.WriteByte(']')
+			_, _ = w.Write(buf.Bytes())
 
 		case http.MethodPost:
 			var profile configv1.ProfileDefinition
@@ -1197,17 +1201,18 @@ func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc 
 			opts := protojson.MarshalOptions{UseProtoNames: true}
 			// ⚡ BOLT: Pre-allocate buffer to prevent O(N) reallocations during JSON array construction.
 			// Randomized Selection from Top 5 High-Impact Targets.
-			buf := make([]byte, 0, len(collections)*256+2)
-			buf = append(buf, '[')
+			var buf bytes.Buffer
+			buf.Grow(1024)
+			buf.WriteByte('[')
 			for i, c := range collections {
 				if i > 0 {
-					buf = append(buf, ',')
+					buf.WriteByte(',')
 				}
 				b, _ := opts.Marshal(c)
-				buf = append(buf, b...)
+				buf.Write(b)
 			}
-			buf = append(buf, ']')
-			_, _ = w.Write(buf)
+			buf.WriteByte(']')
+			_, _ = w.Write(buf.Bytes())
 
 		case http.MethodPost:
 			var collection configv1.Collection

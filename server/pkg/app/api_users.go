@@ -4,6 +4,7 @@
 package app
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"io"
@@ -48,17 +49,18 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 			opts := protojson.MarshalOptions{UseProtoNames: true}
 			// ⚡ BOLT: Pre-allocate buffer to prevent O(N) reallocations during JSON array construction.
 			// Randomized Selection from Top 5 High-Impact Targets.
-			buf := make([]byte, 0, len(users)*256+2)
-			buf = append(buf, '[')
+			var buf bytes.Buffer
+			buf.Grow(1024)
+			buf.WriteByte('[')
 			for i, u := range users {
 				if i > 0 {
-					buf = append(buf, ',')
+					buf.WriteByte(',')
 				}
 				b, _ := opts.Marshal(util.SanitizeUser(u))
-				buf = append(buf, b...)
+				buf.Write(b)
 			}
-			buf = append(buf, ']')
-			_, _ = w.Write(buf)
+			buf.WriteByte(']')
+			_, _ = w.Write(buf.Bytes())
 
 		case http.MethodPost:
 			// Limit 1MB
