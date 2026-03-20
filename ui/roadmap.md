@@ -1168,7 +1168,7 @@
 - [ ] **[P0] Sovereign Discovery Console**: (2026-06-14) Authorization workspace
       for hardware-attested SDP validation of capability cards.
 
-### Upcoming: [2026-06-15] - Advanced Dashboards
+### Upcoming: [2026-06-15]
 
 - **ALCS Dashboard**: Real-time visualization of cognitive attention sharding
   and pinning across active swarms. (Added: 2026-06-15)
