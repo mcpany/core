@@ -4,9 +4,6 @@
  */
 
 import { request, APIRequestContext } from '@playwright/test';
-//
-//
-//
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
@@ -36,7 +33,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
         },
         {
             id: "svc_02",
-            name: "any Service",
+            name: "User Service",
             version: "v1.0",
             http_service: {
                 address: "http://localhost:50051", // Dummy address
@@ -103,7 +100,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-    ].map((service) => any.toJSON(any.fromJSON(service)));
+    ].map((service) => service);
 
     const templates = [
         {
@@ -160,7 +157,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-    ].map((template) => any.toJSON(any.fromJSON(template)));
+    ].map((template) => template);
 
     const users = [
         {
@@ -175,7 +172,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             roles: ["admin"],
             profile_ids: ["dev", "prod"]
         }
-    ].map((user) => any.toJSON(any.fromJSON(user)));
+    ].map((user) => user);
 
     const seedRequest = {
         upstream_services: services,
@@ -217,7 +214,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
     await seedGlobalState(requestContext);
 };
 
-export const seedany = async (requestContext: APIRequestContext | undefined, username: string) => {
+export const seedUser = async (requestContext: APIRequestContext | undefined, username: string) => {
     // We create a specific user if requested, in addition to the core user.
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const user = {
@@ -249,7 +246,7 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const cleanupany = async (requestContext: APIRequestContext | undefined, username: string) => {
+export const cleanupUser = async (requestContext: APIRequestContext | undefined, username: string) => {
     // No-op
 };
 
