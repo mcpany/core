@@ -17,9 +17,17 @@ import (
 )
 
 func TestUpstreamService_Trello(t *testing.T) {
-	if os.Getenv("TRELLO_API_KEY") == "" || os.Getenv("TRELLO_API_TOKEN") == "" || os.Getenv("TRELLO_API_KEY") == "dummy" {
-		// t.Skip("TRELLO_API_KEY or TRELLO_API_TOKEN not set")
-	}
+	t.Setenv("TRELLO_API_KEY", "dummy")
+	t.Setenv("TRELLO_API_TOKEN", "dummy")
+
+	// Mock Trello API
+	mockResponse := `[{"id": "1", "name": "board"}]`
+	mockHandler := integration.DefaultMockHandler(t, map[string]string{
+		"/1/members/me/boards": mockResponse,
+	})
+	mockServer := integration.StartMockServer(t, mockHandler)
+	defer mockServer.Close()
+	t.Setenv("TRELLO_API_BASE_URL", mockServer.URL)
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
@@ -62,9 +70,16 @@ func TestUpstreamService_Trello(t *testing.T) {
 }
 
 func TestUpstreamService_Miro(t *testing.T) {
-	if os.Getenv("MIRO_API_TOKEN") == "" || os.Getenv("MIRO_API_TOKEN") == "dummy" {
-		// t.Skip("MIRO_API_TOKEN not set")
-	}
+	t.Setenv("MIRO_API_TOKEN", "dummy")
+
+	// Mock Miro API
+	mockResponse := `{"data": [{"id": "1", "name": "board"}]}`
+	mockHandler := integration.DefaultMockHandler(t, map[string]string{
+		"/v2/boards": mockResponse,
+	})
+	mockServer := integration.StartMockServer(t, mockHandler)
+	defer mockServer.Close()
+	t.Setenv("MIRO_API_BASE_URL", mockServer.URL)
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
@@ -107,9 +122,17 @@ func TestUpstreamService_Miro(t *testing.T) {
 }
 
 func TestUpstreamService_Figma(t *testing.T) {
-	if os.Getenv("FIGMA_API_TOKEN") == "" || os.Getenv("FIGMA_TEAM_ID") == "" || os.Getenv("FIGMA_API_TOKEN") == "dummy" {
-		// t.Skip("FIGMA_API_TOKEN or FIGMA_TEAM_ID not set")
-	}
+	t.Setenv("FIGMA_API_TOKEN", "dummy")
+	t.Setenv("FIGMA_TEAM_ID", "dummy")
+
+	// Mock Figma API
+	mockResponse := `{"name": "team", "projects": []}`
+	mockHandler := integration.DefaultMockHandler(t, map[string]string{
+		"/v1/teams/dummy/projects": mockResponse,
+	})
+	mockServer := integration.StartMockServer(t, mockHandler)
+	defer mockServer.Close()
+	t.Setenv("FIGMA_API_BASE_URL", mockServer.URL)
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()

@@ -17,15 +17,18 @@ import (
 )
 
 func TestUpstreamService_Airtable(t *testing.T) {
-	if os.Getenv("AIRTABLE_API_TOKEN") == "" {
-		// t.Skip("AIRTABLE_API_TOKEN is not set")
-	}
-	if os.Getenv("AIRTABLE_BASE_ID") == "" {
-		// t.Skip("AIRTABLE_BASE_ID is not set")
-	}
-	if os.Getenv("AIRTABLE_TABLE_ID") == "" {
-		// t.Skip("AIRTABLE_TABLE_ID is not set")
-	}
+	t.Setenv("AIRTABLE_API_TOKEN", "dummy")
+	t.Setenv("AIRTABLE_BASE_ID", "dummy")
+	t.Setenv("AIRTABLE_TABLE_ID", "dummy")
+
+	// Mock Airtable API
+	mockResponse := `{"records": [{"id": "rec123", "fields": {}}]}`
+	mockHandler := integration.DefaultMockHandler(t, map[string]string{
+		"/v0/dummy/dummy": mockResponse,
+	})
+	mockServer := integration.StartMockServer(t, mockHandler)
+	defer mockServer.Close()
+	t.Setenv("AIRTABLE_API_BASE_URL", mockServer.URL)
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
