@@ -11,18 +11,19 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 )
 
-// WebhookRequest matches the data payload sent by mcpany
+// WebhookRequest matches the data payload sent by mcpany.
 type WebhookRequest struct {
 	Kind     int            `json:"kind"` // 1=PreCall, 2=PostCall
 	ToolName string         `json:"tool_name"`
 	Inputs   map[string]any `json:"inputs"`
 }
 
-// WebhookResponse matches the expected response data
+// WebhookResponse matches the expected response data.
 type WebhookResponse struct {
 	Allowed bool    `json:"allowed"`
 	Status  *Status `json:"status,omitempty"`
@@ -43,7 +44,11 @@ func main() {
 	}
 	addr := ":" + port
 	log.Printf("Starting webhook server on %s", addr)
-	if err := http.ListenAndServe(addr, nil); err != nil {
+	server := &http.Server{
+		Addr:              addr,
+		ReadHeaderTimeout: 5 * time.Second,
+	}
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -82,8 +87,8 @@ func validateHandler(w http.ResponseWriter, r *http.Request) {
 			// Also checking for " rm " in case of chained commands
 			cleaned := strings.TrimSpace(strVal)
 			if strings.HasPrefix(cleaned, "rm ") ||
-			   cleaned == "rm" ||
-			   strings.Contains(cleaned, " rm ") {
+				cleaned == "rm" ||
+				strings.Contains(cleaned, " rm ") {
 				allowed = false
 				message = fmt.Sprintf("Command contains restricted keyword 'rm' in input '%s'", k)
 				break
@@ -109,5 +114,5 @@ func validateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	w.WriteHeader(http.StatusOK)
-	w.Write(respBytes)
+	_, _ = w.Write(respBytes)
 }

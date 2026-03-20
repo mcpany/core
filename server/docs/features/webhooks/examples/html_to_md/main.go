@@ -8,19 +8,20 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/google/uuid"
 )
 
-// WebhookRequest matches the data payload sent by mcpany
+// WebhookRequest matches the data payload sent by mcpany.
 type WebhookRequest struct {
-	Kind     int            `json:"kind"` // 1=PreCall, 2=PostCall
-	ToolName string         `json:"tool_name"`
-	Result   any            `json:"result"`
+	Kind     int    `json:"kind"` // 1=PreCall, 2=PostCall
+	ToolName string `json:"tool_name"`
+	Result   any    `json:"result"`
 }
 
-// WebhookResponse matches the expected response data
+// WebhookResponse matches the expected response data.
 type WebhookResponse struct {
 	ReplacementObject any `json:"replacement_object,omitempty"`
 }
@@ -28,7 +29,11 @@ type WebhookResponse struct {
 func main() {
 	http.HandleFunc("/convert", convertHandler)
 	log.Println("Starting html-to-md webhook on :8082")
-	if err := http.ListenAndServe(":8082", nil); err != nil {
+	server := &http.Server{
+		Addr:              ":8082",
+		ReadHeaderTimeout: 5 * time.Second,
+	}
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -84,21 +89,21 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 		// Return original if failure? Or empty?
 		// We'll just return original (no replacement)
 		w.WriteHeader(StatusOK)
-		w.Write([]byte("{}"))
+		_, _ = w.Write([]byte("{}"))
 		return
 	}
 
 	if markdown == "" {
 		// Nothing converted or empty
 		w.WriteHeader(StatusOK)
-		w.Write([]byte("{}"))
+		_, _ = w.Write([]byte("{}"))
 		return
 	}
 
 	respData := WebhookResponse{
 		ReplacementObject: map[string]string{
 			"content": markdown,
-			"format": "markdown",
+			"format":  "markdown",
 		},
 	}
 
@@ -112,7 +117,7 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	w.WriteHeader(http.StatusOK)
-	w.Write(respBytes)
+	_, _ = w.Write(respBytes)
 }
 
 // StatusOK represents the HTTP 200 OK status code.
