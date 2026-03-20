@@ -1,3 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 # Feature Inventory: MCP Any
 
 ## Current Backlog (P0/P1)
