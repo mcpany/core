@@ -11,10 +11,19 @@ global_settings:
   db_path: "/tmp/mcpany.db"
   debugger:
     enabled: true
+  audit:
+    enabled: true
+    log_arguments: true
+    log_results: true
+    storage_type: "STORAGE_TYPE_SQLITE"
+    output_path: "audit.db"
   middlewares:
     - name: "auth"
       priority: 1
       disabled: true
+    - name: "audit"
+      priority: 2
+      disabled: false
 
 upstream_services:
   - id: "weather-service"

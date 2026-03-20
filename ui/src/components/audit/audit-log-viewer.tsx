@@ -25,20 +25,24 @@ import { format } from "date-fns";
 import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
-import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
-import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
+import { JsonView } from "@/components/ui/json-view";
+import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 
 interface AuditLogEntry {
     timestamp: string;
-    toolName: string;
-    userId: string;
-    profileId: string;
+    tool_name: string;
+    user_id: string;
+    profile_id: string;
     arguments: string;
     result: string;
     error: string;
     duration: string;
-    durationMs: number;
+    duration_ms: number;
+    // Keep old names optional just in case
+    toolName?: string;
+    userId?: string;
+    profileId?: string;
+    durationMs?: number;
 }
 
 /**
@@ -48,7 +52,6 @@ interface AuditLogEntry {
  * @returns The rendered AuditLogViewer component.
  */
 export function AuditLogViewer() {
-    SyntaxHighlighter.registerLanguage('json', json);
     const [logs, setLogs] = useState<AuditLogEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [exporting, setExporting] = useState(false);
@@ -121,11 +124,11 @@ export function AuditLogViewer() {
         }
     };
 
-    const formatJson = (jsonStr: string) => {
+    const parseJsonOrReturn = (jsonStr: any) => {
         if (!jsonStr) return null;
+        if (typeof jsonStr === 'object') return jsonStr;
         try {
-            const obj = JSON.parse(jsonStr);
-            return JSON.stringify(obj, null, 2);
+            return JSON.parse(jsonStr);
         } catch (e) {
             return jsonStr;
         }
@@ -245,8 +248,8 @@ export function AuditLogViewer() {
                                     <TableCell className="font-mono text-xs">
                                         {new Date(log.timestamp).toLocaleString()}
                                     </TableCell>
-                                    <TableCell className="font-medium">{log.toolName}</TableCell>
-                                    <TableCell>{log.userId || "-"}</TableCell>
+                                    <TableCell className="font-medium">{log.tool_name || log.toolName}</TableCell>
+                                    <TableCell>{(log.user_id || log.userId) || "-"}</TableCell>
                                     <TableCell>{log.duration}</TableCell>
                                     <TableCell>
                                         {log.error ? (
@@ -276,7 +279,7 @@ export function AuditLogViewer() {
                     <DialogHeader>
                         <DialogTitle>Audit Log Detail</DialogTitle>
                         <DialogDescription>
-                            Execution details for {selectedLog?.toolName} at {selectedLog && new Date(selectedLog.timestamp).toLocaleString()}
+                        Execution details for {selectedLog?.tool_name || selectedLog?.toolName} at {selectedLog && new Date(selectedLog.timestamp).toLocaleString()}
                         </DialogDescription>
                     </DialogHeader>
                     {selectedLog && (
@@ -284,15 +287,15 @@ export function AuditLogViewer() {
                             <div className="grid grid-cols-2 gap-4 text-sm">
                                 <div>
                                     <span className="font-semibold block text-muted-foreground">User ID</span>
-                                    {selectedLog.userId || "N/A"}
+                                {(selectedLog.user_id || selectedLog.userId) || "N/A"}
                                 </div>
                                 <div>
                                     <span className="font-semibold block text-muted-foreground">Profile ID</span>
-                                    {selectedLog.profileId || "N/A"}
+                                {(selectedLog.profile_id || selectedLog.profileId) || "N/A"}
                                 </div>
                                 <div>
                                     <span className="font-semibold block text-muted-foreground">Duration</span>
-                                    {selectedLog.duration} ({selectedLog.durationMs}ms)
+                                {selectedLog.duration} ({(selectedLog.duration_ms || selectedLog.durationMs)}ms)
                                 </div>
                                 <div>
                                     <span className="font-semibold block text-muted-foreground">Status</span>
@@ -310,26 +313,14 @@ export function AuditLogViewer() {
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Arguments</h4>
                                 <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vs2015}
-                                        customStyle={{ margin: 0, fontSize: '12px' }}
-                                    >
-                                        {formatJson(selectedLog.arguments) || "{}"}
-                                    </SyntaxHighlighter>
+                                    <JsonView data={parseJsonOrReturn(selectedLog.arguments)} maxHeight={300} />
                                 </div>
                             </div>
 
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Result</h4>
-                                <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vs2015}
-                                        customStyle={{ margin: 0, fontSize: '12px', maxHeight: '300px' }}
-                                    >
-                                        {formatJson(selectedLog.result) || (selectedLog.error ? "null" : "{}")}
-                                    </SyntaxHighlighter>
+                                <div className="rounded-md overflow-hidden border bg-card">
+                                    <RichResultViewer result={parseJsonOrReturn(selectedLog.result) || (selectedLog.error ? null : {})} />
                                 </div>
                             </div>
                         </div>
