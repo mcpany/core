@@ -16,6 +16,7 @@ import xml from 'react-syntax-highlighter/dist/esm/languages/hljs/xml';
 import markdown from 'react-syntax-highlighter/dist/esm/languages/hljs/markdown';
 import plaintext from 'react-syntax-highlighter/dist/esm/languages/hljs/plaintext';
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
+import { JsonView } from "@/components/ui/json-view";
 
 ReactSyntaxHighlighter.registerLanguage('json', json);
 ReactSyntaxHighlighter.registerLanguage('yaml', yaml);
@@ -81,11 +82,30 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
         );
     }
 
-    if (mimeType.includes("json") || mimeType.includes("yaml") || mimeType.includes("xml")) {
+    if (mimeType.includes("json")) {
+        let parsedData: unknown = text;
+        try {
+            if (text) {
+                parsedData = JSON.parse(text);
+            }
+        } catch (e) {
+            // Fall back to raw text if it doesn't parse
+        }
+
+        return (
+            <ScrollArea className="h-full">
+                <div className="p-4 h-full bg-card">
+                    <JsonView data={parsedData} smartTable={true} />
+                </div>
+            </ScrollArea>
+        );
+    }
+
+    if (mimeType.includes("yaml") || mimeType.includes("xml")) {
         return (
             <ScrollArea className="h-full">
                 <ReactSyntaxHighlighter
-                    language={mimeType.includes("json") ? "json" : "yaml"}
+                    language={mimeType.includes("yaml") ? "yaml" : "xml"}
                     style={vs2015}
                     customStyle={{ margin: 0, borderRadius: 0, height: "100%", fontSize: '0.875rem' }}
                     showLineNumbers={true}

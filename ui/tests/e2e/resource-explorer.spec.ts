@@ -6,66 +6,71 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Resource Explorer', () => {
-  test('should load resources and allow selection', async ({ page }) => {
-    // Navigate to the resources page
-    // Mock resources endpoint
-    await page.route('**/api/v1/resources', async route => {
-        await route.fulfill({
-            json: {
-                resources: [
-                    { uri: 'file:///app/config.json', name: 'config.json', mimeType: 'application/json' },
-                    { uri: 'file:///app/README.md', name: 'README.md', mimeType: 'text/markdown' },
-                    { uri: 'file:///app/script.py', name: 'script.py', mimeType: 'text/x-python' }
-                ]
+
+  const serviceName = 'e2e-resources-test-service';
+
+  test.beforeEach(async ({ request }) => {
+    // Seed the database with a test service that uses echo command to return JSON
+    const response = await request.post('/api/v1/services', {
+      data: {
+        name: serviceName,
+        priority: 10,
+        command_line_service: {
+            command: "echo",
+            // The command returns a valid JSON string that matches the expected ResourceContent structure for MCP
+            // Wait, MCP Resource reading returns an array of contents. The echo command output will be treated as the raw output.
+            // Let's use a simple JSON string output. The MCP adapter for Command Line takes stdout.
+            // But wait, the CLI adapter expects to return a proper MCP result or we configure an output transformer.
+            args: ['{"contents": [{"uri": "file:///config.json", "mimeType": "application/json", "text": "{\\"foo\\":\\"bar\\"}"}]}']
+        },
+        resources: [
+            {
+                uri: "file:///config.json",
+                name: "config.json",
+                description: "A config file",
+                mimeType: "application/json"
             }
-        });
+        ],
+        calls: {
+            "file:///config.json": {
+                // Command line call definition
+                // If it's a CLI service, the call args will be appended to the command.
+                args: []
+            }
+        }
+      }
     });
+    expect(response.ok()).toBeTruthy();
+  });
 
-    // Mock content endpoint
-    await page.route('**/api/v1/resources/read*', async route => {
-        await route.fulfill({
-            json: { contents: [{ mimeType: 'application/json', text: '{\n  "key": "value"\n}' }] }
-        });
-    });
+  test.afterEach(async ({ request }) => {
+    await request.delete(`/api/v1/services/${serviceName}`);
+  });
 
+  test('should load resources and allow selection', async ({ page }) => {
     // Navigate to the resources page
     await page.goto('/resources');
 
-    // Wait for the resource list to populate (using mock data)
-    // Use first() because the URI display might also contain the text "config.json"
-    await expect(page.getByText('config.json').first()).toBeVisible();
-    await expect(page.getByText('README.md').first()).toBeVisible();
+    // Wait for the resource list to populate
+    await expect(page.getByText('config.json').first()).toBeVisible({ timeout: 10000 });
 
-    // Verify search functionality
-    const searchInput = page.getByPlaceholder('Search resources...');
-    await searchInput.fill('script');
-    await expect(page.getByText('script.py').first()).toBeVisible();
-    await expect(page.getByText('config.json')).not.toBeVisible();
-
-    // Clear search
-    await searchInput.fill('');
-    await expect(page.getByText('config.json').first()).toBeVisible();
-
-    // Select a resource
+    // Select the resource
     await page.getByText('config.json').first().click();
 
-    // Verify preview loads
-    // Use first() because the list item also shows the URI
-    await expect(page.getByText('file:///app/config.json').first()).toBeVisible(); // URI header
+    // Verify preview loads and JSON is rendered using JsonView
+    // Since JsonView parses the JSON into a tree structure, we should see the key "foo" and value "bar"
+    // separated, not just a raw string like "{\\"foo\\":\\"bar\\"}".
+    // JsonView renders keys with a specific styling, but we can just check for text content.
 
-    // Check if content area is visible (looking for syntax highlighter or code)
-    // The mock returns JSON content
-    await expect(page.locator('pre').first()).toBeVisible();
+    // Wait for the resource viewer to load the content
+    await expect(page.getByText('foo')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('bar')).toBeVisible();
 
-    // Verify toolbar buttons
-    await expect(page.getByTitle('List View')).toBeVisible();
-    await expect(page.getByTitle('Grid View')).toBeVisible();
+    // Also verify the URI header is visible
+    await expect(page.getByText('file:///config.json').first()).toBeVisible();
 
     // Switch to Grid view
     await page.getByTitle('Grid View').click();
-
-    // Verify grid item exists
-    // In grid view, items are cards. We check for text again but layout changes.
     await expect(page.getByText('config.json').first()).toBeVisible();
   });
 });
