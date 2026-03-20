@@ -49,13 +49,15 @@ jobs:
             - v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
             - v1-lint-
       - run:
+          name: Prepare Environment
+          command: make prepare
+      - run:
           name: Run Lint
           command: |
             . venv/bin/activate
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
-            # Ensure cached golangci-lint does not run and fail on out-of-band typecheck errors
-            rm -f $PWD/build/env/bin/golangci-lint
+            make gen
             make lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
