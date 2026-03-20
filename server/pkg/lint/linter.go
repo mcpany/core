@@ -16,17 +16,22 @@ import (
 
 // Severity indicates the importance of a linting result.
 //
+// It is used to categorize findings based on their impact and urgency.
+//
 // Summary: Represents a Severity.
 type Severity int
 
 const (
 	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
+	//
 	// Summary: Defines Error.
 	Error Severity = iota
 	// Warning indicates a potential issue or best practice violation that should be addressed.
+	//
 	// Summary: Defines Warning.
 	Warning
 	// Info indicates a suggestion or informational message for optimization or clarity.
+	//
 	// Summary: Defines Info.
 	Info
 )
@@ -60,6 +65,8 @@ func (s Severity) String() string {
 }
 
 // Result represents a single linting finding.
+//
+// It encapsulates all details about a detected issue, including its severity, location, and description.
 //
 // Summary: Represents a Result.
 type Result struct {
@@ -102,6 +109,8 @@ func (r Result) String() string {
 
 // Linter performs static analysis on the configuration.
 //
+// It holds the configuration to be analyzed and provides methods to execute various checks.
+//
 // Summary: Represents a Linter.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
@@ -112,7 +121,7 @@ type Linter struct {
 // Summary: Initializes NewLinter operation.
 //
 // Parameters:
-//   - cfg: *configv1.McpAnyServerConfig. The server configuration to be linted.
+//   - cfg (*configv1.McpAnyServerConfig): The server configuration to be linted.
 //
 // Returns:
 //   - *Linter: A new Linter instance initialized with the provided configuration.
@@ -126,7 +135,7 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
 
-// Run executes all linting checks.
+// Run executes all linting checks on the server configuration.
 //
 // It aggregates results from multiple check categories including standard validation,
 // secret usage, shell injection risks, insecure HTTP, and cache settings.
@@ -134,7 +143,7 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 // Summary: Executes Run operation.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
+//   - ctx (context.Context): The context for the request.
 //
 // Returns:
 //   - []Result: A list of linting findings.
