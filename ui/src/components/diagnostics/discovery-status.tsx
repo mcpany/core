@@ -5,7 +5,7 @@
 
 
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { apiClient } from "@/lib/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { RefreshCw, Scan, Radio } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { usePolling } from "@/hooks/use-polling";
 
 /**
  * ProviderStatus represents the status of a specific auto-discovery provider.
@@ -35,7 +36,7 @@ export function DiscoveryStatus() {
     const [scanning, setScanning] = useState(false);
     const { toast } = useToast();
 
-    const fetchStatus = async () => {
+    const fetchStatus = useCallback(async () => {
         try {
             const data = await apiClient.getDiscoveryStatus();
             setStatuses(data);
@@ -44,13 +45,15 @@ export function DiscoveryStatus() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchStatus();
-        const interval = setInterval(fetchStatus, 5000);
-        return () => clearInterval(interval);
-    }, []);
+    }, [fetchStatus]);
+
+    // ⚡ BOLT: [Render Optimization] Replaced raw setInterval with usePolling hook to prevent memory leaks and unnecessary background polling when tab is hidden.
+    // Randomized Selection from Top 5 High-Impact Targets
+    usePolling(fetchStatus, 5000);
 
     const handleScan = async () => {
         setScanning(true);
