@@ -733,11 +733,6 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Side-Channel Immunity Filter**: (P0) Advanced metadata scanning component for the SCI interceptor to block steganographic collusion. (Added: 2026-06-14)
 - **HLCH-Compliant Handshake Gateway**: (P0) Core security gateway mandating hardware-locked sessions for all coordination traffic. (Added: 2026-06-14)
 
-### Upcoming: [2026-06-14]
-- **MRA-Backed Lineage Provider**: (P0) Security service utilizing hardware-bound Mesh-Resident Attestation (MRA) for reasoning fragments. (Added: 2026-06-14)
-- **Side-Channel Immunity Filter**: (P0) Advanced metadata scanning component for the SCI interceptor to block steganographic collusion. (Added: 2026-06-14)
-- **HLCH-Compliant Handshake Gateway**: (P0) Core security gateway mandating hardware-locked sessions for all coordination traffic. (Added: 2026-06-14)
-
 ### Upcoming: [2026-06-13]
 - **Shadow Coordination Interceptor (SCI)**: (P0) Authoritative transport-level security service for the T2T Bridge that monitors metadata and state-tags to neutralize out-of-band collusion. (Added: 2026-06-13)
 - **Dynamic Attention Gating (DAG) Middleware**: (P0) Cognitive stability middleware that performs real-time attention-utilization analysis and dynamically prunes noise to prevent mission-root intent eviction. (Added: 2026-06-13)
