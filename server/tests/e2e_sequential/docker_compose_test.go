@@ -31,7 +31,7 @@ func TestDockerComposeE2E(t *testing.T) {
 		// For this task, we want to resurrect it.
 		// We'll proceed if docker is available.
 		if !integration.IsDockerSocketAccessible() {
-			t.Skip("Skipping E2E Docker test. Docker not accessible and E2E_DOCKER!=true")
+			// t.Skip("Skipping E2E Docker test. Docker not accessible and E2E_DOCKER!=true")
 		}
 	}
 
