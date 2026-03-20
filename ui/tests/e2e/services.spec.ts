@@ -219,7 +219,7 @@ test.describe('Services Feature', () => {
     await page.waitForTimeout(500);
 
     // Verify successful bulk delete toast
-    await expect(page.getByText('Services Deleted')).toBeVisible();
+    await expect(page.getByText('Services Deleted', { exact: true })).toBeVisible();
 
     // Verify both services are no longer visible in the table
     await expect(page.getByText('Payment Gateway')).toBeHidden();
