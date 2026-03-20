@@ -1726,10 +1726,11 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 	if _, ok := configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName]; !ok {
 		t.Fatalf("Invalid HTTP method provided: %s", httpMethod)
 	}
-	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
 	callID := "call-" + toolDef.GetName()
 	toolDef.SetCallId(callID)
+	// inline to prevent golangci-lint from seeing it as unused (since the nested builder causes typecheck false positives outside bazel)
+	methodPtr := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
@@ -1740,7 +1741,7 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 				callID: configv1.HttpCallDefinition_builder{
 					Id:           &callID,
 					EndpointPath: &endpointPath,
-					Method:       &method,
+					Method:       &methodPtr,
 					Parameters:   params,
 				}.Build(),
 			},
@@ -2064,11 +2065,11 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 	if _, ok := configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName]; !ok {
 		t.Fatalf("Invalid HTTP method provided: %s", httpMethod)
 	}
-	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
 	toolDef := configv1.ToolDefinition_builder{Name: &operationID}.Build()
 	callID := "call-" + toolDef.GetName()
 	toolDef.SetCallId(callID)
+	methodPtr := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
@@ -2079,7 +2080,7 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 				callID: configv1.HttpCallDefinition_builder{
 					Id:           &callID,
 					EndpointPath: &endpointPath,
-					Method:       &method,
+					Method:       &methodPtr,
 				}.Build(),
 			},
 		}.Build(),
