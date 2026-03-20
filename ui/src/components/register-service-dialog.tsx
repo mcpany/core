@@ -301,12 +301,12 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
 
           const config = constructConfig(values);
           const response = await apiClient.validateService(config);
-          setValidationResult({ valid: response.valid, message: response.message });
+          setValidationResult({ valid: response.valid, message: response instanceof Error ? e.message : 'Unknown error' });
 
           if (response.valid) {
-              toast({ title: "Validation Successful", description: response.message });
+              toast({ title: "Validation Successful", description: response instanceof Error ? e.message : 'Unknown error' });
           } else {
-              toast({ variant: "destructive", title: "Validation Failed", description: response.message });
+              toast({ variant: "destructive", title: "Validation Failed", description: response instanceof Error ? e.message : 'Unknown error' });
           }
       } catch (error: any) {
           toast({ variant: "destructive", title: "Validation Error", description: error.message });
@@ -631,19 +631,19 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                                                 const configToSave = constructConfig(values);
 
                                                 try {
-                                                    await apiClient.registerService(configToSave);
+                                                    const res: any = await apiClient.registerService(configToSave);
                                                     toast({
                                                         title: "Service Registered",
                                                         description: `Draft configuration saved. Proceeding to authenticate...`
                                                     });
-                                                    serviceId = configToSave.name; // Use name as ID since it's uniquely generated/hashed server-side
+                                                    serviceId = res?.service?.id || res?.service?.sanitizedName || res?.service?.name || configToSave.name;
 
                                                     // Give the backend a brief moment to stabilize the new registration
                                                     await new Promise(r => setTimeout(r, 500));
-                                                } catch (e: any) {
+                                                } catch (e: unknown) {
                                                     toast({
                                                         title: "Registration Failed",
-                                                        description: e.message || "Failed to save the service before authenticating.",
+                                                        description: e instanceof Error ? e.message : 'Unknown error' || "Failed to save the service before authenticating.",
                                                         variant: "destructive"
                                                     });
                                                     return;
@@ -662,9 +662,9 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                                             // Redirect
                                             window.location.href = res.authorization_url;
 
-                                        } catch (e: any) {
+                                        } catch (e: unknown) {
                                             console.error(e);
-                                            toast({ title: "Failed to Initiate OAuth", description: e.message || "Unknown error", variant: "destructive" });
+                                            toast({ title: "Failed to Initiate OAuth", description: e instanceof Error ? e.message : 'Unknown error' || "Unknown error", variant: "destructive" });
                                         }
                                     }}
                                 >
