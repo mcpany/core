@@ -4,6 +4,7 @@
 run:
   timeout: 5m
   tests: false
+
 linters:
   enable:
     - bodyclose
@@ -40,11 +41,6 @@ issues:
     - vendor
     - node_modules
     - .cache
-    - pkg/admin
-    - pkg/app
-    - pkg/bus
-    - pkg/topology
-    - pkg/upstream/grpc/protobufparser
   exclude-rules:
     - path: "_test.go"
       linters:
@@ -53,12 +49,6 @@ issues:
       linters:
         - "revive"
       text: "var-naming: avoid meaningless package names"
-    - text: "could not import github.com/mcpany/core/proto"
-      linters:
-        - typecheck
-    - text: "undefined:"
-      linters:
-        - typecheck
   skip-files:
     - '.*\.pb\.go$'
     - '.*\.pb\.gw\.go$'
