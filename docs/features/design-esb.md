@@ -72,7 +72,8 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
 ### Update: 2026-06-18 - Resolving Teammate Impersonation via Integrity Tokens
 
 **Context:** Today's research discovered a new exploit where compromised teammates can report fake task completions in sharded meshes.
-**Architecture Adjustment:** \* Integrating the **Teammate Integrity Token (TIT) Broker** in Section 4.
+**Architecture Adjustment:**
 
+- Integrating the **Teammate Integrity Token (TIT) Broker** in Section 4.
 - Every shard mutation commit must now be accompanied by a hardware-attested TIT.
   **Security Impact:** Ensures absolute non-repudiation for all teammate-led state changes within the entangled mesh.
