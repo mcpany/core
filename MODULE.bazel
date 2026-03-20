@@ -28,8 +28,6 @@ go_sdk.download(version = "1.26.1")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_work = "//:go.work")
-
-# go_deps.from_file(go_mod = "//k8s/operator:go.mod")
 go_deps.gazelle_override(
     directives = [
         "gazelle:proto disable_global",

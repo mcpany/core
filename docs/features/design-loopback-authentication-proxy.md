@@ -45,3 +45,10 @@ The "ClawdBot" unauthenticated loopback vulnerability (Guardz 2026) revealed tha
 
 ## 7. Evolutionary Changelog
 * **2026-05-13:** Initial Document Creation.
+
+### Update: 2026-05-14 - Hardening Legacy Ports with Mandatory Origin-Binding
+**Context:** The "ClawdBot" exploit pattern continues to target unauthenticated loopback listeners, bridging browser-based scripts to local agent control planes.
+**Architecture Adjustment:**
+* Transitioning from optional to mandatory browser-origin validation for all local listeners.
+* Requiring cryptographic session tokens for any request originating from the local network stack.
+**Security Impact:** Prevents unauthenticated cross-site hijacking of local agent services while the migration to port-free transport is in progress.
