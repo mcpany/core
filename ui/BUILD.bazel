@@ -76,11 +76,11 @@ filegroup(
         ],
         allow_empty = True,
         exclude = [
-            "node_modules/**",
+            ".audit/**",
             "dist/**",
+            "node_modules/**",
             "playwright-report/**",
             "test-results/**",
-            ".audit/**",
         ],
     ),
     visibility = ["//visibility:public"],
@@ -100,9 +100,9 @@ filegroup(
 vite_bin.vite(
     name = "build",
     srcs = [
+        "//proto:ts_proto",
         ":node_modules",
         ":srcs",
-        "//proto:ts_proto",
     ],
     args = ["build"],
     chdir = package_name(),
@@ -112,10 +112,10 @@ vite_bin.vite(
 playwright_bin.playwright_binary(
     name = "playwright_cli",
     data = [
+        "//proto:ts_proto",
         ":node_modules",
         ":playwright_runtime_srcs",
         ":playwright_support_srcs",
-        "//proto:ts_proto",
     ],
 )
 
@@ -130,9 +130,9 @@ eslint_bin.eslint_test(
     ],
     chdir = package_name(),
     data = [
+        "//proto:ts_proto",
         ":node_modules",
         ":srcs",
-        "//proto:ts_proto",
     ],
 )
 
@@ -142,9 +142,9 @@ tsc_bin.tsc_test(
     args = ["--noEmit"],
     chdir = package_name(),
     data = [
+        "//proto:ts_proto",
         ":node_modules",
         ":srcs",
-        "//proto:ts_proto",
     ],
 )
 
