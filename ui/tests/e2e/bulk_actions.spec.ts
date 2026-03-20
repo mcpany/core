@@ -44,6 +44,26 @@ test.describe('Bulk Service Actions', () => {
     await expect(page.getByRole('button', { name: 'Enable' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Disable' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Restart' }).first()).toBeVisible();
+  });
+
+  test('should bulk restart selected services', async ({ page }) => {
+    // Wait for the table to load
+    await page.waitForSelector('table');
+
+    // Click the "Select All" checkbox in the header
+    await page.getByRole('checkbox').first().click();
+
+    // Verify bulk action buttons appear
+    const restartBtn = page.getByRole('button', { name: 'Restart' }).first();
+    await expect(restartBtn).toBeVisible();
+
+    // Click Restart
+    await restartBtn.click();
+
+    // Verify success toast
+    await expect(page.getByText('Services Restarted')).toBeVisible();
+    await expect(page.getByText('Successfully restarted')).toBeVisible();
   });
 
   test('should select individual services', async ({ page }) => {

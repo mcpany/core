@@ -333,6 +333,24 @@ export default function ServicesPage() {
     }
   }, [fetchServices, toast]);
 
+  const handleBulkRestart = useCallback(async (names: string[]) => {
+      try {
+          await apiClient.bulkRestartServices(names);
+          toast({
+              title: "Services Restarted",
+              description: `Successfully restarted ${names.length} services.`
+          });
+          fetchServices();
+      } catch (e) {
+          console.error("Failed to bulk restart services", e);
+          toast({
+              variant: "destructive",
+              title: "Error",
+              description: "Failed to restart some or all selected services."
+          });
+      }
+  }, [fetchServices, toast]);
+
   const handleSave = async () => {
       if (!selectedService) return;
 
@@ -460,6 +478,7 @@ export default function ServicesPage() {
                 onBulkEdit={handleBulkEdit}
                 onLogin={handleLogin}
                 onRestart={handleRestart}
+                onBulkRestart={handleBulkRestart}
              />
         </CardContent>
       </Card>

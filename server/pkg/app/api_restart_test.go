@@ -69,3 +69,34 @@ func TestHandleServiceRestart_Success(t *testing.T) {
 	require.Len(t, registry.unregistered, 1)
 	assert.Equal(t, "test-service", registry.unregistered[0])
 }
+
+func TestHandleServiceBulkRestart_Success(t *testing.T) {
+	app := NewApplication()
+	app.fs = afero.NewMemMapFs()
+	app.configPaths = []string{}
+
+	registry := &SpyServiceRegistry{}
+	app.ServiceRegistry = registry
+
+	svc := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service-1"),
+	}.Build()
+	store := &MockStoreWithGet{
+		service: svc, // Simplified, returns same for any matched name for testing
+	}
+
+	reqBody := `{"names":["test-service-1", "test-service-2"]}`
+	req := httptest.NewRequest(http.MethodPost, "/services/bulk-restart", strings.NewReader(reqBody))
+	rr := httptest.NewRecorder()
+
+	handler := app.handleServiceBulkRestart(store)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+
+	// Verify UnregisterService was called for each service
+	require.Len(t, registry.unregistered, 2)
+	assert.Contains(t, registry.unregistered, "test-service-1")
+	assert.Contains(t, registry.unregistered, "test-service-2")
+}

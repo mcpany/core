@@ -523,6 +523,29 @@ export const apiClient = {
     },
 
     /**
+     * Bulk restarts multiple upstream services.
+     *
+     * Summary: Restarts the specified upstream services.
+     *
+     * @param names - Array of service names to restart.
+     * @returns A promise that resolves when the services have been restarted.
+     * @throws {Error} If the restart fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/services/bulk-restart.
+     */
+    bulkRestartServices: async (names: string[]) => {
+        const response = await fetchWithAuth('/api/v1/services/bulk-restart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ names })
+        });
+        if (!response.ok) throw new Error('Failed to bulk restart services');
+        return {};
+    },
+
+    /**
      * Registers a new upstream service.
      *
      * Summary: Registers a new upstream service with the provided configuration.

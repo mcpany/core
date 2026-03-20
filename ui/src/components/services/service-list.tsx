@@ -49,6 +49,7 @@ interface ServiceListProps {
   onBulkDelete?: (names: string[]) => void;
   onLogin?: (service: UpstreamServiceConfig) => void;
   onRestart?: (name: string) => void;
+  onBulkRestart?: (names: string[]) => void;
   onBulkEdit?: (names: string[], updates: { tags?: string[] }) => void;
 }
 
@@ -57,7 +58,7 @@ interface ServiceListProps {
  *
  * @param onExport - The onExport.
  */
-export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin, onRestart, onBulkEdit }: ServiceListProps) {
+export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin, onRestart, onBulkRestart, onBulkEdit }: ServiceListProps) {
   const [tagFilter, setTagFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
@@ -144,6 +145,14 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                            <Button size="sm" variant="outline" onClick={() => setIsBulkEditDialogOpen(true)}>
                                <Settings className="mr-2 h-4 w-4" /> Bulk Edit
                            </Button>
+                           {onBulkRestart && (
+                               <Button size="sm" variant="outline" onClick={() => {
+                                   onBulkRestart(Array.from(selected));
+                                   setSelected(new Set());
+                               }}>
+                                   <RefreshCw className="mr-2 h-4 w-4" /> Restart
+                               </Button>
+                           )}
                            {onBulkDelete && (
                                <Button size="sm" variant="destructive" onClick={() => {
                                    onBulkDelete(Array.from(selected));
