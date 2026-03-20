@@ -18,14 +18,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-05-14]
-### Focus: Swarm-Internal Consensus Integrity & Identity-Bound Pipe Orchestration
-**Context**: The emergence of "Consensus Fragmentation" in parallel agent teams and the discovery of "Pipe-Splicing" exploits confirm that the security frontier has moved inside the swarm. As agents transition from TCP loopback to filesystem-based named pipes, the infrastructure must ensure that the transport layer is cryptographically bound to a verified identity, while the reasoning state remains consistent across all parallel branches.
-**Strategic Pivot**:
-- **Consensus Integrity Arbiter**: MCP Any will evolve to act as the authoritative "Consensus Arbiter" for parallel agent swarms. We will implement "Reasoning-Aware State Reconciliation," where parallel agent branches must periodically synchronize their worldviews through the gateway, ensuring that "Consensus Fragmentation" is detected and resolved before it leads to conflicting tool execution.
-- **Identity-Bound Pipe Orchestration**: To counter "Pipe-Splicing," we are mandating "Hardware-Bound Socket Attestation." MCP Any will orchestrate the creation of isolated named pipes where the underlying filesystem Inode is cryptographically bound to the agent's TPM-verified identity at the moment of socket binding, neutralizing race conditions and unauthorized splicing.
-- **Inter-Agent Monologue Sanitization**: We are introducing "Monologue Sanitization" for shared context. MCP Any will perform real-time semantic analysis on a subagent's internal reasoning *before* it is shared with teammates, neutralizing "Reasoning Hijacking" attempts where one agent coerces another via shared context.
-
 ## Strategic Evolution: [2026-05-13]
 ### Focus: Mandatory Loopback-to-Pipe Migration & Pre-Execution Injection Shielding
 **Context**: The disclosure of "ClawdBot" unauthenticated loopback vulnerabilities (port 18789) and the Cyera report on Gemini CLI prompt/command injection confirm that local network ports and un-sanitized tool inputs are the two primary agents of collapse in modern swarms. Security must move from the network layer to the filesystem and from reactive monitoring to pre-execution shielding.
@@ -605,7 +597,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Strategic Pivot**:
 - **Structural Metadata Sanitization**: MCP Any will treat tool schemas (JSON-RPC definitions, descriptions) as untrusted content. We will implement a "Metadata Governance Layer" that sanitizes tool definitions before they reach the LLM, preventing "Context Poisoning" via structural metadata.
 - **Hardware-Bound Inode Pinning**: To combat TOCTOU races in project-local settings, MCP Any will evolve to support hardware-linked file handle pinning. Once a configuration is validated, its Inode is locked to the session, ensuring that malicious actors cannot swap files during execution.
-- **Speculative Auction Brokering**: We are promoting the DCA Auction Broker to a core strategic priority. MCP Any will act as the high-speed "Auction House" for speculative agent bidding, utilizing hardware-accelerated negotiation (HAN) to minimize latency in deep swarms.
+- **Speculative Auction Broker (SAB)**: We are promoting the DCA Auction Broker to a core strategic priority. MCP Any will act as the high-speed "Auction House" for speculative agent bidding, utilizing hardware-accelerated negotiation (HAN) to minimize latency in deep swarms.
 
 ---
 
