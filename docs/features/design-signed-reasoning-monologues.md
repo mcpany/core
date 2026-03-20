@@ -44,7 +44,7 @@ The emergence of "Reasoning Hijacking" via monologue injection represents a crit
 ## 7. Evolutionary Changelog
 * **2026-05-19:** Initial Document Creation.
 
-### Update: [2026-06-03] - Cross-Framework Attestation Translation
+### Update: 2026-06-03 - Cross-Framework Attestation Translation
 **Context:** Gemini's proprietary hardware-attested reasoning paths are incompatible with the OpenClaw SRM format, creating a trust gap in heterogeneous teams.
 **Architecture Adjustment:**
 * Introducing the **Cross-Framework Attestation Translator (CFAT)**.

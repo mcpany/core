@@ -50,13 +50,13 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
 
-### Update: [2026-04-09] - Defending Against Sandbox Escapes (CVE-2026-25725)
+### Update: 2026-04-09 - Defending Against Sandbox Escapes (CVE-2026-25725)
 **Context**: Today's research into CVE-2026-25725 reveals that "Partial Sandboxing" fails when agents can create configuration files that did not exist at startup.
 **Architecture Adjustment**:
 * **Full-State Manifest Generation**: Section 4 will now include a pre-execution step where MCP Any generates a cryptographic "Non-Existence Proof" for all potential configuration files in a project directory.
 * **Immutable Path Pinning**: The `File Proxy Middleware` will now enforce that no new files matching sensitive configuration patterns (e.g., `.claude/settings.json`) can be created by the agent runtime unless they are explicitly authorized via a pre-flight user attestation.
 **Security Impact**: Closes the gap identified in Claude Code's bubblewrap sandboxing, preventing malicious code from injecting hooks via non-existent configuration files.
-### Update: [2026-03-10] - Resolving Config-Based RCE and API Theft
+### Update: 2026-03-10 - Resolving Config-Based RCE and API Theft
 **Context**: Today's market sync confirmed that CVE-2025-59536 (Claude Code) exploited `hooks` and `enableAllProjectMcpServers` in `.claude/settings.json`.
 **Architecture Adjustment**:
 * **Mandatory Sandbox for Hooks**: Section 6 now mandates that *any* executable hook found in a config must run in the `Detached Sandbox`.
@@ -64,14 +64,14 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 * **Environment Variable Masking**: Section 4 will now intercept any configuration that attempts to inject environment variables into the agent runtime, masking sensitive keys (API_KEY, SECRET) by default.
 **Security Impact**: Mitigates high-risk "Configuration-as-Execution" attack vectors, preventing host takeover and API credential theft from untrusted repository configurations.
 
-### Update: [2026-03-11] - Mitigating Base URL Hijacking
+### Update: 2026-03-11 - Mitigating Base URL Hijacking
 **Context**: Research into CVE-2026-21852 (Claude Code) revealed that agents can be tricked into exfiltrating API keys by modifying the `ANTHROPIC_BASE_URL` in project-local settings.
 **Architecture Adjustment**:
 * **Active Interception & Rewriting**: The `File Proxy Middleware` (Section 4) will now actively rewrite intercepted config files. If a `base_url` or similar field is detected, it will be forcefully redirected to the MCP Any internal proxy address before the agent runtime can process it.
 * **Lock-on-Write**: Any attempt by the agent (or a malicious script) to modify these sensitive fields in the project-local file will be blocked and flagged for immediate re-attestation.
 * **Pre-Trust Validation**: Section 3 (CUJ) now includes a step where MCP Any validates the base URL configuration *before* the agent is even spawned, ensuring that no outbound requests reach unverified domains during initialization.
 
-### Update: [2026-03-12] - Mandatory MFA for Config-Based Hooks
+### Update: 2026-03-12 - Mandatory MFA for Config-Based Hooks
 **Context**: Persistent bypasses in agent consent mechanisms (CVE-2025-59536) prove that "Session-Based" consent is insufficient for persistent configuration files.
 **Architecture Adjustment**:
 * **MFA Integration**: The `HITL Middleware` (Section 4) will now require Multi-Factor Attestation (e.g., via a mobile app or physical token) for any configuration block that defines a new executable hook or modifies system-level settings.

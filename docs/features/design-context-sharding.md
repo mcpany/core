@@ -44,14 +44,14 @@ As agent swarms grow in complexity, the monolithic transfer of context becomes a
 
 ## 7. Evolutionary Changelog
 * **2026-03-27:** Initial Document Creation.
-### Update: [2026-03-28] - Atomic State Rollbacks
+### Update: 2026-03-28 - Atomic State Rollbacks
 **Context:** Today's research on OpenClaw's Atomic State Rollbacks (ASR) confirms the need for swarm-wide checkpoints.
 **Architecture Adjustment:**
 * Introducing `Checkpoint(sessionID string) (checkpointID string, error)` and `Rollback(checkpointID string) error` to the Shard Manager.
 * The Virtual Context Map now supports "Temporal Snapshots," allowing the gateway to revert the entire sharded state of a swarm to a previous valid checkpoint.
 **Security Impact:** Prevents "Swarm Sanity" loss and context poisoning by rogue sub-specialists.
 
-### Update: [2026-06-03] - Atomic Shard Locking & Prefetching
+### Update: 2026-06-03 - Atomic Shard Locking & Prefetching
 **Context:** Today's research revealed "Shard-Collision" vulnerabilities in Claude Code v2.2.0 and high latency in CSP streaming.
 **Architecture Adjustment:**
 * Introducing the **Atomic Shard Lock-Manager (ASLM)** to the Shard Manager interface.
@@ -59,7 +59,7 @@ As agent swarms grow in complexity, the monolithic transfer of context becomes a
 * Introducing the **Zero-Latency Shard Prefetcher** that speculatively loads binary shards into the state buffer based on predicted intent branches.
 **Security Impact:** Eliminates parallel-write corruption and ensures atomicity in granular state streaming.
 
-### Update: [2026-06-04] - Mission-Root Gravity (MRG)
+### Update: 2026-06-04 - Mission-Root Gravity (MRG)
 **Context:** Highly granular sharding has led to "Semantic Drift" where subagents lose sight of the primary mission.
 **Architecture Adjustment:**
 * Introducing **Mission-Root Gravity (MRG)** middleware integration.
