@@ -1100,10 +1100,11 @@
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time
   tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-
-  injected state synchronization and timing-side-channel mitigation.
+  injected state synchronization and timing-side-channel mitigation\1
 
-### Upcoming: [2026-06-18]
+\2 Upcoming: [2026-06-18\1
 
+\2 Upcoming: [2026-06-18]
 - [ ] **[P0] Autonomous Revocation Dashboard**: (2026-06-18) Real-time
   visualization of ACR events and blocked tool calls.
 - [ ] **[P0] Recursive Depth-Limit Monitor**: (2026-06-18) Visual indicator for

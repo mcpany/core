@@ -27,7 +27,8 @@ This example demonstrates how to integrate Jira with MCP Any.
 
 ## Usage
 
-You can now use the `jira/-/get_issue` tool to get information about a Jira issue.
+You can now use the `jira/-/get_issue` tool to get information about a Jira
+issue.
 
 ### Example Request
 

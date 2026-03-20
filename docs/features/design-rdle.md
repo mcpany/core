@@ -17,7 +17,8 @@ delegation lineage.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Enforce mission-root bound maximum delegation depths for all agent swarms.
+    * Enforce mission-root bound maximum delegation depths for all agent
+      swarms.
     * Mandate cryptographic binding of "Depth Tokens" to UACO task proposals.
     * Provide real-time monitoring and alerting for depth-limit violations.
     * Support "Emergency Depth Expansion" via hardware-attested HITL approval.
@@ -36,7 +37,7 @@ delegation lineage.
     3. Agent B attempts to delegate a complex sub-task to Agent C (Depth 3).
     4. Agent C attempts to spawn Agent D (Depth 4).
     5. The RDLE intercepts the UACO bid from Agent C and detects that the
-requested depth exceeds the hardware-attested manifest limit.
+       requested depth exceeds the hardware-attested manifest limit.
     6. The delegation is blocked, and the violation is logged.
 
 ## 4. Design & Architecture
@@ -57,8 +58,8 @@ requested depth exceeds the hardware-attested manifest limit.
         UACO_Bus --> RDLE Middleware
     ```
 * **APIs / Interfaces:**
-    * `UACO Headers`: Addition of `X-UAB-Mission-Depth` and `X-UAB-Depth-
-      Signature`.
+    * `UACO Headers`: Addition of `X-UAB-Mission-Depth` and
+      `X-UAB-Depth-Signature`.
     * `POST /v1/rdle/validate`: Internal endpoint for validating delegation
       proposals.
 * **Data Storage/State:**
@@ -67,8 +68,8 @@ requested depth exceeds the hardware-attested manifest limit.
 
 ## 5. Alternatives Considered
 * **Parent-Only Enforcement:** Rejected because a compromised parent could
-  simply misreport the depth to its children. Only mission-root manifest
-  binding ensures integrity.
+  simply misreport the depth to its children. Only mission-root manifest binding
+  ensures integrity.
 * **TTL-Based Limits:** Rejected because task execution time does not strictly
   correlate with reasoning depth; depth is the more accurate security boundary
   for swarms.

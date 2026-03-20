@@ -3,7 +3,8 @@
 **Status:** Implemented
 
 ## Goal
-Browse and read static assets exposed by connected MCP servers. Resources can include files, database rows, or any other content addressable by a URI.
+Browse and read static assets exposed by connected MCP servers. Resources can
+include files, database rows, or any other content addressable by a URI.
 
 ## Usage Guide
 

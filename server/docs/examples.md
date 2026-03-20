@@ -1,10 +1,14 @@
 # 🧪 Examples
 
-This document provides examples of how to use the MCP Any. It includes instructions on how to run the example services and how to interact with the server.
+This document provides examples of how to use the MCP Any. It includes
+instructions on how to run the example services and how to interact with the
+server.
 
 ## Running the Examples
 
-The examples are located in the `server/examples/upstream_service_demo` directory. Each example includes a server that can be run to demonstrate how to use MCP Any with a different type of service.
+The examples are located in the `server/examples/upstream_service_demo`
+directory. Each example includes a server that can be run to demonstrate how to
+use MCP Any with a different type of service.
 
 ### Weather Example
 
@@ -25,7 +29,8 @@ The weather example demonstrates how to use MCP Any with a HTTP service.
 
 ### Greeter Service Example
 
-The greeter service example demonstrates how to use MCP Any with a gRPC service that uses gRPC reflection.
+The greeter service example demonstrates how to use MCP Any with a gRPC service
+that uses gRPC reflection.
 
 1. **Start the main server:**
 
@@ -42,7 +47,8 @@ The greeter service example demonstrates how to use MCP Any with a gRPC service 
 
 ## Interacting with the Server
 
-You can interact with the MCP Any server using its JSON-RPC API. The following examples use `curl`.
+You can interact with the MCP Any server using its JSON-RPC API. The following
+examples use `curl`.
 
 ### List Tools
 
@@ -56,7 +62,9 @@ curl -X POST -H "Content-Type: application/json" \
 
 ### Call a Tool
 
-To call a tool, you need to know the tool's name and the required inputs. For example, to use the `GetWeather` tool from the weather example (assuming it is registered as `weather/-/GetWeather`), you would run:
+To call a tool, you need to know the tool's name and the required inputs. For
+example, to use the `GetWeather` tool from the weather example (assuming it is
+registered as `weather/-/GetWeather`), you would run:
 
 ```bash
 curl -X POST -H "Content-Type: application/json" \

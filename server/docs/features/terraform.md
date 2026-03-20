@@ -2,7 +2,8 @@
 
 **Status:** Proposal / Not Implemented
 
-The MCP Any Terraform Provider is a proposed feature to enable "Configuration as Code" for managing MCP resources using HashiCorp Terraform.
+The MCP Any Terraform Provider is a proposed feature to enable "Configuration as
+Code" for managing MCP resources using HashiCorp Terraform.
 
 ## Proposed Resources
 
@@ -20,4 +21,5 @@ resource "mcp_server" "example" {
 
 ## Note
 
-This feature is currently in the design phase and is not yet available in the `mcpany` binary.
+This feature is currently in the design phase and is not yet available in the
+`mcpany` binary.

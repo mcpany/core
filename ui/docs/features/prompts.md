@@ -3,7 +3,9 @@
 **Status:** Implemented
 
 ## Goal
-Discover and use pre-defined prompt templates. Servers can expose standardized prompts (e.g., "Analyze Code", "Summarize Text") to be used by clients or the Playground.
+Discover and use pre-defined prompt templates. Servers can expose standardized
+prompts (e.g., "Analyze Code", "Summarize Text") to be used by clients or the
+Playground.
 
 ## Usage Guide
 
@@ -16,4 +18,5 @@ Navigate to `/prompts`.
 
 ### 2. Use Prompt
 Click **"Open in Playground"** on any item.
-This will redirect you to the **Playground**, where you can use the prompt template.
+This will redirect you to the **Playground**, where you can use the prompt
+template.

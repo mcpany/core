@@ -1,6 +1,7 @@
 # Prompt Injection Guardrails
 
-The Guardrails middleware provides security by intercepting and blocking malicious prompts before they reach the backend tools.
+The Guardrails middleware provides security by intercepting and blocking
+malicious prompts before they reach the backend tools.
 
 ## Configuration
 
@@ -13,4 +14,6 @@ guardrails:
 
 ## How it works
 
-The middleware scans the body of POST requests. If a blocked phrase is detected (case-insensitive), the request is aborted with a `400 Bad Request` error and a policy violation message.
+The middleware scans the body of POST requests. If a blocked phrase is detected
+(case-insensitive), the request is aborted with a `400 Bad Request` error and a
+policy violation message.

@@ -4,7 +4,9 @@
 
 ## Goal
 
-Transform "Config-as-Code" into a visual composition experience. The Stack Composer allows users to assemble complex microservice architectures using an interactive palette and intelligent YAML editor.
+Transform "Config-as-Code" into a visual composition experience. The Stack
+Composer allows users to assemble complex microservice architectures using an
+interactive palette and intelligent YAML editor.
 
 ## Usage Guide
 
@@ -24,7 +26,8 @@ To add a service:
 
 1. Open the **Service Palette** (if collapsed).
 2. Click on a template (e.g. `Postgres`, `Redis`).
-3. The corresponding YAML configuration is injected into the editor cursor position.
+3. The corresponding YAML configuration is injected into the editor cursor
+   position.
 
 ![Service Palette](screenshots/stack_composer_palette.png)
 
@@ -37,4 +40,6 @@ You can fine-tune the configuration in the Monaco Editor.
 
 ### 4. Deploy
 
-Once satisfied, click **"Save Changes"**. The system will save the configuration. If the server is configured for hot-reload, the changes will be applied automatically to the running instance.
+Once satisfied, click **"Save Changes"**. The system will save the
+configuration. If the server is configured for hot-reload, the changes will be
+applied automatically to the running instance.

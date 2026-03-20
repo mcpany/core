@@ -1,11 +1,14 @@
 # Authentication
 
 The `mcpany` server supports flexible authentication mechanisms.
- for both incoming requests (securing your MCP server) and outgoing requests (authenticating with upstream services). These are configured **per upstream service**.
+ for both incoming requests (securing your MCP server) and outgoing requests
+(authenticating with upstream services). These are configured **per upstream
+service**.
 
 ## Configuration
 
-Incoming authentication is configured under `authentication`. Outgoing authentication is configured under `upstream_auth`.
+Incoming authentication is configured under `authentication`. Outgoing
+authentication is configured under `upstream_auth`.
 
 ### Incoming Authentication
 
@@ -41,11 +44,14 @@ upstream_services:
 **Incoming**: You want to prevent unauthorized users from calling tool X.
 **Outgoing**: Upstream API Y requires an API key or an OAuth token.
 
-Clients calling `secure-service` must provide the configured authentication (e.g., adding `X-Mcp-Api-Key` header).
+Clients calling `secure-service` must provide the configured authentication
+(e.g., adding `X-Mcp-Api-Key` header).
 
 ## Real World Example: IPInfo
 
-This example demonstrates how to configure an upstream service (`ipinfo.io`) that requires an API key, load that key from an environment variable, and verify it using the Gemini CLI.
+This example demonstrates how to configure an upstream service (`ipinfo.io`)
+that requires an API key, load that key from an environment variable, and verify
+it using the Gemini CLI.
 
 ### 1. Prerequisite: Get an API Key
 
@@ -54,7 +60,8 @@ This example demonstrates how to configure an upstream service (`ipinfo.io`) tha
 
 ### 2. Configuration
 
-Create a file named `config.yaml` with the following content. We use `${IPINFO_API_KEY}` to load the access token securely from the environment.
+Create a file named `config.yaml` with the following content. We use
+`${IPINFO_API_KEY}` to load the access token securely from the environment.
 
 ```yaml
 upstream_services:
@@ -91,7 +98,8 @@ We can use the `@google/gemini-cli` to verify that the tool works effectively.
     ```bash
     npm install -g @google/gemini-cli
     ```
-    *Note: You can also use `npx -y @google/gemini-cli` to run it without installing globaly.*
+    *Note: You can also use `npx -y @google/gemini-cli` to run it without
+installing globaly.*
 
 2.  **Authenticate Gemini CLI**:
     You need a Gemini API Key from [AI Studio](https://aistudio.google.com/).
@@ -111,4 +119,5 @@ We can use the `@google/gemini-cli` to verify that the tool works effectively.
     ```
 
     **Expected Output**:
-    The CLI should show the tool call `ipinfo` -> `get_ip_info` and then print the JSON response containing your IP details.
+    The CLI should show the tool call `ipinfo` -> `get_ip_info` and then print
+the JSON response containing your IP details.

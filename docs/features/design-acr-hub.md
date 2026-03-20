@@ -34,15 +34,15 @@ reactively enforced without waiting for human intervention.
 * **Primary Goal:** Automatically neutralize a compromised or drifting subagent
   before it can exfiltrate data via authorized tools.
 * **The Happy Path (Tasks):**
-    1. A specialist agent starts a high-trust reasoning task with hardware-
-attested capabilities.
+    1. A specialist agent starts a high-trust reasoning task with
+       hardware-attested capabilities.
     2. The AIA Broker monitors the agent's reasoning trace and detects semantic
-drift from the mission root.
+       drift from the mission root.
     3. The AIA Broker issues a high-priority ACR signal to the Hub.
     4. The ACR Hub immediately invalidates all hardware-attested capability
-tokens for that agent's session ID.
+       tokens for that agent's session ID.
     5. The next tool call attempted by the agent is rejected by the Gateway due
-to revoked attestation.
+       to revoked attestation.
 
 ## 4. Design & Architecture
 * **System Flow:**
@@ -60,8 +60,8 @@ to revoked attestation.
 * **APIs / Interfaces:**
     * `POST /v1/acr/revoke`: Internal endpoint for AIA Broker to signal
       revocation.
-    * `GET /v1/acr/check`: Gateway endpoint to verify token validity against the
-      revocation list.
+    * `GET /v1/acr/check`: Gateway endpoint to verify token validity against
+      the revocation list.
 * **Data Storage/State:**
     * High-speed, in-memory Bloom filter for active revocation list (ARL) to
       ensure sub-millisecond lookups.
@@ -75,9 +75,9 @@ to revoked attestation.
   immediate response.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** The ACR Hub itself must be protected by hardware-
-  attested identity to prevent "Denial of Capability" attacks by compromised
-  agents attempting to spoof revocation signals.
+* **Security (Zero Trust):** The ACR Hub itself must be protected by
+  hardware-attested identity to prevent "Denial of Capability" attacks by
+  compromised agents attempting to spoof revocation signals.
 * **Observability:** Revocation events are streamed to the "Local Security
   Violation Monitor" with full reasoning trace context leading to the drift.
 
