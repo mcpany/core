@@ -12,7 +12,6 @@ import (
 )
 
 // MockTool is a mock implementation of the Tool interface for testing purposes.
-//
 // Summary: Mock tool for testing.
 type MockTool struct {
 	ToolFunc           func() *v1.Tool
@@ -22,9 +21,7 @@ type MockTool struct {
 }
 
 // Tool returns the protobuf definition of the mock tool.
-//
 // Summary: Retrieves the mock tool definition.
-//
 // Returns:
 //   - *v1.Tool: The tool definition.
 func (m *MockTool) Tool() *v1.Tool {
@@ -35,9 +32,7 @@ func (m *MockTool) Tool() *v1.Tool {
 }
 
 // MCPTool returns the MCP tool definition.
-//
 // Summary: Retrieves the MCP tool definition.
-//
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
 func (m *MockTool) MCPTool() *mcp.Tool {
@@ -48,13 +43,10 @@ func (m *MockTool) MCPTool() *mcp.Tool {
 }
 
 // Execute calls the mock ExecuteFunc if set, otherwise returns nil.
-//
 // Summary: Executes the mock tool.
-//
 // Parameters:
 //   - ctx: context.Context. The execution context.
 //   - req: *ExecutionRequest. The execution request.
-//
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
@@ -66,9 +58,7 @@ func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 }
 
 // GetCacheConfig calls the mock GetCacheConfigFunc if set, otherwise returns nil.
-//
 // Summary: Retrieves the cache configuration.
-//
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration.
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {

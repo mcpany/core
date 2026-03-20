@@ -101,9 +101,7 @@ func writeError(w http.ResponseWriter, err error) {
 }
 
 // listCredentialsHandler returns all credentials.
-//
 // Summary: Lists all stored credentials.
-//
 // Parameters:
 //   - w: http.ResponseWriter. The response writer.
 //   - r: *http.Request. The HTTP request.
@@ -126,9 +124,7 @@ func (a *Application) listCredentialsHandler(w http.ResponseWriter, r *http.Requ
 }
 
 // getCredentialHandler returns a credential by ID.
-//
 // Summary: Retrieves a specific credential by ID.
-//
 // Parameters:
 //   - w: http.ResponseWriter. The response writer.
 //   - r: *http.Request. The HTTP request containing the ID in the path.
@@ -160,9 +156,7 @@ func (a *Application) getCredentialHandler(w http.ResponseWriter, r *http.Reques
 }
 
 // createCredentialHandler creates a new credential.
-//
 // Summary: Creates a new credential.
-//
 // Parameters:
 //   - w: http.ResponseWriter. The response writer.
 //   - r: *http.Request. The HTTP request containing the credential in the body.
@@ -209,9 +203,7 @@ func (a *Application) createCredentialHandler(w http.ResponseWriter, r *http.Req
 }
 
 // updateCredentialHandler updates an existing credential.
-//
 // Summary: Updates an existing credential.
-//
 // Parameters:
 //   - w: http.ResponseWriter. The response writer.
 //   - r: *http.Request. The HTTP request containing the updated credential.
@@ -255,9 +247,7 @@ func (a *Application) updateCredentialHandler(w http.ResponseWriter, r *http.Req
 }
 
 // deleteCredentialHandler deletes a credential.
-//
 // Summary: Deletes a credential by ID.
-//
 // Parameters:
 //   - w: http.ResponseWriter. The response writer.
 //   - r: *http.Request. The HTTP request containing the ID in the path.
@@ -283,7 +273,6 @@ func (a *Application) deleteCredentialHandler(w http.ResponseWriter, r *http.Req
 }
 
 // TestAuthRequest defines the payload for testing authentication.
-//
 // Summary: Request payload for testing authentication configurations.
 type TestAuthRequest struct {
 	// The credential to use (can be a reference ID or inline Credential).
@@ -300,7 +289,6 @@ type TestAuthRequest struct {
 }
 
 // TestAuthResponse defines the response for testing authentication.
-//
 // Summary: Response payload for authentication tests.
 type TestAuthResponse struct {
 	Status     int               `json:"status"`
@@ -311,9 +299,7 @@ type TestAuthResponse struct {
 }
 
 // testAuthHandler tests authentication against a target URL.
-//
 // Summary: Tests an authentication configuration by making a request to a target URL.
-//
 // Parameters:
 //   - w: http.ResponseWriter. The response writer.
 //   - r: *http.Request. The HTTP request containing the test parameters.

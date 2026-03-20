@@ -18,7 +18,6 @@ import (
 )
 
 // SQLiteAuditStore writes audit logs to a SQLite database.
-//
 // Summary: Stores audit logs in a local SQLite database with tamper-evident hashing.
 type SQLiteAuditStore struct {
 	db *sql.DB
@@ -26,21 +25,16 @@ type SQLiteAuditStore struct {
 }
 
 // NewSQLiteAuditStore creates a new SQLiteAuditStore.
-//
 // Summary: Initializes a new SQLiteAuditStore.
-//
 // Parameters:
 //   - path: string. The file path to the SQLite database.
-//
 // Returns:
 //   - *SQLiteAuditStore: The initialized store.
 //   - error: An error if the path is invalid or database initialization fails.
-//
 // Errors:
 //   - Returns error if path validation fails.
 //   - Returns error if database connection fails.
 //   - Returns error if schema creation fails.
-//
 // Side Effects:
 //   - Opens (or creates) the SQLite database file.
 //   - Creates the 'audit_logs' table.
@@ -159,16 +153,12 @@ func ensureColumn(db *sql.DB, colName string) error {
 }
 
 // Write writes an audit entry to the database.
-//
 // Summary: Writes a single audit entry with cryptographic hash chaining.
-//
 // Parameters:
 //   - ctx: context.Context. The request context.
 //   - entry: Entry. The audit entry to write.
-//
 // Returns:
 //   - error: An error if the write fails.
-//
 // Side Effects:
 //   - Inserts a row into the audit_logs table.
 func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
@@ -229,17 +219,13 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 }
 
 // Read reads audit entries from the database based on the filter.
-//
 // Summary: Retrieves audit entries matching the specified filter criteria.
-//
 // Parameters:
 //   - ctx: context.Context. The request context.
 //   - filter: Filter. The filtering criteria (time range, tool name, user ID, etc.).
-//
 // Returns:
 //   - []Entry: A slice of matching audit entries.
 //   - error: An error if the query fails.
-//
 // Side Effects:
 //   - Executes a SELECT query on the database.
 func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
@@ -312,16 +298,12 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 }
 
 // Verify checks the integrity of the audit logs.
-//
 // Summary: Validates the cryptographic hash chain of all audit entries.
-//
 // Returns:
 //   - bool: True if the chain is valid, false otherwise.
 //   - error: An error if verification fails or data is corrupted.
-//
 // Errors:
 //   - Returns error if a hash mismatch is detected.
-//
 // Side Effects:
 //   - Scans the entire audit_logs table.
 func (s *SQLiteAuditStore) Verify() (bool, error) {
@@ -372,12 +354,9 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 }
 
 // Close closes the database connection.
-//
 // Summary: Closes the SQLite database connection.
-//
 // Returns:
 //   - error: An error if closing fails.
-//
 // Side Effects:
 //   - Closes the DB connection.
 func (s *SQLiteAuditStore) Close() error {

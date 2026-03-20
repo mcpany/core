@@ -14,7 +14,6 @@ import (
 )
 
 // ValidateRequest represents the request body for the validation endpoint.
-//
 // Summary: Represents a ValidateRequest.
 type ValidateRequest struct {
 	Content string `json:"content"`
@@ -22,7 +21,6 @@ type ValidateRequest struct {
 }
 
 // ValidateResponse represents the response body for the validation endpoint.
-//
 // Summary: Represents a ValidateResponse.
 type ValidateResponse struct {
 	Valid   bool   `json:"valid"`

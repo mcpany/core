@@ -13,6 +13,5 @@ const (
 // Version is the version of the MCP Any server. This is a variable so it can be
 // set at build time using ldflags. The default value is "dev", which is used
 // for local development builds.
-//
 // Summary: Represents a Version.
 var Version = "dev"

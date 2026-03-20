@@ -10,17 +10,13 @@ import (
 )
 
 // RedactedString is the string used to replace sensitive data.
-//
 // Summary: Constant string for redacted data.
 const RedactedString = "REDACTED"
 
 // SanitizeUser creates a sanitized copy of the user object with sensitive data redacted.
-//
 // Summary: Sanitizes a user object.
-//
 // Parameters:
 //   - u (*configv1.User): The user object to sanitize.
-//
 // Returns:
 //   - *configv1.User: A sanitized copy of the user object, or nil if input is nil.
 func SanitizeUser(u *configv1.User) *configv1.User {
@@ -38,12 +34,9 @@ func SanitizeUser(u *configv1.User) *configv1.User {
 }
 
 // SanitizeCredential creates a sanitized copy of the credential object with sensitive data redacted.
-//
 // Summary: Sanitizes a credential object.
-//
 // Parameters:
 //   - c (*configv1.Credential): The credential object to sanitize.
-//
 // Returns:
 //   - *configv1.Credential: A sanitized copy of the credential object, or nil if input is nil.
 func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
@@ -65,12 +58,9 @@ func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
 
 // SanitizeAuthentication sanitizes the authentication object.
 // It modifies the object in place (assumes it's already a clone).
-//
 // Summary: Sanitizes an authentication object.
-//
 // Parameters:
 //   - a (*configv1.Authentication): The authentication object to sanitize.
-//
 // Returns:
 //   - *configv1.Authentication: The sanitized authentication object, or nil if input is nil.
 func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication {
@@ -114,12 +104,9 @@ func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication
 }
 
 // SanitizeUserToken sanitizes the user token.
-//
 // Summary: Sanitizes a user token.
-//
 // Parameters:
 //   - t (*configv1.UserToken): The user token to sanitize.
-//
 // Returns:
 //   - *configv1.UserToken: The sanitized user token, or nil if input is nil.
 func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
@@ -136,12 +123,9 @@ func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
 }
 
 // SanitizeSecretValue sanitizes a SecretValue.
-//
 // Summary: Sanitizes a SecretValue object.
-//
 // Parameters:
 //   - s (*configv1.SecretValue): The secret value to sanitize.
-//
 // Returns:
 //   - *configv1.SecretValue: The sanitized secret value, or nil if input is nil.
 func SanitizeSecretValue(s *configv1.SecretValue) *configv1.SecretValue {

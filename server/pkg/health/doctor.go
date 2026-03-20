@@ -12,7 +12,6 @@ import (
 )
 
 // CheckResult represents a single check result.
-//
 // Summary: The outcome of a single health check execution.
 type CheckResult struct {
 	Status  string `json:"status"`
@@ -22,12 +21,10 @@ type CheckResult struct {
 }
 
 // CheckFunc is a function that performs a health check.
-//
 // Summary: Function signature for a health check execution logic.
 type CheckFunc func(context.Context) CheckResult
 
 // DoctorReport represents the full doctor report.
-//
 // Summary: Aggregated health report containing all check results.
 type DoctorReport struct {
 	Status    string                 `json:"status"`
@@ -36,7 +33,6 @@ type DoctorReport struct {
 }
 
 // Doctor is the health check handler.
-//
 // Summary: Registry and handler for system health checks (Doctor).
 type Doctor struct {
 	checks     map[string]CheckFunc
@@ -45,12 +41,9 @@ type Doctor struct {
 }
 
 // NewDoctor creates a new Doctor.
-//
 // Summary: Initializes a new Doctor instance.
-//
 // Returns:
 //   - *Doctor: The initialized doctor registry.
-//
 // Side Effects:
 //   - Initializes internal maps and HTTP client.
 func NewDoctor() *Doctor {
@@ -61,13 +54,10 @@ func NewDoctor() *Doctor {
 }
 
 // AddCheck adds a named health check.
-//
 // Summary: Registers a custom health check function.
-//
 // Parameters:
 //   - name: string. The unique name of the check.
 //   - check: CheckFunc. The function to execute.
-//
 // Side Effects:
 //   - Updates the internal checks map.
 func (d *Doctor) AddCheck(name string, check CheckFunc) {
@@ -77,12 +67,9 @@ func (d *Doctor) AddCheck(name string, check CheckFunc) {
 }
 
 // Handler returns the http handler.
-//
 // Summary: Returns an HTTP handler that runs all checks and returns a JSON report.
-//
 // Returns:
 //   - http.HandlerFunc: The HTTP handler.
-//
 // Side Effects:
 //   - Executes all registered health checks.
 //   - Makes an external network call to google.com (connectivity check).

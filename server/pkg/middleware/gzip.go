@@ -253,21 +253,12 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 }
 
 // Flush flushes the compressed stream to the client.
-//
 // ⚡ BOLT: Implemented Flush to support streaming responses (e.g. SSE).
 // Randomized Selection from Top 5 High-Impact Targets.
-//
 // Summary: Flushes the compressed stream to the client.
-//
 // Parameters:
-//   - None.
-//
 // Returns:
-//   - None.
-//
 // Errors:
-//   - None.
-//
 // Side Effects:
 //   - Forces any buffered data to be compressed and sent.
 //   - Flushes the underlying response writer.
@@ -291,18 +282,10 @@ func (w *gzipResponseWriter) Flush() {
 }
 
 // Close closes the gzip writer and returns it to the pool.
-//
 // Summary: Closes the Gzip writer and releases resources.
-//
 // Parameters:
-//   - None.
-//
 // Returns:
-//   - None.
-//
 // Errors:
-//   - None.
-//
 // Side Effects:
 //   - Closes the active gzip writer.
 //   - Returns buffers to the pool.
