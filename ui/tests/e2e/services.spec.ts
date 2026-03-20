@@ -6,61 +6,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Services Feature', () => {
-  const services: any[] = [
-    {
-        name: "Payment Gateway",
-        type: "http",
-        address: "https://stripe.com",
-        status: "up",
-        version: "v1.2.0",
-        enabled: true,
-        tools: [{
-            name: "process_payment",
-            description: "Process a payment via Stripe.",
-            inputSchema: {
-                type: "object",
-                properties: {
-                    amount: {
-                        type: "number",
-                        description: "Payment amount in cents"
-                    },
-                    currency: {
-                        type: "string",
-                        description: "Currency code (e.g., USD)"
-                    }
-                },
-                required: ["amount", "currency"]
-            }
-        }]
-    },
-    {
-        name: "User Service",
-        type: "grpc",
-        address: "localhost:50051",
-        status: "up",
-        version: "v1.0",
-        enabled: true
-    }
-  ];
-
   test.beforeEach(async ({ page }) => {
-    // page.on('request', request => console.log('>>', request.method(), request.url()));
-
-    // Mock registration API with dynamic state
-    await page.route(url => url.pathname.endsWith('/api/v1/services'), async route => {
-        const method = route.request().method();
-        if (method === 'GET') {
-            await route.fulfill({ json: { services } });
-        } else if (method === 'POST') {
-            const newSvc = route.request().postDataJSON();
-            const created = { ...newSvc, status: 'up', enabled: true };
-            services.push(created);
-            await route.fulfill({ json: created });
-        } else {
-            await route.continue();
-        }
-    });
-
     await page.goto('/upstream-services');
   });
 
@@ -111,7 +57,7 @@ test.describe('Services Feature', () => {
     await page.getByRole('button', { name: 'Cancel' }).click();
   });
 
-  test.skip('should render schema visualizer in service tools dialog', async ({ page }) => {
+  test('should render schema visualizer in service tools dialog', async ({ page }) => {
     const paymentRow = page.locator('tr').filter({ hasText: 'Payment Gateway' });
 
     // Click on the row to open details
