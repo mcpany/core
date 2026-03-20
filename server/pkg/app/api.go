@@ -802,8 +802,27 @@ func (a *Application) handleTools(store storage.Storage) http.HandlerFunc {
 				return
 			}
 
+			var configTools []*configv1.ToolDefinition
+			if mcpSvc := service.GetMcpService(); mcpSvc != nil {
+				configTools = mcpSvc.GetTools()
+			} else if httpSvc := service.GetHttpService(); httpSvc != nil {
+				configTools = httpSvc.GetTools()
+			} else if grpcSvc := service.GetGrpcService(); grpcSvc != nil {
+				configTools = grpcSvc.GetTools()
+			} else if wsSvc := service.GetWebsocketService(); wsSvc != nil {
+				configTools = wsSvc.GetTools()
+			} else if webrtcSvc := service.GetWebrtcService(); webrtcSvc != nil {
+				configTools = webrtcSvc.GetTools()
+			} else if openapiSvc := service.GetOpenapiService(); openapiSvc != nil {
+				configTools = openapiSvc.GetTools()
+			} else if cmdSvc := service.GetCommandLineService(); cmdSvc != nil {
+				configTools = cmdSvc.GetTools()
+			} else if fsSvc := service.GetFilesystemService(); fsSvc != nil {
+				configTools = fsSvc.GetTools()
+			}
+
 			found := false
-			for _, t := range service.GetTools() {
+			for _, t := range configTools {
 				if t.GetName() == req.Name {
 					t.SetDisable(req.Disable)
 					found = true
@@ -813,10 +832,27 @@ func (a *Application) handleTools(store storage.Storage) http.HandlerFunc {
 
 			if !found {
 				// Tool not explicitly defined in config, add it to explicit tool list
-				service.SetTools(append(service.GetTools(), &configv1.ToolDefinition{
-					Name:    req.Name,
-					Disable: req.Disable,
-				}))
+				newTool := &configv1.ToolDefinition{}
+				newTool.SetName(req.Name)
+				newTool.SetDisable(req.Disable)
+
+				if mcpSvc := service.GetMcpService(); mcpSvc != nil {
+					mcpSvc.SetTools(append(mcpSvc.GetTools(), newTool))
+				} else if httpSvc := service.GetHttpService(); httpSvc != nil {
+					httpSvc.SetTools(append(httpSvc.GetTools(), newTool))
+				} else if grpcSvc := service.GetGrpcService(); grpcSvc != nil {
+					grpcSvc.SetTools(append(grpcSvc.GetTools(), newTool))
+				} else if wsSvc := service.GetWebsocketService(); wsSvc != nil {
+					wsSvc.SetTools(append(wsSvc.GetTools(), newTool))
+				} else if webrtcSvc := service.GetWebrtcService(); webrtcSvc != nil {
+					webrtcSvc.SetTools(append(webrtcSvc.GetTools(), newTool))
+				} else if openapiSvc := service.GetOpenapiService(); openapiSvc != nil {
+					openapiSvc.SetTools(append(openapiSvc.GetTools(), newTool))
+				} else if cmdSvc := service.GetCommandLineService(); cmdSvc != nil {
+					cmdSvc.SetTools(append(cmdSvc.GetTools(), newTool))
+				} else if fsSvc := service.GetFilesystemService(); fsSvc != nil {
+					fsSvc.SetTools(append(fsSvc.GetTools(), newTool))
+				}
 			}
 
 			if err := store.SaveService(r.Context(), service); err != nil {
