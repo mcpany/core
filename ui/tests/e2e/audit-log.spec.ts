@@ -13,7 +13,19 @@ test.describe('Audit Log Viewer', () => {
 
     // Call the /api/v1/debug/traces/seed endpoint to populate the DB with a rich trace
     const seedRes = await request.post('/api/v1/debug/traces/seed');
+
+    if (!seedRes.ok()) {
+      const text = await seedRes.text();
+      console.log(`DEBUG SEED FAILED: ${seedRes.status()} ${text}`);
+    }
+
+    if (!seedRes.ok()) {
+      const text = await seedRes.text();
+      console.log(`DEBUG SEED FAILED: ${seedRes.status()} ${text}`);
+    }
     expect(seedRes.ok()).toBeTruthy();
+
+
 
     await page.goto('/login');
     await page.waitForLoadState('networkidle');
