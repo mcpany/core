@@ -130,7 +130,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     }, [userViewMode, tableData, mcpContent]);
 
     const renderRaw = () => (
-        <JsonView data={result} smartTable={true} maxHeight={400} />
+        <JsonView data={result} maxHeight={400} />
     );
 
     const renderRich = () => {
