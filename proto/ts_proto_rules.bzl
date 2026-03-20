@@ -53,6 +53,7 @@ def _ts_proto_gen_impl(ctx):
     args = ctx.actions.args()
     args.add_all(proto_path_args)
     args.add("--plugin=protoc-gen-ts_proto=" + plugin.path)
+
     # Output directory must match where declare_file places files.
     # For a rule in package "proto/api/v1", ctx.bin_dir.path is
     # "bazel-out/<config>/bin" and declare_file("foo.ts") lands at
@@ -192,4 +193,3 @@ ts_wkt_gen = rule(
     },
     doc = "Generates TypeScript bindings from WKT proto_library targets, preserving package paths.",
 )
-
