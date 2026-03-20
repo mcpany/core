@@ -5,4 +5,6 @@ cd server
 rm -rf vendor
 go mod tidy
 go mod vendor
-$(go env GOPATH)/bin/golangci-lint run ./cmd/server/...
+export GOWORK=off
+/home/jules/go/bin/golangci-lint run ./cmd/server/...
+git restore go.mod go.sum
