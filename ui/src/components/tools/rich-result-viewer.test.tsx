@@ -29,6 +29,7 @@ describe('RichResultViewer', () => {
 
   it('renders a table for tabular data and handles sorting and CSV export', () => {
     const mockToast = vi.fn();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn(useToastHook, 'useToast').mockReturnValue({ toast: mockToast } as any);
 
     // Mock URL.createObjectURL and revokeObjectURL
