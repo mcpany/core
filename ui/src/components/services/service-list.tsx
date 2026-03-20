@@ -122,38 +122,6 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
             />
           </div>
 
-                   {selected.size > 0 && (
-                       <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
-                           <span className="text-sm text-muted-foreground mr-2">{selected.size} selected</span>
-                           {onBulkToggle && (
-                               <>
-                                 <Button size="sm" variant="outline" onClick={() => {
-                                     onBulkToggle(Array.from(selected), true);
-                                     setSelected(new Set());
-                                 }}>
-                                     <PlayCircle className="mr-2 h-4 w-4 text-green-600" /> Enable
-                                 </Button>
-                                 <Button size="sm" variant="outline" onClick={() => {
-                                     onBulkToggle(Array.from(selected), false);
-                                     setSelected(new Set());
-                                 }}>
-                                     <PauseCircle className="mr-2 h-4 w-4 text-amber-600" /> Disable
-                                 </Button>
-                               </>
-                           )}
-                           <Button size="sm" variant="outline" onClick={() => setIsBulkEditDialogOpen(true)}>
-                               <Settings className="mr-2 h-4 w-4" /> Bulk Edit
-                           </Button>
-                           {onBulkDelete && (
-                               <Button size="sm" variant="destructive" onClick={() => {
-                                   onBulkDelete(Array.from(selected));
-                                   setSelected(new Set());
-                               }}>
-                                   <Trash2 className="mr-2 h-4 w-4" /> Delete
-                               </Button>
-                           )}
-                       </div>
-                   )}
       </div>
 
       <div className="rounded-md border">
@@ -205,6 +173,47 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
           </TableBody>
         </Table>
       </div>
+
+      {selected.size > 0 && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-md border shadow-lg rounded-full px-6 py-3 flex items-center gap-4 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300 ease-out">
+              <span className="text-sm font-medium text-foreground mr-2 px-2 py-1 bg-muted rounded-full">{selected.size} selected</span>
+              <div className="h-6 w-px bg-border mx-1"></div>
+              {onBulkToggle && (
+                  <>
+                      <Button size="sm" variant="ghost" className="hover:bg-green-500/10 hover:text-green-600" onClick={() => {
+                          onBulkToggle(Array.from(selected), true);
+                          setSelected(new Set());
+                      }}>
+                          <PlayCircle className="mr-2 h-4 w-4 text-green-600" /> Enable
+                      </Button>
+                      <Button size="sm" variant="ghost" className="hover:bg-amber-500/10 hover:text-amber-600" onClick={() => {
+                          onBulkToggle(Array.from(selected), false);
+                          setSelected(new Set());
+                      }}>
+                          <PauseCircle className="mr-2 h-4 w-4 text-amber-600" /> Disable
+                      </Button>
+                  </>
+              )}
+              <Button size="sm" variant="ghost" onClick={() => setIsBulkEditDialogOpen(true)}>
+                  <Settings className="mr-2 h-4 w-4" /> Edit Tags
+              </Button>
+              {onBulkDelete && (
+                  <>
+                      <div className="h-6 w-px bg-border mx-1"></div>
+                      <Button size="sm" variant="ghost" className="text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => {
+                          onBulkDelete(Array.from(selected));
+                          setSelected(new Set());
+                      }}>
+                          <Trash2 className="mr-2 h-4 w-4" /> Delete
+                      </Button>
+                  </>
+              )}
+              <Button size="icon" variant="ghost" className="ml-2 rounded-full h-8 w-8 text-muted-foreground" onClick={() => setSelected(new Set())}>
+                  <XCircle className="h-4 w-4" />
+              </Button>
+          </div>
+      )}
+
       <Dialog open={isBulkEditDialogOpen} onOpenChange={setIsBulkEditDialogOpen}>
         <DialogContent>
             <DialogHeader>
