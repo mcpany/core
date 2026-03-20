@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "interop",
+    srcs = ["bridge.go"],
+    importpath = "github.com/mcpany/core/src/interop",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "swarm_test",
+    srcs = ["swarm_test.go"],
+    embed = [":interop"],
+)
