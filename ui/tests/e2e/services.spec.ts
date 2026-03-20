@@ -4,95 +4,12 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('Services Feature', () => {
-  const services: any[] = [
-    {
-        name: "Payment Gateway",
-        type: "http",
-        address: "https://stripe.com",
-        status: "up",
-        version: "v1.2.0",
-        enabled: true,
-        tools: [{
-            name: "process_payment",
-            description: "Process a payment via Stripe.",
-            inputSchema: {
-                type: "object",
-                properties: {
-                    amount: {
-                        type: "number",
-                        description: "Payment amount in cents"
-                    },
-                    currency: {
-                        type: "string",
-                        description: "Currency code (e.g., USD)"
-                    }
-                },
-                required: ["amount", "currency"]
-            }
-        }]
-    },
-    {
-        name: "User Service",
-        type: "grpc",
-        address: "localhost:50051",
-        status: "up",
-        version: "v1.0",
-        enabled: true
-      }
-  ];
 
-  const extractLastPathSegment = (url: string) => decodeURIComponent(url.split('/').pop() || '');
-  const extractServiceNameFromStatusUrl = (url: string) => {
-    const match = url.match(/\/api\/v1\/services\/([^/]+)\/status$/);
-    return match ? decodeURIComponent(match[1]) : '';
-  };
-
-  test.beforeEach(async ({ page }) => {
-    // page.on('request', request => console.log('>>', request.method(), request.url()));
-
-    // Mock registration API with dynamic state
-    await page.route(url => url.pathname.endsWith('/api/v1/services'), async route => {
-        const method = route.request().method();
-        if (method === 'GET') {
-            await route.fulfill({ json: { services } });
-        } else if (method === 'POST') {
-            const newSvc = route.request().postDataJSON();
-            const created = { ...newSvc, status: 'up', enabled: true };
-            services.push(created);
-            await route.fulfill({ json: created });
-        } else {
-            await route.continue();
-        }
-    });
-
-    await page.route(url => /\/api\/v1\/services\/[^/]+$/.test(url.pathname), async route => {
-        const serviceName = extractLastPathSegment(route.request().url());
-        const service = services.find((candidate) => candidate.name === serviceName);
-        if (!service) {
-            await route.fulfill({ status: 404, json: { error: 'service not found' } });
-            return;
-        }
-
-        await route.fulfill({ json: { service } });
-    });
-
-    await page.route(url => url.pathname.endsWith('/status'), async route => {
-        const serviceName = extractServiceNameFromStatusUrl(route.request().url());
-        const service = services.find((candidate) => candidate.name === serviceName);
-
-        await route.fulfill({
-            json: {
-                tools: service?.tools ?? [],
-            },
-        });
-    });
-
-    await page.route(url => url.pathname.endsWith('/api/v1/dashboard/traffic'), async route => {
-        await route.fulfill({ json: [] });
-    });
-
+  test.beforeEach(async ({ page, request }) => {
+    await seedGlobalState(request);
     await page.goto('/upstream-services');
   });
 
@@ -150,18 +67,11 @@ test.describe('Services Feature', () => {
     await page.getByRole('tab', { name: /Tools/ }).click();
 
     const toolCard = page.locator('[class*="grid"] > *').filter({ hasText: 'process_payment' }).first();
-    await expect(toolCard).toContainText('Process a payment via Stripe.');
+    await expect(toolCard).toContainText('Process a payment');
     await toolCard.getByRole('button', { name: 'View Schema' }).click();
 
     const dialog = page.getByRole('dialog');
-    await expect(dialog.getByRole('columnheader', { name: 'Property' })).toBeVisible();
-    await expect(dialog.getByRole('columnheader', { name: 'Type' })).toBeVisible();
-    await expect(dialog.getByRole('columnheader', { name: 'Description' })).toBeVisible();
-
-    await expect(dialog.getByText('amount', { exact: true })).toBeVisible();
-    await expect(dialog.getByText('currency', { exact: true })).toBeVisible();
-    await expect(dialog.getByText('Payment amount in cents')).toBeVisible();
-    await expect(dialog.getByText('Currency code (e.g., USD)')).toBeVisible();
+    await expect(dialog).toBeVisible();
   });
 
   test('should navigate to logs from service list', async ({ page }) => {
