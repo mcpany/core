@@ -325,39 +325,37 @@ export function LogStream({
                     onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
-                {isEmbedded && (
-                    <div className="text-[10px] text-muted-foreground flex items-center justify-end px-2 italic">
-                        Note: Showing live logs only. Historical logs may not be available.
-                    </div>
-                )}
-                {!isEmbedded && (
-                    <div className="flex items-center gap-2 justify-end">
-                        <Monitor className="h-4 w-4 text-muted-foreground" />
-                        <Select value={filterSource} onValueChange={setFilterSource}>
-                            <SelectTrigger className="w-[140px] bg-background">
-                                <SelectValue placeholder="Source" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="ALL">All Sources</SelectItem>
-                                {uniqueSources.map(source => (
-                                    <SelectItem key={source} value={source}>{source}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                <div className="flex items-center gap-2 justify-end">
+                    <Monitor className="h-4 w-4 text-muted-foreground" />
+                    <Select value={filterSource} onValueChange={setFilterSource}>
+                        <SelectTrigger className="w-[140px] bg-background">
+                            <SelectValue placeholder="Source" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="ALL">All Sources</SelectItem>
+                            {uniqueSources.map(source => (
+                                <SelectItem key={source} value={source}>{source}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
 
-                        <Filter className="h-4 w-4 text-muted-foreground ml-2" />
-                        <Select value={filterLevel} onValueChange={setFilterLevel}>
-                            <SelectTrigger className="w-[120px] bg-background">
-                                <SelectValue placeholder="Level" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="ALL">All Levels</SelectItem>
-                                <SelectItem value="INFO">Info</SelectItem>
-                                <SelectItem value="WARN">Warning</SelectItem>
-                                <SelectItem value="ERROR">Error</SelectItem>
-                                <SelectItem value="DEBUG">Debug</SelectItem>
-                            </SelectContent>
-                        </Select>
+                    <Filter className="h-4 w-4 text-muted-foreground ml-2" />
+                    <Select value={filterLevel} onValueChange={setFilterLevel}>
+                        <SelectTrigger className="w-[120px] bg-background">
+                            <SelectValue placeholder="Level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="ALL">All Levels</SelectItem>
+                            <SelectItem value="INFO">Info</SelectItem>
+                            <SelectItem value="WARN">Warning</SelectItem>
+                            <SelectItem value="ERROR">Error</SelectItem>
+                            <SelectItem value="DEBUG">Debug</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                {isEmbedded && (
+                    <div className="text-[10px] text-muted-foreground flex items-center justify-end px-2 italic mt-2">
+                        Note: Showing live logs only. Historical logs may not be available.
                     </div>
                 )}
              </div>
