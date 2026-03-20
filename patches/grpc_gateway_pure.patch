@@ -7,4 +7,3 @@
 +    pure = "on",
      visibility = ["//visibility:public"],
  )
- 
