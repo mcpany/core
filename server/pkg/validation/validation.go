@@ -26,6 +26,14 @@ import (
 //
 // Returns:
 //   - error: An error if validation fails.
+//
+// Errors:
+//   - Returns "port must be between 0 and 65535" if triggered.
+//   - Returns "port is required" if triggered.
+//   - Returns "port must be between 0 and 65535" if triggered.
+//
+// Side Effects:
+//   - Makes network calls via HTTP or gRPC.
 func IsValidBindAddress(s string) error {
 	_, port, err := net.SplitHostPort(s)
 	if err != nil {
@@ -144,6 +152,15 @@ var (
 //
 // Parameters:
 //   - paths: []string. The list of allowed paths.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func SetAllowedPaths(paths []string) {
 	allowedPaths = paths
 }
@@ -329,6 +346,12 @@ var allowedOpaqueSchemes = map[string]bool{
 //
 // Returns:
 //   - bool: True if valid.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func IsValidURL(s string) bool {
 	if len(s) > 2048 || strings.TrimSpace(s) != s {
 		return false
@@ -384,6 +407,15 @@ func IsValidURL(s string) bool {
 //
 // Returns:
 //   - error: An error if validation fails.
+//
+// Errors:
+//   - Returns "http call definition cannot be nil" if triggered.
+//   - Returns "path is required" if triggered.
+//   - Returns "path must start with a '/'" if triggered.
+//   - And potentially other underlying errors.
+//
+// Side Effects:
+//   - None.
 func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 	if def == nil {
 		return fmt.Errorf("http call definition cannot be nil")

@@ -314,6 +314,15 @@ type statsCacheEntry struct {
 //
 // Returns:
 //   - (*Application): The initialized application.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -348,6 +357,12 @@ func NewApplication() *Application {
 //   - Starts HTTP and gRPC servers.
 //   - Initializes background workers.
 //   - Loads configuration.
+//
+// Errors:
+//   - Returns "failed to setup filesystem: %w" if triggered.
+//   - Returns "failed to initialize sqlite db: %w" if triggered.
+//   - Returns "postgres driver selected but db_dsn is empty" if triggered.
+//   - And potentially other underlying errors.
 //
 //nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
 func (a *Application) Run(opts RunOptions) error {
@@ -931,6 +946,9 @@ func (a *Application) Run(opts RunOptions) error {
 // Side Effects:
 //   - Reads configuration files.
 //   - Updates global settings, user auth, profiles, and service registry.
+//
+// Errors:
+//   - Returns "failed to load services from config: %w" if triggered.
 func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	start := time.Now()
@@ -1363,6 +1381,12 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 //
 // Returns:
 //   - (error): nil if startup completes successfully, or a context error if canceled.
+//
+// Errors:
+//   - Returns an error if the operation fails or inputs are invalid.
+//
+// Side Effects:
+//   - None.
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1493,6 +1517,12 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or inputs are invalid.
+//
+// Side Effects:
+//   - None.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -1514,6 +1544,15 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
+//
+// Errors:
+//   - Returns "failed to create request for health check: %w" if triggered.
+//   - Returns "health check failed: %w" if triggered.
+//   - Returns "failed to read response body: %w" if triggered.
+//   - And potentially other underlying errors.
+//
+// Side Effects:
+//   - Makes network calls via HTTP or gRPC.
 func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,
@@ -2548,6 +2587,12 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 //
 // Returns:
 //   - (http.Handler): The wrapped handler.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Makes network calls via HTTP or gRPC.
 func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), middleware.HTTPRequestContextKey, r)

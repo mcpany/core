@@ -28,6 +28,12 @@ type GuardrailsConfig struct {
 //
 // Returns:
 //   - gin.HandlerFunc: The Gin middleware handler.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Makes network calls via HTTP or gRPC.
 func NewGuardrailsMiddleware(config GuardrailsConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Only check POST requests (likely prompt submissions)

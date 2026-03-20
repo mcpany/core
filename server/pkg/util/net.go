@@ -86,6 +86,15 @@ type SafeDialer struct {
 //
 // Returns:
 //   - (*SafeDialer): A new SafeDialer instance with restrictive defaults.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewSafeDialer() *SafeDialer {
 	return &SafeDialer{
 		AllowLoopback:  false,
@@ -108,6 +117,15 @@ func NewSafeDialer() *SafeDialer {
 // Returns:
 //   - (net.Conn): The established connection.
 //   - (error): An error if resolution fails, all resolved IPs are blocked by policy, or the connection fails.
+//
+// Errors:
+//   - Returns "failed to split host and port: %w" if triggered.
+//   - Returns "dns lookup failed for host %s: %w" if triggered.
+//   - Returns "no ip addresses found for host: %s" if triggered.
+//   - And potentially other underlying errors.
+//
+// Side Effects:
+//   - Makes network calls via HTTP or gRPC.
 func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -182,6 +200,12 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 // Returns:
 //   - (net.Conn): The established connection.
 //   - (error): An error if the connection is blocked by policy or fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or inputs are invalid.
+//
+// Side Effects:
+//   - None.
 func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }
@@ -199,6 +223,16 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //
 // Returns:
 //   - (*http.Client): A configured HTTP client.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Makes network calls via HTTP or gRPC.
+//   - Interacts with the local filesystem.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
@@ -234,6 +268,14 @@ func NewSafeHTTPClient() *http.Client {
 //
 // Returns:
 //   - (error): nil if the connection succeeded, or an error if it failed.
+//
+// Errors:
+//   - Returns "failed to parse address %s: %w" if triggered.
+//   - Returns "failed to connect to address %s: %w" if triggered.
+//
+// Side Effects:
+//   - Makes network calls via HTTP or gRPC.
+//   - Interacts with the local filesystem.
 func CheckConnection(ctx context.Context, address string) error {
 	var target string
 	if strings.Contains(address, "://") {
@@ -308,6 +350,12 @@ func CheckConnection(ctx context.Context, address string) error {
 // Returns:
 //   - (net.Listener): The successfully bound listener.
 //   - (error): An error if binding fails after all retries.
+//
+// Errors:
+//   - Returns an error if the operation fails or inputs are invalid.
+//
+// Side Effects:
+//   - Makes network calls via HTTP or gRPC.
 func ListenWithRetry(ctx context.Context, network, address string) (net.Listener, error) {
 	var lis net.Listener
 	var err error

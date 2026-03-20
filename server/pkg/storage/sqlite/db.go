@@ -35,6 +35,12 @@ type DB struct {
 // Side Effects:
 //   - Creates the database file and directories if they don't exist.
 //   - Initializes the database schema.
+//
+// Errors:
+//   - Returns "failed to create db directory: %w" if triggered.
+//   - Returns "failed to open sqlite db: %w" if triggered.
+//   - Returns "failed to init schema: %w" if triggered.
+//   - And potentially other underlying errors.
 func NewDB(path string) (*DB, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0750); err != nil {
 		return nil, fmt.Errorf("failed to create db directory: %w", err)

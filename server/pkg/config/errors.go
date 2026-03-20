@@ -98,6 +98,10 @@ func (e *ActionableError) Unwrap() error {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns "%s: %w" if triggered.
+//   - Returns "%s: %w" if triggered.
 func WrapActionableError(context string, err error) error {
 	if err == nil {
 		return nil

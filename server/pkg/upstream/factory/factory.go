@@ -63,6 +63,12 @@ type UpstreamServiceFactory struct {
 //
 // Returns:
 //   - Factory: A new Factory instance.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *configv1.GlobalSettings) Factory {
 	return &UpstreamServiceFactory{
 		poolManager:    poolManager,
@@ -81,6 +87,14 @@ func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *config
 // Returns:
 //   - upstream.Upstream: A new upstream service instance.
 //   - error: An error if the service type is unknown.
+//
+// Errors:
+//   - Returns "upstream service config cannot be nil" if triggered.
+//   - Returns "unknown service config type: %T" if triggered.
+//
+// Side Effects:
+//   - Makes network calls via HTTP or gRPC.
+//   - Reads or writes to the database.
 func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
 	if config == nil {
 		return nil, fmt.Errorf("upstream service config cannot be nil")

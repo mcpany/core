@@ -7,17 +7,15 @@
 
 ## Elevator Pitch
 
-**What is this?**
+**What is this project and why does it exist?**
 
 **MCP Any** is a universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It acts as a configuration-driven gateway, bridging the gap between your backend services (REST, gRPC, OpenAPI, Command-line) and AI agents.
-
-**Why does it exist?**
 
 Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and significant maintenance overhead. MCP Any solves this problem by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint, allowing you to focus on capabilities rather than plumbing.
 
 ## Architecture
 
-**High-Level Overview**
+**High-level overview of the stack and design patterns:**
 
 MCP Any utilizes a modular, adapter-based architecture to decouple the MCP protocol from upstream API specifics. Built with Go for performance and concurrency, it serves as a robust middleware between AI clients and your infrastructure.
 
@@ -76,7 +74,7 @@ graph TD
 
 ## Getting Started
 
-Follow these steps to get up and running with MCP Any immediately.
+**Step-by-step instructions from `git clone` to `Hello World`:**
 
 ### Prerequisites
 
@@ -84,19 +82,32 @@ Follow these steps to get up and running with MCP Any immediately.
 *   `make` (for build automation)
 *   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
 
-### One-Shot Setup
-
-The exact commands to clone, install dependencies, and run the app:
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/mcpany/core.git
 cd core
+```
+
+### 2. Prepare dependencies
+
+```bash
 make prepare
+```
+
+### 3. Build the application
+
+```bash
 make build
+```
+
+### 4. Run the server
+
+```bash
 ./build/bin/server run --config-path server/config.minimal.yaml
 ```
 
-### Hello World
+### 5. Hello World Verification
 
 Once the server is running, you can verify its health and connect a client.
 
@@ -118,7 +129,9 @@ Ask your agent:
 
 The agent will use the `get_weather` tool exposed by MCP Any (configured in `config.minimal.yaml`) to fetch the simulated data.
 
-## Developer Workflow
+## Development
+
+**How to run tests, lint, and build:**
 
 We adhere to a strict development workflow to ensure code quality and maintainability.
 
@@ -157,10 +170,12 @@ To work on the frontend dashboard (Next.js):
 ```bash
 cd ui
 npm install
-npm run dev
+npm run dev &
 ```
 
 ## Configuration
+
+**Environment variables and required secrets:**
 
 MCP Any is configured via environment variables and YAML/JSON configuration files. This allows for flexible deployment across different environments.
 

@@ -42,6 +42,11 @@ type DoctorRunner struct {
 // Side Effects:
 //   - Prints check results to r.Out.
 //   - Makes HTTP requests to the running server.
+//
+// Errors:
+//   - Returns "configuration load failed: %w" if triggered.
+//   - Returns "failed to create request: %w" if triggered.
+//   - Returns "failed to create request: %w" if triggered.
 func (r *DoctorRunner) Run(cmd *cobra.Command, _ []string) error {
 	ctx := cmd.Context()
 	if ctx == nil {
