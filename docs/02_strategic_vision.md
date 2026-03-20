@@ -20,7 +20,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-14]
 ### Focus: Attention Sovereignty & MDRA-Native Mesh Governance
 
 **Context**: Today's findings on **Attention-Aware Routing (AAR)** and **Multi-Dimensional Reasoning Attestation (MDRA)** reveal that coordination integrity must now account for specialist availability and unified attestation tokens. The discovery of gRPC-based side-channels in "Shadow Coordination" proves that transport-layer metadata is a critical new attack vector.
