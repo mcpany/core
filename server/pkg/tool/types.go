@@ -77,6 +77,23 @@ var fastJSONNumber = jsoniter.Config{
 	UseNumber:              true,
 }.Froze()
 
+var bufferPool = sync.Pool{
+	New: func() any {
+		return new(bytes.Buffer)
+	},
+}
+
+// getBuffer returns a bytes.Buffer from the pool.
+func getBuffer() *bytes.Buffer {
+	return bufferPool.Get().(*bytes.Buffer)
+}
+
+// putBuffer returns a bytes.Buffer to the pool after resetting it.
+func putBuffer(b *bytes.Buffer) {
+	b.Reset()
+	bufferPool.Put(b)
+}
+
 // Tool is the fundamental interface for any executable tool in the system.
 //
 // Summary: Interface for defining and executing tools.
@@ -900,7 +917,10 @@ func (t *HTTPTool) logRequest(ctx context.Context, httpReq *http.Request, body i
 	}
 
 	// Log headers
-	var headerBuf bytes.Buffer
+	// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool for O(1) memory reuse under high throughput HTTP traffic.
+	// Randomized Selection from Top 5 High-Impact Targets (Memory)
+	headerBuf := getBuffer()
+	defer putBuffer(headerBuf)
 	headerBuf.WriteString(fmt.Sprintf("%s %s %s\n", httpReq.Method, pathAndQuery, httpReq.Proto))
 	headerBuf.WriteString(fmt.Sprintf("Host: %s\n", httpReq.Host))
 	for k, v := range httpReq.Header {
@@ -1241,7 +1261,10 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		// Log headers
-		var headerBuf bytes.Buffer
+		// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool for O(1) memory reuse under high throughput HTTP traffic.
+		// Randomized Selection from Top 5 High-Impact Targets (Memory)
+		headerBuf := getBuffer()
+		defer putBuffer(headerBuf)
 		headerBuf.WriteString(fmt.Sprintf("%s %s\n", resp.Proto, resp.Status))
 		for k, v := range resp.Header {
 			val := strings.Join(v, ", ")
@@ -2252,12 +2275,15 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		}
 		// We don't defer stdin.Close() here because we close it in the writer goroutine
 
-		var stderrBuf bytes.Buffer
+		// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool for O(1) memory reuse during command execution streams.
+		// Randomized Selection from Top 5 High-Impact Targets (Memory)
+		stderrBuf := getBuffer()
+		defer putBuffer(stderrBuf)
 		stderrDone := make(chan struct{})
 		go func() {
 			defer close(stderrDone)
 			defer func() { _ = stderr.Close() }()
-			_, _ = io.Copy(&stderrBuf, io.LimitReader(stderr, limit))
+			_, _ = io.Copy(stderrBuf, io.LimitReader(stderr, limit))
 		}()
 
 		var unmarshaledInputs map[string]interface{}
@@ -2289,7 +2315,13 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		return nil, fmt.Errorf("failed to execute command: %w", err)
 	}
 
-	var stdoutBuf, stderrBuf bytes.Buffer
+	// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool for O(1) memory reuse during command execution streams.
+	// Randomized Selection from Top 5 High-Impact Targets (Memory)
+	stdoutBuf := getBuffer()
+	defer putBuffer(stdoutBuf)
+	stderrBuf := getBuffer()
+	defer putBuffer(stderrBuf)
+
 	var combinedBuf threadSafeBuffer
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -2297,12 +2329,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	go func() {
 		defer wg.Done()
 		defer func() { _ = stdout.Close() }()
-		_, _ = io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), io.LimitReader(stdout, limit))
+		_, _ = io.Copy(io.MultiWriter(stdoutBuf, &combinedBuf), io.LimitReader(stdout, limit))
 	}()
 	go func() {
 		defer wg.Done()
 		defer func() { _ = stderr.Close() }()
-		_, _ = io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), io.LimitReader(stderr, limit))
+		_, _ = io.Copy(io.MultiWriter(stderrBuf, &combinedBuf), io.LimitReader(stderr, limit))
 	}()
 
 	wg.Wait()
@@ -2636,12 +2668,15 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 		// We don't defer stdin.Close() here because we close it in the writer goroutine
 
-		var stderrBuf bytes.Buffer
+		// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool for O(1) memory reuse during command execution streams.
+		// Randomized Selection from Top 5 High-Impact Targets (Memory)
+		stderrBuf := getBuffer()
+		defer putBuffer(stderrBuf)
 		stderrDone := make(chan struct{})
 		go func() {
 			defer close(stderrDone)
 			defer func() { _ = stderr.Close() }()
-			_, _ = io.Copy(&stderrBuf, io.LimitReader(stderr, limit))
+			_, _ = io.Copy(stderrBuf, io.LimitReader(stderr, limit))
 		}()
 
 		var unmarshaledInputs map[string]interface{}
@@ -2673,7 +2708,13 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return nil, fmt.Errorf("failed to execute command: %w", err)
 	}
 
-	var stdoutBuf, stderrBuf bytes.Buffer
+	// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool for O(1) memory reuse during command execution streams.
+	// Randomized Selection from Top 5 High-Impact Targets (Memory)
+	stdoutBuf := getBuffer()
+	defer putBuffer(stdoutBuf)
+	stderrBuf := getBuffer()
+	defer putBuffer(stderrBuf)
+
 	var combinedBuf threadSafeBuffer
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -2681,12 +2722,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	go func() {
 		defer wg.Done()
 		defer func() { _ = stdout.Close() }()
-		_, _ = io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), io.LimitReader(stdout, limit))
+		_, _ = io.Copy(io.MultiWriter(stdoutBuf, &combinedBuf), io.LimitReader(stdout, limit))
 	}()
 	go func() {
 		defer wg.Done()
 		defer func() { _ = stderr.Close() }()
-		_, _ = io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), io.LimitReader(stderr, limit))
+		_, _ = io.Copy(io.MultiWriter(stderrBuf, &combinedBuf), io.LimitReader(stderr, limit))
 	}()
 
 	wg.Wait()
@@ -2765,9 +2806,12 @@ func prettyPrint(input []byte, contentType string) string {
 		// Redact sensitive keys
 		input = util.RedactJSON(input)
 
-		var prettyJSON bytes.Buffer
+		// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool to minimize GC pressure during intensive logging operations.
+		// Randomized Selection from Top 5 High-Impact Targets (Memory)
+		prettyJSON := getBuffer()
+		defer putBuffer(prettyJSON)
 		// Use stdjson for Indent
-		if err := stdjson.Indent(&prettyJSON, input, "", "  "); err == nil {
+		if err := stdjson.Indent(prettyJSON, input, "", "  "); err == nil {
 			return prettyJSON.String()
 		}
 		// If JSON parsing fails, fall through to return string(input)
@@ -2776,8 +2820,11 @@ func prettyPrint(input []byte, contentType string) string {
 	// Try XML
 	if strings.Contains(contentType, "xml") {
 		decoder := xml.NewDecoder(bytes.NewReader(input))
-		var buf bytes.Buffer
-		encoder := xml.NewEncoder(&buf)
+		// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool to minimize GC pressure during intensive logging operations.
+		// Randomized Selection from Top 5 High-Impact Targets (Memory)
+		buf := getBuffer()
+		defer putBuffer(buf)
+		encoder := xml.NewEncoder(buf)
 		encoder.Indent("", "  ")
 
 		var stack []string
