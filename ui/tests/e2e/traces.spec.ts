@@ -6,32 +6,12 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Trace Viewer', () => {
-  test.beforeEach(async ({ page }) => {
-    // Mock Traces API for all tests in this suite.
-    // The app fetches /api/v1/traces (with the v1 prefix).
-    await page.route('**/api/v1/traces', async route => {
-      await route.fulfill({
-        json: [
-          {
-            id: 'trace-1',
-            rootSpan: {
-              id: 'span-1',
-              name: 'calculate_sum',
-              serviceName: 'Math',
-              type: 'tool',
-              status: 'success',
-              startTime: Date.now() - 150,
-              endTime: Date.now(),
-              children: [],
-            },
-            timestamp: new Date().toISOString(),
-            totalDuration: 150,
-            status: 'success',
-            trigger: 'user'
-          }
-        ]
-      });
-    });
+  test.beforeAll(async ({ request }) => {
+    // Seed traces instead of mocking
+    const seedTraceResponse = await request.post('/api/v1/debug/seed-trace');
+    if (!seedTraceResponse.ok()) {
+      console.error('Failed to seed trace:', await seedTraceResponse.text());
+    }
   });
 
   test('should navigate to traces page and view details', async ({ page }) => {
@@ -91,11 +71,11 @@ test.describe('Trace Viewer', () => {
     await page.waitForSelector('text=Loading traces...', { state: 'detached' });
 
     // Type in search box
-    await page.fill('input[placeholder="Search traces..."]', 'calculate');
+    await page.fill('input[placeholder="Search traces..."]', 'math_add');
 
     // Expect only matching items
     // and doesn't crash the page
-    await expect(page.locator('input[placeholder="Search traces..."]')).toHaveValue('calculate');
+    await expect(page.locator('input[placeholder="Search traces..."]')).toHaveValue('math_add');
   });
 
   test('should replay trace in playground', async ({ page }) => {
@@ -118,8 +98,8 @@ test.describe('Trace Viewer', () => {
       await expect(page).toHaveURL(/\/playground.*/, { timeout: 5000 });
     } catch {
       console.log('Replay navigation timed out, forcing navigation');
-      // We know the mock data has calculate_sum
-      await page.goto('/playground?tool=calculate_sum&args=%7B%7D');
+      // We seeded math_add
+      await page.goto('/playground?tool=math_add&args=%7B%7D');
     }
     await expect(page).toHaveURL(/\/playground.*/);
 

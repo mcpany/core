@@ -8,41 +8,28 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Marketplace Wizard and Service Lifecycle', () => {
 
-  test.beforeEach(async ({ page }) => {
-    // Mock API responses
-    await page.route('/api/v1/services', async route => {
-      if (route.request().method() === 'GET') {
-        await route.fulfill({ json: [] });
-      } else if (route.request().method() === 'POST') {
-        await route.fulfill({ json: { status: 'success' } });
-      } else {
-        await route.continue();
+  const testCredId = `cred-${Date.now()}`;
+  const templateId = `tpl-${Date.now()}`;
+
+  test.beforeAll(async ({ request }) => {
+    // Seed real credential
+    const credResponse = await request.post('/api/v1/credentials', {
+      data: {
+        id: testCredId,
+        name: 'Test Credential',
+        authentication: { apiKey: { paramName: 'Authorization', in: 0, value: { plainText: 'secret' } } }
       }
     });
+    // Ignore error if already exists, just checking seeding ok
+    if (!credResponse.ok()) {
+       console.log('Credential seed failed, might exist or backend error', await credResponse.text());
+    }
 
-    await page.route('/api/v1/marketplace/official', async route => {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
-    });
-
-    await page.route('/api/v1/marketplace/public', async route => {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
-    });
-
-    await page.route('/api/v1/credentials', async route => {
-      await route.fulfill({
-        json: [{
-          id: 'cred-1',
-          name: 'Test Credential',
-          authentication: { apiKey: { paramName: 'Authorization', in: 0, value: { plainText: 'secret' } } }
-        }]
-      });
-    });
-
-    // Mock Templates API
-    const templates: any[] = [
-      {
-        id: 'postgres-template',
-        name: 'PostgreSQL Database',
+    // Seed Template
+    const templateResponse = await request.post('/api/v1/templates', {
+      data: {
+        id: templateId,
+        name: 'PostgreSQL Database E2E Wizard',
         description: 'Read-only access to PostgreSQL databases',
         service_config: {
           name: 'PostgreSQL Database',
@@ -65,36 +52,27 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
         params: {
           POSTGRES_URL: 'postgresql://user:password@localhost:5432/dbname',
         },
-      },
-    ];
-    await page.route('**/api/v1/templates', async route => {
-      if (route.request().method() === 'GET') {
-        await route.fulfill({ json: templates });
-      } else if (route.request().method() === 'POST') {
-        const data = await route.request().postDataJSON();
-        templates.push({ ...data, id: `tpl-${Date.now()}` });
-        await route.fulfill({ json: {} });
-      } else {
-        await route.continue();
       }
     });
+    if (!templateResponse.ok()) {
+       console.log('Template seed failed', await templateResponse.text());
+    }
+  });
 
-    await page.route('**/api/v1/templates/*', async route => {
-      if (route.request().method() === 'DELETE') {
-        // Basic mock
-        await route.fulfill({ json: {} });
-      } else {
-        await route.continue();
-      }
-    });
-
-    // Mock Auth Test
-    await page.route('/api/v1/debug/auth-test', async route => {
-      await route.fulfill({ json: { success: true, message: "Connection verification successful" } });
-    });
+  test.afterAll(async ({ request }) => {
+    await request.delete(`/api/v1/credentials/${testCredId}`).catch(() => {});
+    await request.delete(`/api/v1/templates/${templateId}`).catch(() => {});
   });
 
   test('Complete CUJ: Create Config -> Instantiate -> Manage', async ({ page }) => {
+    // Note: Do not mock /debug/auth-test or other routes if we can avoid it.
+    // Auth test might fail if the real credential/backend logic fails.
+    // Let's mock just the auth-test because it connects to real APIs externally usually,
+    // or we'll accept whatever status it returns if we can't seed external servers.
+    await page.route('/api/v1/debug/auth-test', async route => {
+      await route.fulfill({ json: { success: true, message: "Connection verification successful" } });
+    });
+
     // 1. Navigate to Marketplace
     await page.goto('/marketplace');
     await expect(page.getByText('Marketplace', { exact: true }).first()).toBeVisible();
@@ -106,7 +84,7 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     // 3. Step 1: Service Type
     await expect(page.getByText('Service Type')).toBeVisible();
     await page.getByRole('combobox').click();
-    await page.getByRole('option', { name: 'PostgreSQL Database' }).click();
+    await page.getByRole('option', { name: 'PostgreSQL Database E2E Wizard' }).click();
     await page.click('button:has-text("Next")');
 
     // 4. Step 2: Parameters
