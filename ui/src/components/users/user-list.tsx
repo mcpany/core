@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -40,6 +41,7 @@ interface UserListProps {
     isLoading?: boolean;
     onEdit: (user: User) => void;
     onDelete: (id: string) => void;
+    onBulkDelete?: (ids: string[]) => void;
 }
 
 /**
@@ -51,10 +53,12 @@ interface UserListProps {
  * @param props.isLoading - Whether the data is loading.
  * @param props.onEdit - Callback when a user is edited.
  * @param props.onDelete - Callback when a user is deleted.
+ * @param props.onBulkDelete - Callback when multiple users are deleted.
  * @returns The rendered UserList component.
  */
-export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) {
+export function UserList({ users, isLoading, onEdit, onDelete, onBulkDelete }: UserListProps) {
     const [searchQuery, setSearchQuery] = useState("");
+    const [selected, setSelected] = useState<Set<string>>(new Set());
     const { toast } = useToast();
 
     const filteredUsers = useMemo(() => {
@@ -76,6 +80,28 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
             description: "Copied to clipboard",
         });
     };
+
+    const handleSelectAll = (checked: boolean) => {
+        if (checked) {
+            setSelected(new Set(filteredUsers.map(u => u.id)));
+        } else {
+            setSelected(new Set());
+        }
+    };
+
+    const handleSelectOne = (id: string, checked: boolean) => {
+        setSelected(prev => {
+            const newSelected = new Set(prev);
+            if (checked) {
+                newSelected.add(id);
+            } else {
+                newSelected.delete(id);
+            }
+            return newSelected;
+        });
+    };
+
+    const isAllSelected = filteredUsers.length > 0 && selected.size === filteredUsers.length;
 
     if (isLoading) {
         return (
@@ -107,10 +133,34 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                 </div>
             </div>
 
+            <div className="space-y-2">
+                {selected.size > 0 && (
+                    <div className="flex items-center gap-2 p-2 bg-muted/40 rounded-md animate-in fade-in slide-in-from-top-1 duration-200 sticky top-0 z-10 backdrop-blur-md border">
+                        <span className="text-sm text-muted-foreground mr-2 font-medium px-2">{selected.size} selected</span>
+                        <div className="h-4 w-px bg-border mx-1" />
+                        {onBulkDelete && (
+                            <Button size="sm" variant="destructive" onClick={() => {
+                                onBulkDelete(Array.from(selected));
+                                setSelected(new Set());
+                            }}>
+                                <Trash2 className="mr-2 h-4 w-4" /> Delete
+                            </Button>
+                        )}
+                    </div>
+                )}
+
             <div className="rounded-md border bg-background">
                 <Table>
                     <TableHeader>
                         <TableRow>
+                            <TableHead className="w-[30px] pr-0">
+                                <Checkbox
+                                    checked={isAllSelected}
+                                    onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                                    aria-label="Select all"
+                                    className="translate-y-[2px]"
+                                />
+                            </TableHead>
                             <TableHead className="w-[250px]">User</TableHead>
                             <TableHead>Roles</TableHead>
                             <TableHead>Authentication</TableHead>
@@ -120,13 +170,21 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                     <TableBody>
                         {filteredUsers.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
+                                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
                                     No users found.
                                 </TableCell>
                             </TableRow>
                         ) : (
                             filteredUsers.map((user) => (
-                                <TableRow key={user.id} data-testid={`user-row-${user.id}`}>
+                                <TableRow key={user.id} data-testid={`user-row-${user.id}`} className={selected.has(user.id) ? "bg-muted/50" : ""}>
+                                    <TableCell className="pr-0">
+                                        <Checkbox
+                                            checked={selected.has(user.id)}
+                                            onCheckedChange={(checked) => handleSelectOne(user.id, !!checked)}
+                                            aria-label={`Select ${user.id}`}
+                                            className="translate-y-[2px]"
+                                        />
+                                    </TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             <Avatar className="h-9 w-9 border">
@@ -209,6 +267,7 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                         )}
                     </TableBody>
                 </Table>
+            </div>
             </div>
             <div className="text-xs text-muted-foreground text-center">
                 Showing {filteredUsers.length} of {users.length} users

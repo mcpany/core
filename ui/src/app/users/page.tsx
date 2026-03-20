@@ -82,6 +82,25 @@ export default function UsersPage() {
         }
     };
 
+    const handleBulkDelete = async (ids: string[]) => {
+        if (!confirm(`Are you sure you want to delete ${ids.length} users? This action cannot be undone.`)) return;
+        try {
+            await Promise.all(ids.map(id => apiClient.deleteUser(id)));
+            toast({
+                title: "Users Deleted",
+                description: `${ids.length} users have been removed.`
+            });
+            loadUsers();
+        } catch (e) {
+            console.error("Failed to bulk delete users", e);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Failed to delete some users."
+            });
+        }
+    };
+
     const handleSave = async (userUpdate: Partial<User>, password?: string, apiKey?: string) => {
         try {
             let authConfig: any = editingUser?.authentication || {};
@@ -161,6 +180,7 @@ export default function UsersPage() {
                 isLoading={loading}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                onBulkDelete={handleBulkDelete}
             />
 
             <UserSheet
