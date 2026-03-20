@@ -46,20 +46,34 @@ type Filter struct {
 type Store interface {
 	// Write writes an audit entry to the store.
 	//
-	// ctx is the context for the request.
-	// entry is the entry.
+	// Summary: Writes an audit entry.
 	//
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - entry: Entry. The entry to write.
+	//
+	// Returns:
+	//   - error: An error if the operation fails.
 	Write(ctx context.Context, entry Entry) error
+
 	// Read reads audit entries from the store based on the filter.
 	//
-	// ctx is the context for the request.
-	// filter is the filter to apply.
+	// Summary: Reads audit entries.
 	//
-	// Returns the entries and an error if the operation fails.
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - filter: Filter. The filter to apply.
+	//
+	// Returns:
+	//   - []Entry: The matching entries.
+	//   - error: An error if the operation fails.
 	Read(ctx context.Context, filter Filter) ([]Entry, error)
+
 	// Close closes the store.
 	//
-	// Returns an error if the operation fails.
+	// Summary: Closes the store.
+	//
+	// Returns:
+	//   - error: An error if the operation fails.
 	Close() error
 }

@@ -63,32 +63,14 @@ type CheckResult struct {
 
 // RunChecks performs connectivity and health checks on the provided configuration.
 //
-// It iterates through all upstream services defined in the configuration and executes
-// the appropriate check logic for each service type.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request, used for timeouts and cancellation.
-//   - config: *configv1.McpAnyServerConfig. The server configuration containing upstream service definitions.
-//
-// Returns:
-//   - []CheckResult: A slice of results for each checked service.
-//
-// Side Effects:
-//   - Performs network I/O to connect to upstream services.
-//
 // Summary: Executes RunChecks operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context.
+//   - config: *configv1.McpAnyServerConfig. The server configuration to check.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - []CheckResult: A slice of check results for all upstream services.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
 	// Using 'services' variable to support existing loop
 	services := config.GetUpstreamServices()
@@ -115,32 +97,14 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 
 // CheckService performs a connectivity check for a single service.
 //
-// It dispatches the check to the specific handler based on the service type (HTTP, gRPC, etc.)
-// and handles upstream authentication checks if configured.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - service: *configv1.UpstreamServiceConfig. The configuration of the service to check.
-//
-// Returns:
-//   - CheckResult: The result of the connectivity check.
-//
-// Side Effects:
-//   - Performs network I/O to connect to the upstream service.
-//
 // Summary: Executes CheckService operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context.
+//   - service: *configv1.UpstreamServiceConfig. The service configuration to check.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - CheckResult: The result of the check.
 func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) CheckResult {
 	// 5 second timeout for checks
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)

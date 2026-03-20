@@ -73,32 +73,14 @@ type OpenAIClient struct {
 
 // NewOpenAIClient creates a new OpenAIClient.
 //
-// Parameters:
-//   - apiKey (string): The apiKey parameter.
-//   - baseURL (string): The baseURL parameter.
-//
-// Returns:
-//   - *OpenAIClient: The resulting *OpenAIClient.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
 // Summary: Initializes NewOpenAIClient operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - apiKey: string. The API key for OpenAI.
+//   - baseURL: string. The base URL for the OpenAI API.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - *OpenAIClient: The initialized OpenAI client.
 func NewOpenAIClient(apiKey string, baseURL string) *OpenAIClient {
 	if baseURL == "" {
 		baseURL = "https://api.openai.com/v1"
@@ -128,33 +110,15 @@ type openAIChatResponse struct {
 
 // ChatCompletion performs a chat completion request.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (ChatRequest): The request object.
-//
-// Returns:
-//   - *ChatResponse: The resulting *ChatResponse.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
 // Summary: Executes ChatCompletion operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The request context.
+//   - req: ChatRequest. The chat request parameters.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - *ChatResponse: The chat response.
+//   - error: An error if the request fails.
 func (c *OpenAIClient) ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error) {
 	reqBody := openAIChatRequest(req)
 	bodyBytes, err := json.Marshal(reqBody)

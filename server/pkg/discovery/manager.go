@@ -34,64 +34,22 @@ type Manager struct {
 
 // NewManager creates a new discovery manager.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *Manager: The resulting *Manager.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
 // Summary: Initializes NewManager operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - *Manager: The initialized discovery manager.
 func NewManager() *Manager {
 	return &Manager{
 		statuses: make(map[string]*ProviderStatus),
 	}
 }
 
-// RegisterProvider registers a new provider.
-//
-// Parameters:
-//   - p (Provider): The p parameter.
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// RegisterProvider registers a new discovery provider.
 //
 // Summary: Executes RegisterProvider operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - p: Provider. The discovery provider to register.
 func (m *Manager) RegisterProvider(p Provider) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -102,33 +60,15 @@ func (m *Manager) RegisterProvider(p Provider) {
 	}
 }
 
-// Run runs all registered providers and returns the aggregated discovered services. It also updates the internal status of each provider.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//
-// Returns:
-//   - []*configv1.UpstreamServiceConfig: The resulting []*configv1.UpstreamServiceConfig.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Run runs all registered providers and returns the aggregated discovered services.
 //
 // Summary: Executes Run operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - []*configv1.UpstreamServiceConfig: The slice of discovered service configurations.
 func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	var allServices []*configv1.UpstreamServiceConfig
 	log := logging.GetLogger()
@@ -176,33 +116,12 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	return allServices
 }
 
-// GetStatuses returns the current status of all providers.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []*ProviderStatus: The resulting []*ProviderStatus.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// GetStatuses returns the current status of all discovery providers.
 //
 // Summary: Retrieves GetStatuses operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - []*ProviderStatus: A slice of provider statuses.
 func (m *Manager) GetStatuses() []*ProviderStatus {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -220,32 +139,14 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 
 // GetProviderStatus returns the status of a specific provider.
 //
-// Parameters:
-//   - name (string): The name parameter.
-//
-// Returns:
-//   - *ProviderStatus: The resulting *ProviderStatus.
-//   - bool: True if successful, false otherwise.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
 // Summary: Retrieves GetProviderStatus operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name: string. The name of the provider.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - *ProviderStatus: The status of the provider.
+//   - bool: True if the provider status was found, false otherwise.
 func (m *Manager) GetProviderStatus(name string) (*ProviderStatus, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

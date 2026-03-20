@@ -17,31 +17,16 @@ import (
 
 // AuthMiddleware creates an MCP middleware for handling authentication.
 //
-// It is intended to inspect incoming requests and use the provided `AuthManager` to
-// verify credentials before passing the request to the next handler.
-//
-// Parameters:
-//   - authManager (*auth.Manager): The authentication manager.
-//
-// Returns:
-//   - mcp.Middleware: The authentication middleware function.
-//
-// Side Effects:
-//   - Modifies the context to include authenticated user info.
-//
 // Summary: Executes AuthMiddleware operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - authManager: *auth.Manager. The authentication manager used to verify credentials.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - mcp.Middleware: The authentication middleware function for the MCP server.
 //
 // Side Effects:
-//   - None.
+//   - Modifies the context to include authenticated user info if successful.
 func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {

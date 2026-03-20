@@ -19,32 +19,18 @@ import (
 // Summary: Represents a Pool.
 type Pool = pool.Pool[*client.WebsocketClientWrapper]
 
-// NewPool creates a new connection pool for WebSocket clients. It
-// configures the pool with a factory function that establishes new WebSocket
-// connections to the specified address.
-//
-// Parameters:
-//   - maxSize: The maximum number of connections the pool can hold.
-//   - idleTimeout: The duration after which an idle connection may be closed.
-//   - address: The target URL of the WebSocket server.
-//
-// Returns:
-//   - Pool: A new WebSocket client pool.
-//   - error: An error if the pool cannot be created.
+// NewPool creates a new connection pool for WebSocket clients.
 //
 // Summary: Initializes NewPool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - maxSize: int. The maximum number of connections the pool can hold.
+//   - idleTimeout: time.Duration. The duration after which an idle connection may be closed.
+//   - address: string. The target URL of the WebSocket server.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - Pool: A new WebSocket client pool.
+//   - error: An error if the pool cannot be created.
 func NewPool(maxSize int, idleTimeout time.Duration, address string) (Pool, error) {
 	factory := func(_ context.Context) (*client.WebsocketClientWrapper, error) {
 		conn, resp, err := websocket.DefaultDialer.Dial(address, nil)

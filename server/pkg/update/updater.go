@@ -30,26 +30,14 @@ type Updater struct {
 
 // NewUpdater creates a new Updater.
 //
-// Parameters:
-//   - httpClient: *http.Client. The HTTP client to use for network requests. If nil, http.DefaultClient is used.
-//   - githubAPIURL: string. Optional URL for the GitHub API (useful for Enterprise GitHub).
-//
-// Returns:
-//   - *Updater: A new Updater instance.
-//
 // Summary: Initializes NewUpdater operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - httpClient: *http.Client. The HTTP client to use for network requests. If nil, http.DefaultClient is used.
+//   - githubAPIURL: string. Optional URL for the GitHub API.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - *Updater: A new Updater instance.
 func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -69,32 +57,18 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 
 // CheckForUpdate checks for a new release on GitHub.
 //
-// It compares the provided current version tag with the latest release tag on the repository.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - owner: string. The GitHub repository owner (e.g., "mcpany").
-//   - repo: string. The GitHub repository name (e.g., "core").
-//   - currentVersion: string. The current version tag of the application.
-//
-// Returns:
-//   - *github.RepositoryRelease: The release information if an update is available, nil otherwise.
-//   - bool: True if a newer version is available, false otherwise.
-//   - error: An error if the check fails (e.g., network error, API rate limit).
-//
 // Summary: Executes CheckForUpdate operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The request context.
+//   - owner: string. The GitHub repository owner.
+//   - repo: string. The GitHub repository name.
+//   - currentVersion: string. The current version tag of the application.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - *github.RepositoryRelease: The release information if an update is available.
+//   - bool: True if a newer version is available.
+//   - error: An error if the check fails.
 func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersion string) (*github.RepositoryRelease, bool, error) {
 	release, _, err := u.client.Repositories.GetLatestRelease(ctx, owner, repo)
 	if err != nil {
@@ -110,36 +84,18 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 
 // UpdateTo downloads the new release, verifies its checksum, and replaces the current executable.
 //
-// It handles downloading artifacts, verifying SHA256 checksums, and safely swapping the binary.
+// Summary: Executes UpdateTo operation.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - fs: afero.Fs. The file system abstraction (usually afero.NewOsFs()).
+//   - ctx: context.Context. The request context.
+//   - fs: afero.Fs. The file system abstraction.
 //   - executablePath: string. The path to the currently running executable to replace.
 //   - release: *github.RepositoryRelease. The release object to update to.
 //   - assetName: string. The name of the binary asset to download.
 //   - checksumsAssetName: string. The name of the checksums file asset.
 //
 // Returns:
-//   - error: An error if any step of the update process fails (download, verify, replace).
-//
-// Side Effects:
-//   - Writes temporary files to disk.
-//   - Modifies the executable file on disk.
-//
-// Summary: Executes UpdateTo operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: An error if the update process fails.
 func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath string, release *github.RepositoryRelease, assetName, checksumsAssetName string) error {
 	var asset *github.ReleaseAsset
 	for _, a := range release.Assets {

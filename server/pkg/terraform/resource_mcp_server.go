@@ -14,33 +14,12 @@ type ResourceMCPServer struct {
 	Enabled bool
 }
 
-// Schema returns the Terraform schema definition (Mock). Returns the result.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - map[string]interface: The resulting map[string]interface.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Schema returns the Terraform schema definition.
 //
 // Summary: Executes Schema operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - map[string]interface{}: The Terraform schema map.
 func Schema() map[string]interface{} {
 	return map[string]interface{}{
 		"name": map[string]interface{}{
@@ -63,66 +42,30 @@ func Schema() map[string]interface{} {
 	}
 }
 
-// Create mimics the Create operation of a Terraform resource. _ is an unused parameter. Returns an error if the operation fails.
-//
-// Parameters:
-//   - _ (*ResourceMCPServer): The _ parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
+// Create mimics the Create operation of a Terraform resource.
 //
 // Summary: Initializes Create operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - r: *ResourceMCPServer. The resource object to create.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: An error if creation fails.
 func Create(_ *ResourceMCPServer) error {
 	// Simulate API call to provision resources
 	return nil
 }
 
-// Read mimics the Read operation. name is the name of the resource. Returns the result. Returns an error if the operation fails.
-//
-// Parameters:
-//   - name (string): The name parameter.
-//
-// Returns:
-//   - *ResourceMCPServer: The resulting *ResourceMCPServer.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
+// Read mimics the Read operation of a Terraform resource.
 //
 // Summary: Retrieves Read operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name: string. The name of the resource to read.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - *ResourceMCPServer: The read resource object.
+//   - error: An error if reading fails.
 func Read(name string) (*ResourceMCPServer, error) {
 	return &ResourceMCPServer{
 		Name:    name,

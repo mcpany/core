@@ -34,32 +34,11 @@ type Watcher struct {
 
 // NewWatcher creates a new file watcher.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *Watcher: The resulting *Watcher.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
 // Summary: Initializes NewWatcher operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - *Watcher: The initialized watcher.
+//   - error: An error if the watcher cannot be created.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -203,22 +182,10 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 
 // Close stops the file watcher and releases resources.
 //
-// Parameters:
-//   - None.
-//
 // Summary: Executes Close operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
-//   - None.
+//   - Closes the done channel and the underlying watcher.
 func (w *Watcher) Close() {
 	close(w.done)
 	_ = w.watcher.Close()

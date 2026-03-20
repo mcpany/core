@@ -28,32 +28,14 @@ type PineconeClient struct {
 
 // NewPineconeClient creates a new Pinecone client.
 //
-// Parameters:
-//   - config (*configv1.PineconeVectorDB): The parameter.
-//
-// Returns:
-//   - *PineconeClient: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
 // Summary: Initializes NewPineconeClient operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - config: *configv1.PineconeVectorDB. The Pinecone configuration.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - *PineconeClient: The initialized Pinecone client.
+//   - error: An error if the client cannot be created.
 func NewPineconeClient(config *configv1.PineconeVectorDB) (*PineconeClient, error) {
 	if config.GetApiKey() == "" {
 		return nil, fmt.Errorf("api_key is required for Pinecone")
@@ -134,34 +116,20 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 	return result, nil
 }
 
-// Query searches for similar vectors.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - vector ([]float32): The parameter.
-//   - topK (int64): The parameter.
-//   - filter (map[string]interface{}): The parameter.
-//   - namespace (string): The parameter.
-//
-// Returns:
-//   - (map[string]interface: The result.
-//
-// Side Effects:
-//   - None.
+// Query searches for similar vectors in Pinecone.
 //
 // Summary: Executes Query operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The request context.
+//   - vector: []float32. The query vector.
+//   - topK: int64. The number of nearest neighbors to return.
+//   - filter: map[string]interface{}. The search filter.
+//   - namespace: string. The target namespace.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - map[string]interface{}: The search results.
+//   - error: An error if the query fails.
 func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	req := map[string]interface{}{
 		"vector":          vector,
@@ -179,32 +147,18 @@ func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64
 	return c.doRequest(ctx, "POST", "/query", req)
 }
 
-// Upsert inserts or updates vectors.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - vectors ([]map[string]interface{}): The parameter.
-//   - namespace (string): The parameter.
-//
-// Returns:
-//   - (map[string]interface: The result.
-//
-// Side Effects:
-//   - None.
+// Upsert inserts or updates vectors in Pinecone.
 //
 // Summary: Executes Upsert operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The request context.
+//   - vectors: []map[string]interface{}. The vectors to upsert.
+//   - namespace: string. The target namespace.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - map[string]interface{}: The result of the upsert operation.
+//   - error: An error if the upsert fails.
 func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	req := map[string]interface{}{
 		"vectors": vectors,
@@ -216,33 +170,19 @@ func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interf
 	return c.doRequest(ctx, "POST", "/vectors/upsert", req)
 }
 
-// Delete removes vectors.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - ids ([]string): The parameter.
-//   - namespace (string): The parameter.
-//   - filter (map[string]interface{}): The parameter.
-//
-// Returns:
-//   - (map[string]interface: The result.
-//
-// Side Effects:
-//   - None.
+// Delete removes vectors from Pinecone.
 //
 // Summary: Executes Delete operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The request context.
+//   - ids: []string. The IDs of the vectors to delete.
+//   - namespace: string. The target namespace.
+//   - filter: map[string]interface{}. A filter to select vectors for deletion.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - map[string]interface{}: The result of the delete operation.
+//   - error: An error if deletion fails.
 func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error) {
 	req := map[string]interface{}{}
 	if len(ids) > 0 {
@@ -262,31 +202,17 @@ func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace str
 	return c.doRequest(ctx, "POST", "/vectors/delete", req)
 }
 
-// DescribeIndexStats returns statistics about the index.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - filter (map[string]interface{}): The parameter.
-//
-// Returns:
-//   - (map[string]interface: The result.
-//
-// Side Effects:
-//   - None.
+// DescribeIndexStats returns statistics about the Pinecone index.
 //
 // Summary: Executes DescribeIndexStats operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The request context.
+//   - filter: map[string]interface{}. Optional filter for statistics.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - map[string]interface{}: The index statistics.
+//   - error: An error if retrieval fails.
 func (c *PineconeClient) DescribeIndexStats(ctx context.Context, filter map[string]interface{}) (map[string]interface{}, error) {
 	req := map[string]interface{}{}
 	if filter != nil {

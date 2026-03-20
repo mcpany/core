@@ -266,33 +266,13 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 	return nil
 }
 
-// Flush ⚡ BOLT: Implemented Flush to support streaming responses (e.g. SSE). Randomized Selection from Top 5 High-Impact Targets Flush implements the http.Flusher interface. Summary: Flushes the compressed stream to the client. Side Effects: - Forces any buffered data to be compressed and sent. - Flushes the underlying response writer.
+// Flush implements the http.Flusher interface.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
+// Summary: Flushes the compressed stream to the client.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes Flush operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - Forces any buffered data to be compressed and sent.
+//   - Flushes the underlying response writer.
 func (w *gzipResponseWriter) Flush() {
 	// If we haven't written headers yet, we are still buffering.
 	// Force flush the buffer to start gzip stream (even if small).
@@ -312,33 +292,14 @@ func (w *gzipResponseWriter) Flush() {
 	}
 }
 
-// Close closes the gzip writer and returns it to the pool. Summary: Closes the Gzip writer and releases resources. Side Effects: - Closes the active gzip writer. - Returns buffers to the pool. - Ensures all data is flushed to the client.
+// Close closes the gzip writer and returns it to the pool.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
+// Summary: Closes the Gzip writer and releases resources.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - Closes the active gzip writer.
+//   - Returns buffers to the pool.
+//   - Ensures all data is flushed to the client.
 func (w *gzipResponseWriter) Close() {
 	if w.writer != nil {
 		_ = w.writer.Close()

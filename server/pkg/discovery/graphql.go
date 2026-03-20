@@ -21,17 +21,8 @@ type GraphQLProvider struct {
 //
 // Summary: Executes Name operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - string: The name of the provider.
 func (p *GraphQLProvider) Name() string {
 	return "graphql"
 }
@@ -41,16 +32,11 @@ func (p *GraphQLProvider) Name() string {
 // Summary: Executes Discover operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - []*configv1.UpstreamServiceConfig: The discovered GraphQL service configurations.
+//   - error: An error if discovery fails.
 func (p *GraphQLProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {
 		return nil, nil
