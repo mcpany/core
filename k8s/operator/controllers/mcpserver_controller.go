@@ -35,13 +35,22 @@ type MCPServerReconciler struct {
 // move the current state of the cluster closer to the desired state.
 // It creates or updates the Deployment and Service for the MCPServer.
 //
+// Summary: Reconciles a MCPServer object.
+//
 // Parameters:
-//   - ctx: The context for the request.
-//   - req: The reconciliation request containing the namespaced name of the MCPServer.
+//   - ctx: context.Context. The context for the request.
+//   - req: ctrl.Request. The reconciliation request containing the namespaced name of the MCPServer.
 //
 // Returns:
 //   - ctrl.Result: The result of the reconciliation, indicating if the request should be requeued.
 //   - error: Any error that occurred during reconciliation.
+//
+// Errors:
+//   - Returns error if the MCPServer cannot be read or updated.
+//
+// Side Effects:
+//   - Reads and updates MCPServer resources in the cluster.
+//   - Creates or updates related Deployment and Service resources.
 func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
@@ -134,11 +143,19 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 
 // deploymentForMCPServer creates a new Deployment for the MCPServer resource.
 //
+// Summary: Creates a new Deployment for the MCPServer resource.
+//
 // Parameters:
-//   - m: The MCPServer resource.
+//   - m: *mcpv1alpha1.MCPServer. The MCPServer resource.
 //
 // Returns:
 //   - *appsv1.Deployment: The created Deployment.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *appsv1.Deployment {
 	ls := labelsForMCPServer(m.Name)
 	replicas := m.Spec.Replicas
@@ -194,11 +211,19 @@ func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *
 
 // serviceForMCPServer creates a new Service for the MCPServer resource.
 //
+// Summary: Creates a new Service for the MCPServer resource.
+//
 // Parameters:
-//   - m: The MCPServer resource.
+//   - m: *mcpv1alpha1.MCPServer. The MCPServer resource.
 //
 // Returns:
 //   - *corev1.Service: The created Service.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *MCPServerReconciler) serviceForMCPServer(m *mcpv1alpha1.MCPServer) *corev1.Service {
 	ls := labelsForMCPServer(m.Name)
 	svc := &corev1.Service{
@@ -225,22 +250,38 @@ func (r *MCPServerReconciler) serviceForMCPServer(m *mcpv1alpha1.MCPServer) *cor
 // labelsForMCPServer returns the labels for selecting the resources
 // belonging to the given mcpServer CR name.
 //
+// Summary: Returns the labels for selecting the resources.
+//
 // Parameters:
-//   - name: The name of the MCPServer resource.
+//   - name: string. The name of the MCPServer resource.
 //
 // Returns:
 //   - map[string]string: A map of labels.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func labelsForMCPServer(name string) map[string]string {
 	return map[string]string{"app": "mcp-server", "mcp_cr": name}
 }
 
 // SetupWithManager sets up the controller with the Manager.
 //
+// Summary: Sets up the controller with the Manager.
+//
 // Parameters:
-//   - mgr: The controller manager.
+//   - mgr: ctrl.Manager. The controller manager.
 //
 // Returns:
 //   - error: Any error that occurred during setup.
+//
+// Errors:
+//   - Returns error if the controller cannot be started.
+//
+// Side Effects:
+//   - Registers the controller with the manager.
 func (r *MCPServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&mcpv1alpha1.MCPServer{}).
