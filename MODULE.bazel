@@ -20,6 +20,7 @@ bazel_dep(name = "rules_shell", version = "0.6.1")
 bazel_dep(name = "rules_nodejs", version = "6.7.3")
 bazel_dep(name = "aspect_rules_js", version = "3.0.3")
 bazel_dep(name = "aspect_rules_ts", version = "3.8.7")
+bazel_dep(name = "rules_proto", version = "7.1.0")
 bazel_dep(name = "toolchains_buildbuddy", version = "0.0.4")
 bazel_dep(name = "rules_python", version = "1.7.0")
 
