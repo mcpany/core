@@ -139,6 +139,9 @@
 - [ ] **[P1] RL Feedback & Telemetry Viewer**: (2026-03-19) Real-time stream of conversation-feedback and performance metrics for RL training.
 - [ ] **[P1] Enterprise Governance Center**: (2026-03-19) UI for managing organization-wide security policies and synchronizing allowed-origin lists.
 - [ ] **[P0] Ephemeral Trust Status Monitor**: (2026-03-20) Visual dashboard for monitoring active desktop-session bridges and headless agent attestation status.
+- [ ] **[P0] Semantic Retrieval Alert Dashboard**: (2026-03-20) Real-time visualization of sanitized context fragments and blocked retrieval-smuggling attempts.
+- [ ] **[P0] Terminal-Native Security Widget**: (2026-03-20) Monitor for terminal-based agent sessions and hardware-bound CLI attestation.
+- [ ] **[P1] Behavioral Anomaly Detector UI**: (2026-03-20) Visualization of agent behavioral profiles and multi-factor identity status.
 - [ ] **[P0] Blackboard Lineage Inspector**: (2026-03-20) Forensic UI for visualizing the cryptographic audit trail of Shared KV Store operations.
 - [ ] **[P1] UACO Bid Safety Analyzer**: (2026-03-20) Real-time visualization of agent bid profiles and behavioral anomaly scores during task negotiation.
 - [ ] **[P1] Config Smuggling Alert Center**: (2026-03-20) Detailed scanner output for project-local configurations, highlighting hidden metadata/binary hooks.

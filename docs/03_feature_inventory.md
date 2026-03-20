@@ -1360,3 +1360,27 @@
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-03-20] Updates
+
+### Proposed Additions
+- **Semantic Retrieval Validator (SRV)**: (P0) Real-time semantic analysis middleware for retrieved context shards, ensuring alignment with mission intent and preventing uncontrolled PII/IP retrieval.
+- **Agentic Behavioral Attestation Hub**: (P1) Hardware-bound identity service that issues session-bound behavioral tokens for every tool call to neutralize identity abuse.
+- **NIST CSF-2.0 Compliance Mapper**: (P1) Automated governance tool that maps agent security posture to the NIST Cyber AI Profile and generates impact assessments.
+- **Terminal-Native Isolation Proxy**: (P0) High-speed proxy for local CLI agents, ensuring terminal-based autonomous workflows remain bound to verified session state.
+
+### Priority Shifts
+- **Identity-Bound Discovery (IBD)**: (Re-affirmed P0) Elevated importance due to recent "Identity Abuse" findings in autonomous terminals.
+- **Verified Skill Registry**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Behavioral Attestation** integration.
+
+## Evolution: [2026-03-20] Updates
+
+### Proposed Additions
+- **Semantic Retrieval Validator (SRV)**: (P0) Real-time semantic analysis middleware for retrieved context shards, ensuring alignment with mission intent and preventing uncontrolled PII/IP retrieval.
+- **Agentic Behavioral Attestation Hub**: (P1) Hardware-bound identity service that issues session-bound behavioral tokens for every tool call to neutralize identity abuse.
+- **NIST CSF-2.0 Compliance Mapper**: (P1) Automated governance tool that maps agent security posture to the NIST Cyber AI Profile and generates impact assessments.
+- **Terminal-Native Isolation Proxy**: (P0) High-speed proxy for local CLI agents, ensuring terminal-based autonomous workflows remain bound to verified session state.
+
+### Priority Shifts
+- **Identity-Bound Discovery (IBD)**: (Re-affirmed P0) Elevated importance due to recent "Identity Abuse" findings in autonomous terminals.
+- **Verified Skill Registry**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Behavioral Attestation** integration.

@@ -89,10 +89,16 @@
 *   **[P1] Enterprise Policy Sync Engine**: Service for synchronizing security policies and allowed-origins from a central management server. (Added: 2026-03-19)
 
 #### Upcoming (2026-03-20 Evolution)
+*   **[P0] Semantic Retrieval Validator (SRV)**: Real-time semantic analysis of tool outputs to prevent uncontrolled PII/IP retrieval. (Added: 2026-03-20)
+*   **[P0] Terminal-Native Isolation Proxy**: Secure proxying for AI-powered terminals to ensure CLI-based agency remains hardware-bound. (Added: 2026-03-20)
+*   **[P1] Agentic Behavioral Attestation Hub**: Multi-factor identity service for detecting behavioral anomalies in autonomous operations. (Added: 2026-03-20)
 *   **[P0] Ephemeral Workspace Trust Middleware**: Session-bound attestation service to translate desktop trust tokens for headless agents. (Added: 2026-03-20)
 *   **[P0] Blackboard Integrity Validator**: Cryptographic validation of state lineage for Shared KV Store operations. (Added: 2026-03-20)
 *   **[P1] UACO Bid Profiling Engine**: Behavioral monitoring for agent bidding to prevent task-card shadowing. (Added: 2026-03-20)
 *   **[P1] Config Smuggling Scanner**: Metadata-aware scanner for project-local configuration files. (Added: 2026-03-20)
+*   **[P0] Semantic Retrieval Validator (SRV)**: Real-time semantic analysis of tool outputs to prevent uncontrolled PII/IP retrieval. (Added: 2026-03-20)
+*   **[P0] Terminal-Native Isolation Proxy**: Secure proxying for AI-powered terminals to ensure CLI-based agency remains hardware-bound. (Added: 2026-03-20)
+*   **[P1] Agentic Behavioral Attestation Hub**: Multi-factor identity service for detecting behavioral anomalies in autonomous operations. (Added: 2026-03-20)
 
 #### Upcoming (2026-03-21 Evolution)
 *   **[P0] Content-Addressable Config (CAC) Validator**: Core security service enforcing hash-based validation for all executable hooks. (Added: 2026-03-21)
@@ -123,6 +129,14 @@
 *   **[P0] Relational PoI Enforcement**: Advanced intent-chain validation to prevent "Context-Mirroring" attacks. (Added: 2026-03-24)
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral profiling of un-attested configuration hooks. (Added: 2026-03-24)
 *   **[P1] BSH State Differential Sync**: Optimized binary state transfer that only sends deltas between agent handoffs. (Added: 2026-03-24)
+
+#### Upcoming (2026-03-20 Evolution)
+*   **[P0] Semantic Retrieval Validator (SRV)**: Real-time semantic analysis of tool outputs to prevent uncontrolled PII/IP retrieval. (Added: 2026-03-20)
+*   **[P0] Terminal-Native Isolation Proxy**: Secure proxying for AI-powered terminals to ensure CLI-based agency remains hardware-bound. (Added: 2026-03-20)
+*   **[P1] Agentic Behavioral Attestation Hub**: Multi-factor identity service for detecting behavioral anomalies in autonomous operations. (Added: 2026-03-20)
+*   **[P0] Semantic Retrieval Validator (SRV)**: Real-time semantic analysis of tool outputs to prevent uncontrolled PII/IP retrieval. (Added: 2026-03-20)
+*   **[P0] Terminal-Native Isolation Proxy**: Secure proxying for AI-powered terminals to ensure CLI-based agency remains hardware-bound. (Added: 2026-03-20)
+*   **[P1] Agentic Behavioral Attestation Hub**: Multi-factor identity service for detecting behavioral anomalies in autonomous operations. (Added: 2026-03-20)
 
 #### Upcoming (2026-03-25 Evolution)
 *   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary context handoffs. (Added: 2026-03-25)
