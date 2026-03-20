@@ -1,16 +1,18 @@
-# Copyright 2026 MCP Any Authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+<!--
+Copyright 2026 Author(s) of MCP Any
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
 
 # Strategic Vision: MCP Any
 
@@ -39,17 +41,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Differential Context Guarding (DCG)**: To neutralize "Context-Dump" exfiltration, we are upgrading the Mailbox Integrity Middleware to include DCG. This layer will perform real-time, semantic analysis of tool outputs, ensuring they only contain state fragments explicitly requested by the mission root, blocking mass exfiltration of the teammate mailbox.
 - **Zero-Knowledge Capability Proofs (ZKCP)**: Supporting "Capability Masking," MCP Any will facilitate ZKCPs during the discovery phase. Agents will be able to prove they possess a specific skill (e.g., "Database Admin") without revealing the underlying connection strings or schema until a mission-bound handshake is completed.
 - **Self-Correction Loop Arbiter**: To counter "Reasoning Hijacking" via self-correction, MCP Any will implement an arbiter that monitors subagent "Refinement Drift," forcefully terminating sub-sessions that attempt to use "Self-Correction" as a means to bypass parent-imposed constraints.
-
----
-
-## Strategic Evolution: [2026-05-30]
-### Focus: Cognitive Integrity & Reasoning-Bound Context Sharding (RBCS)
-**Context**: The emergence of "Reasoning Gaslighting" (RGD) and the disclosure of the "Context Mirroring" exploit (CVE-2026-45012) prove that securing the transport layer is no longer sufficient. We must now protect the **cognitive integrity** of the reasoning trace and ensure that context is dynamically bound to a verified intent.
-**Strategic Pivot**:
-- **Reasoning-Bound Context Sharding (RBCS) Hub**: MCP Any will evolve to act as the authoritative "Context Arbiter." We will implement RBCS, providing "Just-in-Time" context shards that are cryptographically bound to an agent's active reasoning path, neutralizing "Context Smearing" in deep swarms.
-- **Reasoning-Gaslighting Detection (RGD) Middleware**: To counter "Cognitive Dissonance" attacks, we are introducing RGD. This layer will monitor the semantic consistency of shared reasoning traces, blocking subagent inputs that subtly inject conflicting logic into sibling reasoning loops.
-- **Monotonic Task Nonce (MTN) Provider**: Supporting the stability of the A2A mesh, MCP Any will implement the MTN. This service will issue non-reusable, monotonic nonces for every delegation proposal, neutralizing "Context Mirroring" exfiltration attempts.
-- **Sovereign Teammate Mailboxes**: To counter "Teammate Coercion," we are mandating hardware-attested mission-root signatures for all inter-teammate mailbox requests. This ensures that teammates from disparate frameworks (Claude, OpenClaw, AutoGen) can only exchange mission-aligned instructions.
 
 ---
 
@@ -869,3 +860,12 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Cross-Mesh Command Sovereignty (CMCS)**: To neutralize "Teammate Impersonation" in horizontal swarms, we are introducing CMCS. Every inter-teammate mailbox request must be signed with a hardware-attested "Mesh Token" that binds the command to the mission root and its authorized role in the shared task list.
 - **Atomic Teammate Handshake (ATH)**: Supporting the SMI standard, MCP Any will implement the ATH. This ensures that teammates (Claude, OpenClaw, AutoGen) must complete a hardware-attested identity exchange before they can "claim" or "delegate" tasks from the shared mailbox.
 - **Mesh-Bound Context Sovereignty**: To counter "Context-Dump" exfiltration in deep teams, we are evolving the DCG middleware to support Mesh-Bound Sovereignty. This layer will perform semantic analysis of state fragments as they cross teammate boundaries, ensuring they remain anchored to the mission-root intent.
+
+## Strategic Evolution: 2026-05-30
+### Focus: Cognitive Integrity & The Context Arbiter Role
+**Context**: The emergence of "Reasoning Gaslighting" and "Context Mirroring" (CVE-2026-45012) confirms that securing the transport and identity layers is no longer sufficient. As agents move toward collaborative reasoning in horizontal teams (Claude Code), we must now protect the **cognitive integrity** of the swarm. Disparate agents are increasingly vulnerable to "Context Smearing" and "Teammate Coercion," where malicious peers manipulate shared reasoning traces.
+**Strategic Pivot**:
+- **Context Arbiter Framework**: MCP Any will evolve to act as the authoritative "Arbiter of Truth" for the swarm. We will implement the Arbiter Framework, utilizing semantic consistency checks to neutralize "Reasoning Gaslighting" before conflicting logic can pollute the mission root.
+- **Reasoning-Bound Context Sharding (RBCS) Hub**: Supporting the OpenClaw standard, we are introducing the RBCS Hub. This ensures that context shards are dynamically and cryptographically bound to an agent's active reasoning path, preventing "Context Smearing" from irrelevant or malicious state fragments.
+- **Monotonic Task Nonce (MTN) Provider**: To counter "Context Mirroring," we are mandating the use of MTNs for all inter-agent delegations. MCP Any will act as the central provider of nonces, ensuring that every task proposal is unique, time-bound, and resistant to capability-card spoofing.
+- **Sovereign Teammate Mailboxes**: Moving beyond shared state, we are implementing Sovereign Mailboxes for horizontal teams. Every teammate instruction must be hardware-attested and mission-signed, ensuring that "Teammate Coercion" is mitigated at the mailbox boundary.
