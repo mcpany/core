@@ -63,7 +63,7 @@ test.describe('Playground Complex Schema Support', () => {
     // Select the complex tool
     await expect(page.getByText('complex_tool')).toBeVisible();
     // The button says "Use Tool"
-    await page.getByRole('button', { name: /^Use$/i }).first().click();
+    await page.getByRole('button', { name: /^Use/i }).first().click();
 
     // Verify form structure
     // Note: The UI might append type info like "user (object)", so we disable exact match
@@ -121,7 +121,7 @@ test.describe('Playground Complex Schema Support', () => {
     });
 
     // Select the tool
-    await page.locator('button').filter({ hasText: /^Use$/ }).first().click();
+    await page.getByRole('button', { name: /^Use/i }).first().click();
 
     // Execute the tool
     await page.getByRole('button', { name: 'Execute', exact: true }).click();
