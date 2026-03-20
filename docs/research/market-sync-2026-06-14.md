@@ -16,7 +16,7 @@ A new draft specification for **MDRA** has been released by the Gemini CLI team 
 This "Three-Factor Agency" is expected to become the gold standard for high-trust enterprise swarms.
 
 ## Summary of Pain Points
-- **Coordination Drift**: Large swarms are experiencing "Coordination Drift" due to **Attestation Jitter**—the slight latency variations in hardware signatures that cause parallel teammates to fall out of sync during high-frequency bidding.
+- **Coordination Drift**: Large swarms are experiencing "Coordination Drift" due to **Attestation Jitter**--the slight latency variations in hardware signatures that cause parallel teammates to fall out of sync during high-frequency bidding.
 - **Shadow-Channel Persistence**: Despite SCI (Shadow Coordination Interceptor) implementations, attackers are exploring "Physical-Layer Side-Channels" (e.g., fan speed or CPU thermals) to coordinate between air-gapped agent containers.
 - **Attestation Overhead**: The move to MDRA is increasing the "Reasoning Tax," with some agents spending up to 30% of their token budget on security handshakes.
 
