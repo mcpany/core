@@ -1,4 +1,4 @@
-# 🔌 Integrating with AI Assistants
+# Integrating with AI Assistants
 
 This guide explains how to connect `mcpany` to various AI assistant clients, enabling them to leverage the tools exposed by your `mcpany` server. By integrating `mcpany`, you can give your AI assistant access to gRPC services, REST APIs, local command-line tools, and more.
 
