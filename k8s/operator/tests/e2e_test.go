@@ -78,7 +78,7 @@ nodes:
 		t.Fatalf("Failed to write temp kind config: %v", err)
 	}
 
-	if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "2m"); err != nil {
+	if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "5m"); err != nil {
 		t.Fatalf("Failed to create kind cluster: %v", err)
 	}
 
@@ -88,9 +88,8 @@ nodes:
 	ensureBazelImageLoaded(t, filepath.Join("server", "cmd", "server", "server_tarball.sh"), "mcpany/server")
 	ensureBazelImageLoaded(t, filepath.Join("server", "tests", "integration", "cmd", "mocks", "http_echo_server", "http_echo_server_tarball.sh"), "mcpany/http-echo-server")
 	ensureBazelImageLoaded(t, filepath.Join("ui", "ui_tarball.sh"), "mcpany/ui")
+
 	if os.Getenv("SKIP_IMAGE_BUILD") != "true" {
-		// mcpany/ui is now built via Bazel and loaded above
-		// mcpany/ui is now built via Bazel and loaded above
 		t.Logf("Building Docker images with tag %s...", tag)
 		if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/operator:%s", tag), "-f", "k8s/operator/Dockerfile", "."); err != nil {
 			t.Fatalf("Failed to build operator image: %v", err)
@@ -195,9 +194,9 @@ nodes:
 
 	t.Log("Executing npx playwright test in", uiDir)
 	if err := playwrightCmd.Run(); err != nil {
-						cmd := exec.Command("sh", "-c", "kubectl get pods -n mcp-system; kubectl logs -n mcp-system -l app.kubernetes.io/name=server --all-containers=true --tail=1000")
-						out, _ := cmd.CombinedOutput()
-						t.Logf("Server Logs:\n%s", out)
+		cmd := exec.Command("sh", "-c", "kubectl get pods -n mcp-system; kubectl logs -n mcp-system -l app.kubernetes.io/name=server --all-containers=true --tail=1000")
+		out, _ := cmd.CombinedOutput()
+		t.Logf("Server Logs:\n%s", out)
 		t.Fatalf("UI Tests failed: %v", err)
 	}
 }
