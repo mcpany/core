@@ -46,11 +46,16 @@ go_test(
         "//server/tests/integration/cmd/mocks/http_caching_server",
         "//server/tests/integration/cmd/mocks/http_echo_server",
         "//server/tests/integration/cmd/mocks/openapi_weather_server",
+        "//server/tests/integration/cmd/mocks/python_cowsay_server:cowsay_server_tarball",
         "//server/tests/integration/cmd/mocks/webrtc_weather_server",
         "//server/tests/integration/upstream/testdata/mock_mcp",
     ],
     embed = [":upstream"],
-    tags = ["integration"],
+    tags = [
+        "integration",
+        "local",
+        "requires-network",
+    ],
     deps = [
         "//proto/api/v1:api",
         "//proto/config/v1:config",

@@ -4,10 +4,13 @@
 package config
 
 import (
+	"context"
 	"os"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestExpandWithBracesInDefault(t *testing.T) {
@@ -159,4 +162,50 @@ func TestExpandDetailed(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestMultiStoreMerging(t *testing.T) {
+	ctx := context.Background()
+
+	// Store 1: DB-like (weather-service)
+	weatherSvc := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("weather-service"),
+	}.Build()
+	cfg1 := configv1.McpAnyServerConfig_builder{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{weatherSvc},
+	}.Build()
+
+	// Store 2: File-like (echo-service)
+	echoSvc := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("echo-service"),
+	}.Build()
+	cfg2 := configv1.McpAnyServerConfig_builder{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{echoSvc},
+	}.Build()
+
+	// Mock stores
+	store1 := &mockStore{cfg: cfg1}
+	store2 := &mockStore{cfg: cfg2}
+
+	ms := NewMultiStore(store1, store2)
+	merged, err := ms.Load(ctx)
+	if err != nil {
+		t.Fatalf("Failed to load MultiStore: %v", err)
+	}
+
+	if len(merged.GetUpstreamServices()) != 2 {
+		t.Errorf("Expected 2 services, got %d", len(merged.GetUpstreamServices()))
+	}
+}
+
+type mockStore struct {
+	cfg *configv1.McpAnyServerConfig
+}
+
+func (m *mockStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
+	return m.cfg, nil
+}
+
+func (m *mockStore) HasConfigSources() bool {
+	return true
 }
