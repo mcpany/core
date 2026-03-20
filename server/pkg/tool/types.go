@@ -3756,21 +3756,115 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 
 //nolint:gocyclo
 func checkUnquotedKeywords(val string, keywords []string) error {
-	for _, kw := range keywords {
-		idx := strings.Index(val, kw)
-		if idx != -1 {
-			leftOk := idx == 0 || !isWordChar(val[idx-1])
-			rightOk := idx+len(kw) == len(val) || !isWordChar(val[idx+len(kw)])
-			if leftOk && rightOk {
-				if idx > 0 {
-					lastChar := val[idx-1]
-					if lastChar == '$' || lastChar == '@' || lastChar == '%' || lastChar == '>' {
-						continue
-					}
-				}
+	inSingle := false
+	inDouble := false
+	inBacktick := false
+	escaped := false
 
-				return fmt.Errorf("interpreter injection detected: dangerous keyword %q found (unquoted)", kw)
+	// ⚡ Bolt Optimization: Use []byte buffer to avoid string allocations
+	wordBuf := make([]byte, 0, 64)
+	lastChar := rune(0) // Last non-whitespace char before current word
+	var lastWord []byte // Last word seen before current word (separated only by whitespace)
+
+	for _, char := range val {
+		if escaped {
+			escaped = false
+			continue
+		}
+		if char == '\\' {
+			escaped = true
+			continue
+		}
+
+		// Quote handling
+		if char == '\'' && !inDouble && !inBacktick {
+			inSingle = !inSingle
+			// Treat quotes as delimiters
+			if inSingle { // Entered quote
+				if len(wordBuf) > 0 {
+					if err := checkKeyword(wordBuf, keywords, lastChar, lastWord); err != nil {
+						return err
+					}
+					// Copy wordBuf to lastWord
+					lastWord = append(lastWord[:0], wordBuf...)
+					wordBuf = wordBuf[:0]
+				}
 			}
+			// When exiting quote, we don't update lastWord because quoted string is not a word
+			// But we should update lastChar to the quote
+			if !inSingle {
+				lastChar = char
+				lastWord = lastWord[:0]
+			}
+			continue
+		}
+		if char == '"' && !inSingle && !inBacktick {
+			inDouble = !inDouble
+			if inDouble { // Entered quote
+				if len(wordBuf) > 0 {
+					if err := checkKeyword(wordBuf, keywords, lastChar, lastWord); err != nil {
+						return err
+					}
+					lastWord = append(lastWord[:0], wordBuf...)
+					wordBuf = wordBuf[:0]
+				}
+			}
+			if !inDouble {
+				lastChar = char
+				lastWord = lastWord[:0]
+			}
+			continue
+		}
+		if char == '`' && !inSingle && !inDouble {
+			inBacktick = !inBacktick
+			if inBacktick { // Entered quote
+				if len(wordBuf) > 0 {
+					if err := checkKeyword(wordBuf, keywords, lastChar, lastWord); err != nil {
+						return err
+					}
+					lastWord = append(lastWord[:0], wordBuf...)
+					wordBuf = wordBuf[:0]
+				}
+			}
+			if !inBacktick {
+				lastChar = char
+				lastWord = lastWord[:0]
+			}
+			continue
+		}
+
+		if inSingle || inDouble || inBacktick {
+			continue
+		}
+
+		if char < 128 && isWordChar(byte(char)) {
+			wordBuf = append(wordBuf, byte(char))
+		} else {
+			// Delimiter (including non-ASCII characters)
+			// Non-ASCII characters cannot be part of the dangerous keywords we check (which are ASCII only).
+			// We treat them as delimiters to ensure we correctly isolate potential keywords.
+			if len(wordBuf) > 0 {
+				if err := checkKeyword(wordBuf, keywords, lastChar, lastWord); err != nil {
+					return err
+				}
+				lastWord = append(lastWord[:0], wordBuf...)
+				wordBuf = wordBuf[:0]
+			}
+
+			if !unicode.IsSpace(char) {
+				lastChar = char
+				lastWord = lastWord[:0] // Clear lastWord if we hit a non-space delimiter
+			} else {
+				lastChar = char       // Space is the last delimiter
+				// do NOT clear lastWord
+			}
+		}
+	}
+
+	// Check last word
+	if len(wordBuf) > 0 {
+		if err := checkKeyword(wordBuf, keywords, lastChar, lastWord); err != nil {
+			return err
 		}
 	}
 	return nil
