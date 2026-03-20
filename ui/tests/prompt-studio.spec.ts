@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Prompt Studio', () => {
   test.beforeAll(async ({ request }) => {
-    // Seed a service for the test
+    // Seed a service with some prompts for the test
     const response = await request.post('/api/v1/services', {
       data: {
         id: 'e2e-test-service',
@@ -17,6 +17,28 @@ test.describe('Prompt Studio', () => {
           command: 'echo',
           working_directory: '/tmp'
         },
+        prompts: [
+          {
+            name: 'existing_prompt_1',
+            description: 'The first seeded prompt',
+            messages: [
+              {
+                role: 'user',
+                content: { type: 'text', text: 'Hello from prompt 1' }
+              }
+            ]
+          },
+          {
+            name: 'existing_prompt_2',
+            description: 'The second seeded prompt',
+            messages: [
+              {
+                role: 'user',
+                content: { type: 'text', text: 'Hello from prompt 2' }
+              }
+            ]
+          }
+        ],
         disable: false
       }
     });
