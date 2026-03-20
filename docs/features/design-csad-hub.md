@@ -1,14 +1,11 @@
 # Design Doc: Collective Swarm Anomaly Detection (CSAD)
-
 **Status:** Draft
 **Created:** 2026-05-29
 
 ## 1. Context and Scope
-
 With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring is no longer sufficient. Attackers now use coordinated networks of autonomous agents to perform low-and-slow probes that evade single-point anomaly detection. MCP Any needs a collective defense layer that can analyze behavioral patterns across the entire agent mesh in real-time.
 
 ## 2. Goals & Non-Goals
-
 * **Goals:**
     * Implement sub-millisecond, cross-agent behavioral analysis.
     * Detect coordinated probe patterns (e.g., distributed port scanning, credential stuffing).
@@ -18,7 +15,6 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
     * Performing deep packet inspection (L7) beyond semantic tool call metadata.
 
 ## 3. Critical User Journey (CUJ)
-
 * **User Persona:** Enterprise Security Architect
 * **Primary Goal:** Detect and neutralize a coordinated "Hivenet" attack attempting lateral movement across the internal agent mesh.
 * **The Happy Path (Tasks):**
@@ -28,7 +24,6 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
     4. Architect receives an alert with a visual graph of the coordinated attack trace.
 
 ## 4. Design & Architecture
-
 * **System Flow:**
     * Every tool call and A2A message is intercepted by the CSAD Middleware.
     * Metadata fragments (caller_id, tool_id, timestamp, mission_root) are pushed to a high-speed, in-memory "Swarm State Buffer."
@@ -41,25 +36,27 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
     * Persistent audit logs in the core database for post-mortem analysis.
 
 ## 5. Alternatives Considered
-
 * **Centralized Cloud Analysis:** Rejected due to latency. "Hivenet" attacks move too fast for cloud-roundtrips to be effective as a first-line defense.
 * **Purely Local Rules:** Rejected as they cannot detect coordination between independent agents.
 
 ## 6. Cross-Cutting Concerns
-
 * **Security (Zero Trust):** The CSAD Hub itself must be hardware-attested to prevent attackers from disabling the defense layer.
 * **Observability:** Provides real-time "Mesh Health" metrics to the UI.
 
 ## 7. Evolutionary Changelog
-
 * **2026-05-29:** Initial Document Creation.
 
-### Update: 2026-05-30 - Addressing Semantic Drift in Anomaly Signaling
+## 7. Evolutionary Changelog
+* **2026-05-30: Initial Document Creation.**
 
-**Context:** Today's market sync revealed "Context Shadowing" as a new exploit pattern where subagents bypass detection by injecting high-priority semantic fragments.
-
+### Update: 2026-05-30 - Neutralizing Context Shadowing
+**Context:** Today's research identified "Context Shadowing" where subagents
+override system instructions via the Shared Blackboard.
 **Architecture Adjustment:**
-* Integrating the Intent Hierarchy Enforcer (IHE) into the Pattern Matcher.
-* Detection logic now weights tool call metadata based on the "Mission Root" anchor priority.
-
-**Security Impact:** Prevents low-trust subagents from masking "Hivenet" probe patterns by overriding shared state instructions.
+* Integrating the **Intent Hierarchy Enforcer (IHE)** into the CSAD Pattern
+  Matcher to flag and block state mutations that conflict with the Mission
+  Root.
+* Implementing **KNS Command Runner** for all CSAD-triggered diagnostic tools
+  to prevent rogue subagents from tampering with anomaly logs.
+**Security Impact:** Prevents subversion of swarm-wide monitoring by
+compromised agents.
