@@ -5,7 +5,7 @@ package integration_test
 
 import (
 	"context"
-	"encoding/json"
+
 	"fmt"
 	"net/http"
 	"net/http/httptest"
