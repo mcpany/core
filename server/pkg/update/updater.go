@@ -40,13 +40,10 @@ type Updater struct {
 // Summary: Initializes NewUpdater operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -85,13 +82,10 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 // Summary: Executes CheckForUpdate operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -130,13 +124,10 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 // Summary: Executes UpdateTo operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

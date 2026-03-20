@@ -48,13 +48,10 @@ type Worker struct {
 // Summary: Initializes New operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -87,13 +84,10 @@ func New(config Config) *Worker {
 // Summary: Executes Start operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

@@ -60,13 +60,10 @@ type GrpcClientWrapper struct {
 // Summary: Initializes NewGrpcClientWrapper operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -99,13 +96,10 @@ func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, che
 // Summary: Checks IsHealthy operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -139,13 +133,10 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

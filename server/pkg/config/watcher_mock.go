@@ -22,13 +22,10 @@ type MockWatcher struct {
 // Summary: Initializes NewMockWatcher operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -54,13 +51,10 @@ func NewMockWatcher() *MockWatcher {
 // Summary: Executes Watch operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -82,13 +76,10 @@ func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

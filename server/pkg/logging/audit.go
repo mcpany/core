@@ -41,13 +41,10 @@ type AuditHandler struct {
 // Summary: Initializes NewAuditHandler operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -113,13 +110,10 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 // Summary: Executes Enabled operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -145,13 +139,10 @@ func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 // Summary: Executes Handle operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -182,13 +173,10 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 // Summary: Executes WithAttrs operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -217,13 +205,10 @@ func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 // Summary: Executes WithGroup operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -253,13 +238,10 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 // Summary: Executes Export operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

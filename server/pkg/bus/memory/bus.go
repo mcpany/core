@@ -47,13 +47,10 @@ type DefaultBus[T any] struct {
 // Summary: Initializes New operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -80,13 +77,10 @@ func New[T any]() *DefaultBus[T] {
 // Summary: Executes Publish operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -140,13 +134,10 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 // Summary: Executes Subscribe operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -209,13 +200,10 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 // Summary: Executes SubscribeOnce operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

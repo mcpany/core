@@ -44,13 +44,10 @@ type PineconeClient struct {
 // Summary: Initializes NewPineconeClient operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -152,13 +149,10 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 // Summary: Executes Query operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -195,13 +189,10 @@ func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64
 // Summary: Executes Upsert operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -233,13 +224,10 @@ func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interf
 // Summary: Executes Delete operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -277,13 +265,10 @@ func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace str
 // Summary: Executes DescribeIndexStats operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

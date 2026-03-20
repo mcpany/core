@@ -118,13 +118,10 @@ type ClientSession interface {
 // Summary: Updates SetNewClientImplForTesting operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -147,13 +144,10 @@ func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1
 // Summary: Updates SetNewClientForTesting operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -180,13 +174,10 @@ func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 // Summary: Updates SetConnectForTesting operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -228,13 +219,10 @@ type Upstream struct {
 // Summary: Executes CheckHealth operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -271,13 +259,10 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Summary: Executes Shutdown operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -320,13 +305,10 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Summary: Initializes NewUpstream operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -357,13 +339,10 @@ type mcpPrompt struct {
 // Summary: Executes Prompt operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -382,13 +361,10 @@ func (p *mcpPrompt) Prompt() *mcp.Prompt {
 // Summary: Executes Service operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -413,13 +389,10 @@ func (p *mcpPrompt) Service() string {
 // Summary: Executes Definition operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -479,13 +452,10 @@ func (p *mcpPrompt) Definition() *configv1.PromptDefinition {
 // Summary: Retrieves Get operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -538,13 +508,10 @@ type mcpResource struct {
 // Summary: Executes Resource operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -563,13 +530,10 @@ func (r *mcpResource) Resource() *mcp.Resource {
 // Summary: Executes Service operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -596,13 +560,10 @@ func (r *mcpResource) Service() string {
 // Summary: Retrieves Read operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -636,13 +597,10 @@ func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 // Summary: Executes Subscribe operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -675,13 +633,10 @@ func (r *mcpResource) Subscribe(_ context.Context) error {
 // Summary: Executes Register operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -864,13 +819,10 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 // Summary: Executes CallTool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -1540,13 +1492,10 @@ type authenticatedRoundTripper struct {
 // Summary: Executes RoundTrip operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -1591,13 +1540,10 @@ type StreamableHTTP struct {
 // Summary: Executes RoundTrip operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

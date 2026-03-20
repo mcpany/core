@@ -34,13 +34,10 @@ var (
 // Summary: Updates SetLevel operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -65,13 +62,10 @@ func SetLevel(level slog.Level) {
 // Summary: Executes ForTestsOnlyResetLogger operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -102,13 +96,10 @@ func ForTestsOnlyResetLogger() {
 // Summary: Executes Init operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -192,13 +183,10 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 // Summary: Retrieves GetLogger operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -235,13 +223,10 @@ func GetLogger() *slog.Logger {
 // Summary: Executes ToSlogLevel operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
