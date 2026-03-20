@@ -82,6 +82,11 @@ const platformItems = [
     icon: ClipboardCheck,
   },
   {
+    title: "Attestation",
+    url: "/attestation",
+    icon: ShieldCheck,
+  },
+  {
     title: "Traces",
     url: "/traces",
     icon: Activity,
