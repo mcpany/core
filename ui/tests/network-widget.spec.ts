@@ -18,7 +18,7 @@ test('dashboard network topology widget', async ({ page, request }) => {
   // The widget might take a moment to be added to the layout or rendered
   await expect(async () => {
     // If the widget is missing, try to add it via the "Add Widget" button
-    const networkWidget = page.locator('.react-flow');
+    const networkWidget = page.locator('.react-flow').first();
     if (!(await networkWidget.isVisible())) {
       const trigger = page.getByTestId('add-widget-trigger').first();
       if (await trigger.isVisible()) {
@@ -27,7 +27,7 @@ test('dashboard network topology widget', async ({ page, request }) => {
       }
     }
     // Check for the React Flow container
-    await expect(page.locator('.react-flow')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('.react-flow').first()).toBeVisible({ timeout: 15000 });
 
     // Check for the presence of nodes
     await expect(page.locator('.react-flow__node').first()).toBeVisible({ timeout: 10000 });
