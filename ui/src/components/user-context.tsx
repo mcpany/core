@@ -5,7 +5,7 @@
 
 
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { apiClient } from '@/lib/client';
 
 /**
@@ -58,7 +58,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       const u = await apiClient.getCurrentUser();
       if (u) {
@@ -78,30 +78,37 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchUser();
-  }, []);
+  }, [fetchUser]);
 
-  const login = async (role: UserRole) => {
+  const login = useCallback(async (role: UserRole) => {
     // In a real app, this would trigger an OAuth flow or redirect to login page.
     // For development/testing with Basic Auth or API Key, the client is pre-configured via headers/localStorage.
     // We simulate a login by refreshing the user state from the backend.
     console.log(`[UserContext] Simulating login for role: ${role}`);
     await fetchUser();
-  };
+  }, [fetchUser]);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem('mcp_auth_token');
     localStorage.removeItem('mcp_user_role');
     // Force reload to clear client state
     window.location.reload();
-  };
+  }, []);
+
+  // ⚡ BOLT: [React/View Optimization] Memoize context value to prevent widespread re-renders
+  // Randomized Selection from Top 5 High-Impact Targets
+  const value = useMemo(
+    () => ({ user, loading, login, logout, refresh: fetchUser }),
+    [user, loading, login, logout, fetchUser]
+  );
 
   return (
-    <UserContext.Provider value={{ user, loading, login, logout, refresh: fetchUser }}>
+    <UserContext.Provider value={value}>
       {children}
     </UserContext.Provider>
   );
