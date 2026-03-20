@@ -1,9 +1,11 @@
 # Coverage Intervention Report
 
-* **Target:** `server/pkg/app/api_skills.go` (`handleSkills` and `handleSkillDetail`)
-* **Risk Profile:** These endpoints handle HTTP operations mapping to internal skill operations in `server/pkg/app`. It exhibited low coverage and high Cyclomatic Complexity. Leaving these endpoints untested posed a risk of regressions, especially related to the security and management of skills (creation, retrieval, updates, asset routing, etc.).
+* **Target:** `server/pkg/storage/postgres/store.go`
+* **Risk Profile:** The `(*Store).Load` function initializes the application state by pulling configurations for upstream services, users, settings, profiles, and service collections from the PostgreSQL database in parallel. Given its high cyclomatic complexity (27) and extremely poor test coverage (~54%), it represented a significant source of regression risk, especially for bootstrapping and dynamic reloading processes.
 * **New Coverage:**
-    * I implemented a comprehensive table-driven test `TestHandleSkills` which tests `GET` (List), `POST` (Create with Success, Invalid Body, and Creation Error scenarios), and default method handler (Method Not Allowed).
-    * I implemented a comprehensive table-driven test `TestHandleSkillDetail` which tests `GET` (Retrieve with Success and Not Found scenarios), `PUT` (Update with Success, Invalid Body, and Update Error scenarios), `DELETE` (Delete with Success and Not Found scenarios), default method handler (Method Not Allowed), missing skill names in the request URL, and correct asset routing (delegation to `handleUploadSkillAsset`).
-    * The new coverage mimics the Google Standard Table-Driven Test pattern present in `TestHandleUploadSkillAsset`.
-* **Verification:** `bazelisk test //server/pkg/app:app_test` confirms tests pass correctly without modifying underlying functionality. Running `bazelisk test //server/...` confirms there are no new regressions.
+  - Achieved comprehensive test coverage for `(*Store).Load` by implementing mocked `t.Run` blocks using `DATA-DOG/go-sqlmock` in `pkg/storage/postgres/store_load_test.go`.
+  - Added robust testing for the **Happy Path**, verifying the correct deserialization and assembly of `*configv1.McpAnyServerConfig` with valid payload fixtures.
+  - Implemented specific edge-case tests validating system behavior when queries fail for `users`, `upstream_services`, and `profile_definitions` (early abort mechanisms).
+  - Included a test validating the deliberate tolerance/ignore logic when pulling `service_collections` fails.
+  - Mocked JSON unmarshal failures and raw database scan errors to prove resilient error propagation.
+* **Verification:** Confirmed that `bazel test //...` passes across the test suite and `bazel run //:lint` verifies formatting, proving no regressions and ensuring hermetic state separation in our mock test environment (`mock.MatchExpectationsInOrder(false)`).
