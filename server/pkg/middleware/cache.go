@@ -17,15 +17,17 @@ import (
 	"github.com/eko/gocache/lib/v4/store"
 	gocache_store "github.com/eko/gocache/store/go_cache/v4"
 	jsoniter "github.com/json-iterator/go"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	go_cache "github.com/patrickmn/go-cache"
 )
 
 // ProviderFactory is a function that creates an EmbeddingProvider.
+//
+// Summary: Represents a ProviderFactory.
 type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error)
 
 // CachingMiddleware is a tool execution middleware that provides caching
@@ -38,6 +40,8 @@ var (
 )
 
 // CachingMiddleware handles caching of tool execution results.
+//
+// Summary: Represents a CachingMiddleware.
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface
@@ -60,6 +64,20 @@ type CachingMiddleware struct {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Initializes NewCachingMiddleware operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
 	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
 	cacheManager := cache.New[any](goCacheStore)
@@ -131,6 +149,20 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 //
 // Side Effects:
 //   - None
+//
+// Summary: Updates SetProviderFactory operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 	m.providerFactory = factory
 }
@@ -151,6 +183,20 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes Execute operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := tool.GetFromContext(ctx)
 	if !ok {
@@ -456,6 +502,20 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes Clear operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *CachingMiddleware) Clear(ctx context.Context) error {
 	return m.cache.Clear(ctx)
 }

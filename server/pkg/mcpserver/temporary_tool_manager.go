@@ -15,6 +15,8 @@ import (
 //
 // It is intended for use in ValidateService where we need to store service info
 // and discovered tools for the duration of the validation request but discard them afterwards.
+//
+// Summary: Represents a TemporaryToolManager.
 type TemporaryToolManager struct {
 	NoOpToolManager
 	mu          sync.RWMutex
@@ -26,6 +28,20 @@ type TemporaryToolManager struct {
 //
 // Returns:
 //   - *TemporaryToolManager: A new instance of TemporaryToolManager.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewTemporaryToolManager operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -44,6 +60,20 @@ func NewTemporaryToolManager() *TemporaryToolManager {
 //
 // Side Effects:
 //   - Updates the internal service info map.
+//
+// Summary: Executes AddServiceInfo operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -61,6 +91,20 @@ func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.Servi
 // Returns:
 //   - *tool.ServiceInfo: The service information if found.
 //   - bool: True if the service information exists.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Retrieves GetServiceInfo operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -84,6 +128,20 @@ func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceIn
 //
 // Side Effects:
 //   - Updates the internal tool map.
+//
+// Summary: Executes AddTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *TemporaryToolManager) AddTool(t tool.Tool) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -117,6 +175,20 @@ func (m *TemporaryToolManager) AddTool(t tool.Tool) error {
 //
 // Side Effects:
 //   - None.
+//
+// Summary: Retrieves GetTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -131,6 +203,20 @@ func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 //
 // Returns:
 //   - []tool.Tool: A list of all tools.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes ListTools operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -154,6 +240,20 @@ func (m *TemporaryToolManager) ListTools() []tool.Tool {
 //
 // Returns:
 //   - int: The number of tools for the service.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Retrieves GetToolCountForService operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

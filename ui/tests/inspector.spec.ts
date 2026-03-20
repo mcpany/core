@@ -86,4 +86,38 @@ test.describe('Inspector Page', () => {
     await expect(sheet).toBeVisible();
     await expect(sheet.locator('text=orchestrator-task').first()).toBeVisible();
   });
+
+  test('should clear traces permanently on backend when Clear is clicked', async ({ page }) => {
+    let wsSend: ((data: string) => void) | null = null;
+    await page.routeWebSocket('**/api/v1/ws/traces', (ws: any) => {
+      wsSend = (data: string) => ws.send(data);
+    });
+
+    let deleteCalled = false;
+    await page.route('**/api/v1/traces', async (route) => {
+      if (route.request().method() === 'DELETE') {
+        deleteCalled = true;
+        await route.fulfill({ status: 204 });
+      } else {
+        await route.continue();
+      }
+    });
+
+    await page.goto('/inspector');
+    await expect(page.getByRole('heading', { name: 'Inspector' })).toBeVisible();
+
+    if (wsSend) {
+      wsSend(JSON.stringify(MOCK_TRACE));
+    }
+
+    const row = page.locator('text=orchestrator-task').first();
+    await expect(row).toBeVisible({ timeout: 10000 });
+
+    const clearBtn = page.getByRole('button', { name: 'Clear' });
+    await expect(clearBtn).toBeVisible();
+    await clearBtn.click();
+
+    await expect(row).not.toBeVisible();
+    expect(deleteCalled).toBe(true);
+  });
 });

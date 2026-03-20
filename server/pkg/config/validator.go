@@ -36,10 +36,13 @@ const (
 
 const (
 	// Server represents the server binary.
+	// Summary: Defines Serve.
 	Server BinaryType = iota
 	// Worker represents the worker binary.
+	// Summary: Defines Worke.
 	Worker
 	// Client represents the client binary.
+	// Summary: Defines Clien.
 	Client
 )
 
@@ -50,8 +53,10 @@ type AuthValidationContext int
 
 const (
 	// AuthValidationContextIncoming represents incoming authentication (e.g., Users).
+	// Summary: Defines AuthValidationContextIncomin.
 	AuthValidationContextIncoming AuthValidationContext = iota
 	// AuthValidationContextOutgoing represents outgoing authentication (e.g., Upstream Services).
+	// Summary: Defines AuthValidationContextOutgoin.
 	AuthValidationContextOutgoing
 )
 
@@ -60,10 +65,12 @@ type contextKey string
 const (
 	// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
 	// Value should be a boolean.
+	// Summary: Defines SkipSecretValidationKey.
 	SkipSecretValidationKey contextKey = "skip_secret_validation"
 
 	// SkipFilesystemCheckKey is the context key to skip filesystem existence checks (e.g. for config check API).
 	// Value should be a boolean.
+	// Summary: Defines SkipFilesystemCheckKey.
 	SkipFilesystemCheckKey contextKey = "skip_filesystem_check"
 )
 
@@ -93,6 +100,20 @@ type ValidationError struct {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes Error operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (e *ValidationError) Error() string {
 	return fmt.Sprintf("service %q: %v", e.ServiceName, e.Err)
 }
