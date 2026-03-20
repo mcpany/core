@@ -753,6 +753,20 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+- **[P1] Speculative Branching Guard (SBG)**: Isolation for un-executed reasoning paths to prevent speculative attention leakage. (Added: 2026-06-16)
+- **[P0] Mesh-Resident Key Exchange (MRKE) Provider**: Hardware-bound session key rotation for sub-100ms inter-teammate coordination. (Added: 2026-06-16)
+
+### Upcoming: [2026-06-15]
+- **Intent-Resumption Gateway (IRG)**: (P0) Authoritative resumption broker implementing OpenClaw-compliant "Intent-Resumption Tokens" to eliminate cognitive stall during teammate rotation. (Added: 2026-06-15)
+- **Side-Channel Timing Mitigator (SCTM)**: (P0) Advanced security middleware for the ASLM that injects hardware-attested timing jitter to neutralize shard-collision timing attacks. (Added: 2026-06-15)
+- **Attention-Locked Telemetry Proxy**: (P1) Authoritative telemetry sanitizer for Gemini-compliant reasoning traces, ensuring attention-mapping privacy during RL feedback export. (Added: 2026-06-15)
+- **WASM-Hook Behavioral Profiler**: (P0) Mandatory extension for the SMS that performs sandboxed profiling of AI-generated configuration hooks to counter PR "Logic Bombs." (Added: 2026-06-15)
+
+### Upcoming: [2026-06-17]
+- **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment service issuing hardware-attested heartbeats for mission-anchored reasoning (Added: 2026-06-17).
+- **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
+- **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
+- **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
 
 ### Upcoming: [2026-06-18]
 * **[P0] Active Intent Alignment (AIA) Hub**: Advanced alignment service utilizing hardware-attested heartbeats to ensure specialist reasoning remains mission-anchored. (Added: 2026-06-18)
