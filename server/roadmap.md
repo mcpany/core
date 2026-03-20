@@ -160,10 +160,14 @@ Enterprise Readiness, Safety, and Developer Experience.
 
 | Rank | Feature Name | Why it matters | Difficulty |
 | :--- | :--- | :--- | :--- |
-| **P0** | **Policy Firewall** | **Security:** Critical for "Zero Trust" agent execution. | High |
-| **P0** | **HITL Middleware** | **Safety:** Prevents catastrophic agent actions. | High |
-| **P1** | **Recursive Context** | **Usability:** Solves subagent configuration pain. | Medium |
-| **P1** | **Shared KV Store** | **Reliability:** Prevents multi-agent hallucinations. | Medium |
+| **P0** | **Policy Firewall** | **Security:** Critical for "Zero Trust" agent
+execution. | High |
+| **P0** | **HITL Middleware** | **Safety:** Prevents catastrophic agent
+actions. | High |
+| **P1** | **Recursive Context** | **Usability:** Solves subagent configuration
+pain. | Medium |
+| **P1** | **Shared KV Store** | **Reliability:** Prevents multi-agent
+hallucinations. | Medium |
 | 1 | **Team Configuration Sync** | **Collaboration**: Allow teams to
 synchronize `mcpany` configurations and secrets securely, ensuring consistent
 dev environments. | Medium |

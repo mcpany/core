@@ -33,8 +33,10 @@ consensus on "Proof of Correctness" before state is committed.
     2. The AVQ Hub intercepts the result and pauses the mission state.
 3. AVQ dispatches the result and the reasoning trace to two independent "Auditor
 Agents" (one specialized in SQL security, one in performance).
-    4. Both Auditors provide hardware-attested "Valid" signals back to the AVQ Hub.
-    5. AVQ releases the mission lock and provides a "Consensus Receipt" to the primary intent loop.
+    4. Both Auditors provide hardware-attested "Valid" signals back to the AVQ
+Hub.
+    5. AVQ releases the mission lock and provides a "Consensus Receipt" to the
+primary intent loop.
     6. The migration continues autonomously, backed by an immutable audit trail.
 
 ## 4. Design & Architecture
