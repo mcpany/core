@@ -134,9 +134,13 @@ fi
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     (
         cd server
-        # Use a concurrency limit to prevent OOM in resource-constrained environments.
-        "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 2 \
-            ./cmd/... ./pkg/... ./tests/... ./examples/...
+        # Use a concurrency limit and scan packages sequentially to prevent OOM in resource-constrained environments.
+        for dir in cmd pkg tests examples; do
+            if [[ -d "$dir" ]]; then
+                echo "    Scanning server/$dir..."
+                "$GOLANGCI_LINT_BIN" run --timeout 10m --fix --concurrency 1 "./$dir/..."
+            fi
+        done
     )
     echo "    golangci-lint OK."
 else
