@@ -161,13 +161,10 @@ if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     PKGS=""
     for d in $(find server/pkg -maxdepth 1 -type d | grep -vE "mcpserver|upstream|tool|app|api|catalog|discovery|config|auth|service|storage|bus|middleware|validation|util|logging|server/pkg$"); do
         if ls "$d"/*.go >/dev/null 2>&1; then
-            PKGS="$PKGS $d/..."
+            echo "    Sub-Batch: $d"
+            "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 1 "$d/..."
         fi
     done
-    # shellcheck disable=SC2086
-    if [[ -n "$PKGS" ]]; then
-        "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 1 $PKGS
-    fi
 
     echo "==> Batch: cmd & tests"
     "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 1 ./server/cmd/... ./server/tests/... ./server/examples/...
