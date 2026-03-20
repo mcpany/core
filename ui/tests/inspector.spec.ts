@@ -76,7 +76,8 @@ test.describe("Inspector Page", () => {
     // After the POST succeeds, inject the trace into the active WebSocket
     // connection.
     if (wsSend !== null) {
-      (wsSend as (data: string) => void)(JSON.stringify(MOCK_TRACE));
+      const sendFn = wsSend as unknown as (data: string) => void;
+      sendFn(JSON.stringify(MOCK_TRACE));
     }
 
     // Wait briefly to allow React state to update based on WebSocket message
@@ -121,7 +122,8 @@ test.describe("Inspector Page", () => {
     ).toBeVisible();
 
     if (wsSend !== null) {
-      (wsSend as (data: string) => void)(JSON.stringify(MOCK_TRACE));
+      const sendFn = wsSend as unknown as (data: string) => void;
+      sendFn(JSON.stringify(MOCK_TRACE));
     }
 
     const row = page.locator("text=orchestrator-task").first();
