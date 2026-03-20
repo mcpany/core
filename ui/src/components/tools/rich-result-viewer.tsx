@@ -3,39 +3,39 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
-import { useMemo } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FileJson, Table as TableIcon, Terminal, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Code, Table as TableIcon, Image as ImageIcon, FileText, ListTree } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { unwrapMcpResult } from "@/lib/mcp-unwrap";
 
 interface RichResultViewerProps {
     result: any;
 }
 
 interface TextContent {
-    type: "text";
+    type: 'text';
     text: string;
 }
 
 interface ImageContent {
-    type: "image";
+    type: 'image';
     data: string;
     mimeType: string;
 }
 
-type McpContent = TextContent | ImageContent;
-
-interface McpContentRendererProps {
-    content: McpContent[];
+interface ResourceContent {
+    type: 'resource';
+    resource?: any;
 }
 
-function McpContentRenderer({ content }: McpContentRendererProps) {
+type McpContent = TextContent | ImageContent | ResourceContent;
+
+function McpContentRenderer({ content }: { content: McpContent[] }) {
     return (
         <div className="space-y-6 p-4">
             {content.map((item, index) => {
@@ -57,6 +57,13 @@ function McpContentRenderer({ content }: McpContentRendererProps) {
                             />
                         </div>
                     );
+                } else if (item.type === "resource") {
+                    return (
+                        <div key={index} className="flex items-center gap-2 p-3 bg-muted/30 rounded-md border border-white/5">
+                            <FileText className="h-4 w-4 text-primary" />
+                            <span className="text-sm font-medium">Resource: {item.resource?.uri || 'Unknown'}</span>
+                        </div>
+                    );
                 }
                 return null;
             })}
@@ -66,161 +73,222 @@ function McpContentRenderer({ content }: McpContentRendererProps) {
 
 /**
  * RichResultViewer displays tool execution results in a user-friendly format.
- * It automatically detects if the result contains JSON or tabular data and provides
- * appropriate views (Table, JSON, Raw).
- *
- * @param props - The component props.
- * @param props.result - The raw result object from the tool execution.
- * @returns The rendered component.
+ * It automatically detects if the result contains JSON, tabular data, or MCP content
+ * and provides appropriate views with smooth transitions.
  */
 export function RichResultViewer({ result }: RichResultViewerProps) {
-    // Attempt to extract meaningful content if it's a command result
-    const [content, isExtracted] = useMemo(() => {
-        if (!result) return [result, false];
+    const [userViewMode, setUserViewMode] = useState<"smart" | "raw" | "rich" | "tree" | null>(null);
 
-        // Handle Command Execution Result (stdout contains JSON)
-        if (typeof result === 'object' && 'stdout' in result && typeof result.stdout === 'string') {
-            try {
-                // Only treat as extracted if parsing succeeds
-                const parsed = JSON.parse(result.stdout);
-                return [parsed, true];
-            } catch {
-                return [result, false];
-            }
+    // 1. Shared unwrapping logic
+    const unwrappedContent = useMemo(() => {
+        let content = result;
+
+        if (result && typeof result === 'object' && Array.isArray(result.content)) {
+            content = result.content;
         }
 
-        // Handle raw string that is JSON
-        if (typeof result === 'string') {
-            try {
-                const parsed = JSON.parse(result);
-                return [parsed, true];
-            } catch {
-                return [result, false];
-            }
+        if (content && typeof content === 'object' && !Array.isArray(content)) {
+             if (content.stdout && typeof content.stdout === 'string') {
+                 try {
+                     const inner = JSON.parse(content.stdout);
+                     if (Array.isArray(inner) || (typeof inner === 'object' && inner !== null)) {
+                         content = inner;
+                     }
+                 } catch (e) {
+                     // stdout is not JSON
+                 }
+             }
         }
-        return [result, false];
+
+        if (content && typeof content === 'object' && !Array.isArray(content) && Array.isArray(content.content)) {
+            content = content.content;
+        }
+
+        return content;
     }, [result]);
 
-    const mcpContent = useMemo<McpContent[] | null>(() => {
-        if (Array.isArray(content)) {
-            const isValidArray = content.every((item: any) =>
-                (item.type === 'text' && typeof item.text === 'string') ||
-                (item.type === 'image' && typeof item.data === 'string' && typeof item.mimeType === 'string')
-            );
-            if (isValidArray) {
-                return content as McpContent[];
-            }
-        }
+    const fullyUnwrapped = useMemo(() => unwrapMcpResult(result), [result]);
 
-        if (content && typeof content === 'object' && Array.isArray(content.content)) {
-            // Check if it looks like MCP content
-            const isValid = content.content.every((item: any) =>
-                (item.type === 'text' && typeof item.text === 'string') ||
-                (item.type === 'image' && typeof item.data === 'string' && typeof item.mimeType === 'string')
+    // 2. Identify MCP Content
+    const mcpContent = useMemo<McpContent[] | null>(() => {
+        if (Array.isArray(unwrappedContent) && unwrappedContent.length > 0) {
+            const isMcp = unwrappedContent.every((item: any) =>
+                typeof item === 'object' && item !== null &&
+                (item.type === 'text' || item.type === 'image' || item.type === 'resource')
             );
-            if (isValid) {
-                return content.content;
-            }
+            if (isMcp) return unwrappedContent as McpContent[];
         }
         return null;
-    }, [content]);
+    }, [unwrappedContent]);
 
-    const isTableEligible = useMemo(() => {
-        return !mcpContent && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
-    }, [content, mcpContent]);
+    // 3. Identify Table Data
+    const tableData = useMemo(() => {
+        if (Array.isArray(fullyUnwrapped) && fullyUnwrapped.length > 0) {
+             const isTable = fullyUnwrapped.every((item: any) => typeof item === 'object' && item !== null);
+             const isRichMcp = mcpContent && mcpContent.some(c => c.type !== 'text');
+             if (isTable && !isRichMcp) return fullyUnwrapped;
+        }
 
-    // Get columns for table
-    const columns = useMemo(() => {
-        if (!isTableEligible) return [];
-        // aggregate all keys from all objects to handle sparse data
-        const keys = new Set<string>();
-        // Limit rows scanned for columns to avoid perf issues on huge datasets
-        content.slice(0, 50).forEach((item: any) => {
-            if (typeof item === 'object' && item !== null) {
-                Object.keys(item).forEach(k => keys.add(k));
+        if (mcpContent) {
+             const hasNonText = mcpContent.some(c => c.type !== 'text');
+             if (hasNonText) return null;
+
+             if (mcpContent.length === 1 && (mcpContent[0] as TextContent).text) {
+                 try {
+                    const parsed = JSON.parse((mcpContent[0] as TextContent).text);
+                    if (Array.isArray(parsed) && parsed.every(item => typeof item === 'object')) {
+                        return parsed;
+                    }
+                } catch (e) {}
+             }
+             return null;
+        }
+
+        if (Array.isArray(unwrappedContent) && unwrappedContent.length > 0) {
+             const isTable = unwrappedContent.every((item: any) => typeof item === 'object' && item !== null);
+             if (isTable) return unwrappedContent;
+        }
+
+        return null;
+    }, [fullyUnwrapped, unwrappedContent, mcpContent]);
+
+    const activeView = useMemo(() => {
+        if (userViewMode) return userViewMode;
+
+        if (mcpContent) return 'rich';
+        if (tableData) return 'smart';
+
+        // If not array, but object, default to tree
+        if (typeof fullyUnwrapped === 'object' && fullyUnwrapped !== null && !Array.isArray(fullyUnwrapped)) {
+            return 'tree';
+        }
+
+        return 'raw';
+    }, [userViewMode, tableData, mcpContent, fullyUnwrapped]);
+
+    const renderRaw = () => (
+        <JsonView data={result} maxHeight={400} />
+    );
+
+    const renderTree = () => (
+        <JsonView data={fullyUnwrapped} maxHeight={400} defaultExpandedLevel={2} />
+    );
+
+    const renderRich = () => {
+        if (!mcpContent) return renderRaw();
+
+        return (
+            <div className="border rounded-md bg-card">
+                <ScrollArea className="h-[400px]">
+                    <McpContentRenderer content={mcpContent} />
+                </ScrollArea>
+            </div>
+        );
+    };
+
+    const renderSmartTable = () => {
+        if (!tableData) return null;
+
+        const allKeys = new Set<string>();
+        tableData.slice(0, 10).forEach((row: any) => {
+            if (row && typeof row === 'object') {
+                Object.keys(row).forEach(k => allKeys.add(k));
             }
         });
-        return Array.from(keys);
-    }, [content, isTableEligible]);
+        const columns = Array.from(allKeys);
 
-    const renderCell = (value: any) => {
-        if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
-        if (typeof value === 'object') return <span className="font-mono text-xs text-muted-foreground truncate max-w-[200px] block" title={JSON.stringify(value)}>{JSON.stringify(value)}</span>;
-        if (typeof value === 'boolean') return <span className={value ? "text-green-500 font-medium" : "text-red-500 font-medium"}>{String(value)}</span>;
-        return <span className="truncate max-w-[300px] block" title={String(value)}>{String(value)}</span>;
-    }
+        return (
+            <div className="rounded-md border bg-card">
+                <ScrollArea className="h-[400px]">
+                    <Table>
+                        <TableHeader className="bg-muted/50 sticky top-0 z-10">
+                            <TableRow>
+                                {columns.map(col => (
+                                    <TableHead key={col} className="whitespace-nowrap font-medium text-xs px-2 py-1 h-8">
+                                        {col}
+                                    </TableHead>
+                                ))}
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {tableData.map((row: any, idx: number) => (
+                                <TableRow key={idx} className="hover:bg-muted/50">
+                                    {columns.map(col => {
+                                        const val = row[col];
+                                        let displayVal = val;
+                                        if (typeof val === 'object' && val !== null) {
+                                            displayVal = JSON.stringify(val);
+                                        } else if (typeof val === 'boolean') {
+                                            displayVal = val ? "true" : "false";
+                                        }
 
-    const defaultTab = mcpContent ? "rendered" : (isTableEligible ? "table" : "json");
+                                        return (
+                                            <TableCell key={col} className="px-2 py-2 text-xs max-w-[200px] truncate" title={String(displayVal)}>
+                                                {String(displayVal ?? "-")}
+                                            </TableCell>
+                                        );
+                                    })}
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </ScrollArea>
+                <div className="bg-muted/30 px-3 py-2 text-xs text-muted-foreground border-t flex justify-between items-center">
+                    <span>Showing {tableData.length} rows</span>
+                </div>
+            </div>
+        );
+    };
 
     return (
-        <Tabs defaultValue={defaultTab} className="w-full">
-            <div className="flex items-center justify-between mb-2">
-                <TabsList>
-                    {mcpContent && (
-                        <TabsTrigger value="rendered" className="flex items-center gap-2">
-                            <FileText className="h-4 w-4" /> Rendered
-                        </TabsTrigger>
-                    )}
-                    {isTableEligible && (
-                        <TabsTrigger value="table" className="flex items-center gap-2">
-                            <TableIcon className="h-4 w-4" /> Table
-                        </TabsTrigger>
-                    )}
-                    <TabsTrigger value="json" className="flex items-center gap-2">
-                        <FileJson className="h-4 w-4" /> JSON
-                    </TabsTrigger>
-                    {isExtracted && (
-                        <TabsTrigger value="raw" className="flex items-center gap-2">
-                            <Terminal className="h-4 w-4" /> Raw Output
-                        </TabsTrigger>
-                    )}
-                </TabsList>
+        <div className="flex flex-col gap-2 w-full">
+            <div className="flex justify-between items-center mb-1">
+                 <div className="flex items-center bg-muted/50 rounded-lg p-0.5 border">
+                     {mcpContent && (
+                        <Button
+                            variant={activeView === "rich" ? "secondary" : "ghost"}
+                            size="sm"
+                            className="h-7 px-3 text-xs gap-1.5"
+                            onClick={() => setUserViewMode("rich")}
+                        >
+                            <FileText className="size-3.5" /> Rendered
+                        </Button>
+                     )}
+                     {tableData && (
+                        <Button
+                            variant={activeView === "smart" ? "secondary" : "ghost"}
+                            size="sm"
+                            className="h-7 px-3 text-xs gap-1.5"
+                            onClick={() => setUserViewMode("smart")}
+                        >
+                            <TableIcon className="size-3.5" /> Table
+                        </Button>
+                     )}
+                     <Button
+                        variant={activeView === "tree" ? "secondary" : "ghost"}
+                        size="sm"
+                        className="h-7 px-3 text-xs gap-1.5"
+                        onClick={() => setUserViewMode("tree")}
+                     >
+                         <ListTree className="size-3.5" /> JSON
+                     </Button>
+                     <Button
+                        variant={activeView === "raw" ? "secondary" : "ghost"}
+                        size="sm"
+                        className="h-7 px-3 text-xs gap-1.5"
+                        onClick={() => setUserViewMode("raw")}
+                     >
+                         <Code className="size-3.5" /> Raw
+                     </Button>
+                 </div>
             </div>
 
-            {mcpContent && (
-                <TabsContent value="rendered" className="border rounded-md bg-card">
-                    <ScrollArea className="h-[400px]">
-                        <McpContentRenderer content={mcpContent} />
-                    </ScrollArea>
-                </TabsContent>
-            )}
-
-            {isTableEligible && (
-                <TabsContent value="table" className="border rounded-md">
-                    <ScrollArea className="h-[400px]">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    {columns.map(col => (
-                                        <TableHead key={col} className="whitespace-nowrap">{col}</TableHead>
-                                    ))}
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {content.map((row: any, i: number) => (
-                                    <TableRow key={i}>
-                                        {columns.map(col => (
-                                            <TableCell key={col} className="py-2">
-                                                {renderCell(row[col])}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </ScrollArea>
-                </TabsContent>
-            )}
-
-            <TabsContent value="json">
-                <JsonView data={content} maxHeight={400} defaultExpandedLevel={2} />
-            </TabsContent>
-
-            {isExtracted && (
-                <TabsContent value="raw">
-                    <JsonView data={result} maxHeight={400} />
-                </TabsContent>
-            )}
-        </Tabs>
+            <div className="mt-0">
+                {activeView === 'smart' && renderSmartTable()}
+                {activeView === 'rich' && renderRich()}
+                {activeView === 'tree' && renderTree()}
+                {activeView === 'raw' && renderRaw()}
+            </div>
+        </div>
     );
 }
