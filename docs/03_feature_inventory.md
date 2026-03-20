@@ -1372,3 +1372,15 @@
 ### Priority Shifts
 - **Reasoning-Effort Quota Controller**: (Evolved to Reasoning-Budget Firewall) Now designated as a mandatory defense against Reasoning-Budget Hijacking (RBH).
 - **Asynchronous Mailbox Sharding (AMS)**: (Promoted to P0) Critical for neutralizing "Coordination Fatigue" tokens in large horizontal swarms.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Reasoning-Budget Firewall (RBF)**: (P0) Authoritative economic gatekeeper that enforces mission-root authorized quotas on subagent reasoning intensity (ARE).
+- **Attention-Locked Context Pinning (ALCP)**: (P0) Advanced security middleware utilizing hardware-bound attention headers to protect mission-critical intent fragments from CWF.
+- **Sovereign Mesh Identity (SMI) Relay**: (P0) Federated identity service providing hardware-attested identity fragments that persist across local and multi-cloud environments.
+- **AMS-Native Coordination Gateway**: (P1) Scaling extension for the T2T Bridge that hosts granular, task-bound mailbox shards to eliminate "Coordination Fatigue."
+
+### Priority Shifts
+- **Reasoning-Effort Quota Controller**: (Evolved to Reasoning-Budget Firewall) Now designated as a mandatory defense against Reasoning-Budget Hijacking (RBH).
+- **Asynchronous Mailbox Sharding (AMS)**: (Promoted to P0) Critical for neutralizing "Coordination Fatigue" tokens in large horizontal swarms.

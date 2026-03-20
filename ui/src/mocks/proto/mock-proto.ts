@@ -48,11 +48,20 @@ export const CallPolicy = {};
 /**
  * Mock constant for CallPolicyRule used in tests.
  */
+/**
+ * Mock constant for CallPolicyRule used in tests.
+ */
 export const CallPolicyRule = {};
 /**
  * Mock constant for ExportPolicy used in tests.
  */
+/**
+ * Mock constant for ExportPolicy used in tests.
+ */
 export const ExportPolicy = {};
+/**
+ * Mock constant for ExportRule used in tests.
+ */
 /**
  * Mock constant for ExportRule used in tests.
  */

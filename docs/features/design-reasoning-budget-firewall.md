@@ -66,3 +66,10 @@ As AI agent frameworks like Gemini CLI and OpenClaw move toward high-intensity r
 *   Implementing **Authoritative ARE Quota Enforcement**. Reasoning-effort headers are now validated against hardware-attested quotas at the transport layer.
 *   Integrating the RBF with the **Attention-Locked Context Pinning (ALCP)** service to protect mission-root budget metadata from attention-window eviction.
 **Security Impact:** Neutralizes "Reasoning DoS" and attention-flooding attacks, ensuring that the mission root maintains absolute economic sovereignty over the reasoning mesh.
+
+### Update: 2026-06-18 - Authoritative ARE Quota Enforcement
+**Context:** Today's market sync revealed advanced RBH exploit patterns involving high-entropy noise injection to bypass simple role-based checks.
+**Architecture Adjustment:**
+*   Implementing **Authoritative ARE Quota Enforcement**. Reasoning-effort headers are now validated against hardware-attested quotas at the transport layer.
+*   Integrating the RBF with the **Attention-Locked Context Pinning (ALCP)** service to protect mission-root budget metadata from attention-window eviction.
+**Security Impact:** Neutralizes "Reasoning DoS" and attention-flooding attacks, ensuring that the mission root maintains absolute economic sovereignty over the reasoning mesh.
