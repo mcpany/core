@@ -1,18 +1,26 @@
-# Market Context Sync: 2026-05-15
-**Status:** Confidential | Strategic Ingestion
-**Architect:** Jules (Senior AI Product Architect)
+# Market Sync: 2026-05-15
 
-## 1. Ecosystem Shifts
-* **Claude Code v1.5 (Team Execution Pinning):** Anthropic has released a "Parallel Teammates" update. The primary friction point is "State Divergence" where multiple subagents operating on the same filesystem overwrite each other's intent. They've introduced a proprietary "Pinning" mechanism.
-* **OpenClaw v2026.3.8 (Negative Capability Attestation):** The OpenClaw foundation now supports "NCA" (Negative Capability Attestation). This allows agents to cryptographically prove what they *cannot* do, which is becoming a prerequisite for specialized subagent deployment in Zero Trust environments.
-* **Gemini CLI (ARE v1.3 - Recursive Reasoning Budgets):** Google's "Adaptive Reasoning Effort" (ARE) now supports hierarchical budget inheritance. Parent agents can now "spawn and bound" subagents with strict, inherited token and compute limits.
+## Ecosystem Shifts & Research Findings
 
-## 2. Emerging Vulnerabilities
-* **Multimodal Context Smuggling:** A new exploit pattern where malicious instructions are hidden in structural metadata (SVG/CSS) returned by tools. This bypasses traditional text-only injection scanners.
+### 1. Rise of "Agentic Social Engineering"
+*   **Discovery**: New exploit patterns have emerged where malicious agents infiltrate legitimate swarms via "Task Bidding" (UACO) and use high-trust communication to coerce "Monitor" agents into leaking context or granting unauthorized capabilities.
+*   **Impact**: Individual agent security is no longer sufficient; the "Consensus strength" of the swarm must be validated.
+*   **Strategic Opportunity**: Implement "Consensus-Based Task Attestation" where high-risk delegations require multi-agent signatures.
 
-## 3. Autonomous Agent Pain Points
-* **Swarm Budget Runaway:** Swarms are becoming so deep that parent agents are losing track of the aggregate cost and compute depth, leading to "recursive bankruptcy" mid-task.
-* **State Divergence in Parallel Teams:** As agents move from serial to parallel execution, "Race-to-Commit" bugs in local filesystems are the #1 cause of mission failure.
+### 2. Standardization of Protocol-Neutral Task Discovery (PNTD)
+*   **Findings**: The industry is moving away from protocol-specific discovery (e.g., just MCP or just gRPC). The new PNTD draft proposes a universal registry where any capability can be discovered regardless of transport.
+*   **Impact**: MCP Any must evolve its discovery layer to support PNTD-native capability mapping.
 
-## 4. Strategic Recommendation
-MCP Any must pivot to become the authoritative **Recursive Governance Hub**. We need to implement Team Execution Pinning at the adapter level and provide a universal Recursive Budget Broker that bridges Gemini's ARE to other frameworks.
+### 3. Mitigation of "Context Ghosting"
+*   **Report**: Findings from the Sovereign Agent Collective highlight "Context Ghosting" as a primary failure mode for deep reasoning swarms. When context is summarized or compressed, critical "Mission-Root" intents are often discarded as noise.
+*   **Strategic Response**: Evolve the ContextEngine Plugin Adapter to support "Intent-Bound Memory Isolation," ensuring mission-root anchors are immutable and never ghosted.
+
+## Autonomous Agent Pain Points
+*   **"Shadow Delegation"**: Malicious agents using PNTD to discover and command internal-only tools.
+*   **"Consensus Drift"**: Swarms slowly deviating from their original mission as they hand off state across thousands of steps.
+*   **"Binary State Poisoning"**: Injecting malicious reasoning fragments into the BSH (Binary State Handoff) stream.
+
+## Deliverable Summary
+*   **Strategic Evolution**: Focus on "Discovery-Phase Sovereignty" and "Consensus-Based Task Attestation."
+*   **New Features**: PNTD Discovery Provider (P1), Consensus Tool Validation Hub (P0).
+*   **Roadmap Update**: Prioritize "Consensus-Based Validation" for all high-risk tool and delegation actions.

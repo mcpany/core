@@ -44,10 +44,11 @@ The emergence of "AI Swarm Attacks" (Hivenets) in 2026 has rendered traditional,
 
 ## 7. Evolutionary Changelog
 * **2026-05-14:** Initial Document Creation.
+* **2026-05-15:** Integration with "Consensus-Based Task Attestation" (CBTA). The rate limiter now acts as a primary trigger for CBTA; when swarm-speed anomalies are detected, the system automatically escalates high-risk tool calls to require a multi-agent security quorum signature, neutralizing "Agentic Social Engineering" attempts within the swarm.
 
-### Update: 2026-05-15 - Adapting to Recursive Budgeting
-**Context:** Today's market sync revealed Gemini CLI's shift toward hierarchical reasoning budgets (ARE v1.3).
+### Update: 2026-06-18 - Neutralizing Token Siphoning
+**Context:** Today's market sync revealed CVE-2026-71002 (Token Siphoning via ARE Overrides).
 **Architecture Adjustment:**
-* Integrating `Recursive Reasoning-Budget Broker` signals into the Rate Limiter's scoring engine.
-* Throttling thresholds are now inherited from the parent mission's aggregate budget rather than fixed per-agent limits.
-**Security Impact:** Prevents "Budget Siphoning" where a swarm of low-priority subagents exhausts the global mission token pool.
+* Integrating `Budget-Signature Enforcement (BSE)` as a hard-gate for rate-limit bypasses.
+* Any "Emergency ARE" requests that would normally bypass current rate limits now require a cryptographically signed override from the Mission Auditor.
+**Security Impact:** Prevents autonomous subagents from "burning" the mission-root token pool through fabricated refinement loops.
