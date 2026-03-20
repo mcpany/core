@@ -76,8 +76,10 @@ if [[ -z "$BUILDIFIER_BIN" || ! -x "$BUILDIFIER_BIN" ]]; then
     exit 1
 fi
 # Collect Bazel BUILD / .bzl / WORKSPACE files, excluding caches and symlinks.
-buildifier_files=(
-    $(find . \
+buildifier_files=()
+while IFS= read -r -d '\0' file; do
+    buildifier_files+=("$file")
+done < <(find . \
         -not \( \
             -path './build/*' \
             -o -path './bazel-*' \
@@ -93,9 +95,8 @@ buildifier_files=(
             -o -name 'WORKSPACE.bazel' \
             -o -name '*.bzl' \
         \) \
-        -type f \
+        -type f -print0 \
         2>/dev/null)
-)
 if [[ ${#buildifier_files[@]} -gt 0 ]]; then
     "$BUILDIFIER_BIN" "${buildifier_files[@]}"
 fi
