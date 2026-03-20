@@ -80,24 +80,37 @@ func newBackoff(ctx context.Context, retryConfig *configv1.RetryConfig) backoff.
 		return &backoff.StopBackOff{}
 	}
 
+	var maxElapsedTime time.Duration
+	if retryConfig.GetMaxElapsedTime() != nil {
+		maxElapsedTime = retryConfig.GetMaxElapsedTime().AsDuration()
+	}
+
 	b := &backoff.ExponentialBackOff{
 		InitialInterval:     retryConfig.GetBaseBackoff().AsDuration(),
 		RandomizationFactor: backoff.DefaultRandomizationFactor,
 		Multiplier:          backoff.DefaultMultiplier,
 		MaxInterval:         retryConfig.GetMaxBackoff().AsDuration(),
-		MaxElapsedTime:      retryConfig.GetMaxElapsedTime().AsDuration(),
+		MaxElapsedTime:      maxElapsedTime,
 		Stop:                backoff.Stop,
 		Clock:               backoff.SystemClock,
 	}
 	if b.InitialInterval == 0 {
 		b.InitialInterval = 100 * time.Millisecond
 	}
+	if b.MaxInterval == 0 {
+		b.MaxInterval = 1 * time.Minute
+	}
+
 	b.Reset()
 	retries := retryConfig.GetNumberOfRetries()
-	if retries < 0 {
+	if retryConfig.HasNumberOfRetries() && retries < 0 {
 		retries = 0
 	}
-	return backoff.WithContext(backoff.WithMaxRetries(b, uint64(retries)), ctx) //nolint:gosec // safe cast
+
+	if retryConfig.HasNumberOfRetries() {
+		return backoff.WithContext(backoff.WithMaxRetries(b, uint64(retries)), ctx) //nolint:gosec // safe cast
+	}
+	return backoff.WithContext(b, ctx)
 }
 
 func isRetryable(err error) bool {
