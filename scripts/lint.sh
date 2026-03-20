@@ -122,10 +122,13 @@ fi
 #    build/env/bin/ (populated by `make prepare`).
 # ---------------------------------------------------------------------------
 echo "==> Generating Go Protos for golangci-lint..."
-export PATH="$PROJECT_ROOT/build/env/bin:$PATH"
-if [[ -x "$PROJECT_ROOT/build/env/bin/protoc" ]]; then
+export PATH="$PROJECT_ROOT/server/build/env/bin:$PROJECT_ROOT/build/env/bin:$PATH"
+if [[ -x "$PROJECT_ROOT/server/build/env/bin/protoc" || -x "$PROJECT_ROOT/build/env/bin/protoc" ]]; then
+    PROTOC_BIN="$(find_tool protoc)"
     cd "$PROJECT_ROOT"
-    find proto -name "*.proto" -not -path "proto/third_party/*" -not -path "proto/google/*" -print0 | xargs -0 protoc --proto_path=. \
+    find proto -name "*.proto" -not -path "proto/third_party/*" -not -path "proto/google/*" -print0 | xargs -0 "$PROTOC_BIN" --proto_path=. \
+           --proto_path=server/build/grpc-gateway \
+           --proto_path=server/build/googleapis \
            --proto_path=build/grpc-gateway \
            --proto_path=build/googleapis \
            --go_out=. \
