@@ -35,7 +35,7 @@ spec:
 {{- end }}
 ---
 # HPA for the stateless UI frontend (vite preview serving the React SPA).
-# The UI tier is fully stateless — no session/socket affinity required —
+# The UI tier is fully stateless  no session/socket affinity required
 # so it can be scaled in/out at any time without service interruption.
 {{- if .Values.ui.autoscaling.enabled }}
 apiVersion: autoscaling/v2

@@ -30,7 +30,7 @@ services:
         aliases:
           - mcpany-server
 
-  # Standalone UI service — serves the pre-built Vite SPA and proxies
+  # Standalone UI service  serves the pre-built Vite SPA and proxies
   # all backend API paths to the real server container.
   # Running it as a separate service mirrors the cloud-native k8s topology
   # where the UI and server are independent, scalable Deployments.
@@ -70,7 +70,7 @@ services:
       - MCPANY_LOG_LEVEL=info
       # Tests point at the standalone ui service (cloud-native topology).
       - PLAYWRIGHT_BASE_URL=http://mcpany-ui:9111
-      # Skip Playwright's built-in webServer — the ui service is already running.
+      # Skip Playwright's built-in webServer  the ui service is already running.
       - SKIP_WEBSERVER=true
       - BACKEND_URL=http://server:50050
       - MCPANY_API_KEY=test-token

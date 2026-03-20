@@ -1,4 +1,4 @@
-# 👨‍💻 Developer Guide
+#  Developer Guide
 
 This guide is for developers who want to contribute to the MCP Any. It provides information about the development environment, build process, and other useful tips.
 
