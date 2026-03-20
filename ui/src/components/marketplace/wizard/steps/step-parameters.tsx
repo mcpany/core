@@ -31,19 +31,31 @@ export function StepParameters() {
         updateState({ params: newParams });
 
         // Also update config env
-        // TODO: Sync `params` to `config.commandLineService.env` more robustly
-        // For now we just update basic env
+        const env: any = {};
+        Object.entries(newParams).filter(([k, v]) => k.trim() !== '').forEach(([k, v]) => {
+            env[k] = { plainText: v };
+        });
+
         if (config.commandLineService) {
-            const env: any = {};
-            Object.entries(newParams).forEach(([k, v]) => {
-                env[k] = { plainText: v };
-            });
             updateConfig({
                 commandLineService: {
                     ...config.commandLineService,
                     env
                 }
             });
+        } else if (config.httpService) {
+            // For HTTP services, we might inject headers or parameters differently, but for now we'll store them as config params if needed.
+            // A more complete implementation might map these to default headers or query params.
+        } else if (config.mcpService?.stdioConnection) {
+             updateConfig({
+                 mcpService: {
+                     ...config.mcpService,
+                     stdioConnection: {
+                         ...config.mcpService.stdioConnection,
+                         env
+                     }
+                 }
+             });
         }
     };
 
@@ -57,18 +69,29 @@ export function StepParameters() {
         delete newParams[key];
         updateState({ params: newParams });
          // Sync with config
+         const env: any = {};
+         Object.entries(newParams).filter(([k, v]) => k.trim() !== '').forEach(([k, v]) => {
+             env[k] = { plainText: v };
+         });
+
          if (config.commandLineService) {
-            const env: any = {};
-            Object.entries(newParams).forEach(([k, v]) => {
-                env[k] = { plainText: v };
-            });
-            updateConfig({
-                commandLineService: {
-                    ...config.commandLineService,
-                    env
-                }
-            });
-        }
+             updateConfig({
+                 commandLineService: {
+                     ...config.commandLineService,
+                     env
+                 }
+             });
+         } else if (config.mcpService?.stdioConnection) {
+             updateConfig({
+                 mcpService: {
+                     ...config.mcpService,
+                     stdioConnection: {
+                         ...config.mcpService.stdioConnection,
+                         env
+                     }
+                 }
+             });
+         }
     };
 
     return (
