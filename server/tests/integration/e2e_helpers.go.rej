@@ -1,0 +1,19 @@
+--- e2e_helpers.go
++++ e2e_helpers.go
+@@ -223,7 +223,7 @@
+		return nil, err
+	}
+
+-	var roots []string
++	roots := make([]string, 0, len(mcpRoots))
+	for _, r := range mcpRoots {
+		roots = append(roots, r.URI)
+	}
+@@ -270,7 +270,7 @@
+	}
+	session, err := client.Connect(ctx, clientTransport, nil)
+	if err != nil {
+-		return nil
++		return err
+	}
+	defer func() { _ = session.Close() }()
