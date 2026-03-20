@@ -1093,42 +1093,6 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 			return
 		}
 
-		// Authorization: Verify user has access to this profile
-		userID, ok := auth.UserFromContext(r.Context())
-		if !ok {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
-
-		isAdmin := auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin")
-
-		// The `name` might be modified below (e.g. by `TrimSuffix(name, "/export")`).
-		// Use the base profile name for authorization.
-		baseName := name
-		if strings.HasSuffix(baseName, "/export") {
-			baseName = strings.TrimSuffix(baseName, "/export")
-		}
-
-		if !isAdmin {
-			user, err := store.GetUser(r.Context(), userID)
-			if err != nil || user == nil {
-				http.Error(w, "Forbidden", http.StatusForbidden)
-				return
-			}
-
-			hasAccess := false
-			for _, pid := range user.GetProfileIds() {
-				if pid == baseName {
-					hasAccess = true
-					break
-				}
-			}
-			if !hasAccess {
-				http.Error(w, "Forbidden", http.StatusForbidden)
-				return
-			}
-		}
-
 		if strings.HasSuffix(name, "/export") {
 			name = strings.TrimSuffix(name, "/export")
 			if r.Method != http.MethodGet {
@@ -1270,22 +1234,6 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 		if name == "" {
 			http.Error(w, "name required", http.StatusBadRequest)
 			return
-		}
-
-		// Authorization: Verify user has access to this collection
-		_, ok := auth.UserFromContext(r.Context())
-		if !ok {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
-
-		isAdmin := auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin")
-		if r.Method != http.MethodGet && !isAdmin {
-			// Restrict modifications (PUT, DELETE, Apply) to admins.
-			if !strings.HasSuffix(name, "/export") {
-				http.Error(w, "Forbidden", http.StatusForbidden)
-				return
-			}
 		}
 
 		if strings.HasSuffix(name, "/export") {
