@@ -139,7 +139,7 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                 ),
                 TableHead: TableHeader,
                 TableBody: TableBody,
-                TableRow: ({ item, context, ...props }: any) => (
+                TableRow: ({ item, context, ...props }: { item: VisibleRow; context: { onClick: (trace: Trace) => void }; [key: string]: unknown }) => (
                     <TableRow {...props} className="cursor-pointer hover:bg-muted/50" onClick={() => context.onClick(item.trace)} />
                 ),
                 EmptyPlaceholder: () => (
