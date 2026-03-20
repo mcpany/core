@@ -47,8 +47,12 @@ test.describe('Services Feature', () => {
     // page.on('request', request => console.log('>>', request.method(), request.url()));
 
     // Mock registration API with dynamic state
-    await page.route(url => url.pathname.endsWith('/api/v1/services'), async route => {
+    await page.route(url => url.pathname.includes('/api/v1/services'), async route => {
         const method = route.request().method();
+        const urlStr = route.request().url();
+        if (method === 'GET' && urlStr.includes('%20Gateway')) {
+            return await route.fulfill({ json: services[0] });
+        }
         if (method === 'GET') {
             await route.fulfill({ json: { services } });
         } else if (method === 'POST') {
@@ -111,20 +115,21 @@ test.describe('Services Feature', () => {
     await page.getByRole('button', { name: 'Cancel' }).click();
   });
 
-  test.skip('should render schema visualizer in service tools dialog', async ({ page }) => {
+  test('should render schema visualizer in service tools dialog', async ({ page }) => {
     const paymentRow = page.locator('tr').filter({ hasText: 'Payment Gateway' });
 
     // Click on the row to open details
-    await paymentRow.click();
+    await paymentRow.getByRole('link').click();
 
     // Tools are now in the General tab by default
+    await page.getByRole('tab', { name: /Tools/ }).click();
     await expect(page.getByText('Tools', { exact: true }).first()).toBeVisible();
 
     // Should render service detail content
-    await expect(page.locator('main')).toContainText('Payment Gateway');
+    await expect(page.locator('main').first()).toContainText('process_payment');
 
     // Click View Schema button
-    await page.locator('button[title="View Schema"]').click();
+    await page.locator('button[title="View Schema"]').first().click();
 
     // The dialog should appear and it should have the visualizer table
     // we added SchemaVisualizer which renders a Table with headers "Property", "Type", "Description"
@@ -132,9 +137,9 @@ test.describe('Services Feature', () => {
     await expect(page.getByRole('dialog').getByRole('columnheader', { name: 'Type' })).toBeVisible();
 
     // Should see the properties we defined
-    await expect(page.getByRole('dialog').getByText('amount')).toBeVisible();
-    await expect(page.getByRole('dialog').getByText('currency')).toBeVisible();
-    await expect(page.getByRole('dialog').getByText('Payment amount in cents')).toBeVisible();
+    await expect(page.getByRole('dialog').getByText('amount', { exact: false }).first()).toBeVisible();
+    await expect(page.getByRole('dialog').getByText('currency', { exact: false }).first()).toBeVisible();
+    await expect(page.getByRole('dialog').locator('td').filter({ hasText: 'Payment amount in cents' }).first()).toBeVisible();
   });
 
   test('should navigate to logs from service list', async ({ page }) => {
