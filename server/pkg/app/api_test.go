@@ -319,8 +319,8 @@ func TestHandleSettings_Detailed(t *testing.T) {
 }
 
 func TestHandleTools_Detailed(t *testing.T) {
-	app, _ := setupApiTestApp()
-	handler := app.handleTools()
+	app, store := setupApiTestApp()
+	handler := app.handleTools(store)
 
 	req := httptest.NewRequest(http.MethodGet, "/tools", nil)
 	w := httptest.NewRecorder()
