@@ -48,7 +48,7 @@ interface AuditLogEntry {
  * @returns The rendered AuditLogViewer component.
  */
 export function AuditLogViewer() {
-    SyntaxHighlighter.registerLanguage('json', json);
+    ;
     const [logs, setLogs] = useState<AuditLogEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [exporting, setExporting] = useState(false);
@@ -309,28 +309,35 @@ export function AuditLogViewer() {
 
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Arguments</h4>
-                                <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vs2015}
-                                        customStyle={{ margin: 0, fontSize: '12px' }}
-                                    >
-                                        {formatJson(selectedLog.arguments) || "{}"}
-                                    </SyntaxHighlighter>
+                                <div className="rounded-md border p-2 bg-muted/50">
+                                    <JsonView
+                                        data={selectedLog.arguments ? JSON.parse(selectedLog.arguments) : {}}
+                                        className="text-xs"
+                                    />
                                 </div>
                             </div>
 
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Result</h4>
-                                <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vs2015}
-                                        customStyle={{ margin: 0, fontSize: '12px', maxHeight: '300px' }}
-                                    >
-                                        {formatJson(selectedLog.result) || (selectedLog.error ? "null" : "{}")}
-                                    </SyntaxHighlighter>
-                                </div>
+                                <Tabs defaultValue="rich" className="w-full">
+                                    <TabsList className="mb-2">
+                                        <TabsTrigger value="rich">Rich Result</TabsTrigger>
+                                        <TabsTrigger value="raw">Raw JSON</TabsTrigger>
+                                    </TabsList>
+                                    <TabsContent value="rich" className="m-0 border rounded-md p-4 max-h-[400px] overflow-y-auto">
+                                        {selectedLog.result ? (
+                                            <RichResultViewer result={JSON.parse(selectedLog.result)} />
+                                        ) : (
+                                            <span className="text-muted-foreground text-sm">No result data available.</span>
+                                        )}
+                                    </TabsContent>
+                                    <TabsContent value="raw" className="m-0 border rounded-md p-2 bg-muted/50 max-h-[400px] overflow-y-auto">
+                                        <JsonView
+                                            data={selectedLog.result ? JSON.parse(selectedLog.result) : (selectedLog.error ? null : {})}
+                                            className="text-xs"
+                                        />
+                                    </TabsContent>
+                                </Tabs>
                             </div>
                         </div>
                     )}
