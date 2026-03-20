@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+
 	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/logging"
 )
