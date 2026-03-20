@@ -100,10 +100,10 @@ filegroup(
 vite_bin.vite(
     name = "build",
     srcs = [
-            "//proto:ts_proto",
-            ":node_modules",
-            ":srcs",
-        ],
+        ":node_modules",
+        ":srcs",
+        "//proto:ts_proto",
+    ],
     args = ["build"],
     chdir = package_name(),
     out_dirs = ["dist"],
@@ -153,9 +153,7 @@ define_playwright_tests()
 # Package the pre-built Vite dist into a tar layer.
 pkg_files(
     name = "ui_dist_files",
-    srcs = [
-            ":build",
-        ],
+    srcs = [":build"],
     prefix = "/app/dist",
 )
 
@@ -164,9 +162,7 @@ pkg_files(
 # prune dev-only packages.
 pkg_files(
     name = "ui_node_modules_files",
-    srcs = [
-            ":node_modules",
-        ],
+    srcs = [":node_modules"],
     prefix = "/app/node_modules",
 )
 
@@ -174,19 +170,19 @@ pkg_files(
 pkg_files(
     name = "ui_config_files",
     srcs = [
-            "index.html",
-            "package.json",
-            "vite.config.ts",
-        ],
+        "index.html",
+        "package.json",
+        "vite.config.ts",
+    ],
     prefix = "/app",
 )
 
 pkg_tar(
     name = "ui_layer",
     srcs = [
-            ":ui_config_files",
-            ":ui_dist_files",
-        ],
+        ":ui_config_files",
+        ":ui_dist_files",
+    ],
 )
 
 oci_image(
