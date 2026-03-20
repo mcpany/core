@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Zero-Knowledge Multi-Modal Blackboard (ZK-MMB)**: (P0) An evolution of the Shared KV Store supporting addressable, native multi-modal state fragments (SVG, Audio) with zero-knowledge cryptographic proofs for instant state attestation.
+- **Entangled Capability Mesh (ECM)**: (P0) A peer-to-peer tool discovery protocol for pre-computing and caching hardware-attested capability proofs, removing discovery bottlenecks in scaling swarms.
+- **Stylometric Resonance Filter (SRF)**: (P1) Advanced multimodal security middleware that monitors the "semantic resonance" of SVG/Audio/Visual inputs, blocking inputs designed to subtly shift behavioral baselines.
+
+### Priority Shifts
+- **Shared KV Store**: (Re-affirmed P0) Now evolving towards **ZK-MMB** to combat "Cognitive Fragmentation" with multi-modal data.
+- **PNTD Discovery Provider**: (Re-affirmed P0) Now elevated with the requirement for **ECM** integration to support zero-knowledge mesh discovery.
+
 ## Evolution: [2026-06-16] Updates
 
 ### Proposed Additions
