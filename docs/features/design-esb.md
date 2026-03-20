@@ -60,3 +60,10 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
     * **Context:** Today's market sync revealed that hardware-bound entangled shards can leak state fragments via cache-timing side-channels.
     * **Architecture Adjustment:** Introducing **Temporal Shard Jitter (TSJ) Injection** in Section 4. The ESB will now inject hardware-attested timing jitter into state synchronization for non-primary mission-root requests.
     * **Security Impact:** Mitigates the risk of subagents mapping mission-root constraints via high-frequency latency monitoring.
+
+### Update: 2026-06-18 - Neutralizing Attention-Leaking Shard Collision (ALSC)
+**Context:** Today's market sync revealed the ALSC exploit, where millisecond-level timing variations in sharded mailbox access leak model attention priorities.
+**Architecture Adjustment:**
+* Upgrading Section 4 to mandate the use of the **Spectral Noise Injection (SNI) Provider**.
+* The ESB will now inject reasoning-aware timing jitter into all shard mount and commit responses for non-primary mission-root requests.
+**Security Impact:** Prevents subagents from using side-channel timing analysis to map or probe the parent agent's active reasoning buffer.

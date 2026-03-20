@@ -12,9 +12,18 @@
 - **Entangled State Broker (ESB)**: (P0) Authoritative coordination service for "Entanglement Shards" that are cryptographically bound to the mission-root intent.
 - **Stylometric Mimicry Mitigator (SMM)**: (P0) Security middleware that performs real-time stylometric analysis of inter-agent messages to detect reasoning-path shadowing.
 - **Speculative Branching Guard (SBG)**: (P1) Isolation service for un-executed reasoning paths that prevents speculative attention leakage.
-- **Mesh-Resident Key Exchange (MRKE) Provider**: (P0) Hardware-bound session key rotation service for sub-100ms inter-teammate coordination.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Atomic Attention Sharding (AAS) Middleware**: (P0) Authoritative security service that allows agents to selectively "blind" themselves to non-relevant context fragments at the hardware level.
+- **Spectral Noise Injection (SNI) Provider**: (P0) Security middleware that injects reasoning-aware timing jitter into state synchronization for non-primary mission-root requests.
+- **HARL-Bound Lineage Validator**: (P0) Mandatory security service that enforces TPM-signed reasoning lineage for all inter-agent coordination fragments.
 
 ### Priority Shifts
+- **Entangled State Broker (ESB)**: (Promoted to P0) Now elevated with the requirement for mandatory **SNI-compliant** timing jitter.
+- **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Designated as the primary defense against Logic Grafting v2.0.
+- **Mesh-Resident Key Exchange (MRKE) Provider**: (P0) Re-affirmed as high priority for sub-100ms coordination.
 - **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ESB-compliant** state entanglement.
 - **Stylometric Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving to support the new **Stylometric Mimicry** defense requirements.
 

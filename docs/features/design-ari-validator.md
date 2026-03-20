@@ -74,3 +74,10 @@ The Atomic Reasoning Integrity (ARI) Validator is needed to perform fragment-lev
 * Mandating that all ARI-attested fragments be committed to **Entanglement Shards** via the Entangled State Broker (ESB).
 * Introducing a "Late-Binding Integrity Check" where the recipient teammate re-verifies the hardware-attested entanglement signature before reasoning ingestion.
 **Security Impact:** Prevents "Time-of-Check to Time-of-Use" (TOCTOU) attacks on shared mailbox state by ensuring state fragments are cryptographically bound to the mission-root intent throughout their entire lifecycle.
+
+### Update: 2026-06-18 - Hardening Against Logic Grafting v2.0
+**Context:** Today's market sync revealed that malicious subagents are using stylometric mimicry to bypass ARI validation.
+**Architecture Adjustment:**
+* Integrating the **Stylometric Mimicry Mitigator (SMM)** into the Mission-Root Consistency Engine (Section 4).
+* Every fragment must now pass a "Stylometric Behavioral Check" before receiving an ARI-Attestation.
+**Security Impact:** Prevents subagents from masquerading as authorized supervisors to inject plausible but unauthorized reasoning paths.

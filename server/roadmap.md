@@ -753,3 +753,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+### Upcoming: [2026-06-18]
+- **Atomic Attention Sharding (AAS) Middleware**: (P0) Implementation of hardware-level attention masking to prevent noise-driven intent eviction. (Added: 2026-06-18)
+- **Spectral Noise Injection (SNI) Provider**: (P0) Reasoning-aware timing jitter service for state synchronization to neutralize ALSC attacks. (Added: 2026-06-18)
+- **HARL-Bound Lineage Validator**: (P0) Mandatory TPM-signed reasoning lineage enforcement for all mesh fragments. (Added: 2026-06-18)
