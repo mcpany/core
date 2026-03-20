@@ -8,9 +8,9 @@ import { test, expect } from '@playwright/test';
 test.describe('Bulk Service Actions', () => {
 
   const testServices = [
-    { name: "service-1-bulk", http_service: { address: "http://localhost:8001" }, disable: false, tags: ["prod"] },
-    { name: "service-2-bulk", http_service: { address: "http://localhost:8002" }, disable: true, tags: ["dev"] },
-    { name: "service-3-bulk", http_service: { address: "http://localhost:8003" }, disable: false, tags: ["prod"] }
+    { id: "service-1-bulk", name: "service-1-bulk", version: "1.0.0", http_service: { address: "http://localhost:8001" }, disable: false, tags: ["prod"] },
+    { id: "service-2-bulk", name: "service-2-bulk", version: "1.0.0", http_service: { address: "http://localhost:8002" }, disable: true, tags: ["dev"] },
+    { id: "service-3-bulk", name: "service-3-bulk", version: "1.0.0", http_service: { address: "http://localhost:8003" }, disable: false, tags: ["prod"] }
   ];
 
   test.beforeEach(async ({ request }) => {
@@ -22,6 +22,9 @@ test.describe('Bulk Service Actions', () => {
       const res = await request.post('/api/v1/services', {
         data: svc
       });
+      if (!res.ok()) {
+          console.error(`Failed to seed service: ${await res.text()}`);
+      }
       expect(res.ok()).toBeTruthy();
     }
   });
@@ -98,6 +101,12 @@ test.describe('Bulk Service Actions', () => {
   test('should delete services via bulk action', async ({ page, request }) => {
       await page.goto('/upstream-services');
       await expect(page.getByText('service-1-bulk')).toBeVisible();
+
+      // Filter by tag so we only operate on our seeded test services to avoid interference
+      await page.getByPlaceholder('Filter by tag...').fill('dev');
+      // service-2-bulk has dev tag
+      await expect(page.getByText('service-2-bulk')).toBeVisible();
+      await expect(page.getByText('service-1-bulk')).not.toBeVisible();
 
       // Select service-2-bulk
       await page.getByRole('checkbox', { name: 'Select service-2-bulk' }).check();
