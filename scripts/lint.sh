@@ -108,7 +108,10 @@ echo "    Buildifier OK."
 echo "==> Running Gazelle..."
 GAZELLE_BIN="$(find_tool gazelle)"
 if [[ -n "$GAZELLE_BIN" && -x "$GAZELLE_BIN" ]]; then
+    # We must run gazelle for each module to correctly update BUILD files.
     "$GAZELLE_BIN" -repo_root="$PROJECT_ROOT"
+    "$GAZELLE_BIN" -repo_root="$PROJECT_ROOT/server"
+    "$GAZELLE_BIN" -repo_root="$PROJECT_ROOT/k8s/operator"
     echo "    Gazelle OK."
 else
     echo "    Warning: gazelle binary not found in runfiles – skipping."
@@ -129,8 +132,12 @@ fi
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
-        ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
+    (
+        cd server
+        # Use a concurrency limit to prevent OOM in resource-constrained environments.
+        "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 2 \
+            ./cmd/... ./pkg/... ./tests/... ./examples/...
+    )
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
