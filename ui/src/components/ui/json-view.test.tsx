@@ -47,6 +47,11 @@ describe('JsonView', () => {
     const data = { foo: 'bar' };
     render(<JsonView data={data} />);
 
+    // In 'tree' view (default for objects), the copy button is not rendered by JsonView.
+    // It's only rendered in 'raw' mode.
+    const rawBtn = screen.getByText('Raw');
+    fireEvent.click(rawBtn);
+
     // The copy button is initially hidden (opacity 0) but present in DOM
     const copyButton = screen.getByTitle('Copy JSON');
     fireEvent.click(copyButton);
