@@ -1584,7 +1584,7 @@ func Test_runStdioMode_real(t *testing.T) {
 	}()
 
 	// Give the server time to process the initialize request.
-	time.Sleep(300 * time.Millisecond)
+	time.Sleep(1000 * time.Millisecond)
 
 	cancel()
 	runErr := <-errChan

@@ -73,8 +73,8 @@ func TestMyPythonQuotedExecfileInjection(t *testing.T) {
 	if err == nil {
 		t.Fatalf("Vulnerability confirmed: execfile passed validation.")
 	} else {
-        t.Logf("Blocked with error: %v", err)
-    }
+		t.Logf("Blocked with error: %v", err)
+	}
 }
 
 func TestJSFunctionKeywordsInjection(t *testing.T) {
@@ -83,16 +83,16 @@ func TestJSFunctionKeywordsInjection(t *testing.T) {
 	if err == nil {
 		t.Fatalf("Vulnerability confirmed: setTimeout passed validation.")
 	} else {
-        t.Logf("Blocked with error: %v", err)
-    }
+		t.Logf("Blocked with error: %v", err)
+	}
 }
 
 func TestPHPKeywordsInjection(t *testing.T) {
-    val := "passthru('ls')"
+	val := "passthru('ls')"
 	err := checkForShellInjection(val, "\"{{val}}\"", "{{val}}", "php", false)
 	if err == nil {
 		t.Fatalf("Vulnerability confirmed: passthru passed validation.")
 	} else {
-        t.Logf("Blocked with error: %v", err)
-    }
+		t.Logf("Blocked with error: %v", err)
+	}
 }
