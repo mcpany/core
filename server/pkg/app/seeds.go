@@ -360,6 +360,30 @@ func init() {
 				}.Build(),
 			}.Build(),
 		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("swarm-orchestrator"),
+			Name:        proto.String("Swarm Orchestrator"),
+			Description: proto.String("Gold Standard demonstration of multi-agent swarm topology, cryptographic entanglement, and active intent alignment. Simulates a high-performance, hardware-attested agent mesh."),
+			Icon:        proto.String("network"),
+			Tags:        []string{"security", "topology", "mock"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("swarm-orchestrator"),
+				McpService: configv1.McpUpstreamService_builder{
+					HttpConnection: configv1.McpStreamableHttpConnection_builder{
+						HttpAddress: proto.String("http://localhost:50050/api/v1/mock/swarm-topology"),
+					}.Build(),
+					ToolAutoDiscovery: proto.Bool(true),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					ApiKey: configv1.ApiKeyAuth_builder{
+						Value: configv1.SecretValue_builder{
+							Value: proto.String("mcp-any-swarm-attestation-token"),
+						}.Build(),
+						HeaderName: proto.String("X-Hardware-Attested-Token"),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+		}.Build(),
 	}
 }
 
