@@ -3,6 +3,10 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Mission Receipt Tracer**: Visualize the recursive hierarchy of hardware-attested mission tokens. (Added: 2026-06-07)
+- [ ] **[P0] CASI Shard Inspector**: Debugger for semantically isolated mailbox shards and fragment-level access violations. (Added: 2026-06-07)
+- [ ] **[P1] CFIB Bidding Workspace**: Real-time visualization of cross-framework task auctions and bid translations. (Added: 2026-06-07)
+- [ ] **[P0] Intent Sovereignty Audit Log**: Forensic UI for reviewing cryptographically logged mission receipts. (Added: 2026-06-07)
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)
@@ -512,12 +516,6 @@
 - [ ] **[P0] Attestation Bridge Monitor**: Visual indicator for translated hardware attestation tokens. (Added: 2026-06-03)
 - [ ] **[P0] Shard Lock Visualizer**: Real-time dashboard for monitoring atomic locks and shard ownership. (Added: 2026-06-03)
 - [ ] **[P1] Prefetching Performance Overlay**: Visualization of speculative context hit/miss rates. (Added: 2026-06-03)
-
-### Upcoming: [2026-06-07]
-- **Semantic Shadowing Dashboard**: (P0) A behavioral security workspace for the AID Hub that visualizes stylometric and contextual consistency alerts.
-- **Mission-Locked Execution (MLE) Visualizer**: (P0) Security UI for viewing and auditing cryptographically locked tool calls and their mission-root lineage.
-- **STR-Native Discovery Status**: (P1) Real-time monitor for "Sovereign Tool Registry" behavioral manifests and TPM-attestation events.
-- **Ephemeral Mission Root Monitor**: (P1) Lifecycle manager UI for monitoring the temporal sovereignty of mission-root tokens.
 
 ### Upcoming: [2026-06-05]
 - **Intent-Splicing Audit Log**: (P0) Forensic UI for reviewing deconstructed inter-agent messages and splicing attempts.

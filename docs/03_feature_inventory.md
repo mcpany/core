@@ -6,18 +6,6 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
-## Evolution: [2026-06-07] Updates
-
-### Proposed Additions
-- **Semantic Shadowing Mitigator (SSM)**: (P0) A behavioral security middleware for the AID Hub that performs stylometric and contextual consistency checks to detect mimicry-based intent hijacking.
-- **Mission-Locked Execution (MLE) Gateway**: (P0) Core security service that enforces cryptographic locking of tool calls and sub-delegations to a hardware-attested mission-root intent.
-- **STR-Native Discovery Provider**: (P1) Upgrade for the PNTD Provider to support "Sovereign Tool Registry" manifests and TPM-signed behavioral baselines.
-- **Temporal Sovereignty Controller**: (P1) Lifecycle management service implementing "Ephemeral Mission Roots" to prevent long-term session hijacking.
-
-### Priority Shifts
-- **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SSM** integration to counter mimicry attacks.
-- **Capability Garbage Collection (CGC) Provider**: (Re-affirmed P0) Designated as a critical mechanism for supporting the new **Temporal Sovereignty** requirements.
-
 ## Evolution: [2026-05-23] Updates
 
 ### Proposed Additions
@@ -1230,6 +1218,18 @@
 ### Priority Shifts
 - **Speculative Execution Guard**: (Re-affirmed P0) Now elevated with the requirement for mandatory **PCSS** to counter speculative fragment poisoning.
 - **Live Context Sharding Middleware**: (Re-affirmed P0) Now elevated with the requirement for **MRG** to maintain mission-root sovereignty in horizontal meshes.
+
+## Evolution: [2026-06-07] Updates
+
+### Proposed Additions
+- **Recursive Mission Attestation (RMA) Provider**: (P0) Authoritative issuer for hardware-attested, recursive mission tokens ensuring intent alignment across multi-hop delegations.
+- **Context-Aware Shard Isolation (CASI) Middleware**: (P0) Security extension for SMS and FAMI providers performing real-time semantic analysis to isolate teammates within active task shards.
+- **CFIB Auction Bridge**: (P1) Advanced orchestration service facilitating cross-framework task auctions by translating HAIL and SRM tokens into unified bids.
+- **Mission-Receipt Logging Service**: (P0) Hardware-bound audit service for cryptographically logging recursive mission tokens and delegation chains.
+
+### Priority Shifts
+- **Sharded Mailbox Sovereignty (SMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **CASI** to prevent horizontal shard pollution.
+- **Active Negotiation Broker (ANB)**: (Re-affirmed P0) Evolving to support the new **CFIB-v1** bidding protocol for heterogeneous swarms.
 
 ## Evolution: [2026-06-06] Updates
 

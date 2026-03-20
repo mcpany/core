@@ -11,6 +11,12 @@
 
 ### Status: Active Development
 
+#### Upcoming (2026-06-07 Evolution)
+*   **[P0] Recursive Mission Attestation (RMA) Provider**: Authoritative hardware-attested mission token issuer for recursive sub-missions. (Added: 2026-06-07)
+*   **[P0] Context-Aware Shard Isolation (CASI) Middleware**: Semantic isolation of mailbox shards to prevent cross-teammate state pollution. (Added: 2026-06-07)
+*   **[P1] CFIB Auction Bridge**: Orchestration bridge for cross-framework intent bidding between Gemini HAIL and OpenClaw SRM. (Added: 2026-06-07)
+*   **[P0] Mission-Receipt Logging Service**: Cryptographic audit trail for mission receipts to prevent shadow delegations. (Added: 2026-06-07)
+
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
@@ -283,7 +289,6 @@ These features represent the next logical steps for the product, focusing on Ent
 ### Healthy Areas
 
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
-- **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
 
 #### Upcoming (2026-03-18 Evolution)
@@ -672,12 +677,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Cross-Framework Attestation Translator**: Bridge proprietary TPM-bound reasoning paths to OpenClaw SRM format. (Added: 2026-06-03)
 *   **[P0] Atomic Shard Lock-Manager**: Kernel-level lock manager for granular context streaming. (Added: 2026-06-03)
 *   **[P1] Zero-Latency Shard Prefetcher**: Speculative context loading based on real-time intent analysis. (Added: 2026-06-03)
-
-### Upcoming: [2026-06-07]
-- **Semantic Shadowing Mitigator (SSM)**: (P0) A behavioral security middleware for the AID Hub performing stylometric and contextual consistency checks to detect mimicry-based intent hijacking.
-- **Mission-Locked Execution (MLE) Gateway**: (P0) Core security service that enforces cryptographic locking of tool calls and sub-delegations to a hardware-attested mission-root intent.
-- **STR-Native Discovery Provider**: (P1) Upgrade for the PNTD Provider to support "Sovereign Tool Registry" (STR) manifests and TPM-signed behavioral baselines.
-- **Temporal Sovereignty Controller**: (P1) Lifecycle management service implementing "Ephemeral Mission Roots" to prevent long-term session hijacking.
 
 ### Upcoming: [2026-06-05]
 - **Intent-Splicing Detector (ISD)**: (P0) Structural validation middleware for the Semantic Integrity Bridge to prevent malicious instruction splicing in inter-agent streams.
