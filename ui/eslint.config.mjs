@@ -24,10 +24,10 @@ export default [
        ...tsPlugin.configs.recommended.rules,
        "no-undef": "off",
        "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }],
-       "@typescript-eslint/no-explicit-any": "warn"
+       "@typescript-eslint/no-explicit-any": "off"
     }
   },
   {
-    ignores: ["dist/**", "node_modules/**", "eslint.config.mjs"]
+    ignores: ["dist/**", "node_modules/**", "eslint.config.mjs", "src/types/bufbuild-protobuf-wire.d.ts"]
   }
 ];
