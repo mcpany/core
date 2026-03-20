@@ -9,8 +9,11 @@ import { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FileJson, Table as TableIcon, Terminal, FileText } from "lucide-react";
+import { FileJson, Table as TableIcon, Terminal, FileText, Maximize2 } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
+import { JsonTree } from "@/components/ui/json-tree";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -145,7 +148,23 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
     const renderCell = (value: any) => {
         if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
-        if (typeof value === 'object') return <span className="font-mono text-xs text-muted-foreground truncate max-w-[200px] block" title={JSON.stringify(value)}>{JSON.stringify(value)}</span>;
+        if (typeof value === 'object') {
+             return (
+                 <Popover>
+                     <PopoverTrigger asChild>
+                         <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] font-mono text-muted-foreground truncate max-w-[150px] justify-start bg-muted/20">
+                             <Maximize2 className="h-3 w-3 mr-1 shrink-0" />
+                             {Array.isArray(value) ? `Array(${value.length})` : `Object({${Object.keys(value).length}})`}
+                         </Button>
+                     </PopoverTrigger>
+                     <PopoverContent className="w-80 p-0" align="start">
+                         <div className="max-h-[300px] overflow-auto p-2 bg-[#1e1e1e]">
+                             <JsonTree data={value} defaultExpandedLevel={1} />
+                         </div>
+                     </PopoverContent>
+                 </Popover>
+             );
+        }
         if (typeof value === 'boolean') return <span className={value ? "text-green-500 font-medium" : "text-red-500 font-medium"}>{String(value)}</span>;
         return <span className="truncate max-w-[300px] block" title={String(value)}>{String(value)}</span>;
     }

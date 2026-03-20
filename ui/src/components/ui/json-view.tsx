@@ -8,11 +8,12 @@
 import { useState, useMemo, useEffect, lazy, Suspense } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Code, Table as TableIcon, Copy, Check, ChevronDown, ChevronUp, ListTree, Image as ImageIcon } from "lucide-react";
+import { Code, Table as TableIcon, Copy, Check, ChevronDown, ChevronUp, ListTree, Image as ImageIcon, Maximize2 } from "lucide-react";
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { JsonTree } from "./json-tree";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 // ⚡ BOLT: Lazy load SyntaxHighlighter to reduce initial bundle size.
 // Randomized Selection from Top 5 High-Impact Targets (Assets/Bundle)
@@ -276,16 +277,36 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400,
                                 <TableRow key={idx} className="hover:bg-muted/50">
                                     {columns.map(col => {
                                         const val = row[col];
-                                        let displayVal = val;
-                                        if (typeof val === 'object' && val !== null) {
-                                            displayVal = JSON.stringify(val);
-                                        } else if (typeof val === 'boolean') {
-                                            displayVal = val ? "true" : "false";
+
+                                        if (val === null || val === undefined) {
+                                            return <TableCell key={col} className="px-2 py-1 text-xs text-muted-foreground">-</TableCell>;
                                         }
 
+                                        if (typeof val === 'object' && val !== null) {
+                                            return (
+                                                <TableCell key={col} className="px-2 py-1 text-xs">
+                                                    <Popover>
+                                                        <PopoverTrigger asChild>
+                                                            <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] font-mono text-muted-foreground truncate max-w-[150px] justify-start bg-muted/20">
+                                                                <Maximize2 className="h-3 w-3 mr-1 shrink-0" />
+                                                                {Array.isArray(val) ? `Array(${val.length})` : `Object({${Object.keys(val).length}})`}
+                                                            </Button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-80 p-0" align="start">
+                                                            <div className="max-h-[300px] overflow-auto p-2 bg-[#1e1e1e]">
+                                                                <JsonTree data={val} defaultExpandedLevel={1} />
+                                                            </div>
+                                                        </PopoverContent>
+                                                    </Popover>
+                                                </TableCell>
+                                            );
+                                        }
+
+                                        const displayVal = typeof val === 'boolean' ? (val ? "true" : "false") : String(val);
+
                                         return (
-                                            <TableCell key={col} className="px-2 py-1 text-xs max-w-[200px] truncate" title={String(displayVal)}>
-                                                {String(displayVal ?? "")}
+                                            <TableCell key={col} className="px-2 py-1 text-xs max-w-[200px] truncate" title={displayVal}>
+                                                {displayVal}
                                             </TableCell>
                                         );
                                     })}
