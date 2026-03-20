@@ -159,7 +159,8 @@ func buildTraceTrees(entries []audit.Entry) []*Trace {
 		// If TraceID is empty, generate a fallback ID
 		tID := e.TraceID
 		if tID == "" {
-			data := fmt.Sprintf("%d-%s-%s-%s", e.Timestamp.UnixNano(), e.ToolName, e.UserID, e.ProfileID)
+			// For testing without TraceID injection, use a fallback based on unique execution so they don't group together unintentionally
+			data := fmt.Sprintf("%d-%s-%s-%s-%s", e.Timestamp.UnixNano(), e.ToolName, e.UserID, e.ProfileID, e.SpanID)
 			hash := sha256.Sum256([]byte(data))
 			tID = hex.EncodeToString(hash[:])
 		}
@@ -219,8 +220,16 @@ func (a *Application) handleTraces() http.HandlerFunc {
 			// (Assuming buildTraceTrees doesn't guarantee order, though map iteration is random)
 			for i := 0; i < len(traces); i++ {
 				for j := i + 1; j < len(traces); j++ {
+					// Use ascending check inside condition to push older items to the end
 					if traces[j].Timestamp > traces[i].Timestamp {
 						traces[i], traces[j] = traces[j], traces[i]
+					} else if traces[j].Timestamp == traces[i].Timestamp {
+						// Tie breaker on StartTime or Trace ID to be stable
+						if traces[j].RootSpan.StartTime > traces[i].RootSpan.StartTime {
+							traces[i], traces[j] = traces[j], traces[i]
+						} else if traces[j].RootSpan.StartTime == traces[i].RootSpan.StartTime && traces[j].ID > traces[i].ID {
+							traces[i], traces[j] = traces[j], traces[i]
+						}
 					}
 				}
 			}
