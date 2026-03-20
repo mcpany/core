@@ -320,73 +320,14 @@ export function DashboardGrid() {
                             className="grid grid-cols-12 gap-4"
                         >
                             {visibleWidgets.map((widget, index) => (
-                                <Draggable key={widget.instanceId} draggableId={widget.instanceId} index={index}>
-                                    {(provided, snapshot) => (
-                                        <div
-                                            ref={provided.innerRef}
-                                            {...provided.draggableProps}
-                                            className={cn(
-                                                "relative group/widget rounded-lg transition-all duration-200",
-                                                getColSpan(widget.size),
-                                                snapshot.isDragging && "z-50 shadow-2xl scale-[1.02] opacity-90"
-                                            )}
-                                        >
-                                            <div className="absolute top-2 right-2 flex items-center space-x-1 opacity-0 group-hover/widget:opacity-100 transition-opacity z-20">
-                                                 <div
-                                                    {...provided.dragHandleProps}
-                                                    className="p-1 hover:bg-muted/80 bg-background/50 backdrop-blur-sm rounded cursor-grab active:cursor-grabbing border border-transparent hover:border-border"
-                                                >
-                                                    <GripVertical className="h-4 w-4 text-muted-foreground" />
-                                                </div>
-
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <div className="p-1 hover:bg-muted/80 bg-background/50 backdrop-blur-sm rounded cursor-pointer border border-transparent hover:border-border">
-                                                            <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                                                        </div>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuLabel>Widget Options</DropdownMenuLabel>
-                                                        <DropdownMenuSeparator />
-                                                        <DropdownMenuSub>
-                                                            <DropdownMenuSubTrigger>
-                                                                <Maximize className="mr-2 h-4 w-4" />
-                                                                <span>Size</span>
-                                                            </DropdownMenuSubTrigger>
-                                                            <DropdownMenuSubContent>
-                                                                <DropdownMenuRadioGroup value={widget.size} onValueChange={(v) => updateWidgetSize(widget.instanceId, v as WidgetSize)}>
-                                                                    <DropdownMenuRadioItem value="full">
-                                                                        <LayoutGrid className="mr-2 h-4 w-4" /> Full Width
-                                                                    </DropdownMenuRadioItem>
-                                                                    <DropdownMenuRadioItem value="two-thirds">
-                                                                        <Columns className="mr-2 h-4 w-4" /> 2/3 Width
-                                                                    </DropdownMenuRadioItem>
-                                                                    <DropdownMenuRadioItem value="half">
-                                                                        <Columns className="mr-2 h-4 w-4" /> 1/2 Width
-                                                                    </DropdownMenuRadioItem>
-                                                                    <DropdownMenuRadioItem value="third">
-                                                                        <Columns className="mr-2 h-4 w-4" /> 1/3 Width
-                                                                    </DropdownMenuRadioItem>
-                                                                </DropdownMenuRadioGroup>
-                                                            </DropdownMenuSubContent>
-                                                        </DropdownMenuSub>
-                                                        <DropdownMenuItem onClick={() => toggleWidgetVisibility(widget.instanceId)}>
-                                                            <EyeOff className="mr-2 h-4 w-4" />
-                                                            Hide Widget
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuSeparator />
-                                                        <DropdownMenuItem onClick={() => removeWidget(widget.instanceId)} className="text-red-600 focus:text-red-600">
-                                                            <Trash2 className="mr-2 h-4 w-4" />
-                                                            Remove
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </div>
-
-                                            {renderWidget(widget)}
-                                        </div>
-                                    )}
-                                </Draggable>
+                                <MemoizedWidgetCard
+                                    key={widget.instanceId}
+                                    widget={widget}
+                                    index={index}
+                                    updateWidgetSize={updateWidgetSize}
+                                    toggleWidgetVisibility={toggleWidgetVisibility}
+                                    removeWidget={removeWidget}
+                                />
                             ))}
                             {provided.placeholder}
                         </div>
