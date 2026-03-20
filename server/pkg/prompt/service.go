@@ -16,6 +16,18 @@ import (
 // name.
 //
 // Summary: Represents a Service.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Service struct {
 	promptManager ManagerInterface
 	mcpServer     *mcp.Server
@@ -30,6 +42,12 @@ type Service struct {
 //
 // Returns:
 //   - *Service: The initialized service.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
 		promptManager: promptManager,
@@ -48,6 +66,12 @@ func NewService(promptManager ManagerInterface) *Service {
 // Returns:
 //
 //	None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.mcpServer = mcpServer
 	s.promptManager.SetMCPServer(NewMCPServerProvider(mcpServer))

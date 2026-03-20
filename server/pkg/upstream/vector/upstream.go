@@ -28,6 +28,18 @@ type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
 // Upstream implements the upstream.Upstream interface for vector database services.
 //
 // Summary: Represents a Upstream.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Upstream struct {
 	clientFactory ClientFactory
 }
@@ -278,6 +290,18 @@ type vectorToolDef struct {
 // Client interface for different vector DB implementations.
 //
 // Summary: Represents a Client.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Client interface {
 	// Query searches for the nearest vectors in the database.
 	// It accepts a context, a query vector, the number of results to return (topK),

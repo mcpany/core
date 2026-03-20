@@ -36,6 +36,18 @@ var (
 // connection and checking its health.
 //
 // Summary: Interface for poolable clients.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ClosableClient interface {
 	// Close terminates the client's connection.
 	//
@@ -493,6 +505,18 @@ func (p *poolImpl[T]) Len() int {
 // UntypedPool defines a non-generic interface for a pool.
 //
 // Summary: Interface for untyped pool management.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type UntypedPool interface {
 	io.Closer
 	// Len returns the number of idle clients currently in the pool.
@@ -507,6 +531,18 @@ type UntypedPool interface {
 // Manager provides a way to manage multiple named connection pools.
 //
 // Summary: Manages a collection of pools.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Manager struct {
 	pools map[string]any
 	mu    sync.RWMutex
@@ -518,6 +554,15 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: The initialized manager.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		pools: make(map[string]any),
@@ -531,6 +576,15 @@ func NewManager() *Manager {
 // Parameters:
 //   - name: string. The pool name.
 //   - pool: any. The pool instance.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) Register(name string, pool any) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -552,6 +606,15 @@ func (m *Manager) Register(name string, pool any) {
 //
 // Parameters:
 //   - name: string. The pool name.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) Deregister(name string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

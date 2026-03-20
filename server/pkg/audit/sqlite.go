@@ -20,6 +20,18 @@ import (
 // SQLiteAuditStore writes audit logs to a SQLite database.
 //
 // Summary: Stores audit logs in a local SQLite database with tamper-evident hashing.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type SQLiteAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -171,6 +183,9 @@ func ensureColumn(db *sql.DB, colName string) error {
 //
 // Side Effects:
 //   - Inserts a row into the audit_logs table.
+//
+// Errors:
+//   - None.
 func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -242,6 +257,9 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 //
 // Side Effects:
 //   - Executes a SELECT query on the database.
+//
+// Errors:
+//   - None.
 func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -324,6 +342,9 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 //
 // Side Effects:
 //   - Scans the entire audit_logs table.
+//
+// Parameters:
+//   - None.
 func (s *SQLiteAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -380,6 +401,12 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 //
 // Side Effects:
 //   - Closes the DB connection.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

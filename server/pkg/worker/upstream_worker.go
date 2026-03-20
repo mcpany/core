@@ -21,6 +21,18 @@ import (
 // a ToolExecutionResult message.
 //
 // Summary: Represents a UpstreamWorker.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type UpstreamWorker struct {
 	bus         *bus.Provider
 	toolManager tool.ManagerInterface

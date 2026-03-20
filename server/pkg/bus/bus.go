@@ -73,6 +73,18 @@ type Bus[T any] interface {
 // instances themselves.
 //
 // Summary: Represents a Provider.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Provider struct {
 	buses  *xsync.Map[string, any]
 	config *bus.MessageBus
@@ -81,6 +93,18 @@ type Provider struct {
 // NewProviderHook is a test hook for overriding the NewProvider logic.
 //
 // Summary: Represents a NewProviderHook.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
 // NewProvider creates and returns a new Provider, which is used to manage
@@ -144,6 +168,18 @@ func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 // GetBusHook is a test hook for overriding the bus retrieval logic.
 //
 // Summary: Represents a GetBusHook.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var GetBusHook func(p *Provider, topic string) (any, error)
 
 // GetBus retrieves a bus for the given topic. If a bus for the given topic

@@ -20,6 +20,18 @@ import (
 // ManagerInterface defines the interface for managing alerts.
 //
 // Summary: Represents a ManagerInterface.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ManagerInterface interface {
 	// ListAlerts returns a list of all alerts.
 	ListAlerts() []*Alert
@@ -56,6 +68,18 @@ type ManagerInterface interface {
 // Manager implements ManagerInterface using in-memory storage.
 //
 // Summary: Represents a Manager.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Manager struct {
 	mu         sync.RWMutex
 	alerts     map[string]*Alert
