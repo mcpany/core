@@ -472,6 +472,7 @@
 - **LFTA Trust Lease Manager**: Promoted to **P0**. Essential for scaling high-frequency attestation in deep swarms.
 
 ---
+---
 
 ## Evolution: [2026-04-17] Updates
 
@@ -1357,6 +1358,15 @@
 - **Reasoning-Aware Garbage Collection (R-GC) Manager**: (P1) Stability middleware for the Speculative Branching Guard that purges low-utility context fragments.
 - **Temporal Shard Jitter (TSJ) Injector**: (P0) Security extension for the ESB that injects hardware-attested timing jitter to neutralize CVE-2026-62001.
 
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Autonomous Mission Resumption (AMRA) Hub**: (P0) Authoritative resumption service that provides hardware-locked, monotonic re-attestation for long-running agent missions.
+- **Semantic Entanglement Sanitizer (SES)**: (P0) Security middleware for the Entangled State Broker that redacts private reasoning monologues before mesh synchronization.
+- **Logic-Grafting Interceptor (LGI)**: (P0) Advanced security extension for the ARI Hub that performs fragment-level semantic hash-chaining to detect unauthorized reasoning paths.
+- **Hardware-Locked Monotonic Re-Attestation Provider**: (P0) Advanced security service mandating TPM-bound monotonic counters for all mission-resumption handshakes.
+
 ### Priority Shifts
-- **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
+- **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SES-compliant** state sanitization to protect monologue privacy and mandatory **TSJ Injection** for all cross-mission synchronization.
+- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Evolving to support the new **Logic-Grafting Interceptor** to counter CVE-2026-71002.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
