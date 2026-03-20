@@ -101,7 +101,7 @@ export function UserList({ users, isLoading, onEdit, onDelete, onBulkDelete }: U
         });
     };
 
-    const isAllSelected = filteredUsers.length > 0 && selected.size === filteredUsers.length;
+    const isAllSelected = filteredUsers.length > 0 && filteredUsers.every(u => selected.has(u.id));
 
     if (isLoading) {
         return (

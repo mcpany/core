@@ -64,7 +64,7 @@ export default function UsersPage() {
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
+        if (!window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
         try {
             await apiClient.deleteUser(id);
             toast({
@@ -83,7 +83,7 @@ export default function UsersPage() {
     };
 
     const handleBulkDelete = async (ids: string[]) => {
-        if (!confirm(`Are you sure you want to delete ${ids.length} users? This action cannot be undone.`)) return;
+        if (!window.confirm(`Are you sure you want to delete ${ids.length} users? This action cannot be undone.`)) return;
         try {
             await Promise.all(ids.map(id => apiClient.deleteUser(id)));
             toast({
