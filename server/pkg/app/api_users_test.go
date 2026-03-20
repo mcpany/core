@@ -181,7 +181,7 @@ func TestHandleUserDetail(t *testing.T) {
 
 	// Create a user for test data
 	user := configv1.User_builder{
-		Id: proto.String("user1"),
+		Id:    proto.String("user1"),
 		Roles: []string{"developer"},
 	}.Build()
 	require.NoError(t, store.CreateUser(context.Background(), user))
