@@ -1375,18 +1375,3 @@
   lineage transparency.
 - **Teammate-Aware Context Scrubber**: (P1) Advanced context optimization
   middleware that prioritizes high-trust teammate fragments during compression.
-
-## Evolution: [2026-06-18] Updates
-
-### Proposed Additions
-- **ACR Hub Controller**: (P0) Authoritative security service for
-  sub-millisecond capability revocation triggered by Active Intent Alignment
-  (AIA) failures.
-- **Recursive Depth-Limit Enforcer (RDLE)**: (P0) Delegation security middleware
-  that cryptographically binds reasoning depth limits to the mission-root
-  manifest.
-- **Reasoning-Path Watermarking Provider**: (P1) Identity service for
-  cryptographically watermarking reasoning fragments for non-repudiation and
-  lineage transparency.
-- **Teammate-Aware Context Scrubber**: (P1) Advanced context optimization
-  middleware that prioritizes high-trust teammate fragments during compression.

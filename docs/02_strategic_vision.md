@@ -1070,29 +1070,3 @@ demands that every reasoning fragment be cryptographically non-repudiable.
   are upgrading our context logic to be "Teammate-Aware." Utilizing MMBA
   signatures, MCP Any will prioritize the preservation of high-trust teammate
   state during automated context sharding and compression.
-
-## Strategic Evolution: [2026-06-18]
-### Focus: Autonomously Reactive Security & Recursive Lineage Enforcement
-**Context**: The emergence of the ACR Protocol (OpenClaw v3.3.0) and the
-disclosure of Recursive Shadow Handoffs (CVE-2026-71001) confirm that
-sub-millisecond revocation and hardware-locked delegation depth are the new
-operational baselines. Simultaneously, "Reasoning Hijacking" in deep swarms
-demands that every reasoning fragment be cryptographically non-repudiable.
-**Strategic Pivot**:
-- **ACR Hub Integration**: MCP Any will evolve to act as the authoritative ACR
-  Controller for all connected agents. We will implement sub-millisecond
-  capability revocation triggered by Active Intent Alignment (AIA) failures,
-  ensuring that misaligned agents are immediately severed from the tool bus.
-- **Recursive Depth-Limit Enforcement (RDLE)**: To neutralize "Shadow Handoff"
-  vulnerabilities, we are mandating RDLE. Delegation depth will be
-  cryptographically bound to the mission-root manifest, ensuring that subagents
-  cannot negotiate their way out of parent-imposed constraints via nested bids.
-- **Reasoning-Path Watermarking Provider**: Leveraging the Gemini CLI v0.41.0
-  standard, MCP Any will act as a "Watermarking Mint." Every reasoning fragment
-  flowing through the bus will be cryptographically watermarked and bound to the
-  mission-root identity, ensuring absolute lineage transparency and
-  non-repudiation.
-- **Teammate-Aware Context Scrubber**: To support horizontal mesh stability, we
-  are upgrading our context logic to be "Teammate-Aware." Utilizing MMBA
-  signatures, MCP Any will prioritize the preservation of high-trust teammate
-  state during automated context sharding and compression.

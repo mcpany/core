@@ -17,33 +17,27 @@ import (
 // Severity indicates the importance of a linting result.
 //
 // It is used to categorize findings based on their impact and urgency.
-//
-// Summary: Represents the severity of a linting result.
 type Severity int
 
 const (
 	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
-	// Summary: Represents a critical error.
 	Error Severity = iota
 	// Warning indicates a potential issue or best practice violation that should be addressed.
-	// Summary: Represents a non-critical warning.
 	Warning
 	// Info indicates a suggestion or informational message for optimization or clarity.
-	// Summary: Represents an informational finding.
 	Info
 )
 
 // String returns the string representation of the severity.
 //
-// It converts the Severity enum to its string counterpart (ERROR, WARNING, INFO).
-//
 // Parameters:
 //   - None.
 //
 // Returns:
-//   - string: The string representation of the severity.
+//   - string: The string representation of the severity (e.g., "ERROR", "WARNING").
 //
-// Summary: Converts Severity to string.
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -63,8 +57,6 @@ func (s Severity) String() string {
 // Result represents a single linting finding.
 //
 // It encapsulates all details about a detected issue, including its severity, location, and description.
-//
-// Summary: Holds the result of a single linting check.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -76,17 +68,16 @@ type Result struct {
 	Path string
 }
 
-// String returns the string representation of the result.
-//
-// It formats the result into a human-readable string suitable for CLI output.
+// String returns the human-readable representation of the result.
 //
 // Parameters:
 //   - None.
 //
 // Returns:
-//   - string: A formatted string containing severity, service, path, and message.
+//   - string: A formatted string containing severity, service name, path, and message.
 //
-// Summary: Formats linting result as string.
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -105,8 +96,6 @@ func (r Result) String() string {
 // Linter performs static analysis on the configuration.
 //
 // It holds the configuration to be analyzed and provides methods to execute various checks.
-//
-// Summary: Logic for linting configuration.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
@@ -114,12 +103,13 @@ type Linter struct {
 // NewLinter creates a new Linter instance.
 //
 // Parameters:
-//   - cfg (*configv1.McpAnyServerConfig): The server configuration to be linted.
+//   - cfg (*configv1.McpAnyServerConfig): The server configuration to be analyzed.
 //
 // Returns:
 //   - *Linter: A new Linter instance initialized with the provided configuration.
 //
-// Summary: Constructs a new Linter.
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -127,24 +117,22 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
 
-// Run executes all linting checks.
-//
-// It aggregates results from multiple check categories including standard validation,
-// secret usage, shell injection risks, insecure HTTP, and cache settings.
+// Run executes all configured linting checks against the provided configuration.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The context for the linting operation.
 //
 // Returns:
-//   - []Result: A list of linting findings.
-//   - error: An error if the linting process encounters a fatal issue.
+//   - []Result: A slice containing all detected linting issues.
+//   - error: An error if the linting process encounters a fatal issue (currently always nil).
 //
-// Summary: Executes all linting rules.
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
-	// Pre-allocate to avoid performance warnings, though initial size is a guess.
+	// Pre-allocate to avoid performance warnings.
 	results := make([]Result, 0, 10)
 
 	// 1. Run standard validation first (Errors)
@@ -205,7 +193,6 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 			}
 		}
 
-		// Check command env vars
 		if cmd := s.GetCommandLineService(); cmd != nil {
 			for k, v := range cmd.GetEnv() {
 				checkSecret(v, fmt.Sprintf("command_line_service.env[%s]", k), s.GetName())
@@ -228,16 +215,6 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 					checkSecret(v, fmt.Sprintf("mcp_service.bundle.env[%s]", k), s.GetName())
 				}
 			}
-		}
-	}
-
-	// Check users
-	for _, u := range l.cfg.GetUsers() {
-		if auth := u.GetAuthentication(); auth != nil {
-			// Similar checks for user auth if applicable
-			// (Assuming user auth structure mirrors upstream auth mostly or has secrets)
-			// ...
-			_ = auth
 		}
 	}
 
@@ -299,7 +276,6 @@ func (l *Linter) checkInsecureHTTP() []Result {
 		}
 
 		if url != "" && strings.HasPrefix(strings.ToLower(url), "http://") {
-			// Whitelist localhost/127.0.0.1
 			if !strings.Contains(url, "localhost") && !strings.Contains(url, "127.0.0.1") {
 				results = append(results, Result{
 					Severity:    Warning,
@@ -316,9 +292,7 @@ func (l *Linter) checkInsecureHTTP() []Result {
 func (l *Linter) checkCacheSettings() []Result {
 	var results []Result
 	for _, s := range l.cfg.GetUpstreamServices() {
-		// If cache is enabled but no TTL or default TTL
 		if s.GetCache() == nil {
-			// No cache configured at all. Maybe okay.
 			continue
 		}
 
