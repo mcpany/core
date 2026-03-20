@@ -748,6 +748,281 @@ func (a *Application) handleTools() http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(toolList)
+		case http.MethodPut:
+			body, err := readBodyWithLimit(w, r, 1048576)
+			if err != nil {
+				return
+			}
+			var req struct {
+				Name    string `json:"name"`
+				Disable bool   `json:"disable"`
+			}
+			if err := json.Unmarshal(body, &req); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			var serviceID string
+			tools := a.ToolManager.ListTools()
+			for _, t := range tools {
+				if t.Tool().GetName() == req.Name {
+					serviceID = t.Tool().GetServiceId()
+					break
+				}
+			}
+
+			if serviceID == "" {
+				http.Error(w, "tool not found", http.StatusNotFound)
+				return
+			}
+
+			if a.Storage == nil {
+				http.Error(w, "storage not available", http.StatusInternalServerError)
+				return
+			}
+
+			svc, err := a.Storage.GetService(r.Context(), serviceID)
+			if err != nil {
+				logging.GetLogger().Error("failed to get service for tool status update", "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			if svc == nil {
+				http.Error(w, "service not found", http.StatusNotFound)
+				return
+			}
+
+			// We need to modify the tool definition inside the UpstreamServiceConfig.
+			var updated bool
+			updateTools := func(tools []*configv1.ToolDefinition) []*configv1.ToolDefinition {
+				var newTools []*configv1.ToolDefinition
+				for _, t := range tools {
+					if t.GetName() == req.Name {
+						tb := configv1.ToolDefinition_builder{
+							Name:           proto.String(t.GetName()),
+							Description:    proto.String(t.GetDescription()),
+							InputSchema:    t.GetInputSchema(),
+							ServiceId:      proto.String(t.GetServiceId()),
+							IsStream:       proto.Bool(t.GetIsStream()),
+							Title:          proto.String(t.GetTitle()),
+							ReadOnlyHint:   proto.Bool(t.GetReadOnlyHint()),
+							DestructiveHint: proto.Bool(t.GetDestructiveHint()),
+							IdempotentHint: proto.Bool(t.GetIdempotentHint()),
+							OpenWorldHint:  proto.Bool(t.GetOpenWorldHint()),
+							CallId:         proto.String(t.GetCallId()),
+							Disable:        proto.Bool(req.Disable),
+							Profiles:       t.GetProfiles(),
+							MergeStrategy:  t.GetMergeStrategy().Enum(),
+							Tags:           t.GetTags(),
+						}
+						newTools = append(newTools, tb.Build())
+						updated = true
+					} else {
+						newTools = append(newTools, t)
+					}
+				}
+				return newTools
+			}
+
+			// Create a clone of the service configuration to modify it safely
+			svcBuilder := configv1.UpstreamServiceConfig_builder{
+				Name:             proto.String(svc.GetName()),
+				Id:               proto.String(svc.GetId()),
+				SanitizedName:    proto.String(svc.GetSanitizedName()),
+				Version:          proto.String(svc.GetVersion()),
+				Priority:         proto.Int32(svc.GetPriority()),
+				Disable:          proto.Bool(svc.GetDisable()),
+				AutoDiscoverTool: proto.Bool(svc.GetAutoDiscoverTool()),
+				ConfigError:      proto.String(svc.GetConfigError()),
+				Tags:             svc.GetTags(),
+			}
+
+			// Copy complex fields that are not part of service_config oneof
+			if svc.GetConnectionPool() != nil {
+				svcBuilder.ConnectionPool = svc.GetConnectionPool()
+			}
+			if svc.GetUpstreamAuth() != nil {
+				svcBuilder.UpstreamAuth = svc.GetUpstreamAuth()
+			}
+			if svc.GetCache() != nil {
+				svcBuilder.Cache = svc.GetCache()
+			}
+			if svc.GetRateLimit() != nil {
+				svcBuilder.RateLimit = svc.GetRateLimit()
+			}
+			svcBuilder.LoadBalancingStrategy = svc.GetLoadBalancingStrategy().Enum()
+			if svc.GetResilience() != nil {
+				svcBuilder.Resilience = svc.GetResilience()
+			}
+			if svc.GetAuthentication() != nil {
+				svcBuilder.Authentication = svc.GetAuthentication()
+			}
+			if svc.GetToolExportPolicy() != nil {
+				svcBuilder.ToolExportPolicy = svc.GetToolExportPolicy()
+			}
+			if svc.GetPromptExportPolicy() != nil {
+				svcBuilder.PromptExportPolicy = svc.GetPromptExportPolicy()
+			}
+			if svc.GetResourceExportPolicy() != nil {
+				svcBuilder.ResourceExportPolicy = svc.GetResourceExportPolicy()
+			}
+			svcBuilder.CallPolicies = svc.GetCallPolicies()
+			svcBuilder.PreCallHooks = svc.GetPreCallHooks()
+			svcBuilder.PostCallHooks = svc.GetPostCallHooks()
+			svcBuilder.Prompts = svc.GetPrompts()
+			if svc.GetConfigurationSchema() != "" {
+				svcBuilder.ConfigurationSchema = proto.String(svc.GetConfigurationSchema())
+			}
+
+			switch svc.WhichServiceConfig() {
+			case configv1.UpstreamServiceConfig_HttpService_case:
+				httpSvc := svc.GetHttpService()
+				httpBuilder := configv1.HttpUpstreamService_builder{
+					Address:             proto.String(httpSvc.GetAddress()),
+					Calls:               httpSvc.GetCalls(),
+					HealthCheck:         httpSvc.GetHealthCheck(),
+					TlsConfig:           httpSvc.GetTlsConfig(),
+					Resources:           httpSvc.GetResources(),
+					Prompts:             httpSvc.GetPrompts(),
+					Tools:               updateTools(httpSvc.GetTools()),
+				}
+				svcBuilder.HttpService = httpBuilder.Build()
+			case configv1.UpstreamServiceConfig_GrpcService_case:
+				grpcSvc := svc.GetGrpcService()
+				grpcBuilder := configv1.GrpcUpstreamService_builder{
+					Address:             proto.String(grpcSvc.GetAddress()),
+					Calls:               grpcSvc.GetCalls(),
+					HealthCheck:         grpcSvc.GetHealthCheck(),
+					Prompts:             grpcSvc.GetPrompts(),
+					Tools:               updateTools(grpcSvc.GetTools()),
+				}
+				svcBuilder.GrpcService = grpcBuilder.Build()
+			case configv1.UpstreamServiceConfig_WebsocketService_case:
+				wsSvc := svc.GetWebsocketService()
+				wsBuilder := configv1.WebsocketUpstreamService_builder{
+					Address:             proto.String(wsSvc.GetAddress()),
+					Calls:               wsSvc.GetCalls(),
+					HealthCheck:         wsSvc.GetHealthCheck(),
+					Prompts:             wsSvc.GetPrompts(),
+					Tools:               updateTools(wsSvc.GetTools()),
+				}
+				svcBuilder.WebsocketService = wsBuilder.Build()
+			case configv1.UpstreamServiceConfig_WebrtcService_case:
+				webrtcSvc := svc.GetWebrtcService()
+				webrtcBuilder := configv1.WebrtcUpstreamService_builder{
+					Address:             proto.String(webrtcSvc.GetAddress()),
+					Calls:               webrtcSvc.GetCalls(),
+					HealthCheck:         webrtcSvc.GetHealthCheck(),
+					Prompts:             webrtcSvc.GetPrompts(),
+					Tools:               updateTools(webrtcSvc.GetTools()),
+				}
+				svcBuilder.WebrtcService = webrtcBuilder.Build()
+			case configv1.UpstreamServiceConfig_OpenapiService_case:
+				openapiSvc := svc.GetOpenapiService()
+				openapiBuilder := configv1.OpenapiUpstreamService_builder{
+					Address:             proto.String(openapiSvc.GetAddress()),
+					Calls:               openapiSvc.GetCalls(),
+					Prompts:             openapiSvc.GetPrompts(),
+					Tools:               updateTools(openapiSvc.GetTools()),
+				}
+				switch openapiSvc.WhichSpecSource() {
+				case configv1.OpenapiUpstreamService_SpecContent_case:
+					openapiBuilder.SpecContent = proto.String(openapiSvc.GetSpecContent())
+				case configv1.OpenapiUpstreamService_SpecUrl_case:
+					openapiBuilder.SpecUrl = proto.String(openapiSvc.GetSpecUrl())
+				}
+				if openapiSvc.GetHealthCheck() != nil {
+					openapiBuilder.HealthCheck = openapiSvc.GetHealthCheck()
+				}
+				svcBuilder.OpenapiService = openapiBuilder.Build()
+			case configv1.UpstreamServiceConfig_CommandLineService_case:
+				cmdSvc := svc.GetCommandLineService()
+				cmdBuilder := configv1.CommandLineUpstreamService_builder{
+					Command:             proto.String(cmdSvc.GetCommand()),
+					WorkingDirectory:    proto.String(cmdSvc.GetWorkingDirectory()),
+					Env:                 cmdSvc.GetEnv(),
+					ContainerEnvironment: cmdSvc.GetContainerEnvironment(),
+					HealthCheck:         cmdSvc.GetHealthCheck(),
+					Calls:               cmdSvc.GetCalls(),
+					Prompts:             cmdSvc.GetPrompts(),
+					CommunicationProtocol: cmdSvc.GetCommunicationProtocol().Enum(),
+					Tools:               updateTools(cmdSvc.GetTools()),
+				}
+				if cmdSvc.GetLocal() {
+					cmdBuilder.Local = proto.Bool(true)
+				}
+				if cmdSvc.GetTimeout() != nil {
+					cmdBuilder.Timeout = cmdSvc.GetTimeout()
+				}
+				svcBuilder.CommandLineService = cmdBuilder.Build()
+			case configv1.UpstreamServiceConfig_GraphqlService_case:
+				svcBuilder.GraphqlService = svc.GetGraphqlService()
+			case configv1.UpstreamServiceConfig_SqlService_case:
+				svcBuilder.SqlService = svc.GetSqlService()
+			case configv1.UpstreamServiceConfig_FilesystemService_case:
+				fsSvc := svc.GetFilesystemService()
+				fsBuilder := configv1.FilesystemUpstreamService_builder{
+					RootPaths:           fsSvc.GetRootPaths(),
+					ReadOnly:            proto.Bool(fsSvc.GetReadOnly()),
+					Resources:           fsSvc.GetResources(),
+					Prompts:             fsSvc.GetPrompts(),
+					Tools:               updateTools(fsSvc.GetTools()),
+				}
+				svcBuilder.FilesystemService = fsBuilder.Build()
+			case configv1.UpstreamServiceConfig_VectorService_case:
+				vecSvc := svc.GetVectorService()
+				vecBuilder := configv1.VectorUpstreamService_builder{
+					Tools:               updateTools(vecSvc.GetTools()),
+					Resources:           vecSvc.GetResources(),
+					Prompts:             vecSvc.GetPrompts(),
+				}
+				switch vecSvc.WhichVectorDbType() {
+				case configv1.VectorUpstreamService_Pinecone_case:
+					vecBuilder.Pinecone = vecSvc.GetPinecone()
+				case configv1.VectorUpstreamService_Milvus_case:
+					vecBuilder.Milvus = vecSvc.GetMilvus()
+				}
+				svcBuilder.VectorService = vecBuilder.Build()
+			case configv1.UpstreamServiceConfig_McpService_case:
+				mcpSvc := svc.GetMcpService()
+				mcpBuilder := configv1.McpUpstreamService_builder{
+					Calls:               mcpSvc.GetCalls(),
+					Prompts:             mcpSvc.GetPrompts(),
+					Tools:               updateTools(mcpSvc.GetTools()),
+				}
+
+				switch mcpSvc.WhichConnectionType() {
+				case configv1.McpUpstreamService_HttpConnection_case:
+					mcpBuilder.HttpConnection = mcpSvc.GetHttpConnection()
+				case configv1.McpUpstreamService_StdioConnection_case:
+					mcpBuilder.StdioConnection = mcpSvc.GetStdioConnection()
+				case configv1.McpUpstreamService_BundleConnection_case:
+					mcpBuilder.BundleConnection = mcpSvc.GetBundleConnection()
+				}
+
+				svcBuilder.McpService = mcpBuilder.Build()
+			}
+
+			if !updated {
+				http.Error(w, "tool not found in service config", http.StatusNotFound)
+				return
+			}
+
+			svcToSave := svcBuilder.Build()
+
+			if err := a.Storage.SaveService(r.Context(), svcToSave); err != nil {
+				logging.GetLogger().Error("failed to save service for tool status update", "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after tool status update", "error", err)
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("{}"))
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
