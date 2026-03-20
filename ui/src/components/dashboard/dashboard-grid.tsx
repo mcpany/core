@@ -32,6 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
+import { apiClient } from "@/lib/client";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
@@ -109,51 +110,46 @@ export function DashboardGrid() {
         const loadLayout = async () => {
             try {
                 // Fetch from API
-                const res = await fetch('/api/v1/user/preferences');
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && data['dashboard-layout']) {
-                         try {
-                            const parsed = JSON.parse(data['dashboard-layout']);
-                            setWidgets(migrateLayout(parsed));
-                         } catch (e) {
-                            console.error("Failed to parse remote layout", e);
-                            setWidgets(DEFAULT_LAYOUT);
-                         }
-                    } else {
-                         // No layout saved in backend, check local storage for migration
-                         const local = localStorage.getItem("dashboard-layout");
-                         if (local) {
-                             try {
-                                const parsed = JSON.parse(local);
-                                const migrated = migrateLayout(parsed);
-                                setWidgets(migrated);
-                                // We rely on the save effect to sync this to backend
-                             } catch (e) {
-                                console.error("Failed to parse local layout", e);
-                                setWidgets(DEFAULT_LAYOUT);
-                             }
-                         } else {
-                             setWidgets(DEFAULT_LAYOUT);
-                         }
-                    }
+                const data = await apiClient.getUserPreferences();
+                if (data && data['dashboard-layout']) {
+                     try {
+                        const parsed = JSON.parse(data['dashboard-layout']);
+                        setWidgets(migrateLayout(parsed));
+                     } catch (e) {
+                        console.error("Failed to parse remote layout", e);
+                        setWidgets(DEFAULT_LAYOUT);
+                     }
                 } else {
-                     console.warn("Failed to fetch preferences, falling back to local/default");
-                     // Fallback to local storage or default
+                     // No layout saved in backend, check local storage for migration
                      const local = localStorage.getItem("dashboard-layout");
                      if (local) {
-                        try {
-                            setWidgets(migrateLayout(JSON.parse(local)));
-                        } catch {
+                         try {
+                            const parsed = JSON.parse(local);
+                            const migrated = migrateLayout(parsed);
+                            setWidgets(migrated);
+                            // We rely on the save effect to sync this to backend
+                         } catch (e) {
+                            console.error("Failed to parse local layout", e);
                             setWidgets(DEFAULT_LAYOUT);
-                        }
+                         }
                      } else {
-                        setWidgets(DEFAULT_LAYOUT);
+                         setWidgets(DEFAULT_LAYOUT);
                      }
                 }
             } catch (err) {
                  console.error("Failed to load layout", err);
-                 setWidgets(DEFAULT_LAYOUT);
+                 console.warn("Failed to fetch preferences, falling back to local/default");
+                 // Fallback to local storage or default
+                 const local = localStorage.getItem("dashboard-layout");
+                 if (local) {
+                    try {
+                        setWidgets(migrateLayout(JSON.parse(local)));
+                    } catch {
+                        setWidgets(DEFAULT_LAYOUT);
+                    }
+                 } else {
+                    setWidgets(DEFAULT_LAYOUT);
+                 }
             } finally {
                 setLoading(false);
             }
@@ -182,12 +178,8 @@ export function DashboardGrid() {
 
         const timer = setTimeout(async () => {
             try {
-                await fetch('/api/v1/user/preferences', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        'dashboard-layout': JSON.stringify(widgets)
-                    })
+                await apiClient.updateUserPreferences({
+                    'dashboard-layout': JSON.stringify(widgets)
                 });
                 // Sync to local storage as backup/cache
                 localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
