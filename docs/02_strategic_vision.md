@@ -9,7 +9,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 3. **Context Persistence**: Shared state and context inheritance across agent swarms and execution environments.
 
 ---
-
 ---
 
 ## Strategic Evolution: [2026-05-15]
