@@ -49,13 +49,18 @@ test.describe('Stack Editor', () => {
       await expect(visualizer.locator('.react-flow')).toBeVisible({ timeout: 45000 });
       await expect(page.getByText('Valid YAML')).toBeVisible();
 
-      const templateCard = page.getByText(/GitHub|Google Calendar|Linear/, { exact: true }).first();
+      const templateCard = page.getByText('Linear', { exact: true }).first();
       await expect(templateCard).toBeVisible({ timeout: 30000 });
       await templateCard.click();
 
       // Verify the editor remains valid and the visualizer stays rendered after inserting a template.
       await expect(page.getByText('Valid YAML')).toBeVisible();
       await expect(visualizer.locator('.react-flow')).toBeVisible({ timeout: 60000 });
+
+      // Verify that the complex openapi_service config was correctly inserted by checking the editor's text content.
+      // Monaco editor renders lines individually, so we check the page text for specific YAML keys.
+      await expect(page.getByText('openapi_service:')).toBeVisible();
+      await expect(page.getByText('spec_url:')).toBeVisible();
     } finally {
       await cleanupCollection(stackName, page.request);
     }
