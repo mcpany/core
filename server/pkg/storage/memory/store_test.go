@@ -158,7 +158,7 @@ func TestMemoryStore(t *testing.T) {
 	t.Run("Users", func(t *testing.T) {
 		s4 := NewStore()
 		user := configv1.User_builder{
-			Id:   proto.String("user-1"),
+			Id: proto.String("user-1"),
 		}.Build()
 
 		// Create
@@ -263,7 +263,7 @@ func TestMemoryStore(t *testing.T) {
 	t.Run("Service Collections", func(t *testing.T) {
 		s6 := NewStore()
 		collection := configv1.Collection_builder{
-			Name: proto.String("collection-1"),
+			Name:        proto.String("collection-1"),
 			Description: proto.String("Test Collection"),
 		}.Build()
 
@@ -304,7 +304,7 @@ func TestMemoryStore(t *testing.T) {
 	t.Run("Credentials", func(t *testing.T) {
 		s7 := NewStore()
 		cred := configv1.Credential_builder{
-			Id: proto.String("cred-1"),
+			Id:   proto.String("cred-1"),
 			Name: proto.String("Test Credential"),
 		}.Build()
 
@@ -345,8 +345,8 @@ func TestMemoryStore(t *testing.T) {
 	t.Run("Tokens", func(t *testing.T) {
 		s8 := NewStore()
 		token := configv1.UserToken_builder{
-			UserId:    proto.String("user-1"),
-			ServiceId: proto.String("service-1"),
+			UserId:      proto.String("user-1"),
+			ServiceId:   proto.String("service-1"),
 			AccessToken: proto.String("abc-123"),
 		}.Build()
 

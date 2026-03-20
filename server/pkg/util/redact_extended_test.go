@@ -4,8 +4,8 @@
 package util
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestRedactJSONFast_EdgeCases(t *testing.T) {
@@ -95,8 +95,8 @@ func TestRedactJSONFast_EdgeCases(t *testing.T) {
 			expected: `{"token": // comment}`, // Value is missing, so nothing is redacted
 		},
 		{
-			name:     "Comment before value",
-			input:    `{"token": // comment
+			name: "Comment before value",
+			input: `{"token": // comment
  "secret"}`,
 			expected: `{"token": // comment
  "[REDACTED]"}`,
@@ -133,8 +133,8 @@ func TestRedactJSONFast_EdgeCases(t *testing.T) {
 		},
 		// Escape coverage
 		{
-			name:     "Key with backspace escape",
-			input:    `{"tok\ben": "123"}`, // tok<BS>en -> token (if BS ignored?) No, \b is byte 8.
+			name:  "Key with backspace escape",
+			input: `{"tok\ben": "123"}`, // tok<BS>en -> token (if BS ignored?) No, \b is byte 8.
 			// unescapeKeySmall converts \b to byte 8.
 			// scanForSensitiveKeys treats it as byte 8.
 			// token matches token.
@@ -157,14 +157,14 @@ func TestRedactJSONFast_EdgeCases(t *testing.T) {
 			input:    `{"to\u00ZZken": "123"}`, // \u00ZZ -> u00ZZ. tou00ZZken.
 			expected: `{"to\u00ZZken": "123"}`,
 		},
-        // Edge case: Large key
-        {
-            name: "Large Key Redaction",
-            input: `{"` + makeLargeString(200) + `token": "123"}`,
-            expected: `{"` + makeLargeString(200) + `token": "[REDACTED]"}`,
-        },
-        // Edge case: Key split across buffer (simulated by logic?)
-        // Hard to simulate buffer split in unit test without mocking.
+		// Edge case: Large key
+		{
+			name:     "Large Key Redaction",
+			input:    `{"` + makeLargeString(200) + `token": "123"}`,
+			expected: `{"` + makeLargeString(200) + `token": "[REDACTED]"}`,
+		},
+		// Edge case: Key split across buffer (simulated by logic?)
+		// Hard to simulate buffer split in unit test without mocking.
 	}
 
 	for _, tc := range tests {
@@ -176,11 +176,11 @@ func TestRedactJSONFast_EdgeCases(t *testing.T) {
 }
 
 func makeLargeString(n int) string {
-    b := make([]byte, n)
-    for i := range b {
-        b[i] = 'a'
-    }
-    return string(b)
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = 'a'
+	}
+	return string(b)
 }
 
 func TestBytesToString(t *testing.T) {

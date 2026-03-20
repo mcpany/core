@@ -4,8 +4,8 @@
 package tokenizer
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestHunter_WordTokenizer_Consistency(t *testing.T) {
@@ -30,19 +30,19 @@ func TestHunter_WordTokenizer_Consistency(t *testing.T) {
 		t.Errorf("Inconsistency detected! []int: %d, []interface{}: %d", countInts, countIfaces)
 	}
 
-    // Case 3: []string{"hello", "world"}
-    // Fast path for []string sums tokens: 1 + 1 = 2 tokens.
-    strs := []string{"hello", "world"}
-    countStrs, err := CountTokensInValue(wt, strs)
-    assert.NoError(t, err)
+	// Case 3: []string{"hello", "world"}
+	// Fast path for []string sums tokens: 1 + 1 = 2 tokens.
+	strs := []string{"hello", "world"}
+	countStrs, err := CountTokensInValue(wt, strs)
+	assert.NoError(t, err)
 
-    // Case 4: Joined string "hello world"
-    // 2 words -> 3 tokens.
-    joined := "hello world"
-    countJoined, err := CountTokensInValue(wt, joined)
-    assert.NoError(t, err)
+	// Case 4: Joined string "hello world"
+	// 2 words -> 3 tokens.
+	joined := "hello world"
+	countJoined, err := CountTokensInValue(wt, joined)
+	assert.NoError(t, err)
 
-    if countStrs != countJoined {
-        t.Errorf("Inconsistency detected! []string: %d, joined string: %d", countStrs, countJoined)
-    }
+	if countStrs != countJoined {
+		t.Errorf("Inconsistency detected! []string: %d, joined string: %d", countStrs, countJoined)
+	}
 }

@@ -8,8 +8,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/config"
 	pb "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/config"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 	"sigs.k8s.io/yaml"
