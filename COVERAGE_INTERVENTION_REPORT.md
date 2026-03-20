@@ -1,8 +1,9 @@
 # Coverage Intervention Report
 
-* **Target:** `server/pkg/app/api.go` (specifically `handleSecretDetail` and `handleSecretReveal`)
-* **Risk Profile:** This module contains critical authorization and data access logic dealing directly with the system's Secret Management routes (creation, revealing, and deleting of credentials). Given the cyclomatic complexity of routing via the same handler function based on methods, the risk is extremely high. The original coverage for `handleSecretReveal` was 0%, meaning critical credential exposure was untested.
+* **Target:** `server/pkg/storage/sqlite/db.go`
+* **Risk Profile:** This file was selected because it is a critical initialization component for the entire SQLite storage backend. With a cyclomatic complexity of 12 and zero test coverage, any failure to correctly initialize the schema, set proper directory permissions, or apply essential performance and safety PRAGMAs (like WAL mode, synchronous=NORMAL, and a strict connection limit) could lead to catastrophic data corruption or application startup failure. Testing this ensures the fundamental database layer is rock solid.
 * **New Coverage:**
-  * `handleSecretReveal`: Tests now cover the happy path (returning a secret successfully), method not allowed (validating HTTP method), and secret not found. Coverage is now 80.0%.
-  * `handleSecretDetail`: Added a new PUT test ensuring the actual values in the store reflect API inputs and handles malformed JSON successfully. Increased `handleSecretDetail` coverage from 30.8% to 61.5%.
-* **Verification:** `go test ./pkg/app/...` passes locally without regressions, with `server/pkg/app` coverage jumping from 68.9% to 69.6%.
+  - **Happy Path (`TestNewDB_Success`):** Guards the initialization logic, confirming the database file is correctly created when given a valid path. It also asserts that the correct PRAGMAs are executed successfully, verifying `journal_mode` is `wal`, `synchronous` is 1 (`NORMAL`), `busy_timeout` is `5000`, and `db.SetMaxOpenConns(1)` logic.
+  - **Edge Case (`TestNewDB_Failure_Mkdir`):** Guards the failure path when directory creation fails (e.g., when the target path is blocked by an existing file).
+  - **Schema Verification (`TestInitSchema_TablesExist`):** Ensures that all 10 required tables (`upstream_services`, `global_settings`, `secrets`, `users`, `profile_definitions`, `service_collections`, `user_tokens`, `credentials`, `service_templates`, `logs`) and the crucial index (`idx_logs_timestamp`) are properly created by the `initSchema` script.
+* **Verification:** Confirmed that tests pass cleanly for the file, and the changes are completely isolated and hermetic without affecting existing application code or causing regressions in the rest of the codebase.
