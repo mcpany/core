@@ -713,8 +713,7 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Environment Sovereignty Enforcer (ESE)**: (P0) Core security service for the EPM and LOWA providers mandating hardware-attested "Environment Scrubbing" to prevent ILPE exfiltration. (Added: 2026-06-10)
 - **Mission-Root Attestation Registry**: (P0) Authoritative registry for hardware-attested identity fragments and their environmental bounds. (Added: 2026-06-10)
 
-### Upcoming: [2026-06-11]
-- **Layer-7 Semantic Inspection Hub (L7SIH)**: (P0) Authoritative semantic firewall for neutralizing Reasoning Entropy Exhaustion (REE) attacks. (Added: 2026-06-11)
-- **Environment Sovereignty Enforcer (ESE)**: (P0) Core security service mandating hardware-attested environment scrubbing to prevent mission-root identity leakage. (Added: 2026-06-11)
-- **Attention-Gated State Retrieval (AGSR)**: (P0) High-speed state retrieval middleware prioritizing fragments based on mission-root importance. (Added: 2026-06-11)
-- **Reasoning Effort Cap (REC) Controller**: (P0) Enforcement layer for hardware-attested reasoning budgets in recursive agent loops. (Added: 2026-06-11)
+## 2026-06-11 Updates
+- [Upcoming] Implement L7SIH Semantic Entropy Profiler for high-density swarms.
+- [Upcoming] Integrate ESE Environment Scrubbing into the EPM lifecycle.
+- [Upcoming] Add REC (Reasoning Effort Cap) support for hardware-attested token budgeting.

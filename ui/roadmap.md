@@ -551,8 +551,7 @@
 - [ ] **[P0] Environment Isolation Dashboard**: (P0) Visual tracker for hardware-attested environment scrubbing and metadata wipe events. (Added: 2026-06-10)
 - [ ] **[P0] Mission-Root Registry Viewer**: (P0) Authoritative UI for reviewing and auditing the hardware-attested Mission-Root Attestation Registry. (Added: 2026-06-10)
 
-### Upcoming: [2026-06-11]
-- [ ] **[P0] Semantic Firewall Monitor**: (2026-06-11) Real-time visualization of L7SIH inspection events and REE neutralization alerts.
-- [ ] **[P0] Environment Scrubbing Auditor**: (2026-06-11) Visual tracker for hardware-attested environment wipes and ESE compliance status.
-- [ ] **[P0] Attention Decay Visualizer**: (2026-06-11) Dashboard for monitoring mission-root importance scores and AGSR retrieval priority.
-- [ ] **[P0] REC Budget Dashboard**: (2026-06-11) Real-time visualization of cognitive budgets and REC-triggered sub-mission terminations.
+## 2026-06-11 Updates
+- [Upcoming] Visualizer for hardware-attested Chain-of-Thought (CoT) Lineage.
+- [Upcoming] Dashboard for real-time Reasoning Entropy (REE) monitoring.
+- [Upcoming] Governance UI for REC (Reasoning Effort Cap) policy management.
