@@ -820,6 +820,23 @@ func (a *Application) handleTools() http.HandlerFunc {
 	}
 }
 
+// updateToolDisableStatus toggles the disable flag for a specific tool within an UpstreamServiceConfig.
+//
+// Summary: Updates the disable status of a tool.
+//
+// Parameters:
+//   - svc (*configv1.UpstreamServiceConfig): The service configuration containing the tool.
+//   - toolName (string): The name of the tool to update.
+//   - disable (bool): True to disable the tool, false to enable it.
+//
+// Returns:
+//   - error: An error if the service type is unsupported.
+//
+// Errors:
+//   - Returns "unknown service type" if the service's type cannot be matched.
+//
+// Side Effects:
+//   - Modifies the Tools array of the provided UpstreamServiceConfig directly.
 func updateToolDisableStatus(svc *configv1.UpstreamServiceConfig, toolName string, disable bool) error {
 	var tools *[]*configv1.ToolDefinition
 	switch st := svc.ServiceConfig.(type) {
