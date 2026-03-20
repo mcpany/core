@@ -277,7 +277,6 @@ func symlinkIfPresent(src, dst string) error {
 	}
 	return nil
 }
-
 func prepareRuntimeDir(t *testing.T, root string) string {
 	t.Helper()
 	runtimeDir := filepath.Join(t.TempDir(), "runtime")
