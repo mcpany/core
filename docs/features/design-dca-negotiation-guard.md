@@ -48,7 +48,7 @@ The DCA Negotiation Guard is a hardware-accelerated (HAN) broker in MCP Any that
 ## 7. Evolutionary Changelog
 * **2026-04-05:** Initial Document Creation.
 
-### Update: 2026-04-06 - Support for Speculative Auction Brokering (SAB)
+### Update: [2026-04-06] - Support for Speculative Auction Brokering (SAB)
 **Context:** Experimental "Intent Probability" bidding requires a broker that can handle speculative tasks.
 **Architecture Adjustment:**
 * Extending the DCA Guard to support the **SAB Protocol**.

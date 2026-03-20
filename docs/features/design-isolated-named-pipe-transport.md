@@ -47,7 +47,7 @@ The industry pivot away from local network port exposure (GSA-2026-OPENCLAW-ROUT
 ## 7. Evolutionary Changelog
 * **2026-05-13:** Initial Document Creation.
 
-### Update: 2026-05-17 - Transport-Layer Session Binding (TLSB)
+### Update: [2026-05-17] - Transport-Layer Session Binding (TLSB)
 **Context:** Today's research has identified a new "Team Ghosting" exploit pattern where sibling agents in a parallel swarm hijack stale or un-authenticated named-pipe sessions to exfiltrate context.
 **Architecture Adjustment:**
 * Deprecating optional loopback listeners in Section 4.

@@ -61,14 +61,14 @@ The Mission-Locked Execution (MLE) Gateway is needed to ensure that every tool c
 ## 7. Evolutionary Changelog
 * **2026-06-07:** Initial Document Creation.
 
-### Update: 2026-06-08 - HAMM Integration & Manifest-Locked discovery
+### Update: [2026-06-08] - HAMM Integration & Manifest-Locked discovery
 **Context:** Today's market sync revealed the emergence of "Hardware-Attested Mission Manifests" (HAMM) in Gemini CLI v0.38.0-alpha, requiring pre-declared tool intents.
 **Architecture Adjustment:**
 * Upgrading Section 4 to support HAMM-compliant lookups.
 * Introducing a "Pre-Execution Manifest Validator" that cross-references tool calls against a TPM-signed manifest.
 **Security Impact:** Prevents "Discovery-Phase Shadowing" by mandating that every possible capability be declared before sub-mission instantiation.
 
-### Update: 2026-06-16 - Stylometric Sovereignty Hardening
+### Update: [2026-06-16] - Stylometric Sovereignty Hardening
 **Context:** The disclosure of CVE-2026-51201 (Reasoning-Path Shadowing) reveals that subagents can bypass mission locks by mimicking the stylometric signature of the parent agent.
 **Architecture Adjustment:**
 * Integrating the **Stylometric Mimicry Mitigator (SMM)** into the MLE validation pipeline.
