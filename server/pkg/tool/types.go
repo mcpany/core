@@ -2158,7 +2158,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		allowedEnvVars := []string{"PATH", "HOME", "USER", "SHELL", "TMPDIR", "SYSTEMROOT", "WINDIR"}
 		for _, key := range allowedEnvVars {
 			if val, ok := os.LookupEnv(key); ok {
-				env = append(env, fmt.Sprintf("%s=%s", key, val))
+				// ⚡ BOLT: Replaced fmt.Sprintf with string concatenation for environment variables to avoid reflection overhead during frequent tool execution.
+				// Randomized Selection from Top 5 High-Impact Targets (Memory/Allocations)
+				env = append(env, key+"="+val)
 			}
 		}
 	}
@@ -2175,7 +2177,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 
 	for k, v := range resolvedServiceEnv {
-		env = append(env, fmt.Sprintf("%s=%s", k, v))
+		env = append(env, k+"="+v)
 	}
 
 	for _, param := range t.callDefinition.GetParameters() {
@@ -2186,7 +2188,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
 			secrets = append(secrets, secretValue)
-			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
+			env = append(env, name+"="+secretValue)
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
 			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
@@ -2209,7 +2211,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			}
 
 			if safeForEnv {
-				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
+				env = append(env, name+"="+valStr)
 			}
 
 			// Sentinel Security Update: Add sensitive inputs to the redactor's secret list
@@ -2524,7 +2526,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		allowedEnvVars := []string{"PATH", "HOME", "USER", "SHELL", "TMPDIR", "SYSTEMROOT", "WINDIR"}
 		for _, key := range allowedEnvVars {
 			if val, ok := os.LookupEnv(key); ok {
-				env = append(env, fmt.Sprintf("%s=%s", key, val))
+				env = append(env, key+"="+val)
 			}
 		}
 	}
@@ -2541,7 +2543,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	for k, v := range resolvedServiceEnv {
-		env = append(env, fmt.Sprintf("%s=%s", k, v))
+		env = append(env, k+"="+v)
 	}
 
 	if ce := t.service.GetContainerEnvironment(); ce != nil {
@@ -2553,7 +2555,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			secrets = append(secrets, v)
 		}
 		for k, v := range resolvedContainerEnv {
-			env = append(env, fmt.Sprintf("%s=%s", k, v))
+			env = append(env, k+"="+v)
 		}
 	}
 
@@ -2565,7 +2567,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
 			secrets = append(secrets, secretValue)
-			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
+			env = append(env, name+"="+secretValue)
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
 			if err := checkForPathTraversal(valStr); err != nil {
@@ -2593,7 +2595,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			}
 
 			if safeForEnv {
-				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
+				env = append(env, name+"="+valStr)
 			}
 
 			// Sentinel Security Update: Add sensitive inputs to the redactor's secret list
