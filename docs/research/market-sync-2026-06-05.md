@@ -1,3 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 # Market Sync: 2026-06-05
 **Objective:** Evolution of Retrieval Sovereignty and Upstream Supply Chain Provenance.
 ## Ecosystem Shifts

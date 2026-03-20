@@ -1,3 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 # Strategic Vision: MCP Any
 ## Mission Statement
 MCP Any aims to be the indispensable core infrastructure layer for all AI agents, subagents, and swarms. It provides a universal adapter and gateway that standardizes how agents interact with tools, manage context, and enforce security policies.
