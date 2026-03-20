@@ -228,7 +228,7 @@ type TestMockPrompt struct {
 func (m *TestMockPrompt) Prompt() *mcp.Prompt {
 	return &mcp.Prompt{Name: m.name}
 }
-func (m *TestMockPrompt) Service() string { return "test" }
+func (m *TestMockPrompt) Service() string                        { return "test" }
 func (m *TestMockPrompt) Definition() *configv1.PromptDefinition { return nil }
 func (m *TestMockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	return nil, nil
@@ -453,6 +453,9 @@ func TestCalculateUptime(t *testing.T) {
 	}
 }
 
+// TestHandleDebugSeedToolUsage verifies seeding tool usage stats.
+//
+// Summary: Tests the debug tool usage seeding handler.
 func TestHandleDebugSeedToolUsage(t *testing.T) {
 	app := &Application{}
 

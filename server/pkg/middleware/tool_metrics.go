@@ -261,15 +261,27 @@ func calculateOutputSize(result any) int {
 }
 
 // InjectToolExecutionForTesting allows tests to simulate tool executions for analytics without running the full pipeline.
+//
+// Summary: Increments the tool execution counter for testing purposes.
+//
+// Parameters:
+//   - toolName (string): The name of the tool.
+//   - serviceID (string): The ID of the upstream service.
+//   - status (string): The execution status.
+//   - errorType (string): The type of error.
+//   - count (int): The number of executions to record.
+//
+// Side Effects:
+//   - Modifies global prometheus metrics.
 func InjectToolExecutionForTesting(toolName, serviceID, status, errorType string, count int) {
-    labels := prometheus.Labels{
+	labels := prometheus.Labels{
 		"tool":       toolName,
 		"service_id": serviceID,
 		"status":     status,
 		"error_type": errorType,
 	}
-    counter := toolExecutionTotal.With(labels)
-    for i := 0; i < count; i++ {
-        counter.Inc()
-    }
+	counter := toolExecutionTotal.With(labels)
+	for i := 0; i < count; i++ {
+		counter.Inc()
+	}
 }
