@@ -43,7 +43,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Local Zero-Trust (LOWA) & Peer-to-Peer Agent Orchestration
 **Context**: The disclosure of "ClawJacked" (CVE-2026-25253) proves that "Implicit Local Trust" for loopback WebSocket traffic is a critical failure point. Simultaneously, the rise of Claude Code's "Agent Teams" signals a shift toward horizontal (mesh) collaboration. The "Universal Agent Bus" must now act as the secure, authenticated bridge for both local control and peer-to-peer teammate communication.
 **Strategic Pivot**:
-- **Local-Only WebSocket Auth (LOWA)**: MCP Any will evolve to mandate session-bound authentication for all local WebSocket listeners. This neutralizes cross-site brute-force attacks and ensures that only verified local applications-not malicious browser scripts-can command the gateway.
+- **Local-Only WebSocket Auth (LOWA)**: MCP Any will evolve to mandate session-bound authentication for all local WebSocket listeners. This neutralizes cross-site brute-force attacks and ensures that only verified local applications—not malicious browser scripts—can command the gateway.
 - **Teammate-to-Teammate (T2T) Encryption Bridge**: Supporting horizontal swarms, MCP Any will implement a T2T Encryption Bridge. This service provides the infrastructure for teammates from disparate frameworks (Claude Code, OpenClaw, AutoGen) to securely exchange mailbox messages and synchronize their views of a "Shared Task List."
 - **Full-Mesh Discovery Authorization**: We are mandating "Auth-before-Discovery" for all A2A-compliant agents. Capabilities and "Agent Cards" will only be visible to peers who have completed a cryptographically bound handshake within a verified mission scope.
 - **Mailbox Integrity Middleware**: To prevent "Mailbox Injection" by rogue subagents, we are introducing a message-validation layer. Every inter-agent message must be signed and validated against the "Mission Root" intent before reaching the target teammate's mailbox.
@@ -196,7 +196,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Origin-Locked Agency & Intent-Sealed Memory
 **Context**: The "ClawJacked" (CVE-2026-25253) exploit proves that implicit local trust is a catastrophic failure point when browser-based attackers can bridge to agent control planes. Simultaneously, the persistent "Memory Smearing" pain point confirms that shared state without reasoning-aware isolation leads to swarm divergence and knowledge loss.
 **Strategic Pivot**:
-- **Mandatory Origin-Locked Connectivity**: MCP Any will transition from optional to mandatory browser-origin and session-token binding for all local listeners. This ensures that only verified local applications-not malicious websites-can command the Universal Agent Bus.
+- **Mandatory Origin-Locked Connectivity**: MCP Any will transition from optional to mandatory browser-origin and session-token binding for all local listeners. This ensures that only verified local applications—not malicious websites—can command the Universal Agent Bus.
 - **Intent-Sealed Reasoning Shards**: We are evolving RAMS into a default "Sealed Shard" model for the Blackboard. MCP Any will provide cryptographically isolated memory regions for every subagent, ensuring that "Intent Drift" or a compromised agent cannot pollute or exfiltrate state from siblings.
 - **Leased Fast-Path Attestation**: To address hardware overhead, we are introducing "Trust Leases." MCP Any will broker time-bound, hardware-attested capabilities, allowing agents to perform high-frequency tool calls without the per-call latency of full hardware signatures.
 
@@ -310,7 +310,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ## Strategic Evolution: [2026-04-22]
 ### Focus: Cognitive Sovereignty & Negative Trust Architectures
-**Context**: The emergence of "Cognitive Sovereignty" within the Sovereign Agent Collective and the discovery of "Replay-as-Delegation" attacks signal a move toward more granular, non-repudiable agent agency. Security must now account for "Negative Trust"-proving the absolute absence of malicious configurations-while ensuring subagents maintain reasoning privacy from their parents.
+**Context**: The emergence of "Cognitive Sovereignty" within the Sovereign Agent Collective and the discovery of "Replay-as-Delegation" attacks signal a move toward more granular, non-repudiable agent agency. Security must now account for "Negative Trust"—proving the absolute absence of malicious configurations—while ensuring subagents maintain reasoning privacy from their parents.
 **Strategic Pivot**:
 - **Cognitive Sovereignty Hub**: MCP Any will evolve to support "Encrypted Monologue" storage. This ensures that a specialized subagent's internal reasoning remains private and immutable, accessible only to the subagent and the user via the A2UI Gateway, preventing parent-agent "Reasoning Hijacking."
 - **A2A Replay Guard**: We are mandating a "Monotonic Task Nonce" for all A2A task proposals. This neutralizes replay attacks by ensuring every inter-agent delegation is unique, time-bound, and cryptographically linked to a specific session state.
@@ -909,14 +909,10 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Sub-Millisecond ARL Synchronizer**: To counter the risk of "Stale-Token Hijacking," we are upgrading the LFTA logic to support high-frequency synchronization with global Attestation Revocation Lists (ARL v3.0), ensuring real-time revocation across distributed meshes.
 
 ## Strategic Evolution: [2026-06-05]
-
 ### Focus: Retrieval Sovereignty & Upstream Provenance
-
 **Context**: The emergence of "Uncontrolled Retrieval" in RAG systems (Stellar Cyber 2026) and the disclosure of deep supply chain compromises in agentic tool registries (Barracuda Security 2026) confirm that the "Security Frontier" has moved to the **data retrieval path** and the **integrity of the tool supply chain**. As agents gain autonomy over vast unstructured datasets, the risk of inadvertent PII exposure and the ingestion of poisoned tool metadata demands a move beyond transport-layer security to active, semantic sanitization and hardware-bound provenance.
-
 **Strategic Pivot**:
-
 - **Supply Chain Provenance Attestor (SCPA)**: MCP Any will evolve to act as the authoritative "Provenance Root" for all connected tools. We will implement SCPA, utilizing hardware-attested (TPM/Secure Enclave) signatures to verify the lineage and structural integrity of tool definitions and library updates, neutralizing "Clinejection" style supply chain attacks.
-- **RAG-Retrieval Integrity Guard (RRIG)**: To neutralize "Uncontrolled Retrieval" exploits, we are introducing RRIG. This middleware will perform real-time semantic sanitization of retrieved context fragments before they are ingested by the reasoning engine, ensuring that sensitive data is redacted based on the user's verified clearance level.
+- **RAG-Retrieval Integrity Guard (RRIG)**: To neutralize "Uncontrolled Retrieval" exploits, we are introducing RRIG. This middleware will perform real-time semantic sanitization of retrieved context fragments *before* they are ingested by the reasoning engine, ensuring that sensitive data is redacted based on the user's verified clearance level.
 - **Upstream Signature Validation (USV)**: Supporting the security of the A2A mesh, we are mandating USV. All incoming agent capability cards and task proposals must carry a cryptographically signed provenance token from an attested upstream registry, ensuring that no "Shadow Tools" are discovered during the mesh handshake.
 - **Provenance-Aware Task Auctioning**: To counter "FuncPoison" attacks, we are evolving the Active Negotiation Broker. Tool bidding will now be weighted by the provenance strength of the agent's function library, ensuring that high-stakes tasks are only delegated to agents with a verified, untampered supply chain.

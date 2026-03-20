@@ -519,7 +519,6 @@
 - **Multi-Hop Trust Persistence Monitor**: Detailed view of hardware-attested trust leases and their propagation across deep swarms.
 
 #### Upcoming (2026-06-05 Evolution)
-
 - [ ] **[P0] Supply Chain Provenance Explorer**: Visualization of hardware-attested tool lineages and "Trust Strength" indicators for the supply chain. (Added: 2026-06-05)
 - [ ] **[P0] Retrieval Sanitization Monitor**: Real-time dashboard for visualizing RRIG-redacted context fragments and sensitive data detection alerts. (Added: 2026-06-05)
 - [ ] **[P0] Upstream Signature Reviewer**: Security workspace for reviewing and approving provenance tokens for external A2A capability cards. (Added: 2026-06-05)
