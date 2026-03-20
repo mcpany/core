@@ -1176,3 +1176,10 @@
       for hardware-attested SDP validation of capability cards.
 - [ ] **[P1] Trust Persistence Monitor**: (2026-06-15) Visual tracker for MHPR
       trust-lease propagation and MSHE-latency gains.
+
+### Upcoming: [2026-06-15]
+
+- **ALCS Dashboard**: Real-time visualization of cognitive attention sharding
+  and pinning across active swarms. (Added: 2026-06-15)
+- **SDP Policy Editor**: Hardware-attested UI for managing trust-lease
+  propagation rules across deep agentic sub-graphs. (Added: 2026-06-15)

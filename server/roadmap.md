@@ -532,11 +532,11 @@ _None at this time._
 
 ### Warning Areas
 
-1. **UI Component Duplication**: Some UI components in `ui/src/components` seem
-   to have overlapping responsibilities (e.g., multiple "detail" views). A UI
-   component audit is recommended.
-2. **Test Coverage gaps**: While core logic is tested, cloud providers (S3/GCS)
-   and some new UI features lack comprehensive integration tests.
+1.  **UI Component Duplication**: Some UI components in `ui/src/components` seem
+    to have overlapping responsibilities (e.g., multiple "detail" views). A UI
+    component audit is recommended.
+2.  **Test Coverage gaps**: While core logic is tested, cloud providers (S3/GCS)
+    and some new UI features lack comprehensive integration tests.
 
 ### Healthy Areas
 
@@ -1274,13 +1274,8 @@ _None at this time._
   CRDT-based task list synchronization. (Added: 2026-05-31)
 - **[P0] Shard-Aware Mailbox Sovereignty (SMS)**: Advanced isolation extension
   for task-bound mailbox shards. (Added: 2026-05-31)
-
-* **Attention-Locked Context Sharding (ALCS)**: (P0) High-security attention
-* **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative gateway for the
-* **Multi-Hop Persistence Relay (MHPR)**: (P1) Trust-lease propagation service
-  to neutralize MSHE-driven cognitive stall in deep swarms. (Added: 2026-06-15)
-  cards. (Added: 2026-06-15) mission-critical fragments. (Added: 2026-06-15)
-
+- **[P1] Autonomous Task Reaper (ATR)**: Stability service for proactive
+  reclamation and re-auction of "Ghost" tasks. (Added: 2026-05-31)
 - **[P0] Hardware-Attested Identity Rotation (HAIR)**: Security middleware
   mandating periodic, hardware-bound identity rotation for inter-teammate
   requests. (Added: 2026-05-31)

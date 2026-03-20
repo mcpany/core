@@ -49,7 +49,6 @@ layer.
 ## 4. Design & Architecture
 
 - **System Flow:**
-
   ```mermaid
   graph TD
       A[MCP Discovery Payload] --> B[PNTD Provider]
@@ -61,7 +60,6 @@ layer.
       F -- No --> H[Sign & Publish to Discovery Bus]
       I[TPM Metadata Signer] --> H
   ```
-
 - **APIs / Interfaces:**
   - `sms.SanitizeSchema(schema) -> SanitizedSchema`: Processes a full tool
     schema.
@@ -89,12 +87,24 @@ layer.
 
 - **2026-06-14:** Initial Document Creation. Addressing the Shadow-Discovery via
   Metadata Injection (SDMI) vulnerability.
-- **2026-06-15: Update - Addressing Cross-Framework SDMI Persistence**
-  - **Context:** Today's research reveals that SDMI fragments can persist across
-    framework handoffs (e.g., OpenClaw -> Claude Code) if the structural
-    metadata is not recursively re-sanitized.
-  - **Design Adjustment:** Mandating **Recursive Metadata Attestation** in
-    Section 4. Sanitized schemas must now carry a "Sanitization Proof" that is
-    validated by the recipient framework's SMS bridge.
-  - **Security Impact:** Neutralizes "Registry-to-Registry" propagation of
-    malicious instructions in heterogeneous swarms.
+
+### Update: [2026-06-15] - Addressing Cross-Framework SDMI Persistence
+
+**Context:** Today's research reveals that SDMI fragments can persist across
+framework handoffs (e.g., OpenClaw -> Claude Code) if the structural metadata is
+not recursively re-sanitized. **Design Adjustment:** Mandating **Recursive
+Metadata Attestation** in Section 4. Sanitized schemas must now carry a
+"Sanitization Proof" that is validated by the recipient framework's SMS bridge.
+**Security Impact:** Neutralizes "Registry-to-Registry" propagation of malicious
+instructions in heterogeneous swarms.
+
+### Update: [2026-06-15] - Mitigating SDMI and Reasoning Hijacking
+
+**Context:** Today's market sync identified Shadow-Discovery via Metadata
+Injection (SDMI) as a primary exploit vector for reasoning hijacking in deep
+agent swarms. **Architecture Adjustment:**
+
+- Extending Section 4: Introducing **Recursive Metadata Attestation (RMA)**.
+- Deprecating simple text-based sanitization in favor of hardware-bound context
+  verifiers. **Security Impact:** Prevents subagents from assuming control of
+  the master reasoning chain via malicious tool-description injections.
