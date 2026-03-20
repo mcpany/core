@@ -23,33 +23,23 @@ type Severity int
 
 const (
 	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
-	// Summary: Defines Erro.
 	Error Severity = iota
 	// Warning indicates a potential issue or best practice violation that should be addressed.
-	// Summary: Defines Warnin.
 	Warning
 	// Info indicates a suggestion or informational message for optimization or clarity.
-	// Summary: Defines Inf.
 	Info
 )
 
 // String returns the string representation of the severity.
 //
-// It converts the Severity enum to its string counterpart (ERROR, WARNING, INFO).
+// Parameters:
+//   - None.
 //
 // Returns:
 //   - string: The string representation of the severity.
 //
-// Summary: Executes String operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -84,21 +74,14 @@ type Result struct {
 
 // String returns the string representation of the result.
 //
-// It formats the result into a human-readable string suitable for CLI output.
+// Parameters:
+//   - None.
 //
 // Returns:
 //   - string: A formatted string containing severity, service, path, and message.
 //
-// Summary: Executes String operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -126,21 +109,13 @@ type Linter struct {
 // NewLinter creates a new Linter instance.
 //
 // Parameters:
-//   - cfg: *configv1.McpAnyServerConfig. The server configuration to be linted.
+//   - cfg (*configv1.McpAnyServerConfig): The server configuration to be linted.
 //
 // Returns:
 //   - *Linter: A new Linter instance initialized with the provided configuration.
 //
-// Summary: Initializes NewLinter operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -150,26 +125,15 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 
 // Run executes all linting checks.
 //
-// It aggregates results from multiple check categories including standard validation,
-// secret usage, shell injection risks, insecure HTTP, and cache settings.
-//
 // Parameters:
-//   - ctx: context.Context. The context for the request (currently unused but reserved for future async checks).
+//   - ctx (context.Context): The context for the request.
 //
 // Returns:
 //   - []Result: A list of linting findings.
 //   - error: An error if the linting process encounters a fatal issue (currently always nil).
 //
-// Summary: Executes Run operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
