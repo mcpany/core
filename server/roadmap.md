@@ -685,7 +685,6 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Temporal Decay Orchestrator**: (P1) Lifecycle management service for handling "Graceful Mission Decay" signals. (Added: 2026-06-08)
 - **Fragment-Level Sovereignty Attestation**: (P0) Advanced security service mandating ARI-attestation for A2A teammates. (Added: 2026-06-08)
 
-### Upcoming: [2026-06-07]
 - **Semantic Shadowing Mitigator (SSM)**: (P0) A behavioral security middleware for the AID Hub performing stylometric and contextual consistency checks to detect mimicry-based intent hijacking.
 - **Mission-Locked Execution (MLE) Gateway**: (P0) Core security service that enforces cryptographic locking of tool calls and sub-delegations to a hardware-attested mission-root intent.
 - **STR-Native Discovery Provider**: (P1) Upgrade for the PNTD Provider to support "Sovereign Tool Registry" (STR) manifests and TPM-signed behavioral baselines.

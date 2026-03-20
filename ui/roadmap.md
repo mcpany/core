@@ -525,7 +525,6 @@
 - [ ] **[P1] Graceful Decay Indicator**: (2026-06-08) Visual status widget for monitoring mission sovereignty decay and re-attestation windows.
 - [ ] **[P0] Fragment Sovereignty Auditor**: (2026-06-08) Security dashboard for verifying ARI-attestation status across the teammate mesh.
 
-### Upcoming: [2026-06-07]
 - **Semantic Shadowing Dashboard**: (P0) A behavioral security workspace for the AID Hub that visualizes stylometric and contextual consistency alerts.
 - **Mission-Locked Execution (MLE) Visualizer**: (P0) Security UI for viewing and auditing cryptographically locked tool calls and their mission-root lineage.
 - **STR-Native Discovery Status**: (P1) Real-time monitor for "Sovereign Tool Registry" behavioral manifests and TPM-attestation events.
