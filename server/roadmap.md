@@ -753,3 +753,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+### Upcoming: [2026-06-18]
+- **Recursive Stylometric Lineage (RSL) Validator**: (P0) Advanced security middleware for reasoning DNA chain verification across infinite hops. (Added: 2026-06-18)
+- **Zero-Latency Attestation Lease (ZLAL) Provider**: (P0) High-speed trust leasing service for sub-millisecond teammate coordination. (Added: 2026-06-18)
+- **Mission-Root Migration (MRM) Gateway**: (P1) Secure protocol for migrating mission roots and hardware state between host environments. (Added: 2026-06-18)
+- **Shard-Collision Hardening Middleware**: (P0) Security extension for the ASLM enforcing mandatory semantic hash-chaining for coordination shards. (Added: 2026-06-18)

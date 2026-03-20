@@ -66,3 +66,10 @@ As agent swarms grow in complexity, the monolithic transfer of context becomes a
 * Every sharded fragment now includes a cryptographically bound "Gravity Anchor" containing the mission-root intent.
 * The Shard Manager now enforces mission-alignment during fragment reconstruction.
 **Security Impact:** Ensures that parallel teammates remain anchored to the parent's verified goal, preventing sub-task isolation and intent hijacking.
+
+### Update: 2026-06-18 - Shard-Collision Hardening (CVE-2026-68002)
+**Context:** Today's research revealed a critical "Logic-Grafting" vulnerability in parallel meshes where unauthorized reasoning could be appended to shared shards during high-frequency teammate rotation.
+**Architecture Adjustment:**
+* Upgrading the **ASLM** to include mandatory **Semantic Hash-Chaining** for all sharded fragments.
+* Introducing `ValidateChain(shardID string) bool` to ensure that every fragment in a shard is a verified descendant of the mission-root intent.
+**Security Impact:** Prevents malicious subagents from grafting unauthorized instructions onto shared coordination shards, neutralizing CVE-2026-68002.

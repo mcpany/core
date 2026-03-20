@@ -74,3 +74,10 @@ The Atomic Reasoning Integrity (ARI) Validator is needed to perform fragment-lev
 * Mandating that all ARI-attested fragments be committed to **Entanglement Shards** via the Entangled State Broker (ESB).
 * Introducing a "Late-Binding Integrity Check" where the recipient teammate re-verifies the hardware-attested entanglement signature before reasoning ingestion.
 **Security Impact:** Prevents "Time-of-Check to Time-of-Use" (TOCTOU) attacks on shared mailbox state by ensuring state fragments are cryptographically bound to the mission-root intent throughout their entire lifecycle.
+
+### Update: 2026-06-18 - Recursive Lineage & Collision Hardening
+**Context:** Today's research reveals that cognitive DNA must be recursively verified and that mailbox shards require collision-resistant chaining.
+**Architecture Adjustment:**
+* Integrating the **Recursive Stylometric Lineage (RSL) Validator** into the ARI verification loop. Every fragment must now match the reasoning "DNA" of the issuing agent.
+* Enforcing mandatory **Semantic Hash-Chaining** for all sharded mailbox fragments to neutralize "Logic-Grafting" (CVE-2026-68002).
+**Security Impact:** Prevents identity confusion in horizontal meshes and ensures that sharded coordination remains an unbroken, un-grafted chain of verified reasoning.

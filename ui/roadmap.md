@@ -591,3 +591,8 @@
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
+
+### Upcoming: [2026-06-18]
+- [ ] **[P0] Mesh Alignment Dashboard (RSL/ZLAL)**: (2026-06-18) Unified workspace for monitoring reasoning DNA chains and trust-lease performance.
+- [ ] **[P0] Mission-Root Migration Monitor**: (2026-06-18) Visual tracker for hardware-attested root handovers between host environments.
+- [ ] **[P0] Shard-Collision Security Widget**: (2026-06-18) Real-time monitor for semantic hash-chain validation in sharded mailboxes.

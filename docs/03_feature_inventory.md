@@ -1360,3 +1360,15 @@
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Recursive Stylometric Lineage (RSL) Validator**: (P0) Advanced security middleware for the MMBA provider that creates and verifies a "Reasoning DNA" chain across infinite delegation hops.
+- **Zero-Latency Attestation Lease (ZLAL) Provider**: (P0) High-speed trust leasing service utilizing hardware-bound pre-attestation for sub-millisecond teammate coordination.
+- **Mission-Root Migration (MRM) Gateway**: (P1) Infrastructure for secure migration of hardware-attested mission roots between different host environments.
+- **Shard-Collision Hardening Middleware**: (P0) Security extension for the ASLM performing semantic hash-chaining for sharded mailbox fragments to prevent logic-grafting.
+
+### Priority Shifts
+- **Multi-Modal Behavioral Attestation (MMBA)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RSL** integration for deep swarm lineage.
+- **Atomic Shard Lock-Manager (ASLM)**: (Re-affirmed P0) Designated as the primary enforcement point for **Shard-Collision Hardening**.
