@@ -121,6 +121,20 @@ fi
 #    the path set by $GOLANGCI_LINT_BIN, then a local install, then
 #    build/env/bin/ (populated by `make prepare`).
 # ---------------------------------------------------------------------------
+echo "==> Generating Go Protos for golangci-lint..."
+export PATH="$PROJECT_ROOT/build/env/bin:$PATH"
+if [[ -x "$PROJECT_ROOT/build/env/bin/protoc" ]]; then
+    cd "$PROJECT_ROOT"
+    protoc --proto_path=. \
+           --proto_path=build/grpc-gateway \
+           --proto_path=build/googleapis \
+           --go_out=. \
+           --go_opt=module=github.com/mcpany/core \
+           --go-grpc_out=. \
+           --go-grpc_opt=module=github.com/mcpany/core \
+           $(find proto -name "*.proto" -not -path "proto/third_party/*" -not -path "proto/google/*") || true
+fi
+
 echo "==> Running golangci-lint..."
 if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
     GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
