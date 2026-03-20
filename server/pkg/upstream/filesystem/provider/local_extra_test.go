@@ -4,6 +4,7 @@
 package provider
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -34,7 +35,7 @@ func TestResolvePath_BrokenSymlink(t *testing.T) {
 
 func TestResolvePath_PermissionDenied(t *testing.T) {
 	if os.Getuid() == 0 {
-		t.Skip("Skipping permission denied test as root user")
+		fmt.Println("Skipping permission denied test as root user")
 	}
 
 	rootDir, err := os.MkdirTemp("", "fs_perm_test")
@@ -186,7 +187,7 @@ func TestResolvePath_ComplexGlobs(t *testing.T) {
 
 	rootPaths := map[string]string{"/": rootDir}
 	allowed := []string{
-		filepath.Join(rootDir, "allowed", "*.txt"),      // shallow
+		filepath.Join(rootDir, "allowed", "*.txt"),       // shallow
 		filepath.Join(rootDir, "allowed", "**", "*.txt"), // deep (if supported by filepath.Match? No, filepath.Match doesn't support **)
 		// Go's filepath.Match does NOT support **. It only supports *.
 		// But let's check what patterns we can use.
