@@ -40,10 +40,6 @@ test.describe('MCP Any UI E2E', () => {
     await page.goto('/');
     // Updated title expectation to be robust (accept both branding variations)
     await expect(page).toHaveTitle(/MCPAny Manager|Jules Master/);
-    if (await page.getByText(/API Key Not Set/i).isVisible()) {
-      console.log('Dashboard test blocked by API Key. Skipping assertions.');
-      return;
-    }
 
     await expect(page.locator('h1')).toContainText(/Dashboard|Jules Master/);
 
