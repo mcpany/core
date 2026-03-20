@@ -22,6 +22,8 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -280,59 +282,73 @@ export function AuditLogViewer() {
                         </DialogDescription>
                     </DialogHeader>
                     {selectedLog && (
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div>
-                                    <span className="font-semibold block text-muted-foreground">User ID</span>
-                                    {selectedLog.userId || "N/A"}
-                                </div>
-                                <div>
-                                    <span className="font-semibold block text-muted-foreground">Profile ID</span>
-                                    {selectedLog.profileId || "N/A"}
-                                </div>
-                                <div>
-                                    <span className="font-semibold block text-muted-foreground">Duration</span>
-                                    {selectedLog.duration} ({selectedLog.durationMs}ms)
-                                </div>
-                                <div>
-                                    <span className="font-semibold block text-muted-foreground">Status</span>
-                                    {selectedLog.error ? <span className="text-red-500">Failed</span> : <span className="text-green-500">Success</span>}
-                                </div>
-                            </div>
+                        <Tabs defaultValue="overview" className="w-full flex-1 flex flex-col mt-4">
+                            <TabsList className="w-full justify-start border-b rounded-none px-4 h-12 bg-transparent space-x-4">
+                                <TabsTrigger value="overview" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0">
+                                    Overview
+                                </TabsTrigger>
+                                <TabsTrigger value="result" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0">
+                                    Result
+                                </TabsTrigger>
+                            </TabsList>
 
-                            {selectedLog.error && (
-                                <div className="bg-red-900/20 border border-red-900/50 rounded-md p-3 text-red-200 text-sm">
-                                    <span className="font-semibold block mb-1">Error:</span>
-                                    {selectedLog.error}
+                            <TabsContent value="overview" className="flex-1 p-4 space-y-4 m-0 overflow-y-auto">
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <span className="font-semibold block text-muted-foreground">User ID</span>
+                                        {selectedLog.userId || "N/A"}
+                                    </div>
+                                    <div>
+                                        <span className="font-semibold block text-muted-foreground">Profile ID</span>
+                                        {selectedLog.profileId || "N/A"}
+                                    </div>
+                                    <div>
+                                        <span className="font-semibold block text-muted-foreground">Duration</span>
+                                        {selectedLog.duration} ({selectedLog.durationMs}ms)
+                                    </div>
+                                    <div>
+                                        <span className="font-semibold block text-muted-foreground">Status</span>
+                                        {selectedLog.error ? <span className="text-red-500">Failed</span> : <span className="text-green-500">Success</span>}
+                                    </div>
                                 </div>
-                            )}
 
-                            <div>
-                                <h4 className="text-sm font-medium mb-2">Arguments</h4>
-                                <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vs2015}
-                                        customStyle={{ margin: 0, fontSize: '12px' }}
-                                    >
-                                        {formatJson(selectedLog.arguments) || "{}"}
-                                    </SyntaxHighlighter>
-                                </div>
-                            </div>
+                                {selectedLog.error && (
+                                    <div className="bg-red-900/20 border border-red-900/50 rounded-md p-3 text-red-200 text-sm">
+                                        <span className="font-semibold block mb-1">Error:</span>
+                                        {selectedLog.error}
+                                    </div>
+                                )}
 
-                            <div>
-                                <h4 className="text-sm font-medium mb-2">Result</h4>
-                                <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vs2015}
-                                        customStyle={{ margin: 0, fontSize: '12px', maxHeight: '300px' }}
-                                    >
-                                        {formatJson(selectedLog.result) || (selectedLog.error ? "null" : "{}")}
-                                    </SyntaxHighlighter>
+                                <div>
+                                    <h4 className="text-sm font-medium mb-2">Arguments</h4>
+                                    <div className="rounded-md overflow-hidden border">
+                                        <SyntaxHighlighter
+                                            language="json"
+                                            style={vs2015}
+                                            customStyle={{ margin: 0, fontSize: '12px' }}
+                                        >
+                                            {formatJson(selectedLog.arguments) || "{}"}
+                                        </SyntaxHighlighter>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+                            </TabsContent>
+
+                            <TabsContent value="result" className="flex-1 m-0 p-4 overflow-hidden flex flex-col min-h-[300px]">
+                                <div className="border rounded-md flex-1 overflow-hidden flex flex-col">
+                                    <RichResultViewer result={
+                                        (() => {
+                                            if (selectedLog.error) return { error: selectedLog.error };
+                                            if (!selectedLog.result) return {};
+                                            try {
+                                                return JSON.parse(selectedLog.result);
+                                            } catch (e) {
+                                                return selectedLog.result;
+                                            }
+                                        })()
+                                    } />
+                                </div>
+                            </TabsContent>
+                        </Tabs>
                     )}
                 </DialogContent>
             </Dialog>
