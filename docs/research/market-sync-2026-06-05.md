@@ -1,27 +1,22 @@
 # Market Sync: 2026-06-05
-
-## Ecosystem Updates
-
-### OpenClaw 2026.3.1 Lifecycle Hardening
-- **Mobile Capability Refresh**: Hardened A2UI retries and scoped URL normalization for Android nodes.
-- **Messaging Platform Granularity**: Advanced session control for Discord and Telegram, supporting per-DM topic-aware auth and debouncing.
-- **Context Engine Hardening**: Improved rich-text parsing and ingestion for complex enterprise chats.
-
-### Claude 4.6 "Agent Teams"
-- Anthropic has introduced a research preview of "Agent Teams" in Claude Code, enabling parallel, autonomous coordination for codebase reviews and complex data tasks.
-- Introduced handoff mechanisms for taking over subagents directly.
-
-## Security Frontier: Retrieval & Supply Chain
-
-### "Uncontrolled Retrieval" in RAG Systems (Stellar Cyber Report)
-- **Problem**: Agents retrieving unstructured data from vast datasets often bypass semantic validation, inadvertently exposing PII (Personally Identifiable Information) or intellectual property to lower-clearance users.
-- **Threat**: Attackers using indirect extraction to trick agents into summarizing sensitive data through semantic side-channels.
-
-### Agentic Supply Chain Attacks (Barracuda Security Report)
-- **Observation**: Over 43 different agent framework components have been identified with backdoors introduced via supply chain compromise.
-- **Vector**: Attackers are targeting library updates and tool definitions (JSON schemas/metadata), injecting malicious logic that remains dormant until activated by C2 servers.
-- **Real-world Impact**: Compromised OpenAI plugin credentials resulted in 47 enterprise breaches in early 2026.
-
-## Strategic Gaps for MCP Any
-1. **Retrieval Sanitization**: The "Universal Agent Bus" must perform real-time semantic scrubbing of RAG-retrieved context *before* it reaches the reasoning engine.
-2. **Upstream Provenance**: We must move beyond simple hashing to active, hardware-bound attestation of the entire tool supply chain, ensuring that library updates and tool schemas carry verified signatures.
+**Objective:** Evolution of Retrieval Sovereignty and Upstream Supply Chain Provenance.
+## Ecosystem Shifts
+### 1. RAG "Uncontrolled Retrieval" Exploit (Stellar Cyber 2026)
+* **Observation:** Large-scale RAG systems are increasingly being probed via "Retrieval Injection," where malicious documents are crafted to trigger the extraction of private PII/IP from the vector store into the agent's context window.
+* **Technical Shift:** Security must move from simple access control to "Semantic Retrieval Sanitization."
+* **Trend:** The emergence of "Retrieval Sovereignty" as a core architectural pillar.
+### 2. Agentic Supply Chain Hijacking (Barracuda Security 2026)
+* **Observation:** 43+ tool registries and "Agentic Components" have been compromised in the last 24 hours via "FuncPoison" attacks, where tool metadata is modified to shadow legitimate capabilities with malicious hooks.
+* **Technical Shift:** Mandatory hardware-bound provenance for all tool definitions and library updates.
+* **Trend:** Shift from "Discovery-time Trust" to "Upstream Provenance Attestation."
+### 3. Claude 4.6 "Agent Teams" Research Preview
+* **Observation:** Anthropic is testing parallel "Agent Teams" that synchronize state via "Context Shards" at sub-150ms intervals.
+* **Technical Shift:** Deep integration of shard-bound locking and atomic state synchronization.
+* **Trend:** Native teammate coordination is becoming the default for complex, horizontal tasks.
+## Competitive Intelligence
+### GitHub "Sovereign Actions"
+* **Action:** GitHub is rolling out hardware-attested provenance for all "Agentic Actions" in the marketplace.
+* **Gap:** MCP Any needs to bridge these "Sovereign Actions" into its own Provenance-Aware Task Auctioning system.
+### Reddit/Social Sentiment
+* **Pain Point:** "I trust the agent, but I don't trust the tools it's downloading from the registry."
+* **Pain Point:** "PII is leaking into the cloud reasoning traces because the RAG retrieved too much sensitive data from the local repo."
