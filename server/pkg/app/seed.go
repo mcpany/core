@@ -29,6 +29,7 @@ type SeedRequest struct {
 	ProfilesRaw    []json.RawMessage `json:"profiles"`
 	UsersRaw       []json.RawMessage `json:"users"`
 	TemplatesRaw   []json.RawMessage `json:"service_templates"`
+	AuditLogsRaw   []json.RawMessage `json:"audit_logs"`
 }
 
 // handleDebugSeed creates a handler to seed the database with data.
@@ -265,6 +266,37 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 		})
 		if err != nil {
 			return fmt.Errorf("failed to save service template %s: %w", t.GetId(), err)
+		}
+	}
+	for _, raw := range req.AuditLogsRaw {
+		var entry struct {
+			Timestamp  string `json:"timestamp"`
+			ToolName   string `json:"tool_name"`
+			UserID     string `json:"user_id"`
+			ProfileID  string `json:"profile_id"`
+			Arguments  string `json:"arguments"`
+			Result     string `json:"result"`
+			Error      string `json:"error"`
+			DurationMs int64  `json:"duration_ms"`
+			TraceID    string `json:"trace_id"`
+			SpanID     string `json:"span_id"`
+		}
+		if err := json.Unmarshal(raw, &entry); err != nil {
+			return fmt.Errorf("invalid json for audit log")
+		}
+
+		t, _ := time.Parse(time.RFC3339, entry.Timestamp)
+		if t.IsZero() {
+			t = time.Now()
+		}
+
+		err := withRetry(ctx, logging.GetLogger(), func() error {
+			return a.AuditManager.Write(ctx, entry.ToolName, entry.UserID, entry.ProfileID,
+				entry.Arguments, entry.Result, entry.Error, t, time.Duration(entry.DurationMs)*time.Millisecond,
+				entry.TraceID, entry.SpanID)
+		})
+		if err != nil {
+			return fmt.Errorf("failed to save audit log: %w", err)
 		}
 	}
 	return nil

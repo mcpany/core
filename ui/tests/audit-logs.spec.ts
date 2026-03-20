@@ -4,9 +4,10 @@
  */
 
 
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import * as path from 'path';
 import * as fs from 'fs';
+import { seedUser, seedGlobalState } from './e2e/test-data';
 
 test.describe('Feature Screenshot', () => {
     // Enabled audit screenshots
@@ -36,7 +37,17 @@ test.describe('Feature Screenshot', () => {
     }
   });
 
-  test('Export Audit Logs to CSV', async ({ page }) => {
+  test('Export Audit Logs to CSV', async ({ page, request }) => {
+    await seedGlobalState(request);
+    await seedUser(request, "e2e-admin-core");
+
+    // Login
+    await page.goto('/login');
+    await page.fill('input[name="username"]', 'e2e-admin-core');
+    await page.fill('input[name="password"]', 'password');
+    await page.click('button[type="submit"]');
+    await page.waitForURL('**/');
+
     await page.goto('/audit');
     await page.waitForSelector('text=Audit Logs');
 
@@ -47,8 +58,7 @@ test.describe('Feature Screenshot', () => {
     const exportBtn = page.locator('button:has-text("Export CSV")');
     await exportBtn.waitFor({ state: 'visible' });
 
-    // Check if we need to mock since we are not fully seeding audit data for this specific test
-    // but the backend handles /api/v1/audit/export naturally.
+    // The backend handles /api/v1/audit/export naturally since we seeded it.
     await exportBtn.click();
 
     const download = await downloadPromise;
@@ -59,5 +69,43 @@ test.describe('Feature Screenshot', () => {
         }
         await download.cancel();
     }
+  });
+
+  test('Render Rich JSON Tables for Audit Logs', async ({ page, request }) => {
+    await seedGlobalState(request);
+    await seedUser(request, "e2e-admin-core");
+
+    // Login
+    await page.goto('/login');
+    await page.fill('input[name="username"]', 'e2e-admin-core');
+    await page.fill('input[name="password"]', 'password');
+    await page.click('button[type="submit"]');
+    await page.waitForURL('**/');
+
+    await page.goto('/audit');
+
+    // Wait for the table to load
+    await page.waitForSelector('table');
+
+    // Find the row for process_payment
+    const row = page.locator('tr', { hasText: 'process_payment' }).first();
+    await expect(row).toBeVisible();
+
+    // Click the "View" button to open the dialog
+    await row.locator('button:has-text("View")').click();
+
+    // Wait for the dialog
+    const dialog = page.locator('div[role="dialog"]');
+    await expect(dialog).toBeVisible();
+
+    // Expect the dialog to display the JSON as a rich table
+    // Look for the "Table" tab in the arguments or result rich viewer
+    const tableTab = dialog.locator('button[role="tab"]', { hasText: 'Table' }).first();
+    await expect(tableTab).toBeVisible();
+    await tableTab.click();
+
+    // Now look for the table cells in the result rich viewer
+    await expect(dialog.locator('td', { hasText: 'ch_123' }).first()).toBeVisible();
+    await expect(dialog.locator('td', { hasText: 'succeeded' }).first()).toBeVisible();
   });
 });
