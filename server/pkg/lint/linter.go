@@ -23,16 +23,19 @@ type Severity int
 
 const (
 	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
+	// Summary: Defines Error.
 	Error Severity = iota
 	// Warning indicates a potential issue or best practice violation that should be addressed.
+	// Summary: Defines Warning.
 	Warning
 	// Info indicates a suggestion or informational message for optimization or clarity.
+	// Summary: Defines Info.
 	Info
 )
 
 // String returns the string representation of the severity.
 //
-// Summary: Returns the string representation of the severity.
+// Summary: Executes String operation.
 //
 // Parameters:
 //   - None.
@@ -76,7 +79,7 @@ type Result struct {
 
 // String returns the string representation of the result.
 //
-// Summary: Returns a formatted string representation of the linting result.
+// Summary: Executes String operation.
 //
 // Parameters:
 //   - None.
@@ -112,7 +115,7 @@ type Linter struct {
 
 // NewLinter creates a new Linter instance.
 //
-// Summary: Creates and initializes a new Linter instance.
+// Summary: Initializes NewLinter operation.
 //
 // Parameters:
 //   - cfg: *configv1.McpAnyServerConfig. The server configuration to be linted.
@@ -131,7 +134,7 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 
 // Run executes all linting checks.
 //
-// Summary: Executes all configured linting checks on the server configuration.
+// Summary: Executes Run operation.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the request.
