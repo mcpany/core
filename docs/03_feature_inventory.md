@@ -2424,7 +2424,7 @@
 
 ## Evolution: [2026-06-15] Updates
 
-### Proposed Additions (2026-06-15)
+### [Proposed Additions: 2026-06-15]
 
 - **Attention-Locked Context Sharding (ALCS)**: (P0) High-security attention
   governance middleware utilizing hardware-bound headers to "pin"
@@ -2436,7 +2436,7 @@
   service for the SMI Relay that facilitates hardware-attested trust lease
   propagation across deep swarms.
 
-### Priority Shifts (2026-06-15)
+### [Priority Shifts: 2026-06-15]
 
 - **Structural Metadata Sanitizer (SMS)**: (Re-affirmed P0) Now elevated as the
   primary defense against Shadow-Discovery via Metadata Injection (SDMI).
