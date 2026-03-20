@@ -156,6 +156,7 @@ pkg_tar(
     name = "ui_dist_tar",
     srcs = [":build"],
     package_dir = "/app",
+    visibility = ["//visibility:public"],
 )
 
 # Package the minimal node_modules needed by vite preview (vite itself + proxy deps).
@@ -176,6 +177,7 @@ pkg_tar(
         "vite.config.ts",
     ],
     package_dir = "/app",
+    visibility = ["//visibility:public"],
 )
 
 pkg_tar(
@@ -187,33 +189,4 @@ pkg_tar(
     ],
 )
 
-oci_image(
-    name = "ui_image",
-    base = "@distroless_nodejs24",
-    cmd = [
-        "/app/node_modules/vite/bin/vite.js",
-        "preview",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "3000",
-    ],
-    env = {
-        # Override at deploy-time (k8s env, docker run --env, Helm values).
-        "BACKEND_URL": "http://localhost:50050",
-        "PORT": "3000",
-    },
-    exposed_ports = ["3000/tcp"],
-    tars = [":ui_layer"],
-    workdir = "/app",
-)
 
-oci_load(
-    name = "ui_tarball",
-    image = ":ui_image",
-    repo_tags = [
-        "mcpany/ui:latest",
-        "mcpany/ui:1.0.0",
-    ],
-    visibility = ["//visibility:public"],
-)

@@ -1,0 +1,48 @@
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@aspect_rules_js//js:defs.bzl", "js_image_layer")
+load("@npm//ui:vite/package_json.bzl", vite_bin = "bin")
+
+vite_bin.vite_binary(
+    name = "vite_preview_bin",
+)
+
+js_image_layer(
+    name = "ui_node_modules_layer",
+    binary = ":vite_preview_bin",
+    root = "/app",
+)
+
+pkg_tar(
+    name = "ui_layer",
+    deps = [
+        "//ui:ui_dist_tar",
+        "//ui:ui_config_tar",
+    ],
+)
+
+oci_image(
+    name = "ui_image",
+    base = "@debian_bookworm_slim",
+    entrypoint = ["/app/ui/docker/vite_preview_bin", "preview", "--host", "0.0.0.0", "--port", "3000"],
+    env = {
+        "BACKEND_URL": "http://localhost:50050",
+        "PORT": "3000",
+    },
+    exposed_ports = ["3000/tcp"],
+    tars = [
+        ":ui_layer",
+        ":ui_node_modules_layer",
+    ],
+    workdir = "/app",
+)
+
+oci_load(
+    name = "ui_tarball",
+    image = ":ui_image",
+    repo_tags = [
+        "mcpany/ui:latest",
+        "mcpany/ui:1.0.0",
+    ],
+    visibility = ["//visibility:public"],
+)
