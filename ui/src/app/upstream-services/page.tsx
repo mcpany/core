@@ -22,6 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import { UpstreamServiceConfig } from "@/lib/client";
 import { ServiceList } from "@/components/services/service-list";
 import { ServiceEditor } from "@/components/services/editor/service-editor";
+import { ServiceWizard } from "@/components/services/service-wizard";
 import { ServiceTemplateSelector } from "@/components/services/service-template-selector";
 import { ServiceTemplate } from "@/lib/templates";
 import { BulkServiceImport } from "@/components/services/bulk-service-import";
@@ -47,6 +48,7 @@ export default function ServicesPage() {
   const [selectedService, setSelectedService] = useState<UpstreamServiceConfig | null>(null);
   const [configuringTemplate, setConfiguringTemplate] = useState<ServiceTemplate | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -199,7 +201,7 @@ export default function ServicesPage() {
   const openNew = () => {
       setSelectedService(null);
       setConfiguringTemplate(null);
-      setIsSheetOpen(true);
+      setIsWizardOpen(true);
   };
 
   const initServiceFromConfig = (config: Partial<UpstreamServiceConfig>) => {
@@ -440,6 +442,12 @@ export default function ServicesPage() {
             </Button>
         </div>
       </div>
+
+      <ServiceWizard
+          open={isWizardOpen}
+          onOpenChange={setIsWizardOpen}
+          onSuccess={fetchServices}
+      />
 
       <Card className="backdrop-blur-sm bg-background/50">
         <CardHeader>
