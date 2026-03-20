@@ -71,7 +71,7 @@ func TestBrowserProvider(t *testing.T) {
 // errorPageFetcher simulates a fetcher that returns an error
 type errorPageFetcher struct{}
 
-func (f *errorPageFetcher) FetchText(ctx context.Context, url string) (string, error) {
+func (f *errorPageFetcher) FetchText(_ context.Context, _ string) (string, error) {
 	return "", fmt.Errorf("mock fetch error")
 }
 
