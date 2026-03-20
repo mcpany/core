@@ -2289,7 +2289,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 					}
 					// If running a shell or interpreter, validate that inputs are safe
 					cmd := t.service.GetCommand()
-					if isShellCommand(cmd) || isInterpreter(cmd) {
+					if isShellCommand(cmd) {
 						if err := checkForShellInjection(val, args[i], placeholder, cmd, isShell(cmd)); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
@@ -2324,7 +2324,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						}
 						// If running a shell, validate that inputs are safe for shell execution
 						cmd := t.service.GetCommand()
-						if isShellCommand(cmd) || isInterpreter(cmd) {
+						if isShellCommand(cmd) {
 							if err := checkForShellInjection(argStr, "", "", cmd, isShell(cmd)); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
@@ -2704,7 +2704,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					}
 					// If running a shell or interpreter, validate that inputs are safe
 					cmd := t.service.GetCommand()
-					if isShellCommand(cmd) || isInterpreter(cmd) {
+					if isShellCommand(cmd) {
 						if err := checkForShellInjection(val, args[i], placeholder, cmd, isShell(cmd)); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
@@ -2740,7 +2740,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 						}
 						// If running a shell, validate that inputs are safe for shell execution
 						cmd := t.service.GetCommand()
-						if isShellCommand(cmd) || isInterpreter(cmd) {
+						if isShellCommand(cmd) {
 							if err := checkForShellInjection(argStr, "", "", cmd, isShell(cmd)); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
@@ -4167,20 +4167,6 @@ func checkPythonInjection(val, template, base string) error {
 			if strings.ContainsAny(val, "{}") {
 				return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
 			}
-		}
-
-		// Check for obfuscated builtins or imports via string concatenation
-		valLower := strings.ToLower(val)
-		valNoConcat := strings.ReplaceAll(valLower, "'", "")
-		valNoConcat = strings.ReplaceAll(valNoConcat, "\"", "")
-		valNoConcat = strings.ReplaceAll(valNoConcat, "+", "")
-		valNoConcat = strings.ReplaceAll(valNoConcat, " ", "")
-
-		if strings.Contains(valNoConcat, "__import__") {
-			return fmt.Errorf("python injection detected: obfuscated '__import__'")
-		}
-		if strings.Contains(valNoConcat, "__builtins__") {
-			return fmt.Errorf("python injection detected: obfuscated '__builtins__'")
 		}
 	}
 	return nil
