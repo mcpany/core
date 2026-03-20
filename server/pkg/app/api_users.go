@@ -236,7 +236,18 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 
 			if !isAdmin {
 				// Prevent non-admin users from escalating their privileges by restoring their original roles
-				user.SetRoles(existingUser.GetRoles())
+				roles := existingUser.GetRoles()
+				if roles == nil {
+					roles = []string{}
+				}
+				user.SetRoles(roles)
+
+				// Sentinel Security Update: Prevent IDOR / Privilege Escalation via profile_ids
+				profileIDs := existingUser.GetProfileIds()
+				if profileIDs == nil {
+					profileIDs = []string{}
+				}
+				user.SetProfileIds(profileIDs)
 			}
 
 			if err := hashUserPassword(r.Context(), &user, store, existingUser); err != nil {
