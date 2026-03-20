@@ -1844,7 +1844,11 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	url := t.url
 	for paramName, paramValue := range inputs {
 		if t.parameterDefs[paramName] == "path" {
-			url = strings.ReplaceAll(url, "{{"+paramName+"}}", util.ToString(paramValue))
+			valStr := util.ToString(paramValue)
+			if err := checkForPathTraversal(valStr); err != nil {
+				return nil, fmt.Errorf("path traversal attempt detected in parameter %q: %w", paramName, err)
+			}
+			url = strings.ReplaceAll(url, "{{"+paramName+"}}", url.PathEscape(valStr))
 			delete(inputs, paramName)
 		}
 	}
@@ -4138,11 +4142,11 @@ func checkSQLKeywords(val string) error {
 			if startOk && endOk {
 				return fmt.Errorf("SQL injection detected: value contains SQL keyword %q in unquoted context", kw)
 			}
-			nextIdx := strings.Index(upperVal[idx+1:], kw)
+			nextIdx := strings.Index(upperVal[idx+len(kw):], kw)
 			if nextIdx == -1 {
 				break
 			}
-			idx += 1 + nextIdx
+			idx += len(kw) + nextIdx
 		}
 	}
 	return nil
