@@ -11,7 +11,6 @@ import (
 )
 
 // SimpleVectorStore is a naive in-memory vector store.
-// Summary: Represents a SimpleVectorStore.
 type SimpleVectorStore struct {
 	mu         sync.RWMutex
 	items      map[string][]*VectorEntry
@@ -19,7 +18,6 @@ type SimpleVectorStore struct {
 }
 
 // VectorEntry represents a single entry in the vector store.
-// Summary: Represents a VectorEntry.
 type VectorEntry struct {
 	// Vector is the embedding vector.
 	Vector []float32

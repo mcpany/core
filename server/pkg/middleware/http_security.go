@@ -9,7 +9,6 @@ import (
 )
 
 // HTTPSecurityHeadersMiddleware adds security headers to HTTP responses.
-// Summary: Middleware that adds standard security headers to all HTTP responses.
 // Parameters:
 //   - next: http.Handler. The next handler in the chain.
 // Returns:

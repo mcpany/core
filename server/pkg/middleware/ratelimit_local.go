@@ -13,13 +13,11 @@ import (
 )
 
 // LocalLimiter is an in-memory implementation of Limiter.
-// Summary: Rate limiter implementation using golang.org/x/time/rate.
 type LocalLimiter struct {
 	*rate.Limiter
 }
 
 // Allow checks if the request is allowed (cost 1).
-// Summary: Checks if a single event is allowed by the rate limiter.
 // Parameters:
 //   - _: context.Context. Unused.
 // Returns:
@@ -32,7 +30,6 @@ func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 }
 
 // AllowN checks if the request is allowed with a specific cost.
-// Summary: Checks if N events are allowed by the rate limiter.
 // Parameters:
 //   - _: context.Context. Unused.
 //   - n: int. The cost of the event.
@@ -46,7 +43,6 @@ func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 }
 
 // Update updates the limiter configuration.
-// Summary: Dynamically updates the rate limit and burst size.
 // Parameters:
 //   - rps: float64. The new requests per second limit.
 //   - burst: int. The new burst size.
@@ -63,11 +59,9 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 }
 
 // LocalStrategy implements RateLimitStrategy for local in-memory rate limiting.
-// Summary: Strategy for creating local rate limiters.
 type LocalStrategy struct{}
 
 // NewLocalStrategy creates a new LocalStrategy.
-// Summary: Initializes a new LocalStrategy.
 // Returns:
 //   - *LocalStrategy: The initialized strategy.
 func NewLocalStrategy() *LocalStrategy {
@@ -75,7 +69,6 @@ func NewLocalStrategy() *LocalStrategy {
 }
 
 // Create creates a new LocalLimiter.
-// Summary: Creates a new in-memory rate limiter based on the provided configuration.
 // Parameters:
 //   - _: context.Context. Unused.
 //   - _: string. Unused (serviceID).

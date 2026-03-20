@@ -13,7 +13,6 @@ import (
 )
 
 // JSONRPCError represents a JSON-RPC 2.0 error object.
-// Summary: Represents a JSONRPCError.
 type JSONRPCError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
@@ -21,7 +20,6 @@ type JSONRPCError struct {
 }
 
 // JSONRPCResponse represents a JSON-RPC 2.0 response object.
-// Summary: Represents a JSONRPCResponse.
 type JSONRPCResponse struct {
 	JSONRPC string        `json:"jsonrpc"`
 	ID      any           `json:"id"`
@@ -29,7 +27,6 @@ type JSONRPCResponse struct {
 }
 
 // JSONRPCComplianceMiddleware ensures that errors are returned as valid JSON-RPC responses.
-// Summary: Wraps non-JSON error responses in a JSON-RPC error format.
 // Parameters:
 //   - next: http.Handler. The next handler in the chain.
 // Returns:
@@ -90,7 +87,6 @@ type smartResponseWriter struct {
 }
 
 // Header returns the header map that will be sent by WriteHeader.
-// Summary: Returns the response headers.
 // Returns:
 //   - http.Header: The header map.
 func (w *smartResponseWriter) Header() http.Header {
@@ -98,7 +94,6 @@ func (w *smartResponseWriter) Header() http.Header {
 }
 
 // WriteHeader sends an HTTP response header with the provided status code.
-// Summary: Writes the status code to the response.
 // Parameters:
 //   - code: int. The HTTP status code.
 func (w *smartResponseWriter) WriteHeader(code int) {
@@ -124,7 +119,6 @@ func (w *smartResponseWriter) WriteHeader(code int) {
 }
 
 // Write writes the data to the connection as part of an HTTP reply.
-// Summary: Writes data to the response body, buffering if necessary.
 // Parameters:
 //   - b: []byte. The data to write.
 // Returns:
@@ -167,7 +161,6 @@ func (w *smartResponseWriter) flushHeader() {
 }
 
 // Flush implements http.Flusher to support streaming.
-// Summary: Flushes the response buffer to the client.
 // Returns:
 //	None.
 func (w *smartResponseWriter) Flush() {

@@ -13,14 +13,12 @@ import (
 )
 
 // IPAllowlistMiddleware restricts access to allowed IP addresses.
-// Summary: Middleware that filters requests based on a list of allowed IP addresses or CIDRs.
 type IPAllowlistMiddleware struct {
 	mu            sync.RWMutex
 	allowedIPNets []*net.IPNet
 }
 
 // NewIPAllowlistMiddleware creates a new IPAllowlistMiddleware.
-// Summary: Initializes the middleware with the initial list of allowed CIDRs.
 // Parameters:
 //   - allowedCIDRs: []string. A list of IP addresses or CIDR blocks to allow.
 // Returns:
@@ -35,7 +33,6 @@ func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, er
 }
 
 // Update updates the allowlist with new CIDRs/IPs.
-// Summary: Dynamically updates the list of allowed IPs.
 // Parameters:
 //   - allowedCIDRs: []string. The new list of allowed IP addresses or CIDR blocks.
 // Returns:
@@ -71,7 +68,6 @@ func (m *IPAllowlistMiddleware) Update(allowedCIDRs []string) error {
 }
 
 // Allow checks if the given remote address is allowed.
-// Summary: Checks if a remote address is in the allowed list.
 // Parameters:
 //   - remoteAddr: string. The remote address (IP or IP:Port).
 // Returns:
@@ -111,7 +107,6 @@ func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 }
 
 // Handler returns an HTTP handler that enforces the allowlist.
-// Summary: Returns an HTTP handler that blocks unauthorized IPs.
 // Parameters:
 //   - next: http.Handler. The next handler in the chain.
 // Returns:

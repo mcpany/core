@@ -14,7 +14,6 @@ import (
 )
 
 // OpenAIEmbeddingProvider implements EmbeddingProvider for OpenAI.
-// Summary: Provides vector embeddings using the OpenAI API.
 type OpenAIEmbeddingProvider struct {
 	apiKey  string
 	model   string
@@ -23,7 +22,6 @@ type OpenAIEmbeddingProvider struct {
 }
 
 // NewOpenAIEmbeddingProvider creates a new OpenAIEmbeddingProvider.
-// Summary: Initializes a new OpenAIEmbeddingProvider with the given API key and model.
 // Parameters:
 //   - apiKey: string. The OpenAI API key.
 //   - model: string. The model ID (defaults to "text-embedding-3-small" if empty).
@@ -60,7 +58,6 @@ type openAIEmbeddingResponse struct {
 }
 
 // Embed generates an embedding vector for the given text using the OpenAI API.
-// Summary: Calls the OpenAI API to generate an embedding for the input text.
 // Parameters:
 //   - ctx: context.Context. The request context.
 //   - text: string. The text to embed.

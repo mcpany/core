@@ -59,7 +59,6 @@ var byteBufferPool = sync.Pool{
 }
 
 // GzipCompressionMiddleware returns a middleware that compresses HTTP responses using Gzip.
-// Summary: Middleware that compresses HTTP responses using Gzip if supported by the client.
 // Parameters:
 //   - next: http.Handler. The next handler in the chain.
 // Returns:
@@ -113,7 +112,6 @@ type gzipResponseWriter struct {
 }
 
 // Write writes the data to the connection as part of an HTTP reply.
-// Summary: Writes data to the response, buffering until compression threshold is met.
 // Parameters:
 //   - b: []byte. The data to write.
 // Returns:
@@ -173,7 +171,6 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 }
 
 // WriteHeader captures the status code.
-// Summary: Captures the status code for later writing.
 // Parameters:
 //   - code: int. The HTTP status code.
 // Side Effects:
@@ -255,15 +252,25 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 	return nil
 }
 
-// Flush ⚡ BOLT: Implemented Flush to support streaming responses (e.g. SSE). Randomized Selection from Top 5 High-Impact Targets Flush implements the http.Flusher interface. Summary: Flushes the compressed stream to the client. Side Effects: - Forces any buffered data to be compressed and sent. - Flushes the underlying response writer.
+// Flush flushes the compressed stream to the client.
+//
+// ⚡ BOLT: Implemented Flush to support streaming responses (e.g. SSE).
+// Randomized Selection from Top 5 High-Impact Targets.
+//
+// Summary: Flushes the compressed stream to the client.
+//
 // Parameters:
-//   - None
+//   - None.
+//
 // Returns:
-//   - None
+//   - None.
+//
 // Errors:
-//   - None
+//   - None.
+//
 // Side Effects:
-//   - None
+//   - Forces any buffered data to be compressed and sent.
+//   - Flushes the underlying response writer.
 func (w *gzipResponseWriter) Flush() {
 	// If we haven't written headers yet, we are still buffering.
 	// Force flush the buffer to start gzip stream (even if small).
@@ -283,15 +290,23 @@ func (w *gzipResponseWriter) Flush() {
 	}
 }
 
-// Close closes the gzip writer and returns it to the pool. Summary: Closes the Gzip writer and releases resources. Side Effects: - Closes the active gzip writer. - Returns buffers to the pool. - Ensures all data is flushed to the client.
+// Close closes the gzip writer and returns it to the pool.
+//
+// Summary: Closes the Gzip writer and releases resources.
+//
 // Parameters:
-//   - None
+//   - None.
+//
 // Returns:
-//   - None
+//   - None.
+//
 // Errors:
-//   - None
+//   - None.
+//
 // Side Effects:
-//   - None
+//   - Closes the active gzip writer.
+//   - Returns buffers to the pool.
+//   - Ensures all data is flushed to the client.
 func (w *gzipResponseWriter) Close() {
 	if w.writer != nil {
 		_ = w.writer.Close()

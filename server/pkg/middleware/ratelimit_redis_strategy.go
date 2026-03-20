@@ -15,14 +15,12 @@ import (
 )
 
 // RedisStrategy implements RateLimitStrategy for Redis-based rate limiting.
-// Summary: Strategy for creating Redis-backed distributed rate limiters.
 type RedisStrategy struct {
 	// redisClients caches Redis clients per config. Key is configHash.
 	redisClients sync.Map
 }
 
 // NewRedisStrategy creates a new RedisStrategy.
-// Summary: Initializes a new RedisStrategy.
 // Returns:
 //   - *RedisStrategy: The initialized strategy.
 func NewRedisStrategy() *RedisStrategy {
@@ -30,7 +28,6 @@ func NewRedisStrategy() *RedisStrategy {
 }
 
 // Create creates a new RedisLimiter.
-// Summary: Creates a new Redis-backed rate limiter.
 // Parameters:
 //   - _: context.Context. Unused.
 //   - serviceID: string. The service identifier.

@@ -15,13 +15,11 @@ import (
 )
 
 // PostgresVectorStore implements VectorStore using PostgreSQL and pgvector.
-// Summary: Provides vector storage capabilities using a PostgreSQL database with the pgvector extension.
 type PostgresVectorStore struct {
 	db *sql.DB
 }
 
 // NewPostgresVectorStore creates a new PostgresVectorStore.
-// Summary: Initializes a new PostgresVectorStore with a connection string.
 // Parameters:
 //   - dsn: string. The Data Source Name for connecting to the PostgreSQL database.
 // Returns:
@@ -53,7 +51,6 @@ func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 }
 
 // NewPostgresVectorStoreWithDB creates a new PostgresVectorStore using an existing database connection.
-// Summary: Initializes a new PostgresVectorStore with an existing sql.DB connection.
 // Parameters:
 //   - db: *sql.DB. The existing database connection.
 // Returns:
@@ -108,7 +105,6 @@ func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 }
 
 // Add adds a new entry to the vector store.
-// Summary: Inserts a new semantic cache entry into the database.
 // Parameters:
 //   - ctx: context.Context. The context for the database operation.
 //   - key: string. The unique key for the cache entry.
@@ -150,7 +146,6 @@ func (s *PostgresVectorStore) Add(ctx context.Context, key string, vector []floa
 }
 
 // Search searches for the most similar entry in the vector store.
-// Summary: Finds the nearest neighbor for the given query vector.
 // Parameters:
 //   - ctx: context.Context. The context for the database query.
 //   - key: string. The key to filter results by.
@@ -206,7 +201,6 @@ func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []fl
 }
 
 // Prune removes expired entries.
-// Summary: Deletes expired cache entries from the database.
 // Parameters:
 //   - ctx: context.Context. The context for the database operation.
 //   - key: string. Optional key to restrict pruning to a specific cache key. If empty, prunes all expired entries.
@@ -225,7 +219,6 @@ func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 }
 
 // Close closes the database connection.
-// Summary: Closes the underlying PostgreSQL database connection.
 // Returns:
 //   - error: An error if closing the connection fails.
 // Side Effects:

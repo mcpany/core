@@ -17,7 +17,6 @@ import (
 // NOTE: This middleware is currently a placeholder for MCP-level (JSON-RPC)
 // interception and does not handle HTTP CORS headers.
 // HTTP CORS is handled by the dedicated HTTP middleware in cors_http.go.
-// Summary: Creates a placeholder MCP CORS middleware.
 // Returns:
 //   - (mcp.Middleware): The middleware function.
 func CORSMiddleware() mcp.Middleware {
