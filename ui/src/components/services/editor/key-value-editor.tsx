@@ -72,8 +72,8 @@ export function KeyValueEditor({ initialValues, onChange, keyPlaceholder = "Key"
 
     return (
         <div className="space-y-2">
-            {/* ⚡ BOLT: [Render Optimization] Replaced array index keys with stable unique IDs to prevent unnecessary DOM re-mounts and state loss during list mutations.
-                Randomized Selection from Top 5 High-Impact Targets */}
+            {/* ⚡ BOLT: [Render Optimization] Use stable IDs instead of array index for list keys to prevent React state/focus loss and unnecessary remounts.
+                Randomized Selection from Top 5 High-Impact Targets (Render Category) */}
             {pairs.map((pair, index) => (
                 <div key={pair.id} className="flex items-center gap-2">
                     <Input
