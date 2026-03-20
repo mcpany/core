@@ -224,7 +224,6 @@ const toolContextKey = contextKey("tool")
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewContextWithTool(ctx context.Context, t Tool) context.Context {
@@ -244,7 +243,6 @@ func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func GetFromContext(ctx context.Context) (Tool, bool) {
@@ -314,7 +312,6 @@ const cacheControlContextKey = contextKey("cache_control")
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.Context {
@@ -334,7 +331,6 @@ func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.C
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
@@ -396,7 +392,6 @@ type GRPCTool struct {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition, resilienceConfig *configv1.ResilienceConfig) *GRPCTool {
@@ -587,7 +582,6 @@ type HTTPTool struct {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *HTTPTool {
@@ -1366,7 +1360,6 @@ type MCPTool struct {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
@@ -1610,7 +1603,6 @@ type OpenAPITool struct {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
@@ -1895,7 +1887,6 @@ type CommandTool struct {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewCommandTool(
@@ -1966,7 +1957,6 @@ type LocalCommandTool struct {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewLocalCommandTool(

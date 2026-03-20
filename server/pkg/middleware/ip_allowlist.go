@@ -33,7 +33,6 @@ type IPAllowlistMiddleware struct {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, error) {

@@ -53,7 +53,6 @@ type Manager struct {
 //
 // Parameters:
 //   - params: Inputs expected by the function.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewManager() *Manager {

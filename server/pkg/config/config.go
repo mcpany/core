@@ -89,8 +89,7 @@ func BindRootFlags(cmd *cobra.Command) {
 //   - cmd (*cobra.Command): The command instance to which the server flags will be attached.
 //
 // Returns:
-//
-//	None.
+//   None.
 //
 // Side Effects:
 //   - Modifies the global Viper configuration state.
@@ -142,8 +141,7 @@ func BindServerFlags(cmd *cobra.Command) {
 //   - cmd (*cobra.Command): The command instance to which the flags will be attached.
 //
 // Returns:
-//
-//	None.
+//   None.
 //
 // Side Effects:
 //   - Modifies the global Viper configuration state.

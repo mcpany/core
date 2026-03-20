@@ -28,27 +28,27 @@ func TestTOCTOU_Vulnerability_Mitigation(t *testing.T) {
 	os.WriteFile(sensitiveFile, []byte("secret"), 0600)
 
 	// Simulate the tool logic
-	// 1. ResolvePath (Simulated)
-	subdir := filepath.Join(safeDir, "subdir")
-	os.Mkdir(subdir, 0755)
+    // 1. ResolvePath (Simulated)
+    subdir := filepath.Join(safeDir, "subdir")
+    os.Mkdir(subdir, 0755)
 
-	// The path we intend to write to (checked and approved)
-	targetPath := filepath.Join(subdir, "passwd")
+    // The path we intend to write to (checked and approved)
+    targetPath := filepath.Join(subdir, "passwd")
 
-	// 2. Race Condition (Attacker Action)
-	// Attacker replaces "subdir" with symlink to "sensitiveDir"
-	os.RemoveAll(subdir)
-	err := os.Symlink(sensitiveDir, subdir)
-	require.NoError(t, err)
+    // 2. Race Condition (Attacker Action)
+    // Attacker replaces "subdir" with symlink to "sensitiveDir"
+    os.RemoveAll(subdir)
+    err := os.Symlink(sensitiveDir, subdir)
+    require.NoError(t, err)
 
-	// 3. safeWriteFile (Remediation)
-	fs := afero.NewOsFs()
-	err = safeWriteFile(fs, targetPath, []byte("pwned"), 0644)
+    // 3. safeWriteFile (Remediation)
+    fs := afero.NewOsFs()
+    err = safeWriteFile(fs, targetPath, []byte("pwned"), 0644)
 
-	// Expect error
-	assert.Error(t, err, "safeWriteFile should fail if path component became a symlink")
+    // Expect error
+    assert.Error(t, err, "safeWriteFile should fail if path component became a symlink")
 
-	// 4. Verify No Overwrite
-	content, _ := os.ReadFile(sensitiveFile)
-	assert.Equal(t, "secret", string(content), "Sensitive file should NOT be overwritten")
+    // 4. Verify No Overwrite
+    content, _ := os.ReadFile(sensitiveFile)
+    assert.Equal(t, "secret", string(content), "Sensitive file should NOT be overwritten")
 }

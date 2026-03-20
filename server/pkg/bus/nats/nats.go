@@ -36,7 +36,6 @@ type Bus[T any] struct {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func New[T any](config *bus.NatsBus) (*Bus[T], error) {
@@ -70,8 +69,7 @@ func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 // Summary: Closes the NATS connection.
 //
 // Returns:
-//
-//	None.
+//   None.
 func (b *Bus[T]) Close() {
 	if b.nc != nil {
 		b.nc.Close()

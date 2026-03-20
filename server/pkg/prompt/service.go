@@ -31,7 +31,6 @@ type Service struct {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewService(promptManager ManagerInterface) *Service {
@@ -50,8 +49,7 @@ func NewService(promptManager ManagerInterface) *Service {
 //   - mcpServer: *mcp.Server. The MCP server instance.
 //
 // Returns:
-//
-//	None.
+//   None.
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.mcpServer = mcpServer
 	s.promptManager.SetMCPServer(NewMCPServerProvider(mcpServer))

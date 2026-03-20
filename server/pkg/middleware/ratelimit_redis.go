@@ -26,7 +26,6 @@ var redisClientCreator = redis.NewClient
 //
 // Returns:
 //   - outcome: The resulting data or value.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
@@ -135,7 +134,6 @@ func NewRedisLimiterWithPartition(serviceID, limitScopeKey, partitionKey string,
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewRedisLimiterWithClient(client *redis.Client, serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) *RedisLimiter {

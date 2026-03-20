@@ -133,7 +133,6 @@ type poolImpl[T ClosableClient] struct {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func New[T ClosableClient](
@@ -525,10 +524,8 @@ type Manager struct {
 //
 // Parameters:
 //   - params: Inputs expected by the function.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewManager() *Manager {
@@ -594,7 +591,6 @@ func (m *Manager) Deregister(name string) {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {

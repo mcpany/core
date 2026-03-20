@@ -35,7 +35,6 @@ func init() {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func IsPrivateNetworkIP(ip net.IP) bool {
@@ -78,7 +77,6 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func IsNAT64(ip net.IP) bool {
@@ -99,7 +97,6 @@ func IsNAT64(ip net.IP) bool {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func IsIPv4Compatible(ip net.IP) bool {
@@ -120,7 +117,6 @@ func IsIPv4Compatible(ip net.IP) bool {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func IsNAT64LinkLocal(ip net.IP) bool {
@@ -143,7 +139,6 @@ func IsNAT64LinkLocal(ip net.IP) bool {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func IsNAT64Loopback(ip net.IP) bool {
@@ -166,7 +161,6 @@ func IsNAT64Loopback(ip net.IP) bool {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func IsPrivateIP(ip net.IP) bool {
@@ -218,7 +212,6 @@ func IsPrivateIP(ip net.IP) bool {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func IsPrivateNetworkIPv4(ip net.IP) bool {

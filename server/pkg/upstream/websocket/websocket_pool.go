@@ -32,7 +32,6 @@ type Pool = pool.Pool[*client.WebsocketClientWrapper]
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewPool(maxSize int, idleTimeout time.Duration, address string) (Pool, error) {

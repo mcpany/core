@@ -35,14 +35,14 @@ func TestEnsureSchema_Error(t *testing.T) {
 	*/
 	// But ensureSchema() logic:
 	/*
-		func ensureSchema() error {
-			schemaMu.Lock()
-			defer schemaMu.Unlock()
-			if jsonSchema != nil {
-				return nil
-			}
-			// ... GenerateJSONSchemaBytes ...
+	func ensureSchema() error {
+		schemaMu.Lock()
+		defer schemaMu.Unlock()
+		if jsonSchema != nil {
+			return nil
 		}
+		// ... GenerateJSONSchemaBytes ...
+	}
 	*/
 	// It just generates the schema. It shouldn't fail unless proto generation fails.
 }

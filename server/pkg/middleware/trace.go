@@ -30,7 +30,6 @@ const (
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func WithTraceContext(ctx context.Context, traceID, spanID, parentID string) context.Context {
@@ -54,7 +53,6 @@ func WithTraceContext(ctx context.Context, traceID, spanID, parentID string) con
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func GetTraceID(ctx context.Context) string {
@@ -76,7 +74,6 @@ func GetTraceID(ctx context.Context) string {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func GetSpanID(ctx context.Context) string {
@@ -98,7 +95,6 @@ func GetSpanID(ctx context.Context) string {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func GetParentID(ctx context.Context) string {

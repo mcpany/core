@@ -89,10 +89,8 @@ type SafeDialer struct {
 //
 // Parameters:
 //   - params: Inputs expected by the function.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewSafeDialer() *SafeDialer {
@@ -194,7 +192,6 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
@@ -217,10 +214,8 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //
 // Parameters:
 //   - params: Inputs expected by the function.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewSafeHTTPClient() *http.Client {
@@ -261,7 +256,6 @@ func NewSafeHTTPClient() *http.Client {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func CheckConnection(ctx context.Context, address string) error {
@@ -341,7 +335,6 @@ func CheckConnection(ctx context.Context, address string) error {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func ListenWithRetry(ctx context.Context, network, address string) (net.Listener, error) {

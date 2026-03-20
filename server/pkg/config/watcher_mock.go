@@ -19,7 +19,6 @@ type MockWatcher struct {
 //
 // Parameters:
 //   - params: Inputs expected by the function.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewMockWatcher() *MockWatcher {

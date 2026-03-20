@@ -28,7 +28,6 @@ type schemaGenerator struct {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func GenerateSchemaFromProto(msg protoreflect.Message) (*jsonschema.Schema, error) {
@@ -49,7 +48,6 @@ func GenerateSchemaFromProto(msg protoreflect.Message) (*jsonschema.Schema, erro
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func GenerateSchemaMapFromProto(msg protoreflect.Message) map[string]interface{} {
@@ -79,7 +77,6 @@ func GenerateSchemaMapFromProto(msg protoreflect.Message) map[string]interface{}
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func CompileSchema(schemaMap map[string]interface{}) (*jsonschema.Schema, error) {

@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	busprotos "github.com/mcpany/core/proto/bus"
 	"github.com/mcpany/core/server/pkg/bus/nats"
+	busprotos "github.com/mcpany/core/proto/bus"
 	"github.com/stretchr/testify/assert"
 )
 

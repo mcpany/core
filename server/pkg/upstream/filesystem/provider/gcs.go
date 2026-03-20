@@ -284,7 +284,7 @@ func (fs *gcsFs) RemoveAll(path string) error {
 // Rename renames a file.
 //
 // Parameters:
-//   - (oldname): The parameter.
+//   -  (oldname): The parameter.
 //   - newname (string): The parameter.
 //
 // Returns:
@@ -368,7 +368,7 @@ func (fs *gcsFs) Chmod(_ string, _ os.FileMode) error {
 //
 // Parameters:
 //   - _ (string): The parameter.
-//   - (_): The parameter.
+//   -  (_): The parameter.
 //   - _ (int): The parameter.
 //
 // Returns:
@@ -387,7 +387,7 @@ func (fs *gcsFs) Chown(_ string, _, _ int) error {
 //
 // Parameters:
 //   - _ (string): The parameter.
-//   - (_): The parameter.
+//   -  (_): The parameter.
 //   - _ (time.Time): The parameter.
 //
 // Returns:

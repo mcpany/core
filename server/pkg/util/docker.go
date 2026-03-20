@@ -42,10 +42,8 @@ var initDockerClientDefault = func() {
 //
 // Parameters:
 //   - params: Inputs expected by the function.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func IsDockerSocketAccessible() bool {

@@ -27,6 +27,7 @@ func TestGRPCHelperFunctions(t *testing.T) {
 		proc.Port = WaitForPort(t, proc)
 		integration.WaitForTCPPort(t, proc.Port, integration.ServiceStartupTimeout)
 
+
 		mcpanyTestServerInfo := integration.StartMCPANYServer(t, "grpc-weather-test")
 		defer mcpanyTestServerInfo.CleanupFunc()
 
@@ -69,6 +70,7 @@ func TestGRPCHelperFunctions(t *testing.T) {
 
 		proc.Port = WaitForPort(t, proc)
 		integration.WaitForTCPPort(t, proc.Port, integration.ServiceStartupTimeout)
+
 
 		mcpanyTestServerInfo := integration.StartMCPANYServer(t, "grpc-authed-weather-test")
 		defer mcpanyTestServerInfo.CleanupFunc()

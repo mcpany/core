@@ -77,7 +77,6 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 //
 // Parameters:
 //   - params: Inputs expected by the function.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewOpenAPIUpstream() upstream.Upstream {

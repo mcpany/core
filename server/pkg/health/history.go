@@ -42,7 +42,6 @@ var (
 //
 // Returns:
 //   - outcome: The resulting data or value.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func AddHealthStatus(serviceName string, status string) {
@@ -92,7 +91,6 @@ func AddHealthStatus(serviceName string, status string) {
 //
 // Parameters:
 //   - params: Inputs expected by the function.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func GetHealthHistory() map[string][]HistoryPoint {

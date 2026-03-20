@@ -59,7 +59,6 @@ var NewRegistrationServerHook func(bus interface{}, authManager interface{}) (*R
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewRegistrationServer(bus *bus.Provider, authManager *auth.Manager) (*RegistrationServer, error) {

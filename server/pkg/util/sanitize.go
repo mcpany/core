@@ -26,7 +26,6 @@ const RedactedString = "REDACTED"
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func SanitizeUser(u *configv1.User) *configv1.User {
@@ -55,7 +54,6 @@ func SanitizeUser(u *configv1.User) *configv1.User {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
@@ -88,7 +86,6 @@ func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication {
@@ -143,7 +140,6 @@ func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
@@ -171,7 +167,6 @@ func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func SanitizeSecretValue(s *configv1.SecretValue) *configv1.SecretValue {

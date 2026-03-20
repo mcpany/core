@@ -32,6 +32,7 @@ func setupTestManager(t *testing.T) (*skill.Manager, string) {
 	return manager, tmpDir
 }
 
+
 func TestSkillServiceServer_CreateSkill(t *testing.T) {
 	manager, _ := setupTestManager(t)
 
@@ -170,7 +171,7 @@ func TestSkillServiceServer_UpdateSkill(t *testing.T) {
 
 	// Seed a skill
 	require.NoError(t, manager.CreateSkill(&skill.Skill{
-		Frontmatter:  skill.Frontmatter{Name: "update-me", Description: "Old"},
+		Frontmatter: skill.Frontmatter{Name: "update-me", Description: "Old"},
 		Instructions: "Old Instructions",
 	}))
 
@@ -220,7 +221,7 @@ func TestSkillServiceServer_UpdateSkill(t *testing.T) {
 		req := pb.UpdateSkillRequest_builder{
 			Name: "missing",
 			Skill: config_v1.Skill_builder{
-				Name:         proto.String("missing"),
+				Name: proto.String("missing"),
 				Instructions: proto.String("Foo"),
 			}.Build(),
 		}.Build()
@@ -248,7 +249,7 @@ func TestSkillServiceServer_DeleteSkill(t *testing.T) {
 	ctx := context.Background()
 
 	require.NoError(t, manager.CreateSkill(&skill.Skill{
-		Frontmatter:  skill.Frontmatter{Name: "delete-me"},
+		Frontmatter: skill.Frontmatter{Name: "delete-me"},
 		Instructions: "Bye",
 	}))
 

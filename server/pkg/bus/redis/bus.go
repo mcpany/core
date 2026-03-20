@@ -30,7 +30,6 @@ type Bus[T any] struct {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
@@ -57,7 +56,6 @@ func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewWithClient[T any](client *redis.Client) *Bus[T] {

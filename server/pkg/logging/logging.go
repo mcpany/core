@@ -33,7 +33,6 @@ var (
 //
 // Returns:
 //   - outcome: The resulting data or value.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func SetLevel(level slog.Level) {
@@ -79,7 +78,6 @@ func ForTestsOnlyResetLogger() {
 //
 // Returns:
 //   - outcome: The resulting data or value.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func Init(level slog.Level, output io.Writer, logFilePath string, format ...string) {
@@ -161,7 +159,6 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 //
 // Parameters:
 //   - params: Inputs expected by the function.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func GetLogger() *slog.Logger {
@@ -175,7 +172,7 @@ func GetLogger() *slog.Logger {
 	defer mu.Unlock()
 	once.Do(func() {
 		defaultLogger.Store(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
-			Level: slog.LevelInfo,
+			Level:     slog.LevelInfo,
 			// ⚡ BOLT: Defaults to INFO, so AddSource is false by default.
 			AddSource: false,
 		})))

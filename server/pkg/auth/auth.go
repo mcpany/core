@@ -43,7 +43,6 @@ const (
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func ContextWithAPIKey(ctx context.Context, apiKey string) context.Context {
@@ -63,7 +62,6 @@ func ContextWithAPIKey(ctx context.Context, apiKey string) context.Context {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func APIKeyFromContext(ctx context.Context) (string, bool) {
@@ -84,7 +82,6 @@ func APIKeyFromContext(ctx context.Context) (string, bool) {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func ContextWithUser(ctx context.Context, userID string) context.Context {
@@ -104,7 +101,6 @@ func ContextWithUser(ctx context.Context, userID string) context.Context {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func UserFromContext(ctx context.Context) (string, bool) {
@@ -125,7 +121,6 @@ func UserFromContext(ctx context.Context) (string, bool) {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func ContextWithProfileID(ctx context.Context, profileID string) context.Context {
@@ -145,7 +140,6 @@ func ContextWithProfileID(ctx context.Context, profileID string) context.Context
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func ProfileIDFromContext(ctx context.Context) (string, bool) {
@@ -192,7 +186,6 @@ type APIKeyAuthenticator struct {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
@@ -259,7 +252,6 @@ type BasicAuthenticator struct {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewBasicAuthenticator(config *configv1.BasicAuth) *BasicAuthenticator {
@@ -325,7 +317,6 @@ type TrustedHeaderAuthenticator struct {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewTrustedHeaderAuthenticator(config *configv1.TrustedHeaderAuth) *TrustedHeaderAuthenticator {
@@ -388,10 +379,8 @@ type Manager struct {
 //
 // Parameters:
 //   - params: Inputs expected by the function.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewManager() *Manager {
@@ -613,7 +602,6 @@ var (
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func ValidateAuthentication(ctx context.Context, config *configv1.Authentication, r *http.Request) error {

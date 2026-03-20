@@ -301,6 +301,7 @@ type Application struct {
 	// statsCache for dashboard
 	statsCacheMu sync.RWMutex
 	statsCache   map[string]statsCacheEntry
+
 }
 
 type statsCacheEntry struct {
@@ -317,10 +318,8 @@ type statsCacheEntry struct {
 //
 // Parameters:
 //   - params: Inputs expected by the function.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewApplication() *Application {
@@ -338,8 +337,8 @@ func NewApplication() *Application {
 		configFiles:     make(map[string]string),
 		startupCh:       make(chan struct{}),
 		startTime:       time.Now(),
-		MetricsGatherer: prometheus.DefaultGatherer,
-		statsCache:      make(map[string]statsCacheEntry),
+		MetricsGatherer:   prometheus.DefaultGatherer,
+		statsCache:        make(map[string]statsCacheEntry),
 	}
 }
 
@@ -1051,9 +1050,8 @@ func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
 	}
 }
 
-// reconcileServices reconciles the service registry with the new configuration.
-//
 //nolint:gocyclo // complexity is fine here
+// reconcileServices reconciles the service registry with the new configuration.
 func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpAnyServerConfig) {
 	log := logging.GetLogger()
 	// Get current active services
@@ -1491,7 +1489,6 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
@@ -1518,7 +1515,6 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func HealthCheckWithContext(
@@ -2172,10 +2168,10 @@ func (a *Application) runServerMode(
 		if standardMiddlewares.Debugger != nil {
 			finalHandler = standardMiddlewares.Debugger.Handler(finalHandler)
 		}
-		// Recursive Context
-		if standardMiddlewares.RecursiveContext != nil {
-			finalHandler = standardMiddlewares.RecursiveContext.HandleContext(finalHandler)
-		}
+			// Recursive Context
+			if standardMiddlewares.RecursiveContext != nil {
+				finalHandler = standardMiddlewares.RecursiveContext.HandleContext(finalHandler)
+			}
 	}
 
 	// Middleware order: SecurityHeaders -> CORS -> CSRF -> JSONRPCCompliance -> Recovery -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)

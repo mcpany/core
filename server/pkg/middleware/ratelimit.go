@@ -58,7 +58,6 @@ type Option func(*RateLimitMiddleware)
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func WithTokenizer(t tokenizer.Tokenizer) Option {
@@ -80,7 +79,6 @@ func WithTokenizer(t tokenizer.Tokenizer) Option {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
@@ -136,6 +134,7 @@ func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRe
 	}
 
 	serviceRateLimitConfig := serviceInfo.Config.GetRateLimit()
+
 
 	// Check for tool-specific limit first
 	var toolLimiter Limiter

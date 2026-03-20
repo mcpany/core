@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"net/http"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 // RBACMiddleware provides middleware for Role-Based Access Control.
@@ -27,10 +27,8 @@ type RBACMiddleware struct {
 //
 // Parameters:
 //   - params: Inputs expected by the function.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewRBACMiddleware() *RBACMiddleware {

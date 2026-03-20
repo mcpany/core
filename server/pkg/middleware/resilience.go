@@ -31,7 +31,6 @@ type ResilienceMiddleware struct {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddleware {

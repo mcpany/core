@@ -21,7 +21,6 @@ import "unicode/utf8"
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func LevenshteinDistance(s1, s2 string) int {
@@ -47,7 +46,6 @@ func LevenshteinDistance(s1, s2 string) int {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func LevenshteinDistanceWithLimit(s1, s2 string, limit int) int {

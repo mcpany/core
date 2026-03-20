@@ -30,10 +30,8 @@ type Label = metrics.Label
 //
 // Parameters:
 //   - params: Inputs expected by the function.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
@@ -54,10 +52,8 @@ var initOnce sync.Once
 //
 // Parameters:
 //   - params: Inputs expected by the function.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func Initialize() error {
@@ -91,10 +87,8 @@ func Initialize() error {
 //
 // Parameters:
 //   - params: Inputs expected by the function.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func Handler() http.Handler {
@@ -113,7 +107,6 @@ func Handler() http.Handler {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func StartServer(addr string) error {
@@ -152,10 +145,8 @@ func StartServer(addr string) error {
 //
 // Returns:
 //   - outcome: The resulting data or value.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func SetGauge(name string, val float32, labels ...string) {
@@ -178,10 +169,8 @@ func SetGauge(name string, val float32, labels ...string) {
 //
 // Returns:
 //   - outcome: The resulting data or value.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func IncrCounter(name []string, val float32) {
@@ -199,10 +188,8 @@ func IncrCounter(name []string, val float32) {
 //
 // Returns:
 //   - outcome: The resulting data or value.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
@@ -219,10 +206,8 @@ func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 //
 // Returns:
 //   - outcome: The resulting data or value.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func MeasureSince(name []string, start time.Time) {
@@ -240,10 +225,8 @@ func MeasureSince(name []string, start time.Time) {
 //
 // Returns:
 //   - outcome: The resulting data or value.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Label) {
@@ -260,10 +243,8 @@ func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Lab
 //
 // Returns:
 //   - outcome: The resulting data or value.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func AddSample(name []string, val float32) {
@@ -281,10 +262,8 @@ func AddSample(name []string, val float32) {
 //
 // Returns:
 //   - outcome: The resulting data or value.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func AddSampleWithLabels(name []string, val float32, labels []metrics.Label) {

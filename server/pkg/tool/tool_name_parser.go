@@ -24,7 +24,6 @@ import (
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func ParseToolName(toolName string) (namespace string, tool string, err error) {
@@ -55,7 +54,6 @@ func ParseToolName(toolName string) (namespace string, tool string, err error) {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func GetFullyQualifiedToolName(serviceID, methodName string) string {

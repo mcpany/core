@@ -150,7 +150,6 @@ var IsSafeURL = func(urlStr string) error {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func ValidateIP(ip net.IP, allowLoopback, allowPrivate bool) error {

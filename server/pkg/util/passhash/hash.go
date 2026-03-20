@@ -21,7 +21,6 @@ import (
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func Password(password string) (string, error) {
@@ -45,7 +44,6 @@ func Password(password string) (string, error) {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func CheckPassword(password, hash string) bool {

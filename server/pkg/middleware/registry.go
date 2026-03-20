@@ -9,9 +9,9 @@ import (
 	"sort"
 	"sync"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/tool"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -43,10 +43,8 @@ var (
 //
 // Returns:
 //   - outcome: The resulting data or value.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func Register(name string, factory Factory) {
@@ -63,10 +61,8 @@ func Register(name string, factory Factory) {
 //
 // Returns:
 //   - outcome: The resulting data or value.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func RegisterMCP(name string, factory MCPFactory) {
@@ -85,7 +81,6 @@ func RegisterMCP(name string, factory MCPFactory) {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
@@ -121,7 +116,6 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
@@ -178,7 +172,6 @@ type StandardMiddlewares struct {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func InitStandardMiddlewares(

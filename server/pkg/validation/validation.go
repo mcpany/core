@@ -29,7 +29,6 @@ import (
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func IsValidBindAddress(s string) error {
@@ -153,10 +152,8 @@ var (
 //
 // Returns:
 //   - outcome: The resulting data or value.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func SetAllowedPaths(paths []string) {
@@ -347,7 +344,6 @@ var allowedOpaqueSchemes = map[string]bool{
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func IsValidURL(s string) bool {
@@ -408,7 +404,6 @@ func IsValidURL(s string) bool {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {

@@ -30,7 +30,6 @@ const remoteIPContextKey = contextKey("remote_ip")
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
@@ -51,7 +50,6 @@ func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func ExtractIP(addr string) string {
@@ -88,7 +86,6 @@ func ExtractIP(addr string) string {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func GetClientIP(r *http.Request, trustProxy bool) string {
@@ -130,7 +127,6 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func RemoteIPFromContext(ctx context.Context) (string, bool) {
@@ -153,7 +149,6 @@ func RemoteIPFromContext(ctx context.Context) (string, bool) {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func IsPrivateNetworkIP(ip net.IP) bool {
@@ -174,7 +169,6 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 //
 // Errors:
 //   - err: Any error that occurs during execution.
-//
 // Side Effects:
 //   - changes: Any state modifications.
 func IsPrivateIP(ip net.IP) bool {
