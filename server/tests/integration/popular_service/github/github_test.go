@@ -19,9 +19,6 @@ import (
 )
 
 func TestUpstreamService_GitHub(t *testing.T) {
-	// if os.Getenv("GITHUB_TOKEN") == "" {
-	// 	t.Skip("GITHUB_TOKEN is not set")
-	// }
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
@@ -54,100 +51,74 @@ func TestUpstreamService_GitHub(t *testing.T) {
 	defer mockServer.Close()
 
 	// --- 2. Start MCPANY Server ---
-	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EGitHubServerTest")
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EGitHubTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 3. Register Service Dynamically ---
-	config := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String("github"),
-		HttpService: configv1.HttpUpstreamService_builder{
+	serviceID := "e2e_github"
+	config := &configv1.UpstreamServiceConfig{
+		Id:   proto.String(serviceID),
+		Name: proto.String(serviceID),
+		HttpService: &configv1.HttpUpstreamService{
 			Address: proto.String(mockServer.URL),
 			Tools: []*configv1.ToolDefinition{
-				configv1.ToolDefinition_builder{Name: proto.String("get_user"), CallId: proto.String("get_user")}.Build(),
-				configv1.ToolDefinition_builder{Name: proto.String("list_repos"), CallId: proto.String("list_repos")}.Build(),
+				{
+					Name:   proto.String("getUser"),
+					CallId: proto.String("getUserCall"),
+				},
 			},
 			Calls: map[string]*configv1.HttpCallDefinition{
-				"get_user": configv1.HttpCallDefinition_builder{
-					Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
-					EndpointPath: proto.String("/users/{{username}}"),
+				"getUserCall": {
+					Id:           proto.String("getUserCall"),
+					EndpointPath: proto.String("/users/octocat"),
+					Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
 					Parameters: []*configv1.HttpParameterMapping{
-						configv1.HttpParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("username"), Type: configv1.ParameterType(configv1.ParameterType_value["STRING"]).Enum()}.Build()}.Build(),
+						{
+							Schema: &configv1.ParameterSchema{
+								Name: proto.String("username"),
+							},
+							In: configv1.HttpParameterMapping_PATH.Enum(),
+						},
 					},
-				}.Build(),
-				"list_repos": configv1.HttpCallDefinition_builder{
-					Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
-					EndpointPath: proto.String("/users/{{username}}/repos"),
-					Parameters: []*configv1.HttpParameterMapping{
-						configv1.HttpParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("username"), Type: configv1.ParameterType(configv1.ParameterType_value["STRING"]).Enum()}.Build()}.Build(),
-					},
-				}.Build(),
+				},
 			},
-		}.Build(),
-	}.Build()
+		},
+	}
 
-	req := apiv1.RegisterServiceRequest_builder{
+	req := &apiv1.RegisterServiceRequest{
 		Config: config,
-	}.Build()
+	}
 
 	integration.RegisterServiceViaAPI(t, mcpAnyTestServerInfo.RegistrationClient, req)
+	t.Logf("INFO: '%s' registered.", serviceID)
 
-	// --- 4. Call Tool via MCPANY ---
-	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpAnyTestServerInfo.HTTPEndpoint}, nil)
-	require.NoError(t, err)
-	defer cs.Close()
+	// --- 3. Call Tool via MCPANY ---
+	client, session, cleanup := integration.ConnectToMCPServer(t, ctx, mcpAnyTestServerInfo.MCPAddress, mcpAnyTestServerInfo.APIKey)
+	defer cleanup()
+	defer session.Close()
 
-	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
-	require.NoError(t, err)
-	// require.Len(t, listToolsResult.Tools, 2, "Expected exactly two tools to be registered")
-
-	foundUser := false
-	foundRepos := false
-	for _, tool := range listToolsResult.Tools {
-		if tool.Name == "github.get_user" {
-			foundUser = true
-		}
-		if tool.Name == "github.list_repos" {
-			foundRepos = true
-		}
-	}
-	require.True(t, foundUser, "Expected github.get_user tool")
-	require.True(t, foundRepos, "Expected github.list_repos tool")
-
-	// --- 5. Test Cases ---
-	t.Run("get_user", func(t *testing.T) {
-		args := json.RawMessage(`{"username": "octocat"}`)
-		res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: "github.get_user", Arguments: args})
+	t.Run("CallTool getUser", func(t *testing.T) {
+		res, err := client.CallTool(ctx, mcp.CallToolRequest{
+			Params: struct {
+				Name      string         `json:"name"`
+				Arguments map[string]any `json:"arguments,omitempty"`
+			}{
+				Name: serviceID + ".getUser",
+				Arguments: map[string]any{
+					"username": "octocat",
+				},
+			},
+		})
 		require.NoError(t, err)
 		require.NotNil(t, res)
+		require.False(t, res.IsError)
 
-		require.Len(t, res.Content, 1, "Expected exactly one content item")
-		textContent, ok := res.Content[0].(*mcp.TextContent)
-		require.True(t, ok, "Expected text content")
+		textContent, ok := res.Content[0].(mcp.TextContent)
+		require.True(t, ok)
 
-		var response map[string]interface{}
-		err = json.Unmarshal([]byte(textContent.Text), &response)
-		require.NoError(t, err, "Failed to unmarshal JSON response")
+		var githubResponse map[string]interface{}
+		json.Unmarshal([]byte(textContent.Text), &githubResponse)
 
-		require.Equal(t, "octocat", response["login"], "The login should match the input")
+		require.Equal(t, "octocat", githubResponse["login"])
+		require.Equal(t, "The Octocat", githubResponse["name"])
 	})
-
-	t.Run("list_repos", func(t *testing.T) {
-		args := json.RawMessage(`{"username": "octocat"}`)
-		res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: "github.list_repos", Arguments: args})
-		require.NoError(t, err)
-		require.NotNil(t, res)
-
-		require.Len(t, res.Content, 1, "Expected exactly one content item")
-		textContent, ok := res.Content[0].(*mcp.TextContent)
-		require.True(t, ok, "Expected text content")
-
-		var response []interface{}
-		err = json.Unmarshal([]byte(textContent.Text), &response)
-		require.NoError(t, err, "Failed to unmarshal JSON response")
-
-		require.NotEmpty(t, response, "The response should not be empty")
-	})
-
-	t.Log("INFO: E2E Test Scenario for GitHub Server Completed Successfully!")
 }

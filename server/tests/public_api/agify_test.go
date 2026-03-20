@@ -20,7 +20,6 @@ import (
 )
 
 func TestUpstreamService_Agify(t *testing.T) {
-	// t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
@@ -45,42 +44,51 @@ func TestUpstreamService_Agify(t *testing.T) {
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
 	callID := "getAge"
-	httpCall := configv1.HttpCallDefinition_builder{
+	httpCall := &configv1.HttpCallDefinition{
 		Id:           proto.String(callID),
-		EndpointPath: proto.String("/?name=michael"),
-		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
-	}.Build()
+		EndpointPath: proto.String("/"),
+		Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+		Parameters: []*configv1.HttpParameterMapping{
+			{
+				Schema: &configv1.ParameterSchema{
+					Name: proto.String("name"),
+					Type: configv1.ParameterType_STRING.Enum(),
+				},
+				In: configv1.HttpParameterMapping_QUERY.Enum(),
+			},
+		},
+	}
 
-	toolDef := configv1.ToolDefinition_builder{
+	toolDef := &configv1.ToolDefinition{
 		Name:   proto.String("getAge"),
 		CallId: proto.String(callID),
-	}.Build()
+	}
 
-	httpService := configv1.HttpUpstreamService_builder{
+	httpService := &configv1.HttpUpstreamService{
 		Address: proto.String(agifyServiceEndpoint),
 		Tools:   []*configv1.ToolDefinition{toolDef},
 		Calls:   map[string]*configv1.HttpCallDefinition{callID: httpCall},
-	}.Build()
+	}
 
-	config := configv1.UpstreamServiceConfig_builder{
+	config := &configv1.UpstreamServiceConfig{
+		Id:          proto.String(agifyServiceID),
 		Name:        proto.String(agifyServiceID),
 		HttpService: httpService,
-	}.Build()
+	}
 
-	req := apiv1.RegisterServiceRequest_builder{
+	req := &apiv1.RegisterServiceRequest{
 		Config: config,
-	}.Build()
+	}
 
 	integration.RegisterServiceViaAPI(t, registrationGRPCClient, req)
 	t.Logf("INFO: '%s' registered.", agifyServiceID)
 
-	// --- 3. Call Tool via MCPANY ---
-	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpAnyTestServerInfo.HTTPEndpoint}, nil)
-	require.NoError(t, err)
-	defer cs.Close()
+	// --- 4. Call Tool via MCPANY ---
+	client, session, cleanup := integration.ConnectToMCPServer(t, ctx, mcpAnyTestServerInfo.MCPAddress, mcpAnyTestServerInfo.APIKey)
+	defer cleanup()
+	defer session.Close()
 
-	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
+	listToolsResult, err := client.ListTools(ctx, mcp.ListToolsRequest{})
 	require.NoError(t, err)
 	for _, tool := range listToolsResult.Tools {
 		t.Logf("Discovered tool from MCPANY: %s", tool.Name)
@@ -89,24 +97,29 @@ func TestUpstreamService_Agify(t *testing.T) {
 	serviceID, _ := util.SanitizeServiceName(agifyServiceID)
 	sanitizedToolName, _ := util.SanitizeToolName("getAge")
 	toolName := serviceID + "." + sanitizedToolName
-	name := `{"name": "michael"}`
 
-	// Call the tool directly
-	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(name)})
+	res, err := client.CallTool(ctx, mcp.CallToolRequest{
+		Params: struct {
+			Name      string         `json:"name"`
+			Arguments map[string]any `json:"arguments,omitempty"`
+		}{
+			Name: toolName,
+			Arguments: map[string]any{
+				"name": "michael",
+			},
+		},
+	})
 	require.NoError(t, err, "Error calling getAge tool")
 	require.NotNil(t, res, "Nil response from getAge tool")
 
-	// --- 4. Assert Response ---
+	// --- 5. Assert Response ---
 	require.Len(t, res.Content, 1, "Expected exactly one content item")
-	textContent, ok := res.Content[0].(*mcp.TextContent)
+	textContent, ok := res.Content[0].(mcp.TextContent)
 	require.True(t, ok, "Expected text content")
 
-	// Wait, the test sometimes returns "invalid character 'T'" looking for beginning of value... Let's just fix JSON Unmarshal to handle any non-JSON
 	var agifyResponse map[string]interface{}
 	err = json.Unmarshal([]byte(textContent.Text), &agifyResponse)
-	if err != nil {
-	    t.Fatalf("Failed to unmarshal JSON response: %v, raw body: %s", err, textContent.Text)
-	}
+	require.NoError(t, err, "Failed to unmarshal JSON response")
 
 	require.Equal(t, "michael", agifyResponse["name"], "The name does not match")
 	require.NotEmpty(t, agifyResponse["age"], "The age should not be empty")

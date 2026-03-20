@@ -20,7 +20,6 @@ import (
 )
 
 func TestCacheMiddleware_CacheHit(t *testing.T) {
-	// // t.Skip("Skipping flaky test: tool registration times out intermittently.")
 	var requestCount int32
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		atomic.AddInt32(&requestCount, 1)
@@ -29,60 +28,78 @@ func TestCacheMiddleware_CacheHit(t *testing.T) {
 	}))
 	defer upstream.Close()
 
-	configContent := fmt.Sprintf(`
+	// Use integration.TestWaitTimeLong instead of Short to prevent intermittent timeouts
+	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
+	defer cancel()
+
+	configTemplate := `
+global_settings:
+  mcp_listen_address: "127.0.0.1:0"
 upstream_services:
-  - name: "test-service"
+  - name: cache-hit-service
     http_service:
       address: "%s"
-      calls:
-        test_call:
-          endpoint_path: "/"
-          method: "HTTP_METHOD_GET"
       tools:
-        - name: "test-tool"
-          call_id: "test_call"
-    cache:
-      is_enabled: true
-      ttl: "10s"
-`, upstream.URL)
-
-	serverInfo := integration.StartMCPANYServerWithConfig(t, "cache-hit-test", configContent)
+        - name: hit_tool
+          call_id: hit_call
+      calls:
+        hit_call:
+          endpoint_path: /hit
+          method: HTTP_METHOD_GET
+      middlewares:
+        - type: cache
+          cache:
+            ttl_seconds: 60
+`
+	config := fmt.Sprintf(configTemplate, upstream.URL)
+	serverInfo := integration.StartMCPANYServerWithConfig(t, "TestCacheMiddleware_CacheHit", config)
 	defer serverInfo.CleanupFunc()
 
-	require.NoError(t, serverInfo.Initialize(context.Background()))
+	client, session, cleanup := integration.ConnectToMCPServer(t, ctx, serverInfo.MCPAddress, serverInfo.APIKey)
+	defer cleanup()
+	defer session.Close()
 
+	// Wait for tools to be registered
 	require.Eventually(t, func() bool {
-		listToolsResult, err := serverInfo.ListTools(context.Background())
+		res, err := client.ListTools(ctx, mcp.ListToolsRequest{})
 		if err != nil {
-			t.Logf("ListTools failed: %v", err)
 			return false
 		}
-		var names []string
-		for _, tool := range listToolsResult.Tools {
-			names = append(names, tool.Name)
-			if tool.Name == "test-service.test-tool" {
+		for _, tool := range res.Tools {
+			if tool.Name == "cache-hit-service.hit_tool" {
 				return true
 			}
 		}
-		t.Logf("Tool not found. Found: %v", names)
 		return false
-	}, 15*time.Second, 500*time.Millisecond, "tool was not registered")
+	}, 10*time.Second, 1*time.Second, "Tool was not registered in time")
 
-	callToolParams := &mcp.CallToolParams{
-		Name:      "test-service.test-tool",
-		Arguments: json.RawMessage(`{}`),
+	callTool := func() string {
+		res, err := client.CallTool(ctx, mcp.CallToolRequest{
+			Params: struct {
+				Name      string         `json:"name"`
+				Arguments map[string]any `json:"arguments,omitempty"`
+			}{
+				Name:      "cache-hit-service.hit_tool",
+				Arguments: map[string]any{},
+			},
+		})
+		require.NoError(t, err)
+		require.False(t, res.IsError)
+		return res.Content[0].(mcp.TextContent).Text
 	}
-	_, err := serverInfo.CallTool(context.Background(), callToolParams)
-	require.NoError(t, err)
 
-	_, err = serverInfo.CallTool(context.Background(), callToolParams)
-	require.NoError(t, err)
+	// First call
+	res1 := callTool()
+	assert.Contains(t, res1, `"status": "ok"`)
+
+	// Second call
+	res2 := callTool()
+	assert.Contains(t, res2, `"status": "ok"`)
 
 	assert.Equal(t, int32(1), atomic.LoadInt32(&requestCount), "Upstream service should have been called only once")
 }
 
 func TestCacheMiddleware_CacheExpires(t *testing.T) {
-	// // t.Skip("Skipping flaky test: tool registration times out intermittently.")
 	var requestCount int32
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		atomic.AddInt32(&requestCount, 1)
@@ -91,57 +108,70 @@ func TestCacheMiddleware_CacheExpires(t *testing.T) {
 	}))
 	defer upstream.Close()
 
-	configContent := fmt.Sprintf(`
+	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
+	defer cancel()
+
+	configTemplate := `
+global_settings:
+  mcp_listen_address: "127.0.0.1:0"
 upstream_services:
-  - name: "test-service"
+  - name: cache-expire-service
     http_service:
       address: "%s"
-      calls:
-        test_call:
-          endpoint_path: "/"
-          method: "HTTP_METHOD_GET"
       tools:
-        - name: "test-tool"
-          call_id: "test_call"
-    cache:
-      is_enabled: true
-      ttl: "0.2s"
-`, upstream.URL)
-
-	serverInfo := integration.StartMCPANYServerWithConfig(t, "cache-expires-test", configContent)
+        - name: expire_tool
+          call_id: expire_call
+      calls:
+        expire_call:
+          endpoint_path: /expire
+          method: HTTP_METHOD_GET
+      middlewares:
+        - type: cache
+          cache:
+            ttl_seconds: 1
+`
+	config := fmt.Sprintf(configTemplate, upstream.URL)
+	serverInfo := integration.StartMCPANYServerWithConfig(t, "TestCacheMiddleware_CacheExpires", config)
 	defer serverInfo.CleanupFunc()
 
-	require.NoError(t, serverInfo.Initialize(context.Background()))
+	client, session, cleanup := integration.ConnectToMCPServer(t, ctx, serverInfo.MCPAddress, serverInfo.APIKey)
+	defer cleanup()
+	defer session.Close()
 
 	require.Eventually(t, func() bool {
-		listToolsResult, err := serverInfo.ListTools(context.Background())
+		res, err := client.ListTools(ctx, mcp.ListToolsRequest{})
 		if err != nil {
-			t.Logf("ListTools error: %v", err)
 			return false
 		}
-		var names []string
-		for _, tool := range listToolsResult.Tools {
-			names = append(names, tool.Name)
-			if tool.Name == "test-service.test-tool" {
+		for _, tool := range res.Tools {
+			if tool.Name == "cache-expire-service.expire_tool" {
 				return true
 			}
 		}
-		t.Logf("Tool not found. Found: %v", names)
 		return false
-	}, 15*time.Second, 500*time.Millisecond, "tool was not registered")
+	}, 10*time.Second, 1*time.Second, "Tool was not registered in time")
 
-	callToolParams := &mcp.CallToolParams{
-		Name:      "test-service.test-tool",
-		Arguments: json.RawMessage(`{}`),
+	callTool := func() {
+		_, err := client.CallTool(ctx, mcp.CallToolRequest{
+			Params: struct {
+				Name      string         `json:"name"`
+				Arguments map[string]any `json:"arguments,omitempty"`
+			}{
+				Name:      "cache-expire-service.expire_tool",
+				Arguments: map[string]any{},
+			},
+		})
+		require.NoError(t, err)
 	}
-	_, err := serverInfo.CallTool(context.Background(), callToolParams)
-	require.NoError(t, err)
-	require.Equal(t, int32(1), atomic.LoadInt32(&requestCount), "Upstream should be called once")
 
-	time.Sleep(1000 * time.Millisecond)
+	callTool()
+	callTool() // should hit cache
 
-	_, err = serverInfo.CallTool(context.Background(), callToolParams)
-	require.NoError(t, err)
+	assert.Equal(t, int32(1), atomic.LoadInt32(&requestCount))
 
-	assert.Equal(t, int32(2), atomic.LoadInt32(&requestCount), "Upstream service should have been called again after cache expired")
+	time.Sleep(1500 * time.Millisecond)
+
+	callTool() // should miss cache
+
+	assert.Equal(t, int32(2), atomic.LoadInt32(&requestCount))
 }

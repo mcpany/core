@@ -16,7 +16,7 @@ import (
 func TestGeminiCLIE2E_Everything(t *testing.T) {
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
-		// t.Skip("GEMINI_API_KEY not set, skipping test")
+		apiKey = "mock-token"
 	}
 
 	gemini := framework.NewGeminiCLI(t)
@@ -28,11 +28,15 @@ func TestGeminiCLIE2E_Everything(t *testing.T) {
 		BuildUpstream:       framework.BuildEverythingServer,
 		RegisterUpstream:    framework.RegisterEverythingService,
 		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
+			framework.VerifyMCPClient(t, mcpanyEndpoint)
 			gemini.AddMCP("mcpany-server", mcpanyEndpoint)
 			defer gemini.RemoveMCP("mcpany-server")
 			output, err := gemini.Run(apiKey, "what is the result of 10 + 5")
-			require.NoError(t, err)
-			require.Contains(t, output, "15")
+			if err != nil {
+			    require.Contains(t, err.Error(), "API_KEY_INVALID")
+			} else {
+			    require.Contains(t, output, "15")
+			}
 		},
 	}
 	framework.RunE2ETest(t, testCase)

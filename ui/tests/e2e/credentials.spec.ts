@@ -7,41 +7,31 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Credentials Management', () => {
 
-
+  test.beforeEach(async ({ request }) => {
+      // Clear out credentials using seed empty state to start clean
+      await request.post('/api/v1/debug/seed', {
+          data: {
+              upstream_services: [],
+              credentials: [],
+              secrets: [],
+              profiles: [],
+              users: []
+          },
+          headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' }
+      });
+  });
 
   test('should list, create, update and delete credentials', async ({ page }) => {
-    // 1. Initial List (Empty)
-    await page.route('**/api/v1/credentials', async route => {
-      if (route.request().method() === 'GET') {
-        await route.fulfill({ json: [] });
-      } else {
-        await route.continue();
-      }
-    });
 
     await page.goto('/credentials');
-    await expect(page.getByText('No credentials found')).toBeVisible();
+
+    // Wait for the table to load.
+    // If it's empty, wait for the table body to have 0 rows or for the empty state message.
+
+    // Sometimes it takes a moment for the data to arrive. Wait for it to become visible.
+    await expect(page.getByText('No credentials found')).toBeVisible({ timeout: 15000 });
 
     // 2. Create Credential
-    const newCred = {
-      id: 'cred-1',
-      name: 'Test API Key',
-      authentication: { apiKey: { paramName: 'Authorization', in: 0, value: { plainText: 'secret-key' } } }
-    };
-
-    let created = false;
-    await page.route('**/api/v1/credentials', async route => {
-      const method = route.request().method();
-      if (method === 'POST') {
-        created = true;
-        await route.fulfill({ json: newCred });
-      } else if (method === 'GET') {
-        await route.fulfill({ json: created ? [newCred] : [] });
-      } else {
-        await route.continue();
-      }
-    });
-
     await page.getByRole('button', { name: 'New Credential' }).click();
     await expect(page.getByText('Create Credential')).toBeVisible();
 
@@ -58,25 +48,6 @@ test.describe('Credentials Management', () => {
     await expect(page.locator('tbody').getByText('API Key', { exact: true })).toBeVisible();
 
     // 3. Update Credential
-    await page.route(`**/api/v1/credentials/${newCred.id}`, async route => {
-        if (route.request().method() === 'PUT') {
-             const data = route.request().postDataJSON();
-             newCred.name = data.name;
-             await route.fulfill({ json: newCred });
-        } else {
-             await route.continue();
-        }
-    });
-
-    // Refresh mock for list to return updated name
-    await page.route('**/api/v1/credentials', async route => {
-        if (route.request().method() === 'GET') {
-            await route.fulfill({ json: [newCred] });
-        } else {
-            await route.continue();
-        }
-    });
-
     await page.getByRole('button', { name: 'Edit' }).click();
     await page.getByPlaceholder('My Credential').fill('Updated API Key');
     await page.getByRole('button', { name: 'Save' }).click();
@@ -84,19 +55,6 @@ test.describe('Credentials Management', () => {
     await expect(page.getByText('Updated API Key')).toBeVisible();
 
     // 4. Delete Credential
-    await page.route(`**/api/v1/credentials/${newCred.id}`, async route => {
-        if (route.request().method() === 'DELETE') {
-             await route.fulfill({ status: 200 });
-        }
-    });
-
-    // Refresh mock for list to return empty
-    await page.route('**/api/v1/credentials', async route => {
-        if (route.request().method() === 'GET') {
-            await route.fulfill({ json: [] });
-        }
-    });
-
     // Accept delete confirmation
     page.on('dialog', dialog => dialog.accept());
 

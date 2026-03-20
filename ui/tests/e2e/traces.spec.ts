@@ -8,33 +8,13 @@ import { seedGlobalState } from './test-data';
 
 test.describe('Trace Viewer', () => {
   test.beforeEach(async ({ page, request }) => {
-    // Mock Traces API for all tests in this suite.
-    // The app fetches /api/v1/traces (with the v1 prefix).
-    await page.route('**/api/v1/traces', async route => {
-      await route.fulfill({
-        json: [
-          {
-            id: 'trace-1',
-            rootSpan: {
-              id: 'span-1',
-              name: 'calculate_sum',
-              serviceName: 'Math',
-              type: 'tool',
-              status: 'success',
-              startTime: Date.now() - 150,
-              endTime: Date.now(),
-              children: [],
-            },
-            timestamp: new Date().toISOString(),
-            totalDuration: 150,
-            status: 'success',
-            trigger: 'user'
-          }
-        ]
-      });
-    });
 
     await seedGlobalState(request);
+
+    // Call seed traces API to ensure we have trace data
+    await request.post('/api/v1/debug/traces', {
+        headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' }
+    });
 
     await page.goto('/login');
     await page.waitForLoadState('networkidle');
@@ -69,10 +49,6 @@ test.describe('Trace Viewer', () => {
     // Wait for traces to load
     await page.waitForSelector('text=Loading traces...', { state: 'detached' });
 
-    // Check if list is populated (should have at least one trace from mock)
-    // Check if list is populated (should have at least one trace from mock)
-    // Use try/catch or flexible selector since mock data is random
-    // But our mock generator creates at least one calculate_sum
     // Actually, let's just check for any trace item
     const firstTrace = page.locator('button.flex.flex-col').first();
     await expect(firstTrace).toBeVisible();
@@ -93,11 +69,11 @@ test.describe('Trace Viewer', () => {
     await page.waitForSelector('text=Loading traces...', { state: 'detached' });
 
     // Type in search box
-    await page.fill('input[placeholder="Search traces..."]', 'calculate');
+    await page.fill('input[placeholder="Search traces..."]', 'orchestrator-task');
 
     // Expect only matching items
     // and doesn't crash the page
-    await expect(page.locator('input[placeholder="Search traces..."]')).toHaveValue('calculate');
+    await expect(page.locator('input[placeholder="Search traces..."]')).toHaveValue('orchestrator-task');
   });
 
   test('should replay trace in playground', async ({ page }) => {
@@ -120,13 +96,11 @@ test.describe('Trace Viewer', () => {
       await expect(page).toHaveURL(/\/playground.*/, { timeout: 5000 });
     } catch {
       console.log('Replay navigation timed out, forcing navigation');
-      // We know the mock data has calculate_sum
-      await page.goto('/playground?tool=calculate_sum&args=%7B%7D');
+      await page.goto('/playground?tool=orchestrator-task&args=%7B%7D');
     }
     await expect(page).toHaveURL(/\/playground.*/);
 
     // Verify query params are present (tool and args)
-    // We don't check exact values as they depend on the random mock trace
     const url = page.url();
     expect(url).toContain('tool=');
     expect(url).toContain('args=');

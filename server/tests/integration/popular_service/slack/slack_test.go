@@ -19,12 +19,6 @@ import (
 )
 
 func TestUpstreamService_Slack(t *testing.T) {
-	// if os.Getenv("SLACK_API_TOKEN") == "" {
-	// 	t.Skip("SLACK_API_TOKEN is not set")
-	// }
-	// if os.Getenv("SLACK_TEST_CHANNEL") == "" {
-	// 	t.Skip("SLACK_TEST_CHANNEL is not set")
-	// }
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
@@ -53,6 +47,7 @@ func TestUpstreamService_Slack(t *testing.T) {
 			"ts": "1503435956.000247"
 		}
 	}`
+
 	mockHandler := integration.DefaultMockHandler(t, map[string]string{
 		"/chat.postMessage": mockResponse,
 	})
@@ -60,86 +55,108 @@ func TestUpstreamService_Slack(t *testing.T) {
 	defer mockServer.Close()
 
 	// --- 2. Start MCPANY Server ---
-	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2ESlackServerTest")
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2ESlackTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 3. Register Service Dynamically ---
-	config := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String("slack"),
-		HttpService: configv1.HttpUpstreamService_builder{
+	serviceID := "e2e_slack"
+	config := &configv1.UpstreamServiceConfig{
+		Id:   proto.String(serviceID),
+		Name: proto.String(serviceID),
+		HttpService: &configv1.HttpUpstreamService{
 			Address: proto.String(mockServer.URL),
 			Tools: []*configv1.ToolDefinition{
-				configv1.ToolDefinition_builder{
-					Name: proto.String("send_message"),
-					CallId: proto.String("send_message"),
-				}.Build(),
+				{
+					Name:   proto.String("postMessage"),
+					CallId: proto.String("postMessageCall"),
+				},
 			},
 			Calls: map[string]*configv1.HttpCallDefinition{
-				"send_message": configv1.HttpCallDefinition_builder{
-					Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_POST"]).Enum(),
+				"postMessageCall": {
+					Id:           proto.String("postMessageCall"),
 					EndpointPath: proto.String("/chat.postMessage"),
+					Method:       configv1.HttpCallDefinition_HTTP_METHOD_POST.Enum(),
 					Parameters: []*configv1.HttpParameterMapping{
-						configv1.HttpParameterMapping_builder{
-							Schema: configv1.ParameterSchema_builder{
+						{
+							Schema: &configv1.ParameterSchema{
 								Name: proto.String("channel"),
-								Type: configv1.ParameterType(configv1.ParameterType_value["STRING"]).Enum(),
-							}.Build(),
-						}.Build(),
-						configv1.HttpParameterMapping_builder{
-							Schema: configv1.ParameterSchema_builder{
+							},
+							In: configv1.HttpParameterMapping_BODY.Enum(),
+						},
+						{
+							Schema: &configv1.ParameterSchema{
 								Name: proto.String("text"),
-								Type: configv1.ParameterType(configv1.ParameterType_value["STRING"]).Enum(),
-							}.Build(),
-						}.Build(),
+							},
+							In: configv1.HttpParameterMapping_BODY.Enum(),
+						},
 					},
-				}.Build(),
+				},
 			},
-		}.Build(),
-	}.Build()
+		},
+	}
 
-	req := apiv1.RegisterServiceRequest_builder{
+	req := &apiv1.RegisterServiceRequest{
 		Config: config,
-	}.Build()
+	}
 
 	integration.RegisterServiceViaAPI(t, mcpAnyTestServerInfo.RegistrationClient, req)
+	t.Logf("INFO: '%s' registered.", serviceID)
 
-	// --- 4. Call Tool via MCPANY ---
-	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpAnyTestServerInfo.HTTPEndpoint}, nil)
-	require.NoError(t, err)
-	defer cs.Close()
+	// --- 3. Call Tool via MCPANY ---
+	client, session, cleanup := integration.ConnectToMCPServer(t, ctx, mcpAnyTestServerInfo.MCPAddress, mcpAnyTestServerInfo.APIKey)
+	defer cleanup()
+	defer session.Close()
 
-	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
-	require.NoError(t, err)
-
-	found := false
-	var toolNames []string
-	for _, tool := range listToolsResult.Tools {
-		toolNames = append(toolNames, tool.Name)
-		if tool.Name == "slack.send_message" {
-			found = true
-			break
-		}
-	}
-	require.Truef(t, found, "Expected slack.send_message tool to be registered. Found: %v", toolNames)
-
-	// --- 5. Test Cases ---
-	t.Run("send_message", func(t *testing.T) {
-		args := json.RawMessage(`{"channel": "C12345678", "text": "Hello, World!"}`)
-		// Tool name is usually ServiceName.ToolName for http_service
-		res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: "slack.send_message", Arguments: args})
+	t.Run("ListTools", func(t *testing.T) {
+		listToolsResult, err := client.ListTools(ctx, mcp.ListToolsRequest{})
 		require.NoError(t, err)
-		require.NotNil(t, res)
+
+		found := false
+		for _, tool := range listToolsResult.Tools {
+			if tool.Name == serviceID+".postMessage" {
+				found = true
+				break
+			}
+		}
+		require.True(t, found, "Tool postMessage should be present")
+	})
+
+	t.Run("CallTool postMessage", func(t *testing.T) {
+		res, err := client.CallTool(ctx, mcp.CallToolRequest{
+			Params: struct {
+				Name      string         `json:"name"`
+				Arguments map[string]any `json:"arguments,omitempty"`
+			}{
+				Name: serviceID + ".postMessage",
+				Arguments: map[string]any{
+					"channel": "C12345678",
+					"text":    "Hello, World!",
+				},
+			},
+		})
+		require.NoError(t, err, "Error calling postMessage tool")
+		require.NotNil(t, res, "Nil response from postMessage tool")
+		require.False(t, res.IsError, "Tool execution returned an error")
 
 		require.Len(t, res.Content, 1, "Expected exactly one content item")
-		textContent, ok := res.Content[0].(*mcp.TextContent)
+		textContent, ok := res.Content[0].(mcp.TextContent)
 		require.True(t, ok, "Expected text content")
 
-		var response map[string]interface{}
-		err = json.Unmarshal([]byte(textContent.Text), &response)
+		t.Logf("Response body: %s", textContent.Text)
+
+		// Parse the result as JSON
+		var slackResponse map[string]interface{}
+		err = json.Unmarshal([]byte(textContent.Text), &slackResponse)
 		require.NoError(t, err, "Failed to unmarshal JSON response")
 
-		require.True(t, response["ok"].(bool), "The response should be ok")
+		// Basic assertions based on the mock data
+		require.Equal(t, true, slackResponse["ok"], "Slack response should be OK")
+		require.Equal(t, "C12345678", slackResponse["channel"], "Unexpected channel ID")
+
+		message, ok := slackResponse["message"].(map[string]interface{})
+		require.True(t, ok, "message should be an object")
+		require.Equal(t, "Hello, World!", message["text"], "Unexpected message text")
+
+		t.Logf("SUCCESS: Received correct Slack response for channel: %v", slackResponse["channel"])
 	})
 
 	t.Log("INFO: E2E Test Scenario for Slack Server Completed Successfully!")

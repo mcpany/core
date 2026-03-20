@@ -8,62 +8,95 @@ package airtable_test
 import (
 	"context"
 	"encoding/json"
-	"os"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
+	apiv1 "github.com/mcpany/core/proto/api/v1"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestUpstreamService_Airtable(t *testing.T) {
-	if os.Getenv("AIRTABLE_API_TOKEN") == "" {
-		// t.Skip("AIRTABLE_API_TOKEN is not set")
-	}
-	if os.Getenv("AIRTABLE_BASE_ID") == "" {
-		// t.Skip("AIRTABLE_BASE_ID is not set")
-	}
-	if os.Getenv("AIRTABLE_TABLE_ID") == "" {
-		// t.Skip("AIRTABLE_TABLE_ID is not set")
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Airtable Server...")
 	t.Parallel()
 
-	// --- 1. Start MCPANY Server ---
-	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EAirtableServerTest", "--config-path", "../../../../examples/popular_services/airtable")
+	// --- 1. Start Mock Server ---
+	mockResponse := `{"records": [{"id": "rec123", "fields": {"Name": "Test Record"}}]}`
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(mockResponse))
+	}))
+	defer mockServer.Close()
+
+	// --- 2. Start MCPANY Server ---
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EAirtableServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 2. Call Tool via MCPANY ---
-	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpAnyTestServerInfo.HTTPEndpoint}, nil)
-	require.NoError(t, err)
-	defer cs.Close()
+	serviceID := "e2e_airtable"
+	config := &configv1.UpstreamServiceConfig{
+		Id:   proto.String(serviceID),
+		Name: proto.String(serviceID),
+		HttpService: &configv1.HttpUpstreamService{
+			Address: proto.String(mockServer.URL),
+			Tools: []*configv1.ToolDefinition{
+				{
+					Name:   proto.String("listRecords"),
+					CallId: proto.String("listRecordsCall"),
+				},
+			},
+			Calls: map[string]*configv1.HttpCallDefinition{
+				"listRecordsCall": {
+					Id:           proto.String("listRecordsCall"),
+					EndpointPath: proto.String("/v0/app123/tbl123"),
+					Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+				},
+			},
+		},
+	}
 
-	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
-	require.NoError(t, err)
-	require.Len(t, listToolsResult.Tools, 1, "Expected exactly one tool to be registered")
+	req := &apiv1.RegisterServiceRequest{
+		Config: config,
+	}
 
-	// --- 3. Test Cases ---
-	t.Run("list_records", func(t *testing.T) {
-		args := json.RawMessage(`{"baseId": "` + os.Getenv("AIRTABLE_BASE_ID") + `", "tableId": "` + os.Getenv("AIRTABLE_TABLE_ID") + `"}`)
-		res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: "airtable-list_records", Arguments: args})
+	integration.RegisterServiceViaAPI(t, mcpAnyTestServerInfo.RegistrationClient, req)
+	t.Logf("INFO: '%s' registered.", serviceID)
+
+	// --- 3. Call Tool via MCPANY ---
+	client, session, cleanup := integration.ConnectToMCPServer(t, ctx, mcpAnyTestServerInfo.MCPAddress, mcpAnyTestServerInfo.APIKey)
+	defer cleanup()
+	defer session.Close()
+
+	t.Run("CallTool listRecords", func(t *testing.T) {
+		res, err := client.CallTool(ctx, mcp.CallToolRequest{
+			Params: struct {
+				Name      string         `json:"name"`
+				Arguments map[string]any `json:"arguments,omitempty"`
+			}{
+				Name: serviceID + ".listRecords",
+				Arguments: map[string]any{},
+			},
+		})
 		require.NoError(t, err)
 		require.NotNil(t, res)
+		require.False(t, res.IsError)
 
-		require.Len(t, res.Content, 1, "Expected exactly one content item")
-		textContent, ok := res.Content[0].(*mcp.TextContent)
-		require.True(t, ok, "Expected text content")
+		textContent, ok := res.Content[0].(mcp.TextContent)
+		require.True(t, ok)
 
-		var response map[string]interface{}
-		err = json.Unmarshal([]byte(textContent.Text), &response)
-		require.NoError(t, err, "Failed to unmarshal JSON response")
+		var airtableResponse map[string]interface{}
+		json.Unmarshal([]byte(textContent.Text), &airtableResponse)
 
-		require.Contains(t, response, "records", "The response should contain records")
+		records := airtableResponse["records"].([]interface{})
+		require.Len(t, records, 1)
+
+		record := records[0].(map[string]interface{})
+		require.Equal(t, "rec123", record["id"])
 	})
-
-	t.Log("INFO: E2E Test Scenario for Airtable Server Completed Successfully!")
 }

@@ -8,72 +8,117 @@ package gemini_test
 import (
 	"context"
 	"encoding/json"
-	"os"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
+	apiv1 "github.com/mcpany/core/proto/api/v1"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestUpstreamService_Gemini(t *testing.T) {
-	if os.Getenv("GEMINI_API_KEY") == "" {
-		// t.Skip("Skipping test because GEMINI_API_KEY is not set")
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Gemini Server...")
 	t.Parallel()
 
-	// --- 1. Start MCPANY Server ---
-	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EGeminiServerTest", "--config-path", "../../../../examples/popular_services/gemini")
+	// --- 1. Start Mock Server ---
+	mockResponse := `{"candidates": [{"content": {"parts": [{"text": "Hello, how can I help you?"}]}}]}`
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(mockResponse))
+	}))
+	defer mockServer.Close()
+
+	// --- 2. Start MCPANY Server ---
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EGeminiServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 2. Call Tool via MCPANY ---
-	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpAnyTestServerInfo.HTTPEndpoint}, nil)
-	require.NoError(t, err)
-	defer cs.Close()
-
-	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
-	require.NoError(t, err)
-	require.Len(t, listToolsResult.Tools, 1, "Expected exactly one tool to be registered")
-
-	// --- 3. Test Cases ---
-	testCases := []struct {
-		name   string
-		prompt string
-	}{
-		{
-			name:   "Generate content with a valid prompt",
-			prompt: "Write a story about a magic backpack.",
+	serviceID := "e2e_gemini"
+	config := &configv1.UpstreamServiceConfig{
+		Id:   proto.String(serviceID),
+		Name: proto.String(serviceID),
+		HttpService: &configv1.HttpUpstreamService{
+			Address: proto.String(mockServer.URL),
+			Tools: []*configv1.ToolDefinition{
+				{
+					Name:   proto.String("generateContent"),
+					CallId: proto.String("generateContentCall"),
+				},
+			},
+			Calls: map[string]*configv1.HttpCallDefinition{
+				"generateContentCall": {
+					Id:           proto.String("generateContentCall"),
+					EndpointPath: proto.String("/v1/models/gemini-pro:generateContent"),
+					Method:       configv1.HttpCallDefinition_HTTP_METHOD_POST.Enum(),
+					Parameters: []*configv1.HttpParameterMapping{
+						{
+							Schema: &configv1.ParameterSchema{
+								Name: proto.String("contents"),
+							},
+							In: configv1.HttpParameterMapping_BODY.Enum(),
+						},
+					},
+				},
+			},
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			// --- 4. Call generateContent Tool ---
-			args := json.RawMessage(`{"contents": [{"parts": [{"text": "` + tc.prompt + `"}]}]}`)
-			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: "gemini/-/generateContent", Arguments: args})
-			require.NoError(t, err)
-			require.NotNil(t, res)
-
-			// --- 5. Assert generateContent Response ---
-			require.Len(t, res.Content, 1, "Expected exactly one content item")
-			textContent, ok := res.Content[0].(*mcp.TextContent)
-			require.True(t, ok, "Expected text content")
-
-			var response map[string]interface{}
-			err = json.Unmarshal([]byte(textContent.Text), &response)
-			require.NoError(t, err, "Failed to unmarshal JSON response")
-
-			candidates, ok := response["candidates"].([]interface{})
-			require.True(t, ok)
-			require.NotEmpty(t, candidates, "Expected at least one candidate")
-		})
+	req := &apiv1.RegisterServiceRequest{
+		Config: config,
 	}
 
-	t.Log("INFO: E2E Test Scenario for Gemini Server Completed Successfully!")
+	integration.RegisterServiceViaAPI(t, mcpAnyTestServerInfo.RegistrationClient, req)
+	t.Logf("INFO: '%s' registered.", serviceID)
+
+	// --- 3. Call Tool via MCPANY ---
+	client, session, cleanup := integration.ConnectToMCPServer(t, ctx, mcpAnyTestServerInfo.MCPAddress, mcpAnyTestServerInfo.APIKey)
+	defer cleanup()
+	defer session.Close()
+
+	t.Run("CallTool generateContent", func(t *testing.T) {
+		res, err := client.CallTool(ctx, mcp.CallToolRequest{
+			Params: struct {
+				Name      string         `json:"name"`
+				Arguments map[string]any `json:"arguments,omitempty"`
+			}{
+				Name: serviceID + ".generateContent",
+				Arguments: map[string]any{
+					"contents": []interface{}{
+						map[string]interface{}{
+							"parts": []interface{}{
+								map[string]interface{}{
+									"text": "Hello!",
+								},
+							},
+						},
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, res)
+		require.False(t, res.IsError)
+
+		textContent, ok := res.Content[0].(mcp.TextContent)
+		require.True(t, ok)
+
+		var geminiResponse map[string]interface{}
+		json.Unmarshal([]byte(textContent.Text), &geminiResponse)
+
+		candidates := geminiResponse["candidates"].([]interface{})
+		require.Len(t, candidates, 1)
+
+		candidate := candidates[0].(map[string]interface{})
+		content := candidate["content"].(map[string]interface{})
+		parts := content["parts"].([]interface{})
+		part := parts[0].(map[string]interface{})
+
+		require.Equal(t, "Hello, how can I help you?", part["text"])
+	})
 }
