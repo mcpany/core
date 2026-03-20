@@ -217,7 +217,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
         let validCount = 0;
         let warningCount = 0;
         let validOrWarningCount = 0;
-        const itemsToImport: ImportItem[] = [];
+        const itemsToImport: ServiceImportItem[] = [];
 
         for (let i = 0; i < items.length; i++) {
             const item = items[i];
