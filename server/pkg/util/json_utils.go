@@ -9,6 +9,21 @@ import (
 
 // skipString returns the index after the JSON string starting at start.
 // start must point to the opening quote.
+//
+// Summary: Returns the index after the JSON string starting at start.
+//
+// Parameters:
+//   - input ([]byte): The JSON input byte slice.
+//   - start (int): The starting index (must point to the opening quote).
+//
+// Returns:
+//   - int: The index after the parsed JSON string.
+//
+// Errors:
+//   - None explicitly returned.
+//
+// Side Effects:
+//   - None.
 func skipString(input []byte, start int) int {
 	// String starts at start, which is '"'
 	scanStart := start + 1
