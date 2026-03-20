@@ -230,18 +230,6 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 		}
 		a.seededTracesMu.RUnlock()
 
-		seededSubCh := make(chan *Trace, 100)
-		if a.seededTraceSubs == nil { a.seededTraceSubs = make(map[chan *Trace]struct{}) }; a.seededTraceSubsMu.Lock()
-		a.seededTraceSubs[seededSubCh] = struct{}{}
-		a.seededTraceSubsMu.Unlock()
-
-		defer func() {
-			if a.seededTraceSubs == nil { a.seededTraceSubs = make(map[chan *Trace]struct{}) }; a.seededTraceSubsMu.Lock()
-			delete(a.seededTraceSubs, seededSubCh)
-			a.seededTraceSubsMu.Unlock()
-			close(seededSubCh)
-		}()
-
 		pingTicker := time.NewTicker(5 * time.Second)
 		defer pingTicker.Stop()
 
@@ -302,16 +290,6 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 			a.seededTraces = a.seededTraces[len(a.seededTraces)-50:]
 		}
 		a.seededTracesMu.Unlock()
-
-		a.seededTraceSubsMu.RLock()
-		for sub := range a.seededTraceSubs {
-			select {
-			case sub <- &trace:
-			default:
-				// If channel is full, skip to avoid blocking
-			}
-		}
-		a.seededTraceSubsMu.RUnlock()
 
 		logging.GetLogger().Info("Seeded debug trace", "id", trace.ID)
 
