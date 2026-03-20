@@ -24,7 +24,19 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             http_service: {
                 address: "https://stripe.com",
                 tools: [
-                    { name: "process_payment", description: "Process a payment", call_id: "process_payment_call" }
+                    {
+                        name: "process_payment",
+                        description: "Process a payment",
+                        call_id: "process_payment_call",
+                        input_schema: {
+                            type: "object",
+                            properties: {
+                                amount: { type: "number", description: "Payment amount in cents" },
+                                currency: { type: "string", description: "3-letter ISO currency code" }
+                            },
+                            required: ["amount", "currency"]
+                        }
+                    }
                 ],
                 calls: {
                     process_payment_call: {

@@ -4,63 +4,11 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('Services Feature', () => {
-  const services: any[] = [
-    {
-        name: "Payment Gateway",
-        type: "http",
-        address: "https://stripe.com",
-        status: "up",
-        version: "v1.2.0",
-        enabled: true,
-        tools: [{
-            name: "process_payment",
-            description: "Process a payment via Stripe.",
-            inputSchema: {
-                type: "object",
-                properties: {
-                    amount: {
-                        type: "number",
-                        description: "Payment amount in cents"
-                    },
-                    currency: {
-                        type: "string",
-                        description: "Currency code (e.g., USD)"
-                    }
-                },
-                required: ["amount", "currency"]
-            }
-        }]
-    },
-    {
-        name: "User Service",
-        type: "grpc",
-        address: "localhost:50051",
-        status: "up",
-        version: "v1.0",
-        enabled: true
-    }
-  ];
-
-  test.beforeEach(async ({ page }) => {
-    // page.on('request', request => console.log('>>', request.method(), request.url()));
-
-    // Mock registration API with dynamic state
-    await page.route(url => url.pathname.endsWith('/api/v1/services'), async route => {
-        const method = route.request().method();
-        if (method === 'GET') {
-            await route.fulfill({ json: { services } });
-        } else if (method === 'POST') {
-            const newSvc = route.request().postDataJSON();
-            const created = { ...newSvc, status: 'up', enabled: true };
-            services.push(created);
-            await route.fulfill({ json: created });
-        } else {
-            await route.continue();
-        }
-    });
-
+  test.beforeEach(async ({ page, request }) => {
+    await seedGlobalState(request);
     await page.goto('/upstream-services');
   });
 
@@ -112,64 +60,23 @@ test.describe('Services Feature', () => {
   });
 
   test('should render schema visualizer in service tools dialog', async ({ page }) => {
-    // Payment Gateway is created by the real API seeding (see test-data.ts)
-    // First, verify the Payment Gateway service is visible on the page
-    await expect(page.getByText('Payment Gateway', { exact: true }).first()).toBeVisible({ timeout: 10000 });
+    // Navigate straight to the service page
+    await page.goto('/upstream-services/Payment%20Gateway');
+    await page.waitForTimeout(2000); // Give the page a moment to load
 
-    // Now get the row containing the Payment Gateway service.
-    const row = page.locator('tr').filter({ hasText: 'Payment Gateway' }).first();
-    await row.click();
+    // Wait for network requests to finish settling
+    await page.waitForLoadState('networkidle');
 
-    // Wait for the side sheet or right panel to appear and check its title
-    const sheet = page.locator('div[role="dialog"]');
+    // Look for the View Schema button directly - it's the only one that exists on the tools section
+    const viewSchemaBtn = page.locator('button[title="View Schema"], .lucide-file-json, button:has(.lucide-file-json)').first();
+    await expect(viewSchemaBtn).toBeVisible({ timeout: 15000 });
+    await viewSchemaBtn.click();
 
-    // First wait for the tools panel/dialog to open
-    // Fallback locator depending on implementation
-    if (await sheet.count() > 0) {
-        await expect(sheet.first()).toBeVisible();
-        await expect(sheet.getByRole('heading', { level: 2 }).first()).toContainText('Payment Gateway');
-
-        // Click View Schema button inside the sheet
-        await sheet.locator('button[title="View Schema"]').first().click();
-
-    } else {
-        // Fallback: The view may use icons or generic text. Wait for any schema trigger.
-        await page.waitForTimeout(1000);
-
-        const dialogTrigger = page.locator('button[title="View Schema"], button:has(.lucide-file-json), .lucide-file-json').first();
-
-        if (await dialogTrigger.isHidden()) {
-            // Expand the tool section if collapsed
-            const textElement = page.getByText('process_payment').first();
-            if (await textElement.isVisible()) {
-                await textElement.click({ force: true });
-                await page.waitForTimeout(500);
-            }
-        }
-
-        // Final fallback: just try to find the button and click it if it's there
-        if (await dialogTrigger.isVisible()) {
-            await dialogTrigger.click({ force: true });
-        } else {
-            // Very last resort: maybe the button has no title or icon we know
-            const schemaBtn = page.getByRole('button').filter({ hasText: 'Schema' }).first();
-            if (await schemaBtn.isVisible()) {
-                 await schemaBtn.click({ force: true });
-            }
-        }
-    }
-
-    // After clicking, the schema dialog should appear
-    // Let's find the element containing the text we expect, then its ancestor dialog
-    // Because Playwright can struggle with nested dialogs, let's just look for the text
-    // anywhere in the page once the schema dialog opens.
-
-    // Wait for something inside the schema view
-    // Since "Input schema definition." wasn't found, let's wait to see if we can find any row from the visualizer table
-    await expect(page.getByRole('row').nth(1)).toBeVisible({ timeout: 10000 });
-
-    // We should be good at this point. The test is just verifying the button can be clicked
-    // and the UI responds.
+    // Validate the Schema Visualizer opens and displays the seeded input schema properties
+    await expect(page.getByText('amount').first()).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText('Payment amount in cents').first()).toBeVisible();
+    await expect(page.getByText('currency').first()).toBeVisible();
+    await expect(page.getByText('3-letter ISO currency code').first()).toBeVisible();
   });
 
   test('should navigate to logs from service list', async ({ page }) => {
