@@ -5,8 +5,7 @@
 
 import { request, APIRequestContext } from '@playwright/test';
 
-// Instead of importing the compiled proto messages which are failing to resolve in playwright environment,
-// we construct the JSON objects directly as any. Playwright just sends these to the backend /seed endpoint.
+// Construct the JSON objects directly as any. Playwright sends these to the backend /seed endpoint.
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const ECHO_SERVER_BASE_URL = process.env.UI_HTTP_ECHO_BASE_URL || 'http://ui-http-echo-server:5678';
@@ -17,7 +16,6 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
 
     const services = [
         {
-            id: "svc_01",
             name: "Payment Gateway",
             version: "v1.2.0",
             httpService: {
@@ -34,11 +32,10 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             }
         },
         {
-            id: "svc_02",
             name: "User Service",
             version: "v1.0",
             httpService: {
-                address: "http://localhost:50051", // Dummy address
+                address: "http://localhost:50051",
                 tools: [
                     { name: "get_user", description: "Get user details", callId: "get_user_call" }
                 ],
@@ -51,7 +48,6 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             }
         },
         {
-            id: "svc_03",
             name: "Math",
             version: "v1.0",
             httpService: {
@@ -82,7 +78,6 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             }
         },
         {
-            id: "svc_echo",
             name: "Echo Service",
             version: "v1.0",
             commandLineService: {
@@ -103,7 +98,6 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             }
         },
         {
-            id: "svc_resource",
             name: "Resource Service",
             version: "v1.0",
             commandLineService: {
@@ -145,39 +139,6 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                     specUrl: "https://api.apis.guru/v2/specs/googleapis.com/calendar/v3/openapi.yaml"
                 }
             }
-        },
-        {
-            id: "github",
-            name: "GitHub",
-            description: "Interact with repositories, issues, and PRs.",
-            icon: "github",
-            tags: ["dev", "git"],
-            serviceConfig: {
-                name: "github",
-                upstreamAuth: {
-                    bearerToken: { token: { plainText: "" } }
-                },
-                openapiService: {
-                    address: "https://api.github.com",
-                    specUrl: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml"
-                }
-            }
-        },
-        {
-            id: "linear",
-            name: "Linear",
-            description: "Issue tracking and project management.",
-            icon: "linear",
-            tags: ["dev", "pm"],
-            serviceConfig: {
-                name: "linear",
-                upstreamAuth: {
-                    apiKey: { value: { plainText: "" } }
-                },
-                openapiService: {
-                    specUrl: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
-                }
-            }
         }
     ];
 
@@ -187,7 +148,6 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             authentication: {
                 basicAuth: {
                     username: "e2e-admin-core",
-                    // hash for "password" (bcrypt cost 12)
                     passwordHash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a"
                 }
             },
@@ -225,7 +185,6 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             const text = await res.text();
             throw new Error(`Failed to seed global state: ${res.status()} ${text}`);
         }
-        console.log("Global state seeded successfully.");
     } catch (e) {
         console.log(`Failed to seed global state: ${e}`);
         throw e;
@@ -244,33 +203,27 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
     }
 };
 
-// Backward compatibility wrappers to ensure other tests don't break
 export const seedServices = async (requestContext?: APIRequestContext) => {
-    // Calling seedGlobalState ensures services are present.
     await seedGlobalState(requestContext);
 };
 
 export const seedUser = async (requestContext: APIRequestContext | undefined, username: string) => {
-    // We create a specific user if requested, in addition to the core user.
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const user = {
         id: username,
         authentication: {
             basicAuth: {
                 username: username,
-                passwordHash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a" // password
+                passwordHash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a"
             }
         },
-        roles: ["admin"], // Default to admin for e2e tests
+        roles: ["admin"],
         profileIds: ["dev"]
     };
 
     try {
         const res = await context.post('/api/v1/users', { data: user, headers: HEADERS });
-        if (!res.ok() && res.status() !== 409) { // Ignore conflict if user exists
-            // If user creation fails, we might create it via seed?
-            // But seed clears everything.
-            // If this is called AFTER seedGlobalState, it adds a user.
+        if (!res.ok() && res.status() !== 409) {
             console.log(`Failed to create user ${username}: ${res.status()}`);
         }
     } catch (e) {
@@ -278,33 +231,13 @@ export const seedUser = async (requestContext: APIRequestContext | undefined, us
     }
 };
 
-export const cleanupServices = async (requestContext?: APIRequestContext) => {
-    // No-op
-};
-
-export const cleanupUser = async (requestContext: APIRequestContext | undefined, username: string) => {
-    // No-op
-};
-
-export const seedProfiles = async (requestContext?: APIRequestContext) => {
-    // Included in seedGlobalState (empty profiles list currently, but we can add if needed)
-};
-
-export const cleanupProfiles = async (requestContext?: APIRequestContext) => {
-    // No-op
-};
-
-export const seedPrompts = async (requestContext?: APIRequestContext) => {
-    // No-op
-};
-
-export const cleanupPrompts = async (requestContext?: APIRequestContext) => {
-    // No-op
-};
-
-export const seedWebhooks = async (requestContext?: APIRequestContext) => {
-    // No-op
-};
+export const cleanupServices = async (requestContext?: APIRequestContext) => {};
+export const cleanupUser = async (requestContext: APIRequestContext | undefined, username: string) => {};
+export const seedProfiles = async (requestContext?: APIRequestContext) => {};
+export const cleanupProfiles = async (requestContext?: APIRequestContext) => {};
+export const seedPrompts = async (requestContext?: APIRequestContext) => {};
+export const cleanupPrompts = async (requestContext?: APIRequestContext) => {};
+export const seedWebhooks = async (requestContext?: APIRequestContext) => {};
 
 export const seedCollection = async (name?: string, requestContext?: APIRequestContext) => {
     if (!name) return;
@@ -340,7 +273,5 @@ export const cleanupCollection = async (name?: string, requestContext?: APIReque
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
         await context.delete(`/api/v1/collections/${name}`, { headers: HEADERS });
-    } catch (e) {
-        // Ignore cleanup errors (collection may not exist)
-    }
+    } catch (e) {}
 };
