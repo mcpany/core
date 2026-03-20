@@ -21,4 +21,4 @@
 ## Autonomous Agent Pain Points
 - **Semantic Drift:** The persistent risk of specialists diverging from the mission root despite valid hardware signatures.
 - **Trace-Injection:** The ability of compromised agents to inject "Ghost Reasoning" into siblings via shared sharded caches.
-- **Attention window Exhaustion:** The overhead of managing high-frequency coordination fragments in large horizontal teams.
+- **Attention Window Exhaustion:** The overhead of managing high-frequency coordination fragments in large horizontal teams.

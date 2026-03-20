@@ -28,24 +28,14 @@ The **Active Intent Alignment (AIA) Hub** is designed to provide real-time, sema
 
 ## 4. Design & Architecture
 * **System Flow:**
-    ```mermaid
-    graph TD
-        MR[Mission Root] --> Hub[AIA Hub]
-        SA[Specialist Agent] -->|Alignment Heartbeat| Hub
-        Hub -->|Semantic Analysis| Engine[AIA Validation Engine]
-        Engine -->|Match/Drift| Hub
-        Hub -->|Hardware Attestation| TPM[TPM/Secure Enclave]
-        TPM -->|Alignment Token| SA
-    ```
-* **APIs / Interfaces:**
-    * `POST /v1/alignment/heartbeat`: Receives reasoning fragments and returns an attestation token.
-    * `POST /v1/alignment/anchor`: Pins a new mission-root intent for a session.
-* **Data Storage/State:**
-    * Intents and heartbeats are stored in the **Mesh-Aware Blackboard** (Shared KV Store) with hardware-bound lineage tags.
+    * **Handshake Phase**: Subagent provides TPM-bound session token to AIA Hub.
+    * **Alignment Phase**: Subagent pushes reasoning trace fragments to AIA Bus.
+    * **Verification Phase**: AIA Hub uses intent-weighted embedding comparison to verify semantic alignment.
+    * **Enforcement Phase**: AIA Hub signs or rejects the next tool-call capability token.
 
 ## 5. Alternatives Considered
-* **Passive Monitoring:** Rejected because reactive detection of drift (after the action) is too late for high-stakes enterprise missions.
-* **Centralized Reasoning:** Rejected due to the "Cognitive Stall" it would introduce; AIA must be lightweight and asynchronous where possible.
+* **Passive Monitoring**: Rejected because reactive detection of drift (after the action) is too late for high-stakes enterprise missions.
+* **Centralized Reasoning**: Rejected due to the "Cognitive Stall" it would introduce; AIA must be lightweight and asynchronous where possible.
 
 ## 6. Cross-Cutting Concerns
 * **Security (Zero Trust):** All heartbeats must be cryptographically bound to the hardware session. If a heartbeat is missed or invalid, the AIA Hub triggers immediate capability revocation via the MSSQ (Machine-Speed Swarm Quarantine).
