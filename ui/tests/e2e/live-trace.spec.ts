@@ -5,29 +5,10 @@
 
 import { test, expect } from '@playwright/test';
 
-test('Live Trace Inspector and Replay Flow', async ({ page }) => {
+test('Live Trace Inspector and Replay Flow', async ({ page, request }) => {
   // Navigate to traces page
-  // Mock traces API
-  await page.route('**/api/v1/traces', async route => {
-    await route.fulfill({
-      json: [
-        {
-          id: 'trace-123',
-          timestamp: new Date().toISOString(),
-          status: 'success',
-          trigger: 'user',
-          totalDuration: 150,
-          rootSpan: {
-            name: 'calculate_sum',
-            type: 'tool',
-            startTime: Date.now(),
-            endTime: Date.now() + 150,
-            input: {}
-          }
-        }
-      ]
-    });
-  });
+  const res = await request.post('/api/v1/debug/traces', { data: {} });
+  expect(res.ok()).toBeTruthy();
 
   // Navigate to traces page
   await page.goto('/traces');

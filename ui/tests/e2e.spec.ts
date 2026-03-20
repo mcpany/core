@@ -128,7 +128,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
     await expect(userService).toBeVisible();
 
-    // We skip checking error details as it depends on runtime health check timing
+    await expect(userService.locator('text=Healthy').or(userService.locator('text=Unhealthy'))).toBeVisible({ timeout: 15000 });
   });
 
 });
