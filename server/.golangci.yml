@@ -8,6 +8,7 @@ run:
 linters:
   enable:
     - bodyclose
+    - typecheck
     - errcheck
     - goconst
     - gocritic
