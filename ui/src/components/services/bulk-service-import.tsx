@@ -86,8 +86,8 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
     const parseAndValidate = async () => {
         setParsingError(null);
         setIsValidating(true);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let parsedServices: any[] = [];
+
+        let parsedServices = [] as UpstreamServiceConfig[];
 
         try {
             if (inputType === "url") {
@@ -112,14 +112,14 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
             } else {
                 if (!jsonContent.trim()) throw new Error("Content is required.");
 
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                let data: any;
+
+                let data = null as unknown as { services?: UpstreamServiceConfig[], openapi?: boolean, swagger?: boolean, info?: { title: string } };
                 try {
                     data = JSON.parse(jsonContent);
                 } catch (_e) {
                     // Try YAML
                     try {
-                        data = yaml.load(jsonContent);
+                        data = yaml.load(jsonContent) as { services?: UpstreamServiceConfig[], openapi?: boolean, swagger?: boolean, info?: { title: string } };
                     } catch (_yamlErr) {
                         throw new Error("Failed to parse input as JSON or YAML.");
                     }
@@ -144,8 +144,8 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
             // Trigger async validation for each
             validateItems(initialItems);
 
-        } catch (e: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
-            setParsingError(e.message || "Failed to parse input.");
+        } catch (err: unknown) {
+            setParsingError((err as Error).message || "Failed to parse input.");
             setIsValidating(false);
         }
     };
@@ -180,9 +180,9 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                          validatedItems[index].selected = false;
                      }
                 }
-            } catch (e: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+            } catch (err: unknown) {
                 validatedItems[index].validationStatus = "invalid";
-                validatedItems[index].validationMessage = e.message;
+                validatedItems[index].validationMessage = (err as Error).message;
                 validatedItems[index].selected = false;
             }
         }));
@@ -252,9 +252,9 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                 await apiClient.registerService(item.config);
                 results[originalIndex].importStatus = "success";
                 successCount++;
-            } catch (e: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+            } catch (err: unknown) {
                 results[originalIndex].importStatus = "error";
-                results[originalIndex].importError = e.message;
+                results[originalIndex].importError = (err as Error).message;
                 failureCount++;
             }
 
