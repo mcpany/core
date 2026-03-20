@@ -8,9 +8,9 @@ import sys
 
 # Regex patterns
 # Exported function: func Name(...) ...
-FUNC_PATTERN = re.compile(r'^func\s+([A-Z]\w*)\s*\((.*)\)\s*(.*)\{')
+FUNC_PATTERN = re.compile(r'^func\s+([A-Z]\w*)\s*\(')
 # Exported method: func (r *Receiver) Name(...) ...
-METHOD_PATTERN = re.compile(r'^func\s+\([^)]+\)\s+([A-Z]\w*)\s*\((.*)\)\s*(.*)\{')
+METHOD_PATTERN = re.compile(r'^func\s+\([^)]+\)\s+([A-Z]\w*)\s*\(')
 # Exported type: type Name ...
 TYPE_PATTERN = re.compile(r'^type\s+([A-Z]\w*)\s+')
 # Exported var/const: var Name ... or const Name ...
@@ -55,16 +55,28 @@ def check_file(filepath):
         m_type = TYPE_PATTERN.match(line)
         m_var_const = VAR_CONST_PATTERN.match(line)
 
-        if m_func:
-            symbol = m_func.group(1)
-            kind = "func"
-            params_str = m_func.group(2)
-            returns_str = m_func.group(3)
-        elif m_method:
-            symbol = m_method.group(1)
-            kind = "method"
-            params_str = m_method.group(2)
-            returns_str = m_method.group(3)
+        if m_func or m_method:
+            m = m_func or m_method
+            symbol = m.group(1)
+            kind = "func" if m_func else "method"
+
+            # Find matching parenthesis for parameters
+            start_search = m.end(0)
+            depth = 1
+            pos = start_search
+            while pos < len(line):
+                if line[pos] == "(":
+                    depth += 1
+                elif line[pos] == ")":
+                    depth -= 1
+
+                if depth == 0:
+                    params_str = line[start_search:pos]
+                    break
+                pos += 1
+
+            # Everything after parameters until { is the return type
+            returns_str = line[pos+1:].strip().rstrip("{").strip()
         elif m_type:
             symbol = m_type.group(1)
             kind = "type"
