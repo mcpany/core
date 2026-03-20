@@ -278,8 +278,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
     if (step === "input") {
         return (
             <div className="space-y-6">
-                <Tabs value={inputType} onValueChange={(v) => setInputType(v as any) // eslint-disable-line @typescript-eslint/no-explicit-any
-                } className="w-full">
+                <Tabs value={inputType} onValueChange={(v) => setInputType(v as "json" | "file" | "url")} className="w-full">
                     <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="json"><FileJson className="mr-2 h-4 w-4" /> JSON / YAML</TabsTrigger>
                         <TabsTrigger value="file"><Upload className="mr-2 h-4 w-4" /> File Upload</TabsTrigger>
