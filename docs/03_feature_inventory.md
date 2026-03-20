@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Hardware-Attested Mission Manifest (HAMM) Provider**: (P0) Authoritative "Manifest Mint" allowing lead agents to issue hardware-bound mission manifests for all spawned teammates.
+- **Semantic Identity Anchoring (SIA) Service**: (P0) Security service that binds agent reasoning traces to their hardware-attested lineage to prevent state-splicing.
+- **Agentic-Server Discovery Guard (ASDG)**: (P1) Discovery layer middleware that ensures "Agentic Servers" (MCP sampling servers) are only discoverable if they provide proof of mission-root alignment.
+- **Teammate Reasoning-Path Validator**: (P0) Real-time validator that performs semantic hash-chaining on all inter-teammate coordination messages.
+
+### Priority Shifts
+- **Mesh-Resident Key Exchange (MRKE) Provider**: (Re-affirmed P0) Now elevated with the requirement for supporting **HAMM-compliant** session rotations.
+- **Entangled State Broker (ESB)**: (Re-affirmed P0) Evolving to support the new **SIA-compliant** state entanglement requirements.
+
 ## Evolution: [2026-06-16] Updates
 
 ### Proposed Additions

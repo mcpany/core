@@ -753,3 +753,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+### Upcoming: [2026-06-18]
+- **Hardware-Attested Mission Manifest (HAMM) Provider**: (P0) Authoritative "Manifest Mint" allowing lead agents to issue hardware-bound mission manifests for all spawned teammates. (Added: 2026-06-18)
+- **Semantic Identity Anchoring (SIA) Service**: (P0) Security service that binds agent reasoning traces to their hardware-attested lineage to prevent state-splicing. (Added: 2026-06-18)
+- **Agentic-Server Discovery Guard (ASDG)**: (P1) Discovery layer middleware that ensures "Agentic Servers" (MCP sampling servers) are only discoverable if they provide proof of mission-root alignment. (Added: 2026-06-18)
+- **Teammate Reasoning-Path Validator**: (P0) Real-time validator that performs semantic hash-chaining on all inter-teammate coordination messages. (Added: 2026-06-18)
