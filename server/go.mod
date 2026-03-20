@@ -54,7 +54,6 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/machinebox/graphql v0.2.2
 	github.com/mcpany/core v0.0.0-00010101000000-000000000000
-	github.com/mcpany/core/upstream_service/grpc/greeter_server v0.0.0-00010101000000-000000000000
 	github.com/milvus-io/milvus-sdk-go/v2 v2.4.2
 	github.com/modelcontextprotocol/go-sdk v1.1.0
 	github.com/nats-io/nats-server/v2 v2.12.1

@@ -28,8 +28,6 @@ go_sdk.download(version = "1.26.1")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//server:go.mod")
-
-# go_deps.from_file(go_mod = "//server/examples/upstream_service_demo/grpc/greeter_server:go.mod")
 # go_deps.from_file(go_mod = "//k8s/operator:go.mod")
 go_deps.gazelle_override(
     directives = [
@@ -97,7 +95,6 @@ use_repo(
     "com_github_machinebox_graphql",
     "com_github_masterminds_semver_v3",
     "com_github_mcpany_core",
-    "com_github_mcpany_core_upstream_service_grpc_greeter_server",
     "com_github_milvus_io_milvus_sdk_go_v2",
     "com_github_modelcontextprotocol_go_sdk",
     "com_github_nats_io_nats_go",
