@@ -18,7 +18,7 @@
 *   **Key Pattern**: Capability discovery is no longer public. Agents must present an identity token before seeing the "Agent Card" (capability list) of a peer.
 
 ### 4. Market Vulnerability: AI Swarm Attacks (Hivenets)
-*   **Findings**: Cybersecurity reports (Palo Alto, Kiteworks) highlight the rise of "Hivenet" attacks—thousands of coordinated autonomous agents performing low-and-slow probes that evade traditional single-point anomaly detection.
+*   **Findings**: Cybersecurity reports (Palo Alto, Kiteworks) highlight the rise of "Hivenet" attacks--thousands of coordinated autonomous agents performing low-and-slow probes that evade traditional single-point anomaly detection.
 *   **Critical Gap**: Existing gateways lack the sub-millisecond "Collective Anomaly Detection" required to neutralize swarm-speed attacks before they achieve lateral movement.
 
 ## Summary of Unique Findings

@@ -3,7 +3,7 @@
 **Created:** 2026-03-13
 
 ## 1. Context and Scope
-As agents become more autonomous, they increasingly consume untrusted data (web pages, logs, emails). Attackers can hide malicious instructions in this data—a technique known as "Prompt Path" or indirect prompt injection. This can trick an agent into exfiltrating sensitive data or performing unauthorized tool calls. MCP Any needs a `Prompt Path Protection` middleware that scans all data entering the agent's context for injection patterns.
+As agents become more autonomous, they increasingly consume untrusted data (web pages, logs, emails). Attackers can hide malicious instructions in this data--a technique known as "Prompt Path" or indirect prompt injection. This can trick an agent into exfiltrating sensitive data or performing unauthorized tool calls. MCP Any needs a `Prompt Path Protection` middleware that scans all data entering the agent's context for injection patterns.
 
 ## 2. Goals & Non-Goals
 * **Goals:**

@@ -4,7 +4,7 @@
 **Created:** 2026-02-25
 
 ## 1. Context and Scope
-As the number of available MCP tools grows, agents face "context pollution"—where the token cost of including all tool definitions exceeds the benefit, often consuming over 70% of the context window. Claude Code recently introduced "MCP Tool Search" to solve this. MCP Any needs a universal version of this capability that works across all LLMs and transport layers.
+As the number of available MCP tools grows, agents face "context pollution"--where the token cost of including all tool definitions exceeds the benefit, often consuming over 70% of the context window. Claude Code recently introduced "MCP Tool Search" to solve this. MCP Any needs a universal version of this capability that works across all LLMs and transport layers.
 
 ## 2. Goals & Non-Goals
 *   **Goals:**

@@ -2,28 +2,19 @@
 
 ## Ecosystem Shifts & Findings
 
-### 1. Attention-Aware Routing (AAR) in OpenClaw v3.2.1
+### 1. Attention-Aware Routing (AAR) in OpenClaw
+The latest OpenClaw "Orchestration Mesh" technical preview introduces **Attention-Aware Routing**. This mechanism allows the parent agent to dynamically route sub-tasks based on the "Attention Availability" of specialists. This is a direct response to **Reasoning Entropy Exhaustion (REE)**, as it enables the swarm to bypass specialists currently under high-entropy noise injection, preserving the mission-root's cognitive resources.
 
-OpenClaw has released a patch (v3.2.1) introducing **Attention-Aware Routing**. This mechanism allows the orchestrator to prioritize the delivery of reasoning fragments based on their "Mission-Root Proximity." Fragments that are semantically closer to the primary goal are given priority in the limited attention window, mitigating the impact of REE (Reasoning Entropy Exhaustion) attacks by ensuring critical intents are processed first.
-
-### 2. Hardware-Locked Context Pinning (Claude Code v2.5.1)
-
-Claude Code v2.5.1 has transitioned from soft-pinning to **Hardware-Locked Context Pinning**. Every pinned context segment must now be accompanied by a TPM-bound attestation signature. This ensures that even if a subagent manages to inject high-entropy noise, it cannot evict the hardware-locked "Mission Root" from the top of the attention stack.
+### 2. Hardware-Locked Context Pinning (Claude Code v2.6)
+Claude Code has released a patch for its "Attention Sovereignty" suite, introducing **Hardware-Locked Context Pinning**. This allows specific mission-critical intent fragments to be cryptographically "pinned" at the LLM's attention layer via a TPM-bound session. Unlike legacy software pinning, this prevents eviction even during extreme REE attacks, ensuring the mission root remains authoritative.
 
 ### 3. Multi-Dimensional Reasoning Attestation (MDRA)
+Gemini CLI has published a draft specification for **MDRA**. This unified token format merges hardware attestation (TPM/TEE), stylometric consistency (SSM), and mission-lineage (HAIL) into a single, multi-dimensional attestation block. This is intended to solve the "Coordination Drift" pain point by providing a high-confidence proof of fragment-level integrity that is resistant to collision-based spoofing.
 
-A new draft specification for **MDRA** has been released by the Gemini CLI team (v0.41.0-draft). MDRA proposes a unified attestation token that combines three vectors:
-- **Hardware Attestation**: TPM/Secure Enclave proof of the execution environment.
-- **Behavioral Attestation**: Real-time profiling of tool usage against a historical baseline.
-- **Lineage Attestation**: Cryptographic proof of the reasoning path back to the user intent.
-This "Three-Factor Agency" is expected to become the gold standard for high-trust enterprise swarms.
-
-## Summary of Pain Points
-
-- **Coordination Drift**: Large swarms are experiencing "Coordination Drift" due to **Attestation Jitter**--the slight latency variations in hardware signatures that cause parallel teammates to fall out of sync during high-frequency bidding.
-- **Shadow-Channel Persistence**: Despite SCI (Shadow Coordination Interceptor) implementations, attackers are exploring "Physical-Layer Side-Channels" (e.g., fan speed or CPU thermals) to coordinate between air-gapped agent containers.
-- **Attestation Overhead**: The move to MDRA is increasing the "Reasoning Tax," with some agents spending up to 30% of their token budget on security handshakes.
+### 4. Autonomous Agent Pain Points
+- **Coordination Drift**: Swarms are diverging when specialists return hardware-attested but semantically inconsistent results.
+- **Context Fragmentation**: The overhead of MDRA-style unified tokens is leading to "Context-Window Bloat" in deep agent chains.
+- **Side-Channel Proliferation**: Discovery of a new side-channel exploit using gRPC metadata for "Shadow Coordination" handshakes.
 
 ## Strategic Implications for MCP Any
-
-MCP Any must adapt to support **MDRA-native coordination**. We need to evolve our Attestation Bridge to aggregate these multi-dimensional proofs without adding to the "Attestation Jitter." Additionally, our "Attention-Locked" infrastructure must align with the new hardware-pinning standards to ensure cross-framework mission sovereignty.
+MCP Any must adopt the MDRA unified token standard to maintain cross-framework trust continuity. We should evolve the **ARI Hub** to support AAR-native routing decisions and integrate **Attention-Locked Routing Hub (ALRH)** logic to mitigate the side-channel proliferation in gRPC metadata.

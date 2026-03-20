@@ -17,7 +17,7 @@
 *   **Key Pattern**: "Authenticated Agent Card Discovery" is now the standard. Agents must complete a cryptographically bound handshake before being allowed to "see" the capability list (Agent Card) of a peer.
 
 ### 4. Market Vulnerability: AI Swarm Attacks (Hivenets)
-*   **Findings**: Coordinated autonomous agents are being used for "Hivenet" attacks—performing low-and-slow, distributed probes that evade single-point anomaly detection.
+*   **Findings**: Coordinated autonomous agents are being used for "Hivenet" attacks--performing low-and-slow, distributed probes that evade single-point anomaly detection.
 *   **Critical Gap**: Modern agent gateways lack the sub-millisecond, mesh-wide behavioral analysis required to detect and neutralize coordinated swarm movements before lateral movement occurs.
 
 ## Summary of Unique Findings
