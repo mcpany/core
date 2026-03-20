@@ -107,13 +107,13 @@ describe("ConnectionDiagnosticDialog", () => {
 
     it("renders the trigger button", () => {
         render(<ConnectionDiagnosticDialog service={mockService} />);
-        expect(screen.getByText("Troubleshoot")).toBeInTheDocument();
+        expect(screen.getByText("Test Connection")).toBeInTheDocument();
     });
 
     it("opens the dialog and starts diagnostics", async () => {
         render(<ConnectionDiagnosticDialog service={mockService} />);
 
-        const trigger = screen.getByText("Troubleshoot");
+        const trigger = screen.getByText("Test Connection");
         fireEvent.click(trigger);
 
         expect(screen.getByText("Connection Diagnostics")).toBeInTheDocument();
@@ -149,7 +149,7 @@ describe("ConnectionDiagnosticDialog", () => {
     it("detects HTTP service and adds browser check step", async () => {
         render(<ConnectionDiagnosticDialog service={mockService} />);
 
-        const trigger = screen.getByText("Troubleshoot");
+        const trigger = screen.getByText("Test Connection");
         fireEvent.click(trigger);
 
         const startButton = screen.getByText("Start Diagnostics");
@@ -195,7 +195,7 @@ describe("ConnectionDiagnosticDialog", () => {
 
         render(<ConnectionDiagnosticDialog service={mockWebSocketService} />);
 
-        const trigger = screen.getByText("Troubleshoot");
+        const trigger = screen.getByText("Test Connection");
         fireEvent.click(trigger);
 
         const startButton = screen.getByText("Start Diagnostics");
@@ -225,7 +225,7 @@ describe("ConnectionDiagnosticDialog", () => {
 
         render(<ConnectionDiagnosticDialog service={mockService} />);
 
-        const trigger = screen.getByText("Troubleshoot");
+        const trigger = screen.getByText("Test Connection");
         fireEvent.click(trigger);
 
         const startButton = screen.getByText("Start Diagnostics");
@@ -256,7 +256,7 @@ describe("ConnectionDiagnosticDialog", () => {
 
         render(<ConnectionDiagnosticDialog service={mockService} />);
 
-        const trigger = screen.getByText("Troubleshoot");
+        const trigger = screen.getByText("Test Connection");
         fireEvent.click(trigger);
 
         const startButton = screen.getByText("Start Diagnostics");
@@ -283,7 +283,7 @@ describe("ConnectionDiagnosticDialog", () => {
 
         render(<ConnectionDiagnosticDialog service={mockService} />);
 
-        const trigger = screen.getByText("Troubleshoot");
+        const trigger = screen.getByText("Test Connection");
         fireEvent.click(trigger);
 
         const startButton = screen.getByText("Start Diagnostics");
@@ -306,7 +306,7 @@ describe("ConnectionDiagnosticDialog", () => {
 
         render(<ConnectionDiagnosticDialog service={mockService} />);
 
-        const trigger = screen.getByText("Troubleshoot");
+        const trigger = screen.getByText("Test Connection");
         fireEvent.click(trigger);
 
         const startButton = screen.getByText("Start Diagnostics");
@@ -344,7 +344,7 @@ describe("ConnectionDiagnosticDialog", () => {
 
         render(<ConnectionDiagnosticDialog service={localhostService} />);
 
-        const trigger = screen.getByText("Troubleshoot");
+        const trigger = screen.getByText("Test Connection");
         fireEvent.click(trigger);
 
         const startButton = screen.getByText("Start Diagnostics");
