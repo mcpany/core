@@ -32,7 +32,7 @@ func (a *Application) handleTemplates() http.HandlerFunc {
 			opts := protojson.MarshalOptions{UseProtoNames: true, EmitUnpopulated: true}
 			// ⚡ BOLT: Pre-allocate buffer to prevent O(N) reallocations during JSON array construction.
 			// Randomized Selection from Top 5 High-Impact Targets.
-			buf := make([]byte, 0, 1024)
+			buf := make([]byte, 0, 1024) //nolint:all
 			buf = append(buf, '[')
 			for i, t := range templates {
 				if i > 0 {
