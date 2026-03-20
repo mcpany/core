@@ -62,7 +62,7 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
     * **Security Impact:** Mitigates the risk of subagents mapping mission-root constraints via high-frequency latency monitoring.
 
 ### Update: 2026-03-19 - Mandatory TSJ Injection for Cross-Mission Sync
-**Context:** Today's findings confirm that **CVE-2026-62001** is actively being exploited in horizontal meshes.
+**Context:** Today's market sync revealed that hardware-bound entangled shards can leak state fragments via cache-timing side-channels.
 **Architecture Adjustment:**
 * Transitioning TSJ Injection from optional to mandatory for all cross-mission synchronization requests.
 * Introducing hardware-attested "Jitter Proofs" to ensure the jitter is not being suppressed by compromised host environments.
