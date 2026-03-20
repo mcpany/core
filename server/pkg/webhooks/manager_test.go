@@ -96,3 +96,54 @@ func TestManager_TestWebhook_Failure(t *testing.T) {
 		t.Errorf("expected status failure, got %s", updated.Status)
 	}
 }
+
+func TestManager_TestWebhook_NotFound(t *testing.T) {
+	m := NewManager()
+	err := m.TestWebhook(context.Background(), "nonexistent")
+	if err == nil {
+		t.Fatalf("TestWebhook expected error for nonexistent webhook, got nil")
+	}
+	if err.Error() != "webhook not found" {
+		t.Errorf("expected error 'webhook not found', got %v", err)
+	}
+}
+
+func TestManager_TestWebhook_InvalidURL(t *testing.T) {
+	m := NewManager()
+	w := &WebhookConfig{
+		URL:    "http://192.168.0.%31/", // Invalid URL that fails http.NewRequestWithContext
+		Events: []string{"test"},
+		Active: true,
+	}
+	m.AddWebhook(w)
+	id := m.ListWebhooks()[0].ID
+
+	// Override URL to something that breaks url.Parse inside NewRequestWithContext
+	w.URL = string([]byte{0x7f})
+
+	err := m.TestWebhook(context.Background(), id)
+	if err == nil {
+		t.Fatalf("TestWebhook expected error for invalid URL, got nil")
+	}
+}
+
+func TestManager_TestWebhook_ClientError(t *testing.T) {
+	m := NewManager()
+	w := &WebhookConfig{
+		URL:    "http://127.0.0.1:0", // Invalid port that dials will fail
+		Events: []string{"test"},
+		Active: true,
+	}
+	m.AddWebhook(w)
+	id := m.ListWebhooks()[0].ID
+
+	err := m.TestWebhook(context.Background(), id)
+	if err == nil {
+		t.Fatalf("TestWebhook expected error for client error, got nil")
+	}
+
+	updated, _ := m.GetWebhook(id)
+	if updated.Status != "failure" {
+		t.Errorf("expected status failure, got %s", updated.Status)
+	}
+}
