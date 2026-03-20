@@ -591,3 +591,9 @@
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
+
+### Upcoming: [2026-06-18]
+- [ ] **[P0] ACP Bridge Status Monitor**: (2026-06-18) Real-time visualization of ACP translation events and inter-framework teammate coordination.
+- [ ] **[P0] STL Lock-Free Workspace**: (2026-06-18) Interactive dashboard for visualizing CRDT-based task list claiming and synchronization.
+- [ ] **[P0] T2T Semantic Security Hub**: (2026-06-18) UI for reviewing semantically flagged teammate messages and blocked "Ghost Context" attempts.
+- [ ] **[P1] Thinking-Level Budget Widget**: (2026-06-18) Centralized resource monitor for tracking reasoning budget consumption across the swarm.

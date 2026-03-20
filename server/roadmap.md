@@ -753,3 +753,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+### Upcoming: [2026-06-18]
+- **ACP-Native Messaging Bridge**: (P0) Native translation service for the Agent Communication Protocol to enable framework-neutral coordination (Added: 2026-06-18).
+- **Lock-Free Shared Task List (STL) Adapter**: (P0) CRDT-based implementation for the Blackboard supporting asynchronous teammate task claiming (Added: 2026-06-18).
+- **T2T Semantic Verification Middleware**: (P0) Advanced mailbox security layer to detect and block "Context Ghosting" in inter-teammate streams (Added: 2026-06-18).
+- **Thinking-Level Budget Controller**: (P1) Centralized resource manager for enforcing `thinking_level` and `thinking_budget` constraints (Added: 2026-06-18).

@@ -1360,3 +1360,15 @@
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **ACP-Native Messaging Bridge**: (P0) Authoritative translation hub for the Agent Communication Protocol, enabling cross-framework inter-teammate messaging.
+- **Lock-Free STL Adapter**: (P0) CRDT-based extension for the Shared KV Store (Blackboard) supporting non-blocking teammate coordination.
+- **T2T Semantic Verification Middleware**: (P0) Advanced mailbox security layer performing semantic analysis of teammate messages to block "Context Ghosting."
+- **Thinking-Level Budget Controller**: (P1) Resource management service for propagating Gemini-style `thinking_level` and `thinking_budget` constraints.
+
+### Priority Shifts
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **CRDT-native STL** support.
+- **A2A Messaging Hub**: (Re-affirmed P0) Evolving to act as the primary backend for the **ACP-Native Messaging Bridge**.
