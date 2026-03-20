@@ -144,11 +144,19 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 
 // deploymentForMCPServer creates a new Deployment for the MCPServer resource.
 //
+// Summary: Creates a new Deployment for the MCPServer resource.
+//
 // Parameters:
 //   - m: The MCPServer resource.
 //
 // Returns:
 //   - *appsv1.Deployment: The created Deployment.
+//
+// Errors:
+//   - Returns nil if setting controller reference fails.
+//
+// Side Effects:
+//   - Creates a Deployment struct but does not apply it to the cluster directly.
 func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *appsv1.Deployment {
 	ls := labelsForMCPServer(m.Name)
 	replicas := m.Spec.Replicas
@@ -204,11 +212,19 @@ func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *
 
 // serviceForMCPServer creates a new Service for the MCPServer resource.
 //
+// Summary: Creates a new Service for the MCPServer resource.
+//
 // Parameters:
 //   - m: The MCPServer resource.
 //
 // Returns:
 //   - *corev1.Service: The created Service.
+//
+// Errors:
+//   - Returns nil if setting controller reference fails.
+//
+// Side Effects:
+//   - Creates a Service struct but does not apply it to the cluster directly.
 func (r *MCPServerReconciler) serviceForMCPServer(m *mcpv1alpha1.MCPServer) *corev1.Service {
 	ls := labelsForMCPServer(m.Name)
 	svc := &corev1.Service{
@@ -235,11 +251,19 @@ func (r *MCPServerReconciler) serviceForMCPServer(m *mcpv1alpha1.MCPServer) *cor
 // labelsForMCPServer returns the labels for selecting the resources
 // belonging to the given mcpServer CR name.
 //
+// Summary: Returns labels for selecting resources by MCPServer CR name.
+//
 // Parameters:
 //   - name: The name of the MCPServer resource.
 //
 // Returns:
 //   - map[string]string: A map of labels.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func labelsForMCPServer(name string) map[string]string {
 	return map[string]string{"app": "mcp-server", "mcp_cr": name}
 }
