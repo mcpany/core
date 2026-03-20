@@ -1,11 +1,14 @@
 # Design Doc: Mesh-Resident Governance Oracle (MRGO) Adapter
+
 **Status:** Draft
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
+
 As agent swarms scale horizontally, the "Mission-Root Bottleneck" has become a critical performance and reliability risk. Currently, every high-stakes policy decision must be escalated back to the lead agent, adding latency and increasing the risk of mission-root exhaustion. OpenClaw v3.3 introduces the MRGO to allow decentralized, local teammate coordination for policy arbitration. MCP Any needs to host this oracle to enable autonomous, secure governance within the horizontal mesh.
 
 ## 2. Goals & Non-Goals
+
 * **Goals:**
     * Provide hardware-attested "Governance Quorums" for horizontal agent teams.
     * Enable local teammate policy arbitration without mission-root escalation.
@@ -16,6 +19,7 @@ As agent swarms scale horizontally, the "Mission-Root Bottleneck" has become a c
     * Managing tool-specific permissions (handled by the Policy Firewall).
 
 ## 3. Critical User Journey (CUJ)
+
 * **User Persona:** Local LLM Swarm Orchestrator (e.g., Claude Code Team Lead)
 * **Primary Goal:** Reach a "Governance Quorum" among 3 specialized teammates to authorize an ambiguous tool call without waking the lead agent.
 * **The Happy Path (Tasks):**
@@ -27,6 +31,7 @@ As agent swarms scale horizontally, the "Mission-Root Bottleneck" has become a c
     6. The decision is asynchronously reported to the mission-root for lineage auditing.
 
 ## 4. Design & Architecture
+
 * **System Flow:**
     ```mermaid
     graph TD
@@ -46,12 +51,15 @@ As agent swarms scale horizontally, the "Mission-Root Bottleneck" has become a c
     * Quorum states and votes are stored in a transient, hardware-locked buffer within the MRGO.
 
 ## 5. Alternatives Considered
+
 * **Centralized Lead Governance:** Rejected due to high latency and mission-root exhaustion risks in large swarms.
 * **Shared-State (Blackboard) Voting:** Rejected as the Blackboard is vulnerable to "Mesh-Split" (CVE-2026-82001) divergence.
 
 ## 6. Cross-Cutting Concerns
+
 * **Security (Zero Trust):** All votes are hardware-bound. "Governance Drifting" is mitigated by mandatory AIA alignment heartbeats.
 * **Observability:** Full audit trail of all mesh-resident decisions exported to the Mesh-Resident Lineage Tracker.
 
 ## 7. Evolutionary Changelog
+
 * **2026-06-18:** Initial Document Creation.
