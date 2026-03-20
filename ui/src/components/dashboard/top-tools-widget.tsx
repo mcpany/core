@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { apiClient } from "@/lib/client";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { usePolling } from "@/hooks/use-polling";
+import { WidgetSkeleton } from "@/components/dashboard/widget-skeleton";
 
 interface ToolUsageStats {
   name: string;
@@ -53,8 +54,19 @@ export function TopToolsWidget() {
                 <CardTitle>Top Tools</CardTitle>
                 <CardDescription>Most frequently executed tools.</CardDescription>
             </CardHeader>
-            <CardContent className="h-[300px] flex items-center justify-center text-muted-foreground">
-                Loading...
+            <CardContent className="h-[300px] flex flex-col justify-between px-4 pb-4">
+                {[1, 2, 3, 4, 5].map((i) => {
+                    const widths = [85, 70, 50, 45, 30];
+                    return (
+                        <div key={i} className="flex items-center space-x-2">
+                            <WidgetSkeleton className="h-4 w-24 shrink-0" />
+                            <WidgetSkeleton
+                                className="h-6 rounded-r-md"
+                                style={{ width: `${widths[(i - 1) % widths.length]}%` }}
+                            />
+                        </div>
+                    );
+                })}
             </CardContent>
           </Card>
       )

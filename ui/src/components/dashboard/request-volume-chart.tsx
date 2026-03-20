@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { apiClient } from "@/lib/client";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { usePolling } from "@/hooks/use-polling";
+import { WidgetSkeleton } from "@/components/dashboard/widget-skeleton";
 
 /**
  * RequestVolumeChart component.
@@ -17,6 +18,7 @@ import { usePolling } from "@/hooks/use-polling";
 export function RequestVolumeChart() {
   const [data, setData] = useState<{ time: string; requests: number }[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { serviceId, timeRange } = useDashboard();
 
   const fetchData = useCallback(async () => {
@@ -37,6 +39,8 @@ export function RequestVolumeChart() {
           setData(filtered);
       } catch (error) {
           console.error("Failed to fetch traffic data", error);
+      } finally {
+          setLoading(false);
       }
   }, [serviceId, timeRange]);
 
@@ -50,6 +54,37 @@ export function RequestVolumeChart() {
   usePolling(fetchData, 30000);
 
   if (!mounted) return null;
+
+  if (loading && data.length === 0) {
+      return (
+          <Card className="col-span-3 backdrop-blur-sm bg-background/50 h-full">
+              <CardHeader>
+                  <CardTitle>Request Volume</CardTitle>
+                  <CardDescription>
+                      Requests handled over the last 24 hours.
+                  </CardDescription>
+              </CardHeader>
+              <CardContent className="pl-2">
+                  <div className="h-[300px] w-full flex items-end justify-between px-4 pb-8 space-x-2">
+                      {[...Array(12)].map((_, i) => {
+                          const heights = [30, 45, 60, 40, 75, 85, 50, 90, 70, 65, 80, 55];
+                          const opacities = [0.6, 0.7, 0.8, 0.6, 0.9, 1.0, 0.7, 1.0, 0.8, 0.8, 0.9, 0.7];
+                          return (
+                              <WidgetSkeleton
+                                  key={i}
+                                  className="w-full flex-1 rounded-t-sm"
+                                  style={{
+                                      height: `${heights[i % heights.length]}%`,
+                                      opacity: opacities[i % opacities.length]
+                                  }}
+                              />
+                          );
+                      })}
+                  </div>
+              </CardContent>
+          </Card>
+      );
+  }
 
   return (
     <Card className="col-span-3 backdrop-blur-sm bg-background/50 h-full">
