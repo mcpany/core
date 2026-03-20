@@ -204,9 +204,19 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
          })));
     };
 
-    const selectedCount = items.filter(i => i.selected).length;
-    const validCount = items.filter(i => i.validationStatus === "valid").length;
-    const warningCount = items.filter(i => i.validationStatus === "warning").length;
+    // ⚡ BOLT: [Algorithmic] Reduced 3x O(N) array filters to a single pass useMemo.
+    // Randomized Selection from Top 5 High-Impact Targets
+    const { selectedCount, validCount, warningCount } = useMemo(() => {
+        let selected = 0;
+        let valid = 0;
+        let warning = 0;
+        for (const item of items) {
+            if (item.selected) selected++;
+            if (item.validationStatus === "valid") valid++;
+            else if (item.validationStatus === "warning") warning++;
+        }
+        return { selectedCount: selected, validCount: valid, warningCount: warning };
+    }, [items]);
 
     const startImport = async () => {
         setStep("import");
