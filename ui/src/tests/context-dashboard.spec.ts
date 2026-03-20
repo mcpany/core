@@ -8,7 +8,7 @@ test.describe('Context Dashboard', () => {
         await expect(page.getByRole('heading', { name: 'Recursive Context Dashboard' })).toBeVisible();
 
         // Verify the "Seed Data" button is GONE (we removed it)
-        await expect(page.getByRole('button', { name: /Seed Data/i })).not_to_be_visible();
+        await expect(page.getByRole('button', { name: /Seed Data/i })).not.toBeVisible();
 
         // Check if the Treemap or Simulator loaded.
         const simulatorHeading = page.getByRole('heading', { name: 'Simulator' });
