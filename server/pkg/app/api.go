@@ -256,41 +256,40 @@ func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request,
 			continue
 		}
 
-		// Inject runtime error information if available
-		// We unmarshal the JSON bytes to a map, inject the error field, and marshal back.
-		// This is a trade-off for not modifying the proto definition for a transient status.
+		b, err = opts.Marshal(svc)
+		if err != nil {
+			logging.GetLogger().Error("failed to marshal service", "error", err)
+			continue
+		}
+
 		var jsonMap map[string]any
-		if err := json.Unmarshal(b, &jsonMap); err == nil && a.ServiceRegistry != nil {
-			if svcID := svc.GetId(); svcID != "" {
-				if errMsg, ok := a.ServiceRegistry.GetServiceError(svcID); ok {
-					jsonMap["last_error"] = errMsg
+		if err := json.Unmarshal(b, &jsonMap); err == nil {
+			if a.ServiceRegistry != nil {
+				if svcID := svc.GetId(); svcID != "" {
+					if errMsg, ok := a.ServiceRegistry.GetServiceError(svcID); ok {
+						jsonMap["last_error"] = errMsg
+					}
 				}
-			}
-			// Also check sanitize name if ID lookup fails (or both?)
-			if svc.GetId() == "" && svc.GetSanitizedName() != "" {
-				if errMsg, ok := a.ServiceRegistry.GetServiceError(svc.GetSanitizedName()); ok {
-					jsonMap["last_error"] = errMsg
+				if svc.GetId() == "" && svc.GetSanitizedName() != "" {
+					if errMsg, ok := a.ServiceRegistry.GetServiceError(svc.GetSanitizedName()); ok {
+						jsonMap["last_error"] = errMsg
+					}
 				}
 			}
 
-			// Inject Tool Count
 			if a.ToolManager != nil {
-				tools := a.ToolManager.ListTools()
-				count := 0
 				svcID := svc.GetId()
-				// Fallback to name if ID is empty or not matching (though tools should use ID)
-				sanitizedName := svc.GetSanitizedName()
+				count := a.ToolManager.GetToolCountForService(svcID)
 
-				for _, t := range tools {
-					tSvcID := t.Tool().GetServiceId()
-					if tSvcID != "" && (tSvcID == svcID || tSvcID == sanitizedName) {
-						count++
+				if count == 0 {
+					sanitizedName := svc.GetSanitizedName()
+					if sanitizedName != "" && sanitizedName != svcID {
+						count = a.ToolManager.GetToolCountForService(sanitizedName)
 					}
 				}
 				jsonMap["tool_count"] = count
 			}
 
-			// Marshal back to JSON
 			if enrichedBytes, err := json.Marshal(jsonMap); err == nil {
 				b = enrichedBytes
 			}
@@ -559,8 +558,44 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				http.NotFound(w, r)
 				return
 			}
+
 			opts := protojson.MarshalOptions{UseProtoNames: true}
 			b, _ := opts.Marshal(svc)
+
+			var jsonMap map[string]any
+			if err := json.Unmarshal(b, &jsonMap); err == nil {
+				if a.ServiceRegistry != nil {
+					svcID := svc.GetId()
+					if svcID != "" {
+						if errMsg, ok := a.ServiceRegistry.GetServiceError(svcID); ok {
+							jsonMap["last_error"] = errMsg
+						}
+					}
+					if svc.GetId() == "" && svc.GetSanitizedName() != "" {
+						if errMsg, ok := a.ServiceRegistry.GetServiceError(svc.GetSanitizedName()); ok {
+							jsonMap["last_error"] = errMsg
+						}
+					}
+				}
+
+				if a.ToolManager != nil {
+					svcID := svc.GetId()
+					count := a.ToolManager.GetToolCountForService(svcID)
+
+					if count == 0 {
+						sanitizedName := svc.GetSanitizedName()
+						if sanitizedName != "" && sanitizedName != svcID {
+							count = a.ToolManager.GetToolCountForService(sanitizedName)
+						}
+					}
+					jsonMap["tool_count"] = count
+				}
+
+				if enrichedBytes, err := json.Marshal(jsonMap); err == nil {
+					b = enrichedBytes
+				}
+			}
+
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write(b)
 		case http.MethodPut:
