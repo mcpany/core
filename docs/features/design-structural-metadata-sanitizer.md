@@ -3,11 +3,23 @@
 **Created:** 2026-06-14
 
 ## 1. Context and Scope
-With the adoption of ARI and SCI, agent swarms have become more resilient to execution-time and coordination-time attacks. However, today's market sync has identified a new "Pre-Flight" attack vector: **Shadow-Discovery via Metadata Injection (SDMI)**. Malicious MCP servers can inject imperative instructions into tool descriptions and examples. Because LLMs treat this structural metadata as trusted documentation, they may begin executing unauthorized reasoning paths *before* any tool is ever called.
 
-The Structural Metadata Sanitizer (SMS) treats all tool structural metadata as untrusted content. It performs real-time semantic deconstruction and sanitization of discovery-time data to ensure that imperative instructions cannot bypass the Universal Agent Bus's security perimeter via the documentation layer.
+With the adoption of ARI and SCI, agent swarms have become more resilient to
+execution-time and coordination-time attacks. However, today's market sync has
+identified a new "Pre-Flight" attack vector: **Shadow-Discovery via Metadata
+Injection (SDMI)**. Malicious MCP servers can inject imperative instructions
+into tool descriptions and examples. Because LLMs treat this structural metadata
+as trusted documentation, they may begin executing unauthorized reasoning paths
+*before* any tool is ever called.
+
+The Structural Metadata Sanitizer (SMS) treats all tool structural metadata as
+untrusted content. It performs real-time semantic deconstruction and
+sanitization of discovery-time data to ensure that imperative instructions
+cannot bypass the Universal Agent Bus's security perimeter via the documentation
+layer.
 
 ## 2. Goals & Non-Goals
+
 * **Goals:**
     * Implement a sanitization layer for the PNTD Discovery Provider.
     * Scan JSON-RPC tool schemas, descriptions, and examples for imperative command patterns.
@@ -19,6 +31,7 @@ The Structural Metadata Sanitizer (SMS) treats all tool structural metadata as u
     * Managing inter-agent coordination (handled by T2T/SCI).
 
 ## 3. Critical User Journey (CUJ)
+
 * **User Persona:** Security-Conscious Agent Developer
 * **Primary Goal:** Prevent a malicious third-party MCP server from hijacking the agent's reasoning via its "Description" field.
 * **The Happy Path (Tasks):**
@@ -30,6 +43,7 @@ The Structural Metadata Sanitizer (SMS) treats all tool structural metadata as u
     6. The agent receives a sanitized, safe description of the tool.
 
 ## 4. Design & Architecture
+
 * **System Flow:**
     ```mermaid
     graph TD
@@ -49,14 +63,17 @@ The Structural Metadata Sanitizer (SMS) treats all tool structural metadata as u
     * **Sanitization Patterns:** A registry of known imperative instruction patterns and "Prompt Path" signatures.
 
 ## 5. Alternatives Considered
+
 * **Manual Schema Whitelisting:** Rejected as it doesn't scale with dynamic tool discovery.
 * **LLM-Based Sanitization:** Considered but rejected as the primary layer due to latency and the risk of recursive injection.
 
 ## 6. Cross-Cutting Concerns
+
 * **Security (Zero Trust):** The SMS must be a mandatory gate for all discovery-time data.
 * **Observability:** Integrated with the "Metadata Poisoning Alert Center" for real-time visualization of redacted fragments.
 
 ## 7. Evolutionary Changelog
+
 * **2026-06-14:** Initial Document Creation. Addressing the Shadow-Discovery via Metadata Injection (SDMI) vulnerability.
 * **2026-06-15: Update - Addressing Cross-Framework SDMI Persistence**
     * **Context:** Today's research reveals that SDMI fragments can persist across framework handoffs (e.g., OpenClaw -> Claude Code) if the structural metadata is not recursively re-sanitized.
