@@ -84,7 +84,9 @@ export function useTraces(options: UseTracesOptions = {}) {
 
                 // 5. Prepend new inserts (newest first).
                 // Buffer is oldest->newest. We want newest at top of list.
-                // So we reverse inserts.
+                // Since updatesMap.values() iterates in insertion order,
+                // and buffer was appended to oldest-first, updatesMap values are oldest-first.
+                // We reverse it to prepend newest-first.
                 const merged = [...inserts.reverse(), ...nextTraces];
 
                 // ⚡ BOLT: Optimization - Enforce hard limit to prevent memory leaks
@@ -115,7 +117,8 @@ export function useTraces(options: UseTracesOptions = {}) {
         const token = localStorage.getItem('mcp_auth_token');
         if (token) {
             // Encode the token because it might contain special characters (like base64 padding =)
-            wsUrl += `?auth_token=${encodeURIComponent(token)}`;
+            const separator = wsUrl.includes('?') ? '&' : '?';
+            wsUrl += `${separator}auth_token=${encodeURIComponent(token)}`;
         }
 
         // Cleanup previous
@@ -177,9 +180,13 @@ export function useTraces(options: UseTracesOptions = {}) {
         };
     }, []);
 
-    const clearTraces = () => setTraces([]);
+    const clearTraces = () => {
+        bufferRef.current = [];
+        setTraces([]);
+    };
 
     const refresh = () => {
+        bufferRef.current = [];
         setTraces([]);
         connect();
     };
