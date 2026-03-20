@@ -1,12 +1,10 @@
-module example/block_rm
+module github.com/mcpany/core/webhooks/examples/block_rm
 
 go 1.24.0
 
-toolchain go1.24.0
-
 require (
 	github.com/google/uuid v1.6.0
-	github.com/mcpany/core v0.0.0
+	github.com/mcpany/core v0.0.0-00010101000000-000000000000
 	github.com/mcpany/core/server v0.0.0
 	github.com/stretchr/testify v1.11.1
 	google.golang.org/protobuf v1.36.11
@@ -157,6 +155,7 @@ require (
 	modernc.org/sqlite v1.41.0 // indirect
 )
 
-replace github.com/mcpany/core/server => ../../../../..
-
-replace github.com/mcpany/core => ../../../../../..
+replace (
+	github.com/mcpany/core => ../../../../../../
+	github.com/mcpany/core/server => ../../../../../../server
+)

@@ -2,7 +2,10 @@ module github.com/mcpany/core/upstream_service/grpc/client
 
 go 1.24.0
 
-require google.golang.org/grpc v1.79.2
+require (
+	github.com/mcpany/core/upstream_service/grpc/greeter_server v0.0.0
+	google.golang.org/grpc v1.79.2
+)
 
 require (
 	golang.org/x/net v0.48.0 // indirect
@@ -11,3 +14,5 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251202230838-ff82c1b0f217 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 )
+
+replace github.com/mcpany/core/upstream_service/grpc/greeter_server => ../greeter_server
