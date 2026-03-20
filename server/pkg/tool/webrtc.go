@@ -97,8 +97,10 @@ type WebrtcTool struct {
 // Returns:
 //   - (*WebrtcTool): The initialized WebrtcTool.
 //   - (error): An error if initialization fails.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewWebrtcTool(

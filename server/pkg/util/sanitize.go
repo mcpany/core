@@ -23,8 +23,10 @@ const RedactedString = "REDACTED"
 //
 // Returns:
 //   - *configv1.User: A sanitized copy of the user object, or nil if input is nil.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func SanitizeUser(u *configv1.User) *configv1.User {
@@ -50,8 +52,10 @@ func SanitizeUser(u *configv1.User) *configv1.User {
 //
 // Returns:
 //   - *configv1.Credential: A sanitized copy of the credential object, or nil if input is nil.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
@@ -81,8 +85,10 @@ func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
 //
 // Returns:
 //   - *configv1.Authentication: The sanitized authentication object, or nil if input is nil.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication {
@@ -134,8 +140,10 @@ func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication
 //
 // Returns:
 //   - *configv1.UserToken: The sanitized user token, or nil if input is nil.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
@@ -160,8 +168,10 @@ func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
 //
 // Returns:
 //   - *configv1.SecretValue: The sanitized secret value, or nil if input is nil.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func SanitizeSecretValue(s *configv1.SecretValue) *configv1.SecretValue {

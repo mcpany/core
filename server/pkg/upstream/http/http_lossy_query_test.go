@@ -18,10 +18,10 @@ import (
 
 func TestHTTPUpstream_URLConstruction_LossyQueryBug(t *testing.T) {
 	testCases := []struct {
-		name          string
-		address       string
-		endpointPath  string
-		expectedFqn   string
+		name         string
+		address      string
+		endpointPath string
+		expectedFqn  string
 	}{
 		{
 			name:         "base url with invalid percent encoding should be preserved when merged",
@@ -29,7 +29,7 @@ func TestHTTPUpstream_URLConstruction_LossyQueryBug(t *testing.T) {
 			endpointPath: "/v1/test?foo=bar",
 			// We expect the original query to be preserved, and the new one appended.
 			// The order might depend on implementation, but typically append puts it at the end.
-			expectedFqn:  "GET http://example.com/api/v1/test?api_key=secret%&foo=bar",
+			expectedFqn: "GET http://example.com/api/v1/test?api_key=secret%&foo=bar",
 		},
 		{
 			name:         "base url with invalid encoding and no endpoint query",

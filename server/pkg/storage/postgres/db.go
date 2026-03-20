@@ -31,6 +31,7 @@ type DB struct {
 //
 // Side Effects:
 //   - Opens a network connection to the database.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewDB(dsn string) (*DB, error) {
@@ -52,6 +53,7 @@ func NewDB(dsn string) (*DB, error) {
 // Side Effects:
 //   - Opens a network connection to the database.
 //   - Initializes the schema.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewDBWithDriver(driver, dsn string) (*DB, error) {
@@ -94,6 +96,7 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 // Side Effects:
 //   - Pings the database.
 //   - Initializes the schema.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewDBFromSQLDB(db *sql.DB) (*DB, error) {

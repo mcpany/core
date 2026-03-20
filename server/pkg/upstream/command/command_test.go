@@ -301,7 +301,7 @@ func TestStdioUpstream_Register(t *testing.T) {
 
 	t.Run("invalid service name", func(t *testing.T) {
 		serviceConfig := configv1.UpstreamServiceConfig_builder{
-			Name: proto.String(""), // empty name
+			Name:               proto.String(""), // empty name
 			CommandLineService: configv1.CommandLineUpstreamService_builder{}.Build(),
 		}.Build()
 		_, _, _, err := u.Register(context.Background(), serviceConfig, tm, prm, rm, false)
@@ -555,7 +555,7 @@ func TestStdioUpstream_Register_DynamicResourceErrors(t *testing.T) {
 			CommandLineService: configv1.CommandLineUpstreamService_builder{
 				Resources: []*configv1.ResourceDefinition{
 					configv1.ResourceDefinition_builder{
-						Name: proto.String("files"),
+						Name:    proto.String("files"),
 						Dynamic: configv1.DynamicResource_builder{
 							// Not setting CommandLineCall, so it is nil
 						}.Build(),

@@ -52,6 +52,7 @@ var (
 //
 // Side Effects:
 //   - Updates a global variable protected by a mutex.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
@@ -87,6 +88,7 @@ type HTTPServiceWithHealthCheck interface {
 //
 // Side Effects:
 //   - Registers metrics for the health check.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {

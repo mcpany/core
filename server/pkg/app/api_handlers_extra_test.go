@@ -282,7 +282,7 @@ func TestHandleServiceDetail_Update_Unsafe_NonAdmin(t *testing.T) {
 // MockStorage for failing SaveService
 type MockStorage struct {
 	storage.Storage // Embed interface to fallback
-	failSave bool
+	failSave        bool
 }
 
 func (m *MockStorage) SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {

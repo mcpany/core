@@ -16,7 +16,6 @@ var jsonWalkerBufferPool = sync.Pool{
 	},
 }
 
-
 // WalkJSONStrings visits every string value in the JSON input.
 //
 // Summary: Walks through a JSON bytes slice and applies a visitor function to all string values.
@@ -29,8 +28,10 @@ var jsonWalkerBufferPool = sync.Pool{
 //
 // Returns:
 //   - []byte: The potentially modified JSON output.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
@@ -144,8 +145,10 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 //
 // Returns:
 //   - []byte: The potentially modified JSON output.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func WalkStandardJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {

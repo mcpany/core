@@ -71,10 +71,13 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A pointer to the newly created Manager.
+//
 // Parameters:
 //   - params: Inputs expected by the function.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewManager() *Manager {

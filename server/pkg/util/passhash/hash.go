@@ -18,8 +18,10 @@ import (
 // Returns:
 //   - string: The hashed password.
 //   - error: An error if the hashing fails.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func Password(password string) (string, error) {
@@ -40,8 +42,10 @@ func Password(password string) (string, error) {
 //
 // Returns:
 //   - bool: True if the password matches the hash, false otherwise.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func CheckPassword(password, hash string) bool {

@@ -16,8 +16,8 @@ import (
 	cloudevents "github.com/cloudevents/sdk-go/v2"
 	cehttp "github.com/cloudevents/sdk-go/v2/protocol/http"
 	"github.com/google/uuid"
-	"github.com/mcpany/core/server/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	webhook "github.com/standard-webhooks/standard-webhooks/libraries/go"
 )
 
@@ -49,6 +49,7 @@ type PolicyHook struct {
 // Side Effects:
 //   - Compiles regex patterns from the policy rules.
 //   - Logs errors for invalid regexes.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
@@ -175,6 +176,7 @@ type WebhookClient struct {
 //
 // Side Effects:
 //   - Initializes HTTP client and optional signer.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
@@ -281,8 +283,10 @@ type WebhookHook struct {
 //
 // Returns:
 //   - *WebhookHook: The initialized hook.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
@@ -444,7 +448,7 @@ func (h *WebhookHook) ExecutePost(
 // Summary: Status information included in the webhook response.
 type WebhookStatus struct {
 	// Code is the status code returned by the webhook.
-	Code    int    `json:"code"`
+	Code int `json:"code"`
 	// Message is a descriptive message returned by the webhook.
 	Message string `json:"message"`
 }

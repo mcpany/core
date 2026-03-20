@@ -21,8 +21,10 @@ import (
 //
 // Returns:
 //   - mcp.Middleware: The configured middleware function.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware {

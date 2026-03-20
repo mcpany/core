@@ -31,8 +31,10 @@ type TemplateManager struct {
 //
 // Returns:
 //   - *TemplateManager: The initialized manager.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewTemplateManager(dataDir string) *TemplateManager {

@@ -13,9 +13,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/alexliesenfeld/health"
 	"github.com/mcpany/core/server/pkg/auth"
 	mcphealth "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -97,8 +97,10 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Returns:
 //   - upstream.Upstream: A new Upstream instance for WebSocket services.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {

@@ -27,7 +27,7 @@ type LocalProvider struct {
 // Parameters:
 //   - _ (*configv1.OsFs): The parameter.
 //   - rootPaths (map[string]string): The parameter.
-//   -  (allowedPaths): The parameter.
+//   - (allowedPaths): The parameter.
 //   - deniedPaths ([]string): The parameter.
 //   - symlinkMode (configv1.FilesystemUpstreamService_SymlinkMode): The parameter.
 //
@@ -36,6 +36,7 @@ type LocalProvider struct {
 //
 // Side Effects:
 //   - None.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPaths, deniedPaths []string, symlinkMode configv1.FilesystemUpstreamService_SymlinkMode) *LocalProvider {

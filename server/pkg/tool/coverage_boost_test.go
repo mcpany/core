@@ -24,22 +24,22 @@ import (
 
 // MockExecutor for testing CommandTool
 type MockExecutor struct {
-    stdout string
-    stderr string
-    exitCode int
+	stdout   string
+	stderr   string
+	exitCode int
 }
 
 func (m *MockExecutor) Execute(ctx context.Context, cmd string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
-    outR := io.NopCloser(strings.NewReader(m.stdout))
-    errR := io.NopCloser(strings.NewReader(m.stderr))
-    ch := make(chan int, 1)
-    ch <- m.exitCode
-    close(ch)
-    return outR, errR, ch, nil
+	outR := io.NopCloser(strings.NewReader(m.stdout))
+	errR := io.NopCloser(strings.NewReader(m.stderr))
+	ch := make(chan int, 1)
+	ch <- m.exitCode
+	close(ch)
+	return outR, errR, ch, nil
 }
 
 func (m *MockExecutor) ExecuteWithStdIO(ctx context.Context, cmd string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
-    return nil, nil, nil, nil, nil
+	return nil, nil, nil, nil, nil
 }
 
 // ... setupHTTPTool ...
@@ -93,7 +93,6 @@ func TestHTTPTool_Execute_InvalidInputJSON(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to unmarshal tool inputs")
 }
 
-
 func TestCommandTool_DryRun(t *testing.T) {
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("echo"),
@@ -115,15 +114,15 @@ func TestCommandTool_DryRun(t *testing.T) {
 
 	resMap, ok := res.(map[string]any)
 	assert.True(t, ok, "result should be a map")
-    if !ok {
-        return
-    }
+	if !ok {
+		return
+	}
 
-    val, exists := resMap["dry_run"]
-    if !exists {
-        t.Errorf("dry_run key missing in response: %+v", resMap)
-        return
-    }
+	val, exists := resMap["dry_run"]
+	if !exists {
+		t.Errorf("dry_run key missing in response: %+v", resMap)
+		return
+	}
 
 	assert.True(t, val.(bool))
 }
@@ -180,73 +179,73 @@ func TestCommandTool_ResolveContainerEnv_Error(t *testing.T) {
 }
 
 func TestCommandTool_ResolveParameterSecret_Error(t *testing.T) {
-    service := configv1.CommandLineUpstreamService_builder{
-        Command: proto.String("echo"),
-    }.Build()
-    callDef := configv1.CommandLineCallDefinition_builder{
-        Parameters: []*configv1.CommandLineParameterMapping{
-            configv1.CommandLineParameterMapping_builder{
-                Schema: configv1.ParameterSchema_builder{Name: proto.String("secret")}.Build(),
-                Secret: configv1.SecretValue_builder{
-                    EnvironmentVariable: proto.String("MISSING_VAR_XYZ_123"),
-                }.Build(),
-            }.Build(),
-        },
-    }.Build()
-    toolDef := v1.Tool_builder{Name: proto.String("test")}.Build()
-    tool := NewLocalCommandTool(toolDef, service, callDef, nil, "id")
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("echo"),
+	}.Build()
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{Name: proto.String("secret")}.Build(),
+				Secret: configv1.SecretValue_builder{
+					EnvironmentVariable: proto.String("MISSING_VAR_XYZ_123"),
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
+	toolDef := v1.Tool_builder{Name: proto.String("test")}.Build()
+	tool := NewLocalCommandTool(toolDef, service, callDef, nil, "id")
 
-    req := &ExecutionRequest{
-        ToolInputs: []byte(`{}`),
-    }
+	req := &ExecutionRequest{
+		ToolInputs: []byte(`{}`),
+	}
 
-    _, err := tool.Execute(context.Background(), req)
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "failed to resolve secret")
+	_, err := tool.Execute(context.Background(), req)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to resolve secret")
 }
 
 func TestCommandTool_Success(t *testing.T) {
-    service := configv1.CommandLineUpstreamService_builder{
-        Command: proto.String("echo"),
-        ContainerEnvironment: configv1.ContainerEnvironment_builder{
-            Image: proto.String("ubuntu"),
-        }.Build(),
-    }.Build()
-    callDef := configv1.CommandLineCallDefinition_builder{
-        Args: []string{"hello"},
-    }.Build()
-    toolDef := v1.Tool_builder{Name: proto.String("test")}.Build()
-    tool := NewCommandTool(toolDef, service, callDef, nil, "id")
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("echo"),
+		ContainerEnvironment: configv1.ContainerEnvironment_builder{
+			Image: proto.String("ubuntu"),
+		}.Build(),
+	}.Build()
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"hello"},
+	}.Build()
+	toolDef := v1.Tool_builder{Name: proto.String("test")}.Build()
+	tool := NewCommandTool(toolDef, service, callDef, nil, "id")
 
-    // Inject mock executor
-    ct := tool.(*CommandTool)
-    ct.executorFactory = func(env *configv1.ContainerEnvironment) command.Executor {
-        return &MockExecutor{
-            stdout: "hello\n",
-            stderr: "",
-            exitCode: 0,
-        }
-    }
+	// Inject mock executor
+	ct := tool.(*CommandTool)
+	ct.executorFactory = func(env *configv1.ContainerEnvironment) command.Executor {
+		return &MockExecutor{
+			stdout:   "hello\n",
+			stderr:   "",
+			exitCode: 0,
+		}
+	}
 
-    req := &ExecutionRequest{
-        ToolInputs: []byte(`{}`),
-    }
+	req := &ExecutionRequest{
+		ToolInputs: []byte(`{}`),
+	}
 
-    res, err := tool.Execute(context.Background(), req)
-    assert.NoError(t, err)
-    resMap := res.(map[string]any)
-    assert.Equal(t, "hello\n", resMap["stdout"])
-    // json.Number handling
-    rc, ok := resMap["return_code"].(json.Number)
-    if ok {
-        f, _ := rc.Float64()
-        assert.Equal(t, float64(0), f)
-    } else {
-        // It might be int if not unmarshaled from JSON?
-        // CommandTool returns map[string]interface{} constructed in code.
-        // "return_code": exitCode (int)
-        assert.Equal(t, 0, resMap["return_code"])
-    }
+	res, err := tool.Execute(context.Background(), req)
+	assert.NoError(t, err)
+	resMap := res.(map[string]any)
+	assert.Equal(t, "hello\n", resMap["stdout"])
+	// json.Number handling
+	rc, ok := resMap["return_code"].(json.Number)
+	if ok {
+		f, _ := rc.Float64()
+		assert.Equal(t, float64(0), f)
+	} else {
+		// It might be int if not unmarshaled from JSON?
+		// CommandTool returns map[string]interface{} constructed in code.
+		// "return_code": exitCode (int)
+		assert.Equal(t, 0, resMap["return_code"])
+	}
 }
 
 func TestHTTPTool_OutputTransformer(t *testing.T) {
@@ -304,17 +303,17 @@ func TestHTTPTool_OutputTransformer_Raw(t *testing.T) {
 }
 
 func TestHTTPTool_InputTransformer_Template(t *testing.T) {
-    // We need to use POST to trigger body preparation
-    handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        buf := new(bytes.Buffer)
-        buf.ReadFrom(r.Body)
-        assert.Equal(t, "Hello World", buf.String())
-    })
+	// We need to use POST to trigger body preparation
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(r.Body)
+		assert.Equal(t, "Hello World", buf.String())
+	})
 
-    server := httptest.NewServer(handler)
-    defer server.Close()
+	server := httptest.NewServer(handler)
+	defer server.Close()
 
-    poolManager := pool.NewManager()
+	poolManager := pool.NewManager()
 	p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: server.Client()}, nil
 	}, 1, 1, 1, 0, true)
@@ -322,30 +321,30 @@ func TestHTTPTool_InputTransformer_Template(t *testing.T) {
 
 	method := "POST " + server.URL
 
-    callDef := configv1.HttpCallDefinition_builder{
-        InputTransformer: configv1.InputTransformer_builder{
-            Template: proto.String("Hello {{name}}"),
-        }.Build(),
-        Parameters: []*configv1.HttpParameterMapping{
-            configv1.HttpParameterMapping_builder{
-                Schema: configv1.ParameterSchema_builder{
-                    Name: proto.String("name"),
-                }.Build(),
-            }.Build(),
-        },
-    }.Build()
+	callDef := configv1.HttpCallDefinition_builder{
+		InputTransformer: configv1.InputTransformer_builder{
+			Template: proto.String("Hello {{name}}"),
+		}.Build(),
+		Parameters: []*configv1.HttpParameterMapping{
+			configv1.HttpParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{
+					Name: proto.String("name"),
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
 
 	toolDef := v1.Tool_builder{
 		UnderlyingMethodFqn: proto.String(method),
 		Name:                proto.String("test-post"),
 	}.Build()
-    tool := NewHTTPTool(toolDef, poolManager, "s", nil, callDef, nil, nil, "")
+	tool := NewHTTPTool(toolDef, poolManager, "s", nil, callDef, nil, nil, "")
 
-    req := &ExecutionRequest{
-        ToolName: "test-post",
-        ToolInputs: []byte(`{"name": "World"}`),
-    }
+	req := &ExecutionRequest{
+		ToolName:   "test-post",
+		ToolInputs: []byte(`{"name": "World"}`),
+	}
 
-    _, err := tool.Execute(context.Background(), req)
-    assert.NoError(t, err)
+	_, err := tool.Execute(context.Background(), req)
+	assert.NoError(t, err)
 }

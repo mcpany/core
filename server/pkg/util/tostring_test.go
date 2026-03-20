@@ -127,10 +127,10 @@ func TestToString_Float32_Overflow(t *testing.T) {
 		t.Errorf("Expected positive string for 2^63, got %s", s)
 	}
 
-    // Check MaxInt64 converted to float32
-    f2 := float32(math.MaxInt64)
-    s2 := ToString(f2)
-    if s2[0] == '-' {
-         t.Errorf("Expected positive string for float32(MaxInt64), got %s", s2)
-    }
+	// Check MaxInt64 converted to float32
+	f2 := float32(math.MaxInt64)
+	s2 := ToString(f2)
+	if s2[0] == '-' {
+		t.Errorf("Expected positive string for float32(MaxInt64), got %s", s2)
+	}
 }

@@ -130,8 +130,10 @@ type poolImpl[T ClosableClient] struct {
 // Returns:
 //   - Pool[T]: The new pool.
 //   - error: An error if configuration is invalid.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func New[T ClosableClient](
@@ -520,10 +522,13 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: The initialized manager.
+//
 // Parameters:
 //   - params: Inputs expected by the function.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewManager() *Manager {
@@ -586,8 +591,10 @@ func (m *Manager) Deregister(name string) {
 // Returns:
 //   - Pool[T]: The typed pool.
 //   - bool: True if found and type matches.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {

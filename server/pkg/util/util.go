@@ -54,6 +54,7 @@ import (
 //
 // Side Effects:
 //   - None.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, reqHashLength int) (string, error) {
@@ -224,6 +225,7 @@ func isValidChar(c byte) bool {
 //
 // Side Effects:
 //   - None.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func SanitizeServiceName(name string) (string, error) {
@@ -246,6 +248,7 @@ func SanitizeServiceName(name string) (string, error) {
 //
 // Side Effects:
 //   - None.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func SanitizeToolName(name string) (string, error) {
@@ -304,6 +307,7 @@ const TrueStr = "true"
 //
 // Side Effects:
 //   - Generates random data.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func GenerateUUID() string {
@@ -326,6 +330,7 @@ func GenerateUUID() string {
 //
 // Side Effects:
 //   - None.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func ParseToolName(toolName string) (service, bareToolName string, err error) {
@@ -351,6 +356,7 @@ func ParseToolName(toolName string) (service, bareToolName string, err error) {
 //
 // Side Effects:
 //   - None.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func SanitizeOperationID(input string) string {
@@ -431,6 +437,7 @@ func stringToBytes(s string) []byte {
 //
 // Side Effects:
 //   - None.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func BytesToString(b []byte) string {
@@ -452,6 +459,7 @@ func BytesToString(b []byte) string {
 //
 // Side Effects:
 //   - Reads environment variable USE_SUDO_FOR_DOCKER.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func GetDockerCommand() (string, []string) {
@@ -477,6 +485,7 @@ func GetDockerCommand() (string, []string) {
 //
 // Side Effects:
 //   - None.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParams map[string]bool) string {
@@ -498,6 +507,7 @@ func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParam
 //
 // Side Effects:
 //   - None.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func ReplaceURLQuery(urlQuery string, params map[string]interface{}, noEscapeParams map[string]bool) string {
@@ -554,6 +564,7 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 //
 // Side Effects:
 //   - None.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func IsNil(i any) bool {
@@ -586,6 +597,7 @@ func IsNil(i any) bool {
 //
 // Side Effects:
 //   - None.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func ToString(v any) string {
@@ -696,6 +708,7 @@ func toStringRecursive(v any, depth int) string {
 //
 // Side Effects:
 //   - Generates random data.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func RandomFloat64() float64 {
@@ -716,6 +729,7 @@ func RandomFloat64() float64 {
 //
 // Side Effects:
 //   - None.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func SanitizeFilename(filename string) string {

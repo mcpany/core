@@ -70,6 +70,7 @@ func (e *ActionableError) Unwrap() error {
 //
 // Side Effects:
 //   - None.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func WrapActionableError(context string, err error) error {

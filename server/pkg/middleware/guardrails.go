@@ -28,8 +28,10 @@ type GuardrailsConfig struct {
 //
 // Returns:
 //   - gin.HandlerFunc: The Gin middleware handler.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewGuardrailsMiddleware(config GuardrailsConfig) gin.HandlerFunc {

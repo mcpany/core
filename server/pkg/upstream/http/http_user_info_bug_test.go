@@ -18,10 +18,10 @@ import (
 
 func TestHTTPUpstream_URLConstruction_UserInfoBug(t *testing.T) {
 	testCases := []struct {
-		name          string
-		address       string
-		endpointPath  string
-		expectedFqn   string
+		name         string
+		address      string
+		endpointPath string
+		expectedFqn  string
 	}{
 		{
 			name:         "endpoint path with double slash and user info",
@@ -31,7 +31,7 @@ func TestHTTPUpstream_URLConstruction_UserInfoBug(t *testing.T) {
 			// "user:pass@foo/bar" is a valid relative path segment if encoded or treated literally.
 			// But since we are constructing it as a path, we want:
 			// http://example.com/api//user:pass@foo/bar
-			expectedFqn:  "GET http://example.com/api//user:pass@foo/bar",
+			expectedFqn: "GET http://example.com/api//user:pass@foo/bar",
 		},
 		{
 			name:         "endpoint path with double slash, user info and port",

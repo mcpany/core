@@ -13,11 +13,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/util"
-	"github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/patrickmn/go-cache"
 	"github.com/redis/go-redis/v9"
@@ -48,6 +48,7 @@ type GlobalRateLimitMiddleware struct {
 //
 // Side Effects:
 //   - Initializes internal caches for limiters.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {

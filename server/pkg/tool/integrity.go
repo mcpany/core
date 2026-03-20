@@ -22,8 +22,10 @@ import (
 //
 // Returns:
 //   - error: An error if integrity check fails.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func VerifyIntegrity(t *v1.Tool) error {
@@ -56,8 +58,10 @@ func VerifyIntegrity(t *v1.Tool) error {
 //
 // Returns:
 //   - error: An error if integrity check fails.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
@@ -91,8 +95,10 @@ func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
 // Returns:
 //   - string: The hex-encoded SHA256 hash.
 //   - error: An error if marshaling fails.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func CalculateHash(t *v1.Tool) (string, error) {
@@ -123,8 +129,10 @@ func CalculateHash(t *v1.Tool) (string, error) {
 // Returns:
 //   - string: The hex-encoded SHA256 hash.
 //   - error: An error if marshaling fails.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func CalculateConfigHash(t *configv1.ToolDefinition) (string, error) {

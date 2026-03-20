@@ -61,8 +61,10 @@ type UpstreamAuthenticator interface {
 // Returns:
 //   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
 //   - An error if the configuration is invalid.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuthenticator, error) {

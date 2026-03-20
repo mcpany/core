@@ -45,8 +45,8 @@ paths:
 	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
 	mockToolManager.On("GetTool", mock.Anything).Return(nil, false)
 
-    // We expect AddTool to be called. If the bug exists, it won't be called.
-    var addedTool tool.Tool
+	// We expect AddTool to be called. If the bug exists, it won't be called.
+	var addedTool tool.Tool
 	mockToolManager.On("AddTool", mock.Anything).Run(func(args mock.Arguments) {
 		addedTool = args.Get(0).(tool.Tool)
 	}).Return(nil)
@@ -54,14 +54,14 @@ paths:
 	_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 	assert.NoError(t, err)
 
-    // The bug: strings.Fields splits "/path with space" into parts, causing "Invalid underlying method FQN" error
-    // so the tool is skipped and not registered.
+	// The bug: strings.Fields splits "/path with space" into parts, causing "Invalid underlying method FQN" error
+	// so the tool is skipped and not registered.
 
-    if addedTool == nil {
-        t.Fatal("Bug reproduced: Tool was not registered due to space in path")
-    }
+	if addedTool == nil {
+		t.Fatal("Bug reproduced: Tool was not registered due to space in path")
+	}
 
-    // Verify the FQN
+	// Verify the FQN
 	fqn := addedTool.Tool().GetUnderlyingMethodFqn()
 	assert.Contains(t, fqn, "/path with space")
 }

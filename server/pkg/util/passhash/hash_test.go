@@ -22,10 +22,10 @@ func TestPassword(t *testing.T) {
 }
 
 func TestPassword_Error(t *testing.T) {
-    // bcrypt returns error if password is too long (> 72 bytes)
+	// bcrypt returns error if password is too long (> 72 bytes)
 	longPassword := strings.Repeat("a", 73)
 	hash, err := Password(longPassword)
 	assert.Error(t, err)
-    assert.Contains(t, err.Error(), "password length exceeds 72 bytes")
-    assert.Empty(t, hash)
+	assert.Contains(t, err.Error(), "password length exceeds 72 bytes")
+	assert.Empty(t, hash)
 }

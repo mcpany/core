@@ -18,10 +18,10 @@ import (
 
 func TestHTTPUpstream_URLConstruction_BugRepro(t *testing.T) {
 	testCases := []struct {
-		name          string
-		address       string
-		endpointPath  string
-		expectedFqn   string
+		name         string
+		address      string
+		endpointPath string
+		expectedFqn  string
 	}{
 		{
 			name:         "base url with query params should be preserved",
@@ -36,7 +36,7 @@ func TestHTTPUpstream_URLConstruction_BugRepro(t *testing.T) {
 			// Note: order of query params is implementation specific, but typically sorted or preserved.
 			// However, in our fix we should ensure both are present.
 			// Let's assert that it contains both.
-			expectedFqn:  "GET http://127.0.0.1:8080/api/v1/test?apikey=123&limit=10",
+			expectedFqn: "GET http://127.0.0.1:8080/api/v1/test?apikey=123&limit=10",
 		},
 	}
 

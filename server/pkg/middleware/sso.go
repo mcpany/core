@@ -32,6 +32,7 @@ type SSOConfig struct {
 //   - Inspects headers for authentication information.
 //   - Aborts the request with 401 Unauthorized if authentication is missing or invalid.
 //   - Sets "UserID" in the context on successful authentication.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func SSOMiddleware(config SSOConfig) gin.HandlerFunc {

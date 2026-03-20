@@ -13,10 +13,13 @@ import (
 //
 // Parameters:
 //   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to strip secrets from.
+//
 // Returns:
 //   - outcome: The resulting data or value.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
@@ -73,10 +76,13 @@ func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 //
 // Parameters:
 //   - profile (*configv1.ProfileDefinition): The profile definition to strip secrets from.
+//
 // Returns:
 //   - outcome: The resulting data or value.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
@@ -94,10 +100,13 @@ func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 //
 // Parameters:
 //   - collection (*configv1.Collection): The service collection to strip secrets from.
+//
 // Returns:
 //   - outcome: The resulting data or value.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func StripSecretsFromCollection(collection *configv1.Collection) {
@@ -115,10 +124,13 @@ func StripSecretsFromCollection(collection *configv1.Collection) {
 //
 // Parameters:
 //   - auth (*configv1.Authentication): The authentication configuration to strip secrets from.
+//
 // Returns:
 //   - outcome: The resulting data or value.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func StripSecretsFromAuth(auth *configv1.Authentication) {
@@ -339,10 +351,13 @@ func scrubSecretValue(sv *configv1.SecretValue) {
 // Parameters:
 //   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to hydrate secrets into.
 //   - secrets (map[string]*configv1.SecretValue): A map of resolved secret values.
+//
 // Returns:
 //   - outcome: The resulting data or value.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[string]*configv1.SecretValue) {

@@ -280,6 +280,7 @@ type Manager struct {
 //
 // Side Effects:
 //   - Allocates memory for internal maps and indices.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewManager(bus *bus.Provider) *Manager {
@@ -981,7 +982,6 @@ func (tm *Manager) AddTool(tool Tool) error {
 			// Randomized Selection from Top 5 High-Impact Targets
 			mcpTool.InputSchema = tool.Tool().GetInputSchema().AsMap()
 		}
-
 
 		log.Info(
 			"Registering tool with MCP server",

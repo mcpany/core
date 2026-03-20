@@ -29,6 +29,7 @@ import (
 //   - Modifies the global Viper configuration state.
 //   - Registers flags on the provided Cobra command.
 //   - Exits the application on error.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func BindRootFlags(cmd *cobra.Command) {
@@ -88,12 +89,14 @@ func BindRootFlags(cmd *cobra.Command) {
 //   - cmd (*cobra.Command): The command instance to which the server flags will be attached.
 //
 // Returns:
-//   None.
+//
+//	None.
 //
 // Side Effects:
 //   - Modifies the global Viper configuration state.
 //   - Registers flags on the provided Cobra command.
 //   - Exits the application on error.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func BindServerFlags(cmd *cobra.Command) {
@@ -139,11 +142,13 @@ func BindServerFlags(cmd *cobra.Command) {
 //   - cmd (*cobra.Command): The command instance to which the flags will be attached.
 //
 // Returns:
-//   None.
+//
+//	None.
 //
 // Side Effects:
 //   - Modifies the global Viper configuration state.
 //   - Registers flags on the provided Cobra command.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func BindFlags(cmd *cobra.Command) {

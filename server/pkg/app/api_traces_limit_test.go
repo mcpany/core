@@ -38,10 +38,10 @@ func TestHandleTraces_Limit(t *testing.T) {
 	w := httptest.NewRecorder()
 	app.handleTraces().ServeHTTP(w, req)
 
-    resp := w.Result()
-    if resp.StatusCode != http.StatusOK {
-        t.Errorf("Expected status OK, got %v", resp.Status)
-    }
+	resp := w.Result()
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected status OK, got %v", resp.Status)
+	}
 
 	var traces []Trace
 	if err := json.NewDecoder(resp.Body).Decode(&traces); err != nil {
@@ -60,10 +60,10 @@ func TestHandleTraces_Limit(t *testing.T) {
 	w = httptest.NewRecorder()
 	app.handleTraces().ServeHTTP(w, req)
 
-    resp = w.Result()
-    if resp.StatusCode != http.StatusOK {
-        t.Errorf("Expected status OK, got %v", resp.Status)
-    }
+	resp = w.Result()
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected status OK, got %v", resp.Status)
+	}
 
 	var tracesLimit []Trace
 	if err := json.NewDecoder(resp.Body).Decode(&tracesLimit); err != nil {

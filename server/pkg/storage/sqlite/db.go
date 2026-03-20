@@ -33,6 +33,7 @@ type DB struct {
 // Side Effects:
 //   - Creates the database file and directories if they don't exist.
 //   - Initializes the database schema.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewDB(path string) (*DB, error) {

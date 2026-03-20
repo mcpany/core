@@ -75,6 +75,7 @@ type Executor interface {
 //
 // Side Effects:
 //   - May initialize a Docker client.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
@@ -96,6 +97,7 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 //
 // Side Effects:
 //   - None.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewLocalExecutor() Executor {

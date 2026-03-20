@@ -18,10 +18,10 @@ import (
 
 func TestHTTPUpstream_URLConstruction_QueryPreservation(t *testing.T) {
 	testCases := []struct {
-		name          string
-		address       string
-		endpointPath  string
-		expectedFqn   string
+		name         string
+		address      string
+		endpointPath string
+		expectedFqn  string
 	}{
 		{
 			name:         "base url with flag query param should not gain equals sign",

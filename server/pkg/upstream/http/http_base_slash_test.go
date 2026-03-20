@@ -18,10 +18,10 @@ import (
 
 func TestHTTPUpstream_BaseURLSlashLogic(t *testing.T) {
 	testCases := []struct {
-		name          string
-		address       string
-		endpointPath  string
-		expectedFqn   string
+		name         string
+		address      string
+		endpointPath string
+		expectedFqn  string
 	}{
 		{
 			name:         "base with encoded path and no slash, endpoint with path",

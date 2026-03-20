@@ -39,11 +39,11 @@ type Engine interface {
 	// Summary: Parses bytes into a protobuf message.
 	//
 	// Parameters:
-//   - b ([]byte): The raw bytes to parse.
-//   - v (proto.Message): The destination protobuf message.
+	//   - b ([]byte): The raw bytes to parse.
+	//   - v (proto.Message): The destination protobuf message.
 	//
 	// Returns:
-//   - (error): An error if parsing fails.
+	//   - (error): An error if parsing fails.
 	Unmarshal(b []byte, v proto.Message) error
 }
 
@@ -98,8 +98,10 @@ type ConfigurableEngine interface {
 // Returns:
 //   - (Engine): An initialized Engine implementation.
 //   - (error): An error if the file extension is not supported.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewEngine(path string) (Engine, error) {
@@ -692,8 +694,10 @@ func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 //
 // Returns:
 //   - (*FileStore): A new instance of FileStore.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
@@ -710,8 +714,10 @@ func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 //
 // Returns:
 //   - (*FileStore): A new instance of FileStore.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
@@ -1242,8 +1248,10 @@ type MultiStore struct {
 //
 // Returns:
 //   - *MultiStore: A new instance of MultiStore.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewMultiStore(stores ...Store) *MultiStore {

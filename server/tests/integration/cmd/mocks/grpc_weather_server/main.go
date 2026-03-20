@@ -58,7 +58,7 @@ func main() {
 	var err error
 	for i := 0; i < 5; i++ {
 		var lc net.ListenConfig
-	lis, err = lc.Listen(context.Background(), "tcp", address)
+		lis, err = lc.Listen(context.Background(), "tcp", address)
 		if err == nil {
 			break
 		}

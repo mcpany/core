@@ -136,39 +136,39 @@ func TestIsIPv4Compatible_Coverage(t *testing.T) {
 }
 
 func TestValidateIP_Multicast(t *testing.T) {
-    // Multicast IPv4
-    err := IsSafeURL("http://224.0.0.1")
-    if err == nil {
-        t.Errorf("Expected IsSafeURL to reject multicast IPv4 224.0.0.1")
-    }
+	// Multicast IPv4
+	err := IsSafeURL("http://224.0.0.1")
+	if err == nil {
+		t.Errorf("Expected IsSafeURL to reject multicast IPv4 224.0.0.1")
+	}
 
-    // Multicast IPv6
-    err = IsSafeURL("http://[ff02::1]")
-    if err == nil {
-        t.Errorf("Expected IsSafeURL to reject multicast IPv6 ff02::1")
-    }
+	// Multicast IPv6
+	err = IsSafeURL("http://[ff02::1]")
+	if err == nil {
+		t.Errorf("Expected IsSafeURL to reject multicast IPv6 ff02::1")
+	}
 }
 
 func TestValidateHTTPServiceDefinition_Coverage(t *testing.T) {
-    // Test invalid characters in path to trigger url.Parse error
-    methodGet := configv1.HttpCallDefinition_HTTP_METHOD_GET
-    def := configv1.HttpCallDefinition_builder{
-        EndpointPath: proto.String("/path\x7fcontrol"),
-        Method:       methodGet.Enum(),
-    }.Build()
+	// Test invalid characters in path to trigger url.Parse error
+	methodGet := configv1.HttpCallDefinition_HTTP_METHOD_GET
+	def := configv1.HttpCallDefinition_builder{
+		EndpointPath: proto.String("/path\x7fcontrol"),
+		Method:       methodGet.Enum(),
+	}.Build()
 
-    err := ValidateHTTPServiceDefinition(def)
-    // url.Parse might not fail on control chars depending on Go version, but let's try.
-    // Actually, usually it accepts almost anything.
-    // But checking coverage, we need to hit `if err != nil`.
+	err := ValidateHTTPServiceDefinition(def)
+	// url.Parse might not fail on control chars depending on Go version, but let's try.
+	// Actually, usually it accepts almost anything.
+	// But checking coverage, we need to hit `if err != nil`.
 
-    // Maybe a path that is not empty but effectively invalid for URL?
-    // /%gh
-    def.SetEndpointPath("/%gh") // Invalid escape
-    err = ValidateHTTPServiceDefinition(def)
-    if err == nil {
-        t.Log("url.Parse did not fail for invalid escape")
-    } else {
-        t.Logf("url.Parse failed as expected: %v", err)
-    }
+	// Maybe a path that is not empty but effectively invalid for URL?
+	// /%gh
+	def.SetEndpointPath("/%gh") // Invalid escape
+	err = ValidateHTTPServiceDefinition(def)
+	if err == nil {
+		t.Log("url.Parse did not fail for invalid escape")
+	} else {
+		t.Logf("url.Parse failed as expected: %v", err)
+	}
 }

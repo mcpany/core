@@ -19,10 +19,12 @@ import (
 //   - results: []CheckResult. The list of check results to print.
 //
 // Returns:
-//   None.
+//
+//	None.
 //
 // Side Effects:
 //   - Writes formatted text to the provided writer.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func PrintResults(w io.Writer, results []CheckResult) {

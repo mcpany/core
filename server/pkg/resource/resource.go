@@ -132,10 +132,13 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A new Manager instance.
+//
 // Parameters:
 //   - params: Inputs expected by the function.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewManager() *Manager {
@@ -169,7 +172,8 @@ func (rm *Manager) GetResource(uri string) (Resource, bool) {
 //   - resource: Resource. The resource to add.
 //
 // Returns:
-//   None.
+//
+//	None.
 //
 // Side Effects:
 //   - Updates the internal resource storage.
@@ -196,7 +200,8 @@ func (rm *Manager) AddResource(resource Resource) {
 //   - uri: string. The URI of the resource.
 //
 // Returns:
-//   None.
+//
+//	None.
 //
 // Side Effects:
 //   - Updates the internal resource storage.
@@ -272,7 +277,8 @@ func (rm *Manager) ListResources() []Resource {
 //   - f: func(). The callback function.
 //
 // Returns:
-//   None.
+//
+//	None.
 func (rm *Manager) OnListChanged(f func()) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()
@@ -305,7 +311,8 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 //   - serviceID: string. The service ID.
 //
 // Returns:
-//   None.
+//
+//	None.
 //
 // Side Effects:
 //   - Removes matching resources from storage.

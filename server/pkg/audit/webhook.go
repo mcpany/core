@@ -44,6 +44,7 @@ type WebhookAuditStore struct {
 //
 // Side Effects:
 //   - Starts background workers.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewWebhookAuditStore(webhookURL string, headers map[string]string) *WebhookAuditStore {

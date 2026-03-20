@@ -18,10 +18,10 @@ import (
 
 func TestHTTPUpstream_URLConstruction_DoubleSlashBug(t *testing.T) {
 	testCases := []struct {
-		name          string
-		address       string
-		endpointPath  string
-		expectedFqn   string
+		name         string
+		address      string
+		endpointPath string
+		expectedFqn  string
 	}{
 		{
 			name:         "endpoint path with double slash prefix",

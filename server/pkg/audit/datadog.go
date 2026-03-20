@@ -48,6 +48,7 @@ type DatadogAuditStore struct {
 //
 // Side Effects:
 //   - Starts background workers to process the log queue.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewDatadogAuditStore(config *configv1.DatadogConfig) *DatadogAuditStore {
@@ -185,7 +186,6 @@ func (e *DatadogAuditStore) sendBatch(batch []Entry) {
 		fmt.Fprintf(os.Stderr, "Datadog API returned status: %d\n", resp.StatusCode)
 	}
 }
-
 
 // Read implements the Store interface.
 //

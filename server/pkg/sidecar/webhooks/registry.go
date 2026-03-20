@@ -49,6 +49,7 @@ type Registry struct {
 //
 // Side Effects:
 //   - Allocates memory for the registry map.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewRegistry() *Registry {

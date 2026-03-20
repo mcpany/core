@@ -29,7 +29,7 @@ func TestSimpleTokenizer_ReflectionCoverage(t *testing.T) {
 		expected int
 	}{
 		// Pointers
-		{"ptr_nil", (*int)(nil), 1}, // "null" -> 1
+		{"ptr_nil", (*int)(nil), 1},                           // "null" -> 1
 		{"ptr_val", func() *int { i := 123; return &i }(), 1}, // "123" -> 3/4 = 0 -> 1
 
 		// Structs
@@ -61,11 +61,11 @@ func TestWordTokenizer_ReflectionCoverage(t *testing.T) {
 		expected int
 	}{
 		// Pointers
-		{"ptr_nil", (*int)(nil), 1}, // "null" -> 1
+		{"ptr_nil", (*int)(nil), 1},                           // "null" -> 1
 		{"ptr_val", func() *int { i := 123; return &i }(), 1}, // 123 -> 1
 
 		// Structs
-		{"struct", TestStruct{Name: "hello", Val: 123}, 2}, // "hello"(1) + 123(1) = 2
+		{"struct", TestStruct{Name: "hello", Val: 123}, 2},                        // "hello"(1) + 123(1) = 2
 		{"struct_nested", NestedStruct{Child: &TestStruct{Name: "a", Val: 1}}, 2}, // "a"(1) + 1(1) = 2
 
 		// Slices/Arrays via reflection (when not caught by type switch)
@@ -120,7 +120,7 @@ func TestGenericTokenizer_ReflectionCoverage(t *testing.T) {
 		expected int
 	}{
 		// Pointers
-		{"ptr_nil", (*int)(nil), 1}, // "null" -> 1
+		{"ptr_nil", (*int)(nil), 1},                           // "null" -> 1
 		{"ptr_val", func() *int { i := 123; return &i }(), 1}, // 123 -> "123" -> 1
 
 		// Structs

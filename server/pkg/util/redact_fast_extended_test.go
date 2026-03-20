@@ -30,12 +30,12 @@ func TestRedactJSON_Fast_Extended(t *testing.T) {
 		{
 			name:     "unclosed object",
 			input:    `{"api_key": {"unclosed": "object"`,
-			expected: `{"api_key": "[REDACTED]"` ,
+			expected: `{"api_key": "[REDACTED]"`,
 		},
 		{
 			name:     "unclosed array",
 			input:    `{"api_key": ["unclosed", "array"`,
-			expected: `{"api_key": "[REDACTED]"` ,
+			expected: `{"api_key": "[REDACTED]"`,
 		},
 		{
 			name:     "literal true",
@@ -75,12 +75,12 @@ func TestRedactJSON_Fast_Extended(t *testing.T) {
 		{
 			name:     "malformed string (unclosed)",
 			input:    `{"api_key": "unclosed string`,
-			expected: `{"api_key": "[REDACTED]"` ,
+			expected: `{"api_key": "[REDACTED]"`,
 		},
 		{
 			name:     "malformed string (odd backslashes at EOF)",
 			input:    `{"api_key": "ends with slash \`,
-			expected: `{"api_key": "[REDACTED]"` ,
+			expected: `{"api_key": "[REDACTED]"`,
 		},
 	}
 

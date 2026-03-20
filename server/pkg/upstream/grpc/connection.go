@@ -29,8 +29,10 @@ type ConnectionFactory struct {
 //
 // Side Effects:
 //   - None.
+//
 // Parameters:
 //   - params: Inputs expected by the function.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewConnectionFactory() *ConnectionFactory {
@@ -42,7 +44,7 @@ func NewConnectionFactory() *ConnectionFactory {
 //
 // Parameters:
 //   - dialer func(context.Context (string): The parameter.
-//   -  (string): The parameter.
+//   - (string): The parameter.
 //
 // Returns:
 //   - net.Conn: The result.

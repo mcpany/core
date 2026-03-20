@@ -27,8 +27,10 @@ const remoteIPContextKey = contextKey("remote_ip")
 //
 // Returns:
 //   - context.Context: A new context with the remote IP attached.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
@@ -46,8 +48,10 @@ func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 //
 // Returns:
 //   - string: The cleaned IP address string, or an empty string if the address is invalid.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func ExtractIP(addr string) string {
@@ -81,8 +85,10 @@ func ExtractIP(addr string) string {
 //
 // Returns:
 //   - string: The best-effort client IP address.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func GetClientIP(r *http.Request, trustProxy bool) string {
@@ -121,8 +127,10 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 // Returns:
 //   - string: The remote IP address.
 //   - bool: True if the IP was found, false otherwise.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func RemoteIPFromContext(ctx context.Context) (string, bool) {
@@ -142,8 +150,10 @@ func RemoteIPFromContext(ctx context.Context) (string, bool) {
 //
 // Returns:
 //   - bool: True if the IP is a private network address.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func IsPrivateNetworkIP(ip net.IP) bool {
@@ -161,8 +171,10 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 //
 // Returns:
 //   - bool: True if the IP is private, link-local, or loopback.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func IsPrivateIP(ip net.IP) bool {

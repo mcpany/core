@@ -24,8 +24,10 @@ var exportRegexCache sync.Map
 //
 // Returns:
 //   - bool: True if the item should be exported, false otherwise.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
@@ -86,8 +88,10 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 // Returns:
 //   - bool: True if the call is allowed, false otherwise.
 //   - error: An error if evaluation fails.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (bool, error) {
@@ -168,8 +172,10 @@ type CompiledCallPolicy struct {
 // Returns:
 //   - []*CompiledCallPolicy: The compiled policies.
 //   - error: An error if compilation fails (e.g., invalid regex).
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy, error) {
@@ -197,8 +203,10 @@ func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy
 // Returns:
 //   - *CompiledCallPolicy: The compiled policy.
 //   - error: An error if compilation fails.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, error) {
@@ -254,8 +262,10 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 // Returns:
 //   - bool: True if the call is allowed, false otherwise.
 //   - error: An error if evaluation fails.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {

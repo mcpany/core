@@ -97,6 +97,7 @@ type TrafficPoint struct {
 //
 // Side Effects:
 //   - Starts the background process loop.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.ManagerInterface) *Manager {
@@ -375,12 +376,12 @@ func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) 
 			totalErrors += stats.Errors
 			totalLatency += stats.Latency
 		} else if stats.ServiceStats != nil {
-				if sStats, ok := stats.ServiceStats[serviceID]; ok {
-					totalReqs += sStats.Requests
-					totalErrors += sStats.Errors
-					totalLatency += sStats.Latency
-				}
+			if sStats, ok := stats.ServiceStats[serviceID]; ok {
+				totalReqs += sStats.Requests
+				totalErrors += sStats.Errors
+				totalLatency += sStats.Latency
 			}
+		}
 	}
 
 	if totalReqs > 0 {

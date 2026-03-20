@@ -12,8 +12,8 @@ import (
 	"fmt"
 	"sync"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/alexliesenfeld/health"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	mcphealth "github.com/mcpany/core/server/pkg/health"
@@ -103,6 +103,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - None.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {

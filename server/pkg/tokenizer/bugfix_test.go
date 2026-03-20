@@ -4,8 +4,8 @@
 package tokenizer
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestHunter_WordTokenizer_PrimitiveSlice_Undercount(t *testing.T) {
@@ -29,19 +29,19 @@ func TestHunter_WordTokenizer_PrimitiveSlice_Undercount(t *testing.T) {
 }
 
 func TestHunter_WordTokenizer_PrimitiveSlice_Int64(t *testing.T) {
-    wt := &WordTokenizer{Factor: 1.5}
-    input := []int64{1, 2, 3, 4}
-    // Expected: 4 * 1.5 = 6.
-    // Current: 4 * 1 = 4.
+	wt := &WordTokenizer{Factor: 1.5}
+	input := []int64{1, 2, 3, 4}
+	// Expected: 4 * 1.5 = 6.
+	// Current: 4 * 1 = 4.
 
-    count, err := CountTokensInValue(wt, input)
-    if err != nil {
-        t.Fatalf("CountTokensInValue failed: %v", err)
-    }
+	count, err := CountTokensInValue(wt, input)
+	if err != nil {
+		t.Fatalf("CountTokensInValue failed: %v", err)
+	}
 
-    if count != 6 {
-        t.Errorf("WordTokenizer undercounts int64 slice. Got %d, expected 6", count)
-    }
+	if count != 6 {
+		t.Errorf("WordTokenizer undercounts int64 slice. Got %d, expected 6", count)
+	}
 }
 
 func TestHunter_WordTokenizer_EdgeCases(t *testing.T) {

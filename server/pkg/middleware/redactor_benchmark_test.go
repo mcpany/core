@@ -128,7 +128,6 @@ func BenchmarkRedactor_RedactJSON_Large(b *testing.B) {
 	}.Build()
 	r := NewRedactor(cfg, slog.Default())
 
-
 	// Construct a larger JSON payload
 	input := []byte(`{
 		"users": [

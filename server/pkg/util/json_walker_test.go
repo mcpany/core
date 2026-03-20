@@ -140,7 +140,7 @@ func TestWalkJSONStrings(t *testing.T) {
 			expected: `{ /* "ignore" */ "key": "REPLACED" }`,
 		},
 		{
-			name:  "slash before line comment with quote",
+			name: "slash before line comment with quote",
 			input: `{"key": 1 / 2 // "commented"
 , "k2": "v2"}`,
 			visitor: func(raw []byte) ([]byte, bool) {

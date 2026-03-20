@@ -16,8 +16,10 @@ import (
 //
 // Side Effects:
 //   - Reads environment variables.
+//
 // Parameters:
 //   - params: Inputs expected by the function.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func CheckAuth() map[string]CheckResult {

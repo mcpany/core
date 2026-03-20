@@ -84,6 +84,7 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // Side Effects:
 //   - Starts a background cache cleaner.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
@@ -277,7 +278,6 @@ func (u *Upstream) Register(
 // createAndRegisterGRPCTools iterates through the parsed MCP annotations, which
 // contain tool definitions extracted from protobuf options. For each tool, it
 // constructs a GRPCTool and registers it with the tool manager.
-//
 func (u *Upstream) createAndRegisterGRPCTools(
 	_ context.Context,
 	serviceID string,

@@ -54,7 +54,7 @@ func TestCircuitBreaker_Flapping_Race(t *testing.T) {
 		defer wg.Done()
 		_ = cb.Execute(ctx, func(_ context.Context) error {
 			started <- struct{}{}
-			<-startWork // Wait until both are running
+			<-startWork         // Wait until both are running
 			<-finishWorkSuccess // Wait for signal to finish
 			return nil
 		})

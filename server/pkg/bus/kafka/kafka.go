@@ -11,8 +11,8 @@ import (
 	"sync"
 
 	"github.com/google/uuid"
-	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/proto/bus"
+	"github.com/mcpany/core/server/pkg/logging"
 	kafkago "github.com/segmentio/kafka-go"
 )
 
@@ -45,8 +45,10 @@ type Bus[T any] struct {
 // Returns:
 //   - *Bus[T]: A pointer to the initialized Kafka bus.
 //   - error: An error if no brokers are provided or initialization fails.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func New[T any](config *bus.KafkaBus) (*Bus[T], error) {

@@ -39,8 +39,10 @@ var (
 // Side Effects:
 //   - Updates the global historyStore.
 //   - Prunes history if it exceeds 1000 points.
+//
 // Returns:
 //   - outcome: The resulting data or value.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func AddHealthStatus(serviceName string, status string) {
@@ -87,8 +89,10 @@ func AddHealthStatus(serviceName string, status string) {
 //
 // Side Effects:
 //   - Acquires a read lock on the history store.
+//
 // Parameters:
 //   - params: Inputs expected by the function.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
 func GetHealthHistory() map[string][]HistoryPoint {

@@ -102,7 +102,7 @@ func TestUpstreamService_Bored(t *testing.T) {
 	var boredResponse map[string]interface{}
 	err = json.Unmarshal([]byte(textContent.Text), &boredResponse)
 	if err != nil {
-	    t.Fatalf("Failed to unmarshal JSON response: %v, raw body: %s", err, textContent.Text)
+		t.Fatalf("Failed to unmarshal JSON response: %v, raw body: %s", err, textContent.Text)
 	}
 
 	require.NotEmpty(t, boredResponse["activity"], "The activity should not be empty")

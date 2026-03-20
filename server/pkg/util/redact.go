@@ -117,8 +117,10 @@ func init() {
 //
 // Returns:
 //   - []byte: The redacted JSON output.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func RedactJSON(input []byte) []byte {
@@ -152,8 +154,10 @@ func RedactJSON(input []byte) []byte {
 //
 // Returns:
 //   - map[string]interface{}: The potentially redacted map.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func RedactMap(m map[string]interface{}) map[string]interface{} {
@@ -271,8 +275,10 @@ var sensitiveKeys = []string{
 //
 // Returns:
 //   - bool: True if the key is considered sensitive, false otherwise.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func IsSensitiveKey(key string) bool {
@@ -512,8 +518,10 @@ var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
 //
 // Returns:
 //   - string: The redacted DSN string.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func RedactDSN(dsn string) string {
@@ -636,8 +644,10 @@ type SecretRedactor struct {
 //
 // Returns:
 //   - *SecretRedactor: The configured redactor.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func NewSecretRedactor(secrets []string) *SecretRedactor {
@@ -701,8 +711,10 @@ func (r *SecretRedactor) Redact(text string) string {
 //
 // Returns:
 //   - string: The redacted text.
+//
 // Errors:
 //   - err: Any error that occurs during execution.
+//
 // Side Effects:
 //   - changes: Any state modifications.
 func RedactSecrets(text string, secrets []string) string {
