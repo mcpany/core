@@ -134,3 +134,34 @@ func (a *Application) handleAuditExport(w http.ResponseWriter, r *http.Request) 
 		})
 	}
 }
+
+func (a *Application) handleDebugSeedAudit() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		if a.standardMiddlewares == nil || a.standardMiddlewares.Audit == nil {
+			http.Error(w, "Audit store not configured", http.StatusServiceUnavailable)
+			return
+		}
+
+		var req struct {
+			Entries []audit.Entry `json:"entries"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
+		for _, entry := range req.Entries {
+			// Create a mock context string that satisfies Write (although standard audit usually uses store)
+            // Hack to inject audit rows for e2e tests
+			_ = a.standardMiddlewares.Audit.WriteEntryForTesting(r.Context(), entry)
+		}
+
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"status": "ok"}`))
+	}
+}

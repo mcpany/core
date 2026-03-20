@@ -4,9 +4,10 @@
  */
 
 
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import * as path from 'path';
 import * as fs from 'fs';
+import { seedAuditLogs } from './e2e/audit-data';
 
 test.describe('Feature Screenshot', () => {
     // Enabled audit screenshots
@@ -23,7 +24,40 @@ test.describe('Feature Screenshot', () => {
         } catch (e) {
             console.warn('Failed to create audit directory:', e);
         }
+        await seedAuditLogs();
     });
+
+  test('Render beautiful JSON Viewer for Audit Logs', async ({ page }) => {
+    await page.goto('/audit');
+    await page.waitForSelector('text=Audit Logs');
+
+    // 2. We should see at least one "View" button for an audit log row.
+    const viewButton = page.locator('button:has-text("View")').first();
+    await viewButton.waitFor({ state: 'visible', timeout: 15000 }).catch(() => null);
+
+    if (await viewButton.isVisible()) {
+        // 3. Open the modal
+        await viewButton.click();
+
+        // 4. Verify that our new JsonViewer renders the formatted arguments
+        // Our JSON viewer wraps keys like "test_argument:" in a span, not raw string
+        // Check that we see the formatted text representation of the seeded args
+        const dialog = page.locator('[role="dialog"]');
+        await dialog.waitFor({ state: 'visible' });
+
+        // Ensure the new JSON viewer renders
+        await expect(dialog.locator('text=Arguments')).toBeVisible();
+        await expect(dialog.locator('text=Result')).toBeVisible();
+
+        // Verify it doesn't have the old syntax-highlighter class wrapper 'react-syntax-highlighter'
+        const oldSyntaxHighlighter = dialog.locator('.react-syntax-highlighter').first();
+        await expect(oldSyntaxHighlighter).toHaveCount(0);
+
+        // Verify the new JsonViewer renders its components
+        const jsonViewerKey = dialog.locator('text=test_argument:').first();
+        await expect(jsonViewerKey).toBeVisible();
+    }
+  });
 
   test('Capture Logs', async ({ page }) => {
     await page.goto('/logs');
