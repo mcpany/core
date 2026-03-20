@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v3"
+	yaml3 "gopkg.in/yaml.v3"
 )
 
 // ClaudeDesktopConfig represents the structure of claude_desktop_config.json.
@@ -129,7 +129,7 @@ func newImportCmd() *cobra.Command {
 			}
 
 			// Marshal to YAML
-			yamlData, err := yaml.Marshal(&mcpAnyConfig)
+			yamlData, err := yaml3.Marshal(&mcpAnyConfig)
 			if err != nil {
 				return fmt.Errorf("failed to marshal to YAML: %w", err)
 			}
