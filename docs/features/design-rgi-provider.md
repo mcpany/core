@@ -1,6 +1,6 @@
 # Design Doc: Reason-Graph Integrity (RGI) Provider
 **Status:** Draft
-**Created:** 2026-06-18
+**Created:** [2026-06-18]
 
 ## 1. Context and Scope
 The emergence of horizontal teammate coordination in frameworks like OpenClaw and Claude Code has introduced the concept of "Reason-Graphs"—distributed, parallel reasoning paths where multiple specialists contribute to a shared objective. However, this has led to **Reason-Graph Collision (RGC)**, where parallel teammates with overlapping roles generate conflicting reasoning traces that cannot be reconciled by simple binary state handoffs.
@@ -33,17 +33,17 @@ The Reason-Graph Integrity (RGI) Provider acts as the authoritative "Graph Arbit
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-    graph TD
-        A[Teammate A Trace] --> B[RGI Hub]
-        C[Teammate B Trace] --> B[RGI Hub]
-        B --> D[Conflict Detector]
-        D --> E{Collision?}
-        E -- Yes --> F[Mission-Root Policy Arbiter]
-        E -- No --> G[Atomic Graph Merge]
-        F --> H[Resolved Reasoning Fragment]
-        H --> G
-        G --> I[Unified Reason-Graph]
-        I --> J[Hardware-Attested Snapshot]
+graph TD
+    A[Teammate A Trace] --> B[RGI Hub]
+    C[Teammate B Trace] --> B[RGI Hub]
+    B --> D[Conflict Detector]
+    D --> E{Collision?}
+    E -- Yes --> F[Mission-Root Policy Arbiter]
+    E -- No --> G[Atomic Graph Merge]
+    F --> H[Resolved Reasoning Fragment]
+    H --> G
+    G --> I[Unified Reason-Graph]
+    I --> J[Hardware-Attested Snapshot]
     ```
 * **APIs / Interfaces:**
     * `rgi.ProposeFragment(graphId, fragment) -> void`: Adds a reasoning fragment to the active mesh graph.
@@ -60,4 +60,4 @@ The Reason-Graph Integrity (RGI) Provider acts as the authoritative "Graph Arbit
 * **Observability:** Integrated with the "Reason-Graph Visualizer" for real-time auditing of conflict resolution events.
 
 ## 7. Evolutionary Changelog
-* **2026-06-18:** Initial Document Creation. Introducing Reason-Graph Integrity (RGI) to resolve coordination collisions in horizontal meshes.
+* **[2026-06-18]:** Initial Document Creation. Introducing Reason-Graph Integrity (RGI) to resolve coordination collisions in horizontal meshes.
