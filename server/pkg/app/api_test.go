@@ -319,14 +319,22 @@ func TestHandleSettings_Detailed(t *testing.T) {
 }
 
 func TestHandleTools_Detailed(t *testing.T) {
-	app, _ := setupApiTestApp()
-	handler := app.handleTools()
+	app, store := setupApiTestApp()
+	handler := app.handleTools(store)
 
 	req := httptest.NewRequest(http.MethodGet, "/tools", nil)
 	w := httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %d", w.Code)
+	}
+
+	body := bytes.NewReader([]byte(`{"name":"test-tool","disable":true}`))
+	req = httptest.NewRequest(http.MethodPut, "/tools", body)
+	w = httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+	if w.Code == http.StatusMethodNotAllowed {
+		t.Errorf("Expected PUT method to be allowed, got %d", w.Code)
 	}
 }
 

@@ -85,7 +85,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/settings", a.handleSettings(store))
 	mux.HandleFunc("/debug/auth-test", a.handleAuthTest())
 
-	mux.HandleFunc("/tools", a.handleTools())
+	mux.HandleFunc("/tools", a.handleTools(store))
 	mux.HandleFunc("/execute", a.handleExecute())
 
 	mux.HandleFunc("/prompts", a.handlePrompts())
@@ -746,7 +746,7 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 	}
 }
 
-func (a *Application) handleTools() http.HandlerFunc {
+func (a *Application) handleTools(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
@@ -757,6 +757,81 @@ func (a *Application) handleTools() http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(toolList)
+		case http.MethodPut:
+			if store == nil {
+				http.Error(w, "Storage not initialized", http.StatusInternalServerError)
+				return
+			}
+			var req struct {
+				Name    string `json:"name"`
+				Disable bool   `json:"disable"`
+			}
+			body, err := readBodyWithLimit(w, r, 1048576)
+			if err != nil {
+				return
+			}
+			if err := json.Unmarshal(body, &req); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			var targetTool tool.Tool
+			tools := a.ToolManager.ListTools()
+			for _, t := range tools {
+				if t.Tool().GetName() == req.Name {
+					targetTool = t
+					break
+				}
+			}
+
+			if targetTool == nil {
+				http.Error(w, "tool not found", http.StatusNotFound)
+				return
+			}
+
+			serviceID := targetTool.Tool().GetServiceId()
+			service, err := store.GetService(r.Context(), serviceID)
+			if err != nil {
+				logging.GetLogger().Error("failed to get service for tool update", "service", serviceID, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			if service == nil {
+				// Tool might be implicitly exposed by an external backend but we need a config entry to disable it.
+				http.Error(w, "service config not found in storage", http.StatusNotFound)
+				return
+			}
+
+			found := false
+			for _, t := range service.GetTools() {
+				if t.GetName() == req.Name {
+					t.SetDisable(req.Disable)
+					found = true
+					break
+				}
+			}
+
+			if !found {
+				// Tool not explicitly defined in config, add it to explicit tool list
+				service.SetTools(append(service.GetTools(), &configv1.ToolDefinition{
+					Name:    req.Name,
+					Disable: req.Disable,
+				}))
+			}
+
+			if err := store.SaveService(r.Context(), service); err != nil {
+				logging.GetLogger().Error("failed to save service for tool update", "service", serviceID, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+
+			// Reload config
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after tool update", "error", err)
+			}
+
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("{}"))
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
