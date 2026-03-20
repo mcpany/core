@@ -5,12 +5,14 @@
 
 
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FileJson, Table as TableIcon, Terminal, FileText } from "lucide-react";
+import { FileJson, Table as TableIcon, Terminal, FileText, ChevronDown, ChevronsUpDown, Search } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -129,6 +131,10 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return !mcpContent && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
     }, [content, mcpContent]);
 
+    const [searchQuery, setSearchQuery] = useState("");
+    const [sortCol, setSortCol] = useState<string | null>(null);
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
     // Get columns for table
     const columns = useMemo(() => {
         if (!isTableEligible) return [];
@@ -142,6 +148,52 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         });
         return Array.from(keys);
     }, [content, isTableEligible]);
+
+    // Filter and sort the table content
+    const tableData = useMemo(() => {
+        if (!isTableEligible) return [];
+        let data = [...content];
+
+        // Apply search filter
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            data = data.filter((row: any) => {
+                return Object.values(row).some((val) =>
+                    String(val).toLowerCase().includes(query)
+                );
+            });
+        }
+
+        // Apply sorting
+        if (sortCol) {
+            data.sort((a: any, b: any) => {
+                const aVal = a[sortCol];
+                const bVal = b[sortCol];
+
+                if (aVal === bVal) return 0;
+                if (aVal === null || aVal === undefined) return sortDirection === 'asc' ? -1 : 1;
+                if (bVal === null || bVal === undefined) return sortDirection === 'asc' ? 1 : -1;
+
+                const aStr = String(aVal).toLowerCase();
+                const bStr = String(bVal).toLowerCase();
+
+                if (aStr < bStr) return sortDirection === 'asc' ? -1 : 1;
+                if (aStr > bStr) return sortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        return data;
+    }, [content, isTableEligible, searchQuery, sortCol, sortDirection]);
+
+    const handleSort = (col: string) => {
+        if (sortCol === col) {
+            setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortCol(col);
+            setSortDirection('asc');
+        }
+    };
 
     const renderCell = (value: any) => {
         if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
@@ -186,26 +238,61 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             )}
 
             {isTableEligible && (
-                <TabsContent value="table" className="border rounded-md">
-                    <ScrollArea className="h-[400px]">
+                <TabsContent value="table" className="border rounded-md bg-background/50 backdrop-blur-sm flex flex-col h-[400px]">
+                    <div className="p-2 border-b">
+                        <div className="relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                placeholder="Search table..."
+                                className="pl-8 bg-background/50 h-9"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <ScrollArea className="flex-1">
                         <Table>
-                            <TableHeader>
+                            <TableHeader className="sticky top-0 bg-background/95 backdrop-blur z-10 border-b">
                                 <TableRow>
                                     {columns.map(col => (
-                                        <TableHead key={col} className="whitespace-nowrap">{col}</TableHead>
+                                        <TableHead
+                                            key={col}
+                                            className="whitespace-nowrap cursor-pointer hover:bg-muted/50 transition-colors"
+                                            onClick={() => handleSort(col)}
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                {col}
+                                                {sortCol === col ? (
+                                                    <ChevronDown className={cn("h-3 w-3 transition-transform", sortDirection === 'desc' ? "" : "rotate-180")} />
+                                                ) : (
+                                                    <ChevronsUpDown className="h-3 w-3 opacity-50" />
+                                                )}
+                                            </div>
+                                        </TableHead>
                                     ))}
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {content.map((row: any, i: number) => (
-                                    <TableRow key={i}>
-                                        {columns.map(col => (
-                                            <TableCell key={col} className="py-2">
-                                                {renderCell(row[col])}
-                                            </TableCell>
-                                        ))}
+                                {tableData.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={columns.length} className="h-24 text-center">
+                                            <div className="flex flex-col items-center justify-center text-muted-foreground">
+                                                <p className="text-base font-medium">No results found</p>
+                                                <p className="text-sm opacity-70">Try adjusting your search query.</p>
+                                            </div>
+                                        </TableCell>
                                     </TableRow>
-                                ))}
+                                ) : (
+                                    tableData.map((row: any, i: number) => (
+                                        <TableRow key={i}>
+                                            {columns.map(col => (
+                                                <TableCell key={col} className="py-2">
+                                                    {renderCell(row[col])}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    ))
+                                )}
                             </TableBody>
                         </Table>
                     </ScrollArea>
