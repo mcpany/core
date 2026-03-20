@@ -142,8 +142,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
             // Trigger async validation for each
             validateItems(initialItems);
 
-        } catch (e: any // eslint-disable-line @typescript-eslint/no-explicit-any
-        ) {
+        } catch (e: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             setParsingError(e.message || "Failed to parse input.");
             setIsValidating(false);
         }
@@ -179,8 +178,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                          validatedItems[index].selected = false;
                      }
                 }
-            } catch (e: any // eslint-disable-line @typescript-eslint/no-explicit-any
-        ) {
+            } catch (e: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
                 validatedItems[index].validationStatus = "invalid";
                 validatedItems[index].validationMessage = e.message;
                 validatedItems[index].selected = false;
@@ -252,8 +250,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                 await apiClient.registerService(item.config);
                 results[originalIndex].importStatus = "success";
                 successCount++;
-            } catch (e: any // eslint-disable-line @typescript-eslint/no-explicit-any
-        ) {
+            } catch (e: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
                 results[originalIndex].importStatus = "error";
                 results[originalIndex].importError = e.message;
                 failureCount++;
@@ -281,8 +278,8 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
     if (step === "input") {
         return (
             <div className="space-y-6">
-                <Tabs value={inputType} onValueChange={(v) => setInputType(v as any // eslint-disable-line @typescript-eslint/no-explicit-any
-                )} className="w-full">
+                <Tabs value={inputType} onValueChange={(v) => setInputType(v as any) // eslint-disable-line @typescript-eslint/no-explicit-any
+                } className="w-full">
                     <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="json"><FileJson className="mr-2 h-4 w-4" /> JSON / YAML</TabsTrigger>
                         <TabsTrigger value="file"><Upload className="mr-2 h-4 w-4" /> File Upload</TabsTrigger>
