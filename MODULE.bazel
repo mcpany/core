@@ -139,7 +139,6 @@ use_repo(
     "io_opentelemetry_go_otel_sdk",
     "io_opentelemetry_go_otel_sdk_metric",
     "org_golang_google_api",
-    "org_golang_google_genproto_googleapis_api",
     "org_golang_google_grpc",
     "org_golang_google_grpc_cmd_protoc_gen_go_grpc",
     "org_golang_google_protobuf",
@@ -173,6 +172,7 @@ oci.pull(
         "linux/arm64",
     ],
 )
+
 # Python 3.12-slim base image for Python-based container images (cowsay server, timeserver).
 oci.pull(
     name = "python312_slim",
@@ -307,16 +307,3 @@ buildbuddy = use_extension("@toolchains_buildbuddy//:extensions.bzl", "buildbudd
 
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(python_version = "3.12")
-
-pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
-pip.parse(
-    hub_name = "cowsay_server_deps",
-    python_version = "3.12",
-    requirements_lock = "//server/tests/integration/cmd/mocks/python_cowsay_server:requirements_lock.txt",
-)
-pip.parse(
-    hub_name = "timeserver_deps",
-    python_version = "3.12",
-    requirements_lock = "//server/tests/integration/examples:requirements_lock.txt",
-)
-use_repo(pip, "cowsay_server_deps", "timeserver_deps")
