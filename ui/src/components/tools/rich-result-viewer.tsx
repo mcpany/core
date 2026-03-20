@@ -17,6 +17,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 interface RichResultViewerProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     result: any;
 }
 
@@ -105,6 +106,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
     const mcpContent = useMemo<McpContent[] | null>(() => {
         if (Array.isArray(content)) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const isValidArray = content.every((item: any) =>
                 (item.type === 'text' && typeof item.text === 'string') ||
                 (item.type === 'image' && typeof item.data === 'string' && typeof item.mimeType === 'string')
@@ -116,6 +118,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
         if (content && typeof content === 'object' && Array.isArray(content.content)) {
             // Check if it looks like MCP content
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const isValid = content.content.every((item: any) =>
                 (item.type === 'text' && typeof item.text === 'string') ||
                 (item.type === 'image' && typeof item.data === 'string' && typeof item.mimeType === 'string')
@@ -141,9 +144,10 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         // aggregate all keys from all objects to handle sparse data
         const keys = new Set<string>();
         // Limit rows scanned for columns to avoid perf issues on huge datasets
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         content.slice(0, 50).forEach((item: any) => {
             if (typeof item === 'object' && item !== null) {
-                Object.keys(item).forEach(k => keys.add(k));
+                Object.keys(item as Record<string, unknown>).forEach(k => keys.add(k));
             }
         });
         return Array.from(keys);
@@ -157,8 +161,9 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         // Apply search filter
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data = data.filter((row: any) => {
-                return Object.values(row).some((val) =>
+                return Object.values(row as Record<string, unknown>).some((val) =>
                     String(val).toLowerCase().includes(query)
                 );
             });
@@ -166,6 +171,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
         // Apply sorting
         if (sortCol) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data.sort((a: any, b: any) => {
                 const aVal = a[sortCol];
                 const bVal = b[sortCol];
@@ -195,6 +201,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const renderCell = (value: any) => {
         if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
         if (typeof value === 'object') return <span className="font-mono text-xs text-muted-foreground truncate max-w-[200px] block" title={JSON.stringify(value)}>{JSON.stringify(value)}</span>;
@@ -283,6 +290,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                                         </TableCell>
                                     </TableRow>
                                 ) : (
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     tableData.map((row: any, i: number) => (
                                         <TableRow key={i}>
                                             {columns.map(col => (
