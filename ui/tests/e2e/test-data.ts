@@ -4,10 +4,9 @@
  */
 
 import { request, APIRequestContext } from '@playwright/test';
-import { ServiceTemplate } from '../../../proto/config/v1/service_template';
-import { UpstreamServiceConfig } from '../../../proto/config/v1/upstream_service';
-import { User } from '../../../proto/config/v1/user';
 
+// Instead of importing the compiled proto messages which are failing to resolve in playwright environment,
+// we construct the JSON objects directly as any. Playwright just sends these to the backend /seed endpoint.
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const ECHO_SERVER_BASE_URL = process.env.UI_HTTP_ECHO_BASE_URL || 'http://ui-http-echo-server:5678';
@@ -21,15 +20,15 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             id: "svc_01",
             name: "Payment Gateway",
             version: "v1.2.0",
-            http_service: {
+            httpService: {
                 address: "https://stripe.com",
                 tools: [
-                    { name: "process_payment", description: "Process a payment", call_id: "process_payment_call" }
+                    { name: "process_payment", description: "Process a payment", callId: "process_payment_call" }
                 ],
                 calls: {
                     process_payment_call: {
                         method: "HTTP_METHOD_POST",
-                        endpoint_path: "/v1/charges"
+                        endpointPath: "/v1/charges"
                     }
                 }
             }
@@ -38,15 +37,15 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             id: "svc_02",
             name: "User Service",
             version: "v1.0",
-            http_service: {
+            httpService: {
                 address: "http://localhost:50051", // Dummy address
                 tools: [
-                    { name: "get_user", description: "Get user details", call_id: "get_user_call" }
+                    { name: "get_user", description: "Get user details", callId: "get_user_call" }
                 ],
                 calls: {
                     get_user_call: {
                         method: "HTTP_METHOD_GET",
-                        endpoint_path: "/users/{id}"
+                        endpointPath: "/users/{id}"
                     }
                 }
             }
@@ -55,16 +54,16 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             id: "svc_03",
             name: "Math",
             version: "v1.0",
-            http_service: {
+            httpService: {
                 address: ECHO_SERVER_BASE_URL,
                 tools: [
-                    { name: "calculator", description: "calc", call_id: "calc_call" }
+                    { name: "calculator", description: "calc", callId: "calc_call" }
                 ],
                 prompts: [
                     {
                         name: "Calculate Sum",
                         description: "Adds two numbers together",
-                        input_schema: {
+                        inputSchema: {
                             type: "object",
                             properties: {
                                 a: { type: "number", description: "First number" },
@@ -77,7 +76,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 calls: {
                     calc_call: {
                         method: "HTTP_METHOD_POST",
-                        endpoint_path: "/calc"
+                        endpointPath: "/calc"
                     }
                 }
             }
@@ -86,14 +85,14 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             id: "svc_echo",
             name: "Echo Service",
             version: "v1.0",
-            command_line_service: {
+            commandLineService: {
                 command: "echo",
                 tools: [
                     {
                         name: "echo_tool",
                         description: "Echoes back input",
-                        input_schema: { type: "object" },
-                        call_id: "echo_call"
+                        inputSchema: { type: "object" },
+                        callId: "echo_call"
                     }
                 ],
                 calls: {
@@ -102,8 +101,28 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                     }
                 }
             }
+        },
+        {
+            id: "svc_resource",
+            name: "Resource Service",
+            version: "v1.0",
+            commandLineService: {
+                command: "cat",
+                resources: [
+                    {
+                        uri: "file:///test.json",
+                        name: "test.json",
+                        mimeType: "application/json"
+                    }
+                ],
+                calls: {
+                    resource_call: {
+                        args: ["{\"key\": \"value\", \"long\": \"content to test modal view\"}"]
+                    }
+                }
+            }
         }
-    ].map((service) => UpstreamServiceConfig.toJSON(UpstreamServiceConfig.fromJSON(service)));
+    ];
 
     const templates = [
         {
@@ -112,18 +131,18 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             description: "Manage events and calendars.",
             icon: "calendar",
             tags: ["google", "productivity"],
-            service_config: {
+            serviceConfig: {
                 name: "google_calendar",
-                upstream_auth: {
+                upstreamAuth: {
                     oauth2: {
-                        token_url: "https://oauth2.googleapis.com/token",
-                        client_id: { plainText: "" },
-                        client_secret: { plainText: "" },
+                        tokenUrl: "https://oauth2.googleapis.com/token",
+                        clientId: { plainText: "" },
+                        clientSecret: { plainText: "" },
                         scopes: "https://www.googleapis.com/auth/calendar"
                     }
                 },
-                openapi_service: {
-                    spec_url: "https://api.apis.guru/v2/specs/googleapis.com/calendar/v3/openapi.yaml"
+                openapiService: {
+                    specUrl: "https://api.apis.guru/v2/specs/googleapis.com/calendar/v3/openapi.yaml"
                 }
             }
         },
@@ -133,14 +152,14 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             description: "Interact with repositories, issues, and PRs.",
             icon: "github",
             tags: ["dev", "git"],
-            service_config: {
+            serviceConfig: {
                 name: "github",
-                upstream_auth: {
-                    bearer_token: { token: { plainText: "" } }
+                upstreamAuth: {
+                    bearerToken: { token: { plainText: "" } }
                 },
-                openapi_service: {
+                openapiService: {
                     address: "https://api.github.com",
-                    spec_url: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml"
+                    specUrl: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml"
                 }
             }
         },
@@ -150,38 +169,52 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             description: "Issue tracking and project management.",
             icon: "linear",
             tags: ["dev", "pm"],
-            service_config: {
+            serviceConfig: {
                 name: "linear",
-                upstream_auth: {
-                    api_key: { value: { plainText: "" } }
+                upstreamAuth: {
+                    apiKey: { value: { plainText: "" } }
                 },
-                openapi_service: {
-                    spec_url: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
+                openapiService: {
+                    specUrl: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
                 }
             }
         }
-    ].map((template) => ServiceTemplate.toJSON(ServiceTemplate.fromJSON(template)));
+    ];
 
     const users = [
         {
             id: "e2e-admin-core",
             authentication: {
-                basic_auth: {
+                basicAuth: {
                     username: "e2e-admin-core",
                     // hash for "password" (bcrypt cost 12)
-                    password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a"
+                    passwordHash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a"
                 }
             },
             roles: ["admin"],
-            profile_ids: ["dev", "prod"]
+            profileIds: ["dev", "prod"]
         }
-    ].map((user) => User.toJSON(User.fromJSON(user)));
+    ];
+
+    const credentials = [
+        {
+            id: 'cred-1',
+            name: 'Test Credential',
+            authentication: {
+                apiKey: {
+                    paramName: 'Authorization',
+                    in: 0,
+                    value: { plainText: 'secret' }
+                }
+            }
+        }
+    ];
 
     const seedRequest = {
         upstream_services: services,
         service_templates: templates,
         users: users,
-        credentials: [],
+        credentials: credentials,
         secrets: [],
         profiles: []
     };
@@ -223,13 +256,13 @@ export const seedUser = async (requestContext: APIRequestContext | undefined, us
     const user = {
         id: username,
         authentication: {
-            basic_auth: {
+            basicAuth: {
                 username: username,
-                password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a" // password
+                passwordHash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a" // password
             }
         },
         roles: ["admin"], // Default to admin for e2e tests
-        profile_ids: ["dev"]
+        profileIds: ["dev"]
     };
 
     try {
@@ -285,7 +318,7 @@ export const seedCollection = async (name?: string, requestContext?: APIRequestC
                 services: [
                     {
                         name: 'weather-service',
-                        command_line_service: {
+                        commandLineService: {
                             command: 'echo weather'
                         }
                     }
