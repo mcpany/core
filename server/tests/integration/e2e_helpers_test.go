@@ -62,14 +62,10 @@ func TestWaitForText(t *testing.T) {
 }
 
 func TestDockerHelpers(t *testing.T) {
-	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
-		t.Log("Skipping TestDockerHelpers in CI environment (CI/GITHUB_ACTIONS=true)")
-		// t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
+	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" || !IsDockerSocketAccessible() {
+		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues or unavailable Docker")
 	}
 	t.Parallel()
-	if !IsDockerSocketAccessible() {
-		// t.Skip("Docker is not available")
-	}
 
 	// Test StartDockerContainer
 	imageName := "alpine:latest"
