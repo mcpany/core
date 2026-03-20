@@ -5,7 +5,7 @@
 ## 1. Context and Scope
 The "ClawJacked" vulnerability (CVE-2026-25253) demonstrated that the assumption of "Implicit Local Trust" for loopback traffic is fundamentally flawed. Malicious websites can use JavaScript to establish WebSocket connections to `localhost`, bypassing same-origin policies for standard HTTP requests. If the local gateway does not enforce strong, rate-limited authentication for these connections, an attacker can hijack the entire agent control plane.
 
-LOWA is a mandatory security layer for MCP Any that enforces session-bound authentication for all local WebSocket listeners. It ensures that only authorized local applications—not rogue scripts in a browser tab—can command the Universal Agent Bus.
+LOWA is a mandatory security layer for MCP Any that enforces session-bound authentication for all local WebSocket listeners. It ensures that only authorized local applicationsnot rogue scripts in a browser tabcan command the Universal Agent Bus.
 
 ## 2. Goals & Non-Goals
 *   **Goals:**
