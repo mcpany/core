@@ -23,8 +23,9 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { CredentialForm } from "./credential-form"
-import { Plus, Trash, Key, Lock, Globe, ExternalLink } from "lucide-react"
+import { Plus, Trash, Key, Lock, Globe, ExternalLink, Trash2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { Checkbox } from "@/components/ui/checkbox"
 
 /**
  * CredentialList component.
@@ -36,6 +37,7 @@ export function CredentialList() {
   const [loading, setLoading] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
   const [editingCred, setEditingCred] = useState<Credential | null>(null)
+  const [selectedCredentials, setSelectedCredentials] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     loadCredentials()
@@ -52,6 +54,7 @@ export function CredentialList() {
       } else {
         setCredentials([])
       }
+      setSelectedCredentials(new Set())
     } catch (error) {
 
       console.error(error)
@@ -93,6 +96,38 @@ export function CredentialList() {
       }
   }
 
+  async function handleBulkDelete() {
+      if (selectedCredentials.size === 0) return;
+      if (!confirm(`Are you sure you want to delete ${selectedCredentials.size} credentials?`)) return;
+
+      try {
+          await Promise.all(Array.from(selectedCredentials).map(id => apiClient.deleteCredential(id)));
+          toast({ description: `${selectedCredentials.size} credentials deleted` })
+          loadCredentials()
+      } catch (error) {
+          toast({ variant: "destructive", description: "Failed to delete some credentials" })
+          loadCredentials() // reload anyway to show what was successfully deleted
+      }
+  }
+
+  const toggleSelectAll = () => {
+      if (selectedCredentials.size === credentials.length) {
+          setSelectedCredentials(new Set())
+      } else {
+          setSelectedCredentials(new Set(credentials.map(c => c.id)))
+      }
+  }
+
+  const toggleSelect = (id: string) => {
+      const next = new Set(selectedCredentials)
+      if (next.has(id)) {
+          next.delete(id)
+      } else {
+          next.add(id)
+      }
+      setSelectedCredentials(next)
+  }
+
   function handleEdit(cred: Credential) {
       setEditingCred(cred)
       setIsOpen(true)
@@ -111,7 +146,14 @@ export function CredentialList() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Credentials</h2>
+        <div className="flex items-center gap-4">
+            <h2 className="text-xl font-semibold">Credentials</h2>
+            {selectedCredentials.size > 0 && (
+                <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
+                    <Trash2 className="mr-2 h-4 w-4" /> Delete Selected ({selectedCredentials.size})
+                </Button>
+            )}
+        </div>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Button onClick={handleCreate}><Plus className="mr-2 h-4 w-4" /> New Credential</Button>
@@ -132,6 +174,13 @@ export function CredentialList() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-12">
+                  <Checkbox
+                      checked={credentials.length > 0 && selectedCredentials.size === credentials.length}
+                      onCheckedChange={toggleSelectAll}
+                      aria-label="Select all"
+                  />
+              </TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Details</TableHead>
@@ -140,15 +189,24 @@ export function CredentialList() {
           </TableHeader>
           <TableBody>
             {loading ? (
-                <TableRow><TableCell colSpan={4} className="text-center py-4">Loading...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={5} className="text-center py-4">Loading...</TableCell></TableRow>
             ) : credentials.length === 0 ? (
-                <TableRow><TableCell colSpan={4} className="text-center py-4 text-muted-foreground">No credentials found</TableCell></TableRow>
+                <TableRow><TableCell colSpan={5} className="text-center py-4 text-muted-foreground">No credentials found</TableCell></TableRow>
             ) : (
                 credentials.map((cred) => (
                     <TableRow key={cred.id}>
-                        <TableCell className="font-medium flex items-center gap-2">
-                            <Key className="h-4 w-4 text-muted-foreground" />
-                            {cred.name}
+                        <TableCell>
+                            <Checkbox
+                                checked={selectedCredentials.has(cred.id)}
+                                onCheckedChange={() => toggleSelect(cred.id)}
+                                aria-label={`Select ${cred.name}`}
+                            />
+                        </TableCell>
+                        <TableCell className="font-medium">
+                            <div className="flex items-center gap-2">
+                                <Key className="h-4 w-4 text-muted-foreground" />
+                                {cred.name}
+                            </div>
                         </TableCell>
                         <TableCell>
                             {cred.authentication?.apiKey ? "API Key" :

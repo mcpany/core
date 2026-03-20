@@ -65,24 +65,6 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
             try {
                 setLoading(true);
                 const data = await apiClient.listTemplates();
-                // Map API response to UI model if needed, but ServiceTemplate matches closely.
-                // We might need to generate yamlSnippet if not present?
-                // The API ServiceTemplate has `serviceConfig`. We need to convert it to YAML snippet.
-                // For now, let's assume the API returns what we need or we construct it.
-                // Wait, the API `ServiceTemplate` definition in client.ts doesn't have `yamlSnippet`.
-                // It has `serviceConfig: UpstreamServiceConfig`.
-                // We need to serialize `serviceConfig` to YAML.
-                // Ideally `apiClient` or backend handles this, or we do it here.
-                // Let's assume we need to construct a simple YAML snippet from the config.
-                // Or maybe the backend templates SHOULD include a snippet?
-                // The backend `ServiceTemplate` proto has `description`, `icon`, etc.
-                // Let's manually construct a basic YAML for now or use a helper.
-
-                // TODO: proper YAML marshaling. For now, we might rely on the `description` or `name` to pick a snippet
-                // if we want to match the old behavior, OR we simply serialize the config.
-                // But the Stack Editor expects a YAML snippet to insert into the stack config.
-                // Stack config is YAML.
-
                 setTemplates(data);
             } catch (err) {
                 console.error("Failed to fetch templates", err);

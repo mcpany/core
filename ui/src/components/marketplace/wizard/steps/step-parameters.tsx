@@ -31,8 +31,6 @@ export function StepParameters() {
         updateState({ params: newParams });
 
         // Also update config env
-        // TODO: Sync `params` to `config.commandLineService.env` more robustly
-        // For now we just update basic env
         if (config.commandLineService) {
             const env: any = {};
             Object.entries(newParams).forEach(([k, v]) => {
