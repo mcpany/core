@@ -5,10 +5,9 @@
 
 
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { TraceList } from "@/components/traces/trace-list";
 import { TraceDetail } from "@/components/traces/trace-detail";
-import { usePolling } from "@/hooks/use-polling";
 import type { Trace } from "@/types/trace";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Loader2 } from "lucide-react";
@@ -25,7 +24,7 @@ export default function TracesPage() {
   const [isLive, setIsLive] = useState(false);
 
   // Separate load function for reuse
-  const loadTraces = useCallback(async (isFirstLoad = false) => {
+  const loadTraces = async (isFirstLoad = false) => {
       try {
         const res = await fetch('/api/v1/traces');
         const data = await res.json();
@@ -43,19 +42,21 @@ export default function TracesPage() {
       } finally {
         if (isFirstLoad) setLoading(false);
       }
-  }, [selectedId]);
+  };
 
   useEffect(() => {
     loadTraces(true);
-  }, [loadTraces]);
+  }, []);
 
-  const pollTraces = useCallback(() => {
-      loadTraces(false);
-  }, [loadTraces]);
-
-  // ⚡ BOLT: [Network/I/O Optimization] Use usePolling hook instead of raw setInterval
-  // Randomized Selection from Top 5 High-Impact Targets
-  usePolling(pollTraces, isLive ? 3000 : null);
+  useEffect(() => {
+      let interval: NodeJS.Timeout;
+      if (isLive) {
+          interval = setInterval(() => {
+              loadTraces(false);
+          }, 3000);
+      }
+      return () => clearInterval(interval);
+  }, [isLive]);
 
   const selectedTrace = traces.find(t => t.id === selectedId) || null;
 

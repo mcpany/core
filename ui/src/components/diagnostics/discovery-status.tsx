@@ -7,7 +7,6 @@
 
 import { useState, useEffect } from "react";
 import { apiClient } from "@/lib/client";
-import { usePolling } from "@/hooks/use-polling";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -49,11 +48,9 @@ export function DiscoveryStatus() {
 
     useEffect(() => {
         fetchStatus();
+        const interval = setInterval(fetchStatus, 5000);
+        return () => clearInterval(interval);
     }, []);
-
-    // ⚡ BOLT: [Network/I/O Optimization] Use usePolling hook instead of raw setInterval
-    // Randomized Selection from Top 5 High-Impact Targets
-    usePolling(fetchStatus, 5000);
 
     const handleScan = async () => {
         setScanning(true);
@@ -64,7 +61,7 @@ export function DiscoveryStatus() {
                 description: "Auto-discovery process has been triggered in the background.",
             });
             fetchStatus();
-        } catch (_e) {
+        } catch (e) {
             toast({
                 title: "Scan Failed",
                 description: "Failed to trigger discovery process.",
