@@ -56,6 +56,19 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
+// NewUpstream initializes and returns a new upstream instance.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - upstream.Upstream: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // NewUpstream creates a new instance of CommandUpstream.
 //
 // Returns:

@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package mcpserver implements the mcpserver subsystem.
 package mcpserver
 
 import (
@@ -24,6 +25,19 @@ type RootsTool struct {
 	mcpTool *mcp.Tool
 }
 
+// NewRootsTool initializes and returns a new roots tool instance.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *RootsTool: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // NewRootsTool creates a new instance of the RootsTool.
 //
 // Returns:
@@ -52,6 +66,19 @@ func NewRootsTool() *RootsTool {
 	}
 }
 
+// Tool handles tool.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *v1.Tool: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // Tool returns the protobuf definition of the tool.
 //
 // Returns:
@@ -63,6 +90,19 @@ func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
 }
 
+// MCPTool handles m c p tool.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *mcp.Tool: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // MCPTool returns the MCP-compliant tool definition.
 //
 // Returns:
@@ -103,6 +143,19 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 	return rootsResult, nil
 }
 
+// GetCacheConfig retrieves the cache config.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *configv1.CacheConfig: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // GetCacheConfig returns the caching configuration for this tool.
 //
 // Returns:

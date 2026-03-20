@@ -49,6 +49,19 @@ func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 	return mock
 }
 
+// EXPECT handles e x p e c t.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *MockManagerInterfaceMockRecorder: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // EXPECT returns an object that allows the caller to indicate expected use.
 //
 // Summary: Returns the recorder for expectations.
@@ -358,6 +371,19 @@ func (mr *MockManagerInterfaceMockRecorder) IsServiceAllowed(serviceID, profileI
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsServiceAllowed", reflect.TypeOf((*MockManagerInterface)(nil).IsServiceAllowed), serviceID, profileID)
 }
 
+// ListMCPTools returns a collection of m c p tools.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - []*mcp.Tool: A slice containing the requested elements.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // ListMCPTools mocks base method.
 //
 // Summary: Mock implementation of ListMCPTools.
@@ -371,6 +397,19 @@ func (m *MockManagerInterface) ListMCPTools() []*mcp.Tool {
 	return ret0
 }
 
+// ListMCPTools returns a collection of m c p tools.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *gomock.Call: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // ListMCPTools indicates an expected call of ListMCPTools.
 //
 // Summary: Expectation for ListMCPTools.
@@ -382,6 +421,19 @@ func (mr *MockManagerInterfaceMockRecorder) ListMCPTools() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMCPTools", reflect.TypeOf((*MockManagerInterface)(nil).ListMCPTools))
 }
 
+// ListServices returns a collection of services.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - []*ServiceInfo: A slice containing the requested elements.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // ListServices mocks base method.
 //
 // Summary: Mock implementation of ListServices.
@@ -395,6 +447,19 @@ func (m *MockManagerInterface) ListServices() []*ServiceInfo {
 	return ret0
 }
 
+// ListServices returns a collection of services.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *gomock.Call: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // ListServices indicates an expected call of ListServices.
 //
 // Summary: Expectation for ListServices.
@@ -406,6 +471,19 @@ func (mr *MockManagerInterfaceMockRecorder) ListServices() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListServices", reflect.TypeOf((*MockManagerInterface)(nil).ListServices))
 }
 
+// ListTools returns a collection of tools.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - []Tool: A slice containing the requested elements.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // ListTools mocks base method.
 //
 // Summary: Mock implementation of ListTools.
@@ -419,6 +497,19 @@ func (m *MockManagerInterface) ListTools() []Tool {
 	return ret0
 }
 
+// ListTools returns a collection of tools.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *gomock.Call: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // ListTools indicates an expected call of ListTools.
 //
 // Summary: Expectation for ListTools.

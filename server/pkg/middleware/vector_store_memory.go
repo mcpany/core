@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package middleware implements the middleware subsystem.
 package middleware
 
 import (
@@ -29,6 +30,19 @@ type VectorEntry struct {
 	Norm float32
 }
 
+// NewSimpleVectorStore initializes and returns a new simple vector store instance.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *SimpleVectorStore: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // NewSimpleVectorStore creates a new SimpleVectorStore.
 // It initializes the store with a default configuration.
 //

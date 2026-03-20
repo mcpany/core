@@ -1,6 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package mcpserver implements the mcpserver subsystem.
 package mcpserver
 
 import (
@@ -22,6 +23,19 @@ type TemporaryToolManager struct {
 	tools       map[string]tool.Tool
 }
 
+// NewTemporaryToolManager initializes and returns a new temporary tool manager instance.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *TemporaryToolManager: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // NewTemporaryToolManager creates a new TemporaryToolManager.
 //
 // Returns:
@@ -127,6 +141,19 @@ func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	return t, ok
 }
 
+// ListTools returns a collection of tools.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - []tool.Tool: A slice containing the requested elements.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // ListTools implements tool.ManagerInterface.
 //
 // Returns:

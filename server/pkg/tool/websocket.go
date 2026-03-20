@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package tool implements the tool subsystem.
 package tool
 
 import (
@@ -71,6 +72,19 @@ func NewWebsocketTool(
 	}
 }
 
+// Tool handles tool.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *v1.Tool: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // Tool returns the protobuf definition of the WebSocket tool.
 //
 // Summary: Retrieves the underlying tool definition.
@@ -81,6 +95,19 @@ func (t *WebsocketTool) Tool() *v1.Tool {
 	return t.tool
 }
 
+// MCPTool handles m c p tool.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *mcp.Tool: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // MCPTool returns the MCP tool definition.
 //
 // Summary: Retrieves the MCP-compatible tool definition.
@@ -98,6 +125,19 @@ func (t *WebsocketTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
+// GetCacheConfig retrieves the cache config.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *configv1.CacheConfig: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // GetCacheConfig returns the cache configuration for the WebSocket tool.
 //
 // Summary: Retrieves the cache configuration.

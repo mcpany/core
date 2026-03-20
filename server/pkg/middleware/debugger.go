@@ -1,6 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package middleware implements the middleware subsystem.
 package middleware
 
 import (
@@ -302,6 +303,19 @@ func isTextContent(contentType string) bool {
 		strings.Contains(contentType, "form-urlencoded")
 }
 
+// Entries handles entries.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - []DebugEntry: A slice containing the requested elements.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // Entries returns the last captured entries.
 //
 // Summary: Retrieves the list of captured debug entries from the ring buffer.
@@ -324,6 +338,19 @@ func (d *Debugger) Entries() []DebugEntry {
 	return entries
 }
 
+// APIHandler handles a p i handler.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - http.HandlerFunc: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // APIHandler returns a http.HandlerFunc to view entries.
 //
 // Summary: Returns an HTTP handler that exposes the debug entries as JSON.

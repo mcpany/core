@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package config implements the config subsystem.
 package config
 
 import (
@@ -656,6 +657,19 @@ type FileStore struct {
 	skipValidation   bool
 }
 
+// SetSkipValidation updates the skip validation.
+//
+// Parameters:
+//   - skip (bool): The skip input required for processing.
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies internal state or updates external storage components.
 // SetSkipValidation configures whether to skip schema validation during loading.
 //
 // Returns:
@@ -667,6 +681,19 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 	s.skipValidation = skip
 }
 
+// SetIgnoreMissingEnv updates the ignore missing env.
+//
+// Parameters:
+//   - ignore (bool): The ignore input required for processing.
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies internal state or updates external storage components.
 // SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
 //
 // Returns:

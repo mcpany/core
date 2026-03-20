@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package mcp implements the mcp subsystem.
 package mcp
 
 import (
@@ -350,6 +351,19 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	return c.encoder.Encode(wire)
 }
 
+// Close handles close.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - error: Returns an error if the execution fails or validation does not pass.
+//
+// Errors:
+//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
+//
+// Side Effects:
+//   - None.
 // Close terminates the connection by closing the underlying ReadWriteCloser.
 //
 // Returns:
@@ -364,6 +378,19 @@ func (c *dockerConn) Close() error {
 	return c.rwc.Close()
 }
 
+// SessionID handles session i d.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - string: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // SessionID returns a static identifier for the Docker transport session.
 //
 // Returns:
@@ -383,6 +410,19 @@ type dockerReadWriteCloser struct {
 	cli         dockerClient
 }
 
+// Close handles close.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - error: Returns an error if the execution fails or validation does not pass.
+//
+// Errors:
+//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
+//
+// Side Effects:
+//   - None.
 // Close closes the underlying connection and removes the associated Docker container.
 //
 // Returns:
@@ -477,6 +517,19 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
+// String handles string.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - string: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // String returns the buffered data as a string.
 //
 // Returns:

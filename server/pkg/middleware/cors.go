@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package middleware implements the middleware subsystem.
 package middleware
 
 import (
@@ -10,6 +11,19 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
+// CORSMiddleware handles c o r s middleware.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - mcp.Middleware: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // CORSMiddleware creates an MCP middleware for handling Cross-Origin Resource
 // Sharing (CORS). It is intended to add the necessary CORS headers to outgoing
 // responses, allowing web browsers to securely make cross-origin requests to

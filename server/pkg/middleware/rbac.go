@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package middleware implements the middleware subsystem.
 package middleware
 
 import (
@@ -18,6 +19,19 @@ type RBACMiddleware struct {
 	enforcer *auth.RBACEnforcer
 }
 
+// NewRBACMiddleware initializes and returns a new r b a c middleware instance.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *RBACMiddleware: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // NewRBACMiddleware creates a new RBACMiddleware.
 //
 // Summary: Initializes the RBAC middleware.

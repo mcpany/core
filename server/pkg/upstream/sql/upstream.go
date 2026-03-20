@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package sql implements the sql subsystem.
 package sql
 
 import (
@@ -28,6 +29,19 @@ type Upstream struct {
 	mu sync.Mutex
 }
 
+// NewUpstream initializes and returns a new upstream instance.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *Upstream: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // NewUpstream creates a new SQL upstream.
 //
 // Returns:

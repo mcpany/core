@@ -53,6 +53,19 @@ type Plugin interface {
 // MockRuntime is a placeholder implementation.
 type MockRuntime struct{}
 
+// NewMockRuntime initializes and returns a new mock runtime instance.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *MockRuntime: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // NewMockRuntime creates a new MockRuntime.
 //
 // Returns:
@@ -77,6 +90,19 @@ func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, er
 	return &MockPlugin{}, nil
 }
 
+// Close handles close.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - error: Returns an error if the execution fails or validation does not pass.
+//
+// Errors:
+//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
+//
+// Side Effects:
+//   - None.
 // Close closes the runtime.
 //
 // Returns:
@@ -105,6 +131,19 @@ func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([
 	return []byte("success"), nil
 }
 
+// Close handles close.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - error: Returns an error if the execution fails or validation does not pass.
+//
+// Errors:
+//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
+//
+// Side Effects:
+//   - None.
 // Close closes the plugin.
 //
 // Returns:

@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package vector implements the vector subsystem.
 package vector
 
 import (
@@ -28,6 +29,19 @@ type Upstream struct {
 	clientFactory ClientFactory
 }
 
+// NewUpstream initializes and returns a new upstream instance.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - upstream.Upstream: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // NewUpstream creates a new instance of VectorUpstream.
 //
 // Returns:

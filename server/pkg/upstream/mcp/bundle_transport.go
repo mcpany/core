@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package mcp implements the mcp subsystem.
 package mcp
 
 import (
@@ -30,6 +31,19 @@ type transportError struct {
 	Data    any    `json:"data,omitempty"`
 }
 
+// Error handles error.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - string: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // Error returns the error message.
 //
 // Returns:
@@ -455,6 +469,19 @@ func fixIDExtracted(val interface{}) interface{} {
 	return fixID(val)
 }
 
+// Close handles close.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - error: Returns an error if the execution fails or validation does not pass.
+//
+// Errors:
+//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
+//
+// Side Effects:
+//   - None.
 // Close closes the connection.
 //
 // Returns:
@@ -469,6 +496,19 @@ func (c *bundleDockerConn) Close() error {
 	return c.rwc.Close()
 }
 
+// SessionID handles session i d.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - string: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // SessionID returns the session ID of the connection.
 //
 // Returns:

@@ -4,6 +4,7 @@
 //go:build generate
 // +build generate
 
+// Package main implements the main subsystem.
 package main
 
 import (

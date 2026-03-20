@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package middleware implements the middleware subsystem.
 package middleware
 
 import (
@@ -91,6 +92,19 @@ type smartResponseWriter struct {
 	passThrough bool
 }
 
+// Header handles header.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - http.Header: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // Header returns the header map that will be sent by WriteHeader.
 //
 // Summary: Returns the response headers.
@@ -175,6 +189,19 @@ func (w *smartResponseWriter) flushHeader() {
 	w.w.WriteHeader(w.statusCode)
 }
 
+// Flush handles flush.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // Flush implements http.Flusher to support streaming.
 //
 // Summary: Flushes the response buffer to the client.

@@ -39,6 +39,19 @@ type Upstream struct {
 	checker health.Checker
 }
 
+// NewUpstream initializes and returns a new upstream instance.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - upstream.Upstream: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // NewUpstream creates a new instance of FilesystemUpstream.
 //
 // Returns:

@@ -258,6 +258,19 @@ type mcpPrompt struct {
 	*mcpConnection
 }
 
+// Prompt handles prompt.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *mcp.Prompt: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // Prompt returns the underlying *mcp.Prompt definition.
 //
 // Returns:
@@ -269,6 +282,19 @@ func (p *mcpPrompt) Prompt() *mcp.Prompt {
 	return p.mcpPrompt
 }
 
+// Service handles service.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - string: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // Service returns the ID of the service that this prompt belongs to.
 //
 // Returns:
@@ -383,6 +409,19 @@ type mcpResource struct {
 	*mcpConnection
 }
 
+// Resource handles resource.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *mcp.Resource: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // Resource returns the underlying *mcp.Resource definition.
 //
 // Returns:
@@ -394,6 +433,19 @@ func (r *mcpResource) Resource() *mcp.Resource {
 	return r.mcpResource
 }
 
+// Service handles service.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - string: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // Service returns the ID of the service that this resource belongs to.
 //
 // Returns:

@@ -1,6 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package mcpserver implements the mcpserver subsystem.
 package mcpserver
 
 import (
@@ -75,6 +76,19 @@ func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 	}
 }
 
+// URI handles u r i.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - string: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // URI returns the URI of the resource.
 //
 // Returns:
@@ -89,6 +103,19 @@ func (r *SkillResource) URI() string {
 	return fmt.Sprintf("skills://%s/%s", r.skill.Name, r.assetPath)
 }
 
+// Name handles name.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - string: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // Name returns the human-readable name of the resource.
 //
 // Returns:
@@ -103,6 +130,19 @@ func (r *SkillResource) Name() string {
 	return fmt.Sprintf("Skill Asset: %s (%s)", r.assetPath, r.skill.Name)
 }
 
+// Service handles service.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - string: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // Service returns the service identifier associated with the resource.
 //
 // Returns:
@@ -114,6 +154,19 @@ func (r *SkillResource) Service() string {
 	return "skills"
 }
 
+// Resource handles resource.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *mcp.Resource: The generated or retrieved entity.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // Resource returns the underlying MCP resource definition.
 //
 // Returns:
