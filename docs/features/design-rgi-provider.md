@@ -3,7 +3,7 @@
 **Created:** [2026-06-18]
 
 ## 1. Context and Scope
-The emergence of horizontal teammate coordination in frameworks like OpenClaw and Claude Code has introduced the concept of "Reason-Graphs"—distributed, parallel reasoning paths where multiple specialists contribute to a shared objective. However, this has led to **Reason-Graph Collision (RGC)**, where parallel teammates with overlapping roles generate conflicting reasoning traces that cannot be reconciled by simple binary state handoffs.
+The emergence of horizontal teammate coordination in frameworks like OpenClaw and Claude Code has introduced the concept of "Reason-Graphs"-- distributed, parallel reasoning paths where multiple specialists contribute to a shared objective. However, this has led to **Reason-Graph Collision (RGC)**, where parallel teammates with overlapping roles generate conflicting reasoning traces that cannot be reconciled by simple binary state handoffs.
 
 The Reason-Graph Integrity (RGI) Provider acts as the authoritative "Graph Arbiter" for MCP Any. It provides the infrastructure to merge parallel reasoning traces, resolve semantic conflicts at the graph level, and ensure that the collective swarm intelligence remains anchored to the mission-root intent without cognitive stall.
 
