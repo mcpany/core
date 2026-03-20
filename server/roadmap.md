@@ -615,14 +615,14 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Zero-Knowledge Capability Proof (ZKCP)**: Prove skill possession without revealing sensitive implementation details. (Added: 2026-05-24)
 *   **[P0] Self-Correction Loop Arbiter**: Lifecycle monitor to prevent reasoning hijacking via self-correction drift. (Added: 2026-05-24)
 
-#### Upcoming (2026-05-26 Evolution)
-*   **[P0] Challenge-Response LOWA Pairing**: Enhanced local auth protocol requiring manual cryptographic challenge validation. (Added: 2026-05-26)
-*   **[P0] T2T Encryption Bridge**: Secure, cross-framework bus for encrypted teammate-to-teammate coordination. (Added: 2026-05-26)
-*   **[P0] Full-Mesh Discovery Auth**: Hardware-attested "Auth-before-Discovery" for A2A meshes to prevent shadow capability mapping. (Added: 2026-05-26)
-*   **[P0] Same-Site Session Enforcement**: Integration of `SameSite=Strict` and origin-bound cookies for local tool listeners. (Added: 2026-05-26)
-
 #### Upcoming (2026-05-25 Evolution)
 *   **[P0] Reasoning-Budget Firewall (RBF)**: Authoritative economic gatekeeper enforcing hardware-attested token/ARE budgets. (Added: 2026-05-25)
 *   **[P0] Asynchronous Mailbox Sharding (AMS)**: Upgrade for T2T bridge to host task-bound mailbox shards and eliminate coordination locks. (Added: 2026-05-25)
 *   **[P0] Cognitive Stall Arbitrator (CSA)**: Stability middleware to detect and terminate non-convergent subagent refinement loops. (Added: 2026-05-25)
 *   **[P0] Identity Fragment Attestation (IFA)**: Security extension mandating hardware-attested, session-bound identity tokens for mailbox requests. (Added: 2026-05-25)
+
+#### Upcoming (2026-05-26 Evolution)
+*   **[P0] LOWA HMAC Challenge-Response**: Implementation of cryptographically bound handshakes for local WebSocket listeners to neutralize CSWSH. (Added: 2026-05-26)
+*   **[P0] T2T Mailbox Sharding Middleware**: Performance optimization for horizontal teammate meshes, supporting 5+ concurrent agents. (Added: 2026-05-26)
+*   **[P0] Full-Mesh Discovery Auth (v2)**: Advanced "Auth-before-Discovery" protocol requiring mission-root attestation before revealing capabilities. (Added: 2026-05-26)
+*   **[P1] A2A Capability Masking**: Implementation of schema-masking for agent capability cards during the initial handshake. (Added: 2026-05-26)

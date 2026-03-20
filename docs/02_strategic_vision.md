@@ -271,7 +271,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Strategic Pivot**:
 - **Multi-Hop Trust Persistence**: MCP Any will implement LFTA v2.0 compliant "Trust Relays." This allows agents to delegate capabilities through deep swarms while maintaining hardware-bound attestation strength, neutralizing "Multi-Hop Exhaustion."
 - **Cognitive Anchoring Host**: We are evolving the ContextEngine Adapter to natively support "Cognitive Anchors." By pinning mission-root intents in an immutable context sidecar, we prevent "Semantic Drift" and "Context-Splicing" during complex subagent handoffs.
-- **Interactive Delegation Gateway**: Leveraging A2UI manifests, MCP Any will act as the authoritative "HITL Bridge" for delegated task cards. We will provide origin-locked UI fragments for user approval of high-risk multi-agent delegations.
+- **Interactive Delegation Gateway**: Leveraging A2UI manifests, MCP Any will act as the authoritative "HITL Bridge" for delegated task card approvals. We will provide origin-locked UI fragments for user approval of high-risk multi-agent delegations.
 
 ## Strategic Evolution: [2026-04-25]
 ### Focus: Pluggable Context Sovereignty & Authenticated A2A Handshake Consolidation
@@ -750,7 +750,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Strategic Pivot**:
 - **A2UI Native Gateway**: MCP Any will pivot to become a secure A2UI bridge. We will provide the infrastructure for agents to surface secure, interactive UI fragments directly to the user, ensuring that tool-specific interfaces are isolated and origin-validated.
 - **Deterministic Absence Proofs (DAP)**: To neutralize the "Absence-as-Exploit" pattern, we are introducing DAPs. MCP Any will generate signed "Non-Existence Manifests" for restricted project-local files, providing a cryptographic guarantee that the agent sandbox is not poisoned by unauthorized configuration creation.
-- **WebSocket-First Context Compaction**: Aligning with OpenClaw 2026.3.1, we are moving toward a native WebSocket transport for all state handoffs, with integrated context compaction to support adaptive reasoning swarms without token bloat.
+- **WebSocket-First Context Compaction**: Aligning with OpenClaw 2026.3.11, we are moving toward a native WebSocket transport for all state handoffs, with integrated context compaction to support adaptive reasoning swarms without token bloat.
 
 ## Strategic Evolution: [2026-04-20]
 ### Focus: Cognitive Resilience & Multi-Dimensional Attestation
@@ -800,15 +800,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Attested Boot Integrity**: We are moving from signed manifests to "Hardware-Locked Deterministic Boot." MCP Any will mandate that any project-local configuration be cryptographically bound to a Trusted Platform Module (TPM) or Secure Enclave, ensuring that cloned repositories cannot execute malicious hooks without explicit, hardware-bound user re-attestation.
 - **VTD-Powered Automation**: To break the "Approval Fatigue" bottleneck, we are accelerating the deployment of the Verifiable Task Delegation (VTD) layer, enabling autonomous A2A handoffs for verified low-risk operations.
 
-## Strategic Evolution: [2026-05-26]
-### Focus: Local Zero-Trust (LOWA) & Authenticated Mesh Discovery
-**Context**: The disclosure of "ClawJacked" (CVE-2026-3.11) and the stabilization of Gemini CLI's A2A auth suite confirm that "Implicit Local Trust" for loopback traffic is no longer a viable security paradigm. At the same time, the rise of Claude Code's "Agent Teams" signals a shift from vertical subagent hierarchies to horizontal meshes. The "Universal Agent Bus" must now act as the secure, authenticated bridge for both local control and teammate-to-teammate coordination.
-**Strategic Pivot**:
-- **Local-Only WebSocket Auth (LOWA)**: MCP Any will evolve to mandate session-bound authentication for all local WebSocket listeners. This ensures that only verified local applications—not malicious browser scripts—can bridge into the agent's control plane via unvalidated loopback connections.
-- **Teammate-to-Teammate (T2T) Encryption Bridge**: Supporting horizontal swarms, MCP Any will implement a T2T Encryption Bridge. This service provides the infrastructure for teammates from disparate frameworks (Claude Code, OpenClaw, AutoGen) to securely exchange mailbox messages and synchronize their views of the Shared Task List.
-- **Full-Mesh Discovery Authorization**: We are mandating "Auth-before-Discovery" for all A2A-compliant agents. Capabilities and "Agent Cards" will only be visible to peers who have completed a hardware-attested handshake within a verified mission scope.
-- **Mailbox Integrity Middleware**: To prevent "Mailbox Injection" by rogue teammates, we are introducing a message-validation layer. Every inter-agent mailbox message must be signed and validated against the "Mission Root" intent before reaching the target agent.
-
 ## Strategic Evolution: [2026-05-25]
 ### Focus: Reasoning-Budget Sovereignty & Asynchronous Mailbox Sharding
 **Context**: The emergence of "Reasoning-Budget Hijacking" (RBH) via spoofed ARE headers and the persistent "Mailbox Lock" bottlenecks in high-density Claude Code teams confirm that the Universal Agent Bus must now move beyond simple context guarding. We must now protect the **economic integrity** of the reasoning path and ensure that inter-teammate communication remains non-blocking as swarms scale horizontally.
@@ -817,3 +808,12 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Asynchronous Mailbox Sharding (AMS)**: To neutralize "Mailbox Lock" latency, we are upgrading the T2T Encryption Bridge to support AMS. This service will host granular, task-bound mailbox shards that allow parallel teammates (Claude, OpenClaw, AutoGen) to synchronize state without global coordination bottlenecks.
 - **Cognitive Stall Arbitrator (CSA)**: Supporting the stability of deep swarms, MCP Any will implement the CSA. This layer will monitor the semantic entropy of subagent refinement loops on the Blackboard, forcefully terminating sessions that exhibit "Refinement Drift" or fail to reach state convergence within the mission-root timeframe.
 - **Identity Fragment Attestation (IFA)**: To counter "Stale Identity" reuse, we are mandating IFA. Every inter-agent mailbox request must be signed with a hardware-attested, session-bound identity token, ensuring that subagents cannot inherit unauthorized mailbox access from previous handoffs.
+
+## Strategic Evolution: [2026-05-26]
+### Focus: Local Zero-Trust (LOWA) & Authenticated Mesh Discovery
+**Context**: The disclosure of "ClawJacked" (CVE-2026-3.11) and the stabilization of Gemini CLI's A2A auth suite confirm that "Implicit Local Trust" for loopback traffic is no longer a viable security paradigm. At the same time, the rise of Claude Code's "Agent Teams" signals a shift from vertical subagent hierarchies to horizontal meshes. The "Universal Agent Bus" must now act as the secure, authenticated bridge for both local control and teammate-to-teammate coordination.
+**Strategic Pivot**:
+- **Local-Only WebSocket Auth (LOWA)**: MCP Any will evolve to mandate session-bound authentication for all local WebSocket listeners. This ensures that only verified local applications—not malicious browser scripts—can bridge into the agent's control plane via unvalidated loopback connections.
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: Supporting horizontal swarms, MCP Any will implement a T2T Encryption Bridge. This service provides the infrastructure for teammates from disparate frameworks (Claude Code, OpenClaw, AutoGen) to securely exchange mailbox messages and synchronize their views of a "Shared Task List."
+- **Full-Mesh Discovery Authorization**: We are mandating "Auth-before-Discovery" for all A2A-compliant agents. Capabilities and "Agent Cards" will only be visible to peers who have completed a hardware-attested handshake within a verified mission scope.
+- **Mailbox Integrity Middleware**: To prevent "Mailbox Injection" by rogue teammates, we are introducing a message-validation layer. Every inter-agent mailbox message must be signed and validated against the "Mission Root" intent before reaching the target agent.

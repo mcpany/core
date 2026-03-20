@@ -31,7 +31,7 @@
 ### Proposed Additions
 - **Local-Only WebSocket Auth (LOWA) Gateway**: (P0) A mandatory security layer for all local listeners that enforces session-bound authentication to neutralize "ClawJacked" style brute-force attacks.
 - **Teammate-to-Teammate (T2T) Encryption Bridge**: (P0) Infrastructure for secure, peer-to-peer mailbox messaging and task list synchronization between teammates from disparate frameworks.
-- **Mailbox Integrity Middleware**: (P0) Security extension for the T2T Bridge that validates inter-agent messages against the "Mission Root" intent to prevent malicious mailbox injection.
+- **Mailbox Integrity Middleware**: (P0) Security extension for the T2T Bridge that validates inter-agent messages against the "Mission Root" intent before reaching the target teammate's mailbox.
 - **Full-Mesh Discovery Auth Provider**: (P0) Advanced discovery service that mandates hardware-attested handshakes before revealing agent capability cards in a mesh environment.
 
 ### Priority Shifts
@@ -1076,18 +1076,6 @@
 - **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Now elevated as the primary solution for the "Approval Fatigue" scaling bottleneck.
 - **Pluggable Context Bridge**: (Re-affirmed P0) Expanded to support the new Standardized Context Sidecar Interface.
 
-## Evolution: [2026-05-26] Updates
-
-### Proposed Additions
-- **Local-Only WebSocket Auth (LOWA) Gateway**: (P0) A mandatory security layer for all local listeners that enforces session-bound authentication to neutralize "ClawJacked" style brute-force attacks.
-- **Teammate-to-Teammate (T2T) Encryption Bridge**: (P0) Infrastructure for secure, peer-to-peer mailbox messaging and task list synchronization between teammates from disparate frameworks.
-- **Mailbox Integrity Middleware**: (P0) Security extension for the T2T Bridge that validates inter-agent messages against the "Mission Root" intent to prevent malicious mailbox injection.
-- **Full-Mesh Discovery Auth Provider**: (P0) Advanced discovery service that mandates hardware-attested handshakes before revealing agent capability cards in a mesh environment.
-
-### Priority Shifts
-- **Inter-Agent Mailbox Guard (IAMG)**: (Evolved to Mailbox Integrity Middleware) Now designated as a mandatory requirement for all mesh-based teammate coordination.
-- **Origin-Locked Agent Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory session-bound LOWA authentication.
-
 ## Evolution: [2026-05-25] Updates
 
 ### Proposed Additions
@@ -1099,3 +1087,15 @@
 ### Priority Shifts
 - **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Now elevated with the requirement for AMS to support high-density parallel swarms.
 - **Reasoning-Effort Quota Controller**: (Evolved to Reasoning-Budget Firewall) Now designated as a mandatory defense against Reasoning-Budget Hijacking (RBH).
+
+## Evolution: [2026-05-26] Updates
+
+### Proposed Additions
+- **LOWA Challenge-Response Pairing**: (P0) Security extension for the LOWA Gateway using HMAC-based challenge-response pairings to neutralize local replay attacks and cross-site brute-force chains.
+- **T2T Mailbox Sharding Middleware**: (P0) Performance extension for the T2T Encryption Bridge designed to handle horizontal scaling of high-density agent teams (5+ concurrent teammates).
+- **A2A Capability Masking Provider**: (P1) Advanced discovery service that masks specific tool schemas behind generic "Capability Roles" until a hardware-attested session is established.
+- **Full-Mesh Discovery Auth (v2)**: (P0) Upgraded discovery protocol mandating hardware-bound "Proof of Intent" before any Agent Card discovery.
+
+### Priority Shifts
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now designated as a mandatory prerequisite for all "Agent Team" deployments to prevent lateral movement by compromised teammates.
+- **LOWA Gateway**: (Re-affirmed P0) Elevated to "Blocking Prerequisite" for all local loopback listeners following the OpenClaw v2026.3.11 disclosure.
