@@ -753,3 +753,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+#### Upcoming (2026-06-18 Evolution)
+*   **[P0] Recursive Intent Deconstruction (RID) Hub**: Implement authoritative lineage deconstruction for hardware-attested atomic intent fragments. (Added: 2026-06-18)
+*   **[P0] Behavioral Entropy Locking (BEL) Middleware**: Monitor semantic entropy of shard-sync to prevent exfiltration via coordination noise. (Added: 2026-06-18)
+*   **[P1] Speculative Shard Checkpointing (SSC) Provider**: High-speed, hardware-attested checkpointing for speculative branches. (Added: 2026-06-18)
+*   **[P0] Post-Sync Integrity Verifier (PSIV)**: Mandatory secondary consistency check immediately following shard-sync to neutralize logic grafting. (Added: 2026-06-18)

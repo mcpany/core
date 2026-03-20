@@ -591,3 +591,9 @@
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
+
+### Upcoming: [2026-06-18]
+- [ ] **[P0] Recursive Intent Auditor**: (2026-06-18) Visual tracer for hardware-attested intent fragments and lineage deconstruction status.
+- [ ] **[P0] Entropy Lock Status Widget**: (2026-06-18) Real-time monitor of shard-sync entropy levels and BEL triggers.
+- [ ] **[P1] Speculative Checkpoint Manager**: (2026-06-18) UI for reviewing speculative branches and managing SSC-based rollbacks.
+- [ ] **[P0] Post-Sync Consistency Monitor**: (2026-06-18) Security indicators for PSIV-attestation status of sharded state.

@@ -1360,3 +1360,15 @@
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Recursive Intent Deconstruction (RID) Hub**: (P0) Authoritative security service for deep semantic auditing of sub-missions by recursively deconstructing reasoning paths.
+- **Behavioral Entropy Locking (BEL) Middleware**: (P0) Security component that monitors semantic entropy and "locks" shared shards if thresholds are exceeded.
+- **Speculative Shard Checkpointing (SSC) Provider**: (P1) High-performance stability service for sub-millisecond checkpointing of speculative reasoning branches.
+- **Post-Sync Integrity Verifier (PSIV)**: (P0) Mandatory consistency check for all sharded fragments immediately following synchronization to counter logic grafting.
+
+### Priority Shifts
+- **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **PSIV-compliant** post-sync verification.
+- **Speculative Branching Guard (SBG)**: (Re-affirmed P1) Designated as the primary integration point for the new **SSC** provider.

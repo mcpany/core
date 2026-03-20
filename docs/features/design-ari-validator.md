@@ -74,3 +74,10 @@ The Atomic Reasoning Integrity (ARI) Validator is needed to perform fragment-lev
 * Mandating that all ARI-attested fragments be committed to **Entanglement Shards** via the Entangled State Broker (ESB).
 * Introducing a "Late-Binding Integrity Check" where the recipient teammate re-verifies the hardware-attested entanglement signature before reasoning ingestion.
 **Security Impact:** Prevents "Time-of-Check to Time-of-Use" (TOCTOU) attacks on shared mailbox state by ensuring state fragments are cryptographically bound to the mission-root intent throughout their entire lifecycle.
+
+### Update: 2026-06-18 - Post-Sync Integrity & Logic Grafting Defense
+**Context:** Today's disclosure of CVE-2026-71002 (Logic Grafting) reveal that sharded state can be tampered with during the synchronization window despite attention-locking.
+**Architecture Adjustment:**
+* Introducing **Post-Sync Integrity Verification (PSIV)** in Section 4.
+* Mandating that all ARI-attested fragments undergo a secondary hardware-attested consistency check immediately following shard-sync.
+**Security Impact:** Neutralizes logic grafting by ensuring that only fragments that match the pre-sync hardware signature are ingested into the teammate's attention window.
