@@ -585,3 +585,15 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
 *   **[P1] Cognitive Fragment Reconciler**: Background service for synchronizing encrypted monologues across agent sessions. (Added: 2026-04-22)
+
+#### Upcoming (2026-05-18 Evolution)
+*   **[P0] Mission-Root Pinning (MRP) Middleware**: [In Design] Transport-level safeguard to protect mission intent. (Updated: 2026-05-19)
+*   **[P0] State-Trust Labeling (STL) Provider**: [In Design] Security extension for the Blackboard to tag data with trust-levels. (Updated: 2026-05-19)
+*   **[P0] Wait-Graph Deadlock Resolver**: Orchestration service for `TeammateTool` to break circular task dependencies. (Added: 2026-05-18)
+*   **[P1] Intent-Weighted Context Summarizer**: Upgrade for ContextEngine to support RCE v2.0 mission-anchored compression. (Added: 2026-05-18)
+
+#### Upcoming (2026-05-19 Evolution)
+*   **[P0] Intent-Weighted MRP Controller**: Upgrade for Mission-Root Pinning to integrate with OpenClaw RCE v2.0 weighted summarization. (Added: 2026-05-19)
+*   **[P0] Standardized Trust-Label Translator**: Authoritative mapping service for cross-framework trust metadata (UAB/A2A/MCP). (Added: 2026-05-19)
+*   **[P1] Cross-Framework Wait-Graph Sync**: Unified bus for wait-state reporting to enable swarm-wide deadlock detection. (Added: 2026-05-19)
+*   **[P1] MAQ Heartbeat Provider**: Efficiency monitor for multi-agent quorums to detect and alert on coordination stalls. (Added: 2026-05-19)

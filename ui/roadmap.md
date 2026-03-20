@@ -425,3 +425,14 @@
 #### Upcoming (2026-03-17 Evolution)
 - [ ] **[P0] Local Security Violation Monitor**: (2026-03-17) Real-time visualization of blocked loopback requests and origin violations. (Added: 2026-03-17)
 - [ ] **[P0] Origin-Bound Session Manager**: (2026-03-17) UI for managing and reviewing session-to-origin bindings. (Added: 2026-03-17)
+
+#### Upcoming (2026-05-18 Evolution)
+- [ ] **[P0] Mission-Root Persistence Monitor**: Real-time visual indicator for pinned intents and re-injection events (MRE defense). (Added: 2026-05-18)
+- [ ] **[P0] State Trust-Level Inspector**: Visual debugger for Blackboard data, highlighting origin framework trust-labels (STL). (Added: 2026-05-18)
+- [ ] **[P0] Wait-Graph Visualizer**: Interactive graph for identifying and debugging circular task dependencies in parallel teams. (Added: 2026-05-18)
+- [ ] **[P0] Intent-Weighted Compression Debugger**: UI for visualizing mission-anchored context summarization and token density. (Updated: 2026-05-19)
+
+#### Upcoming (2026-05-19 Evolution)
+- [ ] **[P0] Universal Trust-Metadata Map**: UI for managing and visualizing the mapping between disparate framework trust labels. (Added: 2026-05-19)
+- [ ] **[P1] Cross-Framework Wait-State Bus**: Visualizer for inter-agent wait states and swarm-wide deadlock alerts. (Added: 2026-05-19)
+- [ ] **[P1] MAQ Quorum Heartbeat Monitor**: Real-time telemetry dashboard for monitoring coordination health in multi-agent quorums. (Added: 2026-05-19)
