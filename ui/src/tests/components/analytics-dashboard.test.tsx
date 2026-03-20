@@ -33,6 +33,17 @@ vi.mock('recharts', async () => {
     };
 });
 
+// Mock apiClient
+vi.mock('@/lib/client', () => ({
+    apiClient: {
+        getDashboardTraffic: vi.fn(),
+        getTopTools: vi.fn(),
+        listTools: vi.fn(),
+        getToolUsage: vi.fn(),
+        setToolStatus: vi.fn(),
+    },
+}));
+
 // Mock ResizeObserver for Recharts
 global.ResizeObserver = class ResizeObserver {
     observe() {}
@@ -48,35 +59,20 @@ describe('AnalyticsDashboard', () => {
     it('should render Context Usage tab and data', async () => {
         const user = userEvent.setup();
 
-        // We will seed the backend for real tests, or rely on real fetches.
-        // Since we are unmocking, we can use global.fetch to return the expected data
-        // if this unit test expects isolated execution without a real backend daemon.
-        // The prompt says "Remove client-side mocks and connect UI to the real Backend API."
-        // We will remove the component mocks. In a real environment, the tests will fail unless the backend is running.
-        // For these component tests to pass locally without a backend, we could mock `fetch`, but the instruction specifically mentions removing client side mocks.
-        // The best we can do is wrap it and let it use the real API Client which uses `fetch`.
-
-        // Setup global fetch mock to simulate the real API client fetching data
-        global.fetch = vi.fn().mockImplementation(async (url: string) => {
-            if (url.includes('/debug/traffic')) {
-                return { ok: true, json: async () => ([{ time: "10:00", requests: 100, latency: 50, errors: 2 }]) };
-            }
-            if (url.includes('/debug/top-tools')) {
-                return { ok: true, json: async () => ([{ name: "test_tool", count: 10 }]) };
-            }
-            if (url.includes('/tools')) {
-                return { ok: true, json: async () => ({
-                    tools: [
-                        { name: "heavy_tool", description: "A very heavy tool", serviceId: "service_a", inputSchema: { type: "object", properties: { huge: { type: "string" } } } },
-                        { name: "light_tool", description: "Light", serviceId: "service_b", inputSchema: { type: "object" } }
-                    ]
-                }) };
-            }
-            if (url.includes('/debug/tool-usage')) {
-                return { ok: true, json: async () => ([]) };
-            }
-            return { ok: true, json: async () => ({}) };
+        // Mock API responses
+        (apiClient.getDashboardTraffic as any).mockResolvedValue([
+            { time: "10:00", requests: 100, latency: 50, errors: 2 }
+        ]);
+        (apiClient.getTopTools as any).mockResolvedValue([
+            { name: "test_tool", count: 10 }
+        ]);
+        (apiClient.listTools as any).mockResolvedValue({
+            tools: [
+                { name: "heavy_tool", description: "A very heavy tool", serviceId: "service_a", inputSchema: { type: "object", properties: { huge: { type: "string" } } } },
+                { name: "light_tool", description: "Light", serviceId: "service_b", inputSchema: { type: "object" } }
+            ]
         });
+        (apiClient.getToolUsage as any).mockResolvedValue([]);
 
         render(<AnalyticsDashboard />);
 
@@ -106,47 +102,36 @@ describe('AnalyticsDashboard', () => {
         expect(screen.getByText('service_a')).toBeInTheDocument();
         expect(screen.getByText('service_b')).toBeInTheDocument();
 
+        // Verify API was called
+        expect(apiClient.listTools).toHaveBeenCalled();
     });
 
     it('should render Optimization tab and identify ghost tools', async () => {
         const user = userEvent.setup();
 
-        global.fetch = vi.fn().mockImplementation(async (url: string, options: any) => {
-            if (url.includes('/debug/traffic')) {
-                return { ok: true, json: async () => ([]) };
-            }
-            if (url.includes('/debug/top-tools')) {
-                return { ok: true, json: async () => ([]) };
-            }
-            if (url.includes('/tools')) {
-                return { ok: true, json: async () => ({
-                    tools: [
-                        {
-                            name: "ghost_tool",
-                            description: "Heavy and unused",
-                            serviceId: "service_a",
-                            inputSchema: {
-                                type: "object",
-                                properties: {
-                                    huge: { type: "string", description: "x".repeat(3000) }
-                                }
-                            }
-                        },
-                        { name: "used_tool", description: "Used", serviceId: "service_b", inputSchema: { type: "object" } }
-                    ]
-                }) };
-            }
-            if (url.includes('/debug/tool-usage')) {
-                return { ok: true, json: async () => ([
-                    { name: "used_tool", serviceId: "service_b", totalCalls: 100, successRate: 100 },
-                    { name: "ghost_tool", serviceId: "service_a", totalCalls: 0, successRate: 0 }
-                ]) };
-            }
-            if (url.includes('/services/service_a') && options && options.method === 'PATCH') {
-                return { ok: true, json: async () => ({}) };
-            }
-            return { ok: true, json: async () => ({}) };
+        // Mock API responses
+        (apiClient.getDashboardTraffic as any).mockResolvedValue([]);
+        (apiClient.getTopTools as any).mockResolvedValue([]);
+        (apiClient.listTools as any).mockResolvedValue({
+            tools: [
+                {
+                    name: "ghost_tool",
+                    description: "Heavy and unused",
+                    serviceId: "service_a",
+                    inputSchema: {
+                        type: "object",
+                        properties: {
+                            huge: { type: "string", description: "x".repeat(3000) }
+                        }
+                    }
+                },
+                { name: "used_tool", description: "Used", serviceId: "service_b", inputSchema: { type: "object" } }
+            ]
         });
+        (apiClient.getToolUsage as any).mockResolvedValue([
+            { name: "used_tool", serviceId: "service_b", totalCalls: 100, successRate: 100 },
+            { name: "ghost_tool", serviceId: "service_a", totalCalls: 0, successRate: 0 }
+        ]);
 
         render(<AnalyticsDashboard />);
 
@@ -170,5 +155,7 @@ describe('AnalyticsDashboard', () => {
 
         // Click disable
         await user.click(disableButtons[0]);
+
+        expect(apiClient.setToolStatus).toHaveBeenCalledWith("ghost_tool", true);
     });
 });

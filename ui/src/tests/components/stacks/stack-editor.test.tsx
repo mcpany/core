@@ -8,6 +8,16 @@ import { StackEditor } from '@/components/stacks/stack-editor';
 import { apiClient } from '@/lib/client';
 import { vi } from 'vitest';
 
+// Mock the API client
+vi.mock('@/lib/client', () => ({
+  apiClient: {
+    getStackConfig: vi.fn(),
+    saveStackConfig: vi.fn(),
+    getCollection: vi.fn(), // Added getCollection mock
+    saveCollection: vi.fn(), // Added saveCollection mock
+  },
+}));
+
 // Mock ConfigEditor to render a simple textarea for testing
 vi.mock('@/components/stacks/config-editor', () => ({
   ConfigEditor: ({ value, onChange }: { value: string; onChange: (val: string) => void }) => (
@@ -54,15 +64,12 @@ global.ResizeObserver = class ResizeObserver {
 describe('StackEditor', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    global.fetch = vi.fn();
   });
 
   it('loads and displays configuration', async () => {
-    (global.fetch as any).mockImplementation(async (url: string) => {
-        if (url.includes('/collections/test-stack')) {
-            return { ok: true, json: async () => ({ name: 'test-stack', services: [] }) };
-        }
-        return { ok: true, json: async () => ({}) };
+    (apiClient.getCollection as any).mockResolvedValue({
+      name: 'test-stack',
+      services: []
     });
 
     render(<StackEditor stackId="test-stack" />);
@@ -77,11 +84,9 @@ describe('StackEditor', () => {
   });
 
   it('validates YAML content', async () => {
-    (global.fetch as any).mockImplementation(async (url: string) => {
-        if (url.includes('/collections/test-stack')) {
-            return { ok: true, json: async () => ({ name: 'test-stack', services: [] }) };
-        }
-        return { ok: true, json: async () => ({}) };
+    (apiClient.getCollection as any).mockResolvedValue({
+      name: 'test-stack',
+      services: []
     });
 
     const { container } = render(<StackEditor stackId="test-stack" />);
@@ -105,13 +110,7 @@ describe('StackEditor', () => {
   });
 
   it('toggles palette and visualizer', async () => {
-    (global.fetch as any).mockImplementation(async (url: string) => {
-        if (url.includes('/collections/test-stack')) {
-            return { ok: true, json: async () => ({ name: 'test-stack', services: [] }) };
-        }
-        return { ok: true, json: async () => ({}) };
-    });
-
+    (apiClient.getCollection as any).mockResolvedValue({ name: 'test-stack', services: [] });
     render(<StackEditor stackId="test-stack" />);
 
     // Wait for the component to finish loading

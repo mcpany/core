@@ -9,6 +9,15 @@ import userEvent from '@testing-library/user-event';
 import { SecretsManager } from '../../components/settings/secrets-manager';
 import { apiClient } from '@/lib/client';
 
+// Mock the apiClient
+vi.mock('@/lib/client', () => ({
+  apiClient: {
+    listSecrets: vi.fn(),
+    saveSecret: vi.fn(),
+    deleteSecret: vi.fn(),
+  },
+}));
+
 // Mock useToast
 vi.mock('@/hooks/use-toast', () => ({
   useToast: () => ({
@@ -19,19 +28,13 @@ vi.mock('@/hooks/use-toast', () => ({
 describe('SecretsManager', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    global.fetch = vi.fn();
   });
 
   it('renders correctly and loads secrets', async () => {
     const mockSecrets = [
       { id: '1', name: 'Test Secret', key: 'TEST_KEY', value: 'secret-value', provider: 'custom', createdAt: '2023-01-01' },
     ];
-    (global.fetch as any).mockImplementation(async (url: string) => {
-        if (url.includes('/secrets')) {
-            return { ok: true, json: async () => ({ secrets: mockSecrets }) };
-        }
-        return { ok: true, json: async () => ({}) };
-    });
+    (apiClient.listSecrets as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockSecrets);
 
     render(<SecretsManager />);
 
@@ -44,15 +47,8 @@ describe('SecretsManager', () => {
   });
 
   it('allows adding a new secret', async () => {
-    (global.fetch as any).mockImplementation(async (url: string, options: any) => {
-        if (url.includes('/secrets') && (!options || options.method === 'GET')) {
-            return { ok: true, json: async () => ({ secrets: [] }) };
-        }
-        if (url.includes('/secrets') && options && options.method === 'POST') {
-            return { ok: true, json: async () => ({ id: 'new_id' }) };
-        }
-        return { ok: true, json: async () => ({}) };
-    });
+    (apiClient.listSecrets as unknown as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    (apiClient.saveSecret as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
     render(<SecretsManager />);
 
     await waitFor(() => {
@@ -74,8 +70,12 @@ describe('SecretsManager', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Save Secret' }));
 
     await waitFor(() => {
-      // Mocking global.fetch verifies we tried to save, and checking UI confirms flow.
-      expect(screen.getByText('New API Key')).toBeInTheDocument();
+      expect(apiClient.saveSecret).toHaveBeenCalledWith(expect.objectContaining({
+        name: 'New API Key',
+        key: 'OPENAI_KEY',
+        value: 'sk-12345',
+        provider: 'custom'
+      }));
     }, { timeout: 15000 });
   }, 20000);
 
@@ -83,15 +83,7 @@ describe('SecretsManager', () => {
     const mockSecrets = [
       { id: '1', name: 'Delete Me', key: 'DELETE_KEY', value: 'secret-value', provider: 'custom', createdAt: '2023-01-01' },
     ];
-    (global.fetch as any).mockImplementation(async (url: string, options: any) => {
-        if (url.includes('/secrets') && (!options || options.method === 'GET')) {
-            return { ok: true, json: async () => ({ secrets: mockSecrets }) };
-        }
-        if (url.includes('/secrets/1') && options && options.method === 'DELETE') {
-            return { ok: true, json: async () => ({}) };
-        }
-        return { ok: true, json: async () => ({}) };
-    });
+    (apiClient.listSecrets as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockSecrets);
 
     render(<SecretsManager />);
 
@@ -104,7 +96,7 @@ describe('SecretsManager', () => {
     await user.click(deleteBtn);
 
     await waitFor(() => {
-      expect(screen.queryByText('Delete Me')).not.toBeInTheDocument();
+      expect(apiClient.deleteSecret).toHaveBeenCalledWith('1');
     });
   });
 });
