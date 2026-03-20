@@ -6,6 +6,19 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-06] Updates
+
+### Proposed Additions
+- **RAMS Shard Extension**: (P0) Advanced extension for the RAMS Hub that implements "Temporal Memory Isolation," automatically purging subagent memory shards upon task completion.
+- **Reasoning-Bound WebSocket (RBW) Controller**: (P0) A security controller for the A2A Messaging Hub that enforces "Reasoning Proof" handshakes for high-privilege WebSocket upgrades.
+- **DCP Middleware**: (P1) Implementation of "Dynamic Capability Pruning" for the Universal Registry, filtering tool schemas based on the active subagent's hardware-attested task lifecycle.
+
+### Priority Shifts
+- **Reasoning-Aware Memory Segmentation (RAMS) Hub**: (Re-affirmed P0) Evolving to support temporal isolation to counter Shadow Memory Exfiltration (SME).
+- **A2A Messaging Hub**: (Re-affirmed P0) Now designated as the primary enforcement point for RBW handshakes.
+
+---
+
 ## Evolution: [2026-05-05] Updates
 
 ### Proposed Additions
@@ -16,19 +29,6 @@
 ### Priority Shifts
 - **Kernel-Bound FD Persistence**: (Evolved to HEPA) Upgraded with hardware enclave support for stronger path-resolution guarantees.
 - **Semantic Integrity Bridge**: (Promoted to P0) Critical requirement for detecting "Recursive Context Splicing" (RCS) in multi-modal reasoning traces.
-
----
-
-## Evolution: [2026-05-06] Updates
-
-### Proposed Additions
-- **Timing-Attack Resistant Blackboard (TARB) Extension**: (P0) A security upgrade for the RAMS architecture that implements jittered, bucketed memory access to neutralize Shadow Memory Exfiltration (SME).
-- **Reasoning-Bound WebSocket (RBW) Controller**: (P0) A session-bound enforcement service that terminates agent tool connections if reasoning (Internal Monologue) deviates from the signed mission intent.
-- **Dynamic Capability Pruning (DCP) Middleware**: (P1) A programmatic API that allows agents to autonomously revoke their own time-bound capabilities upon sub-task completion.
-
-### Priority Shifts
-- **Reasoning-Aware Memory Segmentation (RAMS) Hub**: (Re-affirmed P0) Now elevated with the requirement for Temporal Isolation via the TARB extension.
-- **A2A Messaging Hub**: (Re-affirmed P0) Evolving to support RBW-bound connection lifecycles.
 
 ## Evolution: [2026-05-04] Updates
 
@@ -148,7 +148,7 @@
 ## Evolution: [2026-04-24] Updates
 
 ### Proposed Additions
-- **A2A Authenticated Handshake Provider**: (P0) Native security middleware implementing Gemini CLI v0.33.0 style HTTP authentication for all agent-to-agent remote communications and card discovery.
+- **A2A Authentshake Provider**: (P0) Native security middleware implementing Gemini CLI v0.33.0 style HTTP authentication for all agent-to-agent remote communications and card discovery.
 - **ContextEngine Plugin Adapter**: (P0) Core adapter for hosting OpenClaw-compatible ContextEngine plugins, enabling sovereignty-aware state management and intent protection.
 - **Zero-Trust Discovery Gate**: (P1) Identity-bound access control layer for the A2A Messaging Hub that enforces "Auth-before-Discovery" for agent capabilities.
 
@@ -348,9 +348,6 @@
 - **Recursive Context Protocol**: Promoted from **P1** to **P0**. Essential for modern agent swarms to prevent state loss.
 - **Shared KV Store**: Promoted from **P1** to **P0**. Critical for coordinating multi-agent actions in complex workflows.
 
-### Deprecations / Monitoring
-- *None today.*
-
 ---
 
 ## Evolution: [2026-02-24] Updates
@@ -376,9 +373,6 @@
 - **Environment Bridging Middleware**: Promoted from **P1** to **P0**. The need for secure "Local-to-Cloud" tool bridging is increasing with more agents running in remote sandboxes.
 - **Supply Chain Integrity Guard**: (New entry but P0 priority) High urgency due to recent ecosystem exploits.
 
-### Deprecations / Monitoring
-- **Upfront Tool Schema Pushing**: Monitoring for deprecation in favor of Lazy-Discovery.
-
 ---
 
 ## Evolution: [2026-02-26] Updates
@@ -391,9 +385,6 @@
 ### Priority Shifts
 - **MCP Provenance Attestation**: Promoted to **P0** as it is a prerequisite for secure Federated MCP peering.
 - **Lazy-MCP Middleware**: Promoted to **P0** (Already P0, but re-affirming importance for Federated Tool Mesh).
-
-### Deprecations / Monitoring
-- **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
 
 ---
 
@@ -418,9 +409,6 @@
 - **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
 - **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
 
-### Deprecations / Monitoring
-- **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
-
 ---
 
 ## Evolution: [2026-03-10] Updates
@@ -433,9 +421,6 @@
 ### Priority Shifts
 - **Detached Sandbox for Automated Hooks**: Promoted from **P1** to **P0**. Urgent requirement to mitigate RCE vulnerabilities discovered in the ecosystem.
 - **A2A Interop Bridge**: Re-affirmed as **P0** to support secure state handoffs in multi-agent swarms.
-
-### Deprecations / Monitoring
-- **Implicit Hook Execution**: All "hooks" or "auto-exec" commands in configurations are now **Deprecated**. They must be explicitly moved to an "Attested Hooks" registry.
 
 ---
 
@@ -469,10 +454,6 @@
 - **Verified Skill Registry**: Re-affirmed as **P0** following the "ClawHavoc" malicious skill crisis.
 - **A2A Interop Bridge**: Re-affirmed as **P0** to support the industry shift towards "Agentic Swarms."
 
-### Deprecations / Monitoring
-- **Direct Agent-to-LLM Communication**: Monitoring for deprecation in favor of **Exfiltration-Resistant Transport** (Proxied via MCP Any).
-- **Unsigned/Unverified Skills**: Moving towards a default-block policy for any skill not present in the Verified Skill Registry.
-
 ---
 
 ## Evolution: [2026-03-14] Updates
@@ -486,9 +467,6 @@
 ### Priority Shifts
 - **OpenClaw ContextEngine Bridge**: Promoted to **P0**. Urgent need for interoperability to combat "Context Ghosting" in shared swarms.
 - **"Safe-by-Default" Network Hardening**: (Re-affirmed P0) Expanded to include mandatory browser-origin validation for all local listeners.
-
-### Deprecations / Monitoring
-- **Unvalidated Local WebSockets**: Monitoring for total deprecation. All local WebSocket connections must provide a valid, allow-listed `Origin` header.
 
 ---
 
@@ -513,9 +491,6 @@
 - **Signed Context Chain Protocol**: Re-affirmed as **P0** with expanded requirements for UAB compatibility.
 - **"Safe-by-Default" Network Hardening**: (Re-affirmed P0) Now includes mandatory Browser-Origin enforcement for all adapters.
 
-### Deprecations / Monitoring
-- **Implicit Local Trust**: All listeners must now explicitly validate request origins. Standard `localhost` binding without header checks is now **Deprecated**.
-
 ---
 
 ## Evolution: [2026-03-17] Updates
@@ -529,9 +504,6 @@
 ### Priority Shifts
 - **Universal Agent Bus (UAB) Adapter**: Promoted to **P0**. Essential for cross-framework agentic coordination.
 - **Verified Skill Registry**: (Re-affirmed P0) Expanded to include Behavioral Profiling requirements.
-
-### Deprecations / Monitoring
-- **Unthrottled Local Access**: All local interfaces must now implement rate limiting. Unthrottled loopback access is now **Deprecated**.
 
 ---
 
@@ -566,9 +538,6 @@
 - **A2A Interop Bridge**: Promoted to **P0**. With UACO maturation, the bridge is now critical for multi-agent task negotiation.
 - **Project Configuration Security Guard**: (Re-affirmed P0) Expanded to include support for Enterprise-Managed policy overrides.
 
-### Deprecations / Monitoring
-- **Framework-Specific Feedback Logs**: Monitoring for deprecation. Feedback should be normalized via the Unified Telemetry Bridge.
-
 ---
 
 ## Evolution: [2026-03-21] Updates
@@ -592,9 +561,6 @@
 - **UACO v1.5 RCC Validator**: Re-affirmed as **P0**. Essential foundation for the new SLA middleware.
 - **Shared KV Store (Blackboard)**: (Re-affirmed P0) Expanded to support "SLA-Aware State Locking" to prevent resource-heavy contention.
 
-### Deprecations / Monitoring
-- **Unbounded Task Delegation**: Moving toward total deprecation. All UACO delegations must eventually include a resource contract (SLA).
-
 ---
 
 ## Evolution: [2026-03-23] Updates
@@ -603,13 +569,6 @@
 - **Proof-of-Intent (PoI) Validator**: (P0) Middleware that implements UACO v1.7 headers to verify that tool calls align with cryptographically signed session intents.
 - **Binary State Handoff (BSH) Gateway**: (P1) High-performance binary transport for agent state to mitigate "Token Storms" and JSON overhead.
 - **Multi-Signature Skill Attestation**: (P0) Verification mechanism for dynamic skill grafting, requiring signatures from both framework and user policy to prevent "Skill-Squatting."
-
-### Priority Shifts
-- **UACO-Native Coordination Middleware**: Re-affirmed as **P0**. Urgent update required to support v1.7 PoI and combat Context-Mirroring.
-- **Verified Skill Registry**: (Re-affirmed P0) Expanded to include real-time attestation for dynamic grafting.
-
-### Deprecations / Monitoring
-- **JSON-only State Handoffs**: Monitoring for deprecation in favor of **BSH** for high-frequency agent swarms.
 
 ---
 
@@ -657,14 +616,6 @@
 - **PNTD Discovery Provider**: (P1) Implementation of Protocol-Neutral Task Discovery to unify capability mapping across MCP, gRPC, and UACO transports.
 - **Shard-Aware State Buffer**: (P1) Optimized BSH buffer extension that supports addressable memory regions for individual context shards.
 
-### Priority Shifts
-- **UACO-Native Coordination Middleware**: (Re-affirmed P0) Expanded to support RID Parental Overrides and Consensus Tokens.
-- **A2A Interop Bridge**: (Re-affirmed P0) Now a critical transport for Consensus-Based Tool Validation.
-
-### Deprecations / Monitoring
-- **Single-Agent HITL for High-Risk Actions**: Monitoring for deprecation in enterprise profiles in favor of **Consensus-Based Validation**.
-- **Monolithic Context Handoffs**: Moving toward deprecation for deep swarms in favor of **Context Sharding**.
-
 ---
 
 ## Evolution: [2026-03-28] Updates
@@ -678,9 +629,6 @@
 ### Priority Shifts
 - **Consensus Tool Validation Gateway**: Re-affirmed as **P0**. Urgent need to align with UACO v1.9 MAQ.
 - **WASM-BSH State Sanitizer**: (Re-affirmed P0) Expanded to include detection of "Context Smearing" patterns.
-
-### Deprecations / Monitoring
-- **Legacy HITL Approval Tokens**: Monitoring for deprecation in favor of UACO-MAQ compliant multi-signature tokens.
 
 ---
 
@@ -716,13 +664,6 @@
 - **Path Normalization Engine (NaaS)**: (P0) Centralized service for OS-agnostic path normalization to prevent symlink and traversal escapes.
 - **Optimistic Capability Loading Middleware**: (P1) Predictive tool registry that handles Gemini-style optimistic loading with built-in TOCTOU protection.
 
-### Priority Shifts
-- **Inode-Aware Symlink Validator**: (Re-affirmed P0) Urgent requirement to address "Normalization Fatigue" in project-local config parsing.
-
-### Deprecations / Monitoring
-- **OS-Specific Path Joins**: Monitoring for deprecation in favor of the **Path Normalization Engine**.
-- **Static Discovery Quorums**: Moving toward **Optimistic Loading** with background attestation.
-
 ---
 
 ## Evolution: [2026-03-30] Updates
@@ -732,13 +673,6 @@
 - **Continuous BSH Integrity Monitor**: (P0) Real-time WASM-based monitor for Binary State Handoffs to detect "Ghost Fragment Mutation" during self-correction.
 - **UDP Beacon Discovery Listener**: (P1) High-speed reactive listener for Gemini-style Capability Beacons to reduce discovery noise.
 - **Correction Budget Controller**: (P1) Resource management middleware that enforces token and cycle limits on agent self-correction loops.
-
-### Priority Shifts
-- **WASM-BSH State Sanitizer**: Re-affirmed as **P0**. Expanded to include "Dormant Fragment" detection as part of GFM defense.
-- **PNTD Discovery Provider**: Promoted from **P1** to **P0**. Essential foundation for the new Beacon-First Discovery Hub.
-
-### Deprecations / Monitoring
-- **Unbounded Self-Correction**: Moving toward total deprecation. All self-correction loops must eventually be bound by an IPSC token and Correction Budget.
 
 ---
 
@@ -760,14 +694,6 @@
 - **DCA Auction Broker**: (P1) High-speed negotiation bus for the "Distributed Capability Auction" protocol, managing agent tool bidding.
 - **Subagent Heartbeat Provider**: (P1) Standardized heartbeat protocol for subagents to report liveness and intent alignment to the Reaper.
 
-### Priority Shifts
-- **Speculative Execution Guard**: Re-affirmed as **P0**. Now requires integration with the Subagent Reaper to ensure speculative "Zombies" are purged.
-- **Branch-Purity Blackboard Validator**: (Re-affirmed P0) Expanded to detect "Ghost State" injected by non-terminated subagents.
-
-### Deprecations / Monitoring
-- **Unmanaged Subagent Lifecycle**: Moving toward total deprecation. All subagent sessions must be bound to a supervised intent lifecycle.
-- **Unsanitized Structural Metadata**: Monitoring for deprecation. Tool schemas will require "Safe Metadata" attestation.
-
 ---
 
 ## Evolution: [2026-04-04] Updates
@@ -777,10 +703,6 @@
 - **Metadata Provenance Engine**: (P0) Verification service for structural metadata lineage, ensuring tool schemas are cryptographically signed.
 - **Unified Lifecycle Bridge**: (P1) Standardized commit/rollback middleware for cross-framework (OpenClaw/AutoGen) lifecycle synchronization.
 
-### Priority Shifts
-- **Tool Metadata Sanitizer**: Promoted from **P1** to **P0**. Critical for mitigating CVE-2026-42001.
-- **DCA Auction Broker**: Re-affirmed as **P0** (Already P0, but expanded to include HAN requirements).
-
 ---
 
 ## Evolution: [2026-04-05] Updates
@@ -789,13 +711,6 @@
 - **RL Telemetry Provider**: (P1) Standardized middleware for exporting tool performance and feedback metrics to agent training frameworks (e.g., OpenClaw-RL).
 - **Attested Discovery Authority**: (P0) Cryptographic identity broker for local MCP servers, providing the "Trust Verification" required by Claude Code.
 - **Optimistic Execution Gate**: (P0) Implementation of speculative context loading for tools, synchronized with background discovery quorums.
-
-### Priority Shifts
-- **Unified RL Feedback Telemetry Bridge**: (Re-affirmed P1) Now a core strategic requirement to support OpenClaw-RL v1.
-- **Provenance-First Discovery**: (Promoted to P0) Critical for satisfying the new Claude Code trust verification requirements.
-
-### Deprecations / Monitoring
-- **Implicitly Trusted Local Discovery**: Moving toward total deprecation. All local tool discovery must eventually be backed by an Attested Discovery signal.
 
 ---
 
@@ -815,13 +730,6 @@
 - **Deterministic Environment Attestation Gateway**: (P0) Advanced pre-execution security service that generates signed environment manifests, including non-existence proofs for restricted configuration hooks.
 - **Structured Context Propagation Middleware**: (P1) Implementation of emerging context propagation standards to ensure rich, structured contextual data (trace IDs, session IDs) flows securely across the agentic lifecycle.
 
-### Priority Shifts
-- **Tool Metadata Sanitizer**: Promoted to **P0**. Urgent requirement to address CVE-2026-45201.
-- **DCA Negotiation Guard**: (Re-affirmed P0) Expanded to support the new Speculative Auction Broker (SAB) protocol.
-
-### Deprecations / Monitoring
-- **Implicitly Trusted Tool Schemas**: Monitoring for total deprecation. All structural metadata must eventually pass through the Sanitizer.
-
 ---
 
 ## Evolution: [2026-04-13] Updates
@@ -829,10 +737,6 @@
 ### Proposed Additions
 - **CLAW-10 Compliance Mapper**: (P1) Middleware that maps MCP Any's internal security state to the CLAW-10 Enterprise Evaluation Matrix for automated compliance reporting.
 - **Deterministic Boot Manifest Provider**: (P0) Core service that generates and signs "Environment Integrity Manifests" to fulfill deterministic boot requirements for high-security agent environments.
-
-### Priority Shifts
-- **A2A Messaging Hub**: (Re-affirmed P0) Evolving to support the finalized Linux Foundation open governance model for inter-agent task brokering.
-- **Settings Injection Guard**: (Re-affirmed P0) Promoted as the primary defense against "Shadow Agent" configuration overrides identified in recent enterprise audits.
 
 ---
 
@@ -843,17 +747,9 @@
 - **Resident Integrity Monitor (RIM)**: (P1) Background service that performs continuous, hardware-bound sandbox attestation to detect post-boot environment drift or tampering.
 - **Self-Healing Consensus Hub**: (P0) A coordination service that provides a standardized interface for swarm state reconciliation, leveraging MAQ for authoritative "Truth Brokering."
 
-### Priority Shifts
-- **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to support the new Resident Integrity Monitor for continuous lifecycle protection.
-- **TPM-Bound Configuration Boot**: (Re-affirmed P0) Now considered the prerequisite foundation for RIG-mediated boundary expansions.
-
 ## Evolution: [2026-04-15] Updates
 
 ### Proposed Additions
 - **Standardized Context Sidecar Interface**: (P1) A core API and "Context Bus" that allows MCP Any to host and bridge framework-specific context strategies (OpenClaw, etc.) across different agent frameworks.
 - **Hardware-Attested Boot Manifest Provider**: (P0) Advanced attestation service that binds project-local environment manifests to a TPM/Secure Enclave, ensuring configuration integrity.
 - **VTD Autonomous Delegation Engine**: (P0) Automation layer for the Delegation Attestation Layer that executes low-risk A2A handoffs without manual approval, based on safety proofs.
-
-### Priority Shifts
-- **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Now elevated as the primary solution for the "Approval Fatigue" scaling bottleneck.
-- **Pluggable Context Bridge**: (Re-affirmed P0) Expanded to support the new Standardized Context Sidecar Interface.

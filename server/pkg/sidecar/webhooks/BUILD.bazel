@@ -12,9 +12,9 @@ go_library(
     importpath = "github.com/mcpany/core/server/pkg/sidecar/webhooks",
     visibility = ["//visibility:public"],
     deps = [
-        "@com_github_cloudevents_sdk_go_v2//:sdk-go",
-        "@com_github_google_uuid//:uuid",
-        "@com_github_johanneskaufmann_html_to_markdown//:html-to-markdown",
+        "@com_github_cloudevents_sdk_go_v2//:go_default_library",
+        "@com_github_google_uuid//:go_default_library",
+        "@com_github_johanneskaufmann_html_to_markdown//:go_default_library",
     ],
 )
 
@@ -27,8 +27,8 @@ go_test(
     ],
     embed = [":webhooks"],
     deps = [
-        "@com_github_cloudevents_sdk_go_v2//:sdk-go",
-        "@com_github_stretchr_testify//assert",
-        "@com_github_stretchr_testify//require",
+        "@com_github_cloudevents_sdk_go_v2//:go_default_library",
+        "@com_github_stretchr_testify//assert:go_default_library",
+        "@com_github_stretchr_testify//require:go_default_library",
     ],
 )

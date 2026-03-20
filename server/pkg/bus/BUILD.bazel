@@ -19,7 +19,7 @@ go_library(
         "//server/pkg/bus/memory",
         "//server/pkg/bus/nats",
         "//server/pkg/bus/redis",
-        "@com_github_puzpuzpuz_xsync_v4//:xsync",
+        "@com_github_puzpuzpuz_xsync_v4//:go_default_library",
     ],
 )
 
@@ -33,10 +33,10 @@ go_test(
     embed = [":bus"],
     deps = [
         "//proto/bus",
-        "@com_github_alicebob_miniredis_v2//:miniredis",
-        "@com_github_nats_io_nats_server_v2//server",
-        "@com_github_redis_go_redis_v9//:go-redis",
-        "@com_github_stretchr_testify//assert",
-        "@com_github_stretchr_testify//require",
+        "@com_github_alicebob_miniredis_v2//:go_default_library",
+        "@com_github_nats_io_nats_server_v2//server:go_default_library",
+        "@com_github_redis_go_redis_v9//:go_default_library",
+        "@com_github_stretchr_testify//assert:go_default_library",
+        "@com_github_stretchr_testify//require:go_default_library",
     ],
 )

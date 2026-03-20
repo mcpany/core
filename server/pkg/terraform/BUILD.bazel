@@ -14,5 +14,5 @@ go_test(
     name = "terraform_test",
     srcs = ["resource_mcp_server_test.go"],
     embed = [":terraform"],
-    deps = ["@com_github_stretchr_testify//assert"],
+    deps = ["@com_github_stretchr_testify//assert:go_default_library"],
 )

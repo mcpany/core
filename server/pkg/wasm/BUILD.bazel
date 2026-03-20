@@ -14,5 +14,5 @@ go_test(
     name = "wasm_test",
     srcs = ["runtime_test.go"],
     embed = [":wasm"],
-    deps = ["@com_github_stretchr_testify//assert"],
+    deps = ["@com_github_stretchr_testify//assert:go_default_library"],
 )

@@ -283,15 +283,15 @@
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
 
+#### Upcoming (2026-05-06 Evolution)
+- [ ] **[P0] Temporal Memory Purge Dashboard**: Visualize the lifecycle of ephemeral RAMS shards and purge events. (Added: 2026-05-06)
+- [ ] **[P0] RBW Handshake Monitor**: Real-time visualization of Reasoning-Bound WebSocket handshakes and "Reasoning Proof" validation. (Added: 2026-05-06)
+- [ ] **[P1] DCP Schema View**: UI for reviewing pruned tool schemas and the associated task lifecycle proofs. (Added: 2026-05-06)
+
 #### Upcoming (2026-05-05 Evolution)
 - [ ] **[P0] RAMS Shard Inspector**: Visual debugger for reasoning-aware memory segments and intent-sealed shards. (Added: 2026-05-05)
 - [ ] **[P0] HEPA Security Widget**: Real-time status for hardware-enclave path attestation and TPM-locked configs. (Added: 2026-05-05)
 - [ ] **[P1] Multi-modal Trace Debugger**: Forensic UI for analyzing textual and visual traces for RCS patterns. (Added: 2026-05-05)
-
-#### Upcoming (2026-05-06 Evolution)
-- [ ] **[P0] TARB Timing Inspector**: Visual debugger for monitoring jittered memory access and SME violation alerts. (Added: 2026-05-06)
-- [ ] **[P0] RBW Connection Monitor**: Real-time tracker for Reasoning-Bound WebSocket lifecycles and intent alignment. (Added: 2026-05-06)
-- [ ] **[P1] Self-Pruning Dashboard**: UI for visualizing autonomously revoked agent capabilities and remaining privilege window. (Added: 2026-05-06)
 
 #### Upcoming (2026-05-04 Evolution)
 - [ ] **[P0] Semantic Integrity Dashboard**: Real-time visualization of intent drift and RIP/RCS alerts. (Added: 2026-05-04 - Promoted to P0 on 2026-05-05)

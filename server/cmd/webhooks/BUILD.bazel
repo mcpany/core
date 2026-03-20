@@ -13,7 +13,7 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//server/pkg/sidecar/webhooks",
-        "@com_github_standard_webhooks_standard_webhooks_libraries//go",
+        "@com_github_standard_webhooks_standard_webhooks_libraries//go:go_default_library",
     ],
 )
 

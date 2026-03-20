@@ -1,66 +1,57 @@
 # Design Doc: Reasoning-Aware Memory Segmentation (RAMS) Hub
+
 **Status:** Draft
 **Created:** 2026-05-06
 
 ## 1. Context and Scope
-As AI agent swarms become increasingly complex and multi-layered, the shared "Blackboard" (Shared KV Store) has transitioned from a collaboration utility to a primary attack surface. Current implementations suffer from "Memory Smearing," where specialized subagents inadvertently overwrite or corrupt the state of peer agents, and "Shadow Memory Exfiltration" (SME), where malicious subagents use timing side-channels to leak data across supposedly isolated memory regions.
-
-The RAMS Hub is designed to evolve MCP Any's state management into a secure, reasoning-aware architecture. It provides cryptographic isolation for subagent memory and implements temporal protections to neutralize side-channel attacks, ensuring that collective reasoning remains both cohesive and sovereign.
+As AI agent swarms evolve, they increasingly rely on shared memory segments (the "Blackboard") for low-latency context exchange. However, static isolation is no longer sufficient. The emergence of Shadow Memory Exfiltration (SME) vulnerabilities allows compromised subagents to exfiltrate context from siblings. MCP Any needs a "Just-in-Time" memory architecture that binds memory access to a verifiable reasoning trace.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Implement "Intent-Sealed Shards" that provide cryptographically isolated memory regions for individual subagents.
-    * Provide "Temporal Memory Isolation" (TARB) using jittered and bucketed access patterns to neutralize timing-based exfiltration.
-    * Ensure "Reasoning-Aware" access control, where memory access is bound to the agent's verified internal monologue and mission intent.
-    * Maintain sub-millisecond latency for legitimate state handoffs between trusted agents.
+    * Implement Temporal Memory Isolation for subagent memory shards.
+    * Bind shard lifecycle to a hardware-attested reasoning trace.
+    * Provide sub-millisecond context swapping between specialized agents.
 * **Non-Goals:**
-    * Replacing the underlying storage engine (SQLite); RAMS acts as a governance and encryption layer on top of it.
-    * Implementing general-purpose multi-user database isolation; this is strictly for inter-agent state coordination.
+    * Replacing the primary long-term vector memory (handled by ContextEngine).
+    * Providing cross-host shared memory (initially limited to local node).
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Autonomous Swarm Orchestrator
-* **Primary Goal:** Coordinate a 5-agent research swarm where the "Financial Analyst" agent cannot leak sensitive PII to the "Public Blogger" agent, even if the latter is compromised.
+* **User Persona:** Local LLM Swarm Orchestrator
+* **Primary Goal:** Securely share a 50MB context shard between a "Researcher" and a "Coder" agent without exposing it to a concurrent "Audit" agent.
 * **The Happy Path (Tasks):**
-    1. The Orchestrator initializes a new RAMS-compliant session with a "Mission Root" intent.
-    2. The "Financial Analyst" subagent requests an "Intent-Sealed Shard" for its specialized findings.
-    3. The RAMS Hub generates a shard bound to the subagent's identity and signed intent.
-    4. The subagent writes encrypted data to its shard; the RAMS Hub applies TARB jitter to the write operation.
-    5. The "Public Blogger" agent attempts to read the financial shard or measure its access time; the RAMS Hub denies access and provides a uniform timing response.
-    6. Upon task completion, the "Financial Analyst" prunes its own capability to access the shard.
+    1. Parent agent initializes a RAMS session with a signed mission root.
+    2. Researcher agent requests a RAMS Shard, providing a signed Reasoning Trace.
+    3. RAMS Hub validates the trace and allocates a cryptographically isolated shard.
+    4. Researcher writes context and completes subtask.
+    5. Coder agent requests the same shard, providing a lineage-proof linked to the Researcher.
+    6. RAMS Hub validates the lineage and rotates the encryption key for the Coder.
+    7. Shard is automatically purged when the parent mission completes.
 
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-    graph TD
-        A[Agent Request] --> B{RAMS Policy Engine}
-        B -- Verified Intent --> C[Intent-Sealed Shard Manager]
-        B -- Rejected --> D[Security Alert/Deny]
-        C --> E[TARB Timing Controller]
-        E --> F[Encrypted SQLite Storage]
-        F -- Jittered Result --> E
-        E -- Decrypted Fragment --> A
+    sequenceDiagram
+        Agent->>RAMS Hub: Request Shard (Intent + Trace)
+        RAMS Hub->>Trust Provider: Validate Trace
+        Trust Provider-->>RAMS Hub: Verified (Attested)
+        RAMS Hub->>Memory Controller: Allocate Shard
+        Memory Controller-->>Agent: Shard Handle (Encrypted)
+        Agent->>RAMS Hub: Commit/Release
+        RAMS Hub->>Memory Controller: Rotate Key / Purge
     ```
 * **APIs / Interfaces:**
-    * `rams.CreateShard(intent_token, identity_proof) -> shard_id`
-    * `rams.Write(shard_id, key, value, mission_context)`
-    * `rams.Read(shard_id, key) -> value`
-    * `rams.PruneShard(shard_id, prune_token)`
+    * `POST /v1/rams/shards/allocate`: Requires `reasoning_trace_sig` and `mission_root_id`.
+    * `GET /v1/rams/shards/{id}/access`: Rotates access keys for the next agent in the lineage chain.
 * **Data Storage/State:**
-    * State is stored in an encrypted SQLite backend.
-    * Shard keys are derived from the `mission_root` and `subagent_identity`.
-    * A "Wait-Graph" is maintained in memory to detect and mitigate timing-channel exploitation attempts.
+    * Shards are stored in memory-mapped files (`/dev/shm`) with per-agent encryption keys managed by the RAMS Controller.
 
 ## 5. Alternatives Considered
-* **Flat KV Store with ACLs**: Rejected because it does not protect against "Memory Smearing" via authorized but buggy agents, and provides no protection against timing-based exfiltration (SME).
-* **Fully Air-Gapped DB Instances**: Rejected due to the massive resource overhead and the difficulty of legitimate, high-speed state handoffs required by UACO v3.0.
+* **Namespace Isolation (cgroups):** Rejected due to the high overhead of container/namespace context switching for sub-millisecond swaps.
+* **JSON-RPC State Passing:** Rejected due to "Token Storm" latency in deep agent chains (50MB+ context objects).
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):**
-    * Every memory operation requires a valid PoI (Proof-of-Intent) token.
-    * TARB ensures that no information is leaked via the latency of the storage subsystem.
-* **Observability:**
-    * "Shard Integrity Logs" track all access attempts and timing deviations.
-    * Real-time "Memory Smear" detection alerts users if an agent attempts to write to a key that diverges from its profiled intent.
+* **Security (Zero Trust):** All shard access is bound to the hardware-attested reasoning lifecycle. Key rotation occurs at every handoff.
+* **Observability:** RAMS Hub logs every shard allocation, access, and rotation event to the Local Security Audit Log.
 
 ## 7. Evolutionary Changelog
-* **2026-05-06:** Initial Document Creation. Added TARB and Intent-Sealed Shard specifications.
+* **2026-05-06:** Initial Document Creation.

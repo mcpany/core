@@ -17,7 +17,7 @@ go_library(
     deps = [
         "//proto/config/v1:config",
         "//server/pkg/logging",
-        "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//proto:go_default_library",
     ],
 )
 
@@ -33,7 +33,7 @@ go_test(
     embed = [":discovery"],
     deps = [
         "//proto/config/v1:config",
-        "@com_github_stretchr_testify//assert",
-        "@com_github_stretchr_testify//require",
+        "@com_github_stretchr_testify//assert:go_default_library",
+        "@com_github_stretchr_testify//require:go_default_library",
     ],
 )

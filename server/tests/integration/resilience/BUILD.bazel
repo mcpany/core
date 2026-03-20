@@ -10,7 +10,7 @@ go_test(
         "//server/pkg/util",
         "//server/tests/framework",
         "//server/tests/integration",
-        "@com_github_modelcontextprotocol_go_sdk//mcp",
-        "@com_github_stretchr_testify//require",
+        "@com_github_modelcontextprotocol_go_sdk//mcp:go_default_library",
+        "@com_github_stretchr_testify//require:go_default_library",
     ],
 )

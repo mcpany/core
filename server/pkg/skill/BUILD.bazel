@@ -14,7 +14,7 @@ go_library(
     deps = [
         "//server/pkg/logging",
         "//server/pkg/validation",
-        "@in_gopkg_yaml_v3//:yaml_v3",
+        "@in_gopkg_yaml_v3//:go_default_library",
     ],
 )
 
@@ -26,7 +26,7 @@ go_test(
     ],
     embed = [":skill"],
     deps = [
-        "@com_github_stretchr_testify//assert",
-        "@com_github_stretchr_testify//require",
+        "@com_github_stretchr_testify//assert:go_default_library",
+        "@com_github_stretchr_testify//require:go_default_library",
     ],
 )
