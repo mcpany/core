@@ -757,10 +757,121 @@ func (a *Application) handleTools() http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(toolList)
+		case http.MethodPut:
+			var req struct {
+				Name    string `json:"name"`
+				Disable bool   `json:"disable"`
+			}
+			body, err := readBodyWithLimit(w, r, 1024*1024)
+			if err != nil {
+				return
+			}
+			if err := json.Unmarshal(body, &req); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			if req.Name == "" {
+				http.Error(w, "tool name is required", http.StatusBadRequest)
+				return
+			}
+
+			t, ok := a.ToolManager.GetTool(req.Name)
+			if !ok {
+				http.Error(w, "tool not found", http.StatusNotFound)
+				return
+			}
+
+			serviceID := t.Tool().GetServiceId()
+			svc, err := a.Storage.GetService(r.Context(), serviceID)
+			if err != nil {
+				logging.GetLogger().Error("failed to get service", "service_id", serviceID, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			if svc == nil {
+				http.Error(w, "service not found", http.StatusNotFound)
+				return
+			}
+
+			if err := updateToolDisableStatus(svc, req.Name, req.Disable); err != nil {
+				http.Error(w, "failed to update tool status: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if err := a.Storage.SaveService(r.Context(), svc); err != nil {
+				logging.GetLogger().Error("failed to save service", "service_id", serviceID, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after updating tool status", "error", err)
+			}
+
+			w.WriteHeader(http.StatusOK)
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
+				"name":    req.Name,
+				"disable": req.Disable,
+			})
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	}
+}
+
+func updateToolDisableStatus(svc *configv1.UpstreamServiceConfig, toolName string, disable bool) error {
+	var tools *[]*configv1.ToolDefinition
+	switch st := svc.ServiceConfig.(type) {
+	case *configv1.UpstreamServiceConfig_McpService:
+		tools = &st.McpService.Tools
+	case *configv1.UpstreamServiceConfig_HttpService:
+		tools = &st.HttpService.Tools
+	case *configv1.UpstreamServiceConfig_GrpcService:
+		tools = &st.GrpcService.Tools
+	case *configv1.UpstreamServiceConfig_OpenapiService:
+		tools = &st.OpenapiService.Tools
+	case *configv1.UpstreamServiceConfig_CommandLineService:
+		tools = &st.CommandLineService.Tools
+	case *configv1.UpstreamServiceConfig_WebsocketService:
+		tools = &st.WebsocketService.Tools
+	case *configv1.UpstreamServiceConfig_WebrtcService:
+		tools = &st.WebrtcService.Tools
+	case *configv1.UpstreamServiceConfig_GraphqlService:
+		tools = &st.GraphqlService.Tools
+	case *configv1.UpstreamServiceConfig_SqlService:
+		tools = &st.SqlService.Tools
+	case *configv1.UpstreamServiceConfig_FilesystemService:
+		tools = &st.FilesystemService.Tools
+	case *configv1.UpstreamServiceConfig_VectorService:
+		tools = &st.VectorService.Tools
+	default:
+		return fmt.Errorf("unknown service type")
+	}
+
+	found := false
+	for _, td := range *tools {
+		if td.Name == toolName {
+			td.Disable = disable
+			// Ensure merge strategy override is set
+			override := configv1.ToolDefinition_MERGE_STRATEGY_OVERRIDE
+			td.MergeStrategy = &override
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		// If the tool is auto-discovered, it might not be explicitly listed. We add it with override strategy.
+		override := configv1.ToolDefinition_MERGE_STRATEGY_OVERRIDE
+		*tools = append(*tools, &configv1.ToolDefinition{
+			Name:          toolName,
+			Disable:       disable,
+			MergeStrategy: &override,
+		})
+	}
+
+	return nil
 }
 
 func (a *Application) handleExecute() http.HandlerFunc {
