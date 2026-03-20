@@ -452,3 +452,20 @@ func TestCalculateUptime(t *testing.T) {
 		})
 	}
 }
+
+func TestHandleDebugSeedToolUsage(t *testing.T) {
+	app := &Application{}
+
+	stats := []ToolAnalytics{
+		{Name: "my_tool", ServiceID: "my_service", TotalCalls: 100, SuccessRate: 85.0},
+	}
+	body, _ := json.Marshal(stats)
+
+	req, _ := http.NewRequest("POST", "/debug/seed_tool_usage", bytes.NewBuffer(body))
+	rr := httptest.NewRecorder()
+
+	handler := app.handleDebugSeedToolUsage()
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+}

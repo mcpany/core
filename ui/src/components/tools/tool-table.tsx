@@ -184,7 +184,7 @@ export const ToolTable = memo(function ToolTable({
                   <Badge variant="outline" className={isCompact ? "h-5 text-[10px] px-1" : ""}>{tool.serviceId}</Badge>
               </TableCell>
               <TableCell className={cn("text-right font-mono", isCompact ? "py-0 px-2" : "")}>
-                  {usageStats?.[`${tool.name}@${tool.serviceId}`]?.totalCalls || "-"}
+                  {usageStats?.[`${tool.name}@${tool.serviceId}`]?.totalCalls?.toLocaleString() || "-"}
               </TableCell>
               <TableCell className={cn("text-right", isCompact ? "py-0 px-2" : "")}>
                   {(() => {

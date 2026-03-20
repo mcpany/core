@@ -2095,6 +2095,7 @@ func (a *Application) runServerMode(
 	})))
 	mux.Handle("/debug/auth-test", authMiddleware(http.HandlerFunc(a.testAuthHandler)))
 	mux.Handle("/api/v1/debug/seed_traffic", authMiddleware(a.handleDebugSeedTraffic()))
+	mux.Handle("/api/v1/debug/seed_tool_usage", authMiddleware(a.handleDebugSeedToolUsage()))
 	mux.Handle("/api/v1/debug/seed", authMiddleware(a.handleDebugSeed()))
 	mux.Handle("/api/v1/debug/traces", authMiddleware(a.handleDebugSeedTraces()))
 

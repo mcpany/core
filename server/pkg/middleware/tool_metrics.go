@@ -259,3 +259,17 @@ func calculateOutputSize(result any) int {
 		return util.EstimateJSONSize(v)
 	}
 }
+
+// InjectToolExecutionForTesting allows tests to simulate tool executions for analytics without running the full pipeline.
+func InjectToolExecutionForTesting(toolName, serviceID, status, errorType string, count int) {
+    labels := prometheus.Labels{
+		"tool":       toolName,
+		"service_id": serviceID,
+		"status":     status,
+		"error_type": errorType,
+	}
+    counter := toolExecutionTotal.With(labels)
+    for i := 0; i < count; i++ {
+        counter.Inc()
+    }
+}
