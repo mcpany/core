@@ -1,166 +1,100 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
+import React, { useState } from 'react';
+import { ChevronRight, ChevronDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-
-
-import React, { useState } from "react";
-import { ChevronRight, ChevronDown, Copy, Check } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-
-interface JsonTreeProps {
-  data: unknown;
-  level?: number;
-  defaultExpandedLevel?: number;
-  className?: string;
+interface JsonNodeProps {
+  keyName: string | number;
+  value: any;
+  isLast: boolean;
+  depth: number;
 }
 
-/**
- * JsonTree component.
- * Renders a recursive tree view of JSON data.
- *
- * @param props - The component props.
- * @param props.data - The data to display.
- * @param props.level - The current nesting level (default: 0).
- * @param props.defaultExpandedLevel - The level up to which nodes are expanded by default (default: 1).
- * @param props.className - The className.
- * @returns The rendered component.
- */
-export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className }: JsonTreeProps) {
-  const isObject = typeof data === 'object' && data !== null;
-  const isArray = Array.isArray(data);
-  const isEmpty = isObject && Object.keys(data as object).length === 0;
+const JsonNode: React.FC<JsonNodeProps> = ({ keyName, value, isLast, depth }) => {
+  const [isExpanded, setIsExpanded] = useState(true);
 
-  const [expanded, setExpanded] = useState(level < defaultExpandedLevel);
-  const [copied, setCopied] = useState(false);
+  const isObject = value !== null && typeof value === 'object';
+  const isArray = Array.isArray(value);
+  const isEmpty = isObject && Object.keys(value).length === 0;
 
-  const handleCopy = (e: React.MouseEvent) => {
+  const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const text = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).catch(err => console.error("Clipboard error", err));
-    }
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setIsExpanded(!isExpanded);
   };
 
-  if (!isObject) {
+  const renderValue = () => {
+    if (value === null) return <span className="text-muted-foreground">null</span>;
+    if (typeof value === 'boolean') return <span className="text-blue-500">{value ? 'true' : 'false'}</span>;
+    if (typeof value === 'number') return <span className="text-green-500">{value}</span>;
+    if (typeof value === 'string') return <span className="text-amber-500">"{value}"</span>;
+    return <span>{String(value)}</span>;
+  };
+
+  // Skip showing the root key "" for the top-level object/array
+  const displayKey = keyName !== '' ? `"${keyName}": ` : '';
+
+  if (isObject) {
+    const keys = Object.keys(value);
+
     return (
-      <div className={cn("flex items-center gap-2 group/node font-mono text-xs hover:bg-white/5 rounded px-1 -ml-1", className)} style={{ paddingLeft: level > 0 ? '0' : undefined }}>
-        <PrimitiveValue value={data} />
-        <Button
-            variant="ghost"
-            size="icon"
-            className="h-4 w-4 opacity-0 group-hover/node:opacity-100 transition-opacity ml-auto"
-            onClick={handleCopy}
-            title="Copy value"
+      <div className="font-mono text-sm leading-relaxed relative" style={{ marginLeft: depth > 0 ? '1.5rem' : 0 }}>
+        <div
+          className={cn("flex items-start", !isEmpty && "cursor-pointer hover:bg-muted/50 rounded -ml-5 pl-5")}
+          onClick={!isEmpty ? handleToggle : undefined}
         >
-            {copied ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3 text-muted-foreground" />}
-        </Button>
+          {!isEmpty && (
+            <span className="absolute -left-4 top-1 w-3 h-3 flex items-center justify-center opacity-50 hover:opacity-100 transition-opacity">
+              {isExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+            </span>
+          )}
+
+          {keyName !== '' && <span className="text-purple-600 dark:text-purple-400 mr-1">{displayKey}</span>}
+          <span className="text-foreground">{isArray ? '[' : '{'}</span>
+          {!isExpanded && !isEmpty && (
+            <span className="text-muted-foreground mx-2 text-xs px-1.5 py-0.5 bg-muted rounded">
+              {isArray ? `${keys.length} items` : `${keys.length} keys`}
+            </span>
+          )}
+          {(!isExpanded || isEmpty) && <span className="text-foreground">{isArray ? ']' : '}'}{!isLast && ','}</span>}
+        </div>
+
+        {isExpanded && !isEmpty && (
+          <div>
+            {keys.map((k, i) => (
+              <JsonNode
+                key={k}
+                keyName={isArray ? i : k}
+                value={value[k as keyof typeof value]}
+                isLast={i === keys.length - 1}
+                depth={depth + 1}
+              />
+            ))}
+            <div className="flex items-start -ml-5 pl-5">
+              <span className="text-foreground">{isArray ? ']' : '}'}{!isLast && ','}</span>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
 
-  if (isEmpty) {
-     return (
-        <div className={cn("font-mono text-xs text-muted-foreground", className)}>
-            {isArray ? "[]" : "{}"}
-        </div>
-     );
-  }
-
-  const entries = Object.entries(data as object);
-  const preview = isArray
-    ? `Array(${entries.length})`
-    : `{ ${entries.slice(0, 3).map(([k]) => k).join(", ")}${entries.length > 3 ? ", ..." : ""} }`;
-
   return (
-    <div className={cn("font-mono text-xs", className)}>
-      <div
-        className="flex items-center gap-1 cursor-pointer hover:bg-white/5 rounded px-1 -ml-1 select-none group/node"
-        onClick={() => setExpanded(!expanded)}
-      >
-        <span className="text-muted-foreground w-4 flex justify-center shrink-0">
-            {expanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-        </span>
-        <span className="text-muted-foreground">{isArray ? "[" : "{"}</span>
-        {!expanded && (
-            <span className="text-muted-foreground opacity-50 mx-1 italic text-[10px]">{preview}</span>
-        )}
-        {!expanded && (
-             <span className="text-muted-foreground">{isArray ? "]" : "}"}</span>
-        )}
-         <Button
-            variant="ghost"
-            size="icon"
-            className="h-4 w-4 opacity-0 group-hover/node:opacity-100 transition-opacity ml-auto"
-            onClick={handleCopy}
-            title="Copy JSON"
-        >
-            {copied ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3 text-muted-foreground" />}
-        </Button>
-      </div>
-
-      {expanded && (
-        <div className="border-l border-white/10 ml-2 pl-2 flex flex-col">
-          {entries.map(([key, value], idx) => (
-            <div key={key} className="flex items-start gap-1">
-               {/* Key */}
-               <div className="pt-[2px] shrink-0 text-purple-400">
-                  {!isArray && (
-                      <span className="mr-1 opacity-80">
-                        "{key}":
-                      </span>
-                  )}
-               </div>
-
-               {/* Value */}
-               <div className="flex-1 min-w-0">
-                  <JsonTree
-                    data={value}
-                    level={level + 1}
-                    defaultExpandedLevel={defaultExpandedLevel}
-                  />
-               </div>
-               {/* Comma if needed (optional purely visual preference, syntax highlighter usually omits in tree view but keeps structure) */}
-            </div>
-          ))}
-        </div>
-      )}
-      {expanded && (
-          <div className="pl-6 text-muted-foreground">
-              {isArray ? "]" : "}"}
-          </div>
-      )}
+    <div className="font-mono text-sm leading-relaxed flex items-start" style={{ marginLeft: depth > 0 ? '1.5rem' : 0 }}>
+      {keyName !== '' && <span className="text-purple-600 dark:text-purple-400 mr-1">{displayKey}</span>}
+      {renderValue()}
+      {!isLast && <span className="text-foreground">,</span>}
     </div>
   );
+};
+
+export interface JsonTreeProps {
+  data: any;
+  className?: string;
 }
 
-function PrimitiveValue({ value }: { value: unknown }) {
-  if (typeof value === 'string') {
-    if (value.startsWith('data:image/') && value.length > 50) {
-        return (
-            <div className="mt-1 mb-2">
-                <span className="text-green-400 break-all whitespace-pre-wrap opacity-50 text-[10px] block truncate max-w-[300px]" title="Click copy to get full string">"{value}"</span>
-                <img src={value} alt="Base64 Image" className="max-w-[200px] h-auto rounded-md border bg-black/50 mt-1" />
-            </div>
-        );
-    }
-    return <span className="text-green-400 break-all whitespace-pre-wrap">"{value}"</span>;
-  }
-  if (typeof value === 'number') {
-    return <span className="text-blue-400">{value}</span>;
-  }
-  if (typeof value === 'boolean') {
-    return <span className="text-orange-400">{value ? 'true' : 'false'}</span>;
-  }
-  if (value === null) {
-    return <span className="text-gray-500 italic">null</span>;
-  }
-  if (value === undefined) {
-    return <span className="text-gray-500 italic">undefined</span>;
-  }
-  return <span>{String(value)}</span>;
-}
+export const JsonTree: React.FC<JsonTreeProps> = ({ data, className }) => {
+  return (
+    <div className={cn("bg-background border rounded-md p-4 overflow-auto", className)}>
+      <JsonNode keyName="" value={data} isLast={true} depth={0} />
+    </div>
+  );
+};
