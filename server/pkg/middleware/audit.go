@@ -317,6 +317,9 @@ func (m *AuditMiddleware) ClearHistory() {
 //
 // Summary: Subscribes to audit events with history.
 //
+// Parameters:
+//   - None.
+//
 // Returns:
 //   - chan any: A channel receiving new audit entries.
 //   - []any: A slice of historical audit entries.
@@ -401,29 +404,20 @@ func (m *AuditMiddleware) Close() error {
 
 // Write writes an audit entry directly to the store.
 //
+// Summary: Writes an audit entry to the initialized store.
+//
 // Parameters:
-//   - ctx: context.Context for the operation.
-//   - entry: The audit.Entry to write.
+//   - ctx (context.Context): The request context.
+//   - entry (audit.Entry): The audit entry to write.
 //
 // Returns:
-//   - error: An error if the write fails, or nil on success.
+//   - error: An error if the write fails.
 //
 // Errors:
 //   - Returns an error if the audit store is not initialized.
 //
-// Summary: Updates Write operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
-//   - None.
+//   - Writes to the underlying audit store and broadcaster.
 func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
 	m.mu.RLock()
 	store := m.store
