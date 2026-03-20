@@ -1,4 +1,4 @@
-# Copyright 2026 MCP Any Authors
+# Copyright 2026 Author(s) of MCP Any
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,79 +19,49 @@
 
 ## 1. Context and Scope
 
-The rapid expansion of the agentic ecosystem has led to a critical reliance on third-party tool registries and dynamic library updates. Recent security reports (Barracuda 2026) have identified over 43 agent framework components with backdoors introduced via supply chain compromise, often remaining dormant until activated by a remote command-and-control server. The "Clinejection" attack pattern demonstrates how unverified tool definitions and library updates can be weaponized to exfiltrate credentials and PII.
-MCP Any must evolve from a passive tool proxy to an active guarantor of supply chain integrity. The SCPA provides a hardware-bound mechanism for attesting to the lineage and structural integrity of every tool and library in the agent's execution path. By anchoring provenance in a Trusted Platform Module (TPM), we ensure that tool definitions cannot be tampered with or replaced by malicious updates without a verified cryptographic signature.
+The rapid expansion of the agentic ecosystem has led to a critical reliance on third-party tool registries and dynamic library updates. Recent security reports (Barracuda 2026) have identified over 43 agent framework components with backdoors introduced via supply chain compromise. The "Clinejection" attack pattern demonstrates how unverified tool definitions and library updates can be weaponized to exfiltrate credentials and PII.
 
 ## 2. Goals & Non-Goals
 
-*   **Goals:**
-
-    *   Provide hardware-attested (TPM/Secure Enclave) signatures for all tool definitions and local libraries.
-
-    *   Enforce mandatory signature validation for all tool updates before they are committed to the active environment.
-
-    *   Facilitate multi-signature quorums for high-risk upstream tool updates.
-
-    *   Ensure that tool metadata (schemas, descriptions) remains immutable once attested.
-
-*   **Non-Goals:**
-
-    *   Providing general-purpose code signing for non-agentic host applications.
-
-    *   Verifying the functional "safety" or correctness of the tool logic (this is the responsibility of the behavioral profiling and Ghost Shell layers).
+* **Goals:**
+    * Mandate hardware-bound (TPM/Secure Enclave) signatures for all tool manifest updates.
+    * Implement "Provenance-before-Discovery" validation for all A2A capability cards.
+    * Provide a "Trust Strength" weight for the Active Negotiation Broker bidding process.
+* **Non-Goals:**
+    * Automated patching of compromised tools (SCPA focuses on detection and blocking).
+    * Managing host-level binary signatures (SCPA focuses on the MCP tool definition layer).
 
 ## 3. Critical User Journey (CUJ)
 
-*   **User Persona:** Enterprise AI Infrastructure Architect
-
-*   **Primary Goal:** Prevent a poisoned "Database Specialist" tool update from compromising a high-clearance swarm.
-
-*   **The Happy Path (Tasks):**
-
-    1.  An update for the "Database Specialist" tool manifest is received by the local MCP Any registry.
-
-    2.  SCPA intercepts the update and issues a TPM-bound signature challenge to the originating developer workstation.
-
-    3.  The developer signs the update using a hardware-resident key; SCPA verifies this against the local "Provenance Root."
-
-    4.  A multi-agent security quorum (using the APRIG middleware) performs a pre-commit semantic scan of the new tool schemas.
-
-    5.  SCPA issues a unique "Provenance Token" and allows the update to be merged into the active capability card.
-
-    6.  The agent swarm boots, validating the Provenance Token before establishing any tool sessions.
+* **User Persona:** Enterprise Security Architect
+* **Primary Goal:** Prevent an agent from discovering and using a "Shadow Tool" introduced via a compromised registry.
+* **The Happy Path (Tasks):**
+    1. Architect configures MCP Any to require "P0 Upstream Provenance."
+    2. A new tool is discovered via the A2A mesh.
+    3. SCPA intercept the discovery event and validates the Upstream Signature against the verified root.
+    4. The signature check passes; the tool is added to the Discovery Bus.
 
 ## 4. Design & Architecture
 
-*   **System Flow:**
-
-    `Registry Update Request -> SCPA Interceptor -> Hardware Signature Validation -> APRIG Multi-Agent Review -> Provenance Token Issuance -> Capability Mapping`
-
-*   **APIs / Interfaces:**
-
-    *   `/v1/provenance/sign`: Endpoint for submitting a tool manifest for hardware signing.
-
-    *   `/v1/provenance/verify`: Internal service API for validating tokens during agent boot.
-
-    *   `mcp.provenance.v1`: A gRPC-based extension for the PNTD provider to carry provenance metadata.
-
-*   **Data Storage/State:**
-
-    *   **Provenance Root Keys**: Stored in the local hardware TPM or Secure Enclave.
-
-    *   **Provenance Ledger**: A versioned, append-only ledger stored on the Blackboard that tracks the signature history and lineage of every attested tool.
+* **System Flow:**
+    - **Interception**: The SCPA middleware hooks into the PNTD Provider's discovery pipeline.
+    - **Attestation**: It extracts the TPM-bound signature from the capability card and verifies it against the configured Upstream Registry Root.
+    - **Scoring**: It calculates a "Provenance Score" (0-100) based on the signature strength and registry reputation.
+* **APIs / Interfaces:**
+    - `POST /v1/provenance/validate`: Core validation endpoint for capability cards.
+    - Metadata: `_mcp_provenance_token: string`
+* **Data Storage/State:** Local cache of verified registry public keys and revocation lists.
 
 ## 5. Alternatives Considered
 
-*   **Centralized SaaS Attestation**: Rejected because it introduces a single point of failure and violates the "Local Sovereignty" mandate for air-gapped and high-security enterprise environments.
-
-*   **Plain SHA-256 File Hashing**: Rejected because hashes only prove integrity, not provenance. An attacker with filesystem access could replace both the tool and the expected hash simultaneously. SCPA's use of hardware-bound asymmetric keys prevents this "Shadow Substitution."
+* **Runtime Sandboxing Only**: Relying solely on Docker/WASM to contain tools. *Rejected* as this doesn't prevent "Logical Injection" or exfiltration of context-allowed data.
+* **Manual Tool Allow-listing**: *Rejected* as it doesn't scale with the speed of autonomous agent meshes.
 
 ## 6. Cross-Cutting Concerns
 
-*   **Security (Zero Trust):** SCPA implements "Provenance-before-Discovery." An agent cannot even "see" a tool in the discovery bus unless it carries a valid, hardware-attested provenance token. This prevents "Shadow Tool" injection during the mesh handshake.
-
-*   **Observability:** Every signature validation and provenance failure is logged to the Local Security Audit Dashboard. The UI provides a "Provenance Heatmap" showing the trust strength of the entire tool supply chain.
+* **Security (Zero Trust):** SCPA implements "Provenance-before-Discovery." An agent cannot even "see" a tool in the discovery bus unless it carries a valid, hardware-attested provenance token.
+* **Observability:** Every signature validation and provenance failure is logged to the Local Security Audit Dashboard.
 
 ## 7. Evolutionary Changelog
 
-*   **2026-06-05:** Initial Document Creation.
+* **2026-06-05:** Initial Document Creation.
