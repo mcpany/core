@@ -1,0 +1,54 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+option features.field_presence = IMPLICIT;
+
+package examples.userservice.v1;
+
+// Import the MCP options. The path must be findable by protoc.
+// When protoc is run for this file, an include path to the main project's 'proto' dir will be needed.
+import "proto/mcp_options/v1/mcp_options.proto";
+import "google/protobuf/go_features.proto";
+
+option features.(pb.go).api_level = API_OPAQUE;
+
+option go_package = "github.com/mcpany/core/proto/examples/userservice/v1";
+
+// --- Messages ---
+message EchoRequest {
+    string message = 1 [(mcpany.mcp_options.v1.field_description) = "The message to be echoed."];
+}
+
+message EchoResponse {
+    string echoed_message = 1 [(mcpany.mcp_options.v1.field_description) = "The echoed message."];
+}
+
+message GetDetailsRequest {
+    string item_id = 1 [(mcpany.mcp_options.v1.field_description) = "The ID of the item to fetch details for."];
+}
+
+message GetDetailsResponse {
+    option (mcpany.mcp_options.v1.resource_name) = "ItemDetail";
+    option (mcpany.mcp_options.v1.resource_description) = "Represents detailed information about an item.";
+
+    string item_id = 1 [(mcpany.mcp_options.v1.field_description) = "The ID of the item."];
+    string detail = 2 [(mcpany.mcp_options.v1.field_description) = "The detailed information about the item."];
+    map<string, string> attributes = 3 [(mcpany.mcp_options.v1.field_description) = "A map of attributes for the item."];
+}
+
+// --- Service Definition ---
+service EchoService {
+    // This method will be an MCP tool
+    rpc Echo(EchoRequest) returns (EchoResponse) {
+        option (mcpany.mcp_options.v1.tool_name) = "EchoTool";
+        option (mcpany.mcp_options.v1.tool_description) = "Echoes back the input message. Useful for testing.";
+    }
+
+    // This method will also be an MCP tool
+    rpc GetDetails(GetDetailsRequest) returns (GetDetailsResponse) {
+        option (mcpany.mcp_options.v1.tool_name) = "ItemDetailFetcher";
+        option (mcpany.mcp_options.v1.tool_description) = "Fetches details for a given item ID.";
+    }
+}

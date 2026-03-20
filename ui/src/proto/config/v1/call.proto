@@ -1,0 +1,333 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.config.v1;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/duration.proto";
+
+import "google/protobuf/go_features.proto";
+import "proto/config/v1/auth.proto";
+import "proto/config/v1/webhook.proto";
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+option features.(pb.go).api_level = API_OPAQUE;
+
+// HttpCallDefinition describes how to map an MCP call to a specific HTTP request.
+message HttpCallDefinition {
+  // The unique identifier for the call.
+  string id = 1;
+
+  enum HttpMethod {
+    HTTP_METHOD_UNSPECIFIED = 0;
+    HTTP_METHOD_GET = 1;
+    HTTP_METHOD_POST = 2;
+    HTTP_METHOD_PUT = 3;
+    HTTP_METHOD_DELETE = 4;
+    HTTP_METHOD_PATCH = 5;
+  }
+  // The path of the HTTP endpoint (e.g., "/users/{userId}").
+  string endpoint_path = 3 [json_name = "endpoint_path"];
+  // The HTTP method to use for the request.
+  HttpMethod method = 4;
+  // Defines the parameters for the HTTP request.
+  repeated HttpParameterMapping parameters = 5;
+  // An optional input transformer to generate the request body.
+  InputTransformer input_transformer = 6 [json_name = "input_transformer"];
+  // An optional output transformer to parse the response body.
+  OutputTransformer output_transformer = 7 [json_name = "output_transformer"];
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 8;
+  // The schema for the input parameters required by the call.
+  google.protobuf.Struct input_schema = 9 [json_name = "input_schema"];
+  // The schema for the output of the call.
+  google.protobuf.Struct output_schema = 10 [json_name = "output_schema"];
+}
+
+// WebsocketCallDefinition describes how to map an MCP call to a specific websocket message.
+message WebsocketCallDefinition {
+  // The unique identifier for the call.
+  string id = 1;
+  // Defines the parameters for the websocket message.
+  repeated WebsocketParameterMapping parameters = 3;
+  // An optional input transformer to generate the request body.
+  InputTransformer input_transformer = 4 [json_name = "input_transformer"];
+  // An optional output transformer to parse the response body.
+  OutputTransformer output_transformer = 5 [json_name = "output_transformer"];
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 6;
+  // The schema for the input parameters required by the call.
+  google.protobuf.Struct input_schema = 7 [json_name = "input_schema"];
+  // The schema for the output of the call.
+  google.protobuf.Struct output_schema = 8 [json_name = "output_schema"];
+}
+
+// WebrtcCallDefinition describes how to map an MCP call to a specific webrtc message.
+message WebrtcCallDefinition {
+  // The unique identifier for the call.
+  string id = 1;
+  // Defines the parameters for the webrtc message.
+  repeated WebrtcParameterMapping parameters = 3;
+  // An optional input transformer to generate the request body.
+  InputTransformer input_transformer = 4 [json_name = "input_transformer"];
+  // An optional output transformer to parse the response body.
+  OutputTransformer output_transformer = 5 [json_name = "output_transformer"];
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 6;
+  // The schema for the input parameters required by the call.
+  google.protobuf.Struct input_schema = 7 [json_name = "input_schema"];
+  // The schema for the output of the call.
+  google.protobuf.Struct output_schema = 8 [json_name = "output_schema"];
+}
+
+// CommandLineCallDefinition describes how to map an MCP call to a stdio command.
+message CommandLineCallDefinition {
+  // The unique identifier for the call.
+  string id = 1;
+  // Defines the parameters for the stdio command.
+  repeated CommandLineParameterMapping parameters = 3;
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 4;
+  // The arguments to pass to the command.
+  repeated string args = 5;
+  // The schema for the input parameters required by the call.
+  google.protobuf.Struct input_schema = 6 [json_name = "input_schema"];
+  // The schema for the output of the call.
+  google.protobuf.Struct output_schema = 7 [json_name = "output_schema"];
+}
+
+// InputTransformer defines how to render a template from input parameters.
+message InputTransformer {
+  // A text template to be rendered.
+  // This is used for generating the request body for POST/PUT requests.
+  // The template engine is compatible with Jinja2.
+  // A text template to be rendered.
+  // This is used for generating the request body for POST/PUT requests.
+  // The template engine is compatible with Jinja2.
+  string template = 1 [deprecated = true];
+  // A webhook to call to transform the input.
+  WebhookConfig webhook = 2;
+}
+
+// OutputTransformer defines how to parse an output text into structured data.
+message OutputTransformer {
+  enum OutputFormat {
+    JSON = 0; // The output is JSON, which will be parsed using JSONPath expressions.
+    XML = 1;  // The output is XML, which will be parsed using XPath expressions.
+    TEXT = 2; // The output is plain text, which will be parsed using regex.
+    RAW_BYTES = 3; // The output is raw bytes, no parsing will be performed.
+    JQ = 4; // The output is JSON, which will be transformed using a JQ query.
+  }
+  // The format of the upstream service's output.
+  OutputFormat format = 1;
+  // A map of field names to the extraction expressions.
+  // The interpretation of the expression depends on the 'format':
+  // - JSON: JSONPath expressions.
+  // - XML: XPath expressions.
+  // - TEXT: Regular expressions (first capture group is used).
+  map<string, string> extraction_rules = 2 [json_name = "extraction_rules"];
+  // An optional template to render the extracted data into a final string.
+  // If this is not provided, the raw extracted data will be returned.
+  string template = 3;
+  // The JQ query to transform the output.
+  // Only used when format is JQ.
+  string jq_query = 4 [json_name = "jq_query"];
+}
+
+// GrpcCallDefinition describes how to map an MCP call to a specific gRPC method.
+message GrpcCallDefinition {
+  // The unique identifier for the call.
+  string id = 1;
+  // The fully-qualified gRPC service name.
+  string service = 3;
+  // The name of the gRPC method to call.
+  string method = 4;
+  // Note: For gRPC, parameter mapping is typically done by matching field names
+  // between the MCP input schema and the gRPC request message.
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 5;
+  // The schema for the input parameters required by the call.
+  google.protobuf.Struct input_schema = 6 [json_name = "input_schema"];
+  // The schema for the output of the call.
+  google.protobuf.Struct output_schema = 7 [json_name = "output_schema"];
+}
+
+// OpenAPICallDefinition describes a call derived from an OpenAPI specification.
+// This is often used for discovery rather than manual configuration.
+message OpenAPICallDefinition {
+  // The unique identifier for the call.
+  string id = 1;
+  // An optional input transformer to generate the request body.
+  InputTransformer input_transformer = 3 [json_name = "input_transformer"];
+  // An optional output transformer to parse the response body.
+  OutputTransformer output_transformer = 4 [json_name = "output_transformer"];
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 5;
+  // The schema for the input parameters required by the call.
+  google.protobuf.Struct input_schema = 6 [json_name = "input_schema"];
+  // The schema for the output of the call.
+  google.protobuf.Struct output_schema = 7 [json_name = "output_schema"];
+}
+
+// MCPCallDefinition describes how to map an MCP call to a specific MCP tool.
+message MCPCallDefinition {
+  // The unique identifier for the call.
+  string id = 1;
+  // An optional input transformer to generate the request body.
+  InputTransformer input_transformer = 3 [json_name = "input_transformer"];
+  // An optional output transformer to parse the response body.
+  OutputTransformer output_transformer = 4 [json_name = "output_transformer"];
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 5;
+  // The schema for the input parameters required by the call.
+  google.protobuf.Struct input_schema = 6 [json_name = "input_schema"];
+  // The schema for the output of the call.
+  google.protobuf.Struct output_schema = 7 [json_name = "output_schema"];
+}
+
+// GraphQLCallDefinition describes a call derived from a GraphQL introspection query.
+message GraphQLCallDefinition {
+// The unique identifier for the call.
+string id = 1;
+// The GraphQL query to execute.
+string query = 2;
+// The GraphQL operation name.
+string operation_name = 3 [json_name = "operation_name"];
+// A map of variables for the GraphQL query.
+google.protobuf.Struct variables = 4;
+// Caching configuration to improve performance and reduce load on the upstream.
+CacheConfig cache = 5;
+// The selection set for the GraphQL query.
+string selection_set = 6 [json_name = "selection_set"];
+// The schema for the input parameters required by the call.
+google.protobuf.Struct input_schema = 7 [json_name = "input_schema"];
+// The schema for the output of the call.
+google.protobuf.Struct output_schema = 8 [json_name = "output_schema"];
+}
+
+// SqlCallDefinition describes how to map an MCP call to a SQL query.
+message SqlCallDefinition {
+  // The unique identifier for the call.
+  string id = 1;
+  // The SQL query to execute. Use placeholders like $1, $2 or ? based on the driver.
+  string query = 2;
+  // The order of input properties to map to query parameters.
+  // For example, if the query uses $1 and $2, and this list is ["userId", "active"],
+  // then input.userId will be passed as $1 and input.active as $2.
+  repeated string parameter_order = 3 [json_name = "parameter_order"];
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 4;
+  // The schema for the input parameters required by the call.
+  google.protobuf.Struct input_schema = 5 [json_name = "input_schema"];
+  // The schema for the output of the call.
+  google.protobuf.Struct output_schema = 6 [json_name = "output_schema"];
+}
+
+// ParameterType defines the data type of a parameter.
+enum ParameterType {
+  STRING = 0;
+  NUMBER = 1;
+  INTEGER = 2;
+  BOOLEAN = 3;
+  ARRAY = 4;
+  OBJECT = 5;
+}
+
+// ParameterSchema defines the schema for a single parameter, following Google's JSON schema.
+message ParameterSchema {
+  // The name of the input parameter from the MCP call.
+  string name = 1;
+  // A description of the parameter.
+  string description = 2;
+  // The data type of the parameter.
+  ParameterType type = 3;
+  // Whether the parameter is required.
+  bool is_required = 4 [json_name = "is_required"];
+  // The default value of the parameter.
+  google.protobuf.Value default_value = 5 [json_name = "default_value"];
+}
+
+// HttpParameterMapping defines how to place an input parameter into an HTTP request.
+message HttpParameterMapping {
+  // The schema for the parameter.
+  ParameterSchema schema = 1;
+  // A secret value to use for the parameter.
+  SecretValue secret = 2;
+  // Whether to disable automatic URL escaping for this parameter.
+  bool disable_escape = 3 [json_name = "disable_escape"];
+}
+
+// WebsocketParameterMapping defines how to place an input parameter into a websocket message.
+message WebsocketParameterMapping {
+  // The schema for the parameter.
+  ParameterSchema schema = 1;
+  // A secret value to use for the parameter.
+  SecretValue secret = 2;
+}
+
+// WebrtcParameterMapping defines how to place an input parameter into a webrtc message.
+message WebrtcParameterMapping {
+  // The schema for the parameter.
+  ParameterSchema schema = 1;
+  // A secret value to use for the parameter.
+  SecretValue secret = 2;
+}
+
+// CommandLineParameterMapping defines how to pass an input parameter to a stdio process.
+message CommandLineParameterMapping {
+  // The schema for the parameter.
+  ParameterSchema schema = 1;
+  // A secret value to use for the parameter.
+  SecretValue secret = 2;
+}
+
+// CacheConfig is a dummy message for now.
+message CacheConfig {
+  bool is_enabled = 1 [json_name = "is_enabled"];
+  google.protobuf.Duration ttl = 2;
+  string strategy = 3;
+  SemanticCacheConfig semantic_config = 4 [json_name = "semantic_config"];
+}
+
+message SemanticCacheConfig {
+  // Provider for embeddings (e.g., "openai", "vertexai", "ollama", "http")
+  // Deprecated: Use provider_config instead.
+  string provider = 1;
+  // Model name (e.g., "text-embedding-3-small")
+  // Deprecated: Use provider_config instead.
+  string model = 2;
+  // API Key (can be a reference to environment variable or secret)
+  // Deprecated: Use provider_config instead.
+  SecretValue api_key = 3 [json_name = "api_key"];
+  // Similarity threshold (0.0 to 1.0). Higher means stricter matching.
+  float similarity_threshold = 4 [json_name = "similarity_threshold"];
+
+  oneof provider_config {
+    OpenAIEmbeddingProviderConfig openai = 5 [json_name = "openai"];
+    OllamaEmbeddingProviderConfig ollama = 6 [json_name = "ollama"];
+    HttpEmbeddingProviderConfig http = 7 [json_name = "http"];
+  }
+
+  // Path to SQLite database file for persistent storage.
+  // If empty, the cache will be in-memory only.
+  string persistence_path = 8 [json_name = "persistence_path"];
+}
+
+message OpenAIEmbeddingProviderConfig {
+  string model = 1;
+  SecretValue api_key = 2 [json_name = "api_key"];
+}
+
+message OllamaEmbeddingProviderConfig {
+  string model = 1;
+  string base_url = 2 [json_name = "base_url"];
+}
+
+message HttpEmbeddingProviderConfig {
+  string url = 1;
+  map<string, string> headers = 2;
+  string body_template = 3 [json_name = "body_template"];
+  string response_json_path = 4 [json_name = "response_json_path"];
+}

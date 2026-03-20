@@ -1,0 +1,75 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+option features.field_presence = IMPLICIT;
+
+import "google/protobuf/go_features.proto";
+import "proto/config/v1/auth.proto";
+import "proto/bus/bus.proto"; // For RedisBus in RateLimitConfig
+
+package mcpany.config.v1;
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+option features.(pb.go).api_level = API_OPAQUE;
+
+message Profile {
+  // The name of the profile (e.g., "dev", "prod").
+  string name = 1;
+  // The unique ID of the profile (UUID).
+  string id = 2;
+  // The authentication configuration for the profile.
+  Authentication authentication = 3 [json_name = "authentication"];
+}
+
+message ToolConfig {
+  // Whether the tool is disabled.
+  bool disabled = 1 [json_name = "disabled"];
+}
+
+message ProfileServiceConfig {
+  // Whether the service is enabled in this profile.
+  bool enabled = 1 [features.field_presence = EXPLICIT];
+  // Tool-specific configuration. Key is the tool name (e.g. "delete_file").
+  map<string, ToolConfig> tools = 2 [json_name = "tools"];
+  // Other service-specific overrides can be added here.
+  // We explicitly removed upstream_authentication to use centralized secrets instead.
+}
+
+message RateLimitConfig {
+  // Whether rate limiting is enabled.
+  bool is_enabled = 1 [json_name = "is_enabled"];
+  // The maximum number of requests allowed per second.
+  double requests_per_second = 2 [json_name = "requests_per_second"];
+  // The number of requests that can be allowed in a short burst.
+  int64 burst = 3;
+
+  enum Storage {
+    STORAGE_UNSPECIFIED = 0;
+    STORAGE_MEMORY = 1;
+    STORAGE_REDIS = 2;
+  }
+  Storage storage = 4;
+
+  // Redis configuration if storage is set to STORAGE_REDIS.
+  bus.RedisBus redis = 5;
+
+  enum KeyBy {
+    KEY_BY_UNSPECIFIED = 0;
+    KEY_BY_GLOBAL = 1;
+    KEY_BY_IP = 2;
+    KEY_BY_USER_ID = 3;
+    KEY_BY_API_KEY = 4;
+  }
+  KeyBy key_by = 6 [json_name = "key_by"];
+
+  enum CostMetric {
+    COST_METRIC_REQUESTS = 0;
+    COST_METRIC_TOKENS = 1;
+  }
+  CostMetric cost_metric = 7 [json_name = "cost_metric"];
+
+  // Tool-specific rate limits. Key is the tool name.
+  map<string, RateLimitConfig> tool_limits = 8 [json_name = "tool_limits"];
+}

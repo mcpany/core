@@ -1,0 +1,39 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package bus;
+
+import "google/protobuf/go_features.proto";
+
+option go_package = "github.com/mcpany/core/proto/bus";
+option java_outer_classname = "BusProto";
+option features.(pb.go).api_level = API_OPAQUE;
+
+message MessageBus {
+  oneof bus_type {
+    InMemoryBus in_memory = 1;
+    RedisBus redis = 2;
+    NatsBus nats = 3;
+    KafkaBus kafka = 4;
+  }
+}
+
+message InMemoryBus {}
+
+message NatsBus {
+  string server_url = 1;
+}
+
+message RedisBus {
+  string address = 1;
+  int32 db = 2;
+  string password = 3;
+}
+
+message KafkaBus {
+  repeated string brokers = 1;
+  string topic_prefix = 2;
+  string consumer_group = 3;
+}

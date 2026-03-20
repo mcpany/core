@@ -1,0 +1,26 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.config.v1;
+
+import "google/protobuf/go_features.proto";
+import "proto/config/v1/upstream_service.proto";
+import "proto/config/v1/auth.proto";
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+option java_outer_classname = "CollectionProto";
+option features.(pb.go).api_level = API_OPAQUE;
+
+message Collection {
+  string name = 1;
+  string description = 2;
+  string version = 3;
+  int32 priority = 4;
+  string http_url = 5 [json_name = "http_url"];
+  Authentication authentication = 6;
+
+  repeated UpstreamServiceConfig services = 7;
+  repeated string skills = 8;
+}
