@@ -110,3 +110,14 @@ agent swarms. **Architecture Adjustment:**
 - Deprecating simple text-based sanitization in favor of hardware-bound context
   verifiers. **Security Impact:** Prevents subagents from assuming control of
   the master reasoning chain via malicious tool-description injections.
+
+### Update: [2026-06-15] - Mitigating SDMI and Reasoning Hijacking (2)
+
+**Context:** Today's market sync identified Shadow-Discovery via Metadata
+Injection (SDMI) as a primary exploit vector for reasoning hijacking in deep
+agent swarms. **Architecture Adjustment:**
+
+- Extending Section 4: Introducing **Recursive Metadata Attestation (RMA)**.
+- Deprecating simple text-based sanitization in favor of hardware-bound context
+  verifiers. **Security Impact:** Prevents subagents from assuming control of
+  the master reasoning chain via malicious tool-description injections.

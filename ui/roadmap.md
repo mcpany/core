@@ -1183,3 +1183,10 @@
   and pinning across active swarms. (Added: 2026-06-15)
 - **SDP Policy Editor**: Hardware-attested UI for managing trust-lease
   propagation rules across deep agentic sub-graphs. (Added: 2026-06-15)
+
+### Upcoming: [2026-06-15] (2)
+
+- **ALCS Dashboard**: Real-time visualization of cognitive attention sharding
+  and pinning across active swarms. (Added: 2026-06-15)
+- **SDP Policy Editor**: Hardware-attested UI for managing trust-lease
+  propagation rules across deep agentic sub-graphs. (Added: 2026-06-15)

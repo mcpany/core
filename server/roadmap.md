@@ -1480,3 +1480,14 @@ _None at this time._
   cards. (Added: 2026-06-15)
 - **Multi-Hop Persistence Relay (MHPR)**: (P1) Trust-lease propagation service
   to neutralize MSHE-driven cognitive stall in deep swarms. (Added: 2026-06-15)
+
+### Upcoming: [2026-06-15] (2)
+
+- **Attention-Locked Context Sharding (ALCS)**: (P0) High-security attention
+  governance middleware utilizing hardware-bound headers to "pin"
+  mission-critical fragments. (Added: 2026-06-15)
+- **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative gateway for the
+  Discovery Bus that performs hardware-attested validation of tool capability
+  cards. (Added: 2026-06-15)
+- **Multi-Hop Persistence Relay (MHPR)**: (P1) Trust-lease propagation service
+  to neutralize MSHE-driven cognitive stall in deep swarms. (Added: 2026-06-15)

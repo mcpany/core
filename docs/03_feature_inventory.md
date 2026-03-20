@@ -2443,3 +2443,25 @@
 - **PNTD Discovery Provider**: (Re-affirmed P0) Now elevated with the
   requirement for mandatory **SDP** integration to counter metadata-based
   reasoning hijacking.
+
+## Evolution: [2026-06-15] Updates (2)
+
+### [Proposed Additions: 2026-06-15]
+
+- **Attention-Locked Context Sharding (ALCS)**: (P0) High-security attention
+  governance middleware utilizing hardware-bound headers to "pin"
+  mission-critical fragments to protected attention tiers.
+- **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative gateway for the
+  Discovery Bus that performs hardware-attested validation of all tool
+  capability cards to neutralize SDMI.
+- **Multi-Hop Persistence Relay (MHPR)**: (P1) Performance-optimizing security
+  service for the SMI Relay that facilitates hardware-attested trust lease
+  propagation across deep swarms.
+
+### [Priority Shifts: 2026-06-15]
+
+- **Structural Metadata Sanitizer (SMS)**: (Re-affirmed P0) Now elevated as the
+  primary defense against Shadow-Discovery via Metadata Injection (SDMI).
+- **PNTD Discovery Provider**: (Re-affirmed P0) Now elevated with the
+  requirement for mandatory **SDP** integration to counter metadata-based
+  reasoning hijacking.
