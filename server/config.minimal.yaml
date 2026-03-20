@@ -11,6 +11,9 @@ global_settings:
   db_path: "/tmp/mcpany.db"
   debugger:
     enabled: true
+  audit:
+    storage_type: STORAGE_TYPE_SQLITE
+    retention_days: 7
   middlewares:
     - name: "auth"
       priority: 1
