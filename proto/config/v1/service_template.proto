@@ -10,7 +10,7 @@ import "proto/config/v1/upstream_service.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "ServiceTemplateProto";
-
+option features.(pb.go).api_level = API_OPAQUE;
 
 // ServiceTemplate defines a template for an upstream service that can be
 // used to quickly create new service instances in the wizard.
