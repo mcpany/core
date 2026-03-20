@@ -28,11 +28,11 @@ Unlike traditional "Wrapper" MCP servers (like `mcp-server-postgres`, `mcp-serve
 | **Maintenance**   | **High**: Manage dependencies/versions for N projects.                  | **Low**: Upgrade one core server; just swap config files.                       |
 | **Extensibility** | Write code (TypeScript/Python/Go).                                      | Write JSON/YAML.                                                                |
 
-Most "popular" MCP servers today are bespoke binaries. If the upstream API changes, you must wait for the maintainer to update the code, release a new version, and then you must redeploy. With **MCP Any**, you simply update your configuration file to match the new API signature—zero downtime, zero recompilation.
+Most "popular" MCP servers today are bespoke binaries. If the upstream API changes, you must wait for the maintainer to update the code, release a new version, and then you must redeploy. With **MCP Any**, you simply update your configuration file to match the new API signature--zero downtime, zero recompilation.
 
 ## ✨ Key Features
 
-- **Dynamic Tool Registration & Auto-Discovery**: Automatically discover and register tools from various backend services. For gRPC and OpenAPI, simply provide the server URL or spec URL—MCP Any handles the rest (no manual tool definition required).
+- **Dynamic Tool Registration & Auto-Discovery**: Automatically discover and register tools from various backend services. For gRPC and OpenAPI, simply provide the server URL or spec URL--MCP Any handles the rest (no manual tool definition required).
 - **Multiple Service Types**: Supports a wide range of service types, including:
   - **gRPC**: Register services from `.proto` files or by using gRPC reflection.
   - **OpenAPI**: Ingest OpenAPI (Swagger) specifications to expose RESTful APIs as tools.
