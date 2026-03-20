@@ -3,14 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
 import { useState, useMemo } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Code, Table as TableIcon, Image as ImageIcon, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 import { unwrapMcpResult } from "@/lib/mcp-unwrap";
+import { DataTable } from "@/components/ui/data-table";
 
 /**
  * Props for the SmartResultRenderer component.
@@ -177,46 +175,25 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
         tableData.slice(0, 10).forEach((row: any) => {
             Object.keys(row).forEach(k => allKeys.add(k));
         });
-        const columns = Array.from(allKeys);
+        const columns = Array.from(allKeys).map(col => ({
+            accessorKey: col,
+            header: col,
+            cell: (row: any) => {
+                const val = row[col];
+                let displayVal = val;
+                if (typeof val === 'object' && val !== null) {
+                    displayVal = JSON.stringify(val);
+                } else if (typeof val === 'boolean') {
+                    displayVal = val ? "true" : "false";
+                }
+                return String(displayVal ?? "");
+            }
+        }));
 
         return (
-            <div className="rounded-md border max-h-[400px] overflow-auto">
-                <Table>
-                    <TableHeader className="bg-muted/50 sticky top-0">
-                        <TableRow>
-                            {columns.map(col => (
-                                <TableHead key={col} className="whitespace-nowrap font-medium text-xs px-2 py-1 h-8">
-                                    {col}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {tableData.map((row: any, idx: number) => (
-                            <TableRow key={idx} className="hover:bg-muted/50">
-                                {columns.map(col => {
-                                    const val = row[col];
-                                    let displayVal = val;
-                                    if (typeof val === 'object' && val !== null) {
-                                        displayVal = JSON.stringify(val);
-                                    } else if (typeof val === 'boolean') {
-                                        displayVal = val ? "true" : "false";
-                                    }
-
-                                    return (
-                                        <TableCell key={col} className="px-2 py-1 text-xs max-w-[200px] truncate" title={String(displayVal)}>
-                                            {String(displayVal ?? "")}
-                                        </TableCell>
-                                    );
-                                })}
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                <div className="bg-muted/30 px-2 py-1 text-[10px] text-muted-foreground border-t">
-                    Showing {tableData.length} rows
-                </div>
-            </div>
+             <div className="w-full pt-2">
+                 <DataTable data={tableData} columns={columns} />
+             </div>
         );
     };
 
@@ -228,7 +205,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                         <Button
                             variant={activeView === "smart" ? "secondary" : "ghost"}
                             size="sm"
-                            className="h-6 px-2 text-[10px] gap-1"
+                            className="h-6 px-2 text-[10px] gap-1 transition-colors"
                             onClick={() => setUserViewMode("smart")}
                         >
                             <TableIcon className="size-3" /> Table
@@ -238,7 +215,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                         <Button
                             variant={activeView === "rich" ? "secondary" : "ghost"}
                             size="sm"
-                            className="h-6 px-2 text-[10px] gap-1"
+                            className="h-6 px-2 text-[10px] gap-1 transition-colors"
                             onClick={() => setUserViewMode("rich")}
                         >
                             <ImageIcon className="size-3" /> Rich
@@ -247,7 +224,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                      <Button
                         variant={activeView === "raw" ? "secondary" : "ghost"}
                         size="sm"
-                        className="h-6 px-2 text-[10px] gap-1"
+                        className="h-6 px-2 text-[10px] gap-1 transition-colors"
                         onClick={() => setUserViewMode("raw")}
                      >
                          <Code className="size-3" /> JSON
