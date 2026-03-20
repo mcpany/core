@@ -39,11 +39,11 @@ type Engine interface {
 	// Summary: Parses bytes into a protobuf message.
 	//
 	// Parameters:
-//   - b ([]byte): The raw bytes to parse.
-//   - v (proto.Message): The destination protobuf message.
+	//   - b ([]byte): The raw bytes to parse.
+	//   - v (proto.Message): The destination protobuf message.
 	//
 	// Returns:
-//   - (error): An error if parsing fails.
+	//   - (error): An error if parsing fails.
 	Unmarshal(b []byte, v proto.Message) error
 }
 
@@ -128,6 +128,20 @@ type yamlEngine struct {
 //
 // Side Effects:
 //   - None.
+//
+// Summary: Updates SetSkipValidation operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (e *yamlEngine) SetSkipValidation(skip bool) {
 	e.skipValidation = skip
 }
@@ -139,6 +153,20 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 //
 // Returns:
 //   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Updates SetIgnoreEnv operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -157,6 +185,20 @@ func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 //
 // Errors:
 //   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Unmarshal operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -190,6 +232,20 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 //
 // Errors:
 //   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes UnmarshalFromMap operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -311,6 +367,20 @@ type textprotoEngine struct{}
 //
 // Side Effects:
 //   - None.
+//
+// Summary: Executes Unmarshal operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
@@ -329,6 +399,20 @@ type jsonEngine struct{}
 //
 // Errors:
 //   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Unmarshal operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -663,6 +747,20 @@ type FileStore struct {
 //
 // Side Effects:
 //   - None.
+//
+// Summary: Updates SetSkipValidation operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (s *FileStore) SetSkipValidation(skip bool) {
 	s.skipValidation = skip
 }
@@ -671,6 +769,20 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 //
 // Returns:
 //   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Updates SetIgnoreMissingEnv operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -719,6 +831,20 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Checks HasConfigSources operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (s *FileStore) HasConfigSources() bool {
 	return len(s.paths) > 0
 }
@@ -1346,6 +1472,20 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 //
 // Side Effects:
 //   - None
+//
+// Summary: Checks HasConfigSources operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (ms *MultiStore) HasConfigSources() bool {
 	for _, s := range ms.stores {
 		if s.HasConfigSources() {

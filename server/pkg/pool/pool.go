@@ -19,9 +19,11 @@ import (
 
 var (
 	// ErrPoolClosed is returned when an operation is attempted on a closed pool.
+	// Summary: Defines ErrPoolClosed.
 	ErrPoolClosed = fmt.Errorf("pool has been closed")
 	// ErrPoolFull is returned when the pool has reached its maximum capacity and
 	// cannot create new clients.
+	// Summary: Defines the ErrPoolFull constant or variable.
 	ErrPoolFull = fmt.Errorf("pool is full")
 
 	// retryBackoff is the duration to wait before retrying to create a new client
@@ -600,6 +602,20 @@ func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes CloseAll operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) CloseAll() {
 	m.mu.Lock()
 	defer m.mu.Unlock()

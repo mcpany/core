@@ -42,6 +42,49 @@ func TestHTTPRateLimitMiddleware(t *testing.T) {
 	assert.Equal(t, http.StatusOK, rec2.Code, "Different IP should be allowed")
 }
 
+func TestHTTPRateLimitMiddleware_LoopbackOrigin(t *testing.T) {
+	// 2 RPS, burst 2
+	limiter := NewHTTPRateLimitMiddleware(2, 2)
+	handler := limiter.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	// First Origin
+	for i := 0; i < 2; i++ {
+		req := httptest.NewRequest("GET", "/", nil)
+		req.RemoteAddr = "127.0.0.1:1234"
+		req.Header.Set("Origin", "http://example.com")
+		rec := httptest.NewRecorder()
+		handler.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusOK, rec.Code, "Origin 1 Request %d should be allowed", i)
+	}
+
+	// 3rd request from First Origin should be blocked
+	reqBlocked := httptest.NewRequest("GET", "/", nil)
+	reqBlocked.RemoteAddr = "127.0.0.1:1234"
+	reqBlocked.Header.Set("Origin", "http://example.com")
+	recBlocked := httptest.NewRecorder()
+	handler.ServeHTTP(recBlocked, reqBlocked)
+	assert.Equal(t, http.StatusTooManyRequests, recBlocked.Code, "Origin 1 Request 3 should be blocked")
+
+	// Second Origin should still be allowed, because loopback is rate-limited per origin
+	reqDifferentOrigin := httptest.NewRequest("GET", "/", nil)
+	reqDifferentOrigin.RemoteAddr = "127.0.0.1:1234"
+	reqDifferentOrigin.Header.Set("Origin", "http://other.com")
+	recDifferentOrigin := httptest.NewRecorder()
+	handler.ServeHTTP(recDifferentOrigin, reqDifferentOrigin)
+	assert.Equal(t, http.StatusOK, recDifferentOrigin.Code, "Origin 2 Request 1 should be allowed")
+
+	// IPv6 Loopback
+	reqIPv6 := httptest.NewRequest("GET", "/", nil)
+	reqIPv6.RemoteAddr = "[::1]:1234"
+	reqIPv6.Header.Set("Origin", "http://example.com")
+	recIPv6 := httptest.NewRecorder()
+	handler.ServeHTTP(recIPv6, reqIPv6)
+	// Blocked because `::1` origin example.com shares the loopback key cache? Actually it's just loopback:http://example.com
+	assert.Equal(t, http.StatusTooManyRequests, recIPv6.Code, "IPv6 Loopback Origin 1 should share the cache and be blocked")
+}
+
 func TestHTTPRateLimitMiddleware_TrustProxy(t *testing.T) {
 	// 5 RPS, burst 5, Trust Proxy Enabled
 	limiter := NewHTTPRateLimitMiddleware(5, 5, WithTrustProxy(true))

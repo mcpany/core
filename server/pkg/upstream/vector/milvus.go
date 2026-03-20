@@ -15,6 +15,8 @@ import (
 )
 
 // MilvusClient implements VectorClient for Milvus.
+//
+// Summary: Represents a MilvusClient.
 type MilvusClient struct {
 	config *configv1.MilvusVectorDB
 	client client.Client
@@ -31,6 +33,20 @@ type MilvusClient struct {
 //
 // Errors:
 //   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewMilvusClient operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -85,6 +101,20 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 //
 // Returns:
 //   - (map[string]interface: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Query operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -208,6 +238,20 @@ func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, 
 //
 // Returns:
 //   - (map[string]interface: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Upsert operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -427,6 +471,20 @@ func fillMetadataColumn(col entity.Column, i int, val interface{}) {
 //
 // Side Effects:
 //   - None.
+//
+// Summary: Executes Delete operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error) {
 	// Construct expression
 	var expr string
@@ -493,6 +551,20 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 //
 // Returns:
 //   - (map[string]interface: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes DescribeIndexStats operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

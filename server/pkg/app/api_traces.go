@@ -4,22 +4,24 @@
 package app
 
 import (
+	"math/rand"
+
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/gorilla/websocket"
-
 	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // Span represents a span in a trace.
+//
+// Summary: Represents a Span.
 type Span struct {
 	ID           string         `json:"id"`
 	Name         string         `json:"name"`
@@ -35,6 +37,8 @@ type Span struct {
 }
 
 // Trace represents a full trace.
+//
+// Summary: Represents a Trace.
 type Trace struct {
 	ID            string `json:"id"`
 	RootSpan      Span   `json:"rootSpan"`
@@ -150,6 +154,22 @@ func (a *Application) handleTraces() http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(traces)
+	}
+}
+
+func (a *Application) handleClearTraces() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodDelete {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
+			a.standardMiddlewares.Audit.ClearHistory()
+			logging.GetLogger().Info("Cleared trace history via API")
+		}
+
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
 
@@ -306,9 +326,8 @@ func generateMockAuditEntries() []audit.Entry {
 			SpanID:    traceID + "-1",
 			ParentID:  traceID + "-0",
 			Arguments: json.RawMessage(child1Args),
-			Result: []map[string]any{
-				{"file": "report_q3.pdf", "size": "1.2MB", "type": "pdf"},
-				{"file": "data_q3.xlsx", "size": "5.4MB", "type": "excel"},
+			Result: map[string]any{
+				"results": []string{"report_q3.pdf", "data_q3.xlsx"},
 			},
 			Duration:   "400ms",
 			DurationMs: 400,
