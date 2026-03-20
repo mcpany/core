@@ -4,7 +4,7 @@
 
 ### 1. OpenClaw v2026.5.1: Swarm-Aware Capability Handoff (SACH)
 - **Findings**: OpenClaw has introduced SACH, which allows agents to delegate capabilities not just as binary tokens, but as "Shared Responsibility" objects. This ensures that the delegated capability is only active when both the parent and child agents are in reasoning alignment.
-- **MCP Any Opportunity**: We can implement SACH support in our A2A Messaging Hub to provide hardware-bound "Co-signed" capabilities, neutralizing "Capability Hijacking" in deep swarms.
+- **MCP Any Opportunity**: We can implement SACH support in our A2A Messaging Hub to provide hardware-bound "Co-signed Capabilities," neutralizing "Capability Hijacking" in deep swarms.
 
 ### 2. Gemini CLI v0.37.0: Intent-Scoped Resource Quotas (ISRQ)
 - **Findings**: Gemini CLI now supports ISRQ, enabling users to define strict resource limits (CPU, memory, tokens) at the "Intent" level rather than just the session level. This prevents a single diverging sub-intent from exhausting the entire swarm's resources.
