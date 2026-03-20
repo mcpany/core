@@ -16,27 +16,22 @@ import (
 
 // Severity indicates the importance of a linting result.
 //
-// It is used to categorize findings based on their impact and urgency.
-//
 // Summary: Represents a Severity.
 type Severity int
 
 const (
 	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
-	//
 	// Summary: Defines Error.
 	Error Severity = iota
 	// Warning indicates a potential issue or best practice violation that should be addressed.
-	//
 	// Summary: Defines Warning.
 	Warning
 	// Info indicates a suggestion or informational message for optimization or clarity.
-	//
 	// Summary: Defines Info.
 	Info
 )
 
-// String returns the string representation of the severity.
+// String converts the Severity enum to its string counterpart (ERROR, WARNING, INFO).
 //
 // Summary: Executes String operation.
 //
@@ -66,8 +61,6 @@ func (s Severity) String() string {
 
 // Result represents a single linting finding.
 //
-// It encapsulates all details about a detected issue, including its severity, location, and description.
-//
 // Summary: Represents a Result.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
@@ -80,7 +73,7 @@ type Result struct {
 	Path string
 }
 
-// String returns the string representation of the result.
+// String formats the result into a human-readable string suitable for CLI output.
 //
 // Summary: Executes String operation.
 //
@@ -109,8 +102,6 @@ func (r Result) String() string {
 
 // Linter performs static analysis on the configuration.
 //
-// It holds the configuration to be analyzed and provides methods to execute various checks.
-//
 // Summary: Represents a Linter.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
@@ -136,6 +127,9 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 }
 
 // Run executes all linting checks.
+//
+// It aggregates results from multiple check categories including standard validation,
+// secret usage, shell injection risks, insecure HTTP, and cache settings.
 //
 // Summary: Executes Run operation.
 //
