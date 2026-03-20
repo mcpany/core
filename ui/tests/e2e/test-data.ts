@@ -177,27 +177,13 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
         }
     ].map((user) => User.toJSON(User.fromJSON(user)));
 
-    const prompts = [
-        {
-            name: "test_prompt",
-            description: "A test prompt for E2E",
-            service_id: "svc_01",
-            disable: false,
-            input_schema: "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"arg1\": { \"type\": \"string\" }\n  }\n}",
-            messages: [
-                { role: "user", content: "Hello, my argument is {{arg1}}" }
-            ]
-        }
-    ];
-
     const seedRequest = {
         upstream_services: services,
         service_templates: templates,
         users: users,
         credentials: [],
         secrets: [],
-        profiles: [],
-        prompts: prompts
+        profiles: []
     };
 
     try {
@@ -276,7 +262,7 @@ export const cleanupProfiles = async (requestContext?: APIRequestContext) => {
 };
 
 export const seedPrompts = async (requestContext?: APIRequestContext) => {
-    await seedGlobalState(requestContext);
+    // No-op
 };
 
 export const cleanupPrompts = async (requestContext?: APIRequestContext) => {
