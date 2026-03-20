@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -162,9 +162,9 @@ export function DashboardGrid() {
         loadLayout();
     }, []);
 
-    const saveWidgets = (newWidgets: WidgetInstance[]) => {
+    const saveWidgets = useCallback((newWidgets: WidgetInstance[]) => {
         setWidgets(newWidgets);
-    };
+    }, []);
 
     // ⚡ BOLT: Debounce API writes to prevent server spam during drag/resize operations
     // Randomized Selection from Top 5 High-Impact Targets
@@ -199,7 +199,7 @@ export function DashboardGrid() {
         return () => clearTimeout(timer);
     }, [widgets, isMounted, loading]);
 
-    const onDragEnd = (result: DropResult) => {
+    const onDragEnd = useCallback((result: DropResult) => {
         if (!result.destination) return;
 
         const visibleWidgets = widgets.filter(w => !w.hidden);
@@ -210,24 +210,24 @@ export function DashboardGrid() {
         items.splice(result.destination.index, 0, reorderedItem);
 
         saveWidgets([...items, ...hiddenWidgets]);
-    };
+    }, [widgets, saveWidgets]);
 
-    const updateWidgetSize = (instanceId: string, newSize: WidgetSize) => {
+    const updateWidgetSize = useCallback((instanceId: string, newSize: WidgetSize) => {
         const updated = widgets.map(w => w.instanceId === instanceId ? { ...w, size: newSize } : w);
         saveWidgets(updated);
-    };
+    }, [widgets, saveWidgets]);
 
-    const toggleWidgetVisibility = (instanceId: string) => {
+    const toggleWidgetVisibility = useCallback((instanceId: string) => {
         const updated = widgets.map(w => w.instanceId === instanceId ? { ...w, hidden: !w.hidden } : w);
         saveWidgets(updated);
-    };
+    }, [widgets, saveWidgets]);
 
-    const removeWidget = (instanceId: string) => {
+    const removeWidget = useCallback((instanceId: string) => {
         const updated = widgets.filter(w => w.instanceId !== instanceId);
         saveWidgets(updated);
-    };
+    }, [widgets, saveWidgets]);
 
-    const addWidget = (type: string) => {
+    const addWidget = useCallback((type: string) => {
         const def = getWidgetDefinition(type);
         if (!def) return;
 
@@ -241,7 +241,7 @@ export function DashboardGrid() {
 
         // Add to the top
         saveWidgets([newWidget, ...widgets]);
-    };
+    }, [widgets, saveWidgets]);
 
     if (!isMounted) return null;
 
@@ -271,7 +271,9 @@ export function DashboardGrid() {
         }
     };
 
-    const visibleWidgets = widgets.filter(w => !w.hidden);
+    // ⚡ BOLT: [Render Waste Optimization] Memoized filtered widgets and callbacks to prevent unnecessary drag-and-drop re-renders.
+    // Randomized Selection from Top 5 High-Impact Targets
+    const visibleWidgets = useMemo(() => widgets.filter(w => !w.hidden), [widgets]);
 
     return (
         <div className="space-y-4">
