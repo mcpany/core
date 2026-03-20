@@ -55,7 +55,7 @@ RUN mkdir -p -m 755 /etc/apt/keyrings \
   && rm -rf /var/lib/apt/lists/*
 
 # Install Go 1.26 (Architecture-aware)
-ENV GO_VERSION=1.26.1
+ENV GO_VERSION=1.24.0
 RUN ARCH=$(dpkg --print-architecture | sed 's/x86_64/amd64/;s/aarch64/arm64/') && \
   wget -q https://go.dev/dl/go${GO_VERSION}.linux-${ARCH}.tar.gz && \
   tar -C /usr/local -xzf go${GO_VERSION}.linux-${ARCH}.tar.gz && \
