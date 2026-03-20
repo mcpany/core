@@ -521,12 +521,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Multi-Modal Trace Sanitizer**: Semantic scanning of visual/auditory reasoning traces for multi-modal injection defense. (Added: 2026-05-16)
 *   **[P0] Identity-Bound Discovery (IBD) Enforcer**: Mission-token gated tool and peer discovery for large meshes. (Added: 2026-05-16)
 
-#### Upcoming (2026-05-16 Evolution)
-*   **[P0] Hardware-Locked Intent Store (HLIS)**: Cryptographic anchoring of mission-root intents in Secure Enclaves (TPM/SEP). (Added: 2026-05-16)
-*   **[P0] Secure Swarm Coordination Bus**: Mandatory signing for parallel teammate messaging and state reconciliation. (Added: 2026-05-16)
-*   **[P1] Multi-Modal Trace Sanitizer**: Semantic scanning of visual/auditory reasoning traces for multi-modal injection defense. (Added: 2026-05-16)
-*   **[P0] Identity-Bound Discovery (IBD) Enforcer**: Mission-token gated tool and peer discovery for large meshes. (Added: 2026-05-16)
-
 #### Upcoming (2026-05-15 Evolution)
 *   **[P0] Consensus Tool Validation Hub**: Distributed security middleware requiring multi-agent signatures for high-risk delegations. (Added: 2026-05-15)
 *   **[P1] PNTD Discovery Provider**: Universal discovery bus for mapping MCP, gRPC, and UACO tasks into a single registry. (Added: 2026-05-15)

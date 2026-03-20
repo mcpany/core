@@ -9,7 +9,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 3. **Context Persistence**: Shared state and context inheritance across agent swarms and execution environments.
 
 ---
-
 ## Strategic Evolution: [2026-05-16]
 ### Focus: Hardware-Locked Intent Sovereignty & Secure Swarm Coordination
 **Context**: The emergence of "Agent Teams" (Claude Code) and the rise of "Agentic Social Engineering" (OpenClaw) mark a shift from linear to parallel, high-trust coordination. Security must now protect the "Root Intent" of a mission in hardware and ensure that parallel teammate coordination is cryptographically signed and immutable.
