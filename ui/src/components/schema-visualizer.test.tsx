@@ -61,6 +61,36 @@ describe('SchemaVisualizer', () => {
         expect(screen.getByText('*')).toBeInTheDocument();
     });
 
+    it('renders enum and default values nicely', () => {
+        const schema = {
+            type: 'object',
+            properties: {
+                role: {
+                    type: 'string',
+                    description: 'The user role',
+                    enum: ['admin', 'user', 'guest'],
+                    default: 'guest',
+                },
+            },
+        };
+
+        render(<SchemaVisualizer schema={schema} />);
+
+        // Properties
+        expect(screen.getByText('role')).toBeInTheDocument();
+        expect(screen.getByText('The user role')).toBeInTheDocument();
+
+        // Check enum
+        expect(screen.getByText('Allowed values:')).toBeInTheDocument();
+        expect(screen.getByText('admin')).toBeInTheDocument();
+        expect(screen.getByText('user')).toBeInTheDocument();
+        // Since 'guest' is both an enum and default, it might appear twice or in different contexts.
+        expect(screen.getAllByText('guest').length).toBeGreaterThan(0);
+
+        // Check default
+        expect(screen.getByText('Default:')).toBeInTheDocument();
+    });
+
     it('renders nested objects', () => {
         const schema = {
             type: 'object',

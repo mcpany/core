@@ -101,15 +101,22 @@ const SchemaNode = memo(({ name, schema, required, level = 0 }: SchemaNodeProps)
         <TableCell className="text-muted-foreground text-sm align-top py-2">
           <div className="flex flex-col gap-1">
              <span>{schema.description}</span>
-             {schema.enum && (
-                 <div className="text-xs mt-1">
-                    <span className="font-semibold text-muted-foreground/80">Allowed values: </span>
-                    <code className="bg-muted px-1 rounded text-xs break-all">{JSON.stringify(schema.enum)}</code>
+             {schema.enum && Array.isArray(schema.enum) && (
+                 <div className="text-xs mt-1 flex flex-wrap gap-1 items-center">
+                    <span className="font-semibold text-muted-foreground/80 mr-1">Allowed values:</span>
+                    {schema.enum.map((val: any, i: number) => (
+                      <span key={i} className="px-1.5 py-0.5 rounded-md border bg-background/50 text-foreground text-[11px] font-mono shadow-sm backdrop-blur-sm">
+                        {String(val)}
+                      </span>
+                    ))}
                  </div>
              )}
               {schema.default !== undefined && (
-                  <div className="text-xs text-muted-foreground/80">
-                      Default: <code className="bg-muted px-1 rounded text-xs">{JSON.stringify(schema.default)}</code>
+                  <div className="text-xs mt-1 flex items-center gap-1">
+                      <span className="font-semibold text-muted-foreground/80">Default:</span>
+                      <span className="px-1.5 py-0.5 rounded-md border bg-primary/5 text-primary text-[11px] font-mono shadow-sm">
+                        {String(schema.default)}
+                      </span>
                   </div>
               )}
           </div>
