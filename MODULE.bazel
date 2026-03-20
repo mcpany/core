@@ -296,5 +296,4 @@ buildbuddy = use_extension("@toolchains_buildbuddy//:extensions.bzl", "buildbudd
 
 use_repo(
     go_deps,
-    "org_golang_google_genproto_googleapis_api",
 )
