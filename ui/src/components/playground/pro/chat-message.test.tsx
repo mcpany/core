@@ -29,7 +29,7 @@ describe('ChatMessage Diffing', () => {
       toolName: 'test-tool',
       toolResult: { data: 'new-value' },
       previousResult: { data: 'old-value' },
-      timestamp: new Date().toISOString()
+      timestamp: new Date()
     };
 
     render(<ChatMessage message={message}  />);
@@ -55,7 +55,7 @@ describe('ChatMessage Diffing', () => {
       toolName: 'test-tool',
       toolResult: { data: 'same-value' },
       previousResult: { data: 'same-value' },
-      timestamp: new Date().toISOString()
+      timestamp: new Date()
     };
 
     render(<ChatMessage message={message}  />);
