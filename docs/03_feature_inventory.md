@@ -963,7 +963,7 @@
 
 ---
 
-## Evolution: 2026-04-01 Updates
+## Evolution: [2026-04-01] Updates
 
 ### Proposed Additions
 - **Reasoning-Bound Context Shifter**: (P0) Context management middleware that synchronizes dynamic shifting logic across frameworks.
@@ -1364,11 +1364,11 @@
 ## Evolution: [2026-06-18] Updates
 
 ### Proposed Additions
-- **Reason-Graph Integrity (RGI) Provider**: (P0) Authoritative graph arbitration service for merging parallel teammate reasoning traces without cognitive stall.
-- **Mesh-Resident Policy Monitor (MRPM)**: (P0) Hardware-bound auditing service for synthesized mesh policies, ensuring alignment with the mission-root intent.
-- **Attention-Aware Gating (AAG) Middleware**: (P0) Dynamic stability middleware for the HAAL provider that prunes low-entropy "Attention-Baiting" noise.
-- **Spectral Attention Guard**: (P0) Security extension for the SCTM injecting hardware-attested jitter to prevent attention-locked fragment probing.
+- **Reason-Graph Integrity (RGI) Provider**: (P0) Authoritative security middleware that performs hardware-attested graph validation for multi-agent reasoning.
+- **Mesh-Resident Policy Manager (MRPM)**: (P0) Federated policy service that provides hardware-attested "Mesh-Resident Policy Synthesis" (MRPS).
+- **AAG Middleware**: (P1) Optimization extension for the DAG middleware that implements "Entropy-Aware Attention Gating."
+- **Spectral Attention Guard**: (P0) Advanced security service for the DAG middleware that injects timing jitter to neutralize "Leaked Enclave-Timing" (LET).
 
 ### Priority Shifts
-- **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **AAG** integration to counter attention-baiting.
-- **Side-Channel Timing Mitigator (SCTM)**: (Re-affirmed P0) Evolving to support the new **Spectral Attention Guard** requirement.
+- **Dynamic Attention Gating (DAG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **AAG-compliant** attention gating.
+- **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Attention-Aware Stylometry (AASM)** defense.

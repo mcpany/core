@@ -32,7 +32,7 @@ MCP Any needs to transition to an **Ephemeral Agency** model, where high-level p
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-        sequenceDiagram
+    sequenceDiagram
         Agent->>EPM: Request Lease (Scope, Timeout)
         EPM->>RiskArbiter: Evaluate Semantic Risk
         RiskArbiter-->>EPM: High Risk (MFA Required)

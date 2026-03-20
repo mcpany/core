@@ -1,6 +1,6 @@
 # Design Doc: Dynamic Attention Gating (DAG) Middleware
 **Status:** Draft
-**Created:** 2026-06-13
+**Created:** [2026-06-13]
 
 ## 1. Context and Scope
 As agent swarms scale horizontally and process high volumes of inter-teammate coordination, they are becoming vulnerable to **Reasoning Entropy Exhaustion (REE)**. In an REE attack, a malicious or malfunctioning subagent injects a stream of high-entropy, plausible-sounding but irrelevant reasoning fragments into the shared teammate mailbox. This noise "blinds" the parent agent's attention mechanism, causing the primary mission-root intent to be evicted from the active attention window.
@@ -33,7 +33,7 @@ The Dynamic Attention Gating (DAG) Middleware acts as a cognitive stability laye
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-        graph TD
+    graph TD
         A[Subagent Fragment] --> B[DAG Middleware]
         B --> C[Entropy Analyzer]
         C --> D[Attention Impact Scorer]
@@ -58,12 +58,11 @@ The Dynamic Attention Gating (DAG) Middleware acts as a cognitive stability laye
 * **Observability:** Integrated with the "Attention Gating Visualizer" for real-time monitoring of noise levels and gating events.
 
 ## 7. Evolutionary Changelog
-* **2026-06-13:** Initial Document Creation. Introducing Dynamic Attention Gating to counter Reasoning Entropy Exhaustion (REE) attacks.
+* **[2026-06-13]:** Initial Document Creation. Introducing Dynamic Attention Gating to counter Reasoning Entropy Exhaustion (REE) attacks.
 
 ### Update: [2026-06-18] - Entropy-Aware Attention Gating (AAG)
-**Context:** Today's research has identified a new "Attention-Baiting" exploit pattern. Malicious subagents inject high-frequency, low-entropy reasoning fragments that successfully mimic "Active Reasoning" to bypass simple threshold-based gating, effectively evicting mission-root intent.
-**Architecture Adjustment:** * Deprecating static threshold gating in Section 4.
-    * Introducing the **Entropy-Aware Attention Gating (AAG)** engine.
-    * The new AAG engine monitors the "Entropy-to-Utility Ratio" (EUR) for all incoming coordination.
-    * Fragments that exhibit repetitive, low-utility semantics (Baiting) are dynamically "Gated" even if they fall below the absolute entropy threshold.
-**Security Impact:** Mitigates cognitive stall and mission-root eviction caused by low-entropy "Attention-Baiting" noise in high-frequency coordination swarms.
+**Context:** Today's market sync revealed a new "Attention-Baiting" stylometry exploit and the escalation of REE (Reasoning Entropy Exhaustion) attacks.
+**Architecture Adjustment:**
+*   Integrating the **AAG Middleware** to perform real-time entropy monitoring of subagent coordination fragments.
+*   Introducing **Spectral Attention Guards** that inject hardware-attested timing jitter to neutralize side-channel mapping (LET).
+**Security Impact:** Prevents mission-root anchors from being evicted by high-entropy noise and blocks the mapping of parent attention tiers via timing side-channels.

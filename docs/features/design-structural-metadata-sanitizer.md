@@ -32,7 +32,7 @@ The Structural Metadata Sanitizer (SMS) treats all tool structural metadata as u
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-        graph TD
+    graph TD
         A[MCP Discovery Payload] --> B[PNTD Provider]
         B --> C[SMS Sanitizer]
         C --> D[Semantic Pattern Matcher]

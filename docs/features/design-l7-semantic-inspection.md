@@ -32,7 +32,7 @@ The **Layer-7 Semantic Inspection Hub (L7SIH)** is designed to address the emerg
 ## 4. Design & Architecture
 *   **System Flow:**
     ```mermaid
-        graph TD
+    graph TD
         Subagent[Subagent] -->|Coordination Message| Middleware[Mailbox Integrity Middleware]
         Middleware -->|Intercept| L7SIH[L7 Semantic Inspection Hub]
         L7SIH -->|Entropy Scoring| EntropyEngine[Entropy Analysis Engine]

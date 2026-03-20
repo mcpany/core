@@ -3,61 +3,53 @@
 **Created:** [2026-06-18]
 
 ## 1. Context and Scope
-The emergence of horizontal teammate coordination in frameworks like OpenClaw and Claude Code has introduced the concept of "Reason-Graphs"-- distributed, parallel reasoning paths where multiple specialists contribute to a shared objective. However, this has led to **Reason-Graph Collision (RGC)**, where parallel teammates with overlapping roles generate conflicting reasoning traces that cannot be reconciled by simple binary state handoffs.
+With the emergence of "Reason-Graph Collision" (RGC) exploits in multi-agent environments, MCP Any requires a mechanism to validate the structural integrity of the reasoning graph before subagent refinements are merged into the mission-root. RGC attacks cause cognitive deadlock by injecting semantically valid but structurally conflicting reasoning nodes.
 
-The Reason-Graph Integrity (RGI) Provider acts as the authoritative "Graph Arbiter" for MCP Any. It provides the infrastructure to merge parallel reasoning traces, resolve semantic conflicts at the graph level, and ensure that the collective swarm intelligence remains anchored to the mission-root intent without cognitive stall.
+This document defines the architecture for the RGI Provider, a service that performs hardware-attested graph analysis to ensure mission-root stability.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Implement hardware-attested graph-conflict resolution strategies for parallel teammates.
-    * Provide a standardized interface for merging non-conflicting reasoning traces (CFRR-compatible).
-    * Detect and resolve Reason-Graph Collisions (RGC) before they lead to cognitive stall.
-    * Ensure mission-root sovereignty across complex, multi-threaded reasoning paths.
+    * Detect circular or conflicting reasoning structures (RGC) in real-time.
+    * Provide hardware-attested (TPM) graph validation signatures.
+    * Maintain sub-10ms validation latency for reasoning refinement loops.
 * **Non-Goals:**
-    * Managing low-level transport (handled by Isolated Named Pipes).
-    * Providing individual agent memory (handled by ContextEngine).
-    * Performing real-time entropy gating (handled by AAG Middleware).
+    * Validating the semantic "truthfulness" of reasoning (handled by separate Truth Providers).
+    * Governing individual tool-call permissions (handled by the Policy Firewall).
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Heterogeneous Swarm Orchestrator
-* **Primary Goal:** Successfully merge conflicting reasoning paths from two specialists (e.g., a "Security Auditor" and a "Performance Engineer") without losing mission context.
+* **User Persona:** High-Trust Agent Swarm Orchestrator
+* **Primary Goal:** Merge refinements from 5 specialist subagents without triggering a cognitive deadlock.
 * **The Happy Path (Tasks):**
-    1. Mission Root spawns two parallel teammates: Agent S (Security) and Agent P (Performance).
-    2. Both agents contribute to the Reason-Graph on the Shared Blackboard.
-    3. Agent S proposes a restrictive security patch; Agent P proposes a conflicting performance optimization for the same block.
-    4. RGI Provider detects the collision during the graph-sync phase.
-    5. RGI utilizes the mission-root priority policy to arbitrate the conflict.
-    6. RGI merges the non-conflicting fragments and provides a "Winning Graph" to the swarm.
-    7. Coordination continues without manual intervention or cognitive stall.
+    1. Orchestrator receives a "Reasoning Refinement Fragment" from a specialist.
+    2. Orchestrator submits the current Mission Reason-Graph and the proposed fragment to the RGI Provider.
+    3. RGI Provider performs structural collision analysis.
+    4. RGI Provider issues a TPM-signed "Integrity Receipt."
+    5. Orchestrator merges the fragment into the mission-root context window.
 
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-        graph TD
-        A[Teammate A Trace] --> B[RGI Hub]
-        C[Teammate B Trace] --> B[RGI Hub]
-        B --> D[Conflict Detector]
-        D --> E{Collision?}
-        E -- Yes --> F[Mission-Root Policy Arbiter]
-        E -- No --> G[Atomic Graph Merge]
-        F --> H[Resolved Reasoning Fragment]
-        H --> G
-        G --> I[Unified Reason-Graph]
-        I --> J[Hardware-Attested Snapshot]
+    graph TD
+        A[Subagent Refinement] --> B[RGI Provider]
+        B --> C{Collision Analysis}
+        C -->|Conflict| D[Quarantine Fragment]
+        C -->|Safe| E[TPM Signing]
+        E --> F[Integrity Receipt]
+        F --> G[Mission-Root Merge]
     ```
 * **APIs / Interfaces:**
-    * `rgi.ProposeFragment(graphId, fragment) -> void`: Adds a reasoning fragment to the active mesh graph.
-    * `rgi.SynchronizeGraph(graphId) -> UnifiedGraph`: Triggers collision detection and graph merging.
+    * `POST /v1/rgi/validate`: Accepts a JSON Reason-Graph object and returns an Integrity Receipt.
+    * `GET /v1/rgi/status`: Returns current hardware attestation status.
 * **Data Storage/State:**
-    * **Reason-Graph Cache:** A transient, graph-based representation of the active teammate coordination, stored in the Shared KV Store (Blackboard).
+    * Temporary state-tags for active mission graphs are stored in the hardware-locked memory segment of the RGI Provider.
 
 ## 5. Alternatives Considered
-* **Last-Writer-Wins (LWW):** Rejected because it causes loss of critical reasoning context in high-stakes missions.
-* **Sequential Hand-offs:** Rejected as it eliminates the performance benefits of horizontal parallel coordination.
+* **Recursive LLM Validation:** Rejected due to high latency (1s+) and susceptibility to the same "Attention-Baiting" exploits it should detect.
+* **Static Rulesets:** Rejected as Reason-Graphs are too dynamic and non-deterministic for fixed rules.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** All graph-merging decisions must be signed by the hardware-attested RGI Provider (MRA-compliant).
-* **Observability:** Integrated with the "Reason-Graph Visualizer" for real-time auditing of conflict resolution events.
+* **Security (Zero Trust):** The RGI Provider runs in a hardened enclave with zero access to external network resources.
+* **Observability:** Structural collision events are logged with full graph snapshots to the local Security Audit Log.
 
 ## 7. Evolutionary Changelog
-* **[2026-06-18]:** Initial Document Creation. Introducing Reason-Graph Integrity (RGI) to resolve coordination collisions in horizontal meshes.
+* **[2026-06-18]:** Initial Document Creation.

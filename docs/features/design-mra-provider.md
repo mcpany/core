@@ -34,7 +34,7 @@ The Mesh-Resident Attestation (MRA) Provider provides the hardware-bound infrast
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-        graph TD
+    graph TD
         A[ARI Hub] --> B[MRA Provider]
         B --> C[TPM/Secure Enclave]
         C --> D[Hardware Hash Generator]

@@ -29,7 +29,7 @@ The **Local-Loopback Rate Limiter** is a mandatory security middleware for MCP A
 ## 4. Design & Architecture
 *   **System Flow:**
     ```mermaid
-        graph TD
+    graph TD
         Client[Browser / CLI Client] -->|Request| Listener[MCP Any Listener]
         Listener -->|IP/Origin| RL[Loopback Rate Limiter Middleware]
         RL -->|Check Quota| Store[In-Memory Token Bucket Store]

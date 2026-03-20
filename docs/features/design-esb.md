@@ -29,7 +29,7 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-        graph TD
+    graph TD
         MR[Mission Root] -->|Init Mission| ESB[Entangled State Broker]
         ESB -->|Generate Keys| TPM[Hardware TPM/Enclave]
         T1[Teammate 1] -->|Request Shard| ESB

@@ -27,7 +27,7 @@ As agentic workflows evolve from single-agent tasks to multi-agent swarms (e.g.,
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-        sequenceDiagram
+    sequenceDiagram
         Parent Agent->>MCP Any: Create Session (Initial Context)
         MCP Any-->>Parent Agent: Session ID / Token
         Parent Agent->>Subagent: Delegate Task + Token
