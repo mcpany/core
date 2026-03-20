@@ -5,7 +5,7 @@
 
 
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import {
     Plus,
     Trash2,
@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
     Dialog,
     DialogContent,
@@ -51,6 +52,7 @@ export function SecretsManager() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+    const [selected, setSelected] = useState<Set<string>>(new Set());
     const { toast } = useToast();
 
     // Form state
@@ -158,6 +160,54 @@ export function SecretsManager() {
         );
     }, [safeSecrets, searchQuery]);
 
+    const handleSelectAll = useCallback((checked: boolean) => {
+        setSelected(prev => {
+            const next = new Set(prev);
+            if (checked) {
+                filteredSecrets.forEach(s => next.add(s.id));
+            } else {
+                filteredSecrets.forEach(s => next.delete(s.id));
+            }
+            return next;
+        });
+    }, [filteredSecrets]);
+
+    const handleSelectOne = useCallback((id: string, checked: boolean) => {
+        setSelected(prev => {
+            const next = new Set(prev);
+            if (checked) {
+                next.add(id);
+            } else {
+                next.delete(id);
+            }
+            return next;
+        });
+    }, []);
+
+    const handleBulkDelete = async () => {
+        if (selected.size === 0) return;
+        if (!confirm(`Are you sure you want to delete ${selected.size} secret(s)?`)) return;
+
+        setLoading(true);
+        try {
+            await Promise.all(Array.from(selected).map(id => apiClient.deleteSecret(id)));
+            toast({
+                title: "Secrets Deleted",
+                description: `${selected.size} secret(s) removed successfully.`
+            });
+            setSelected(new Set());
+            loadSecrets();
+        } catch (e) {
+            console.error("Bulk delete failed", e);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Failed to delete one or more secrets."
+            });
+            setLoading(false); // Let loadSecrets reset it if success, otherwise stop spinner
+        }
+    };
+
     return (
         <div className="space-y-4 h-full flex flex-col">
             <div className="flex items-center justify-between">
@@ -234,17 +284,37 @@ export function SecretsManager() {
             </div>
 
             <Card className="flex-1 flex flex-col overflow-hidden bg-background/50 backdrop-blur-sm border-muted/50">
-                <CardHeader className="p-4 border-b bg-muted/20">
-                     <div className="relative">
+                <CardHeader className="p-4 border-b bg-muted/20 flex flex-row items-center justify-between space-y-0">
+                     <div className="relative flex-1 max-w-sm">
                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
                             placeholder="Search secrets..."
-                            className="pl-8 bg-background max-w-sm"
+                            className="pl-8 bg-background w-full"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
+                    {selected.size > 0 && (
+                        <div className="flex items-center gap-2 animate-in fade-in">
+                            <span className="text-sm text-muted-foreground">
+                                {selected.size} selected
+                            </span>
+                            <Button size="sm" variant="destructive" onClick={handleBulkDelete}>
+                                <Trash2 className="mr-2 h-4 w-4" /> Delete Selected
+                            </Button>
+                        </div>
+                    )}
                 </CardHeader>
+                {filteredSecrets.length > 0 && !loading && (
+                    <div className="px-4 py-2 border-b bg-muted/10 flex items-center gap-4 sticky top-0 z-10">
+                        <Checkbox
+                            checked={selected.size === filteredSecrets.length}
+                            onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                            aria-label="Select all secrets"
+                        />
+                        <span className="text-xs font-medium text-muted-foreground uppercase">Select All</span>
+                    </div>
+                )}
                 <CardContent className="p-0 flex-1 overflow-hidden">
                     <ScrollArea className="h-full">
                         {loading ? (
@@ -259,7 +329,13 @@ export function SecretsManager() {
                         ) : (
                             <div className="divide-y">
                                 {filteredSecrets.map((secret) => (
-                                    <SecretItem key={secret.id} secret={secret} onDelete={handleDeleteSecret} />
+                                    <SecretItem
+                                        key={secret.id}
+                                        secret={secret}
+                                        onDelete={handleDeleteSecret}
+                                        isSelected={selected.has(secret.id)}
+                                        onSelect={(checked) => handleSelectOne(secret.id, checked)}
+                                    />
                                 ))}
                             </div>
                         )}
@@ -275,9 +351,11 @@ export function SecretsManager() {
  * @param props - The component props.
  * @param props.secret - The secret property.
  * @param props.onDelete - The onDelete property.
+ * @param props.isSelected - Indicates if the item is selected.
+ * @param props.onSelect - Callback when selection changes.
  * @returns The rendered component.
  */
-function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: (id: string) => void }) {
+function SecretItem({ secret, onDelete, isSelected, onSelect }: { secret: SecretDefinition; onDelete: (id: string) => void; isSelected?: boolean; onSelect?: (checked: boolean) => void }) {
     const [revealedValue, setRevealedValue] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
@@ -326,8 +404,15 @@ function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: 
     };
 
     return (
-        <div className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group">
+        <div className={`flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group ${isSelected ? 'bg-muted/20' : ''}`}>
             <div className="flex items-center gap-4">
+                {onSelect && (
+                    <Checkbox
+                        checked={isSelected}
+                        onCheckedChange={(checked) => onSelect(!!checked)}
+                        aria-label={`Select ${secret.name}`}
+                    />
+                )}
                 <div className="bg-primary/10 p-2 rounded-full text-primary">
                     <Key className="h-4 w-4" />
                 </div>
