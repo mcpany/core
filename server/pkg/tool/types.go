@@ -4661,20 +4661,20 @@ func checkEnvInjection(val string) error {
 
 func validateSafePathAndInjection(val string, isDocker bool, commandName string) error {
 	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
-	val = strings.TrimSpace(val)
+	trimmedVal := strings.TrimSpace(val)
 
 	// Sentinel Security Update: Enforce SSRF protection on arguments that look like URLs.
 	// We check for "://" to capture any scheme (http, https, ftp, gopher, etc.).
 	// IsSafeURL will block any scheme other than http/https, and verify IPs for those.
-	if strings.Contains(val, "://") {
-		if err := validation.IsSafeURL(val); err != nil {
+	if strings.Contains(trimmedVal, "://") {
+		if err := validation.IsSafeURL(trimmedVal); err != nil {
 			return fmt.Errorf("unsafe url argument: %w", err)
 		}
 	} else {
 		// Sentinel Security Update: Also block schema-less IPs and localhost to prevent SSRF
 		// via tools like curl/wget that accept them.
 		// Check for "localhost" (case-insensitive)
-		if strings.EqualFold(val, "localhost") {
+		if strings.EqualFold(trimmedVal, "localhost") {
 			allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
 			if !allowLoopback {
 				return fmt.Errorf("unsafe argument: localhost is not allowed")
@@ -4682,39 +4682,39 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		} else if validation.IsSafeIP != nil {
 			// Check if it's an IP address and validate it against policy
 			// We ignore "invalid IP address" error as it just means it's not an IP
-			if err := validation.IsSafeIP(val); err != nil && err.Error() != "invalid IP address" {
+			if err := validation.IsSafeIP(trimmedVal); err != nil && err.Error() != "invalid IP address" {
 				return fmt.Errorf("unsafe IP argument: %w", err)
 			}
 		}
 	}
 
-	if err := checkForPathTraversal(val); err != nil {
+	if err := checkForPathTraversal(trimmedVal); err != nil {
 		return err
 	}
 	// Also check decoded value just in case the input was already encoded
-	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+	if decodedVal, err := url.QueryUnescape(trimmedVal); err == nil && decodedVal != trimmedVal {
 		if err := checkForPathTraversal(decodedVal); err != nil {
 			return fmt.Errorf("%w (decoded)", err)
 		}
 	}
 
 	if !isDocker {
-		if err := checkForLocalFileAccess(val); err != nil {
+		if err := checkForLocalFileAccess(trimmedVal); err != nil {
 			return err
 		}
 		// Also check decoded value for local file access (e.g. %66ile://)
-		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+		if decodedVal, err := url.QueryUnescape(trimmedVal); err == nil && decodedVal != trimmedVal {
 			if err := checkForLocalFileAccess(decodedVal); err != nil {
 				return fmt.Errorf("%w (decoded)", err)
 			}
 		}
 	}
 
-	if err := checkForArgumentInjection(val); err != nil {
+	if err := checkForArgumentInjection(trimmedVal); err != nil {
 		return err
 	}
 	// Also check decoded value for argument injection (e.g. %2drf)
-	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+	if decodedVal, err := url.QueryUnescape(trimmedVal); err == nil && decodedVal != trimmedVal {
 		if err := checkForArgumentInjection(decodedVal); err != nil {
 			return fmt.Errorf("%w (decoded)", err)
 		}
@@ -4724,11 +4724,11 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 	// We ONLY block these for tools known to be vulnerable (ImageMagick, FFmpeg, Git, etc.)
 	// Blocking them for generic tools (like echo) causes false positives (usability regression).
 	if isVulnerableToSchemes(commandName) {
-		if err := checkForDangerousSchemes(val); err != nil {
+		if err := checkForDangerousSchemes(trimmedVal); err != nil {
 			return err
 		}
 		// Also check decoded value for dangerous schemes
-		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+		if decodedVal, err := url.QueryUnescape(trimmedVal); err == nil && decodedVal != trimmedVal {
 			if err := checkForDangerousSchemes(decodedVal); err != nil {
 				return fmt.Errorf("%w (decoded)", err)
 			}
