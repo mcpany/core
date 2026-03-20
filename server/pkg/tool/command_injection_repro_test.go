@@ -66,3 +66,33 @@ func TestLocalCommandTool_ShellInjection_ArgsBypass(t *testing.T) {
 	assert.Contains(t, err.Error(), "shell injection detected")
 	assert.Nil(t, result)
 }
+
+func TestMyPythonQuotedExecfileInjection(t *testing.T) {
+	val := "execfile('hack.py')"
+	err := checkForShellInjection(val, "\"{{val}}\"", "{{val}}", "python", false)
+	if err == nil {
+		t.Fatalf("Vulnerability confirmed: execfile passed validation.")
+	} else {
+        t.Logf("Blocked with error: %v", err)
+    }
+}
+
+func TestJSFunctionKeywordsInjection(t *testing.T) {
+	val := "setTimeout('console.log(1)')"
+	err := checkForShellInjection(val, "\"{{val}}\"", "{{val}}", "node", false)
+	if err == nil {
+		t.Fatalf("Vulnerability confirmed: setTimeout passed validation.")
+	} else {
+        t.Logf("Blocked with error: %v", err)
+    }
+}
+
+func TestPHPKeywordsInjection(t *testing.T) {
+    val := "passthru('ls')"
+	err := checkForShellInjection(val, "\"{{val}}\"", "{{val}}", "php", false)
+	if err == nil {
+		t.Fatalf("Vulnerability confirmed: passthru passed validation.")
+	} else {
+        t.Logf("Blocked with error: %v", err)
+    }
+}

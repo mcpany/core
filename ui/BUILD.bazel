@@ -188,5 +188,3 @@ pkg_tar(
         ":ui_node_modules_tar",
     ],
 )
-
-

@@ -1,0 +1,11 @@
+--- server/pkg/tool/types.go
++++ server/pkg/tool/types.go
+@@ -2780,8 +2780,6 @@
+		encoder := xml.NewEncoder(&buf)
+		encoder.Indent("", "  ")
+
+-		var stack []string
+-
+		// Attempt to decode and re-encode to format
+		for {
+			token, err := decoder.Token()

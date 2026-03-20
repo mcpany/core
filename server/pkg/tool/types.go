@@ -3341,6 +3341,8 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"open", "read", "write",
 		"phpinfo",
 		"syscall", "dlopen", "fiddle", "send", "__send__", "public_send",
+		"execfile", "evalfile", "passthru", "shell_exec", "proc_open", "popen",
+		"setTimeout", "setInterval", "setImmediate", "Function",
 	}
 
 	if isStrict {
@@ -3362,6 +3364,8 @@ func checkInterpreterFunctionCalls(val, language string) error {
 			"open", "read", "write",
 			"getattr", "setattr", "delattr",
 			"compile", "globals", "locals", "vars",
+			"execfile", "evalfile", "passthru", "shell_exec", "proc_open",
+			"setTimeout", "setInterval", "setImmediate", "Function",
 		}
 	}
 
