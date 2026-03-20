@@ -240,7 +240,9 @@ func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	var buf []byte
+	// ⚡ BOLT: Pre-allocate buffer to prevent O(N) reallocations during JSON array construction.
+	// Randomized Selection from Top 5 High-Impact Targets
+	buf := make([]byte, 0, len(services)*256+2)
 	buf = append(buf, '[')
 	opts := protojson.MarshalOptions{UseProtoNames: true, EmitUnpopulated: false}
 	// Sort services for consistent output
@@ -864,7 +866,9 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
-			var buf []byte
+			// ⚡ BOLT: Pre-allocate buffer to prevent O(N) reallocations during JSON array construction.
+			// Randomized Selection from Top 5 High-Impact Targets
+			buf := make([]byte, 0, len(secrets)*256+2)
 			buf = append(buf, '[')
 			for i, s := range secrets {
 				if i > 0 {
@@ -1040,7 +1044,9 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
-			var buf []byte
+			// ⚡ BOLT: Pre-allocate buffer to prevent O(N) reallocations during JSON array construction.
+			// Randomized Selection from Top 5 High-Impact Targets
+			buf := make([]byte, 0, len(profiles)*256+2)
 			buf = append(buf, '[')
 			for i, p := range profiles {
 				if i > 0 {
@@ -1189,7 +1195,9 @@ func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc 
 			}
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
-			var buf []byte
+			// ⚡ BOLT: Pre-allocate buffer to prevent O(N) reallocations during JSON array construction.
+			// Randomized Selection from Top 5 High-Impact Targets
+			buf := make([]byte, 0, len(collections)*256+2)
 			buf = append(buf, '[')
 			for i, c := range collections {
 				if i > 0 {
