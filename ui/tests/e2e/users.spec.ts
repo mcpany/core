@@ -2,16 +2,16 @@ import { test, expect } from '@playwright/test';
 import { seedUser, cleanupUser } from './test-data';
 
 test.describe('User Management', () => {
-    test.beforeEach(async () => {
-        await seedUser('user-test-bulk-1', ['admin']);
-        await seedUser('user-test-bulk-2', ['viewer']);
-        await seedUser('user-test-bulk-3', ['editor']);
+    test.beforeEach(async ({ request }) => {
+        await seedUser(request, 'user-test-bulk-1');
+        await seedUser(request, 'user-test-bulk-2');
+        await seedUser(request, 'user-test-bulk-3');
     });
 
-    test.afterEach(async () => {
-        await cleanupUser('user-test-bulk-1').catch(() => {});
-        await cleanupUser('user-test-bulk-2').catch(() => {});
-        await cleanupUser('user-test-bulk-3').catch(() => {});
+    test.afterEach(async ({ request }) => {
+        await cleanupUser(request, 'user-test-bulk-1').catch(() => {});
+        await cleanupUser(request, 'user-test-bulk-2').catch(() => {});
+        await cleanupUser(request, 'user-test-bulk-3').catch(() => {});
     });
 
     test('supports bulk actions to delete users', async ({ page }) => {
