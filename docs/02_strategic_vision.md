@@ -19,7 +19,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Intent-Bound Memory Enclaves**: Leveraging RAMS and HEPA, we will implement "Intent-Bound Memory Enclaves." These are hardware-attested memory regions that are cryptographically sealed to a specific reasoning mission, ensuring that even multi-modal injections cannot "smear" across agent boundaries.
 
 ## Strategic Evolution: [2026-05-05]
-### Focus: Reasoning-Aware Memory Segmentation (RAMS)
 **Context**: OpenClaw's prototyping of "Intent-Bound Memory Isolation" and the emergence of "Recursive Context Splicing" (RCS) exploits reveal that shared state is the new primary attack surface. As swarms become more complex, "Memory Smearing" and "Ghost Fragment" injection demand a move from simple isolation to "Active Reasoning Segmentation."
 **Strategic Pivot**:
 - **Reasoning-Aware Memory Segmentation (RAMS)**: MCP Any will evolve the "Blackboard" into a RAMS-compliant architecture. We will implement "Intent-Sealed Shards" that provide cryptographically isolated memory regions for subagents, ensuring that a compromised agent cannot "smear" or exfiltrate state from siblings.
