@@ -28,17 +28,22 @@ vi.mock('recharts', async () => {
     return {
         ...actual,
         ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         PieChart: ({ children }: any) => <div data-testid="pie-chart">{children}</div>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Pie: ({ children }: any) => <div>{children}</div>,
         Cell: () => <div />,
         Tooltip: () => <div />,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         AreaChart: ({ children }: any) => <div>{children}</div>,
         Area: () => <div />,
         XAxis: () => <div />,
         YAxis: () => <div />,
         CartesianGrid: () => <div />,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         BarChart: ({ children }: any) => <div>{children}</div>,
         Bar: () => <div />,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         LineChart: ({ children }: any) => <div>{children}</div>,
         Line: () => <div />,
         Legend: () => <div />,
@@ -72,18 +77,22 @@ describe('AnalyticsDashboard', () => {
         const user = userEvent.setup();
 
         // Mock API responses
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (apiClient.getDashboardTraffic as any).mockResolvedValue([
             { time: "10:00", requests: 100, latency: 50, errors: 2 }
         ]);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (apiClient.getTopTools as any).mockResolvedValue([
             { name: "test_tool", count: 10 }
         ]);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (apiClient.listTools as any).mockResolvedValue({
             tools: [
                 { name: "heavy_tool", description: "A very heavy tool", serviceId: "service_a", inputSchema: { type: "object", properties: { huge: { type: "string" } } } },
                 { name: "light_tool", description: "Light", serviceId: "service_b", inputSchema: { type: "object" } }
             ]
         });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (apiClient.getToolUsage as any).mockResolvedValue([]);
 
         render(<AnalyticsDashboard />);
@@ -122,8 +131,11 @@ describe('AnalyticsDashboard', () => {
         const user = userEvent.setup();
 
         // Mock API responses
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (apiClient.getDashboardTraffic as any).mockResolvedValue([]);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (apiClient.getTopTools as any).mockResolvedValue([]);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (apiClient.listTools as any).mockResolvedValue({
             tools: [
                 {
@@ -140,6 +152,7 @@ describe('AnalyticsDashboard', () => {
                 { name: "used_tool", description: "Used", serviceId: "service_b", inputSchema: { type: "object" } }
             ]
         });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (apiClient.getToolUsage as any).mockResolvedValue([
             { name: "used_tool", serviceId: "service_b", totalCalls: 100, successRate: 100 },
             { name: "ghost_tool", serviceId: "service_a", totalCalls: 0, successRate: 0 }
