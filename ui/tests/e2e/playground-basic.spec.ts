@@ -4,46 +4,27 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedServices, cleanupServices, seedUser, cleanupUser } from './test-data';
 
 test.describe('Playground Basic Verification', () => {
+  test.beforeEach(async ({ page, request }) => {
+      await seedServices(request);
+      await seedUser(request, "e2e-playground-admin");
+      await page.goto('/login');
+      await page.fill('input[name="username"]', "e2e-playground-admin");
+      await page.fill('input[name="password"]', 'password');
+      await Promise.all([
+          page.waitForURL('/', { timeout: 30000 }),
+          page.click('button[type="submit"]', { force: true })
+      ]);
+  });
+
+  test.afterEach(async ({ request }) => {
+      await cleanupServices(request);
+      await cleanupUser(request, "e2e-playground-admin");
+  });
+
   test('should execute calculator tool and verify output', async ({ page }) => {
-    // Mock the tools API
-    await page.route('**/api/v1/tools', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          tools: [
-            {
-              name: 'calculator',
-              description: 'A simple calculator',
-              inputSchema: {
-                type: 'object',
-                properties: {
-                  operation: { type: 'string', enum: ['add', 'subtract'] },
-                  a: { type: 'number' },
-                  b: { type: 'number' }
-                },
-                required: ['operation', 'a', 'b']
-              }
-            }
-          ]
-        })
-      });
-    });
-
-    // Mock the execute API
-    await page.route('**/api/v1/execute', async (route) => {
-        const body = JSON.parse(route.request().postData() || '{}');
-        await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-                content: [{ type: "text", text: `Result: ${body.arguments.a + body.arguments.b}` }]
-            })
-        });
-    });
-
     // Navigate to playground
     await page.goto('/playground');
 
@@ -52,7 +33,7 @@ test.describe('Playground Basic Verification', () => {
     await expect(chatInput).toBeVisible({ timeout: 10000 });
 
     // Type a command
-    const msg = 'calculator {"operation": "add", "a": 5, "b": 3}';
+    const msg = 'echo_tool {"test": "echo"}';
     await chatInput.fill(msg);
 
     // Click Send
@@ -66,7 +47,7 @@ test.describe('Playground Basic Verification', () => {
     // Checking layout (Library visible)
     await expect(page.getByText('Library')).toBeVisible();
 
-    // Verify result (Execution happened)
-    await expect(page.getByText('Result: 8')).toBeVisible();
+    // Verify result (Execution happened). echo_tool echoes back the input as JSON string.
+    await expect(page.getByText('echoed_output')).toBeVisible({ timeout: 10000 });
   });
 });
