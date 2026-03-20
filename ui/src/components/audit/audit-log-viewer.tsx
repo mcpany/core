@@ -28,6 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
 import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
+import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 
 interface AuditLogEntry {
     timestamp: string;
@@ -323,13 +324,13 @@ export function AuditLogViewer() {
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Result</h4>
                                 <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vs2015}
-                                        customStyle={{ margin: 0, fontSize: '12px', maxHeight: '300px' }}
-                                    >
-                                        {formatJson(selectedLog.result) || (selectedLog.error ? "null" : "{}")}
-                                    </SyntaxHighlighter>
+                                    {selectedLog.result ? (
+                                        <RichResultViewer result={typeof selectedLog.result === 'string' ? (formatJson(selectedLog.result) ? JSON.parse(selectedLog.result) : selectedLog.result) : selectedLog.result} />
+                                    ) : (
+                                        <div className="bg-muted p-4 text-muted-foreground text-xs font-mono">
+                                            {selectedLog.error ? "null" : "{}"}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
