@@ -56,11 +56,3 @@ The 2026 Armis Cyberwarfare Report highlights a critical collapse in Mean Time t
         * Implementing "Reasoning-Aware Timing Jitter" for all quarantine revocation signals.
         * Decoupling the "Kill Switch" bitset update from the network notification loop to prevent timing correlation.
     * **Security Impact:** Neutralizes subagent ability to probe quarantine thresholds via ARE header timing analysis.
-
-### Update: 2026-06-03 - Policy-Triggered Quarantine
-**Context:** Today's market sync revealed the maturation of Gemini CLI's policy engine and the importance of project-local security sovereignty.
-**Architecture Adjustment:**
-*   **Policy-Triggered Quarantine (PTQ)**: Section 4 will now include a direct trigger from the **Project-Level Policy Engine Adapter**.
-*   **Automatic Mission Isolation**: If a project-local policy violation occurs (e.g., unauthorized network call), the Policy Engine will trigger a "Mission-Wide" MSSQ quarantine.
-*   **Consensus-Based Re-attestation**: Once quarantined, the mission remains in a "Safe-Hold" state until a multi-agent consensus or user-attestation provides a hardware-bound "Resume" signal.
-**Security Impact:** Provides a high-speed, autonomous interdiction layer that enforces project-resident security constraints at machine speed, bridging the gap between static policies and active agent swarms.

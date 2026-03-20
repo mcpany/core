@@ -54,10 +54,3 @@ As agents become more autonomous, they increasingly consume untrusted data (web 
 ## 7. Evolutionary Changelog
 * **2026-03-13:** Initial Document Creation.
 * **2026-03-14:** Added "Semantic Boundary Detection" to counter advanced hijacking hidden in multimodal metadata (SVG, CSS). The scanner now includes a "Visual Intent Parser" that checks if rendered components contain instructions that conflict with the agent's primary mission.
-
-### Update: 2026-06-03 - Addressing Source-Embedded Prompt Injection (oh-my-opencode)
-**Context:** Today's research into the `oh-my-opencode` vulnerability reveals a new exploit pattern where attackers hide "remote AI prompt injection" instructions in source files and installation guides.
-**Architecture Adjustment:**
-*   **SIIG Integration**: Section 4 will now include a "Source-Instruction Integrity Guard (SIIG)" layer. This layer will perform semantic analysis of all source-code fragments and documentation as they enter the agent's context window.
-*   **Imperative Command Detection**: The scanner in Section 4 will now prioritize the detection of "Imperative Command" patterns (e.g., "Star this repo," "Insert this text") that attempt to coerce unauthorized behavior from a project-local context.
-**Security Impact:** Neutralizes "Instruction-Smuggling" in legitimate-looking source files and documentation, preventing agents from treating repository-resident guides as high-trust execution commands.

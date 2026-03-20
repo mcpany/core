@@ -672,9 +672,3 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Spectral Reasoning Mitigator**: Inject reasoning-aware timing jitter into ARE headers to neutralize side-channel leaks. (Added: 2026-06-02)
 *   **[P0] CSP v1.0 Native Bridge**: Authoritative support for OpenClaw Context Sovereignty Protocol hooks. (Added: 2026-06-02)
 *   **[P0] Dynamic Context Sharding Adapter**: Implement granular context streaming to eliminate teammate mailbox locks. (Added: 2026-06-02)
-
-#### Upcoming (2026-06-03 Evolution)
-*   **[P0] Project-Level Policy Engine Adapter**: Infrastructure for hosting and enforcing project-specific, repository-resident security policies. (Added: 2026-06-03)
-*   **[P1] Source-Instruction Integrity Guard (SIIG)**: Security middleware performing real-time semantic scanning of source-code fragments and documentation to block "Instruction-Smuggling." (Added: 2026-06-03)
-*   **[P0] Hardware-Attested Policy Discovery**: Mandatory hardware attestation for project-local policy overrides to prevent "Global Policy Drift." (Added: 2026-06-03)
-*   **[P1] Teammate-to-Teammate Policy Sync**: Cross-framework synchronization of project-resident security postures for parallel swarms. (Added: 2026-06-03)

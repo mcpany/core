@@ -1185,20 +1185,6 @@ SPDX-License-Identifier: Apache-2.0
 - **CSP v1.0 Native Bridge**: (P0) Authoritative adapter for the OpenClaw Context Sovereignty Protocol, providing recursive redaction and ownership hooks for context sidecars.
 - **Dynamic Context Sharding Adapter**: (P0) High-efficiency coordination middleware that enables granular context streaming between teammates, neutralizing "Mailbox Lock" bottlenecks.
 
----
-
-## Evolution: [2026-06-03] Updates
-
-### Proposed Additions
-- **Project-Level Policy Engine Adapter**: (P0) Infrastructure for hosting and enforcing project-specific, repository-resident security policies (e.g., `mcp-policy.rego`), enabling Gemini-style granular governance.
-- **Source-Instruction Integrity Guard (SIIG)**: (P1) Advanced security middleware that performs real-time semantic scanning of source-code fragments and documentation to block "Instruction-Smuggling" and prompt injection.
-- **Hardware-Attested Policy Discovery Provider**: (P0) Advanced extension of the Policy Engine that mandates hardware-attested signatures for project-local policy overrides.
-- **Teammate-to-Teammate Policy Synchronizer**: (P1) Coordination service that facilitates the secure propagation of project-level policies between teammates in a horizontal mesh.
-
-### Priority Shifts
-- **Policy-Bound Reasoning (PBR) Adapter**: (Re-affirmed P0) Evolving to support the integration of the new **Project-Level Policy Engine Adapter**.
-- **Prompt Path Protection Middleware**: (Re-affirmed P0) Elevated with the requirement for **Source-Instruction Integrity Guard (SIIG)**.
-
 ### Priority Shifts
 - **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hardware-Bound RPA** to ensure cognitive path integrity.
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support **CSP-compliant recursive redaction** for sharded teammate meshes.
