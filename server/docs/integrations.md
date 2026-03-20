@@ -9,7 +9,7 @@ This guide explains how to connect `mcpany` to various AI assistant clients, ena
 > [!TIP] > **Best Practice: One Server, Many Tools**
 > You don't need to run a separate `mcpany` instance for every tool you want to use. Instead, point your initialized `mcpany` server to multiple configuration files or a directory of configs using `--config-paths`. This way, you only need to register **one** MCP server with your AI assistant to access **all** your tools.
 
-- --
+---
 
 ## 1. Local Binary Integration
 
@@ -79,7 +79,7 @@ claude mcp add mcpany "./build/bin/server"
 
 Use the interactive prompt (`/mcp add`) and provide the absolute path to the `server` binary and any optional arguments.
 
-- --
+---
 
 ## 2. Docker Compose Integration
 
@@ -119,7 +119,7 @@ The repository includes a `docker-compose.yml` file that starts `mcpany` and a s
 
    For clients with a UI (like VS Code or JetBrains), look for an option to add an "HTTP" or "Remote" MCP server and point it to `http://localhost:50050`.
 
-- --
+---
 
 ## 3. Helm Integration
 
@@ -158,7 +158,7 @@ For production or staging environments, you can deploy `mcpany` to a Kubernetes 
    gemini http add mcpany http://localhost:50050
    ```
 
-- --
+---
 
 ## 4. Claude Desktop
 
@@ -192,7 +192,7 @@ Add the following to your `claude_desktop_config.json`:
 
 This setup ensures Claude launches a fresh `mcpany` container whenever it needs to access your tools.
 
-- --
+---
 
 ## 5. Claude Code CLI
 
@@ -203,7 +203,7 @@ To integrate `mcpany` with the [Claude Code CLI](https://www.npmjs.com/package/@
 claude mcp add mcpany --transport http http://localhost:50050
 ```
 
-- --
+---
 
 ## 6. GitHub Copilot CLI
 
@@ -228,7 +228,7 @@ The GitHub Copilot CLI does not currently support a non-interactive `mcp add` co
 gh copilot explain "how does this code work?"
 ```
 
-- --
+---
 
 ## 7. VS Code (GitHub Copilot)
 
@@ -240,7 +240,7 @@ code --add-mcp '{"name":"mcpany","command":"docker","args":["run","-i","--rm","-
 
 Alternatively, you can manually edit your VS Code `settings.json` or use the **"Add MCP Server"** command in the command palette.
 
-- --
+---
 
 ## 8. Cursor
 
@@ -254,7 +254,7 @@ To integrate with [Cursor](https://cursor.sh/):
     - **Command**: `docker run -i --rm -v /absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml ghcr.io/mcpany/server:latest run --config-path /etc/mcpany/config.yaml --stdio`
 4.  Click **Add**.
 
-- --
+---
 
 ## 9. JetBrains AI Assistant
 
@@ -269,7 +269,7 @@ To integrate with JetBrains IDEs (IntelliJ IDEA, PyCharm, GoLand, etc.):
     - **Args**: `run -i --rm -v /absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml ghcr.io/mcpany/server:latest run --config-path /etc/mcpany/config.yaml --stdio`
 5.  Click **OK** or **Apply**.
 
-- --
+---
 
 ## 10. Cline
 

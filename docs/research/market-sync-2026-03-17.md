@@ -18,7 +18,7 @@
 ## Unique Findings Summary
 Today's research highlights that **"Local Trust" is the primary attack vector for 2026**. Between WebSocket brute-forcing of localhost and malicious skill payloads, the "Personal AI Assistant" model is under heavy fire. MCP Any must pivot to provide a hardened, rate-limited, and attested sanctuary for all agent communications, regardless of where they originate.
 
-- --
+---
 
 ## Strategic Evolution Research: Swarm Coordination & RL Scaling
 

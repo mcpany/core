@@ -9,7 +9,7 @@ There are two primary strategies for controlling access:
 1.  **Call Policy**: Best for restricting specific APIs within a service, especially when auto-discovery logic (like OpenAPI or gRPC reflection) exposes too many tools.
 2.  **Profiles**: Best for creating different "views" of the system for different environments (Dev vs Prod) or different types of agents.
 
-- --
+---
 
 ## 1. Call Policy (Restricting APIs)
 
@@ -62,7 +62,7 @@ upstream_services:
             name_regex: ".*AdminService.*"
 ```
 
-- --
+---
 
 ## 2. Profiles (Agent-Specific Views)
 
@@ -122,7 +122,7 @@ Profiles also filter **Resources** and **Prompts** associated with the service. 
 
 You can combine both strategies! Use **Profiles** to select high-level service sets for an environment, and **Call Policies** to fine-tune exactly which methods on those services are safe to call.
 
-- --
+---
 
 ## Examples & Verification
 

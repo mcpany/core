@@ -4,7 +4,7 @@
 **Date:** 2025-12-31
 **Status:** Released
 
-- --
+---
 
 ## Overview
 
@@ -77,7 +77,7 @@ Configure and test outbound webhooks for system events.
 
 ![Webhooks Configuration](../.audit/ui/2025-12-31/webhooks.png)
 
-- --
+---
 
 ## Technical Details
 
