@@ -50,22 +50,23 @@ test.describe('Rich Result Viewer - Advanced Content Extraction', () => {
   test('extracts deep arrays into a table and shows cards for the object', async ({ page }) => {
     await page.goto('/playground');
 
-    // Wait for Playground to load
-    await expect(page.getByText('Interactive Playground').first()).toBeVisible();
+    // Wait for Playground to load (using Console which is the actual title)
+    // The previous test failed looking for "Interactive Playground"
+    await expect(page.getByText('Console', { exact: true }).or(page.locator('h1'))).toBeVisible({ timeout: 10000 });
 
-    // Select the tool from the dropdown
-    const toolTrigger = page.locator('button', { hasText: 'Select Tool' });
-    await toolTrigger.click();
+    // Select the tool from the sidebar or dropdown
+    // Based on playground.spec.ts, we can filter for the tool name in the group
+    await expect(page.getByText(`${serviceName}.get_nested_data`)).toBeVisible({ timeout: 15000 });
+    await page.locator('.group').filter({ hasText: `${serviceName}.get_nested_data` }).click();
 
-    // Search and pick our seeded tool
-    await page.getByPlaceholder('Search tools...').fill('get_nested_data');
-    await page.getByText(`${serviceName}.get_nested_data`).click();
+    // Verify "Tool Runner" tab is active
+    await expect(page.getByRole('tab', { name: 'Tool Runner' })).toHaveAttribute('data-state', 'active');
 
     // Execute tool
     await page.getByRole('button', { name: 'Execute' }).click();
 
     // Wait for Result block
-    await expect(page.locator('label', { hasText: 'RESULT' })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Result', { exact: true })).toBeVisible({ timeout: 10000 });
 
     // We modified RichResultViewer to extract `data` array deeply.
     // It should default to "Table" view.
