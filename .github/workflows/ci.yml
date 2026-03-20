@@ -100,7 +100,7 @@ jobs:
 
   bazel-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 180
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
