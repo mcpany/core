@@ -4,6 +4,19 @@
  */
 
 import { defineConfig, devices } from '@playwright/test';
+import path from 'path';
+
+require('tsconfig-paths').register({
+  baseUrl: './',
+  paths: {
+    '@proto/*': ['./proto/*', '../proto/*'],
+    '../../../proto/*': ['../proto/*'],
+    '../proto/*': ['../proto/*'],
+    '../../proto/*': ['../proto/*'],
+    '../../../../proto/*': ['../proto/*'],
+    '../../../google/*': ['./node_modules/ts-proto-descriptors/dist/google/*']
+  }
+});
 import os from 'os';
 
 // Use TEST_PORT env var if set, otherwise default to 9111

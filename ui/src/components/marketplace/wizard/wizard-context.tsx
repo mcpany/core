@@ -26,7 +26,14 @@ export interface WizardState {
     // Temporary state for the wizard that might not map 1:1 to config yet
     selectedTemplateId?: string;
     params: Record<string, string>; // Key-Value pairs for parameters/env vars
-    webhooks: any[]; // TODO: Define webhook type
+    webhooks: {
+        name: string;
+        webhook: {
+            url: string;
+            timeout: string;
+            webhookSecret?: string;
+        };
+    }[];
     transformers: any[];
     authType?: 'local' | 'new';
     authCredentialId?: string;

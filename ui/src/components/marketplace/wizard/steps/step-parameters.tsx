@@ -30,19 +30,20 @@ export function StepParameters() {
         }
         updateState({ params: newParams });
 
-        // Also update config env
-        // TODO: Sync `params` to `config.commandLineService.env` more robustly
-        // For now we just update basic env
+        // Sync params to config.commandLineService.env
         if (config.commandLineService) {
-            const env: any = {};
-            Object.entries(newParams).forEach(([k, v]) => {
-                env[k] = { plainText: v };
-            });
+            const env: any = { ...config.commandLineService.env };
+            if (newKey !== undefined && newKey !== key) {
+                delete env[key];
+                env[newKey] = { plainText: value };
+            } else {
+                env[key] = { plainText: value };
+            }
             updateConfig({
                 commandLineService: {
                     ...config.commandLineService,
                     env
-                }
+                } as any
             });
         }
     };
@@ -58,15 +59,13 @@ export function StepParameters() {
         updateState({ params: newParams });
          // Sync with config
          if (config.commandLineService) {
-            const env: any = {};
-            Object.entries(newParams).forEach(([k, v]) => {
-                env[k] = { plainText: v };
-            });
+            const env: any = { ...config.commandLineService.env };
+            delete env[key];
             updateConfig({
                 commandLineService: {
                     ...config.commandLineService,
                     env
-                }
+                } as any
             });
         }
     };
@@ -133,7 +132,7 @@ export function StepParameters() {
                             commandLineService: {
                                 ...(config.commandLineService || { env: {}, workingDirectory: '', tools: [], resources: [], calls: {}, prompts: [], communicationProtocol: 0, local: false }),
                                 command: e.target.value
-                            }
+                            } as any
                         })}
                         placeholder="npx -y package-name OR /usr/bin/python3"
                      />

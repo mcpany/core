@@ -123,105 +123,102 @@ export const ToolTable = memo(function ToolTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[30px] pr-0">
-               <Checkbox
-                  checked={isAllSelected}
-                  onCheckedChange={(checked) => handleSelectAll(!!checked)}
-                  aria-label="Select all"
-                  className="translate-y-[2px]"
+            <TableHead className="w-[40px] px-2">
+                <Checkbox
+                    checked={isAllSelected}
+                    onCheckedChange={handleSelectAll}
+                    aria-label="Select all"
                 />
             </TableHead>
-            <TableHead className="w-[30px]"></TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead>Service</TableHead>
-            <TableHead className="text-right">Calls</TableHead>
-            <TableHead className="text-right">Success</TableHead>
-            <TableHead title="Estimated context size when tool is defined">Est. Context</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="w-[40px] px-2"></TableHead>
+            <TableHead>Tool</TableHead>
+            {!isCompact && <TableHead>Description</TableHead>}
+            {!isCompact && <TableHead className="hidden md:table-cell">Provider</TableHead>}
+            {!isCompact && <TableHead className="text-right">Usage (24h)</TableHead>}
+            <TableHead className="w-[100px] text-center">Status</TableHead>
+            <TableHead className="w-[60px]"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tools.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={10} className="h-24 text-center">
-                <div className="flex flex-col items-center justify-center text-muted-foreground">
-                  <Wrench className="h-8 w-8 mb-2 opacity-50" />
-                  <p className="text-base font-medium">No tools found</p>
-                  <p className="text-sm opacity-70">No tools found for this service or matching your search.</p>
+          {tools.map((tool) => (
+            <TableRow
+              key={tool.name}
+              className={cn(tool.disable && "opacity-60", "group cursor-pointer")}
+              onClick={(e) => {
+                  // Don't trigger if clicking buttons/switches
+                  if ((e.target as HTMLElement).closest('button') || (e.target as HTMLElement).closest('[role="switch"]')) {
+                      return;
+                  }
+                  openInspector(tool);
+              }}
+            >
+              <TableCell className="px-2">
+                  <Checkbox
+                      checked={selected.has(tool.name)}
+                      onCheckedChange={(c) => handleSelectOne(tool.name, !!c)}
+                      aria-label={`Select ${tool.name}`}
+                  />
+              </TableCell>
+              <TableCell className="px-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "h-8 w-8",
+                    isPinned(tool.name) ? "text-yellow-500 hover:text-yellow-600" : "text-muted-foreground opacity-0 group-hover:opacity-100"
+                  )}
+                  onClick={(e) => { e.stopPropagation(); togglePin(tool.name); }}
+                >
+                  <Star className={cn("h-4 w-4", isPinned(tool.name) && "fill-current")} />
+                </Button>
+              </TableCell>
+              <TableCell className="font-medium">
+                <div className="flex items-center gap-2">
+                  <Wrench className="h-4 w-4 text-muted-foreground" />
+                  <span className="truncate max-w-[200px]" title={tool.name}>{tool.name}</span>
+                  {tool.disable && (
+                    <Badge variant="outline" className="ml-2">Disabled</Badge>
+                  )}
                 </div>
               </TableCell>
-            </TableRow>
-          ) : (
-          tools.map((tool) => (
-            <TableRow key={tool.name} className={cn("group", isCompact ? "h-8" : "", selected.has(tool.name) ? "bg-muted/50" : "")}>
-               <TableCell className={cn("pr-0", isCompact ? "py-0 px-2" : "")}>
-                 <Checkbox
-                    checked={selected.has(tool.name)}
-                    onCheckedChange={(checked) => handleSelectOne(tool.name, !!checked)}
-                    aria-label={`Select ${tool.name}`}
-                    className="translate-y-[2px]"
-                 />
-              </TableCell>
-              <TableCell className={isCompact ? "py-0 px-2" : ""}>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6"
-                    onClick={() => togglePin(tool.name)}
-                    aria-label={`Pin ${tool.name}`}
-                  >
-                      <Star className={`h-4 w-4 ${isPinned(tool.name) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`} />
-                  </Button>
-              </TableCell>
-              <TableCell className={cn("font-medium flex items-center", isCompact ? "py-0 px-2 h-8" : "")}>
-                <Wrench className={cn("mr-2 text-muted-foreground", isCompact ? "h-3 w-3" : "h-4 w-4")} />
-                {tool.name}
-              </TableCell>
-              <TableCell className={cn("max-w-[300px] truncate", isCompact ? "py-0 px-2" : "")} title={tool.description}>{tool.description}</TableCell>
-              <TableCell className={isCompact ? "py-0 px-2" : ""}>
-                  <Badge variant="outline" className={isCompact ? "h-5 text-[10px] px-1" : ""}>{tool.serviceId}</Badge>
-              </TableCell>
-              <TableCell className={cn("text-right font-mono", isCompact ? "py-0 px-2" : "")}>
-                  {usageStats?.[`${tool.name}@${tool.serviceId}`]?.totalCalls || "-"}
-              </TableCell>
-              <TableCell className={cn("text-right", isCompact ? "py-0 px-2" : "")}>
-                  {(() => {
-                      const stats = usageStats?.[`${tool.name}@${tool.serviceId}`];
-                      if (!stats || stats.totalCalls === 0) return "-";
-                      const rate = stats.successRate;
-                      let color = "text-green-500";
-                      if (rate < 50) color = "text-red-500";
-                      else if (rate < 90) color = "text-yellow-500";
-                      return <span className={cn("font-bold", color)}>{rate.toFixed(1)}%</span>;
-                  })()}
-              </TableCell>
-              <TableCell className={isCompact ? "py-0 px-2" : ""}>
+              {!isCompact && (
+                <TableCell className="text-muted-foreground text-sm max-w-[300px] truncate" title={tool.description}>
+                  {tool.description || "No description provided."}
+                </TableCell>
+              )}
+              {!isCompact && (
+                <TableCell className="hidden md:table-cell">
                   <div className="flex items-center text-muted-foreground text-xs" title={`${estimateTokens(JSON.stringify(tool))} tokens`}>
-                      <Info className="w-3 h-3 mr-1 opacity-50" />
                       {formatTokenCount(estimateTokens(JSON.stringify(tool)))}
                   </div>
+                </TableCell>
+              )}
+              {!isCompact && (
+                  <TableCell className="text-right text-muted-foreground">
+                      {usageStats?.[tool.name]?.calls || 0} calls
+                  </TableCell>
+              )}
+              <TableCell className="text-center">
+                <Switch
+                  checked={!tool.disable}
+                  onCheckedChange={(checked) => { toggleTool(tool.name, !checked); }}
+                  onClick={(e) => e.stopPropagation()}
+                />
               </TableCell>
-              <TableCell className={isCompact ? "py-0 px-2" : ""}>
-                <div className="flex items-center space-x-2">
-                    <Switch
-                        checked={!tool.disable}
-                        onCheckedChange={() => toggleTool(tool.name, !tool.disable)}
-                        className={isCompact ? "scale-75" : ""}
-                    />
-                    <span className={cn("text-muted-foreground", isCompact ? "text-[10px] w-12" : "text-sm w-16")}>
-                        {!tool.disable ? "Enabled" : "Disabled"}
-                    </span>
-                </div>
-              </TableCell>
-              <TableCell className={cn("text-right", isCompact ? "py-0 px-2" : "")}>
-                  <Button variant="outline" size={isCompact ? "xs" as any : "sm"} onClick={() => openInspector(tool)} className={isCompact ? "h-6 px-2 text-[10px]" : ""}>
-                      <Play className={cn("mr-1", isCompact ? "h-2 w-2" : "h-3 w-3")} /> Inspect
-                  </Button>
+              <TableCell>
+                <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); openInspector(tool); }}>
+                  <Info className="h-4 w-4" />
+                </Button>
               </TableCell>
             </TableRow>
-          )))}
+          ))}
+          {tools.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={isCompact ? 5 : 8} className="h-24 text-center text-muted-foreground">
+                No tools found matching your criteria.
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </div>
