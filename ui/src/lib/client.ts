@@ -2146,6 +2146,27 @@ export const apiClient = {
     },
 
     /**
+     * Batch updates multiple alerts.
+     *
+     * Summary: Batch updates multiple alerts.
+     *
+     * @param ids The IDs of the alerts.
+     * @param status The new status of the alerts.
+     * @returns A promise that resolves to the updated alerts.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a PATCH request to /api/v1/alerts/batch.
+     */
+    batchUpdateAlerts: async (ids: string[], status: string) => {
+        const res = await fetchWithAuth(`/api/v1/alerts/batch`, {
+            method: 'PATCH',
+            body: JSON.stringify({ ids, status }),
+        });
+        if (!res.ok) throw new Error('Failed to batch update alerts');
+        return res.json();
+    },
+
+    /**
      * Gets the configured global webhook URL for alerts.
      *
      * Summary: Retrieves webhook URL.

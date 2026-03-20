@@ -70,6 +70,28 @@ func (a *Application) handleAlertWebhook() http.HandlerFunc {
 	}
 }
 
+func (a *Application) handleBatchUpdateAlerts() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPatch {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var body struct {
+			IDs    []string      `json:"ids"`
+			Status alerts.Status `json:"status"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, "bad request", http.StatusBadRequest)
+			return
+		}
+
+		updated := a.AlertsManager.BatchUpdateAlerts(body.IDs, body.Status)
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(updated)
+	}
+}
+
 func (a *Application) handleAlertDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := strings.TrimPrefix(r.URL.Path, "/alerts/")

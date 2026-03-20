@@ -8,6 +8,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
+	"math"
 	"net/http"
 	"sort"
 	"sync"
@@ -27,6 +29,8 @@ type ManagerInterface interface {
 	CreateAlert(alert *Alert) *Alert
 	// UpdateAlert updates an existing alert.
 	UpdateAlert(id string, alert *Alert) *Alert
+	// BatchUpdateAlerts updates multiple existing alerts.
+	BatchUpdateAlerts(ids []string, status Status) []*Alert
 	// GetAlertStats returns aggregated statistics for alerts.
 	GetAlertStats() *AlertStats
 
@@ -216,6 +220,9 @@ func (m *Manager) GetAlertStats() *AlertStats {
 	now := time.Now()
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 
+	var totalResolutionTime time.Duration
+	var resolvedCount int
+
 	for _, a := range m.alerts {
 		if a.Timestamp.After(today) {
 			stats.TotalToday++
@@ -228,12 +235,50 @@ func (m *Manager) GetAlertStats() *AlertStats {
 				stats.ActiveWarning++
 			}
 		}
+
+		if a.Status == StatusResolved && a.ResolvedAt != nil {
+			totalResolutionTime += a.ResolvedAt.Sub(a.Timestamp)
+			resolvedCount++
+		}
 	}
 
-	// Mock MTTR for now as calculating true MTTR requires alert state transition history
-	stats.MTTR = "14m"
+	if resolvedCount > 0 {
+		avgDuration := totalResolutionTime / time.Duration(resolvedCount)
+		// Format to minutes or hours
+		if avgDuration.Hours() >= 1 {
+			stats.MTTR = fmt.Sprintf("%.0fh%.0fm", avgDuration.Hours(), math.Mod(avgDuration.Minutes(), 60))
+		} else {
+			stats.MTTR = fmt.Sprintf("%.0fm", avgDuration.Minutes())
+		}
+	} else {
+		stats.MTTR = "0m"
+	}
 
 	return stats
+}
+
+// BatchUpdateAlerts updates multiple existing alerts.
+//
+// Parameters:
+//   - ids ([]string): The IDs of the alerts to update.
+//   - status (Status): The new status to apply.
+//
+// Returns:
+//   - []*Alert: The updated alerts.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+func (m *Manager) BatchUpdateAlerts(ids []string, status Status) []*Alert {
+	updated := make([]*Alert, 0, len(ids))
+	for _, id := range ids {
+		if a := m.UpdateAlert(id, &Alert{Status: status}); a != nil {
+			updated = append(updated, a)
+		}
+	}
+	return updated
 }
 
 // UpdateAlert updates an existing alert.
@@ -259,6 +304,12 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 	}
 	// Update fields
 	if alert.Status != "" {
+		if alert.Status == StatusResolved && existing.Status != StatusResolved {
+			now := time.Now()
+			existing.ResolvedAt = &now
+		} else if alert.Status != StatusResolved && existing.Status == StatusResolved {
+			existing.ResolvedAt = nil
+		}
 		existing.Status = alert.Status
 	}
 	// Can add more updatable fields here

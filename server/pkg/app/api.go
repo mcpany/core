@@ -189,6 +189,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/webhooks/", a.handleWebhookDetail())
 
 	mux.HandleFunc("/alerts", a.handleAlerts())
+	mux.HandleFunc("/alerts/batch", a.handleBatchUpdateAlerts())
 	mux.HandleFunc("/alerts/stats", a.handleAlertStats())
 	mux.HandleFunc("/alerts/webhook", a.handleAlertWebhook())
 	mux.HandleFunc("/alerts/rules", a.handleAlertRules())

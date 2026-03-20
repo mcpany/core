@@ -37,6 +37,7 @@ type Alert struct {
 	Service   string    `json:"service"`
 	Source    string    `json:"source"`
 	Timestamp time.Time `json:"timestamp"`
+	ResolvedAt *time.Time `json:"resolved_at,omitempty"`
 }
 
 // AlertRule defines a condition for triggering an alert.

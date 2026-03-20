@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CheckCircle2, AlertCircle, AlertTriangle, Search, Filter, MoreHorizontal, Clock, RefreshCw, Activity, Loader2 } from "lucide-react";
 import {
   DropdownMenu,
@@ -48,6 +49,7 @@ export function AlertList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSeverity, setFilterSeverity] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
   const fetchAlerts = async () => {
@@ -71,6 +73,26 @@ export function AlertList() {
     fetchAlerts();
   }, []);
 
+  const toggleAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(new Set(filteredAlerts.map(a => a.id)));
+    } else {
+      setSelectedIds(new Set());
+    }
+  };
+
+  const toggleOne = (id: string, checked: boolean) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (checked) {
+        next.add(id);
+      } else {
+        next.delete(id);
+      }
+      return next;
+    });
+  };
+
   const filteredAlerts = useMemo(() => {
     return alerts.filter(alert => {
       const matchesSearch =
@@ -85,6 +107,18 @@ export function AlertList() {
     });
   }, [alerts, searchQuery, filterSeverity, filterStatus]);
 
+  // When filtered alerts change, remove any selected IDs that are no longer visible
+  useEffect(() => {
+    setSelectedIds(prev => {
+      const visibleIds = new Set(filteredAlerts.map(a => a.id));
+      const next = new Set<string>();
+      prev.forEach(id => {
+        if (visibleIds.has(id)) next.add(id);
+      });
+      return next;
+    });
+  }, [filteredAlerts]);
+
   const handleStatusChange = async (id: string, newStatus: AlertStatus) => {
     try {
         const updated = await apiClient.updateAlertStatus(id, newStatus);
@@ -93,11 +127,33 @@ export function AlertList() {
             title: "Status Updated",
             description: `Alert marked as ${newStatus}`,
         });
+        window.dispatchEvent(new Event('alerts-updated'));
     } catch (error) {
         console.error(error);
         toast({
             title: "Error",
             description: "Failed to update status",
+            variant: "destructive",
+        });
+    }
+  };
+
+  const handleBulkAction = async (newStatus: AlertStatus) => {
+    if (selectedIds.size === 0) return;
+    try {
+        await apiClient.batchUpdateAlerts(Array.from(selectedIds), newStatus);
+        toast({
+            title: "Bulk Update Successful",
+            description: `${selectedIds.size} alerts marked as ${newStatus}`,
+        });
+        setSelectedIds(new Set());
+        fetchAlerts();
+        window.dispatchEvent(new Event('alerts-updated'));
+    } catch (error) {
+        console.error(error);
+        toast({
+            title: "Error",
+            description: "Failed to perform bulk update",
             variant: "destructive",
         });
     }
@@ -172,6 +228,13 @@ export function AlertList() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[40px]">
+                <Checkbox
+                  checked={filteredAlerts.length > 0 && selectedIds.size === filteredAlerts.length}
+                  onCheckedChange={(checked) => toggleAll(checked as boolean)}
+                  aria-label="Select all"
+                />
+              </TableHead>
               <TableHead className="w-[100px]">Severity</TableHead>
               <TableHead className="w-[100px]">Status</TableHead>
               <TableHead>Summary</TableHead>
@@ -183,7 +246,7 @@ export function AlertList() {
           <TableBody>
             {loading && alerts.length === 0 ? (
                  <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                         <div className="flex items-center justify-center gap-2">
                             <Loader2 className="h-4 w-4 animate-spin" />
                             Loading alerts...
@@ -192,13 +255,20 @@ export function AlertList() {
                 </TableRow>
             ) : filteredAlerts.length === 0 ? (
                 <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                         No alerts match your filters.
                     </TableCell>
                 </TableRow>
             ) : (
                 filteredAlerts.map((alert) => (
-                <TableRow key={alert.id} className="group">
+                <TableRow key={alert.id} className="group" data-state={selectedIds.has(alert.id) ? "selected" : undefined}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedIds.has(alert.id)}
+                        onCheckedChange={(checked) => toggleOne(alert.id, checked as boolean)}
+                        aria-label={`Select alert ${alert.id}`}
+                      />
+                    </TableCell>
                     <TableCell>{getSeverityBadge(alert.severity)}</TableCell>
                     <TableCell>
                     <div className="flex items-center gap-2" title={alert.status}>
@@ -250,6 +320,30 @@ export function AlertList() {
           </TableBody>
         </Table>
       </div>
+
+      {selectedIds.size > 0 && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-background/80 backdrop-blur-md border border-border/50 shadow-xl rounded-full px-6 py-3 z-50">
+          <span className="text-sm font-medium whitespace-nowrap">
+            {selectedIds.size} selected
+          </span>
+          <div className="h-4 w-px bg-border"></div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleBulkAction('acknowledged')}
+            className="rounded-full"
+          >
+            Acknowledge Selected
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => handleBulkAction('resolved')}
+            className="rounded-full"
+          >
+            Resolve Selected
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

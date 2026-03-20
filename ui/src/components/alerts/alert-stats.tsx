@@ -18,18 +18,26 @@ export function AlertStats() {
   const [stats, setStats] = useState<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number } | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchStats = async () => {
+    try {
+      const data = await apiClient.getAlertStats();
+      setStats(data);
+    } catch (error) {
+      console.error("Failed to fetch alert stats:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const data = await apiClient.getAlertStats();
-        setStats(data);
-      } catch (error) {
-        console.error("Failed to fetch alert stats:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchStats();
+
+    const handleUpdate = () => {
+      fetchStats();
+    };
+
+    window.addEventListener('alerts-updated', handleUpdate);
+    return () => window.removeEventListener('alerts-updated', handleUpdate);
   }, []);
 
   if (loading || !stats) {
