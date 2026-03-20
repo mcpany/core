@@ -55,7 +55,7 @@ func ReadLastNLines(path string, n int) ([][]byte, error) {
 
 		// ⚡ BOLT: Optimized ring buffer for small files to prevent O(N) allocations.
 		// Randomized Selection from Top 5 High-Impact Targets
-		var ring [][]byte
+		ring := make([][]byte, 0, n)
 		count := 0
 
 		for scanner.Scan() {
