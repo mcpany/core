@@ -1219,14 +1219,3 @@
 
 - **Active Negotiation Broker (ANB)**: (Re-affirmed P0) Now elevated with the requirement for **Provenance-Aware Task Auctioning** to prioritize agents with verified supply chains.
 - **Speculative Execution Guard**: (Re-affirmed P0) Now integrates with **RRIG** to ensure retrieved speculative fragments are sanitized before ingestion.
-
-
-## Evolution: [2026-06-05] Updates
-### Proposed Additions
-- **Supply Chain Provenance Attestor (SCPA)**: (P0) Authoritative provenance service that issues hardware-attested signatures for tool definitions and library updates, neutralizing "Clinejection" supply chain attacks.
-- **RAG-Retrieval Integrity Guard (RRIG)**: (P0) Security middleware that performs real-time semantic sanitization of RAG-retrieved context fragments to prevent "Uncontrolled Retrieval" of sensitive PII or IP.
-- **Upstream Signature Validator (USV)**: (P0) Extension for the PNTD Provider that mandates cryptographically signed provenance tokens for all tool discoveries within the A2A mesh.
-
-### Priority Shifts
-- **Active Negotiation Broker (ANB)**: (Re-affirmed P0) Now elevated with the requirement for **Provenance-Aware Task Auctioning** to prioritize agents with verified supply chains.
-- **Speculative Execution Guard**: (Re-affirmed P0) Now integrates with **RRIG** to ensure retrieved speculative fragments are sanitized before ingestion.

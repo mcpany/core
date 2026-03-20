@@ -684,9 +684,3 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Supply Chain Provenance Attestor (SCPA)**: Implement hardware-bound (TPM/Secure Enclave) signature validation for tool manifest updates. (Added: 2026-06-05)
 *   **[P0] RAG-Retrieval Integrity Guard (RRIG)**: Middleware for semantic sanitization of retrieved context to prevent uncontrolled PII/IP exposure. (Added: 2026-06-05)
 *   **[P0] Upstream Signature Validator (USV)**: Extension for PNTD provider to enforce cryptographically signed provenance for mesh-wide tool discovery. (Added: 2026-06-05)
-
-
-#### Upcoming (2026-06-05 Evolution)
-*   **[P0] Supply Chain Provenance Attestor (SCPA)**: Implement hardware-bound (TPM/Secure Enclave) signature validation for tool manifest updates. (Added: 2026-06-05)
-*   **[P0] RAG-Retrieval Integrity Guard (RRIG)**: Middleware for semantic sanitization of retrieved context to prevent uncontrolled PII/IP exposure. (Added: 2026-06-05)
-*   **[P0] Upstream Signature Validator (USV)**: Extension for PNTD provider to enforce cryptographically signed provenance for mesh-wide tool discovery. (Added: 2026-06-05)
