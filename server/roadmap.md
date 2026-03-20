@@ -11,11 +11,11 @@
 
 ### Status: Active Development
 
-### Upcoming: [2026-06-14]
-- **Attention-Locked Routing Hub (ALRH)**: (P0) Authoritative coordination middleware performing real-time attention analysis. (Added: 2026-06-14)
-- **MDRA Attestation Bridge**: (P0) Unified security service for MDRA-compliant attestation merging. (Added: 2026-06-14)
-- **Three-Factor Agency Gateway**: (P1) Multi-factor authentication hub for autonomous handoffs. (Added: 2026-06-14)
-- **Side-Channel Shield**: (P0) gRPC metadata scrubbing for shadow coordination defense. (Added: 2026-06-14)
+#### Upcoming (2026-06-14 Evolution)
+*   **[P0] Attention-Locked Routing Hub (ALRH)**: Authoritative coordination middleware performing real-time attention analysis. (Added: 2026-06-14)
+*   **[P0] MDRA Attestation Bridge**: Unified security service for MDRA-compliant attestation merging. (Added: 2026-06-14)
+*   **[P1] Three-Factor Agency Gateway**: Multi-factor authentication hub for autonomous handoffs. (Added: 2026-06-14)
+*   **[P0] Side-Channel Shield**: gRPC metadata scrubbing for shadow coordination defense. (Added: 2026-06-14)
 
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.

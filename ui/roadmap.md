@@ -3,7 +3,6 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
-### Upcoming: [2026-06-14]
 - [ ] **[P0] Attention Sovereignty Visualizer**: Real-time tracker for DAG-gated fragments and ALRH-locked intent segments. (Added: 2026-06-14)
 - [ ] **[P0] Unified MDRA Attestation Viewer**: Monitor for multi-dimensional reasoning proofs and coordination drift alerts. (Added: 2026-06-14)
 - [ ] **[P1] gRPC Metadata Security Dashboard**: Visualization of scrubbed metadata and blocked shadow coordination handshakes. (Added: 2026-06-14)

@@ -178,7 +178,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Strategic Pivot**:
 - **Task-Bound Discovery Isolation**: MCP Any will evolve the discovery layer to treat all discovery-time commands (e.g., `tools.discoveryCommand`) as high-risk execution events. We will implement "Isolated Discovery Environments" where discovery logic is executed in a ephemeral, zero-trust sandbox before any tool is exposed to the primary agent.
 - **Continuous Negative Attestation (DAP-v2)**: Moving beyond boot-time proofs, we are introducing "Continuous DAP." MCP Any will maintain a persistent, hardware-attested manifest of *non-existent* files at restricted paths, ensuring that a subagent cannot create a malicious configuration hook in a previously empty directory to bypass sandbox mounts.
-- **Asynchronous Rollout Orchestration**: Supporting OpenClaw-RL v1.0, MCP Any will evolve into an "Asynchronous Rollout Collector." We will provide the non-blocking infrastructure for real-time telemetry export of reasoning traces and process-reward evaluations, enabling continuous policy optimization without reasoning latency.
+- **Asynchronous Rollout Orchestration**: Supporting OpenClaw-RL v1.0, MCP Any will evolve into an "Asynchronous Rollout Collector." We will provide the non-blocking infrastructure for real-time telemetry export of reasoning traces and proces-reward evaluations, enabling continuous policy optimization without reasoning latency.
 
 ## Strategic Evolution: [2026-05-09]
 ### Focus: Shadow-Subagent Lineage & Hardware-Locked Permission Hardening
