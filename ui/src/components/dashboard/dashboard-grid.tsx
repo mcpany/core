@@ -49,9 +49,11 @@ export interface WidgetInstance {
     hidden?: boolean;
 }
 
-// ⚡ BOLT: [Render Optimization] Extract widget rendering into React.memo to prevent re-renders during drag/resize operations.
-// Randomized Selection from Top 5 High-Impact Targets (React/View)
-const MemoizedWidgetRenderer = memo(function MemoizedWidgetRenderer({ widget }: { widget: WidgetInstance }) {
+/**
+ * ⚡ BOLT: [Render Optimization] Extract widget rendering into React.memo to prevent re-renders during drag/resize operations.
+ * Randomized Selection from Top 5 High-Impact Targets (React/View)
+ */
+export const MemoizedWidgetRenderer = memo(function MemoizedWidgetRenderer({ widget }: { widget: WidgetInstance }) {
     const def = getWidgetDefinition(widget.type);
     if (!def) return <div className="p-4 border border-dashed text-muted-foreground">Unknown Widget Type: {widget.type}</div>;
 
