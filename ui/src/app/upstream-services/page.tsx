@@ -34,7 +34,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Download } from "lucide-react";
-import { TemplateConfigForm } from "@/components/services/template-config-form";
+import { SmartConnectionWizard } from "@/components/services/smart-connection-wizard";
 import { applyTemplateFields } from "@/lib/template-utils";
 
 
@@ -226,14 +226,22 @@ export default function ServicesPage() {
       }
   };
 
-  const handleTemplateConfigSubmit = (values: Record<string, string>) => {
-      if (!configuringTemplate) return;
-
-      const configuredConfig = applyTemplateFields(configuringTemplate, values);
-      const newService = initServiceFromConfig(configuredConfig);
-
-      setSelectedService(newService as UpstreamServiceConfig);
-      setConfiguringTemplate(null); // Clear the configuration step
+  const handleWizardComplete = async (configuredConfig: UpstreamServiceConfig) => {
+      try {
+          // The wizard has already validated the service. Now we register it.
+          await apiClient.registerService(configuredConfig);
+          toast({ title: "Service Connected", description: `${configuredConfig.name} registered successfully.` });
+          setIsSheetOpen(false);
+          setConfiguringTemplate(null);
+          fetchServices();
+      } catch (err) {
+          console.error("Failed to register service via wizard", err);
+          toast({
+              variant: "destructive",
+              title: "Connection Failed",
+              description: "Failed to save the connected service."
+          });
+      }
   };
 
   const handleDuplicate = useCallback((service: UpstreamServiceConfig) => {
@@ -381,10 +389,10 @@ export default function ServicesPage() {
       if (configuringTemplate) {
           return (
               <div className="h-[calc(100vh-140px)] overflow-y-auto">
-                  <TemplateConfigForm
+                  <SmartConnectionWizard
                       template={configuringTemplate}
                       onCancel={() => setConfiguringTemplate(null)}
-                      onSubmit={handleTemplateConfigSubmit}
+                      onComplete={handleWizardComplete}
                   />
               </div>
           );
