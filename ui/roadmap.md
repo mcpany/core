@@ -591,3 +591,9 @@
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
+
+### Upcoming: [2026-06-18]
+- [ ] **[P0] Mission Resumption Status Widget**: (2026-06-18) Real-time monitor for hardware-locked re-attestation events and AMRA session health.
+- [ ] **[P0] Entanglement Privacy Auditor**: (2026-06-18) Security dashboard for reviewing SES-redacted fragments and monologue smearing alerts.
+- [ ] **[P0] Logic Grafting Alert Console**: (2026-06-18) Forensic UI for inspecting the ARI Hub "Reasoning Mainline" and blocked branch proposals.
+- [ ] **[P0] Hardware Monotonic Counter Monitor**: (2026-06-18) Status widget for visualizing mission-root continuity and TPM-attestation provenance.
