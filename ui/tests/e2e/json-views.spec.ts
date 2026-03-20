@@ -1,0 +1,96 @@
+import { test, expect, request } from '@playwright/test';
+
+const SERVICE_ID = 'jsonview-test-service';
+
+const SERVICE_CONFIG = {
+  name: SERVICE_ID,
+  id: SERVICE_ID,
+  version: "1.0.0",
+  command_line_service: {
+    command: "echo",
+    tools: [
+      {
+        "name": "test_json_schema",
+        "call_id": "test_json_schema",
+        "description": "Test tool with complex schema",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "configData": { "type": "string", "description": "The config data" },
+            "nested": {
+              "type": "object",
+              "properties": {
+                "key1": { "type": "string" },
+                "key2": { "type": "integer" }
+              }
+            }
+          }
+        }
+      }
+    ],
+    calls: {
+      "test_json_schema": {
+        "args": ["-e", "echo '{\"status\": \"success\"}'"]
+      }
+    }
+  }
+};
+
+test.describe('JsonView UI Components', () => {
+  let apiContext: any;
+
+  test.beforeAll(async () => {
+    apiContext = await request.newContext({
+      baseURL: process.env.BACKEND_URL || 'http://localhost:50050',
+      extraHTTPHeaders: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    // Seed the database with our test service
+    await apiContext.post('/api/v1/services', {
+      data: SERVICE_CONFIG
+    });
+  });
+
+  test.afterAll(async () => {
+    // Clean up database
+    await apiContext.delete(`/api/v1/services/${SERVICE_ID}`);
+    await apiContext.dispose();
+  });
+
+  test('should verify ToolRunner renders JsonView for schema rather than raw string', async ({ page }) => {
+    await page.goto('/tools');
+
+    // Open the inspector for our test tool
+    await page.getByRole('row', { name: /test_json_schema/i }).getByRole('button', { name: /Inspect/i }).click();
+
+    // Verify dialog opens
+    await expect(page.getByRole('heading', { name: 'test_json_schema' })).toBeVisible();
+
+    // Switch to Schema tab
+    await page.getByRole('tab', { name: 'Schema' }).click();
+
+    // Switch to JSON sub-tab
+    await page.getByRole('tab', { name: 'JSON' }).click();
+
+    // Verify JsonView is rendered instead of a raw `<pre>` string.
+    // JsonView renders standard tree view items. For example, the primitive string keys will have quotes but it's interactive.
+    // The class 'bg-[#1e1e1e]' is used for JsonView container.
+    const jsonViewContainer = page.locator('.bg-\\[\\#1e1e1e\\]').first();
+    await expect(jsonViewContainer).toBeVisible();
+
+    // In JsonView tree mode, we can expand/collapse. Look for the "object" signature.
+    // Ensure "configData" text is visible inside the JsonView (it should have quotes around the key)
+    await expect(page.getByText('"configData":').first()).toBeVisible();
+
+    // Check that we can collapse/expand which proves it's interactive JsonTree and not raw JSON string
+    // The first object `{` should have a Chevron Down icon next to it if it's the JsonTree
+    const expandToggle = page.locator('svg.lucide-chevron-down').first();
+    await expect(expandToggle).toBeVisible();
+    await expandToggle.click();
+
+    // After clicking, the Chevron Right should be visible because it's collapsed
+    await expect(page.locator('svg.lucide-chevron-right').first()).toBeVisible();
+  });
+});
