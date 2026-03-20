@@ -33,13 +33,15 @@ def process_file_go(filepath):
 
 all_missing = []
 for root, dirs, files in os.walk('.'):
-    if 'vendor' in root or '.git' in root or 'ui' in root:
+    if 'test' in root or 'vendor' in root or '.git' in root or 'ui' in root:
         continue
 
     for file in files:
-        if file.endswith('.go') and not 'mock' in file and not 'pb.go' in file:
+        if file.endswith('.go') and not file.endswith('_test.go') and not 'mock' in file and not 'pb.go' in file:
             filepath = os.path.join(root, file)
             missing = process_file_go(filepath)
             all_missing.extend(missing)
 
 print(f"Total missing: {len(all_missing)}")
+for m in all_missing:
+    print(m)
