@@ -622,10 +622,10 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Identity Fragment Attestation (IFA)**: Security extension mandating hardware-attested, session-bound identity tokens for mailbox requests. (Added: 2026-05-25)
 
 #### Upcoming (2026-05-26 Evolution)
-*   **[P0] LOWA HMAC Challenge-Response**: Implementation of cryptographically bound handshakes for local WebSocket listeners to neutralize CSWSH. (Added: 2026-05-26)
-*   **[P0] T2T Mailbox Sharding Middleware**: Performance optimization for horizontal teammate meshes, supporting 5+ concurrent agents. (Added: 2026-05-26)
-*   **[P0] Full-Mesh Discovery Auth (v2)**: Advanced "Auth-before-Discovery" protocol requiring mission-root attestation before revealing capabilities. (Added: 2026-05-26)
-*   **[P1] A2A Capability Masking**: Implementation of schema-masking for agent capability cards during the initial handshake. (Added: 2026-05-26)
+*   **[P0] Foundation Governance Sync**: Implementation of neutral lifecycle hooks for OpenClaw Foundation compliance. (Added: 2026-05-26)
+*   **[P0] Non-Blocking AMS Core**: Kernel-level lock-free buffers for high-density horizontal teammate coordination. (Added: 2026-05-26)
+*   **[P0] Intent-Scoped ARE Validator**: Cryptographic pinning of reasoning budgets to mission-root intent branches. (Added: 2026-05-26)
+*   **[P0] Hardware-Attested Monologue Vault**: Encrypted SQLite sidecar for subagent reasoning monologues with TPM-bound keys. (Added: 2026-05-26)
 
 #### Upcoming (2026-05-27 Evolution)
 *   **[P0] SMI Relay Provider**: Implementation of Sovereign Mesh Identity standard for cross-cloud agent identity persistence. (Added: 2026-05-27)
@@ -753,9 +753,3 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
-
-#### Upcoming (2026-05-26 Evolution)
-*   **[P0] LOWA HMAC Challenge-Response**: Implementation of cryptographically bound handshakes for local WebSocket listeners to neutralize CSWSH. (Added: 2026-05-26)
-*   **[P0] T2T Mailbox Sharding Middleware**: Performance optimization for horizontal teammate meshes, supporting 5+ concurrent agents. (Added: 2026-05-26)
-*   **[P0] Full-Mesh Discovery Auth (v2)**: Advanced "Auth-before-Discovery" protocol requiring mission-root attestation before revealing capabilities. (Added: 2026-05-26)
-*   **[P1] A2A Capability Masking**: Implementation of schema-masking for agent capability cards during the initial handshake. (Added: 2026-05-26)

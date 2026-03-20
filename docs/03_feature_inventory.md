@@ -1135,7 +1135,6 @@
 ### Priority Shifts
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Now designated as a mandatory prerequisite for all "Agent Team" deployments to prevent lateral movement by compromised teammates.
 - **LOWA Gateway**: (Re-affirmed P0) Elevated to "Blocking Prerequisite" for all local loopback listeners following the OpenClaw v2026.3.11 disclosure.
-
 ## Evolution: [2026-05-27] Updates
 
 ### Proposed Additions
