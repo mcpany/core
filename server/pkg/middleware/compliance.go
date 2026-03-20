@@ -42,6 +42,10 @@ type JSONRPCResponse struct {
 //
 // Side Effects:
 //   - Intercepts and rewrites HTTP response bodies for error status codes.
+//
+// Errors/Throws:
+//   - None.
+//
 func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Only intercept POST requests (likely JSON-RPC)
@@ -101,6 +105,15 @@ type smartResponseWriter struct {
 //
 // Returns:
 //   - http.Header: The header map.
+//
+// Parameters:
+//   - Inputs necessary to execute Header safely and correctly.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *smartResponseWriter) Header() http.Header {
 	return w.header
 }
@@ -111,6 +124,15 @@ func (w *smartResponseWriter) Header() http.Header {
 //
 // Parameters:
 //   - code: int. The HTTP status code.
+//
+// Returns:
+//   - The resulting payload or state object from WriteHeader.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - Interacts with the local file system for reads or writes.
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
 		return
@@ -143,6 +165,12 @@ func (w *smartResponseWriter) WriteHeader(code int) {
 // Returns:
 //   - int: The number of bytes written.
 //   - error: An error if the write fails.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Write execution.
+//
+// Side Effects:
+//   - Interacts with the local file system for reads or writes.
 func (w *smartResponseWriter) Write(b []byte) (int, error) {
 	if !w.committed {
 		w.WriteHeader(http.StatusOK)
@@ -186,6 +214,15 @@ func (w *smartResponseWriter) flushHeader() {
 // Returns:
 //
 //	None.
+//
+// Parameters:
+//   - Inputs necessary to execute Flush safely and correctly.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *smartResponseWriter) Flush() {
 	if w.passThrough {
 		if f, ok := w.w.(http.Flusher); ok {

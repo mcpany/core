@@ -44,6 +44,12 @@ type Executor interface {
 	//   - stderr (io.ReadCloser): The standard error stream.
 	//   - exitCode (<-chan int): A channel that receives the exit code.
 	//   - err (error): An error if the operation fails.
+	//
+	// Errors/Throws:
+	//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Execute execution.
+	//
+	// Side Effects:
+	//   - None.
 	Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (stdout, stderr io.ReadCloser, exitCode <-chan int, err error)
 	// ExecuteWithStdIO executes a command and returns the stdin, stdout, and stderr as streams.
 	//
@@ -62,6 +68,12 @@ type Executor interface {
 	//   - stderr (io.ReadCloser): The standard error stream.
 	//   - exitCode (<-chan int): A channel that receives the exit code.
 	//   - err (error): An error if the operation fails.
+	//
+	// Errors/Throws:
+	//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during ExecuteWithStdIO execution.
+	//
+	// Side Effects:
+	//   - None.
 	ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (stdin io.WriteCloser, stdout, stderr io.ReadCloser, exitCode <-chan int, err error)
 }
 
@@ -77,6 +89,10 @@ type Executor interface {
 //
 // Side Effects:
 //   - May initialize a Docker client.
+//
+// Errors/Throws:
+//   - None.
+//
 func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 	if containerEnv != nil && containerEnv.GetImage() != "" {
 		return newDockerExecutor(containerEnv)
@@ -96,6 +112,10 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
+//
 func NewLocalExecutor() Executor {
 	return &localExecutor{}
 }
@@ -121,6 +141,10 @@ type localExecutor struct{}
 //
 // Side Effects:
 //   - Spawns a subprocess.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Execute execution.
+//
 func (e *localExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	if workingDir != "" {
 		if err := validation.IsAllowedPath(workingDir); err != nil {
@@ -186,6 +210,10 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 //
 // Side Effects:
 //   - Spawns a subprocess.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during ExecuteWithStdIO execution.
+//
 func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	if workingDir != "" {
 		if err := validation.IsAllowedPath(workingDir); err != nil {
@@ -272,6 +300,10 @@ func newDockerExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 //
 // Side Effects:
 //   - Creates and starts a Docker container.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Execute execution.
+//
 func (e *dockerExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
 	cli, err := e.clientFactory()
@@ -409,6 +441,10 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 //
 // Side Effects:
 //   - Creates and starts a Docker container.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during ExecuteWithStdIO execution.
+//
 func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
 	cli, err := e.clientFactory()
@@ -541,6 +577,10 @@ type closeWriter struct {
 //
 // Side Effects:
 //   - Writes to the network connection.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Write execution.
+//
 func (c *closeWriter) Write(p []byte) (n int, err error) {
 	return c.conn.Write(p)
 }
@@ -557,6 +597,10 @@ func (c *closeWriter) Write(p []byte) (n int, err error) {
 //
 // Side Effects:
 //   - Closes the connection writer.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Close execution.
+//
 func (c *closeWriter) Close() error {
 	if cw, ok := c.conn.(interface{ CloseWrite() error }); ok {
 		return cw.CloseWrite()

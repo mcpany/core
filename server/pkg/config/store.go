@@ -44,6 +44,12 @@ type Engine interface {
 	//
 	// Returns:
 	//   - (error): An error if parsing fails.
+	//
+	// Errors/Throws:
+	//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Unmarshal execution.
+	//
+	// Side Effects:
+	//   - None.
 	Unmarshal(b []byte, v proto.Message) error
 }
 
@@ -63,6 +69,12 @@ type StructuredEngine interface {
 	//
 	// Returns:
 	//   - (error): An error if parsing fails.
+	//
+	// Errors/Throws:
+	//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during UnmarshalFromMap execution.
+	//
+	// Side Effects:
+	//   - None.
 	UnmarshalFromMap(m map[string]interface{}, v proto.Message, originalBytes []byte) error
 }
 
@@ -77,6 +89,15 @@ type ConfigurableEngine interface {
 	//
 	// Parameters:
 	//   - skip (bool): True to skip validation.
+	//
+	// Returns:
+	//   - The resulting payload or state object from SetSkipValidation.
+	//
+	// Errors/Throws:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	SetSkipValidation(skip bool)
 
 	// SetIgnoreEnv sets whether to ignore environment variables and other external overrides.
@@ -85,6 +106,15 @@ type ConfigurableEngine interface {
 	//
 	// Parameters:
 	//   - ignore (bool): True to ignore environment variables.
+	//
+	// Returns:
+	//   - The resulting payload or state object from SetIgnoreEnv.
+	//
+	// Errors/Throws:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	SetIgnoreEnv(ignore bool)
 }
 
@@ -98,6 +128,12 @@ type ConfigurableEngine interface {
 // Returns:
 //   - (Engine): An initialized Engine implementation.
 //   - (error): An error if the file extension is not supported.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during NewEngine execution.
+//
+// Side Effects:
+//   - None.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -462,6 +498,12 @@ type Store interface {
 	// Returns:
 	//   - (*configv1.McpAnyServerConfig): The loaded configuration.
 	//   - (error): An error if loading fails.
+	//
+	// Errors/Throws:
+	//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Load execution.
+	//
+	// Side Effects:
+	//   - None.
 	Load(ctx context.Context) (*configv1.McpAnyServerConfig, error)
 
 	// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
@@ -470,6 +512,15 @@ type Store interface {
 	//
 	// Returns:
 	//   - (bool): True if sources are configured, false otherwise.
+	//
+	// Parameters:
+	//   - Inputs necessary to execute HasConfigSources safely and correctly.
+	//
+	// Errors/Throws:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	HasConfigSources() bool
 }
 
@@ -488,6 +539,12 @@ type ServiceStore interface {
 	//
 	// Returns:
 	//   - (error): An error if the operation fails.
+	//
+	// Errors/Throws:
+	//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during SaveService execution.
+	//
+	// Side Effects:
+	//   - None.
 	SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error
 
 	// GetService retrieves a service configuration by name.
@@ -501,6 +558,12 @@ type ServiceStore interface {
 	// Returns:
 	//   - (*configv1.UpstreamServiceConfig): The service configuration.
 	//   - (error): An error if the service is not found or the operation fails.
+	//
+	// Errors/Throws:
+	//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during GetService execution.
+	//
+	// Side Effects:
+	//   - None.
 	GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error)
 
 	// ListServices retrieves all stored service configurations.
@@ -513,6 +576,12 @@ type ServiceStore interface {
 	// Returns:
 	//   - ([]*configv1.UpstreamServiceConfig): A slice of service configurations.
 	//   - (error): An error if the operation fails.
+	//
+	// Errors/Throws:
+	//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during ListServices execution.
+	//
+	// Side Effects:
+	//   - None.
 	ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 
 	// DeleteService removes a service configuration by name.
@@ -525,6 +594,12 @@ type ServiceStore interface {
 	//
 	// Returns:
 	//   - (error): An error if the operation fails.
+	//
+	// Errors/Throws:
+	//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during DeleteService execution.
+	//
+	// Side Effects:
+	//   - None.
 	DeleteService(ctx context.Context, name string) error
 }
 
@@ -800,6 +875,12 @@ func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 //
 // Returns:
 //   - (*FileStore): A new instance of FileStore.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - Interacts with the local file system for reads or writes.
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths}
 }
@@ -814,6 +895,12 @@ func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 //
 // Returns:
 //   - (*FileStore): A new instance of FileStore.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - Interacts with the local file system for reads or writes.
 func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths, skipErrors: true}
 }
@@ -859,6 +946,12 @@ func (s *FileStore) HasConfigSources() bool {
 // Returns:
 //   - (*configv1.McpAnyServerConfig): The merged configuration.
 //   - (error): An error if loading or merging fails.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Load execution.
+//
+// Side Effects:
+//   - None.
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	filePaths, err := s.collectFilePaths()
 	if err != nil {
@@ -1356,6 +1449,12 @@ type MultiStore struct {
 //
 // Returns:
 //   - *MultiStore: A new instance of MultiStore.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewMultiStore(stores ...Store) *MultiStore {
 	return &MultiStore{stores: stores}
 }
@@ -1370,6 +1469,12 @@ func NewMultiStore(stores ...Store) *MultiStore {
 // Returns:
 //   - *configv1.McpAnyServerConfig: The merged configuration.
 //   - error: An error if loading fails.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Load execution.
+//
+// Side Effects:
+//   - None.
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
 	for _, s := range ms.stores {

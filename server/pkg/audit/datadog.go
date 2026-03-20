@@ -48,6 +48,10 @@ type DatadogAuditStore struct {
 //
 // Side Effects:
 //   - Starts background workers to process the log queue.
+//
+// Errors/Throws:
+//   - None.
+//
 func NewDatadogAuditStore(config *configv1.DatadogConfig) *DatadogAuditStore {
 	if config == nil {
 		config = &configv1.DatadogConfig{}
@@ -195,6 +199,12 @@ func (e *DatadogAuditStore) sendBatch(batch []Entry) {
 // Returns:
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Read execution.
+//
+// Side Effects:
+//   - Interacts with the local file system for reads or writes.
 func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for datadog audit store")
 }
@@ -209,6 +219,13 @@ func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 // Side Effects:
 //   - Closes internal channels.
 //   - Flushes pending logs.
+//
+// Parameters:
+//   - Inputs necessary to execute Close safely and correctly.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Close execution.
+//
 func (e *DatadogAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)

@@ -62,6 +62,10 @@ func NewRegistry() *Registry {
 //
 // Parameters:
 //   - name: string. The name/path to register the handler under.
+//
+// Errors/Throws:
+//   - None.
+//
 //   - handler: Handler. The Handler instance to register.
 //
 // Returns:
@@ -82,6 +86,9 @@ func (r *Registry) Register(name string, handler Handler) {
 //
 // Parameters:
 //   - name: string. The name of the handler to retrieve.
+//
+// Errors/Throws:
+//   - None.
 //
 // Returns:
 //   - Handler: The registered handler, if found.

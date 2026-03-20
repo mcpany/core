@@ -200,6 +200,12 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 // Returns:
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Read execution.
+//
+// Side Effects:
+//   - Makes external network calls.
 func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
@@ -218,6 +224,10 @@ func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) 
 //
 // Side Effects:
 //   - Reads all rows from the audit_logs table.
+//
+// Parameters:
+//   - Inputs necessary to execute Verify safely and correctly.
+//
 func (s *PostgresAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -290,6 +300,13 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 //
 // Side Effects:
 //   - Closes the DB connection.
+//
+// Parameters:
+//   - Inputs necessary to execute Close safely and correctly.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Close execution.
+//
 func (s *PostgresAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

@@ -16,6 +16,13 @@ import (
 //
 // Side Effects:
 //   - Reads environment variables.
+//
+// Parameters:
+//   - Inputs necessary to execute CheckAuth safely and correctly.
+//
+// Errors/Throws:
+//   - None.
+//
 func CheckAuth() map[string]CheckResult {
 	results := make(map[string]CheckResult)
 

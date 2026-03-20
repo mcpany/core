@@ -27,6 +27,12 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: The initialized manager, or nil if no resilience features are enabled.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewManager(config *configv1.ResilienceConfig) *Manager {
 	if config == nil {
 		return nil
@@ -73,6 +79,10 @@ func NewManager(config *configv1.ResilienceConfig) *Manager {
 //   - Applies timeout context.
 //   - Retries operation on failure.
 //   - Checks and updates circuit breaker state.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Execute execution.
+//
 func (m *Manager) Execute(ctx context.Context, work func(context.Context) error) error {
 	if m == nil {
 		return work(ctx)

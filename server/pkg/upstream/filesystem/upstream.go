@@ -266,6 +266,12 @@ type fsCallable struct {
 // Returns:
 //   - any: The result of the execution.
 //   - error: An error if execution fails.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Call execution.
+//
+// Side Effects:
+//   - None.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

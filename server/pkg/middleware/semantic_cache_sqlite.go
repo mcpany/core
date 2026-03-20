@@ -251,6 +251,12 @@ func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float3
 //   - any: The best matching result data.
 //   - float32: The similarity score (0-1).
 //   - bool: True if a match was found.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool) {
 	return s.memoryStore.Search(ctx, key, query)
 }
@@ -266,6 +272,13 @@ func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []floa
 // Side Effects:
 //   - Removes items from memory.
 //   - Deletes rows from SQLite database.
+//
+// Returns:
+//   - The resulting payload or state object from Prune.
+//
+// Errors/Throws:
+//   - None.
+//
 func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 	s.memoryStore.Prune(ctx, key)
 
@@ -279,6 +292,15 @@ func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 //
 // Returns:
 //   - error: An error if closing fails.
+//
+// Parameters:
+//   - Inputs necessary to execute Close safely and correctly.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Close execution.
+//
+// Side Effects:
+//   - None.
 func (s *SQLiteVectorStore) Close() error {
 	return s.db.Close()
 }

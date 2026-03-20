@@ -39,6 +39,13 @@ var (
 // Side Effects:
 //   - Updates the global historyStore.
 //   - Prunes history if it exceeds 1000 points.
+//
+// Returns:
+//   - The resulting payload or state object from AddHealthStatus.
+//
+// Errors/Throws:
+//   - None.
+//
 func AddHealthStatus(serviceName string, status string) {
 	historyMu.Lock()
 	defer historyMu.Unlock()
@@ -83,6 +90,13 @@ func AddHealthStatus(serviceName string, status string) {
 //
 // Side Effects:
 //   - Acquires a read lock on the history store.
+//
+// Parameters:
+//   - Inputs necessary to execute GetHealthHistory safely and correctly.
+//
+// Errors/Throws:
+//   - None.
+//
 func GetHealthHistory() map[string][]HistoryPoint {
 	historyMu.RLock()
 	defer historyMu.RUnlock()

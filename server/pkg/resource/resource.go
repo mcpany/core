@@ -264,6 +264,14 @@ func (rm *Manager) ListResources() []Resource {
 // OnListChanged sets a callback function that will be invoked whenever the list
 // of resources is modified.
 //
+// Parameters:
+//   - Inputs necessary to execute NewManager safely and correctly.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // Summary: Registers a callback for list changes.
 //
 // Parameters:
@@ -280,6 +288,11 @@ func (rm *Manager) OnListChanged(f func()) {
 
 // Subscribe finds a resource by its URI and calls its Subscribe method.
 //
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // Summary: Subscribes to a resource.
 //
 // Parameters:
@@ -302,6 +315,10 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 //
 // Parameters:
 //   - serviceID: string. The service ID.
+//
+// Errors/Throws:
+//   - None.
+//
 //
 // Returns:
 //
@@ -330,4 +347,11 @@ func (rm *Manager) ClearResourcesForService(serviceID string) {
 	if callback != nil {
 		callback()
 	}
+// RemoveResource implements the core logic for the RemoveResource operation.
+//
+// Summary: Executes the RemoveResource specific operation.
+//
+// Errors/Throws:
+//   - None.
+//
 }

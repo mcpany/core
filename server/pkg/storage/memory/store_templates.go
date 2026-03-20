@@ -20,6 +20,12 @@ import (
 // Returns:
 //   - []*configv1.ServiceTemplate: A list of service templates.
 //   - error: Always nil.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during ListServiceTemplates execution.
+//
+// Side Effects:
+//   - None.
 func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -41,6 +47,12 @@ func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemp
 // Returns:
 //   - *configv1.ServiceTemplate: The template, or nil if not found.
 //   - error: Always nil.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during GetServiceTemplate execution.
+//
+// Side Effects:
+//   - None.
 func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -63,6 +75,10 @@ func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.Serv
 //
 // Side Effects:
 //   - Updates the internal service template map.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during SaveServiceTemplate execution.
+//
 func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.ServiceTemplate) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -83,6 +99,10 @@ func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.Servic
 //
 // Side Effects:
 //   - Removes from the internal service template map.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during DeleteServiceTemplate execution.
+//
 func (s *Store) DeleteServiceTemplate(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

@@ -98,6 +98,10 @@ func (e *ActionableError) Unwrap() error {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during WrapActionableError execution.
+//
 func WrapActionableError(context string, err error) error {
 	if err == nil {
 		return nil

@@ -59,6 +59,10 @@ type Debugger struct {
 //
 // Side Effects:
 //   - Starts a background goroutine to process debug entries.
+//
+// Errors/Throws:
+//   - None.
+//
 func NewDebugger(size int) *Debugger {
 	d := &Debugger{
 		ring:        ring.New(size),
@@ -137,6 +141,10 @@ type bodyLogWriter struct {
 // Side Effects:
 //   - Writes to the underlying http.ResponseWriter.
 //   - Writes to the internal buffer for logging, truncating if necessary.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Write execution.
+//
 func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	if !w.wroteHeader {
 		w.WriteHeader(http.StatusOK)
@@ -167,6 +175,13 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 // Side Effects:
 //   - Sets the status code on the writer.
 //   - Writes the header to the underlying http.ResponseWriter.
+//
+// Returns:
+//   - The resulting payload or state object from WriteHeader.
+//
+// Errors/Throws:
+//   - None.
+//
 func (w *bodyLogWriter) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return
@@ -197,6 +212,10 @@ type readCloserWrapper struct {
 //   - Generates trace and span IDs if missing.
 //   - Captures request and response bodies (truncated).
 //   - Sends debug entries to the ingress channel.
+//
+// Errors/Throws:
+//   - None.
+//
 func (d *Debugger) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -325,6 +344,13 @@ func isTextContent(contentType string) bool {
 //
 // Side Effects:
 //   - Acquires a read lock on the ring buffer.
+//
+// Parameters:
+//   - Inputs necessary to execute Entries safely and correctly.
+//
+// Errors/Throws:
+//   - None.
+//
 func (d *Debugger) Entries() []DebugEntry {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -347,6 +373,13 @@ func (d *Debugger) Entries() []DebugEntry {
 //
 // Side Effects:
 //   - Encodes the entries to JSON and writes to the response.
+//
+// Parameters:
+//   - Inputs necessary to execute APIHandler safely and correctly.
+//
+// Errors/Throws:
+//   - None.
+//
 func (d *Debugger) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

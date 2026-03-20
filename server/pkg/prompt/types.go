@@ -185,6 +185,14 @@ func (p *TemplatedPrompt) Service() string {
 
 // Definition returns the raw configuration definition of the prompt.
 //
+// Parameters:
+//   - Inputs necessary to execute Prompt safely and correctly.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // Summary: Retrieves the prompt configuration definition.
 //
 // Returns:
@@ -244,6 +252,15 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 //
 // Parameters:
 //   - definition: The prompt definition from configuration.
+//
+// Parameters:
+//   - Inputs necessary to execute Service safely and correctly.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 //   - serviceID: The ID of the service providing the prompt.
 //
 // Returns:

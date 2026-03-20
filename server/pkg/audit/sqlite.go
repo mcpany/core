@@ -171,6 +171,10 @@ func ensureColumn(db *sql.DB, colName string) error {
 //
 // Side Effects:
 //   - Inserts a row into the audit_logs table.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Write execution.
+//
 func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -242,6 +246,10 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 //
 // Side Effects:
 //   - Executes a SELECT query on the database.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Read execution.
+//
 func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -324,6 +332,10 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 //
 // Side Effects:
 //   - Scans the entire audit_logs table.
+//
+// Parameters:
+//   - Inputs necessary to execute Verify safely and correctly.
+//
 func (s *SQLiteAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -380,6 +392,13 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 //
 // Side Effects:
 //   - Closes the DB connection.
+//
+// Parameters:
+//   - Inputs necessary to execute Close safely and correctly.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Close execution.
+//
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

@@ -43,6 +43,15 @@ type ClosableClient interface {
 	//
 	// Returns:
 	//   - error: An error if the operation fails.
+	//
+	// Parameters:
+	//   - Inputs necessary to execute Close safely and correctly.
+	//
+	// Errors/Throws:
+	//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Close execution.
+	//
+	// Side Effects:
+	//   - None.
 	Close() error
 
 	// IsHealthy returns true if the client's connection is active and usable.
@@ -54,6 +63,12 @@ type ClosableClient interface {
 	//
 	// Returns:
 	//   - bool: True if healthy.
+	//
+	// Errors/Throws:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	IsHealthy(ctx context.Context) bool
 }
 
@@ -71,6 +86,12 @@ type Pool[T ClosableClient] interface {
 	// Returns:
 	//   - T: The acquired client.
 	//   - error: An error if acquisition fails.
+	//
+	// Errors/Throws:
+	//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Get execution.
+	//
+	// Side Effects:
+	//   - None.
 	Get(ctx context.Context) (T, error)
 
 	// Put returns a client to the pool.
@@ -79,6 +100,12 @@ type Pool[T ClosableClient] interface {
 	//
 	// Parameters:
 	//   - client: T. The client to return.
+	//
+	// Errors/Throws:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	Put(client T)
 
 	// Close terminates all clients in the pool.
@@ -87,6 +114,15 @@ type Pool[T ClosableClient] interface {
 	//
 	// Returns:
 	//   - error: An error if closure fails.
+	//
+	// Parameters:
+	//   - Inputs necessary to execute Close safely and correctly.
+	//
+	// Errors/Throws:
+	//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Close execution.
+	//
+	// Side Effects:
+	//   - None.
 	Close() error
 
 	// Len returns the number of idle clients currently in the pool.
@@ -95,6 +131,15 @@ type Pool[T ClosableClient] interface {
 	//
 	// Returns:
 	//   - int: The count of idle clients.
+	//
+	// Parameters:
+	//   - Inputs necessary to execute Len safely and correctly.
+	//
+	// Errors/Throws:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	Len() int
 }
 
@@ -132,6 +177,12 @@ type poolImpl[T ClosableClient] struct {
 // Returns:
 //   - Pool[T]: The new pool.
 //   - error: An error if configuration is invalid.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func New[T ClosableClient](
 	factory func(context.Context) (T, error),
 	initialSize, maxIdleSize, maxSize int,
@@ -230,6 +281,12 @@ func (p *poolImpl[T]) release(n int64) {
 // Returns:
 //   - T: The client.
 //   - error: Error if pool closed or creation failed.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Get execution.
+//
+// Side Effects:
+//   - None.
 func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	var zero T
 
@@ -403,6 +460,12 @@ func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
 //
 // Parameters:
 //   - client: T. The client to return.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (p *poolImpl[T]) Put(client T) {
 	v := reflect.ValueOf(client)
 	if !v.IsValid() || ((v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil()) {
@@ -450,6 +513,15 @@ func (p *poolImpl[T]) Put(client T) {
 //
 // Returns:
 //   - error: Error if close fails (usually nil).
+//
+// Parameters:
+//   - Inputs necessary to execute Close safely and correctly.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Close execution.
+//
+// Side Effects:
+//   - None.
 func (p *poolImpl[T]) Close() error {
 	// We use the mutex here to ensure that we don't close the channel multiple times
 	// or have races with other Close calls. Get/Put check p.closed via atomic which is fast.
@@ -486,6 +558,15 @@ func (p *poolImpl[T]) Close() error {
 //
 // Returns:
 //   - int: Idle count.
+//
+// Parameters:
+//   - Inputs necessary to execute Len safely and correctly.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (p *poolImpl[T]) Len() int {
 	return len(p.clients)
 }
@@ -501,6 +582,15 @@ type UntypedPool interface {
 	//
 	// Returns:
 	//   - int: Idle count.
+	//
+	// Parameters:
+	//   - Inputs necessary to execute Len safely and correctly.
+	//
+	// Errors/Throws:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	Len() int
 }
 
@@ -518,6 +608,15 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: The initialized manager.
+//
+// Parameters:
+//   - Inputs necessary to execute NewManager safely and correctly.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		pools: make(map[string]any),
@@ -531,6 +630,15 @@ func NewManager() *Manager {
 // Parameters:
 //   - name: string. The pool name.
 //   - pool: any. The pool instance.
+//
+// Returns:
+//   - The resulting payload or state object from Register.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) Register(name string, pool any) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -552,6 +660,15 @@ func (m *Manager) Register(name string, pool any) {
 //
 // Parameters:
 //   - name: string. The pool name.
+//
+// Returns:
+//   - The resulting payload or state object from Deregister.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) Deregister(name string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -578,6 +695,12 @@ func (m *Manager) Deregister(name string) {
 // Returns:
 //   - Pool[T]: The typed pool.
 //   - bool: True if found and type matches.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

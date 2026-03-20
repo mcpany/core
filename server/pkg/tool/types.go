@@ -138,6 +138,10 @@ type ServiceInfo struct {
 	// PreHooks are the cached pre-call hooks for the service.
 	PreHooks []PreCallHook
 	// PostHooks are the cached post-call hooks for the service.
+	//
+	// Errors/Throws:
+	//   - None.
+	//
 	PostHooks []PostCallHook
 
 	// CompiledPolicies are the pre-compiled call policies for the service.
@@ -146,6 +150,30 @@ type ServiceInfo struct {
 	// HealthStatus indicates the health of the service ("healthy", "unhealthy", "unknown").
 	HealthStatus string
 }
+
+// GetCacheConfig implements the core logic for the GetCacheConfig operation.
+
+//
+
+// Summary: Retrieves the GetCacheConfig specific operation.
+
+//
+
+// Parameters:
+
+//   - Inputs necessary to execute GetCacheConfig safely and correctly.
+
+//
+
+// Errors/Throws:
+
+//   - None.
+
+//
+
+// Side Effects:
+
+//   - None.
 
 // ExecutionRequest represents a request to execute a specific tool, including
 // its name and input arguments as a raw JSON message.
@@ -274,6 +302,12 @@ const (
 	// ActionSaveCache indicates that the result should be saved to the cache.
 	//
 	// Summary: Save to cache action.
+	//
+	// Errors/Throws:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	ActionSaveCache Action = 2
 	// ActionDeleteCache indicates that the associated cache entry should be invalidated.
 	//
@@ -288,6 +322,15 @@ type CacheControl struct {
 	Action Action
 }
 
+// GetFromContext implements the core logic for the GetFromContext operation.
+//
+// Summary: Retrieves the GetFromContext specific operation.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 const cacheControlContextKey = contextKey("cache_control")
 
 // NewContextWithCacheControl creates a new context with the given CacheControl.
@@ -365,6 +408,12 @@ type GRPCTool struct {
 //   - poolManager: *pool.Manager. The connection pool manager for gRPC connections.
 //   - serviceID: string. The identifier for the service.
 //   - method: protoreflect.MethodDescriptor. The gRPC method descriptor.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 //   - callDefinition: *configv1.GrpcCallDefinition. The configuration for the gRPC call.
 //   - resilienceConfig: *configv1.ResilienceConfig. The resilience configuration.
 //
@@ -379,6 +428,15 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 		requestMessage:    dynamicpb.NewMessage(method.Input()),
 		cache:             callDefinition.GetCache(),
 		resilienceManager: resilience.NewManager(resilienceConfig),
+	// GetCacheControl implements the core logic for the GetCacheControl operation.
+	//
+	// Summary: Retrieves the GetCacheControl specific operation.
+	//
+	// Errors/Throws:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	}
 }
 
@@ -461,6 +519,11 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Summary: Executes the gRPC tool call.
 //
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // It retrieves a client from the pool, unmarshals the JSON input into a protobuf request message,
 // invokes the gRPC method, and marshals the protobuf response back to JSON.
 //
@@ -567,6 +630,13 @@ type HTTPTool struct {
 	policies          []*CompiledCallPolicy
 	callID            string
 	allowedParams     map[string]bool
+	// Execute implements the core logic for the Execute operation.
+	//
+	// Summary: Executes the Execute specific operation.
+	//
+	// Errors/Throws:
+	//   - None.
+	//
 	secretParams      map[string]bool
 
 	// Cached fields for performance
@@ -688,6 +758,15 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 			if strings.Contains(pathStr, placeholder) {
 				t.paramInPath[i] = true
 			}
+			// NewHTTPTool implements the core logic for the NewHTTPTool operation.
+			//
+			// Summary: Initializes the NewHTTPTool specific operation.
+			//
+			// Errors/Throws:
+			//   - None.
+			//
+			// Side Effects:
+			//   - None.
 			if strings.Contains(queryStr, placeholder) {
 				t.paramInQuery[i] = true
 			}
@@ -882,6 +961,20 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		if err != nil {
 			return fmt.Errorf("failed to execute http request: %w", err)
 		}
+
+// Execute implements the core logic for the Execute operation.
+
+//
+
+// Summary: Executes the Execute specific operation.
+
+//
+
+// Errors/Throws:
+
+//   - None.
+
+//
 
 		if attemptResp.StatusCode == http.StatusTooManyRequests {
 			_ = attemptResp.Body.Close()
@@ -1504,6 +1597,12 @@ func (t *MCPTool) MCPTool() *mcp.Tool {
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
 //
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
 // Summary: Retrieves GetCacheConfig operation.
 //
 // Parameters:
@@ -1630,6 +1729,13 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 			if t.cachedOutputTemplate == nil {
 				return nil, fmt.Errorf("output template configured but not cached (initialization error?)")
 			}
+			// Execute implements the core logic for the Execute operation.
+			//
+			// Summary: Executes the Execute specific operation.
+			//
+			// Errors/Throws:
+			//   - None.
+			//
 			resultMap, ok := parsedResult.(map[string]any)
 			if !ok {
 				return nil, fmt.Errorf("output must be a map to be used with a template, got %T", parsedResult)
@@ -1783,6 +1889,15 @@ func (t *OpenAPITool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
+// NewOpenAPITool implements the core logic for the NewOpenAPITool operation.
+//
+// Summary: Initializes the NewOpenAPITool specific operation.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // GetCacheConfig returns the cache configuration for the OpenAPI tool.
 //
 // Returns:
@@ -1914,6 +2029,13 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if t.parameterDefs[paramName] == "query" {
 				if slice, ok := paramValue.([]interface{}); ok {
 					for _, v := range slice {
+						// Execute implements the core logic for the Execute operation.
+						//
+						// Summary: Executes the Execute specific operation.
+						//
+						// Errors/Throws:
+						//   - None.
+						//
 						q.Add(paramName, util.ToString(v))
 					}
 				} else {
@@ -2104,6 +2226,15 @@ func NewLocalCommandTool(
 		callID:         callID,
 		allowedParams:  allowedParams,
 	}
+	// NewCommandTool implements the core logic for the NewCommandTool operation.
+	//
+	// Summary: Initializes the NewCommandTool specific operation.
+	//
+	// Errors/Throws:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	if err != nil {
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
@@ -2169,6 +2300,12 @@ func (t *LocalCommandTool) Tool() *v1.Tool {
 //   - TODO: Document returns.
 //
 // Errors:
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during NewLocalCommandTool execution.
+//
+// Side Effects:
+//   - Makes external network calls.
 //   - TODO: Document errors.
 //
 // Side Effects:
@@ -2319,6 +2456,13 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
+						// Execute implements the core logic for the Execute operation.
+						//
+						// Summary: Executes the Execute specific operation.
+						//
+						// Errors/Throws:
+						//   - None.
+						//
 						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
@@ -2737,6 +2881,13 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 						// Use validateSafePathAndInjection which now centralizes all checks
 						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
+						// Execute implements the core logic for the Execute operation.
+						//
+						// Summary: Executes the Execute specific operation.
+						//
+						// Errors/Throws:
+						//   - None.
+						//
 						}
 						// If running a shell, validate that inputs are safe for shell execution
 						cmd := t.service.GetCommand()

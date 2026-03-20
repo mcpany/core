@@ -27,6 +27,12 @@ import (
 // Returns:
 //   - *configv1.McpAnyServerConfig: A validated configuration object.
 //   - error: An error if loading or validation fails.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during LoadServices execution.
+//
+// Side Effects:
+//   - None.
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
@@ -113,6 +119,12 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 // Returns:
 //   - *configv1.McpAnyServerConfig: The resolved configuration.
 //   - error: An error if loading fails.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during LoadResolvedConfig execution.
+//
+// Side Effects:
+//   - None.
 func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 

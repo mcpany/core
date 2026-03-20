@@ -138,6 +138,9 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 //
 // Summary: Caches a result associated with a specific embedding.
 //
+// Errors/Throws:
+//   - None.
+//
 // Parameters:
 //   - ctx: context.Context. The request context.
 //   - key: string. The semantic key or scope.

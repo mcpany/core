@@ -23,6 +23,15 @@ import (
 //
 // Returns:
 //   - (mcp.Middleware): The middleware function.
+//
+// Parameters:
+//   - Inputs necessary to execute CORSMiddleware safely and correctly.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func CORSMiddleware() mcp.Middleware {
 	// Log a warning once when the middleware is created to inform the user.
 	// This helps avoid confusion if they expect this middleware to handle HTTP CORS.

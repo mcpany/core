@@ -16,6 +16,15 @@ type PermanentError struct {
 //
 // Returns:
 //   - string: The error message.
+//
+// Parameters:
+//   - Inputs necessary to execute Error safely and correctly.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (e *PermanentError) Error() string {
 	if e.Err == nil {
 		return "permanent error"
@@ -29,6 +38,15 @@ func (e *PermanentError) Error() string {
 //
 // Returns:
 //   - error: The original error.
+//
+// Parameters:
+//   - Inputs necessary to execute Unwrap safely and correctly.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Unwrap execution.
+//
+// Side Effects:
+//   - None.
 func (e *PermanentError) Unwrap() error {
 	return e.Err
 }

@@ -28,6 +28,12 @@ type ResilienceMiddleware struct {
 //
 // Returns:
 //   - *ResilienceMiddleware: The initialized middleware.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddleware {
 	return &ResilienceMiddleware{
 		toolManager: toolManager,
@@ -51,6 +57,10 @@ func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddl
 //   - Checks circuit breaker state.
 //   - May retry the execution on failure.
 //   - Records success/failure to update circuit breaker stats.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Execute execution.
+//
 func (m *ResilienceMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

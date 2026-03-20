@@ -23,6 +23,13 @@ var redisClientCreator = redis.NewClient
 //
 // Side Effects:
 //   - Modifies the global redisClientCreator variable.
+//
+// Returns:
+//   - The resulting payload or state object from SetRedisClientCreatorForTests.
+//
+// Errors/Throws:
+//   - None.
+//
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
 	redisClientCreator = creator
 }
@@ -56,6 +63,10 @@ type RedisLimiter struct {
 //
 // Side Effects:
 //   - Creates a new Redis connection.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during NewRedisLimiter execution.
+//
 func NewRedisLimiter(serviceID string, config *configv1.RateLimitConfig) (*RedisLimiter, error) {
 	return NewRedisLimiterWithPartition(serviceID, "", "", config)
 }
@@ -123,6 +134,12 @@ func NewRedisLimiterWithPartition(serviceID, limitScopeKey, partitionKey string,
 //
 // Returns:
 //   - *RedisLimiter: The initialized limiter.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - Makes external network calls.
 func NewRedisLimiterWithClient(client *redis.Client, serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) *RedisLimiter {
 	key := "ratelimit:" + serviceID
 	if limitScopeKey != "" {
@@ -215,6 +232,10 @@ var redisRateLimitScript = redis.NewScript(RedisRateLimitScript)
 //
 // Side Effects:
 //   - Executes a Lua script on Redis to atomically consume tokens.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Allow execution.
+//
 func (l *RedisLimiter) Allow(ctx context.Context) (bool, error) {
 	return l.AllowN(ctx, 1)
 }
@@ -234,6 +255,10 @@ func (l *RedisLimiter) Allow(ctx context.Context) (bool, error) {
 //
 // Side Effects:
 //   - Executes a Lua script on Redis to atomically consume tokens.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during AllowN execution.
+//
 func (l *RedisLimiter) AllowN(ctx context.Context, n int) (bool, error) {
 	// ⚡ BOLT: Use server time to prevent clock skew issues in distributed systems.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -262,6 +287,13 @@ func (l *RedisLimiter) AllowN(ctx context.Context, n int) (bool, error) {
 //
 // Side Effects:
 //   - Modifies the internal state of the limiter.
+//
+// Returns:
+//   - The resulting payload or state object from Update.
+//
+// Errors/Throws:
+//   - None.
+//
 func (l *RedisLimiter) Update(rps float64, burst int) {
 	l.rps = rps
 	l.burst = burst
@@ -274,6 +306,15 @@ func (l *RedisLimiter) Update(rps float64, burst int) {
 //
 // Returns:
 //   - string: The configuration hash string.
+//
+// Parameters:
+//   - Inputs necessary to execute GetConfigHash safely and correctly.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (l *RedisLimiter) GetConfigHash() string {
 	return l.configHash
 }
@@ -287,6 +328,13 @@ func (l *RedisLimiter) GetConfigHash() string {
 //
 // Side Effects:
 //   - Closes the TCP connection to Redis.
+//
+// Parameters:
+//   - Inputs necessary to execute Close safely and correctly.
+//
+// Errors/Throws:
+//   - Returns a structured error if internal validation fails, external dependencies cannot be reached, or state inconsistencies occur during Close execution.
+//
 func (l *RedisLimiter) Close() error {
 	return l.client.Close()
 }
