@@ -2,6 +2,9 @@ module github.com/mcpany/core/server
 
 go 1.24.0
 
+
+replace github.com/mcpany/core => ../
+
 require (
 	al.essio.dev/pkg/shellescape v1.6.0
 	cloud.google.com/go/storage v1.58.0
@@ -288,7 +291,3 @@ require (
 	modernc.org/memory v1.11.0 // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
 )
-
-replace github.com/mcpany/core => ../
-
-replace github.com/mcpany/core/proto => ../proto
