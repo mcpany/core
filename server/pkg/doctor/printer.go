@@ -23,8 +23,6 @@ import (
 //
 // Side Effects:
 //   - Writes formatted text to the provided writer.
-// Errors:
-//   - err: Any error that occurs during execution.
 func PrintResults(w io.Writer, results []CheckResult) {
 	if w == nil {
 		w = os.Stdout

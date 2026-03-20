@@ -96,8 +96,6 @@ type ToolMetricsMiddleware struct {
 //
 // Side Effects:
 //   - Registers Prometheus metrics (globally, once).
-// Errors:
-//   - err: Any error that occurs during execution.
 func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	registerMetricsOnce.Do(func() {
 		// Register metrics with the default registry (which server/pkg/metrics also uses/exposes)

@@ -29,10 +29,6 @@ type ConnectionFactory struct {
 //
 // Side Effects:
 //   - None.
-// Parameters:
-//   - params: Inputs expected by the function.
-// Errors:
-//   - err: Any error that occurs during execution.
 func NewConnectionFactory() *ConnectionFactory {
 	return &ConnectionFactory{}
 }

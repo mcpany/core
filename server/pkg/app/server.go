@@ -315,12 +315,6 @@ type statsCacheEntry struct {
 //
 // Returns:
 //   - (*Application): The initialized application.
-// Parameters:
-//   - params: Inputs expected by the function.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -1485,10 +1479,6 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -1510,10 +1500,6 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,

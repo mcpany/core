@@ -49,10 +49,6 @@ var (
 //
 // Side Effects:
 //   - Initializes the singleton on first call.
-// Parameters:
-//   - params: Inputs expected by the function.
-// Errors:
-//   - err: Any error that occurs during execution.
 func NewTextParser() *TextParser {
 	defaultTextParserOnce.Do(func() {
 		defaultTextParser = &TextParser{

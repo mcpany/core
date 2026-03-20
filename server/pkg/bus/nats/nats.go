@@ -33,10 +33,6 @@ type Bus[T any] struct {
 // Returns:
 //   - *Bus[T]: A pointer to the initialized NATS bus.
 //   - error: An error if the connection or embedded server startup fails.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 	var s *server.Server
 	if config.GetServerUrl() == "" {

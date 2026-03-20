@@ -86,12 +86,6 @@ type SafeDialer struct {
 //
 // Returns:
 //   - (*SafeDialer): A new SafeDialer instance with restrictive defaults.
-// Parameters:
-//   - params: Inputs expected by the function.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func NewSafeDialer() *SafeDialer {
 	return &SafeDialer{
 		AllowLoopback:  false,
@@ -188,10 +182,6 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 // Returns:
 //   - (net.Conn): The established connection.
 //   - (error): An error if the connection is blocked by policy or fails.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }
@@ -209,12 +199,6 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //
 // Returns:
 //   - (*http.Client): A configured HTTP client.
-// Parameters:
-//   - params: Inputs expected by the function.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
@@ -250,10 +234,6 @@ func NewSafeHTTPClient() *http.Client {
 //
 // Returns:
 //   - (error): nil if the connection succeeded, or an error if it failed.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func CheckConnection(ctx context.Context, address string) error {
 	var target string
 	if strings.Contains(address, "://") {
@@ -328,10 +308,6 @@ func CheckConnection(ctx context.Context, address string) error {
 // Returns:
 //   - (net.Listener): The successfully bound listener.
 //   - (error): An error if binding fails after all retries.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func ListenWithRetry(ctx context.Context, network, address string) (net.Listener, error) {
 	var lis net.Listener
 	var err error

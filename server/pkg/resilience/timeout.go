@@ -25,10 +25,6 @@ type Timeout struct {
 //
 // Returns:
 //   - *Timeout: The initialized timeout policy.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func NewTimeout(duration *durationpb.Duration) *Timeout {
 	return &Timeout{
 		duration: duration,

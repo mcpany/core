@@ -57,12 +57,6 @@ type MockRuntime struct{}
 //
 // Returns:
 //   - *MockRuntime: A new mock runtime instance.
-// Parameters:
-//   - params: Inputs expected by the function.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func NewMockRuntime() *MockRuntime {
 	return &MockRuntime{}
 }

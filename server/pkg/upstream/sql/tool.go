@@ -48,8 +48,6 @@ type Tool struct {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - err: Any error that occurs during execution.
 func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, policies []*configv1.CallPolicy, callID string) *Tool {
 	compiled, err := tool.CompileCallPolicies(policies)
 	to := &Tool{

@@ -137,8 +137,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - Allocates memory for the Upstream struct.
-// Errors:
-//   - err: Any error that occurs during execution.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,

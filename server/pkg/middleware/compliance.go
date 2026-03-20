@@ -38,8 +38,6 @@ type JSONRPCResponse struct {
 //
 // Side Effects:
 //   - Intercepts and rewrites HTTP response bodies for error status codes.
-// Errors:
-//   - err: Any error that occurs during execution.
 func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Only intercept POST requests (likely JSON-RPC)

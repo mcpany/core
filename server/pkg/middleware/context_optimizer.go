@@ -30,10 +30,6 @@ type ContextOptimizer struct {
 //
 // Returns:
 //   - *ContextOptimizer: The initialized optimizer.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
 	return &ContextOptimizer{
 		MaxChars: maxChars,

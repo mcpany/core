@@ -247,10 +247,6 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 // Returns:
 //   - Prompt: The created Prompt instance.
 //   - error: An error if the prompt cannot be created.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func NewPromptFromConfig(definition *configv1.PromptDefinition, serviceID string) (Prompt, error) {
 	return NewTemplatedPrompt(definition, serviceID)
 }

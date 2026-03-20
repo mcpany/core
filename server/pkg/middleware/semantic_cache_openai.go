@@ -37,8 +37,6 @@ type OpenAIEmbeddingProvider struct {
 // Side Effects:
 //   - Sets a default model and base URL.
 //   - Initializes an HTTP client with a timeout.
-// Errors:
-//   - err: Any error that occurs during execution.
 func NewOpenAIEmbeddingProvider(apiKey, model string) *OpenAIEmbeddingProvider {
 	if model == "" {
 		model = "text-embedding-3-small"

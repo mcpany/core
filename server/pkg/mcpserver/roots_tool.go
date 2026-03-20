@@ -31,10 +31,6 @@ type RootsTool struct {
 //
 // Side Effects:
 //   - None.
-// Parameters:
-//   - params: Inputs expected by the function.
-// Errors:
-//   - err: Any error that occurs during execution.
 func NewRootsTool() *RootsTool {
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{

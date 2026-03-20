@@ -24,12 +24,6 @@ type RBACMiddleware struct {
 //
 // Returns:
 //   - *RBACMiddleware: The initialized middleware.
-// Parameters:
-//   - params: Inputs expected by the function.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func NewRBACMiddleware() *RBACMiddleware {
 	return &RBACMiddleware{
 		enforcer: auth.NewRBACEnforcer(),

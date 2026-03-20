@@ -27,10 +27,6 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: The initialized manager, or nil if no resilience features are enabled.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func NewManager(config *configv1.ResilienceConfig) *Manager {
 	if config == nil {
 		return nil

@@ -48,8 +48,6 @@ type GlobalRateLimitMiddleware struct {
 //
 // Side Effects:
 //   - Initializes internal caches for limiters.
-// Errors:
-//   - err: Any error that occurs during execution.
 func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {
 	return &GlobalRateLimitMiddleware{
 		config:   config,

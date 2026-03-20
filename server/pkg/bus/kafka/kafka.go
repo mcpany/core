@@ -45,10 +45,6 @@ type Bus[T any] struct {
 // Returns:
 //   - *Bus[T]: A pointer to the initialized Kafka bus.
 //   - error: An error if no brokers are provided or initialization fails.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 	if len(config.GetBrokers()) == 0 {
 		return nil, fmt.Errorf("kafka brokers are missing")

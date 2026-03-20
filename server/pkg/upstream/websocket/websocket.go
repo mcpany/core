@@ -97,10 +97,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Returns:
 //   - upstream.Upstream: A new Upstream instance for WebSocket services.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,

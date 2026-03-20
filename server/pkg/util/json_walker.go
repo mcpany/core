@@ -29,10 +29,6 @@ var jsonWalkerBufferPool = sync.Pool{
 //
 // Returns:
 //   - []byte: The potentially modified JSON output.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
 	var outPtr *[]byte
 	var out []byte
@@ -144,10 +140,6 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 //
 // Returns:
 //   - []byte: The potentially modified JSON output.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func WalkStandardJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
 	var outPtr *[]byte
 	var out []byte

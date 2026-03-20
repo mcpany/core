@@ -46,8 +46,6 @@ type Redactor struct {
 // Side Effects:
 //   - Compiles regular expressions for custom patterns.
 //   - Logs warnings for invalid regex patterns.
-// Errors:
-//   - err: Any error that occurs during execution.
 func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 	if config == nil || !config.GetEnabled() {
 		return nil

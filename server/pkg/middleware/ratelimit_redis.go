@@ -23,10 +23,6 @@ var redisClientCreator = redis.NewClient
 //
 // Side Effects:
 //   - Modifies the global redisClientCreator variable.
-// Returns:
-//   - outcome: The resulting data or value.
-// Errors:
-//   - err: Any error that occurs during execution.
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
 	redisClientCreator = creator
 }
@@ -60,8 +56,6 @@ type RedisLimiter struct {
 //
 // Side Effects:
 //   - Creates a new Redis connection.
-// Errors:
-//   - err: Any error that occurs during execution.
 func NewRedisLimiter(serviceID string, config *configv1.RateLimitConfig) (*RedisLimiter, error) {
 	return NewRedisLimiterWithPartition(serviceID, "", "", config)
 }
@@ -129,10 +123,6 @@ func NewRedisLimiterWithPartition(serviceID, limitScopeKey, partitionKey string,
 //
 // Returns:
 //   - *RedisLimiter: The initialized limiter.
-// Errors:
-//   - err: Any error that occurs during execution.
-// Side Effects:
-//   - changes: Any state modifications.
 func NewRedisLimiterWithClient(client *redis.Client, serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) *RedisLimiter {
 	key := "ratelimit:" + serviceID
 	if limitScopeKey != "" {

@@ -33,8 +33,6 @@ type CSRFMiddleware struct {
 //
 // Side Effects:
 //   - Populates the internal allowed origins map.
-// Errors:
-//   - err: Any error that occurs during execution.
 func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 	m := &CSRFMiddleware{
 		allowedOrigins: make(map[string]bool),
