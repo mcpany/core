@@ -66,13 +66,13 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 						serviceID = before
 					}
 				} else {
-                    // Sentinel Security Update: Secure By Design, Fail Closed.
+					// Sentinel Security Update: Secure By Design, Fail Closed.
 					// If we reach here for tools/call or prompts/get, we couldn't extract a valid
-                    // serviceID from the payload. This either means the payload is malformed,
-                    // or it's an exploit attempt. We MUST fail closed.
-                    // By setting a dummy invalid service ID, we force authentication to fail.
-                    serviceID = "__invalid_missing_service_id__"
-                }
+					// serviceID from the payload. This either means the payload is malformed,
+					// or it's an exploit attempt. We MUST fail closed.
+					// By setting a dummy invalid service ID, we force authentication to fail.
+					serviceID = "__invalid_missing_service_id__"
+				}
 			}
 
 			// Extract the http.Request from the context.
