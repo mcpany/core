@@ -177,7 +177,15 @@ export function useTraces(options: UseTracesOptions = {}) {
         };
     }, []);
 
-    const clearTraces = () => setTraces([]);
+    const clearTraces = async () => {
+        setTraces([]);
+        try {
+            const { apiClient } = await import("@/lib/client");
+            await apiClient.clearTraces();
+        } catch (e) {
+            console.error("Failed to clear traces on server", e);
+        }
+    };
 
     const refresh = () => {
         setTraces([]);

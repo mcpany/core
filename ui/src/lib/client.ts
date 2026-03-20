@@ -2066,6 +2066,23 @@ export const apiClient = {
     },
 
     /**
+     * Clears all execution traces.
+     *
+     * Summary: Deletes all traces from the server.
+     *
+     * @returns A promise that resolves when the operation completes.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a DELETE request to /api/v1/traces.
+     */
+    clearTraces: async (): Promise<void> => {
+        const res = await fetchWithAuth('/api/v1/traces', {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to clear traces');
+    },
+
+    /**
      * Gets the network topology graph.
      *
      * Summary: Retrieves network topology.

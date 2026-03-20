@@ -38,5 +38,26 @@ test.describe('Inspector Page', () => {
 
     // Check that we see some details of the trace
     await expect(sheet.locator('text=orchestrator-task').first()).toBeVisible();
+
+    // Close the details sheet (by pressing Escape or clicking outside, or clicking a close button if available)
+    await page.keyboard.press('Escape');
+    await expect(sheet).toBeHidden();
+
+    // Click the "Clear" button to clear traces
+    const clearBtn = page.getByRole('button', { name: 'Clear' });
+    await expect(clearBtn).toBeVisible();
+    await clearBtn.click();
+
+    // Verify the trace is gone from the table
+    await expect(page.getByText('No traces found.').first()).toBeVisible();
+
+    // Refresh the page to verify it's cleared from the backend
+    await page.reload();
+
+    // Wait for the "Inspector" header to appear again
+    await expect(page.getByRole('heading', { name: 'Inspector' })).toBeVisible();
+
+    // Verify traces are still gone
+    await expect(page.getByText('No traces found.').first()).toBeVisible();
   });
 });
