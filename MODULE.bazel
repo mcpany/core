@@ -7,6 +7,7 @@ module(
 )
 
 bazel_dep(name = "rules_go", version = "0.60.0")
+bazel_dep(name = "rules_proto", version = "7.1.0")
 bazel_dep(name = "gazelle", version = "0.47.0")
 bazel_dep(name = "protobuf", version = "34.0.bcr.1")
 bazel_dep(name = "googleapis", version = "0.0.0-20260223-edfe7983")
@@ -41,6 +42,11 @@ go_deps.gazelle_override(
 )
 go_deps.gazelle_override(
     path = "google.golang.org/genproto/googleapis/api",
+)
+go_deps.module(
+    path = "google.golang.org/genproto/googleapis/api",
+    sum = "h1:HnE7hZ3nO8o+xJ2iX86y/5V7W8WwP9D0K1fO88o0UuY=",
+    version = "v0.0.0-20241202173237-19429a94021a",
 )
 
 # Add required direct dependencies from go.mod manually or via use_repo
@@ -135,6 +141,7 @@ use_repo(
     "io_opentelemetry_go_otel_sdk",
     "io_opentelemetry_go_otel_sdk_metric",
     "org_golang_google_api",
+    "org_golang_google_genproto_googleapis_api",
     "org_golang_google_grpc",
     "org_golang_google_grpc_cmd_protoc_gen_go_grpc",
     "org_golang_google_protobuf",
