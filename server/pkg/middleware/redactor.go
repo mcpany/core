@@ -26,6 +26,7 @@ var (
 
 // Redactor handles redaction of sensitive data based on configuration.
 //
+// Summary: Redactor operation.
 type Redactor struct {
 	customPattern  *regexp.Regexp
 	customPatterns []*regexp.Regexp
@@ -44,6 +45,7 @@ type Redactor struct {
 // Side Effects:
 //   - Compiles regular expressions for custom patterns.
 //   - Logs warnings for invalid regex patterns.
+// Summary: NewRedactor operation.
 func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 	if config == nil || !config.GetEnabled() {
 		return nil
@@ -98,6 +100,7 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 // Side Effects:
 //   - Walks the JSON structure.
 //   - Unmarshals and remarshals strings if modification is needed.
+// Summary: RedactJSON operation.
 func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 	if r == nil || len(data) == 0 {
 		return data, nil
@@ -156,6 +159,7 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 //
 // Side Effects:
 //   - Performs regex replacements for emails, credit cards, SSNs, and custom patterns.
+// Summary: RedactString operation.
 func (r *Redactor) RedactString(s string) string {
 	if r == nil {
 		return s
@@ -220,6 +224,7 @@ func (r *Redactor) RedactString(s string) string {
 //
 // Side Effects:
 //   - Modifies the map in place.
+// Summary: RedactStruct operation.
 func (r *Redactor) RedactStruct(v map[string]interface{}) {
 	if r == nil {
 		return
@@ -240,6 +245,7 @@ func (r *Redactor) RedactStruct(v map[string]interface{}) {
 //
 // Side Effects:
 //   - Recursively processes maps and slices.
+// Summary: RedactValue operation.
 func (r *Redactor) RedactValue(val interface{}) interface{} {
 	if r == nil {
 		return val

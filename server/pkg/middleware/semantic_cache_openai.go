@@ -15,6 +15,7 @@ import (
 
 // OpenAIEmbeddingProvider implements EmbeddingProvider for OpenAI.
 //
+// Summary: OpenAIEmbeddingProvider operation.
 type OpenAIEmbeddingProvider struct {
 	apiKey  string
 	model   string
@@ -35,6 +36,7 @@ type OpenAIEmbeddingProvider struct {
 // Side Effects:
 //   - Sets a default model and base URL.
 //   - Initializes an HTTP client with a timeout.
+// Summary: NewOpenAIEmbeddingProvider operation.
 func NewOpenAIEmbeddingProvider(apiKey, model string) *OpenAIEmbeddingProvider {
 	if model == "" {
 		model = "text-embedding-3-small"
@@ -81,6 +83,7 @@ type openAIEmbeddingResponse struct {
 //
 // Side Effects:
 //   - Makes an external HTTP POST request to the OpenAI API.
+// Summary: Embed operation.
 func (p *OpenAIEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := openAIEmbeddingRequest{
 		Input:          text,

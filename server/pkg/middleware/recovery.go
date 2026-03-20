@@ -23,6 +23,7 @@ import (
 // Side Effects:
 //   - Logs panic details if a panic occurs.
 //   - Writes a 500 Internal Server Error response to the client on panic.
+// Summary: RecoveryMiddleware operation.
 func RecoveryMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {

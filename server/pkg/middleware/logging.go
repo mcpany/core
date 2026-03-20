@@ -39,6 +39,7 @@ import (
 //
 // Side Effects:
 //   - None.
+// Summary: LoggingMiddleware operation.
 func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	if log == nil {
 		log = logging.GetLogger()

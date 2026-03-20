@@ -8,4 +8,5 @@ type contextKey string
 
 // HTTPRequestContextKey is the context key for the HTTP request.
 //
+// Summary: Key for HTTP request context.
 const HTTPRequestContextKey contextKey = "http.request"

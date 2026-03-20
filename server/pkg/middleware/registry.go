@@ -17,6 +17,7 @@ import (
 
 // Registry manages available middlewares.
 //
+// Summary: Registry operation.
 type Registry struct {
 	mu           sync.RWMutex
 	factories    map[string]Factory
@@ -25,10 +26,12 @@ type Registry struct {
 
 // Factory is a function that creates a HTTP middleware from configuration.
 //
+// Summary: Factory for middlewares.
 type Factory func(config *configv1.Middleware) func(http.Handler) http.Handler
 
 // MCPFactory is a function that creates an MCP middleware from configuration.
 //
+// Summary: Factory for MCP middlewares.
 type MCPFactory func(config *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler
 
 var (
@@ -53,6 +56,7 @@ var (
 //
 // Side Effects:
 //   - None.
+// Summary: Register operation.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -74,6 +78,7 @@ func Register(name string, factory Factory) {
 //
 // Side Effects:
 //   - None.
+// Summary: RegisterMCP operation.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -97,6 +102,7 @@ func RegisterMCP(name string, factory MCPFactory) {
 //
 // Side Effects:
 //   - None.
+// Summary: GetHTTPMiddlewares operation.
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -137,6 +143,7 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 //
 // Side Effects:
 //   - None.
+// Summary: GetMCPMiddlewares operation.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -162,6 +169,7 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 
 // StandardMiddlewares holds the standard middlewares that might need to be updated.
 //
+// Summary: StandardMiddlewares operation.
 type StandardMiddlewares struct {
 	Audit            *AuditMiddleware
 	GlobalRateLimit  *GlobalRateLimitMiddleware

@@ -16,6 +16,7 @@ import (
 
 // PostgresVectorStore implements VectorStore using PostgreSQL and pgvector.
 //
+// Summary: PostgresVectorStore operation.
 type PostgresVectorStore struct {
 	db *sql.DB
 }
@@ -37,6 +38,7 @@ type PostgresVectorStore struct {
 // Side Effects:
 //   - Opens a connection to the PostgreSQL database.
 //   - May create the 'vector' extension and 'semantic_cache_entries' table if they do not exist.
+// Summary: NewPostgresVectorStore operation.
 func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("postgres dsn is required")
@@ -74,6 +76,7 @@ func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 //   - Verifies the database connection.
 //   - Creates the 'vector' extension if it doesn't exist.
 //   - Creates the 'semantic_cache_entries' table and indexes if they don't exist.
+// Summary: NewPostgresVectorStoreWithDB operation.
 func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 	// Verify connection
 	ctxPing, cancelPing := context.WithTimeout(context.Background(), 5*time.Second)
@@ -134,6 +137,7 @@ func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 //
 // Side Effects:
 //   - Writes a new row to the 'semantic_cache_entries' table.
+// Summary: Add operation.
 func (s *PostgresVectorStore) Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	vectorJSON, err := json.Marshal(vector)
 	if err != nil {
@@ -179,6 +183,7 @@ func (s *PostgresVectorStore) Add(ctx context.Context, key string, vector []floa
 //
 // Side Effects:
 //   - Executes a SELECT query on the database.
+// Summary: Search operation.
 func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool) {
 	queryJSON, err := json.Marshal(query)
 	if err != nil {
@@ -230,6 +235,7 @@ func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []fl
 //
 // Side Effects:
 //   - Deletes rows from the 'semantic_cache_entries' table.
+// Summary: Prune operation.
 func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 	query := "DELETE FROM semantic_cache_entries WHERE expires_at <= $1"
 	args := []interface{}{time.Now()}
@@ -250,6 +256,7 @@ func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 //
 // Side Effects:
 //   - Closes the DB connection.
+// Summary: Close operation.
 func (s *PostgresVectorStore) Close() error {
 	return s.db.Close()
 }

@@ -77,6 +77,7 @@ var (
 //
 // Side Effects:
 //   - None.
+// Summary: PrometheusMetricsMiddleware operation.
 func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 	registerProtocolMetricsOnce.Do(func() {
 		prometheus.MustRegister(mcpOperationDuration)
@@ -240,6 +241,7 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 //
 // Side Effects:
 //   - None.
+// Summary: CalculateToolResultTokens operation.
 func CalculateToolResultTokens(t tokenizer.Tokenizer, result any) int {
 	if result == nil {
 		return 0
