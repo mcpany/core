@@ -14,6 +14,8 @@ import (
 )
 
 // WebhookRequest matches the data payload sent by mcpany
+//
+// Summary: WebhookRequest definition.
 type WebhookRequest struct {
 	Kind     int            `json:"kind"` // 1=PreCall, 2=PostCall
 	ToolName string         `json:"tool_name"`
@@ -21,6 +23,8 @@ type WebhookRequest struct {
 }
 
 // WebhookResponse matches the expected response data
+//
+// Summary: WebhookResponse definition.
 type WebhookResponse struct {
 	ReplacementObject any `json:"replacement_object,omitempty"`
 }
