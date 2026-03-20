@@ -120,4 +120,5 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // StatusOK represents the HTTP 200 OK status code.
+// Summary: StatusOK indicates a successful webhook response.
 const StatusOK = 200
