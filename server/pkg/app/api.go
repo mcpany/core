@@ -838,41 +838,53 @@ func (a *Application) handleTools() http.HandlerFunc {
 // Side Effects:
 //   - Modifies the Tools array of the provided UpstreamServiceConfig directly.
 func updateToolDisableStatus(svc *configv1.UpstreamServiceConfig, toolName string, disable bool) error {
-	var tools *[]*configv1.ToolDefinition
+	var tools []*configv1.ToolDefinition
+	var setToolsFunc func([]*configv1.ToolDefinition)
+
 	switch st := svc.ServiceConfig.(type) {
 	case *configv1.UpstreamServiceConfig_McpService:
-		tools = &st.McpService.Tools
+		tools = st.McpService.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { st.McpService.SetTools(t) }
 	case *configv1.UpstreamServiceConfig_HttpService:
-		tools = &st.HttpService.Tools
+		tools = st.HttpService.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { st.HttpService.SetTools(t) }
 	case *configv1.UpstreamServiceConfig_GrpcService:
-		tools = &st.GrpcService.Tools
+		tools = st.GrpcService.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { st.GrpcService.SetTools(t) }
 	case *configv1.UpstreamServiceConfig_OpenapiService:
-		tools = &st.OpenapiService.Tools
+		tools = st.OpenapiService.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { st.OpenapiService.SetTools(t) }
 	case *configv1.UpstreamServiceConfig_CommandLineService:
-		tools = &st.CommandLineService.Tools
+		tools = st.CommandLineService.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { st.CommandLineService.SetTools(t) }
 	case *configv1.UpstreamServiceConfig_WebsocketService:
-		tools = &st.WebsocketService.Tools
+		tools = st.WebsocketService.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { st.WebsocketService.SetTools(t) }
 	case *configv1.UpstreamServiceConfig_WebrtcService:
-		tools = &st.WebrtcService.Tools
+		tools = st.WebrtcService.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { st.WebrtcService.SetTools(t) }
 	case *configv1.UpstreamServiceConfig_GraphqlService:
-		tools = &st.GraphqlService.Tools
+		tools = st.GraphqlService.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { st.GraphqlService.SetTools(t) }
 	case *configv1.UpstreamServiceConfig_SqlService:
-		tools = &st.SqlService.Tools
+		tools = st.SqlService.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { st.SqlService.SetTools(t) }
 	case *configv1.UpstreamServiceConfig_FilesystemService:
-		tools = &st.FilesystemService.Tools
+		tools = st.FilesystemService.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { st.FilesystemService.SetTools(t) }
 	case *configv1.UpstreamServiceConfig_VectorService:
-		tools = &st.VectorService.Tools
+		tools = st.VectorService.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { st.VectorService.SetTools(t) }
 	default:
 		return fmt.Errorf("unknown service type")
 	}
 
 	found := false
-	for _, td := range *tools {
-		if td.Name == toolName {
-			td.Disable = disable
+	for _, td := range tools {
+		if td.GetName() == toolName {
+			td.SetDisable(disable)
 			// Ensure merge strategy override is set
-			override := configv1.ToolDefinition_MERGE_STRATEGY_OVERRIDE
-			td.MergeStrategy = &override
+			td.SetMergeStrategy(configv1.ToolDefinition_MERGE_STRATEGY_OVERRIDE)
 			found = true
 			break
 		}
@@ -880,12 +892,13 @@ func updateToolDisableStatus(svc *configv1.UpstreamServiceConfig, toolName strin
 
 	if !found {
 		// If the tool is auto-discovered, it might not be explicitly listed. We add it with override strategy.
-		override := configv1.ToolDefinition_MERGE_STRATEGY_OVERRIDE
-		*tools = append(*tools, &configv1.ToolDefinition{
-			Name:          toolName,
-			Disable:       disable,
-			MergeStrategy: &override,
-		})
+		newTool := configv1.ToolDefinition_builder{
+			Name:          proto.String(toolName),
+			Disable:       proto.Bool(disable),
+			MergeStrategy: configv1.ToolDefinition_MERGE_STRATEGY_OVERRIDE.Enum(),
+		}.Build()
+		tools = append(tools, newTool)
+		setToolsFunc(tools)
 	}
 
 	return nil
