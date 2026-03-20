@@ -34,12 +34,12 @@ Skills are stored in a root directory (configurable).
 
 ```text
 skills/
-  |-- my-skill/
-  |   |-- SKILL.md
-  |   |-- assets/
-  |   `-- scripts/
-  `-- another-skill/
-      `-- SKILL.md
+  ├── my-skill/
+  │   ├── SKILL.md
+  │   ├── assets/
+  │   └── scripts/
+  └── another-skill/
+      └── SKILL.md
 ```
 
 ## Constraints
