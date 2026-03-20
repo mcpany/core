@@ -496,6 +496,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
 
 ---
+
 ---
 
 ## Strategic Evolution: [2026-03-09]
