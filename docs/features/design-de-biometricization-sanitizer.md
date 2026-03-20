@@ -32,7 +32,7 @@ The **De-biometricization Sanitizer** acts as a local-first security boundary, s
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-    graph LR
+        graph LR
         LocalData[Local Data/Tools] --> Interceptor[MCP Any Interceptor]
         Interceptor --> Scrubber[De-biometricization Engine]
         Scrubber --> RedactedData[Sanitized Context]

@@ -33,17 +33,17 @@ The Reason-Graph Integrity (RGI) Provider acts as the authoritative "Graph Arbit
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-graph TD
-    A[Teammate A Trace] --> B[RGI Hub]
-    C[Teammate B Trace] --> B[RGI Hub]
-    B --> D[Conflict Detector]
-    D --> E{Collision?}
-    E -- Yes --> F[Mission-Root Policy Arbiter]
-    E -- No --> G[Atomic Graph Merge]
-    F --> H[Resolved Reasoning Fragment]
-    H --> G
-    G --> I[Unified Reason-Graph]
-    I --> J[Hardware-Attested Snapshot]
+        graph TD
+        A[Teammate A Trace] --> B[RGI Hub]
+        C[Teammate B Trace] --> B[RGI Hub]
+        B --> D[Conflict Detector]
+        D --> E{Collision?}
+        E -- Yes --> F[Mission-Root Policy Arbiter]
+        E -- No --> G[Atomic Graph Merge]
+        F --> H[Resolved Reasoning Fragment]
+        H --> G
+        G --> I[Unified Reason-Graph]
+        I --> J[Hardware-Attested Snapshot]
     ```
 * **APIs / Interfaces:**
     * `rgi.ProposeFragment(graphId, fragment) -> void`: Adds a reasoning fragment to the active mesh graph.

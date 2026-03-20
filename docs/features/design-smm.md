@@ -28,7 +28,7 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-    graph TD
+        graph TD
         P[Parent Agent] -->|Instruction| SMM[Stylometric Mimicry Mitigator]
         SMM -->|Extract Profile| Trace[Reasoning Trace]
         SMM -->|Compare Profile| Enclave[Hardware-Bound Profiler]

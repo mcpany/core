@@ -30,7 +30,7 @@ MCP Any needs to solve this by providing a cryptographically signed "Chain of Co
 ## 4. Design & Architecture
 *   **System Flow:**
     ```mermaid
-    sequenceDiagram
+        sequenceDiagram
         User->>Gateway: Initial Mission Root (Signed COT_v0)
         Gateway->>ParentAgent: Delegate Task (COT_v0)
         ParentAgent->>SubAgent: Sub-Delegate (COT_v1 = COT_v0 + Parent_Signature)

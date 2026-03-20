@@ -33,7 +33,7 @@ The Dynamic Attention Gating (DAG) Middleware acts as a cognitive stability laye
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-    graph TD
+        graph TD
         A[Subagent Fragment] --> B[DAG Middleware]
         B --> C[Entropy Analyzer]
         C --> D[Attention Impact Scorer]

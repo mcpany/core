@@ -31,7 +31,7 @@ The **Environment Sovereignty Enforcer (ESE)** is a core security service for th
 ## 4. Design & Architecture
 *   **System Flow:**
     ```mermaid
-    graph TD
+        graph TD
         EPM[Ephemeral Privilege Manager] -->|Request Env| ESE[Environment Sovereignty Enforcer]
         ESE -->|Scrub & Isolate| EnvBlock[Isolated Env Block]
         EnvBlock -->|Execute| CommandAdapter[Command Adapter]

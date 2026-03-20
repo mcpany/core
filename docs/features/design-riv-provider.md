@@ -34,7 +34,7 @@ The Recursive Integrity Verification (RIV) Provider is needed to establish a cry
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-    graph TD
+        graph TD
         A[Parent Lineage Proof] --> B[RIV Provider]
         C[Current ARI Token] --> B
         B --> D[Proof Merger]

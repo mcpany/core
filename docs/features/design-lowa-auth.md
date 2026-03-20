@@ -32,7 +32,7 @@ LOWA is a mandatory security layer for MCP Any that enforces session-bound authe
 ## 4. Design & Architecture
 *   **System Flow:**
     ```mermaid
-    sequenceDiagram
+        sequenceDiagram
         participant Browser as Browser/IDE
         participant LOWA as LOWA Gateway
         participant Core as MCP Any Core

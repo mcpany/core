@@ -33,7 +33,7 @@ The Mission-Locked Execution (MLE) Gateway is needed to ensure that every tool c
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-    graph TD
+        graph TD
         A[Agent Tool Call + Mission Lock] --> B[MLE Gateway Interceptor]
         B --> C[Cryptographic Lock Validator]
         C --> D[Mission-Root Lineage Checker]

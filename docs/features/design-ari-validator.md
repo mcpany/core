@@ -33,7 +33,7 @@ The Atomic Reasoning Integrity (ARI) Validator is needed to perform fragment-lev
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-    graph TD
+        graph TD
         A[Teammate Write Request] --> B[ARI Validator]
         B --> C[Semantic Deconstructor]
         C --> D[Mission-Root Consistency Engine]

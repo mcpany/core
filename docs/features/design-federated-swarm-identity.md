@@ -30,7 +30,7 @@ FSI provides a local, hardware-attested "Identity Mint" that issues cross-framew
 ## 4. Design & Architecture
 *   **System Flow:**
     ```mermaid
-    sequenceDiagram
+        sequenceDiagram
         participant Agent as AI Agent (Claude/OpenClaw)
         participant FSI as FSI Provider
         participant TPM as Secure Enclave (TPM)

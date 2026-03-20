@@ -32,7 +32,7 @@ Hardware-Attested Attention Locking (HAAL) provides a cryptographic defense agai
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-    graph TD
+        graph TD
         A[Orchestrator Fragment] --> B[HAAL Middleware]
         C[Hardware Identity Token] --> B
         B --> D[TPM/Enclave Signer]

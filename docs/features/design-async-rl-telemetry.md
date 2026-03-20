@@ -29,7 +29,7 @@ OpenClaw-RL v1.0 and recent research into "Process-Reward Models" (PRM) demand t
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-    graph TD
+        graph TD
         Agent[AI Agent] -->|Trace Delta| Buffer[Ring Buffer]
         Buffer -->|Batch| Sanitizer[Semantic Sanitizer]
         Sanitizer -->|Stream| RLEndpoint[RL Training Endpoint]

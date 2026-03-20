@@ -33,7 +33,7 @@ MCP Any needs to provide a robust defense mechanism that performs active deconst
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-    graph TD
+        graph TD
         A[Subagent Message] --> B[AID Hub Interceptor]
         B --> C[Semantic Deconstructor]
         C --> D[Instruction Fragment Validator]

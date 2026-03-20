@@ -30,7 +30,7 @@ MCP Any, as the universal infrastructure layer, must provide a standardized way 
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-    graph TD
+        graph TD
         Agent[AI Agent] -->|Tool Call / State Sync| Server[MCP Any Server]
         Server -->|Middleware| CAM[Cognitive Anchor Manager]
         CAM -->|Pruning Logic| Engine[Smart Pruning Engine]

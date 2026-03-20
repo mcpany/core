@@ -31,7 +31,7 @@ MCP Any needs to act as the final gate for any tool call that generates or modif
 ## 4. Design & Architecture
 *   **System Flow:**
     ```mermaid
-    graph TD
+        graph TD
         Agent[Coding Agent] -->|Tool Call: Create PR| Gate[APRIG Middleware]
         Gate -->|Request Audit| Auditor1[Security Auditor A]
         Gate -->|Request Audit| Auditor2[Security Auditor B]

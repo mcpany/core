@@ -33,7 +33,7 @@ The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring 
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-    graph TD
+        graph TD
         A[Subagent Coordination Request] --> B[T2T Bridge]
         B --> C[SCI Interceptor]
         C --> D[Metadata Scanner]

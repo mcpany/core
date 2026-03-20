@@ -33,7 +33,7 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-    graph TD
+        graph TD
         A[Agent Fragment Proposal] --> B[ARI Hub]
         B --> C[Hash-Chain Validator]
         C --> D[Semantic Consistency Engine]

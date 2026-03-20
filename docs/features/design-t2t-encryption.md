@@ -33,7 +33,7 @@ The T2T Encryption Bridge provides a universal, secure bus for teammate-to-teamm
 ## 4. Design & Architecture
 *   **System Flow:**
     ```mermaid
-    graph TD
+        graph TD
         AgentA[Claude Teammate] <--> Bridge[T2T Encryption Bridge]
         AgentB[OpenClaw Teammate] <--> Bridge
         Bridge <--> STL[Shared Task List (SQLite/Encrypted)]

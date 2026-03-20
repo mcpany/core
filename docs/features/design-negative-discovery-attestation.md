@@ -30,7 +30,7 @@ The tool discovery phase in AI agents has become a primary attack vector (e.g., 
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-    graph TD
+        graph TD
         Discovery[Discovery Request] --> Sandbox[Discovery Sandbox]
         Sandbox --> Monitor[NDAP Monitor]
         Monitor --> Validator[Hardware Attestation Service]

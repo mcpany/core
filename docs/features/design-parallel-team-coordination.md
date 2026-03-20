@@ -29,7 +29,7 @@ With the release of Claude Code "Agent Teams," the industry is moving from seque
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
-    graph LR
+        graph LR
         Lead[Lead Agent] --> Hub[Parallel Coordination Hub]
         Hub --> T1[Teammate 1]
         Hub --> T2[Teammate 2]
