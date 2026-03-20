@@ -194,6 +194,20 @@ type ConfigParameter interface {
 	//
 	// Returns:
 	//   - *configv1.ParameterSchema: The parameter schema.
+	//
+	// Summary: Gets schema.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	GetSchema() *configv1.ParameterSchema
 }
 
@@ -205,21 +219,77 @@ type McpFieldParameter interface {
 	//
 	// Returns:
 	//   - string: The name of the parameter.
+	//
+	// Summary: Gets name.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	GetName() string
 	// GetDescription returns the description of the parameter.
 	//
 	// Returns:
 	//   - string: The description of the parameter.
+	//
+	// Summary: Gets description.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	GetDescription() string
 	// GetType returns the type of the parameter.
 	//
 	// Returns:
 	//   - string: The type of the parameter.
+	//
+	// Summary: Gets type.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	GetType() string
 	// GetIsRepeated returns true if the parameter is a repeated field (array).
 	//
 	// Returns:
 	//   - bool: True if the parameter is repeated.
+	//
+	// Summary: Gets is repeated.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	GetIsRepeated() bool
 }
 

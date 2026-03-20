@@ -18,6 +18,20 @@ type Provider interface {
 	// GetFs returns the underlying afero.Fs.
 	//
 	// Returns the result.
+	//
+	// Summary: Gets fs.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	GetFs() afero.Fs
 
 	// ResolvePath resolves a virtual path to the actual path expected by the filesystem.
@@ -26,5 +40,19 @@ type Provider interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
+	//
+	// Summary: Resolves path.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	ResolvePath(virtualPath string) (string, error)
 }

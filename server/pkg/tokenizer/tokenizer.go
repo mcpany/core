@@ -23,6 +23,20 @@ type Tokenizer interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
+	//
+	// Summary: Counts tokens.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	CountTokens(text string) (int, error)
 }
 

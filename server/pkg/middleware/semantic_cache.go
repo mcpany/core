@@ -21,6 +21,20 @@ type EmbeddingProvider interface {
 	// Returns:
 	//   - []float32: The resulting embedding vector.
 	//   - error: An error if generation fails.
+	//
+	// Summary: Embeds.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	Embed(ctx context.Context, text string) ([]float32, error)
 }
 
@@ -39,6 +53,20 @@ type VectorStore interface {
 	//
 	// Returns:
 	//   - error: An error if the operation fails.
+	//
+	// Summary: Adds.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error
 
 	// Search searches for the most similar entry in the vector store.
@@ -52,6 +80,20 @@ type VectorStore interface {
 	//   - any: The best matching result data.
 	//   - float32: The similarity score (0.0 to 1.0).
 	//   - bool: True if a match was found, false otherwise.
+	//
+	// Summary: Searchs.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	Search(ctx context.Context, key string, query []float32) (any, float32, bool)
 
 	// Prune removes expired entries.
@@ -59,6 +101,20 @@ type VectorStore interface {
 	// Parameters:
 	//   - ctx: context.Context. The context for the request.
 	//   - key: string. Optional key to restrict pruning scope.
+	//
+	// Summary: Prunes.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - Returns error upon failure.
+	//
+	// Side Effects:
+	//   - Interacts with internal state.
 	Prune(ctx context.Context, key string)
 }
 
