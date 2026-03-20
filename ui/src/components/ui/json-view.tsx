@@ -13,6 +13,7 @@ import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { JsonTree } from "./json-tree";
+import { InteractiveCell } from "./interactive-cell";
 
 // ⚡ BOLT: Lazy load SyntaxHighlighter to reduce initial bundle size.
 // Randomized Selection from Top 5 High-Impact Targets (Assets/Bundle)
@@ -276,16 +277,9 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400,
                                 <TableRow key={idx} className="hover:bg-muted/50">
                                     {columns.map(col => {
                                         const val = row[col];
-                                        let displayVal = val;
-                                        if (typeof val === 'object' && val !== null) {
-                                            displayVal = JSON.stringify(val);
-                                        } else if (typeof val === 'boolean') {
-                                            displayVal = val ? "true" : "false";
-                                        }
-
                                         return (
-                                            <TableCell key={col} className="px-2 py-1 text-xs max-w-[200px] truncate" title={String(displayVal)}>
-                                                {String(displayVal ?? "")}
+                                            <TableCell key={col} className="px-2 py-1 text-xs max-w-[200px] truncate">
+                                                <InteractiveCell value={val} />
                                             </TableCell>
                                         );
                                     })}

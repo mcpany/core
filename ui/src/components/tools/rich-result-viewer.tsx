@@ -13,6 +13,7 @@ import { FileJson, Table as TableIcon, Terminal, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { InteractiveCell } from "@/components/ui/interactive-cell";
 
 interface RichResultViewerProps {
     result: any;
@@ -144,10 +145,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     }, [content, isTableEligible]);
 
     const renderCell = (value: any) => {
-        if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
-        if (typeof value === 'object') return <span className="font-mono text-xs text-muted-foreground truncate max-w-[200px] block" title={JSON.stringify(value)}>{JSON.stringify(value)}</span>;
-        if (typeof value === 'boolean') return <span className={value ? "text-green-500 font-medium" : "text-red-500 font-medium"}>{String(value)}</span>;
-        return <span className="truncate max-w-[300px] block" title={String(value)}>{String(value)}</span>;
+        return <InteractiveCell value={value} />;
     }
 
     const defaultTab = mcpContent ? "rendered" : (isTableEligible ? "table" : "json");

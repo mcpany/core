@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Code, Table as TableIcon, Image as ImageIcon, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 import { unwrapMcpResult } from "@/lib/mcp-unwrap";
+import { InteractiveCell } from "@/components/ui/interactive-cell";
 
 /**
  * Props for the SmartResultRenderer component.
@@ -196,16 +197,9 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                             <TableRow key={idx} className="hover:bg-muted/50">
                                 {columns.map(col => {
                                     const val = row[col];
-                                    let displayVal = val;
-                                    if (typeof val === 'object' && val !== null) {
-                                        displayVal = JSON.stringify(val);
-                                    } else if (typeof val === 'boolean') {
-                                        displayVal = val ? "true" : "false";
-                                    }
-
                                     return (
-                                        <TableCell key={col} className="px-2 py-1 text-xs max-w-[200px] truncate" title={String(displayVal)}>
-                                            {String(displayVal ?? "")}
+                                        <TableCell key={col} className="px-2 py-1 text-xs max-w-[200px] truncate">
+                                            <InteractiveCell value={val} />
                                         </TableCell>
                                     );
                                 })}
