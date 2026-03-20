@@ -7,6 +7,11 @@ import { render, screen, fireEvent, waitFor, act } from "@testing-library/react"
 import { DashboardGrid } from "./dashboard-grid";
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 
+// Mock next/link to avoid Vite resolution errors during test
+vi.mock('next/link', () => ({
+  default: ({ children, href }: { children: React.ReactNode, href: string }) => <a href={href}>{children}</a>
+}));
+
 // Mock next/navigation for NetworkGraphFlow and other components
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -33,6 +38,10 @@ vi.mock("@/components/dashboard/metrics-overview", () => ({
 vi.mock("@/components/dashboard/service-health-widget", () => ({
   ServiceHealthWidget: () => <div data-testid="widget-service-health">Service Health Widget</div>
 }));
+vi.mock("@/components/dashboard/service-gallery-widget", () => ({
+  ServiceGalleryWidget: () => <div data-testid="widget-service-gallery">Service Gallery Widget</div>
+}));
+
 vi.mock("@/components/dashboard/lazy-charts", () => ({
   LazyRequestVolumeChart: () => <div data-testid="widget-request-volume">Request Volume Widget</div>,
   LazyTopToolsWidget: () => <div data-testid="widget-top-tools">Top Tools Widget</div>,
