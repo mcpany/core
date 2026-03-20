@@ -11,8 +11,6 @@ import { Button } from "@/components/ui/button";
 import { DashboardProvider } from "@/components/dashboard/dashboard-context";
 import { ServiceFilter } from "@/components/dashboard/service-filter";
 import { TimeRangeFilter } from "@/components/dashboard/time-range-filter";
-import { OnboardingHero } from "@/components/dashboard/onboarding-hero";
-import { apiClient } from "@/lib/client";
 import { Loader2 } from "lucide-react";
 
 /**
@@ -22,22 +20,11 @@ import { Loader2 } from "lucide-react";
  */
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
-  const [hasServices, setHasServices] = useState(false);
 
   useEffect(() => {
-    async function checkServices() {
-        try {
-            const services = await apiClient.listServices();
-            setHasServices(services && services.length > 0);
-        } catch (e) {
-            console.error("Failed to check services", e);
-            // Default to showing dashboard if error, to avoid getting stuck on hero
-            setHasServices(true);
-        } finally {
-            setLoading(false);
-        }
-    }
-    checkServices();
+    // Simulate loading for visual consistency if needed, or remove completely
+    const timer = setTimeout(() => setLoading(false), 100);
+    return () => clearTimeout(timer);
   }, []);
 
   if (loading) {
@@ -46,10 +33,6 @@ export default function DashboardPage() {
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
       );
-  }
-
-  if (!hasServices) {
-      return <OnboardingHero />;
   }
 
   return (
