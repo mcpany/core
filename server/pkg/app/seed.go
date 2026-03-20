@@ -14,6 +14,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/encoding/protojson"
 )
@@ -291,9 +292,22 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 		}
 
 		err := withRetry(ctx, logging.GetLogger(), func() error {
-			return a.AuditManager.Write(ctx, entry.ToolName, entry.UserID, entry.ProfileID,
-				entry.Arguments, entry.Result, entry.Error, t, time.Duration(entry.DurationMs)*time.Millisecond,
-				entry.TraceID, entry.SpanID)
+			if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
+				return a.standardMiddlewares.Audit.Write(ctx, audit.Entry{
+					Timestamp:  t,
+					ToolName:   entry.ToolName,
+					UserID:     entry.UserID,
+					ProfileID:  entry.ProfileID,
+					Arguments:  []byte(entry.Arguments),
+					Result:     entry.Result,
+					Error:      entry.Error,
+					Duration:   fmt.Sprintf("%dms", entry.DurationMs),
+					DurationMs: entry.DurationMs,
+					TraceID:    entry.TraceID,
+					SpanID:     entry.SpanID,
+				})
+			}
+			return fmt.Errorf("audit middleware not initialized")
 		})
 		if err != nil {
 			return fmt.Errorf("failed to save audit log: %w", err)
