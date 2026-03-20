@@ -16,6 +16,8 @@ import (
 
 // SessionState represents the shared state for a recursive context session.
 //
+// Summary: Represents a SessionState.
+//
 // Parameters:
 //   - None.
 //
@@ -36,6 +38,8 @@ type SessionState struct {
 
 // RecursiveContextManager manages the shared context sessions (Blackboard).
 //
+// Summary: Represents a RecursiveContextManager.
+//
 // Parameters:
 //   - None.
 //
@@ -53,6 +57,8 @@ type RecursiveContextManager struct {
 }
 
 // NewRecursiveContextManager initializes and returns a new RecursiveContextManager.
+//
+// Summary: Initializes NewRecursiveContextManager operation.
 //
 // Parameters:
 //   - None.
@@ -72,6 +78,8 @@ func NewRecursiveContextManager() *RecursiveContextManager {
 }
 
 // CreateSession generates a new recursive context session with the provided data and expiration time.
+//
+// Summary: Initializes CreateSession operation.
 //
 // Parameters:
 //   - data (map[string]interface{}): The initial state data to be stored in the session.
@@ -112,6 +120,8 @@ func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl
 
 // GetSession retrieves an active context session by its unique identifier.
 //
+// Summary: Retrieves GetSession operation.
+//
 // Parameters:
 //   - id (string): The unique UUID string of the session to retrieve.
 //
@@ -139,6 +149,8 @@ func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 }
 
 // APIHandler constructs an HTTP handler function for managing Recursive Context Protocol endpoints.
+//
+// Summary: Executes APIHandler operation.
 //
 // Parameters:
 //   - None.
@@ -210,6 +222,8 @@ func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 
 // RecursiveContextKeyType is a custom type for context keys to avoid collisions.
 //
+// Summary: Represents a RecursiveContextKeyType.
+//
 // Parameters:
 //   - None.
 //
@@ -226,6 +240,8 @@ type RecursiveContextKeyType string
 const (
 	// RecursiveContextDataKey is the key used to store the recursive context data in the request context.
 	//
+	// Summary: Defines RecursiveContextDataKe.
+	//
 	// Parameters:
 	//   - None.
 	//
@@ -241,6 +257,8 @@ const (
 )
 
 // HandleContext intercepts HTTP requests to inject recursive context state based on the X-MCP-Parent-Context-ID header.
+//
+// Summary: Executes HandleContext operation.
 //
 // Parameters:
 //   - next (http.Handler): The next HTTP handler in the middleware chain.
