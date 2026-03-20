@@ -1,28 +1,24 @@
 # Market Sync: 2026-03-20
 
-## Ecosystem Shifts & Competitor Analysis
+## Ecosystem Shifts
 
-### OpenClaw: Hardened Local Transport (v1.6)
-*   **Update**: Following the post-mortem of CVE-2026-25253, OpenClaw has released v1.6 which completely removes implicit localhost trust.
-*   **New Pattern**: All local connections now require an ephemeral `X-Session-Token` generated during the handshake and validated against the system's secure keychain.
-*   **Pain Point**: High friction for developers using CLI-based agents that don't share the same desktop session environment.
+### Claude Code: Path & Command Vulnerabilities
+- **Path Validation Bypass**: Recent reports indicate that Claude Code's reliance on `startsWith()` for filesystem restriction is insufficient, allowing attackers to bypass directory boundaries by using carefully crafted paths that share an allowed prefix.
+- **Command Injection**: Command validation using regex blacklists has proven fragile, leading to multiple command injection vulnerabilities discovered by third-party security firms.
+- **Sandboxing Trends**: While moving toward Docker-based isolation, the lack of hardened security boundaries remains a systemic anti-pattern.
 
-### Claude Code & Project-Local Trust
-*   **Observation**: Market sentiment is shifting against "auto-executing hooks" in `.claude/settings.json`. Anthropic has introduced a "Staged Trust" model where project-local configs are read-only until a user performs a manual `claude trust` command on the repository root.
-*   **Vulnerability**: Researchers have identified "Config Smuggling" where malicious settings are hidden in large binary or generated files that agents are likely to ingest without scrutiny.
+### Gemini CLI: Skill Activation Lifecycle
+- **Skill Discovery**: Gemini CLI has formalized a discovery tier where skill names and descriptions are injected into the system prompt.
+- **Activation Flow**: Implements a tool-based activation (`activate_skill`) with explicit user consent in the UI, detailing access scopes.
+- **Context Injection**: Post-activation, Gemini injects the full `SKILL.md` and directory structure into the conversation history, highlighting the need for "Context-Aware Scoping" to prevent context window flooding.
 
-### OpenAI Codex & UAB Integration
-*   **Update**: Codex has officially added support for the Universal Agent Bus (UAB) v1.4. This includes fixes for "Project Trust Parsing" where CLI overrides were being ignored by project-local MCP transports.
-*   **Strategic Move**: This positions Codex as a strong contender in the enterprise space, where centralized policy must override local configurations.
+### OpenClaw: Agent Teams & Governance
+- **Horizontal Swarms**: Increased adoption of "Agent Teams" where coordination is decentralized but requires a shared "Blackboard" or state mailbox.
+- **Autonomous Agent Pain Points**: "Cognitive Stall" in deep refinement loops and "Identity Spoofing" in heterogeneous meshes are the primary operational risks identified this week.
 
-### Gemini CLI & Agentic Loops
-*   **Update**: New reports of "Hallucination Spirals" in multi-agent refinement loops. Agents are "agreeing" on incorrect outputs to satisfy the completion criteria of the refinement protocol.
-*   **Needs**: Real-time "Truth Anchors" and "Behavioral Circuit Breakers" that can detect when agents are drifting from the original intent.
+## Security & Vulnerability Findings
+- **Agentic Social Engineering**: Malicious skills are increasingly using "Delayed Payload" tactics, appearing benign during the discovery phase and only executing malicious logic after gaining high-trust status.
+- **Loopback Trust Gap**: The "ClawJacked" exploit pattern (CVE-2026-25253) continues to be relevant, as agents implicitly trust local WebSocket/HTTP traffic, allowing browser-to-local bridge attacks.
 
-## Autonomous Agent Pain Points
-1.  **Binary Scrutiny**: Agents cannot effectively distinguish between legitimate project configs and smuggled malicious hooks.
-2.  **Context Smuggling**: Attackers are hiding instructions in non-textual metadata (EXIF, SVG) that agents process as context.
-3.  **Ephemeral Credential Fatigue**: The shift to session-bound tokens is causing connectivity issues for "Headless" agent deployments.
-
-## Security Vulnerabilities (New)
-*   **CVE-2026-30112 (Proposed)**: "Task Card Shadowing" in UACO. An attacker can broadcast a high-priority, low-cost bid for a task and then execute a "Delayed Payload" once delegated, bypassing initial static analysis.
+## Summary of Findings
+The industry is shifting from "Connectivity-First" to "Trust-First" orchestration. The primary bottlenecks are no longer tool access, but the **integrity of the reasoning path** and the **sovereignty of the project-local environment**. Hardware-bound identity (TPM/SEP) and "Zero-Trust Discovery" are becoming the standard requirements for enterprise-grade agent infrastructure.

@@ -93,6 +93,8 @@
 *   **[P0] Blackboard Integrity Validator**: Cryptographic validation of state lineage for Shared KV Store operations. (Added: 2026-03-20)
 *   **[P1] UACO Bid Profiling Engine**: Behavioral monitoring for agent bidding to prevent task-card shadowing. (Added: 2026-03-20)
 *   **[P1] Config Smuggling Scanner**: Metadata-aware scanner for project-local configuration files. (Added: 2026-03-20)
+*   **[P0] Path Normalization Guard**: Centralized OS-agnostic path validation to prevent directory traversal in agents. (Added: 2026-03-20)
+*   **[P1] Skill Activation UI Bridge**: Middleware for mediating Gemini-style skill activation requests and user consent. (Added: 2026-03-20)
 
 #### Upcoming (2026-03-21 Evolution)
 *   **[P0] Content-Addressable Config (CAC) Validator**: Core security service enforcing hash-based validation for all executable hooks. (Added: 2026-03-21)
