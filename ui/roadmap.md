@@ -591,3 +591,9 @@
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
+
+### Upcoming: [2026-06-18]
+- [ ] **[P0] CoT Lineage Visualizer**: (2026-06-18) Interactive dashboard for auditing hardware-attested reasoning traces back to the mission root.
+- [ ] **[P0] RTB Budget Monitor**: (2026-06-18) Real-time tracker for intent-branch token budgets and consumption alerts.
+- [ ] **[P0] HAPS Noise Monitor**: (2026-06-18) Visualization of hardware-attested semantic noise-injection for sharded meshes.
+- [ ] **[P0] RIV Context Auditor**: (2026-06-18) Security workspace for reviewing hardware-verified context mirrors and logic-bomb alerts.

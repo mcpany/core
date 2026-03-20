@@ -60,3 +60,9 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
     * **Context:** Today's market sync revealed that hardware-bound entangled shards can leak state fragments via cache-timing side-channels.
     * **Architecture Adjustment:** Introducing **Temporal Shard Jitter (TSJ) Injection** in Section 4. The ESB will now inject hardware-attested timing jitter into state synchronization for non-primary mission-root requests.
     * **Security Impact:** Mitigates the risk of subagents mapping mission-root constraints via high-frequency latency monitoring.
+
+### Update: 2026-06-18 - Integrating Lineage-Aware Jitter
+**Context:** The emergence of CTLA requires that timing-jitter injection (HAPS) be aware of the reasoning lineage to prevent "Lineage-Timing Fingerprinting."
+**Architecture Adjustment:** * Upgrading **TSJ Injection** in Section 4 to be **Lineage-Aware**.
+* The ESB will now modulate timing jitter based on the hardware-attested reasoning depth.
+**Security Impact:** Prevents subagents from correlating timing variations with specific steps in the parent agent's chain of thought.

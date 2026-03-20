@@ -1360,3 +1360,15 @@
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Chain-of-Thought Lineage Provider (CTLP)**: (P0) Authoritative security middleware that provides hardware-attested, non-repudiable proof for every step in an agent's reasoning process.
+- **Hardware-Attested Privacy Shrouding (HAPS)**: (P0) Middleware for the ESB that injects hardware-attested semantic noise to neutralize enclave-timing side-channels (CVE-2026-62001).
+- **Recursive Token Budgeting (RTB) Controller**: (P0) Resource management service for assigning cryptographically bound token/reasoning budgets to sub-intent branches.
+- **Recursive Integrity Verification (RIV) Gateway**: (P0) Security extension for the AID Hub that verifies mirrored context fragments against mission-root intent to detect hidden logic bombs.
+
+### Priority Shifts
+- **Active Intent Alignment (AIA) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **CTLP-compliant** lineage traces.
+- **Multi-Modal Behavioral Attestation (MMBA) Provider**: (Re-affirmed P0) Designated as a critical dependency for the new **RIV** context verification protocol.

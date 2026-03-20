@@ -753,3 +753,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+#### Upcoming (2026-06-18 Evolution)
+*   **[P0] Chain-of-Thought Lineage Provider (CTLP)**: Authoritative host for hardware-attested reasoning traces and non-repudiable audit trails. (Added: 2026-06-18)
+*   **[P0] Hardware-Attested Privacy Shrouding (HAPS)**: Middleware for semantic noise-injection to neutralize enclave-timing side-channels. (Added: 2026-06-18)
+*   **[P0] Recursive Token Budgeting (RTB) Controller**: Resource management for cryptographically bound reasoning-effort and token budgets. (Added: 2026-06-18)
+*   **[P0] Recursive Integrity Verification (RIV) Gateway**: Hardware-layer verification of mirrored context fragments to detect hidden logic bombs. (Added: 2026-06-18)
