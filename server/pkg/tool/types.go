@@ -1145,8 +1145,10 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 }
 
 func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any) (map[string]string, map[string]string, bool, error) {
-	pathReplacements := make(map[string]string, len(t.parameters))
-	queryReplacements := make(map[string]string, len(t.parameters))
+	// ⚡ BOLT: Lazily allocate maps to avoid allocations for tools with zero parameters or only body parameters.
+	// Randomized Selection from Top 5 High-Impact Targets
+	var pathReplacements map[string]string
+	var queryReplacements map[string]string
 	inputsModified := false
 
 	for i, param := range t.parameters {
@@ -1157,9 +1159,15 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 				return nil, nil, false, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
 			if t.paramInPath[i] {
+				if pathReplacements == nil {
+					pathReplacements = make(map[string]string, len(t.parameters))
+				}
 				pathReplacements[name] = secretValue
 			}
 			if t.paramInQuery[i] {
+				if queryReplacements == nil {
+					queryReplacements = make(map[string]string, len(t.parameters))
+				}
 				queryReplacements[name] = secretValue
 			}
 		} else if schema := param.GetSchema(); schema != nil {
@@ -1194,9 +1202,15 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 
 			if param.GetDisableEscape() {
 				if t.paramInPath[i] {
+					if pathReplacements == nil {
+						pathReplacements = make(map[string]string, len(t.parameters))
+					}
 					pathReplacements[name] = valStr
 				}
 				if t.paramInQuery[i] {
+					if queryReplacements == nil {
+						queryReplacements = make(map[string]string, len(t.parameters))
+					}
 					queryReplacements[name] = valStr
 				}
 			} else {
@@ -1207,9 +1221,15 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 					if err := checkForPathTraversal(valStr); err != nil {
 						return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
 					}
+					if pathReplacements == nil {
+						pathReplacements = make(map[string]string, len(t.parameters))
+					}
 					pathReplacements[name] = url.PathEscape(valStr)
 				}
 				if t.paramInQuery[i] {
+					if queryReplacements == nil {
+						queryReplacements = make(map[string]string, len(t.parameters))
+					}
 					queryReplacements[name] = url.QueryEscape(valStr)
 				}
 			}
