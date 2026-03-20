@@ -1,6 +1,9 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: Span represents a span in a trace.
+//
+// Side Effects:
+//   - None.
 package app
 
 import (
@@ -19,22 +22,24 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Span represents a span in a trace.
 type Span struct {
-	ID           string         `json:"id"`
-	Name         string         `json:"name"`
-	ServiceName  string         `json:"serviceName,omitempty"`
-	Type         string         `json:"type"`
-	StartTime    int64          `json:"startTime"` // Unix millis
-	EndTime      int64          `json:"endTime"`   // Unix millis
-	Status       string         `json:"status"`    // success, error, pending
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	ServiceName string `json:"serviceName,omitempty"`
+	Type        string `json:"type"`
+	StartTime   int64  `json:"startTime"` // Unix millis
+	EndTime     int64  `json:"endTime"`   // Unix millis
+	Status      string `json:"status"`    // success, error, pending
+	// Summary: Trace represents a full trace.
+	//
+	// Side Effects:
+	//   - None.
 	Input        map[string]any `json:"input,omitempty"`
 	Output       map[string]any `json:"output,omitempty"`
 	ErrorMessage string         `json:"errorMessage,omitempty"`
 	Children     []Span         `json:"children,omitempty"`
 }
 
-// Trace represents a full trace.
 type Trace struct {
 	ID            string `json:"id"`
 	RootSpan      Span   `json:"rootSpan"`
@@ -282,14 +287,14 @@ func generateMockAuditEntries() []audit.Entry {
 
 	entries := []audit.Entry{
 		{
-			Timestamp:  now,
-			ToolName:   "orchestrator-task",
-			UserID:     "system",
-			ProfileID:  "default",
-			TraceID:    traceID,
-			SpanID:     traceID + "-0",
-			ParentID:   "",
-			Arguments:  json.RawMessage(rootArgs),
+			Timestamp: now,
+			ToolName:  "orchestrator-task",
+			UserID:    "system",
+			ProfileID: "default",
+			TraceID:   traceID,
+			SpanID:    traceID + "-0",
+			ParentID:  "",
+			Arguments: json.RawMessage(rootArgs),
 			Result: map[string]any{
 				"summary":    "Revenue up 15%",
 				"confidence": 0.98,
@@ -298,14 +303,14 @@ func generateMockAuditEntries() []audit.Entry {
 			DurationMs: 1250,
 		},
 		{
-			Timestamp:  now.Add(50 * time.Millisecond),
-			ToolName:   "search-tool",
-			UserID:     "system",
-			ProfileID:  "default",
-			TraceID:    traceID,
-			SpanID:     traceID + "-1",
-			ParentID:   traceID + "-0",
-			Arguments:  json.RawMessage(child1Args),
+			Timestamp: now.Add(50 * time.Millisecond),
+			ToolName:  "search-tool",
+			UserID:    "system",
+			ProfileID: "default",
+			TraceID:   traceID,
+			SpanID:    traceID + "-1",
+			ParentID:  traceID + "-0",
+			Arguments: json.RawMessage(child1Args),
 			Result: map[string]any{
 				"results": []string{"report_q3.pdf", "data_q3.xlsx"},
 			},
@@ -313,14 +318,14 @@ func generateMockAuditEntries() []audit.Entry {
 			DurationMs: 400,
 		},
 		{
-			Timestamp:  now.Add(500 * time.Millisecond),
-			ToolName:   "data-analyzer",
-			UserID:     "system",
-			ProfileID:  "default",
-			TraceID:    traceID,
-			SpanID:     traceID + "-2",
-			ParentID:   traceID + "-0",
-			Arguments:  json.RawMessage(child2Args),
+			Timestamp: now.Add(500 * time.Millisecond),
+			ToolName:  "data-analyzer",
+			UserID:    "system",
+			ProfileID: "default",
+			TraceID:   traceID,
+			SpanID:    traceID + "-2",
+			ParentID:  traceID + "-0",
+			Arguments: json.RawMessage(child2Args),
 			Result: map[string]any{
 				"analysis": "Growth detected",
 				"metrics": map[string]any{

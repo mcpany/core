@@ -2,46 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
 package http //nolint:revive,nolintlint // Package name 'http' is intentional for this directory structure.
-
-import (
-	"context"
-	"crypto/tls"
-	"fmt"
-	"crypto/x509"
-	"net/http"
-	"os"
-	"time"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/client"
-	healthChecker "github.com/mcpany/core/server/pkg/health"
-	"github.com/mcpany/core/server/pkg/pool"
-	"github.com/mcpany/core/server/pkg/util"
-	"github.com/mcpany/core/server/pkg/validation"
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-)
-
-type httpPool struct {
-	pool.Pool[*client.HTTPClientWrapper]
-	transport *http.Transport
-}
-
-// Close closes the connection pool and the idle connections.
+// Summary: Close closes the connection pool and the idle connections.
 //
 // Returns:
 //   - error: An error if the pool cannot be closed.
 //
 // Side Effects:
 //   - Closes idle network connections.
-func (p *httpPool) Close() error {
-	if err := p.Pool.Close(); err != nil {
-		return err
-	}
-	p.transport.CloseIdleConnections()
-	return nil
-}
-
-// NewHTTPPool creates a new connection pool for HTTP clients.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+// Summary: NewHTTPPool creates a new connection pool for HTTP clients.
 //
 // It is defined as a variable to allow for easy mocking in tests.
 //
@@ -62,6 +36,37 @@ func (p *httpPool) Close() error {
 // Side Effects:
 //   - Reads certificate files if mTLS is configured.
 //   - Initializes a new http.Transport and http.Client.
+import (
+	"context"
+	"crypto/tls"
+	"crypto/x509"
+	"fmt"
+	"net/http"
+	"os"
+	"time"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/client"
+	healthChecker "github.com/mcpany/core/server/pkg/health"
+	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/validation"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+)
+
+type httpPool struct {
+	pool.Pool[*client.HTTPClientWrapper]
+	transport *http.Transport
+}
+
+func (p *httpPool) Close() error {
+	if err := p.Pool.Close(); err != nil {
+		return err
+	}
+	p.transport.CloseIdleConnections()
+	return nil
+}
+
 var NewHTTPPool = func(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

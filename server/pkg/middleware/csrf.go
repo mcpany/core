@@ -1,26 +1,12 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"fmt"
-	"net/http"
-	"net/url"
-	"strings"
-	"sync"
-
-	"github.com/mcpany/core/server/pkg/logging"
-)
-
 // CSRFMiddleware protects against Cross-Site Request Forgery attacks.
 //
 // Summary: Middleware that blocks unauthorized cross-origin requests.
-type CSRFMiddleware struct {
-	allowedOrigins map[string]bool
-	mu             sync.RWMutex
-}
-
+//
+// Side Effects:
+//   - None.
+//
 // NewCSRFMiddleware creates a new CSRFMiddleware.
 //
 // Summary: Initializes a new CSRFMiddleware with a list of allowed origins.
@@ -33,14 +19,10 @@ type CSRFMiddleware struct {
 //
 // Side Effects:
 //   - Populates the internal allowed origins map.
-func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
-	m := &CSRFMiddleware{
-		allowedOrigins: make(map[string]bool),
-	}
-	m.Update(allowedOrigins)
-	return m
-}
-
+//
+// Errors:
+//   - None.
+//
 // Update updates the allowed origins.
 //
 // Summary: Updates the list of allowed origins at runtime.
@@ -50,15 +32,13 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 //
 // Side Effects:
 //   - Replaces the existing allowed origins map in a thread-safe manner.
-func (m *CSRFMiddleware) Update(origins []string) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	m.allowedOrigins = make(map[string]bool)
-	for _, o := range origins {
-		m.allowedOrigins[strings.ToLower(o)] = true
-	}
-}
-
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
 // Handler returns the HTTP handler.
 //
 // Summary: Returns an HTTP handler that enforces CSRF protection checks.
@@ -73,6 +53,43 @@ func (m *CSRFMiddleware) Update(origins []string) {
 //   - Inspects Method, Headers, Origin, and Referer of incoming requests.
 //   - Blocks requests with 403 Forbidden if validation fails.
 //   - Logs warnings for blocked requests.
+//
+// Errors:
+//   - None.
+package middleware
+
+import (
+	"fmt"
+	"net/http"
+	"net/url"
+	"strings"
+	"sync"
+
+	"github.com/mcpany/core/server/pkg/logging"
+)
+
+type CSRFMiddleware struct {
+	allowedOrigins map[string]bool
+	mu             sync.RWMutex
+}
+
+func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
+	m := &CSRFMiddleware{
+		allowedOrigins: make(map[string]bool),
+	}
+	m.Update(allowedOrigins)
+	return m
+}
+
+func (m *CSRFMiddleware) Update(origins []string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.allowedOrigins = make(map[string]bool)
+	for _, o := range origins {
+		m.allowedOrigins[strings.ToLower(o)] = true
+	}
+}
+
 func (m *CSRFMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 1. Safe Methods are always allowed

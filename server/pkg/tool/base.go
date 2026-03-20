@@ -2,14 +2,61 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package tool defines the interface for tools that can be executed by the upstream service.
+// Tool returns the protobuf definition of the tool.
+//
+// Summary: Retrieves the protobuf definition.
+//
+// Returns:
+//   - *v1.Tool: The protobuf tool definition.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// MCPTool returns the MCP tool definition.
+//
+// Summary: Retrieves the MCP-compliant tool definition.
+//
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
+//
+// Side Effects:
+//   - Lazily converts the proto definition to MCP format on first call.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// GetCacheConfig returns the cache configuration for the tool, or nil if caching is disabled.
+//
+// Summary: Retrieves the cache configuration (always nil for baseTool).
+//
+// Returns:
+//   - *configv1.CacheConfig: Always returns nil.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 package tool
 
 import (
 	"sync"
 
-	"github.com/mcpany/core/server/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -34,25 +81,10 @@ func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.Upstr
 	}, nil
 }
 
-// Tool returns the protobuf definition of the tool.
-//
-// Summary: Retrieves the protobuf definition.
-//
-// Returns:
-//   - *v1.Tool: The protobuf tool definition.
 func (t *baseTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP tool definition.
-//
-// Summary: Retrieves the MCP-compliant tool definition.
-//
-// Returns:
-//   - *mcp.Tool: The MCP tool definition.
-//
-// Side Effects:
-//   - Lazily converts the proto definition to MCP format on first call.
 func (t *baseTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -64,12 +96,6 @@ func (t *baseTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig returns the cache configuration for the tool, or nil if caching is disabled.
-//
-// Summary: Retrieves the cache configuration (always nil for baseTool).
-//
-// Returns:
-//   - *configv1.CacheConfig: Always returns nil.
 func (t *baseTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

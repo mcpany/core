@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package llm provides interfaces and implementations for interacting with LLM providers.
+// Summary: Client is the interface for an LLM client.
+//
+// Side Effects:
+//   - None.
 package llm
 
 import (
@@ -14,7 +18,6 @@ import (
 	"time"
 )
 
-// Client is the interface for an LLM client.
 type Client interface {
 	// ChatCompletion sends a chat request to the LLM and returns the response.
 	//
@@ -34,47 +37,74 @@ type Client interface {
 	//
 	// Side Effects:
 	//   - Makes a network request to the LLM provider.
+	// Summary: ChatRequest represents a chat completion request.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: Message represents a chat message.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: ChatResponse represents a chat completion response.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: OpenAIClient implements Client for OpenAI.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: NewOpenAIClient creates a new OpenAIClient.
+	//
+	// Parameters:
+	//   - apiKey (string): The apiKey parameter.
+	//   - baseURL (string): The baseURL parameter.
+	//
+	// Returns:
+	//   - *OpenAIClient: The resulting *OpenAIClient.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
+	// Summary: ChatCompletion performs a chat completion request.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//   - req (ChatRequest): The request object.
+	//
+	// Returns:
+	//   - *ChatResponse: The resulting *ChatResponse.
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if the operation fails or is invalid.
+	//
+	// Side Effects:
+	//   - None
 	ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error)
 }
 
-// ChatRequest represents a chat completion request.
 type ChatRequest struct {
 	Model    string    `json:"model"`
 	Messages []Message `json:"messages"`
 }
 
-// Message represents a chat message.
 type Message struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
 }
 
-// ChatResponse represents a chat completion response.
 type ChatResponse struct {
 	Content string `json:"content"`
 }
 
-// OpenAIClient implements Client for OpenAI.
 type OpenAIClient struct {
 	apiKey  string
 	baseURL string
 	client  *http.Client
 }
 
-// NewOpenAIClient creates a new OpenAIClient.
-//
-// Parameters:
-//   - apiKey (string): The apiKey parameter.
-//   - baseURL (string): The baseURL parameter.
-//
-// Returns:
-//   - *OpenAIClient: The resulting *OpenAIClient.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func NewOpenAIClient(apiKey string, baseURL string) *OpenAIClient {
 	if baseURL == "" {
 		baseURL = "https://api.openai.com/v1"
@@ -102,21 +132,6 @@ type openAIChatResponse struct {
 	} `json:"error,omitempty"`
 }
 
-// ChatCompletion performs a chat completion request.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (ChatRequest): The request object.
-//
-// Returns:
-//   - *ChatResponse: The resulting *ChatResponse.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
 func (c *OpenAIClient) ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error) {
 	reqBody := openAIChatRequest(req)
 	bodyBytes, err := json.Marshal(reqBody)

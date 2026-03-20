@@ -4,9 +4,12 @@
 package middleware
 
 // contextKey is a custom type for context keys to prevent collisions.
-type contextKey string
-
 // HTTPRequestContextKey is the context key for the HTTP request.
 //
 // Summary: Context key used to store the original HTTP request.
+//
+// Side Effects:
+//   - None.
+type contextKey string
+
 const HTTPRequestContextKey contextKey = "http.request"

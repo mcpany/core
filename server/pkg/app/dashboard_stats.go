@@ -39,7 +39,10 @@ func (a *Application) setStatsCache(key string, data any) {
 		// Instead of clearing the entire cache (which causes a thundering herd),
 		// we evict a random subset (approx 25%) to make room.
 		// Randomized Selection from Top 5 High-Impact Targets
-
+		// Summary: ToolUsageStats represents usage statistics for a tool.
+		//
+		// Side Effects:
+		//   - None.
 		toEvict := len(a.statsCache) / 4
 		for k := range a.statsCache {
 			delete(a.statsCache, k)
@@ -63,7 +66,6 @@ const (
 	labelStatus          = "status"
 )
 
-// ToolUsageStats represents usage statistics for a tool.
 type ToolUsageStats struct {
 	Name      string `json:"name"`
 	ServiceID string `json:"serviceId"`
@@ -184,6 +186,10 @@ func (a *Application) handleDashboardTraffic() http.HandlerFunc {
 }
 
 // handleDebugSeedTraffic seeds the traffic history.
+// Summary: ToolFailureStats represents failure statistics for a tool.
+//
+// Side Effects:
+//   - None.
 func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
@@ -209,7 +215,6 @@ func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 	}
 }
 
-// ToolFailureStats represents failure statistics for a tool.
 type ToolFailureStats struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -322,6 +327,10 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 		}
 
 		// ⚡ Bolt Optimization: Update cache
+		// Summary: ToolAnalytics represents detailed usage analytics for a tool.
+		//
+		// Side Effects:
+		//   - None.
 		a.setStatsCache(cacheKey, stats)
 
 		w.Header().Set("Content-Type", "application/json")
@@ -329,7 +338,6 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 	}
 }
 
-// ToolAnalytics represents detailed usage analytics for a tool.
 type ToolAnalytics struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -436,6 +444,14 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 		})
 
 		// ⚡ Bolt Optimization: Update cache
+		// Summary: ServiceHealthResponse represents the response for the health dashboard.
+		//
+		// Side Effects:
+		//   - None.
+		// Summary: ServiceHealth represents the health status of a service.
+		//
+		// Side Effects:
+		//   - None.
 		a.setStatsCache(cacheKey, analytics)
 
 		w.Header().Set("Content-Type", "application/json")
@@ -443,13 +459,11 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 	}
 }
 
-// ServiceHealthResponse represents the response for the health dashboard.
 type ServiceHealthResponse struct {
-	Services []ServiceHealth                 `json:"services"`
+	Services []ServiceHealth                  `json:"services"`
 	History  map[string][]health.HistoryPoint `json:"history"`
 }
 
-// ServiceHealth represents the health status of a service.
 type ServiceHealth struct {
 	ID      string `json:"id"`
 	Name    string `json:"name"`

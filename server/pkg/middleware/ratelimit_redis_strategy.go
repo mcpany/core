@@ -1,6 +1,11 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// RedisStrategy implements RateLimitStrategy for Redis-based rate limiting.
+//
+// Summary: Strategy for creating Redis-backed distributed rate limiters.
+//
+// Side Effects:
+//   - None.
 package middleware
 
 import (
@@ -14,20 +19,26 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// RedisStrategy implements RateLimitStrategy for Redis-based rate limiting.
-//
-// Summary: Strategy for creating Redis-backed distributed rate limiters.
 type RedisStrategy struct {
 	// redisClients caches Redis clients per config. Key is configHash.
+	// NewRedisStrategy creates a new RedisStrategy.
+	//
+	// Summary: Initializes a new RedisStrategy.
+	//
+	// Returns:
+	//   - *RedisStrategy: The initialized strategy.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	redisClients sync.Map
 }
 
-// NewRedisStrategy creates a new RedisStrategy.
-//
-// Summary: Initializes a new RedisStrategy.
-//
-// Returns:
-//   - *RedisStrategy: The initialized strategy.
 func NewRedisStrategy() *RedisStrategy {
 	return &RedisStrategy{}
 }

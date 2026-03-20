@@ -2,39 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package sql provides a SQL upstream implementation.
-package sql
-
-import (
-	"context"
-	"database/sql"
-	"encoding/json"
-	"fmt"
-	"log/slog"
-	"sync"
-	"time"
-
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/metrics"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
-// Tool implements the Tool interface for a tool that executes a SQL query.
-type Tool struct {
-	tool        *v1.Tool
-	mcpTool     *mcp.Tool
-	mcpToolOnce sync.Once
-	db          *sql.DB
-	callDef     *configv1.SqlCallDefinition
-	policies    []*tool.CompiledCallPolicy
-	callID      string
-	initError   error
-}
-
-// NewTool creates a new SQL Tool.
+// Summary: Tool implements the Tool interface for a tool that executes a SQL query.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: NewTool creates a new SQL Tool.
 //
 // Parameters:
 //   - t (*v1.Tool): The parameter.
@@ -48,6 +21,98 @@ type Tool struct {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: Tool returns the protobuf definition of the tool.
+//
+// Returns:
+//   - *v1.Tool: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: MCPTool returns the MCP tool definition.
+//
+// Returns:
+//   - *mcp.Tool: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: GetCacheConfig returns the cache configuration for the tool.
+//
+// Returns:
+//   - *configv1.CacheConfig: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: Execute runs the SQL query with the provided inputs.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The parameter.
+//
+// Returns:
+//   - any: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+package sql
+
+import (
+	"context"
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"log/slog"
+	"sync"
+	"time"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/metrics"
+	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/util"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+)
+
+type Tool struct {
+	tool        *v1.Tool
+	mcpTool     *mcp.Tool
+	mcpToolOnce sync.Once
+	db          *sql.DB
+	callDef     *configv1.SqlCallDefinition
+	policies    []*tool.CompiledCallPolicy
+	callID      string
+	initError   error
+}
+
 func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, policies []*configv1.CallPolicy, callID string) *Tool {
 	compiled, err := tool.CompileCallPolicies(policies)
 	to := &Tool{
@@ -63,24 +128,10 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 	return to
 }
 
-// Tool returns the protobuf definition of the tool.
-//
-// Returns:
-//   - *v1.Tool: The result.
-//
-// Side Effects:
-//   - None.
 func (t *Tool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP tool definition.
-//
-// Returns:
-//   - *mcp.Tool: The result.
-//
-// Side Effects:
-//   - None.
 func (t *Tool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -92,13 +143,6 @@ func (t *Tool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig returns the cache configuration for the tool.
-//
-// Returns:
-//   - *configv1.CacheConfig: The result.
-//
-// Side Effects:
-//   - None.
 func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDef == nil {
 		return nil
@@ -106,21 +150,6 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	return t.callDef.GetCache()
 }
 
-// Execute runs the SQL query with the provided inputs.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The parameter.
-//
-// Returns:
-//   - any: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

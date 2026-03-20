@@ -1,6 +1,11 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
+//
+// Summary: Middleware that enforces global rate limits on MCP requests across the entire server.
+//
+// Side Effects:
+//   - None.
 package middleware
 
 import (
@@ -13,41 +18,57 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/util"
-	"github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/patrickmn/go-cache"
 	"github.com/redis/go-redis/v9"
 	"golang.org/x/time/rate"
 )
 
-// GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
-//
-// Summary: Middleware that enforces global rate limits on MCP requests across the entire server.
 type GlobalRateLimitMiddleware struct {
 	mu     sync.RWMutex
 	config *configv1.RateLimitConfig
 	// limiters caches active limiters. Key is "partitionKey".
 	limiters *cache.Cache
 	// redisClients caches Redis clients. Key is "global".
+	// NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
+	//
+	// Summary: Initializes the global rate limit middleware with the provided configuration.
+	//
+	// Parameters:
+	//   - config: *configv1.RateLimitConfig. The rate limit configuration settings.
+	//
+	// Returns:
+	//   - *GlobalRateLimitMiddleware: The initialized middleware instance.
+	//
+	// Side Effects:
+	//   - Initializes internal caches for limiters.
+	//
+	// Errors:
+	//   - None.
+	// UpdateConfig updates the rate limit configuration safely.
+	//
+	// Summary: Updates the rate limit configuration at runtime.
+	//
+	// Parameters:
+	//   - config: *configv1.RateLimitConfig. The new configuration settings.
+	//
+	// Side Effects:
+	//   - Acquires a lock to safely update the configuration.
+	//   - Effectively changes rate limiting behavior for subsequent requests.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
 	redisClients sync.Map
 }
 
-// NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
-//
-// Summary: Initializes the global rate limit middleware with the provided configuration.
-//
-// Parameters:
-//   - config: *configv1.RateLimitConfig. The rate limit configuration settings.
-//
-// Returns:
-//   - *GlobalRateLimitMiddleware: The initialized middleware instance.
-//
-// Side Effects:
-//   - Initializes internal caches for limiters.
 func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {
 	return &GlobalRateLimitMiddleware{
 		config:   config,
@@ -55,16 +76,6 @@ func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateL
 	}
 }
 
-// UpdateConfig updates the rate limit configuration safely.
-//
-// Summary: Updates the rate limit configuration at runtime.
-//
-// Parameters:
-//   - config: *configv1.RateLimitConfig. The new configuration settings.
-//
-// Side Effects:
-//   - Acquires a lock to safely update the configuration.
-//   - Effectively changes rate limiting behavior for subsequent requests.
 func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

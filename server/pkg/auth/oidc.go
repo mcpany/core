@@ -1,36 +1,16 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package auth
-
-import (
-	"context"
-	"crypto/rand"
-	"encoding/base64"
-	"encoding/json"
-	"net/http"
-
-	"github.com/coreos/go-oidc/v3/oidc"
-	"golang.org/x/oauth2"
-)
-
-// OIDCConfig holds the configuration for the OIDC provider.
-type OIDCConfig struct {
-	Issuer       string
-	ClientID     string
-	ClientSecret string
-	RedirectURL  string
-}
-
-// OIDCProvider handles OIDC authentication flow.
-type OIDCProvider struct {
-	config       OIDCConfig
-	provider     *oidc.Provider
-	verifier     *oidc.IDTokenVerifier
-	oauth2Config oauth2.Config
-}
-
-// NewOIDCProvider creates a new OIDCProvider. ctx is the context for the request. config holds the configuration settings. Returns the result. Returns an error if the operation fails.
+// Summary: OIDCConfig holds the configuration for the OIDC provider.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: OIDCProvider handles OIDC authentication flow.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: NewOIDCProvider creates a new OIDCProvider. ctx is the context for the request. config holds the configuration settings. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -45,6 +25,48 @@ type OIDCProvider struct {
 //
 // Side Effects:
 //   - None
+//
+// Summary: HandleLogin initiates the OIDC login flow. w is the HTTP response writer. r is the HTTP request.
+//
+// Parameters:
+//   - w (http.ResponseWriter): The w parameter.
+//   - r (*http.Request): The r parameter.
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+package auth
+
+import (
+	"context"
+	"crypto/rand"
+	"encoding/base64"
+	"encoding/json"
+	"net/http"
+
+	"github.com/coreos/go-oidc/v3/oidc"
+	"golang.org/x/oauth2"
+)
+
+type OIDCConfig struct {
+	Issuer       string
+	ClientID     string
+	ClientSecret string
+	RedirectURL  string
+}
+
+type OIDCProvider struct {
+	config       OIDCConfig
+	provider     *oidc.Provider
+	verifier     *oidc.IDTokenVerifier
+	oauth2Config oauth2.Config
+}
+
 func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, error) {
 	provider, err := oidc.NewProvider(ctx, config.Issuer)
 	if err != nil {
@@ -69,20 +91,6 @@ func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, err
 	}, nil
 }
 
-// HandleLogin initiates the OIDC login flow. w is the HTTP response writer. r is the HTTP request.
-//
-// Parameters:
-//   - w (http.ResponseWriter): The w parameter.
-//   - r (*http.Request): The r parameter.
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	state, err := generateRandomState()
 	if err != nil {
@@ -100,25 +108,25 @@ func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		SameSite: http.SameSiteLaxMode,
 		Path:     "/",
 		MaxAge:   300, // 5 minutes
+		// Summary: HandleCallback handles the OIDC provider callback. w is the HTTP response writer. r is the HTTP request.
+		//
+		// Parameters:
+		//   - w (http.ResponseWriter): The w parameter.
+		//   - r (*http.Request): The r parameter.
+		//
+		// Returns:
+		//   - None
+		//
+		// Errors:
+		//   - None
+		//
+		// Side Effects:
+		//   - None
 	})
 
 	http.Redirect(w, r, p.oauth2Config.AuthCodeURL(state), http.StatusFound)
 }
 
-// HandleCallback handles the OIDC provider callback. w is the HTTP response writer. r is the HTTP request.
-//
-// Parameters:
-//   - w (http.ResponseWriter): The w parameter.
-//   - r (*http.Request): The r parameter.
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (p *OIDCProvider) HandleCallback(w http.ResponseWriter, r *http.Request) {
 	stateCookie, err := r.Cookie("oauth_state")
 	if err != nil {

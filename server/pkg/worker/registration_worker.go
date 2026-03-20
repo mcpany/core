@@ -2,6 +2,58 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package worker provides background worker functionality.
+// Summary: ServiceRegistrationWorker is a background worker responsible for handling
+// service registration requests. It listens for ServiceRegistrationRequest
+// messages on the event bus, processes them using the service registry, and
+// publishes the results as ServiceRegistrationResult messages.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: NewServiceRegistrationWorker creates a new ServiceRegistrationWorker.
+//
+// Parameters:
+//   - bus: The event bus used for receiving requests and publishing results.
+//   - serviceRegistry: The registry that will handle the actual registration logic.
+//
+// Returns:
+//   - *ServiceRegistrationWorker: A new service registration worker.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: SetRetryDelay sets the retry delay for failed registrations.
+//
+// Parameters:
+//   - d: The duration to wait before retrying.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Start launches the worker in a new goroutine. It subscribes to service
+// registration requests on the event bus and will continue to process them
+// until the provided context is canceled.
+//
+// Parameters:
+//   - ctx: The context that controls the lifecycle of the worker.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 package worker
 
 import (
@@ -19,10 +71,6 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// ServiceRegistrationWorker is a background worker responsible for handling
-// service registration requests. It listens for ServiceRegistrationRequest
-// messages on the event bus, processes them using the service registry, and
-// publishes the results as ServiceRegistrationResult messages.
 type ServiceRegistrationWorker struct {
 	bus             *bus.Provider
 	serviceRegistry serviceregistry.ServiceRegistryInterface
@@ -30,14 +78,6 @@ type ServiceRegistrationWorker struct {
 	retryDelay      time.Duration
 }
 
-// NewServiceRegistrationWorker creates a new ServiceRegistrationWorker.
-//
-// Parameters:
-//   - bus: The event bus used for receiving requests and publishing results.
-//   - serviceRegistry: The registry that will handle the actual registration logic.
-//
-// Returns:
-//   - *ServiceRegistrationWorker: A new service registration worker.
 func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
 	return &ServiceRegistrationWorker{
 		bus:             bus,
@@ -46,20 +86,10 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 	}
 }
 
-// SetRetryDelay sets the retry delay for failed registrations.
-//
-// Parameters:
-//   - d: The duration to wait before retrying.
 func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 	w.retryDelay = d
 }
 
-// Start launches the worker in a new goroutine. It subscribes to service
-// registration requests on the event bus and will continue to process them
-// until the provided context is canceled.
-//
-// Parameters:
-//   - ctx: The context that controls the lifecycle of the worker.
 func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "ServiceRegistrationWorker")
@@ -249,6 +279,19 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 		service, ok := w.serviceRegistry.GetServiceConfig(req.ServiceName)
 		if !ok {
 			// Try sanitizing the name
+			// Summary: Stop waits for the worker to stop.
+			//
+			// Parameters:
+			//   - None
+			//
+			// Returns:
+			//   - None
+			//
+			// Errors:
+			//   - None
+			//
+			// Side Effects:
+			//   - None
 			sanitized, err := util.SanitizeServiceName(req.ServiceName)
 			if err == nil {
 				service, ok = w.serviceRegistry.GetServiceConfig(sanitized)
@@ -281,19 +324,6 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	}()
 }
 
-// Stop waits for the worker to stop.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (w *ServiceRegistrationWorker) Stop() {
 	w.wg.Wait()
 }

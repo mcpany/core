@@ -1,6 +1,13 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// CatalogServer implements the CatalogService API.
+//
+// Summary: Server implementation for the Catalog Service.
+//
+// It handles requests to list available services from the dynamic catalog.
+//
+// Side Effects:
+//   - None.
 package rest
 
 import (
@@ -10,11 +17,6 @@ import (
 	"github.com/mcpany/core/server/pkg/catalog"
 )
 
-// CatalogServer implements the CatalogService API.
-//
-// Summary: Server implementation for the Catalog Service.
-//
-// It handles requests to list available services from the dynamic catalog.
 type CatalogServer struct {
 	manager *catalog.Manager
 }
@@ -30,10 +32,12 @@ type CatalogServer struct {
 //   - (*CatalogServer): The initialized server instance.
 //
 // Errors:
-//   None.
+//
+//	None.
 //
 // Side Effects:
-//   None.
+//
+//	None.
 func NewCatalogServer(manager *catalog.Manager) *CatalogServer {
 	return &CatalogServer{manager: manager}
 }

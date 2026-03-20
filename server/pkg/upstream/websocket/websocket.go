@@ -2,45 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package websocket provides WebSocket upstream integration.
-package websocket
-
-import (
-	"context"
-	"crypto/sha256"
-	"encoding/hex"
-	"errors"
-	"fmt"
-	"sync"
-	"time"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	pb "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/alexliesenfeld/health"
-	"github.com/mcpany/core/server/pkg/auth"
-	mcphealth "github.com/mcpany/core/server/pkg/health"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/pool"
-	"github.com/mcpany/core/server/pkg/prompt"
-	"github.com/mcpany/core/server/pkg/resource"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/upstream"
-	"github.com/mcpany/core/server/pkg/util"
-	"github.com/mcpany/core/server/pkg/util/schemaconv"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
-)
-
-// Upstream implements the upstream.Upstream interface for services that
+// Summary: Upstream implements the upstream.Upstream interface for services that
 // are exposed via a WebSocket connection. It manages a connection pool and
 // registers tools based on the service configuration.
-type Upstream struct {
-	poolManager *pool.Manager
-	serviceID   string
-	checker     health.Checker
-	mu          sync.RWMutex
-}
-
-// CheckHealth performs a health check on the upstream service.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: CheckHealth performs a health check on the upstream service.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -53,22 +22,8 @@ type Upstream struct {
 //
 // Side Effects:
 //   - None.
-func (u *Upstream) CheckHealth(ctx context.Context) error {
-	u.mu.RLock()
-	checker := u.checker
-	u.mu.RUnlock()
-
-	if checker != nil {
-		res := checker.Check(ctx)
-		if res.Status != health.StatusUp {
-			return fmt.Errorf("health check failed: %v", res)
-		}
-		return nil
-	}
-	return nil
-}
-
-// Shutdown gracefully terminates the WebSocket upstream service by shutting down
+//
+// Summary: Shutdown gracefully terminates the WebSocket upstream service by shutting down
 // the associated connection pool.
 //
 // Parameters:
@@ -76,34 +31,28 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // Returns:
 //   - error: An error if the shutdown operation fails, or nil on success.
-func (u *Upstream) Shutdown(_ context.Context) error {
-	u.mu.Lock()
-	if u.checker != nil {
-		if c, ok := u.checker.(interface{ Stop() }); ok {
-			c.Stop()
-		}
-	}
-	serviceID := u.serviceID
-	u.mu.Unlock()
-
-	u.poolManager.Deregister(serviceID)
-	return nil
-}
-
-// NewUpstream creates a new instance of WebsocketUpstream.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: NewUpstream creates a new instance of WebsocketUpstream.
 //
 // Parameters:
 //   - poolManager: The connection pool manager to be used for managing WebSocket connections.
 //
 // Returns:
 //   - upstream.Upstream: A new Upstream instance for WebSocket services.
-func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
-	return &Upstream{
-		poolManager: poolManager,
-	}
-}
-
-// Register processes the configuration for a WebSocket service. It creates a
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Register processes the configuration for a WebSocket service. It creates a
 // connection pool and registers tools for each call definition specified in the
 // configuration.
 //
@@ -120,6 +69,82 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - []*configv1.ToolDefinition: A list of discovered tool definitions.
 //   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
 //   - error: An error if registration fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+package websocket
+
+import (
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"errors"
+	"fmt"
+	"sync"
+	"time"
+
+	"github.com/alexliesenfeld/health"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	pb "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/auth"
+	mcphealth "github.com/mcpany/core/server/pkg/health"
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/prompt"
+	"github.com/mcpany/core/server/pkg/resource"
+	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/upstream"
+	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/util/schemaconv"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
+)
+
+type Upstream struct {
+	poolManager *pool.Manager
+	serviceID   string
+	checker     health.Checker
+	mu          sync.RWMutex
+}
+
+func (u *Upstream) CheckHealth(ctx context.Context) error {
+	u.mu.RLock()
+	checker := u.checker
+	u.mu.RUnlock()
+
+	if checker != nil {
+		res := checker.Check(ctx)
+		if res.Status != health.StatusUp {
+			return fmt.Errorf("health check failed: %v", res)
+		}
+		return nil
+	}
+	return nil
+}
+
+func (u *Upstream) Shutdown(_ context.Context) error {
+	u.mu.Lock()
+	if u.checker != nil {
+		if c, ok := u.checker.(interface{ Stop() }); ok {
+			c.Stop()
+		}
+	}
+	serviceID := u.serviceID
+	u.mu.Unlock()
+
+	u.poolManager.Deregister(serviceID)
+	return nil
+}
+
+func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
+	return &Upstream{
+		poolManager: poolManager,
+	}
+}
+
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

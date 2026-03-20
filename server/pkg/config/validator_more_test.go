@@ -232,7 +232,7 @@ func TestValidate_MoreServices(t *testing.T) {
 			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					configv1.UpstreamServiceConfig_builder{
-						Name: proto.String("http-empty"),
+						Name:        proto.String("http-empty"),
 						HttpService: configv1.HttpUpstreamService_builder{}.Build(),
 					}.Build(),
 				},

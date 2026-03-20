@@ -50,17 +50,17 @@ func TestBlindFileReadMitigation(t *testing.T) {
 
 	errs := Validate(context.Background(), cfg, Server)
 
-    foundMitigationError := false
-    for _, e := range errs {
-        t.Logf("Error: %v", e.Err)
-        if e.Err != nil && strings.Contains(e.Err.Error(), "validation regex is not supported for secret file paths") {
-            foundMitigationError = true
-        }
-    }
+	foundMitigationError := false
+	for _, e := range errs {
+		t.Logf("Error: %v", e.Err)
+		if e.Err != nil && strings.Contains(e.Err.Error(), "validation regex is not supported for secret file paths") {
+			foundMitigationError = true
+		}
+	}
 
-    if !foundMitigationError {
-        t.Errorf("Expected mitigation error 'validation regex is not supported for secret file paths' but did not find it.")
-    } else {
-        t.Log("SUCCESS: Blind File Read attempt was blocked.")
-    }
+	if !foundMitigationError {
+		t.Errorf("Expected mitigation error 'validation regex is not supported for secret file paths' but did not find it.")
+	} else {
+		t.Log("SUCCESS: Blind File Read attempt was blocked.")
+	}
 }

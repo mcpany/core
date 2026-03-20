@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 package util //nolint:revive,nolintlint // Package name 'util' is common in this codebase
-
-import "unicode/utf8"
-
 // LevenshteinDistance calculates the Levenshtein distance between two strings.
 //
 // Summary: Calculates the Levenshtein edit distance.
@@ -18,26 +15,40 @@ import "unicode/utf8"
 //
 // Returns:
 //   - int: The Levenshtein distance.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+import "unicode/utf8"
+
 func LevenshteinDistance(s1, s2 string) int {
 	// Pass a very large limit so it behaves like the unbounded version.
 	// The maximum possible distance is max(len(s1), len(s2)).
 	// We use max int as limit effectively.
+	// LevenshteinDistanceWithLimit calculates the Levenshtein distance with an upper limit.
+	//
+	// Summary: Calculates the Levenshtein edit distance with a limit.
+	//
+	// If the distance is strictly greater than limit, it returns a value > limit (specifically limit + 1).
+	//
+	// Parameters:
+	//   - s1: string. The first string.
+	//   - s2: string. The second string.
+	//   - limit: int. The maximum distance to compute.
+	//
+	// Returns:
+	//   - int: The Levenshtein distance, or limit + 1 if it exceeds the limit.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	return LevenshteinDistanceWithLimit(s1, s2, len(s1)+len(s2))
 }
 
-// LevenshteinDistanceWithLimit calculates the Levenshtein distance with an upper limit.
-//
-// Summary: Calculates the Levenshtein edit distance with a limit.
-//
-// If the distance is strictly greater than limit, it returns a value > limit (specifically limit + 1).
-//
-// Parameters:
-//   - s1: string. The first string.
-//   - s2: string. The second string.
-//   - limit: int. The maximum distance to compute.
-//
-// Returns:
-//   - int: The Levenshtein distance, or limit + 1 if it exceeds the limit.
 func LevenshteinDistanceWithLimit(s1, s2 string, limit int) int {
 	// Optimization: If both strings are ASCII, we can avoid rune conversion
 	// and use stack-based allocation for small strings.

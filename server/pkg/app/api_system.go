@@ -1,6 +1,9 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: SystemStatusResponse represents the response from the system status API.
+//
+// Side Effects:
+//   - None.
 package app
 
 import (
@@ -13,7 +16,6 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// SystemStatusResponse represents the response from the system status API.
 type SystemStatusResponse struct {
 	UptimeSeconds     int64    `json:"uptime_seconds"`
 	ActiveConnections int32    `json:"active_connections"`

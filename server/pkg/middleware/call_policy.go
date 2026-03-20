@@ -1,6 +1,28 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// CallPolicyMiddleware is a middleware that enforces call policies (allow/deny)
+// based on tool name and arguments.
+//
+// Summary: Middleware that evaluates and enforces security policies for tool executions.
+//
+// Side Effects:
+//   - None.
+//
+// NewCallPolicyMiddleware creates a new CallPolicyMiddleware.
+//
+// Summary: Initializes a new CallPolicyMiddleware.
+//
+// Parameters:
+//   - toolManager: tool.ManagerInterface. The tool manager to access tool and service information.
+//
+// Returns:
+//   - *CallPolicyMiddleware: The initialized middleware.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 package middleware
 
 import (
@@ -12,23 +34,10 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// CallPolicyMiddleware is a middleware that enforces call policies (allow/deny)
-// based on tool name and arguments.
-//
-// Summary: Middleware that evaluates and enforces security policies for tool executions.
 type CallPolicyMiddleware struct {
 	toolManager tool.ManagerInterface
 }
 
-// NewCallPolicyMiddleware creates a new CallPolicyMiddleware.
-//
-// Summary: Initializes a new CallPolicyMiddleware.
-//
-// Parameters:
-//   - toolManager: tool.ManagerInterface. The tool manager to access tool and service information.
-//
-// Returns:
-//   - *CallPolicyMiddleware: The initialized middleware.
 func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
 	return &CallPolicyMiddleware{
 		toolManager: toolManager,

@@ -1,6 +1,10 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: SeedRequest defines the payload for seeding the database.
+// We use json.RawMessage to manually unmarshal using protojson, ensuring correct Protobuf handling.
+//
+// Side Effects:
+//   - None.
 package app
 
 import (
@@ -18,8 +22,6 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-// SeedRequest defines the payload for seeding the database.
-// We use json.RawMessage to manually unmarshal using protojson, ensuring correct Protobuf handling.
 type SeedRequest struct {
 	ServicesRaw    []json.RawMessage `json:"upstream_services"`
 	CredentialsRaw []json.RawMessage `json:"credentials"`

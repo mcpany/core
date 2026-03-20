@@ -1,15 +1,5 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package memory
-
-import (
-	"context"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"google.golang.org/protobuf/proto"
-)
-
 // ListServiceTemplates retrieves all service templates.
 //
 // Summary: Lists all stored service templates.
@@ -20,16 +10,13 @@ import (
 // Returns:
 //   - []*configv1.ServiceTemplate: A list of service templates.
 //   - error: Always nil.
-func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemplate, error) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-	list := make([]*configv1.ServiceTemplate, 0, len(s.serviceTemplates))
-	for _, t := range s.serviceTemplates {
-		list = append(list, proto.Clone(t).(*configv1.ServiceTemplate))
-	}
-	return list, nil
-}
-
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
 // GetServiceTemplate retrieves a service template by ID.
 //
 // Summary: Retrieves a service template by ID.
@@ -41,15 +28,13 @@ func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemp
 // Returns:
 //   - *configv1.ServiceTemplate: The template, or nil if not found.
 //   - error: Always nil.
-func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.ServiceTemplate, error) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-	if t, ok := s.serviceTemplates[id]; ok {
-		return proto.Clone(t).(*configv1.ServiceTemplate), nil
-	}
-	return nil, nil
-}
-
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
 // SaveServiceTemplate saves a service template.
 //
 // Summary: Stores a service template.
@@ -63,13 +48,10 @@ func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.Serv
 //
 // Side Effects:
 //   - Updates the internal service template map.
-func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.ServiceTemplate) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.serviceTemplates[template.GetId()] = proto.Clone(template).(*configv1.ServiceTemplate)
-	return nil
-}
-
+//
+// Errors:
+//   - None.
+//
 // DeleteServiceTemplate deletes a service template by ID.
 //
 // Summary: Deletes a service template.
@@ -83,6 +65,44 @@ func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.Servic
 //
 // Side Effects:
 //   - Removes from the internal service template map.
+//
+// Errors:
+//   - None.
+package memory
+
+import (
+	"context"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"google.golang.org/protobuf/proto"
+)
+
+func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemplate, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	list := make([]*configv1.ServiceTemplate, 0, len(s.serviceTemplates))
+	for _, t := range s.serviceTemplates {
+		list = append(list, proto.Clone(t).(*configv1.ServiceTemplate))
+	}
+	return list, nil
+}
+
+func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.ServiceTemplate, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if t, ok := s.serviceTemplates[id]; ok {
+		return proto.Clone(t).(*configv1.ServiceTemplate), nil
+	}
+	return nil, nil
+}
+
+func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.ServiceTemplate) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.serviceTemplates[template.GetId()] = proto.Clone(template).(*configv1.ServiceTemplate)
+	return nil
+}
+
 func (s *Store) DeleteServiceTemplate(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

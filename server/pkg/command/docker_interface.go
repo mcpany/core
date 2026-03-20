@@ -1,6 +1,9 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: DockerClient interface matching the subset of docker client methods used.
+//
+// Side Effects:
+//   - None.
 package command
 
 import (
@@ -14,7 +17,6 @@ import (
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 )
 
-// DockerClient interface matching the subset of docker client methods used.
 type DockerClient interface {
 	// ImagePull requests the docker host to pull an image from a remote registry.
 	//

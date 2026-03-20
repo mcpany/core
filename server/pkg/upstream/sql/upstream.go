@@ -10,6 +10,57 @@ import (
 	"sync"
 
 	// Import drivers for SQL upstream.
+	// Summary: Upstream implements the upstream.Upstream interface for SQL databases.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: NewUpstream creates a new SQL upstream.
+	//
+	// Returns:
+	//   - *Upstream: The result.
+	//
+	// Side Effects:
+	//   - None.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	// Summary: Shutdown closes the database connection.
+	//
+	// Parameters:
+	//   - _ (context.Context): The parameter.
+	//
+	// Returns:
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if ...
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: Register discovers and registers tools from the SQL configuration. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
+	//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+	//   - _ (prompt.ManagerInterface): The _ parameter.
+	//   - _ (resource.ManagerInterface): The _ parameter.
+	//   - _ (bool): The _ parameter.
+	//
+	// Returns:
+	//   - string: The resulting string.
+	//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
+	//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if the operation fails or is invalid.
+	//
+	// Side Effects:
+	//   - None
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	_ "modernc.org/sqlite"
@@ -22,36 +73,15 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// Upstream implements the upstream.Upstream interface for SQL databases.
 type Upstream struct {
 	db *sql.DB
 	mu sync.Mutex
 }
 
-// NewUpstream creates a new SQL upstream.
-//
-// Returns:
-//   - *Upstream: The result.
-//
-// Side Effects:
-//   - None.
 func NewUpstream() *Upstream {
 	return &Upstream{}
 }
 
-// Shutdown closes the database connection.
-//
-// Parameters:
-//   - _ (context.Context): The parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -65,27 +95,6 @@ func ptr(s string) *string {
 	return &s
 }
 
-// Register discovers and registers tools from the SQL configuration. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
-//   - toolManager (tool.ManagerInterface): The toolManager parameter.
-//   - _ (prompt.ManagerInterface): The _ parameter.
-//   - _ (resource.ManagerInterface): The _ parameter.
-//   - _ (bool): The _ parameter.
-//
-// Returns:
-//   - string: The resulting string.
-//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
-//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

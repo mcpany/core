@@ -1,18 +1,5 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package config
-
-import (
-	"log"
-	"path/filepath"
-	"strings"
-	"sync"
-	"time"
-
-	"github.com/fsnotify/fsnotify"
-)
-
 // Watcher monitors configuration files for changes and triggers a reload.
 //
 // Summary: A file system watcher for configuration reloading.
@@ -25,14 +12,11 @@ import (
 //   - done (chan bool): Channel to signal shutdown.
 //   - mu (sync.Mutex): Mutex to protect concurrent access.
 //   - timer (*time.Timer): Timer for debouncing reload events.
-type Watcher struct {
-	watcher *fsnotify.Watcher
-	done    chan bool
-	mu      sync.Mutex
-	timer   *time.Timer
-}
-
-// NewWatcher creates a new file watcher.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: NewWatcher creates a new file watcher.
 //
 // Parameters:
 //   - None
@@ -46,6 +30,25 @@ type Watcher struct {
 //
 // Side Effects:
 //   - None
+package config
+
+import (
+	"log"
+	"path/filepath"
+	"strings"
+	"sync"
+	"time"
+
+	"github.com/fsnotify/fsnotify"
+)
+
+type Watcher struct {
+	watcher *fsnotify.Watcher
+	done    chan bool
+	mu      sync.Mutex
+	timer   *time.Timer
+}
+
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -158,6 +161,19 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 							w.timer.Stop()
 						}
 						// Debounce for 500ms to avoid multiple reloads for a single save event
+						// Summary: Close stops the file watcher and releases resources.
+						//
+						// Parameters:
+						//   - None.
+						//
+						// Returns:
+						//   - None.
+						//
+						// Errors:
+						//   - None.
+						//
+						// Side Effects:
+						//   - None.
 						w.timer = time.AfterFunc(500*time.Millisecond, func() {
 							log.Println("Reloading configuration...")
 							reloadFunc()
@@ -187,10 +203,6 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 	return nil
 }
 
-// Close stops the file watcher and releases resources.
-//
-// Parameters:
-//   - None.
 func (w *Watcher) Close() {
 	close(w.done)
 	_ = w.watcher.Close()

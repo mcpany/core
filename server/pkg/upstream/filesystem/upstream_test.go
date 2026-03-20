@@ -204,7 +204,7 @@ func TestFilesystemUpstream_Register_And_Execute(t *testing.T) {
 		require.NotNil(t, listRootsTool)
 
 		res, err := listRootsTool.Execute(context.Background(), &tool.ExecutionRequest{
-			ToolName: "list_allowed_directories",
+			ToolName:  "list_allowed_directories",
 			Arguments: map[string]interface{}{},
 		})
 		require.NoError(t, err)
@@ -701,7 +701,7 @@ func TestFilesystemUpstream_UnavailablePath(t *testing.T) {
 	require.NotNil(t, listRootsTool)
 
 	res, err := listRootsTool.Execute(context.Background(), &tool.ExecutionRequest{
-		ToolName: "list_allowed_directories",
+		ToolName:  "list_allowed_directories",
 		Arguments: map[string]interface{}{},
 	})
 	require.NoError(t, err)

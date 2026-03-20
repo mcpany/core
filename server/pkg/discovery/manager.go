@@ -1,6 +1,9 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: ProviderStatus represents the status of a discovery provider.
+//
+// Side Effects:
+//   - None.
 package discovery
 
 import (
@@ -12,54 +15,69 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// ProviderStatus represents the status of a discovery provider.
 type ProviderStatus struct {
-	Name            string
-	Status          string // "OK", "ERROR"
+	Name   string
+	Status string // "OK", "ERROR"
+	// Summary: Manager manages auto-discovery providers.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: NewManager creates a new discovery manager.
+	//
+	// Parameters:
+	//   - None
+	//
+	// Returns:
+	//   - *Manager: The resulting *Manager.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
+	// Summary: RegisterProvider registers a new provider.
+	//
+	// Parameters:
+	//   - p (Provider): The p parameter.
+	//
+	// Returns:
+	//   - None
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
+	// Summary: Run runs all registered providers and returns the aggregated discovered services. It also updates the internal status of each provider.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//
+	// Returns:
+	//   - []*configv1.UpstreamServiceConfig: The resulting []*configv1.UpstreamServiceConfig.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
 	LastError       string
 	LastRunAt       time.Time
 	DiscoveredCount int
 }
 
-// Manager manages auto-discovery providers.
 type Manager struct {
 	providers []Provider
 	mu        sync.RWMutex
 	statuses  map[string]*ProviderStatus
 }
 
-// NewManager creates a new discovery manager.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *Manager: The resulting *Manager.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func NewManager() *Manager {
 	return &Manager{
 		statuses: make(map[string]*ProviderStatus),
 	}
 }
 
-// RegisterProvider registers a new provider.
-//
-// Parameters:
-//   - p (Provider): The p parameter.
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *Manager) RegisterProvider(p Provider) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -70,19 +88,6 @@ func (m *Manager) RegisterProvider(p Provider) {
 	}
 }
 
-// Run runs all registered providers and returns the aggregated discovered services. It also updates the internal status of each provider.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//
-// Returns:
-//   - []*configv1.UpstreamServiceConfig: The resulting []*configv1.UpstreamServiceConfig.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	var allServices []*configv1.UpstreamServiceConfig
 	log := logging.GetLogger()
@@ -94,6 +99,19 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 
 	// ⚡ BOLT: Parallelized discovery providers to avoid waterfall latency.
 	// Randomized Selection from Top 5 High-Impact Targets
+	// Summary: GetStatuses returns the current status of all providers.
+	//
+	// Parameters:
+	//   - None
+	//
+	// Returns:
+	//   - []*ProviderStatus: The resulting []*ProviderStatus.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
 	var wg sync.WaitGroup
 	wg.Add(len(providers))
 
@@ -130,19 +148,6 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	return allServices
 }
 
-// GetStatuses returns the current status of all providers.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []*ProviderStatus: The resulting []*ProviderStatus.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *Manager) GetStatuses() []*ProviderStatus {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -152,26 +157,26 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 		// Copy to avoid race conditions if caller modifies it (though we return pointers to structs created in Run)
 		// But map iteration order is random, maybe sort?
 		// For now just return list.
+		// Summary: GetProviderStatus returns the status of a specific provider.
+		//
+		// Parameters:
+		//   - name (string): The name parameter.
+		//
+		// Returns:
+		//   - *ProviderStatus: The resulting *ProviderStatus.
+		//   - bool: True if successful, false otherwise.
+		//
+		// Errors:
+		//   - None
+		//
+		// Side Effects:
+		//   - None
 		sCopy := *s
 		statuses = append(statuses, &sCopy)
 	}
 	return statuses
 }
 
-// GetProviderStatus returns the status of a specific provider.
-//
-// Parameters:
-//   - name (string): The name parameter.
-//
-// Returns:
-//   - *ProviderStatus: The resulting *ProviderStatus.
-//   - bool: True if successful, false otherwise.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *Manager) GetProviderStatus(name string) (*ProviderStatus, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

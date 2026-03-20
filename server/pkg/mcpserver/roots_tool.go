@@ -1,6 +1,87 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: RootsTool implements the Tool interface for listing roots.
+//
+// It provides a built-in tool ("mcp:list_roots") that allows the server to query the client
+// for available filesystem roots.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: NewRootsTool creates a new instance of the RootsTool.
+//
+// Returns:
+//   - *RootsTool: A new instance of RootsTool.
+//
+// Side Effects:
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: Tool returns the protobuf definition of the tool.
+//
+// Returns:
+//   - *v1.Tool: The protobuf tool definition.
+//
+// Side Effects:
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: MCPTool returns the MCP-compliant tool definition.
+//
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
+//
+// Side Effects:
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: Execute executes the "mcp:list_roots" tool.
+//
+// It retrieves the current MCP session from the context and requests the client
+// to list its roots.
+//
+// Parameters:
+//   - ctx (context.Context): The request context, must contain an active MCP session.
+//   - _ (*tool.ExecutionRequest): The execution request parameters (unused as this tool takes no inputs).
+//
+// Returns:
+//   - any: The result of the roots list operation (typically a list of roots).
+//   - error: An error if the session is missing or the list operation fails.
+//
+// Side Effects:
+//   - Sends a "roots/list" request to the client.
+//
+// Errors:
+//   - None.
+//
+// Summary: GetCacheConfig returns the caching configuration for this tool.
+//
+// Returns:
+//   - *configv1.CacheConfig: Always nil (caching disabled).
+//
+// Side Effects:
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
 package mcpserver
 
 import (
@@ -15,22 +96,11 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// RootsTool implements the Tool interface for listing roots.
-//
-// It provides a built-in tool ("mcp:list_roots") that allows the server to query the client
-// for available filesystem roots.
 type RootsTool struct {
 	tool    *v1.Tool
 	mcpTool *mcp.Tool
 }
 
-// NewRootsTool creates a new instance of the RootsTool.
-//
-// Returns:
-//   - *RootsTool: A new instance of RootsTool.
-//
-// Side Effects:
-//   - None.
 func NewRootsTool() *RootsTool {
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -52,43 +122,14 @@ func NewRootsTool() *RootsTool {
 	}
 }
 
-// Tool returns the protobuf definition of the tool.
-//
-// Returns:
-//   - *v1.Tool: The protobuf tool definition.
-//
-// Side Effects:
-//   - None.
 func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP-compliant tool definition.
-//
-// Returns:
-//   - *mcp.Tool: The MCP tool definition.
-//
-// Side Effects:
-//   - None.
 func (t *RootsTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// Execute executes the "mcp:list_roots" tool.
-//
-// It retrieves the current MCP session from the context and requests the client
-// to list its roots.
-//
-// Parameters:
-//   - ctx (context.Context): The request context, must contain an active MCP session.
-//   - _ (*tool.ExecutionRequest): The execution request parameters (unused as this tool takes no inputs).
-//
-// Returns:
-//   - any: The result of the roots list operation (typically a list of roots).
-//   - error: An error if the session is missing or the list operation fails.
-//
-// Side Effects:
-//   - Sends a "roots/list" request to the client.
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {
@@ -103,13 +144,6 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 	return rootsResult, nil
 }
 
-// GetCacheConfig returns the caching configuration for this tool.
-//
-// Returns:
-//   - *configv1.CacheConfig: Always nil (caching disabled).
-//
-// Side Effects:
-//   - None.
 func (t *RootsTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

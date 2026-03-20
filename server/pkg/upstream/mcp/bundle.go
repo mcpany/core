@@ -1,6 +1,9 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: Manifest represents the structure of the manifest.json file in an MCP bundle.
+//
+// Side Effects:
+//   - None.
 package mcp
 
 import (
@@ -23,7 +26,6 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Manifest represents the structure of the manifest.json file in an MCP bundle.
 type Manifest struct {
 	// ManifestVersion is the version of the manifest format.
 	ManifestVersion string `json:"manifest_version"`
@@ -36,20 +38,26 @@ type Manifest struct {
 	// Server contains configuration for the MCP server within the bundle.
 	Server ManifestServer `json:"server"`
 	// UserConfig contains default configuration for the user.
+	// Summary: ManifestServer represents the server configuration in the manifest.
+	//
+	// Side Effects:
+	//   - None.
 	UserConfig json.RawMessage `json:"user_config"`
 }
 
-// ManifestServer represents the server configuration in the manifest.
 type ManifestServer struct {
 	// Type is the type of the server (e.g., "node", "python").
 	Type string `json:"type"`
 	// EntryPoint is the entry point script or command for the server.
 	EntryPoint string `json:"entry_point"`
 	// McpConfig contains specific configuration for running the MCP server.
+	// Summary: ManifestMcpConfig represents the MCP configuration in the manifest.
+	//
+	// Side Effects:
+	//   - None.
 	McpConfig ManifestMcpConfig `json:"mcp_config"`
 }
 
-// ManifestMcpConfig represents the MCP configuration in the manifest.
 type ManifestMcpConfig struct {
 	// Command is the command to run the server.
 	Command string `json:"command"`

@@ -38,8 +38,8 @@ func TestExtractIP_ZoneIndex(t *testing.T) {
 			shouldBeValid: true,
 		},
 		{
-			name:          "IPv6 Link Local with Zone Index, no brackets, and Port (invalid URL but maybe passed)",
-			input:         "fe80::1%eth0:8080",
+			name:  "IPv6 Link Local with Zone Index, no brackets, and Port (invalid URL but maybe passed)",
+			input: "fe80::1%eth0:8080",
 			// SplitHostPort might fail or return weird stuff.
 			// "fe80::1%eth0:8080" -> too many colons.
 			// ip = input.

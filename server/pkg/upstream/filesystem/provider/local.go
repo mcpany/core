@@ -1,33 +1,16 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package provider
-
-import (
-	"fmt"
-	"os"
-	"path/filepath"
-	"strings"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/spf13/afero"
-)
-
-// LocalProvider provides access to the local filesystem.
-type LocalProvider struct {
-	fs           afero.Fs
-	rootPaths    map[string]string
-	allowedPaths []string
-	deniedPaths  []string
-	symlinkMode  configv1.FilesystemUpstreamService_SymlinkMode
-}
-
-// NewLocalProvider creates a new LocalProvider from the given configuration.
+// Summary: LocalProvider provides access to the local filesystem.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: NewLocalProvider creates a new LocalProvider from the given configuration.
 //
 // Parameters:
 //   - _ (*configv1.OsFs): The parameter.
 //   - rootPaths (map[string]string): The parameter.
-//   -  (allowedPaths): The parameter.
+//   - (allowedPaths): The parameter.
 //   - deniedPaths ([]string): The parameter.
 //   - symlinkMode (configv1.FilesystemUpstreamService_SymlinkMode): The parameter.
 //
@@ -36,28 +19,25 @@ type LocalProvider struct {
 //
 // Side Effects:
 //   - None.
-func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPaths, deniedPaths []string, symlinkMode configv1.FilesystemUpstreamService_SymlinkMode) *LocalProvider {
-	return &LocalProvider{
-		fs:           afero.NewOsFs(),
-		rootPaths:    rootPaths,
-		allowedPaths: allowedPaths,
-		deniedPaths:  deniedPaths,
-		symlinkMode:  symlinkMode,
-	}
-}
-
-// GetFs returns the underlying filesystem.
+//
+// Errors:
+//   - None.
+//
+// Summary: GetFs returns the underlying filesystem.
 //
 // Returns:
 //   - afero.Fs: The result.
 //
 // Side Effects:
 //   - None.
-func (p *LocalProvider) GetFs() afero.Fs {
-	return p.fs
-}
-
-// ResolvePath resolves the virtual path to a real path in the local filesystem.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: ResolvePath resolves the virtual path to a real path in the local filesystem.
 //
 // Parameters:
 //   - virtualPath (string): The parameter.
@@ -71,6 +51,40 @@ func (p *LocalProvider) GetFs() afero.Fs {
 //
 // Side Effects:
 //   - None.
+package provider
+
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/spf13/afero"
+)
+
+type LocalProvider struct {
+	fs           afero.Fs
+	rootPaths    map[string]string
+	allowedPaths []string
+	deniedPaths  []string
+	symlinkMode  configv1.FilesystemUpstreamService_SymlinkMode
+}
+
+func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPaths, deniedPaths []string, symlinkMode configv1.FilesystemUpstreamService_SymlinkMode) *LocalProvider {
+	return &LocalProvider{
+		fs:           afero.NewOsFs(),
+		rootPaths:    rootPaths,
+		allowedPaths: allowedPaths,
+		deniedPaths:  deniedPaths,
+		symlinkMode:  symlinkMode,
+	}
+}
+
+func (p *LocalProvider) GetFs() afero.Fs {
+	return p.fs
+}
+
 func (p *LocalProvider) ResolvePath(virtualPath string) (string, error) {
 	if len(p.rootPaths) == 0 {
 		return "", fmt.Errorf("no root paths defined")
@@ -248,6 +262,19 @@ func (p *LocalProvider) checkPathSecurity(targetPathCanonical, realRootCanonical
 
 	// Double check strict prefix as defense in depth (handling trailing slash behavior)
 	// Ensure root path ends with separator for prefix check, unless it is already root (e.g. "/")
+	// Summary: Close closes the provider.
+	//
+	// Returns:
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if ...
+	//
+	// Side Effects:
+	//   - None.
+	//
+	// Parameters:
+	//   - None.
 	rootWithSlash := realRootCanonical
 	if !strings.HasSuffix(rootWithSlash, string(os.PathSeparator)) {
 		rootWithSlash += string(os.PathSeparator)
@@ -320,16 +347,6 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 	return false, nil
 }
 
-// Close closes the provider.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (p *LocalProvider) Close() error {
 	return nil
 }

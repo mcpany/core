@@ -21,27 +21,48 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
 	_ "modernc.org/sqlite" // Register SQLite driver
+	// Summary: Status represents the status of a check.
+	//
+	// It is an enumerated string type used to indicate the outcome of a health or connectivity check.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: StatusOk indicates the check passed successfully.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: StatusWarning indicates a partial failure or non-critical issue that should be investigated.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: StatusError indicates a critical failure that prevents the service from functioning correctly.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: CheckResult represents the result of a single service check.
+	//
+	// It aggregates the status, any message, and potential error encountered during the check.
+	//
+	// Side Effects:
+	//   - None.
 )
 
-// Status represents the status of a check.
-//
-// It is an enumerated string type used to indicate the outcome of a health or connectivity check.
 type Status string
 
 const (
-	// StatusOk indicates the check passed successfully.
 	StatusOk Status = "OK"
-	// StatusWarning indicates a partial failure or non-critical issue that should be investigated.
+
 	StatusWarning Status = "WARNING"
-	// StatusError indicates a critical failure that prevents the service from functioning correctly.
+
 	StatusError Status = "ERROR"
-	// StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
+
 	StatusSkipped Status = "SKIPPED"
 )
 
-// CheckResult represents the result of a single service check.
-//
-// It aggregates the status, any message, and potential error encountered during the check.
 type CheckResult struct {
 	// ServiceName is the name of the service being checked.
 	ServiceName string
@@ -50,29 +71,49 @@ type CheckResult struct {
 	// Message provides human-readable details about the check result.
 	Message string
 	// Error contains the underlying error object if the check failed.
+	// Summary: RunChecks performs connectivity and health checks on the provided configuration.
+	//
+	// It iterates through all upstream services defined in the configuration and executes
+	// the appropriate check logic for each service type.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request, used for timeouts and cancellation.
+	//   - config: *configv1.McpAnyServerConfig. The server configuration containing upstream service definitions.
+	//
+	// Returns:
+	//   - []CheckResult: A slice of results for each checked service.
+	//
+	// Side Effects:
+	//   - Performs network I/O to connect to upstream services.
+	//
+	// Errors:
+	//   - None.
 	Error error
 }
 
-// RunChecks performs connectivity and health checks on the provided configuration.
-//
-// It iterates through all upstream services defined in the configuration and executes
-// the appropriate check logic for each service type.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request, used for timeouts and cancellation.
-//   - config: *configv1.McpAnyServerConfig. The server configuration containing upstream service definitions.
-//
-// Returns:
-//   - []CheckResult: A slice of results for each checked service.
-//
-// Side Effects:
-//   - Performs network I/O to connect to upstream services.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
 	// Using 'services' variable to support existing loop
 	services := config.GetUpstreamServices()
 	results := make([]CheckResult, 0, len(services))
 
 	// Check upstream services
+	// Summary: CheckService performs a connectivity check for a single service.
+	//
+	// It dispatches the check to the specific handler based on the service type (HTTP, gRPC, etc.)
+	// and handles upstream authentication checks if configured.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - service: *configv1.UpstreamServiceConfig. The configuration of the service to check.
+	//
+	// Returns:
+	//   - CheckResult: The result of the connectivity check.
+	//
+	// Side Effects:
+	//   - Performs network I/O to connect to the upstream service.
+	//
+	// Errors:
+	//   - None.
 	for _, service := range services {
 		if service.GetDisable() {
 			results = append(results, CheckResult{
@@ -91,20 +132,6 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 	return results
 }
 
-// CheckService performs a connectivity check for a single service.
-//
-// It dispatches the check to the specific handler based on the service type (HTTP, gRPC, etc.)
-// and handles upstream authentication checks if configured.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - service: *configv1.UpstreamServiceConfig. The configuration of the service to check.
-//
-// Returns:
-//   - CheckResult: The result of the connectivity check.
-//
-// Side Effects:
-//   - Performs network I/O to connect to the upstream service.
 func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) CheckResult {
 	// 5 second timeout for checks
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)

@@ -2,6 +2,66 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package command provides command execution functionality.
+// Summary: Upstream implements the upstream.Upstream interface for services that
+// are exposed as command-line tools.
+//
+// It discovers and registers tools based on a list of commands defined in the
+// service configuration.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Shutdown implements the upstream.Upstream interface.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+//
+// Returns:
+//   - error: Always returns nil.
+//
+// Side Effects:
+//   - Stops the health checker.
+//
+// Errors:
+//   - None.
+//
+// Summary: NewUpstream creates a new instance of CommandUpstream.
+//
+// Returns:
+//   - upstream.Upstream: A new instance of the command upstream.
+//
+// Side Effects:
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: Register processes the configuration for a command-line service, creates a
+// new tool for each defined command, and registers them with the tool manager.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the registration process.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
+//   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
+//   - promptManager (prompt.ManagerInterface): The manager where discovered prompts will be registered.
+//   - resourceManager (resource.ManagerInterface): The manager where discovered resources will be registered.
+//   - isReload (bool): Indicates whether this is a configuration reload.
+//
+// Returns:
+//   - string: The unique service ID.
+//   - []*configv1.ToolDefinition: A list of registered tool definitions.
+//   - []*configv1.ResourceDefinition: A list of registered resource definitions.
+//   - error: An error if registration fails.
+//
+// Side Effects:
+//   - Starts a health checker for the service.
+//   - Registers tools and prompts with their respective managers.
+//
+// Errors:
+//   - None.
 package command
 
 import (
@@ -26,26 +86,11 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream implements the upstream.Upstream interface for services that
-// are exposed as command-line tools.
-//
-// It discovers and registers tools based on a list of commands defined in the
-// service configuration.
 type Upstream struct {
 	mu      sync.Mutex
 	checker health.Checker
 }
 
-// Shutdown implements the upstream.Upstream interface.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
-//
-// Returns:
-//   - error: Always returns nil.
-//
-// Side Effects:
-//   - Stops the health checker.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -56,37 +101,10 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of CommandUpstream.
-//
-// Returns:
-//   - upstream.Upstream: A new instance of the command upstream.
-//
-// Side Effects:
-//   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
-// Register processes the configuration for a command-line service, creates a
-// new tool for each defined command, and registers them with the tool manager.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the registration process.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
-//   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
-//   - promptManager (prompt.ManagerInterface): The manager where discovered prompts will be registered.
-//   - resourceManager (resource.ManagerInterface): The manager where discovered resources will be registered.
-//   - isReload (bool): Indicates whether this is a configuration reload.
-//
-// Returns:
-//   - string: The unique service ID.
-//   - []*configv1.ToolDefinition: A list of registered tool definitions.
-//   - []*configv1.ResourceDefinition: A list of registered resource definitions.
-//   - error: An error if registration fails.
-//
-// Side Effects:
-//   - Starts a health checker for the service.
-//   - Registers tools and prompts with their respective managers.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

@@ -1,20 +1,11 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package logging
-
-import (
-	"io"
-
-	"github.com/mcpany/core/server/pkg/util"
-)
-
-// RedactingWriter is an io.Writer that redacts sensitive information from JSON logs.
-type RedactingWriter struct {
-	w io.Writer
-}
-
-// Write implements io.Writer.
+// Summary: RedactingWriter is an io.Writer that redacts sensitive information from JSON logs.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Write implements io.Writer.
 //
 // Parameters:
 //   - p ([]byte): The p parameter.
@@ -28,6 +19,18 @@ type RedactingWriter struct {
 //
 // Side Effects:
 //   - None
+package logging
+
+import (
+	"io"
+
+	"github.com/mcpany/core/server/pkg/util"
+)
+
+type RedactingWriter struct {
+	w io.Writer
+}
+
 func (w *RedactingWriter) Write(p []byte) (n int, err error) {
 	// Attempt to redact JSON. RedactJSON handles validation internally.
 	// If it's not valid JSON (e.g. partial write), it returns original input.

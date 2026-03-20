@@ -53,7 +53,7 @@ func TestEnvVarTypoSuggestion(t *testing.T) {
 			shouldSuggest: false,
 		},
 		{
-			name:           "Long_Target_Threshold_Cap",
+			name: "Long_Target_Threshold_Cap",
 			// Length 22. Threshold = 22/3 = 7. Cap at 5.
 			// Distance 4 should match.
 			targetEnv:      "VERY_LONG_ENVIRONMENT_VARIABLE_NAME",
@@ -63,13 +63,13 @@ func TestEnvVarTypoSuggestion(t *testing.T) {
 			suggestionPart: `Did you mean "VERY_LONG_ENVIRONMENT_VARIABLE_NAM"?`,
 		},
 		{
-			name:           "Long_Target_Threshold_Cap_Exceeded",
+			name: "Long_Target_Threshold_Cap_Exceeded",
 			// Length 22. Threshold capped at 5.
 			// If distance is 6, it should NOT match.
-			targetEnv:      "VERY_LONG_ENVIRONMENT_VARIABLE_NAME",
-			setEnv:         "VERY_LONG_ENV_VAR_NAME_CHANGE", // Distance > 5
-			setVal:         "val",
-			shouldSuggest:  false,
+			targetEnv:     "VERY_LONG_ENVIRONMENT_VARIABLE_NAME",
+			setEnv:        "VERY_LONG_ENV_VAR_NAME_CHANGE", // Distance > 5
+			setVal:        "val",
+			shouldSuggest: false,
 		},
 	}
 

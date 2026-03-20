@@ -3,6 +3,50 @@
 
 // Package lint provides functionality for analyzing configuration files
 // to detect potential security issues and best practice violations.
+// Summary: Severity indicates the importance of a linting result.
+//
+// It is used to categorize findings based on their impact and urgency.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Error indicates a critical issue that must be fixed for the system to function correctly or securely.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Warning indicates a potential issue or best practice violation that should be addressed.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Info indicates a suggestion or informational message for optimization or clarity.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: String returns the string representation of the severity.
+//
+// It converts the Severity enum to its string counterpart (ERROR, WARNING, INFO).
+//
+// Returns:
+//   - string: The string representation of the severity.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Result represents a single linting finding.
+//
+// It encapsulates all details about a detected issue, including its severity, location, and description.
+//
+// Side Effects:
+//   - None.
 package lint
 
 import (
@@ -14,26 +58,16 @@ import (
 	"github.com/mcpany/core/server/pkg/config"
 )
 
-// Severity indicates the importance of a linting result.
-//
-// It is used to categorize findings based on their impact and urgency.
 type Severity int
 
 const (
-	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
 	Error Severity = iota
-	// Warning indicates a potential issue or best practice violation that should be addressed.
+
 	Warning
-	// Info indicates a suggestion or informational message for optimization or clarity.
+
 	Info
 )
 
-// String returns the string representation of the severity.
-//
-// It converts the Severity enum to its string counterpart (ERROR, WARNING, INFO).
-//
-// Returns:
-//   - string: The string representation of the severity.
 func (s Severity) String() string {
 	switch s {
 	case Error:
@@ -47,9 +81,6 @@ func (s Severity) String() string {
 	}
 }
 
-// Result represents a single linting finding.
-//
-// It encapsulates all details about a detected issue, including its severity, location, and description.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -58,15 +89,60 @@ type Result struct {
 	// Message is the descriptive text of the finding.
 	Message string
 	// Path is the location in the configuration where the issue was found (e.g., "upstream_services[0].auth").
+	// Summary: String returns the string representation of the result.
+	//
+	// It formats the result into a human-readable string suitable for CLI output.
+	//
+	// Returns:
+	//   - string: A formatted string containing severity, service, path, and message.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: Linter performs static analysis on the configuration.
+	//
+	// It holds the configuration to be analyzed and provides methods to execute various checks.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: NewLinter creates a new Linter instance.
+	//
+	// Parameters:
+	//   - cfg: *configv1.McpAnyServerConfig. The server configuration to be linted.
+	//
+	// Returns:
+	//   - *Linter: A new Linter instance initialized with the provided configuration.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: Run executes all linting checks.
+	//
+	// It aggregates results from multiple check categories including standard validation,
+	// secret usage, shell injection risks, insecure HTTP, and cache settings.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request (currently unused but reserved for future async checks).
+	//
+	// Returns:
+	//   - []Result: A list of linting findings.
+	//   - error: An error if the linting process encounters a fatal issue (currently always nil).
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	Path string
 }
 
-// String returns the string representation of the result.
-//
-// It formats the result into a human-readable string suitable for CLI output.
-//
-// Returns:
-//   - string: A formatted string containing severity, service, path, and message.
 func (r Result) String() string {
 	pathStr := ""
 	if r.Path != "" {
@@ -79,35 +155,14 @@ func (r Result) String() string {
 	return fmt.Sprintf("[%s]%s%s: %s", r.Severity, serviceStr, pathStr, r.Message)
 }
 
-// Linter performs static analysis on the configuration.
-//
-// It holds the configuration to be analyzed and provides methods to execute various checks.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
 
-// NewLinter creates a new Linter instance.
-//
-// Parameters:
-//   - cfg: *configv1.McpAnyServerConfig. The server configuration to be linted.
-//
-// Returns:
-//   - *Linter: A new Linter instance initialized with the provided configuration.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
 
-// Run executes all linting checks.
-//
-// It aggregates results from multiple check categories including standard validation,
-// secret usage, shell injection risks, insecure HTTP, and cache settings.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request (currently unused but reserved for future async checks).
-//
-// Returns:
-//   - []Result: A list of linting findings.
-//   - error: An error if the linting process encounters a fatal issue (currently always nil).
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// Pre-allocate to avoid performance warnings, though initial size is a guess.
 	results := make([]Result, 0, 10)

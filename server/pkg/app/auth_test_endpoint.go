@@ -1,6 +1,14 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: AuthTestRequest defines the structure for an authentication test request.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: AuthTestResponse defines the structure for an authentication test response.
+//
+// Side Effects:
+//   - None.
 package app
 
 import (
@@ -18,14 +26,12 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-// AuthTestRequest defines the structure for an authentication test request.
 type AuthTestRequest struct {
 	CredentialID  string         `json:"credential_id"`
 	ServiceType   string         `json:"service_type"`
 	ServiceConfig map[string]any `json:"service_config"`
 }
 
-// AuthTestResponse defines the structure for an authentication test response.
 type AuthTestResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`

@@ -1,6 +1,51 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Config holds the configuration for the worker.
+//
+// Summary: Configuration for worker pool.
+//
+// Side Effects:
+//   - None.
+//
+// Worker is responsible for processing jobs from the bus.
+//
+// Summary: Processes background jobs.
+//
+// Side Effects:
+//   - None.
+//
+// New creates a new Worker.
+//
+// Summary: Initializes a new Worker.
+//
+// Parameters:
+//   - busProvider: *bus.Provider. The bus provider.
+//   - cfg: *Config. The worker configuration.
+//
+// Returns:
+//   - *Worker: The initialized worker.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Start starts the worker and its background tasks.
+//
+// Summary: Starts the worker processing loop.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the worker.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 package worker
 
 import (
@@ -13,17 +58,11 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Config holds the configuration for the worker.
-//
-// Summary: Configuration for worker pool.
 type Config struct {
 	MaxWorkers   int
 	MaxQueueSize int
 }
 
-// Worker is responsible for processing jobs from the bus.
-//
-// Summary: Processes background jobs.
 type Worker struct {
 	busProvider *bus.Provider
 	pond        pond.Pool
@@ -32,16 +71,6 @@ type Worker struct {
 	wg          sync.WaitGroup
 }
 
-// New creates a new Worker.
-//
-// Summary: Initializes a new Worker.
-//
-// Parameters:
-//   - busProvider: *bus.Provider. The bus provider.
-//   - cfg: *Config. The worker configuration.
-//
-// Returns:
-//   - *Worker: The initialized worker.
 func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	return &Worker{
 		busProvider: busProvider,
@@ -52,12 +81,6 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	}
 }
 
-// Start starts the worker and its background tasks.
-//
-// Summary: Starts the worker processing loop.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the worker.
 func (w *Worker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)

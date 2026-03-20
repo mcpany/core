@@ -2,24 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package profile provides functionality for managing and resolving profiles.
-package profile
-
-import (
-	"fmt"
-	"sync"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"google.golang.org/protobuf/proto"
-)
-
 // Manager handles the lifecycle and resolution of profiles.
 //
 // Summary: Manages profile definitions and resolution.
-type Manager struct {
-	mu       sync.RWMutex
-	profiles map[string]*configv1.ProfileDefinition
-}
-
+//
+// Side Effects:
+//   - None.
+//
 // NewManager creates a new Profile Manager.
 //
 // Summary: Initializes a new Profile Manager.
@@ -29,30 +18,29 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: The initialized manager.
-func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
-	m := &Manager{
-		profiles: make(map[string]*configv1.ProfileDefinition),
-	}
-	m.Update(profiles)
-	return m
-}
-
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
 // Update updates the profile definitions managed by the manager.
 //
 // Summary: Updates the stored profile definitions.
 //
 // Parameters:
 //   - profiles: []*configv1.ProfileDefinition. The new list of profiles.
-func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
-	newProfiles := make(map[string]*configv1.ProfileDefinition)
-	for _, p := range profiles {
-		newProfiles[p.GetName()] = p
-	}
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	m.profiles = newProfiles
-}
-
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
 // GetProfileDefinition returns the profile definition by name.
 //
 // Summary: Retrieves a profile definition.
@@ -63,13 +51,13 @@ func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 // Returns:
 //   - *configv1.ProfileDefinition: The profile definition.
 //   - bool: True if found.
-func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition, bool) {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-	p, ok := m.profiles[name]
-	return p, ok
-}
-
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
 // ResolveProfile computes the final effective configuration for a given profile,
 // applying inheritance and overrides.
 //
@@ -82,6 +70,52 @@ func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition
 //   - map[string]*configv1.ProfileServiceConfig: Merged service configs.
 //   - map[string]*configv1.SecretValue: Merged secrets.
 //   - error: Error if profile not found or cycle detected.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+package profile
+
+import (
+	"fmt"
+	"sync"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"google.golang.org/protobuf/proto"
+)
+
+type Manager struct {
+	mu       sync.RWMutex
+	profiles map[string]*configv1.ProfileDefinition
+}
+
+func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
+	m := &Manager{
+		profiles: make(map[string]*configv1.ProfileDefinition),
+	}
+	m.Update(profiles)
+	return m
+}
+
+func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
+	newProfiles := make(map[string]*configv1.ProfileDefinition)
+	for _, p := range profiles {
+		newProfiles[p.GetName()] = p
+	}
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.profiles = newProfiles
+}
+
+func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition, bool) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	p, ok := m.profiles[name]
+	return p, ok
+}
+
 func (m *Manager) ResolveProfile(profileName string) (map[string]*configv1.ProfileServiceConfig, map[string]*configv1.SecretValue, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

@@ -71,7 +71,7 @@ func TestCheckConnection(t *testing.T) {
 	err = CheckConnection(ctx, "http://127.0.0.1")
 	assert.Error(t, err)
 
-    // https -> 443
-    err = CheckConnection(ctx, "https://127.0.0.1")
-    assert.Error(t, err)
+	// https -> 443
+	err = CheckConnection(ctx, "https://127.0.0.1")
+	assert.Error(t, err)
 }

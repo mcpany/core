@@ -19,7 +19,7 @@ func TestLocalCommandTool_SSHInjection_Prevention(t *testing.T) {
 	// This test verifies that arguments to 'ssh' command are checked for shell injection.
 
 	tool := v1.Tool_builder{
-		Name:        proto.String("test-tool-ssh"),
+		Name: proto.String("test-tool-ssh"),
 	}.Build()
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("ssh"), // Now considered a shell command

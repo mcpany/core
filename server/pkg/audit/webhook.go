@@ -1,6 +1,26 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: WebhookAuditStore sends audit logs to a configured webhook URL.
+//
+// Side Effects:
+//   - None.
+//
+// NewWebhookAuditStore creates a new WebhookAuditStore.
+//
+// Summary: Creates a new webhook audit store.
+//
+// Parameters:
+//   - webhookURL (string): The URL to send audit logs to.
+//   - headers (map[string]string): Additional headers to send with the request.
+//
+// Returns:
+//   - *WebhookAuditStore: A new WebhookAuditStore instance.
+//
+// Side Effects:
+//   - Starts background workers.
+//
+// Errors:
+//   - None.
 package audit
 
 import (
@@ -21,7 +41,6 @@ const (
 	webhookBatchWait  = 1 * time.Second
 )
 
-// WebhookAuditStore sends audit logs to a configured webhook URL.
 type WebhookAuditStore struct {
 	webhookURL string
 	headers    map[string]string
@@ -31,19 +50,6 @@ type WebhookAuditStore struct {
 	done       chan struct{}
 }
 
-// NewWebhookAuditStore creates a new WebhookAuditStore.
-//
-// Summary: Creates a new webhook audit store.
-//
-// Parameters:
-//   - webhookURL (string): The URL to send audit logs to.
-//   - headers (map[string]string): Additional headers to send with the request.
-//
-// Returns:
-//   - *WebhookAuditStore: A new WebhookAuditStore instance.
-//
-// Side Effects:
-//   - Starts background workers.
 func NewWebhookAuditStore(webhookURL string, headers map[string]string) *WebhookAuditStore {
 	store := &WebhookAuditStore{
 		webhookURL: webhookURL,
@@ -86,6 +92,54 @@ func (s *WebhookAuditStore) worker() {
 			}
 		case <-s.done:
 			// Drain queue
+			// Write writes an audit entry to the webhook (buffered).
+			//
+			// Summary: Queues an audit entry for sending.
+			//
+			// Parameters:
+			//   - _ (context.Context): Unused context.
+			//   - entry (Entry): The audit entry to write.
+			//
+			// Returns:
+			//   - error: An error if the queue is full.
+			//
+			// Side Effects:
+			//   - Queues the entry for processing.
+			//
+			// Errors:
+			//   - None.
+			// Read implements the Store interface.
+			//
+			// Summary: Reads audit logs (not implemented for webhook store).
+			//
+			// Parameters:
+			//   - _ (context.Context): Unused.
+			//   - _ (Filter): Unused.
+			//
+			// Returns:
+			//   - []Entry: Always nil.
+			//   - error: Always returns an error indicating not implemented.
+			//
+			// Side Effects:
+			//   - None.
+			//
+			// Errors:
+			//   - None.
+			// Close stops the workers and drains the queue.
+			//
+			// Summary: Gracefully shuts down the webhook store.
+			//
+			// Parameters:
+			//   - None.
+			//
+			// Returns:
+			//   - error: Always nil.
+			//
+			// Side Effects:
+			//   - Stops background workers and drains the queue.
+			//
+			// Errors:
+			//   - None.
 			for entry := range s.queue {
 				batch = append(batch, entry)
 				if len(batch) >= webhookBatchSize {
@@ -99,19 +153,6 @@ func (s *WebhookAuditStore) worker() {
 	}
 }
 
-// Write writes an audit entry to the webhook (buffered).
-//
-// Summary: Queues an audit entry for sending.
-//
-// Parameters:
-//   - _ (context.Context): Unused context.
-//   - entry (Entry): The audit entry to write.
-//
-// Returns:
-//   - error: An error if the queue is full.
-//
-// Side Effects:
-//   - Queues the entry for processing.
 func (s *WebhookAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case s.queue <- entry:
@@ -156,36 +197,10 @@ func (s *WebhookAuditStore) sendBatch(batch []Entry) {
 	}
 }
 
-// Read implements the Store interface.
-//
-// Summary: Reads audit logs (not implemented for webhook store).
-//
-// Parameters:
-//   - _ (context.Context): Unused.
-//   - _ (Filter): Unused.
-//
-// Returns:
-//   - []Entry: Always nil.
-//   - error: Always returns an error indicating not implemented.
-//
-// Side Effects:
-//   - None.
 func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for webhook audit store")
 }
 
-// Close stops the workers and drains the queue.
-//
-// Summary: Gracefully shuts down the webhook store.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - error: Always nil.
-//
-// Side Effects:
-//   - Stops background workers and drains the queue.
 func (s *WebhookAuditStore) Close() error {
 	if s.done != nil {
 		close(s.done)

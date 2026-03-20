@@ -1,42 +1,28 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package mcpserver
-
-import (
-	"fmt"
-	"sync"
-
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/util"
-)
-
-// TemporaryToolManager is a tool manager that stores service info and tools temporarily.
+// Summary: TemporaryToolManager is a tool manager that stores service info and tools temporarily.
 //
 // It is intended for use in ValidateService where we need to store service info
 // and discovered tools for the duration of the validation request but discard them afterwards.
-type TemporaryToolManager struct {
-	NoOpToolManager
-	mu          sync.RWMutex
-	serviceInfo map[string]*tool.ServiceInfo
-	tools       map[string]tool.Tool
-}
-
-// NewTemporaryToolManager creates a new TemporaryToolManager.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: NewTemporaryToolManager creates a new TemporaryToolManager.
 //
 // Returns:
 //   - *TemporaryToolManager: A new instance of TemporaryToolManager.
 //
 // Side Effects:
 //   - None.
-func NewTemporaryToolManager() *TemporaryToolManager {
-	return &TemporaryToolManager{
-		serviceInfo: make(map[string]*tool.ServiceInfo),
-		tools:       make(map[string]tool.Tool),
-	}
-}
-
-// AddServiceInfo implements tool.ManagerInterface.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: AddServiceInfo implements tool.ManagerInterface.
 //
 // Parameters:
 //   - serviceID (string): The ID of the service.
@@ -44,16 +30,14 @@ func NewTemporaryToolManager() *TemporaryToolManager {
 //
 // Side Effects:
 //   - Updates the internal service info map.
-func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	if m.serviceInfo == nil {
-		m.serviceInfo = make(map[string]*tool.ServiceInfo)
-	}
-	m.serviceInfo[serviceID] = info
-}
-
-// GetServiceInfo implements tool.ManagerInterface.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: GetServiceInfo implements tool.ManagerInterface.
 //
 // Parameters:
 //   - serviceID (string): The ID of the service.
@@ -64,6 +48,99 @@ func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.Servi
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: AddTool implements tool.ManagerInterface.
+//
+// Parameters:
+//   - t (tool.Tool): The tool to add.
+//
+// Returns:
+//   - error: An error if the tool service ID is empty or name sanitization fails.
+//
+// Side Effects:
+//   - Updates the internal tool map.
+//
+// Errors:
+//   - None.
+//
+// Summary: GetTool implements tool.ManagerInterface.
+//
+// Parameters:
+//   - toolName (string): The name of the tool.
+//
+// Returns:
+//   - tool.Tool: The tool if found.
+//   - bool: True if the tool exists.
+//
+// Side Effects:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: ListTools implements tool.ManagerInterface.
+//
+// Returns:
+//   - []tool.Tool: A list of all tools.
+//
+// Side Effects:
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: GetToolCountForService implements tool.ManagerInterface.
+//
+// Parameters:
+//   - serviceID (string): The ID of the service.
+//
+// Returns:
+//   - int: The number of tools for the service.
+//
+// Side Effects:
+//   - None.
+//
+// Errors:
+//   - None.
+package mcpserver
+
+import (
+	"fmt"
+	"sync"
+
+	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/util"
+)
+
+type TemporaryToolManager struct {
+	NoOpToolManager
+	mu          sync.RWMutex
+	serviceInfo map[string]*tool.ServiceInfo
+	tools       map[string]tool.Tool
+}
+
+func NewTemporaryToolManager() *TemporaryToolManager {
+	return &TemporaryToolManager{
+		serviceInfo: make(map[string]*tool.ServiceInfo),
+		tools:       make(map[string]tool.Tool),
+	}
+}
+
+func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if m.serviceInfo == nil {
+		m.serviceInfo = make(map[string]*tool.ServiceInfo)
+	}
+	m.serviceInfo[serviceID] = info
+}
+
 func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -74,16 +151,6 @@ func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceIn
 	return info, ok
 }
 
-// AddTool implements tool.ManagerInterface.
-//
-// Parameters:
-//   - t (tool.Tool): The tool to add.
-//
-// Returns:
-//   - error: An error if the tool service ID is empty or name sanitization fails.
-//
-// Side Effects:
-//   - Updates the internal tool map.
 func (m *TemporaryToolManager) AddTool(t tool.Tool) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -106,17 +173,6 @@ func (m *TemporaryToolManager) AddTool(t tool.Tool) error {
 	return nil
 }
 
-// GetTool implements tool.ManagerInterface.
-//
-// Parameters:
-//   - toolName (string): The name of the tool.
-//
-// Returns:
-//   - tool.Tool: The tool if found.
-//   - bool: True if the tool exists.
-//
-// Side Effects:
-//   - None.
 func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -127,13 +183,6 @@ func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	return t, ok
 }
 
-// ListTools implements tool.ManagerInterface.
-//
-// Returns:
-//   - []tool.Tool: A list of all tools.
-//
-// Side Effects:
-//   - None.
 func (m *TemporaryToolManager) ListTools() []tool.Tool {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -147,16 +196,6 @@ func (m *TemporaryToolManager) ListTools() []tool.Tool {
 	return list
 }
 
-// GetToolCountForService implements tool.ManagerInterface.
-//
-// Parameters:
-//   - serviceID (string): The ID of the service.
-//
-// Returns:
-//   - int: The number of tools for the service.
-//
-// Side Effects:
-//   - None.
 func (m *TemporaryToolManager) GetToolCountForService(serviceID string) int {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

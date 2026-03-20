@@ -1,6 +1,9 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: Provider defines the interface for a filesystem provider.
+//
+// Side Effects:
+//   - None.
 package provider
 
 import (
@@ -9,7 +12,6 @@ import (
 	"github.com/spf13/afero"
 )
 
-// Provider defines the interface for a filesystem provider.
 type Provider interface {
 	io.Closer
 

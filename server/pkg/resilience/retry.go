@@ -1,23 +1,10 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package resilience
-
-import (
-	"context"
-	"errors"
-	"time"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/util"
-	"google.golang.org/protobuf/types/known/durationpb"
-)
-
-// Retry implements a retry policy for failed operations.
-type Retry struct {
-	config *configv1.RetryConfig
-}
-
+// Summary: Retry implements a retry policy for failed operations.
+//
+// Side Effects:
+//   - None.
+//
 // NewRetry creates a new Retry instance with the given configuration.
 // It sets default values for base and max backoff if they are not provided.
 //
@@ -31,6 +18,43 @@ type Retry struct {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - None.
+//
+// Execute runs the provided work function, retrying it if it fails according
+// to the configured policy.
+//
+// Summary: Executes a function with retries.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - work (func(context.Context) error): The function to execute.
+//
+// Returns:
+//   - error: An error if all retries fail.
+//
+// Side Effects:
+//   - Executes the provided function multiple times.
+//
+// Errors:
+//   - None.
+package resilience
+
+import (
+	"context"
+	"errors"
+	"time"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
+	"google.golang.org/protobuf/types/known/durationpb"
+)
+
+type Retry struct {
+	config *configv1.RetryConfig
+}
+
 func NewRetry(config *configv1.RetryConfig) *Retry {
 	if config == nil {
 		config = &configv1.RetryConfig{}
@@ -46,20 +70,6 @@ func NewRetry(config *configv1.RetryConfig) *Retry {
 	}
 }
 
-// Execute runs the provided work function, retrying it if it fails according
-// to the configured policy.
-//
-// Summary: Executes a function with retries.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - work (func(context.Context) error): The function to execute.
-//
-// Returns:
-//   - error: An error if all retries fail.
-//
-// Side Effects:
-//   - Executes the provided function multiple times.
 func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) error {
 	var err error
 	// Use int64 for attempts to match usage, though retries count is usually small.

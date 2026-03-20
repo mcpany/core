@@ -1,6 +1,9 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: BuiltinServiceCollections contains the official service collections.
+//
+// Side Effects:
+//   - None.
 package app
 
 import (
@@ -8,7 +11,6 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// BuiltinServiceCollections contains the official service collections.
 var BuiltinServiceCollections []*configv1.Collection
 
 func init() {

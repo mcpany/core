@@ -2,31 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package update provides functionality for self-updating the application.
-package update
-
-import (
-	"context"
-	"crypto/sha256"
-	"encoding/hex"
-	"fmt"
-	"io"
-	"net/http"
-	"net/url"
-	"strings"
-
-	"github.com/google/go-github/v39/github"
-	"github.com/spf13/afero"
-)
-
-// Updater handles the self-update process.
+// Summary: Updater handles the self-update process.
 //
 // It manages checking for updates on GitHub and applying them to the local executable.
-type Updater struct {
-	client     *github.Client
-	httpClient *http.Client
-}
-
-// NewUpdater creates a new Updater.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: NewUpdater creates a new Updater.
 //
 // Parameters:
 //   - httpClient: *http.Client. The HTTP client to use for network requests. If nil, http.DefaultClient is used.
@@ -34,24 +17,14 @@ type Updater struct {
 //
 // Returns:
 //   - *Updater: A new Updater instance.
-func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
-	if httpClient == nil {
-		httpClient = http.DefaultClient
-	}
-	client := github.NewClient(httpClient)
-	if githubAPIURL != "" {
-		baseURL, err := url.Parse(githubAPIURL)
-		if err == nil {
-			if !strings.HasSuffix(baseURL.Path, "/") {
-				baseURL.Path += "/"
-			}
-			client.BaseURL = baseURL
-		}
-	}
-	return &Updater{client: client, httpClient: httpClient}
-}
-
-// CheckForUpdate checks for a new release on GitHub.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: CheckForUpdate checks for a new release on GitHub.
 //
 // It compares the provided current version tag with the latest release tag on the repository.
 //
@@ -65,20 +38,14 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 //   - *github.RepositoryRelease: The release information if an update is available, nil otherwise.
 //   - bool: True if a newer version is available, false otherwise.
 //   - error: An error if the check fails (e.g., network error, API rate limit).
-func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersion string) (*github.RepositoryRelease, bool, error) {
-	release, _, err := u.client.Repositories.GetLatestRelease(ctx, owner, repo)
-	if err != nil {
-		return nil, false, fmt.Errorf("failed to get latest release: %w", err)
-	}
-
-	if release.GetTagName() == currentVersion {
-		return nil, false, nil
-	}
-
-	return release, true, nil
-}
-
-// UpdateTo downloads the new release, verifies its checksum, and replaces the current executable.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: UpdateTo downloads the new release, verifies its checksum, and replaces the current executable.
 //
 // It handles downloading artifacts, verifying SHA256 checksums, and safely swapping the binary.
 //
@@ -96,6 +63,60 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 // Side Effects:
 //   - Writes temporary files to disk.
 //   - Modifies the executable file on disk.
+//
+// Errors:
+//   - None.
+package update
+
+import (
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+	"strings"
+
+	"github.com/google/go-github/v39/github"
+	"github.com/spf13/afero"
+)
+
+type Updater struct {
+	client     *github.Client
+	httpClient *http.Client
+}
+
+func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
+	if httpClient == nil {
+		httpClient = http.DefaultClient
+	}
+	client := github.NewClient(httpClient)
+	if githubAPIURL != "" {
+		baseURL, err := url.Parse(githubAPIURL)
+		if err == nil {
+			if !strings.HasSuffix(baseURL.Path, "/") {
+				baseURL.Path += "/"
+			}
+			client.BaseURL = baseURL
+		}
+	}
+	return &Updater{client: client, httpClient: httpClient}
+}
+
+func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersion string) (*github.RepositoryRelease, bool, error) {
+	release, _, err := u.client.Repositories.GetLatestRelease(ctx, owner, repo)
+	if err != nil {
+		return nil, false, fmt.Errorf("failed to get latest release: %w", err)
+	}
+
+	if release.GetTagName() == currentVersion {
+		return nil, false, nil
+	}
+
+	return release, true, nil
+}
+
 func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath string, release *github.RepositoryRelease, assetName, checksumsAssetName string) error {
 	var asset *github.ReleaseAsset
 	for _, a := range release.Assets {

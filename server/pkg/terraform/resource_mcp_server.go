@@ -2,17 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package terraform provides a Terraform provider skeleton.
-package terraform
-
-// ResourceMCPServer represents the configuration schema for an MCP Server resource
+// Summary: ResourceMCPServer represents the configuration schema for an MCP Server resource
 // This would map to hashicorp/terraform-plugin-sdk in a real provider.
-type ResourceMCPServer struct {
-	Name    string
-	Port    int
-	Enabled bool
-}
-
-// Schema returns the Terraform schema definition (Mock). Returns the result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Schema returns the Terraform schema definition (Mock). Returns the result.
 //
 // Parameters:
 //   - None
@@ -25,6 +21,28 @@ type ResourceMCPServer struct {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Create mimics the Create operation of a Terraform resource. _ is an unused parameter. Returns an error if the operation fails.
+//
+// Parameters:
+//   - _ (*ResourceMCPServer): The _ parameter.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None
+package terraform
+
+type ResourceMCPServer struct {
+	Name    string
+	Port    int
+	Enabled bool
+}
+
 func Schema() map[string]interface{} {
 	return map[string]interface{}{
 		"name": map[string]interface{}{
@@ -47,38 +65,25 @@ func Schema() map[string]interface{} {
 	}
 }
 
-// Create mimics the Create operation of a Terraform resource. _ is an unused parameter. Returns an error if the operation fails.
-//
-// Parameters:
-//   - _ (*ResourceMCPServer): The _ parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
 func Create(_ *ResourceMCPServer) error {
 	// Simulate API call to provision resources
+	// Summary: Read mimics the Read operation. name is the name of the resource. Returns the result. Returns an error if the operation fails.
+	//
+	// Parameters:
+	//   - name (string): The name parameter.
+	//
+	// Returns:
+	//   - *ResourceMCPServer: The resulting *ResourceMCPServer.
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if the operation fails or is invalid.
+	//
+	// Side Effects:
+	//   - None
 	return nil
 }
 
-// Read mimics the Read operation. name is the name of the resource. Returns the result. Returns an error if the operation fails.
-//
-// Parameters:
-//   - name (string): The name parameter.
-//
-// Returns:
-//   - *ResourceMCPServer: The resulting *ResourceMCPServer.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
 func Read(name string) (*ResourceMCPServer, error) {
 	return &ResourceMCPServer{
 		Name:    name,

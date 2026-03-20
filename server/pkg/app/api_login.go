@@ -1,6 +1,14 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: LoginRequest is the request body for login.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: LoginResponse is the response body for login.
+//
+// Side Effects:
+//   - None.
 package app
 
 import (
@@ -12,13 +20,11 @@ import (
 	"github.com/mcpany/core/server/pkg/util/passhash"
 )
 
-// LoginRequest is the request body for login.
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-// LoginResponse is the response body for login.
 type LoginResponse struct {
 	Token string `json:"token"`
 }

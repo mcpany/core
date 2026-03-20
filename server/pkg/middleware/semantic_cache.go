@@ -1,6 +1,11 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// EmbeddingProvider defines the interface for fetching text embeddings.
+//
+// Summary: Interface for services that can generate vector embeddings from text.
+//
+// Side Effects:
+//   - None.
 package middleware
 
 import (
@@ -8,9 +13,6 @@ import (
 	"time"
 )
 
-// EmbeddingProvider defines the interface for fetching text embeddings.
-//
-// Summary: Interface for services that can generate vector embeddings from text.
 type EmbeddingProvider interface {
 	// Embed generates an embedding vector for the given text.
 	//
@@ -21,12 +23,15 @@ type EmbeddingProvider interface {
 	// Returns:
 	//   - []float32: The resulting embedding vector.
 	//   - error: An error if generation fails.
+	// VectorStore defines the interface for storing and searching vectors.
+	//
+	// Summary: Interface for storage backends that support vector similarity search.
+	//
+	// Side Effects:
+	//   - None.
 	Embed(ctx context.Context, text string) ([]float32, error)
 }
 
-// VectorStore defines the interface for storing and searching vectors.
-//
-// Summary: Interface for storage backends that support vector similarity search.
 type VectorStore interface {
 	// Add adds a new entry to the vector store.
 	//
@@ -59,33 +64,39 @@ type VectorStore interface {
 	// Parameters:
 	//   - ctx: context.Context. The context for the request.
 	//   - key: string. Optional key to restrict pruning scope.
+	// SemanticCache implements a semantic cache using embeddings and cosine similarity.
+	//
+	// Summary: A cache implementation that uses semantic similarity rather than exact key matching.
+	//
+	// Side Effects:
+	//   - None.
+	// NewSemanticCache creates a new SemanticCache.
+	//
+	// Summary: Initializes a new SemanticCache.
+	//
+	// Parameters:
+	//   - provider: EmbeddingProvider. The service to generate embeddings.
+	//   - store: VectorStore. The storage backend for vectors.
+	//   - threshold: float32. The minimum similarity score (0-1) to consider a hit.
+	//
+	// Returns:
+	//   - *SemanticCache: The initialized semantic cache.
+	//
+	// Side Effects:
+	//   - Sets a default threshold of 0.9 if the provided threshold is <= 0.
+	//   - Creates a memory-based vector store if store is nil.
+	//
+	// Errors:
+	//   - None.
 	Prune(ctx context.Context, key string)
 }
 
-// SemanticCache implements a semantic cache using embeddings and cosine similarity.
-//
-// Summary: A cache implementation that uses semantic similarity rather than exact key matching.
 type SemanticCache struct {
 	provider  EmbeddingProvider
 	store     VectorStore
 	threshold float32
 }
 
-// NewSemanticCache creates a new SemanticCache.
-//
-// Summary: Initializes a new SemanticCache.
-//
-// Parameters:
-//   - provider: EmbeddingProvider. The service to generate embeddings.
-//   - store: VectorStore. The storage backend for vectors.
-//   - threshold: float32. The minimum similarity score (0-1) to consider a hit.
-//
-// Returns:
-//   - *SemanticCache: The initialized semantic cache.
-//
-// Side Effects:
-//   - Sets a default threshold of 0.9 if the provided threshold is <= 0.
-//   - Creates a memory-based vector store if store is nil.
 func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold float32) *SemanticCache {
 	if threshold <= 0 {
 		threshold = 0.9 // Default high threshold
@@ -121,19 +132,7 @@ func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold f
 // Side Effects:
 //   - calls the EmbeddingProvider to generate an embedding.
 //   - calls the VectorStore to search for matches.
-func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any, []float32, bool, error) {
-	embedding, err := c.provider.Embed(ctx, input)
-	if err != nil {
-		return nil, nil, false, err
-	}
-
-	result, score, found := c.store.Search(ctx, key, embedding)
-	if found && score >= c.threshold {
-		return result, embedding, true, nil
-	}
-	return nil, embedding, false, nil
-}
-
+//
 // Set adds a result to the cache using the provided embedding.
 //
 // Summary: Caches a result associated with a specific embedding.
@@ -150,6 +149,22 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 //
 // Side Effects:
 //   - Writes to the underlying VectorStore.
+//
+// Errors:
+//   - None.
+func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any, []float32, bool, error) {
+	embedding, err := c.provider.Embed(ctx, input)
+	if err != nil {
+		return nil, nil, false, err
+	}
+
+	result, score, found := c.store.Search(ctx, key, embedding)
+	if found && score >= c.threshold {
+		return result, embedding, true, nil
+	}
+	return nil, embedding, false, nil
+}
+
 func (c *SemanticCache) Set(ctx context.Context, key string, embedding []float32, result any, ttl time.Duration) error {
 	return c.store.Add(ctx, key, embedding, result, ttl)
 }

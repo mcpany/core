@@ -1,6 +1,9 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: ValidateRequest represents the request body for the validation endpoint.
+//
+// Side Effects:
+//   - None.
 package app
 
 import (
@@ -13,13 +16,15 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-// ValidateRequest represents the request body for the validation endpoint.
 type ValidateRequest struct {
 	Content string `json:"content"`
 	Format  string `json:"format"` // "json" or "yaml"
+	// Summary: ValidateResponse represents the response body for the validation endpoint.
+	//
+	// Side Effects:
+	//   - None.
 }
 
-// ValidateResponse represents the response body for the validation endpoint.
 type ValidateResponse struct {
 	Valid   bool   `json:"valid"`
 	Error   string `json:"error,omitempty"`

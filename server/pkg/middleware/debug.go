@@ -1,18 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"context"
-	"encoding/json"
-	"log/slog"
-
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
-// DebugMiddleware returns a middleware function that logs the full request and response of each MCP method call. This is useful for debugging and understanding the flow of data through the server.
+// Summary: DebugMiddleware returns a middleware function that logs the full request and response of each MCP method call. This is useful for debugging and understanding the flow of data through the server.
 //
 // Parameters:
 //   - None
@@ -25,6 +13,17 @@ import (
 //
 // Side Effects:
 //   - None
+package middleware
+
+import (
+	"context"
+	"encoding/json"
+	"log/slog"
+
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+)
+
 func DebugMiddleware() mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {

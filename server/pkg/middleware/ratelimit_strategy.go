@@ -1,6 +1,9 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: Limiter interface defines the methods required for a rate limiter.
+//
+// Side Effects:
+//   - None.
 package middleware
 
 import (
@@ -9,7 +12,6 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Limiter interface defines the methods required for a rate limiter.
 type Limiter interface {
 	// Allow checks if the request is allowed.
 	//
@@ -30,10 +32,13 @@ type Limiter interface {
 	//
 	// rps is the rps.
 	// burst is the burst.
+	// Summary: RateLimitStrategy defines the interface for creating rate limiters.
+	//
+	// Side Effects:
+	//   - None.
 	Update(rps float64, burst int)
 }
 
-// RateLimitStrategy defines the interface for creating rate limiters.
 type RateLimitStrategy interface {
 	// Create creates a new Limiter instance.
 	//

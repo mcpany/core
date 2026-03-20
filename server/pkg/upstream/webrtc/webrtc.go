@@ -2,45 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package webrtc provides WebRTC upstream integration.
-package webrtc
-
-import (
-	"context"
-	"crypto/sha256"
-	"encoding/hex"
-	"errors"
-	"fmt"
-	"sync"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/alexliesenfeld/health"
-	pb "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/mcpany/core/server/pkg/auth"
-	mcphealth "github.com/mcpany/core/server/pkg/health"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/pool"
-	"github.com/mcpany/core/server/pkg/prompt"
-	"github.com/mcpany/core/server/pkg/resource"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/upstream"
-	"github.com/mcpany/core/server/pkg/util"
-	"github.com/mcpany/core/server/pkg/util/schemaconv"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
-)
-
-type sanitizer func(string) (string, error)
-
-// Upstream implements the upstream.Upstream interface for services that
+// Summary: Upstream implements the upstream.Upstream interface for services that
 // communicate over WebRTC data channels.
-type Upstream struct {
-	poolManager       *pool.Manager
-	toolNameSanitizer sanitizer
-	checker           health.Checker
-	mu                sync.RWMutex
-}
-
-// CheckHealth performs a health check on the upstream service.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: CheckHealth performs a health check on the upstream service.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -53,22 +21,8 @@ type Upstream struct {
 //
 // Side Effects:
 //   - None.
-func (u *Upstream) CheckHealth(ctx context.Context) error {
-	u.mu.RLock()
-	checker := u.checker
-	u.mu.RUnlock()
-
-	if checker != nil {
-		res := checker.Check(ctx)
-		if res.Status != health.StatusUp {
-			return fmt.Errorf("health check failed: %v", res)
-		}
-		return nil
-	}
-	return nil
-}
-
-// Shutdown is a no-op for the WebRTC upstream, as connections are transient
+//
+// Summary: Shutdown is a no-op for the WebRTC upstream, as connections are transient
 // and not managed by a persistent pool.
 //
 // Parameters:
@@ -82,18 +36,8 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // Side Effects:
 //   - None.
-func (u *Upstream) Shutdown(_ context.Context) error {
-	u.mu.Lock()
-	if u.checker != nil {
-		if c, ok := u.checker.(interface{ Stop() }); ok {
-			c.Stop()
-		}
-	}
-	u.mu.Unlock()
-	return nil
-}
-
-// NewUpstream creates a new instance of WebrtcUpstream.
+//
+// Summary: NewUpstream creates a new instance of WebrtcUpstream.
 //
 // Parameters:
 //   - poolManager (*pool.Manager): The parameter.
@@ -103,14 +47,11 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - None.
-func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
-	return &Upstream{
-		poolManager:       poolManager,
-		toolNameSanitizer: util.SanitizeToolName,
-	}
-}
-
-// Register processes the configuration for a WebRTC service, creating and registering tools for each call definition specified in the configuration.
+//
+// Errors:
+//   - None.
+//
+// Summary: Register processes the configuration for a WebRTC service, creating and registering tools for each call definition specified in the configuration.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -131,6 +72,75 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //
 // Side Effects:
 //   - None
+package webrtc
+
+import (
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"errors"
+	"fmt"
+	"sync"
+
+	"github.com/alexliesenfeld/health"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	pb "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/auth"
+	mcphealth "github.com/mcpany/core/server/pkg/health"
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/prompt"
+	"github.com/mcpany/core/server/pkg/resource"
+	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/upstream"
+	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/util/schemaconv"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
+)
+
+type sanitizer func(string) (string, error)
+
+type Upstream struct {
+	poolManager       *pool.Manager
+	toolNameSanitizer sanitizer
+	checker           health.Checker
+	mu                sync.RWMutex
+}
+
+func (u *Upstream) CheckHealth(ctx context.Context) error {
+	u.mu.RLock()
+	checker := u.checker
+	u.mu.RUnlock()
+
+	if checker != nil {
+		res := checker.Check(ctx)
+		if res.Status != health.StatusUp {
+			return fmt.Errorf("health check failed: %v", res)
+		}
+		return nil
+	}
+	return nil
+}
+
+func (u *Upstream) Shutdown(_ context.Context) error {
+	u.mu.Lock()
+	if u.checker != nil {
+		if c, ok := u.checker.(interface{ Stop() }); ok {
+			c.Stop()
+		}
+	}
+	u.mu.Unlock()
+	return nil
+}
+
+func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
+	return &Upstream{
+		poolManager:       poolManager,
+		toolNameSanitizer: util.SanitizeToolName,
+	}
+}
+
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

@@ -36,37 +36,16 @@ import (
 
 // httpMethodToString converts the protobuf enum for an HTTP method into its
 // corresponding string representation from the net/http package.
-func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, error) {
-	switch method {
-	case configv1.HttpCallDefinition_HTTP_METHOD_GET:
-		return http.MethodGet, nil
-	case configv1.HttpCallDefinition_HTTP_METHOD_POST:
-		return http.MethodPost, nil
-	case configv1.HttpCallDefinition_HTTP_METHOD_PUT:
-		return http.MethodPut, nil
-	case configv1.HttpCallDefinition_HTTP_METHOD_DELETE:
-		return http.MethodDelete, nil
-	case configv1.HttpCallDefinition_HTTP_METHOD_PATCH:
-		return http.MethodPatch, nil
-	default:
-		return "", fmt.Errorf("unsupported HTTP method: %v", method)
-	}
-}
-
-// Upstream implements the upstream.Upstream interface for services that are
+// Summary: Upstream implements the upstream.Upstream interface for services that are
 // exposed via standard HTTP endpoints.
 //
 // It handles the registration of tools defined in the service configuration
 // and manages connection pooling for HTTP requests.
-type Upstream struct {
-	poolManager *pool.Manager
-	serviceID   string
-	address     string
-	checker     health.Checker
-	mu          sync.RWMutex
-}
-
-// CheckHealth performs a health check on the upstream service.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: CheckHealth performs a health check on the upstream service.
 //
 // It uses a configured health checker if available, or falls back to a basic
 // TCP connection check to the service address.
@@ -82,26 +61,8 @@ type Upstream struct {
 //
 // Side Effects:
 //   - May establish a network connection to the service.
-func (u *Upstream) CheckHealth(ctx context.Context) error {
-	u.mu.RLock()
-	checker := u.checker
-	address := u.address
-	u.mu.RUnlock()
-
-	if checker != nil {
-		res := checker.Check(ctx)
-		if res.Status != health.StatusUp {
-			return fmt.Errorf("health check failed: %v", res)
-		}
-		return nil
-	}
-	if address == "" {
-		return fmt.Errorf("no address configured")
-	}
-	return util.CheckConnection(ctx, address)
-}
-
-// Shutdown gracefully terminates the HTTP upstream service by shutting down the
+//
+// Summary: Shutdown gracefully terminates the HTTP upstream service by shutting down the
 // associated connection pool.
 //
 // Parameters:
@@ -113,21 +74,11 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Side Effects:
 //   - Stops the health checker.
 //   - Deregisters the connection pool.
-func (u *Upstream) Shutdown(_ context.Context) error {
-	u.mu.Lock()
-	if u.checker != nil {
-		if c, ok := u.checker.(interface{ Stop() }); ok {
-			c.Stop()
-		}
-	}
-	serviceID := u.serviceID
-	u.mu.Unlock()
-
-	u.poolManager.Deregister(serviceID)
-	return nil
-}
-
-// NewUpstream creates a new instance of Upstream.
+//
+// Errors:
+//   - None.
+//
+// Summary: NewUpstream creates a new instance of Upstream.
 //
 // Parameters:
 //   - poolManager (*pool.Manager): The connection pool manager to be used for managing HTTP connections.
@@ -137,13 +88,11 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - Allocates memory for the Upstream struct.
-func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
-	return &Upstream{
-		poolManager: poolManager,
-	}
-}
-
-// Register processes the configuration for an HTTP service, creates a connection
+//
+// Errors:
+//   - None.
+//
+// Summary: Register processes the configuration for an HTTP service, creates a connection
 // pool for it, and then creates and registers tools for each call definition
 // specified in the configuration.
 //
@@ -169,6 +118,70 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - Creates and registers a new HTTP connection pool.
 //   - Starts a health checker for the service.
 //   - Registers tools and prompts with their respective managers.
+func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, error) {
+	switch method {
+	case configv1.HttpCallDefinition_HTTP_METHOD_GET:
+		return http.MethodGet, nil
+	case configv1.HttpCallDefinition_HTTP_METHOD_POST:
+		return http.MethodPost, nil
+	case configv1.HttpCallDefinition_HTTP_METHOD_PUT:
+		return http.MethodPut, nil
+	case configv1.HttpCallDefinition_HTTP_METHOD_DELETE:
+		return http.MethodDelete, nil
+	case configv1.HttpCallDefinition_HTTP_METHOD_PATCH:
+		return http.MethodPatch, nil
+	default:
+		return "", fmt.Errorf("unsupported HTTP method: %v", method)
+	}
+}
+
+type Upstream struct {
+	poolManager *pool.Manager
+	serviceID   string
+	address     string
+	checker     health.Checker
+	mu          sync.RWMutex
+}
+
+func (u *Upstream) CheckHealth(ctx context.Context) error {
+	u.mu.RLock()
+	checker := u.checker
+	address := u.address
+	u.mu.RUnlock()
+
+	if checker != nil {
+		res := checker.Check(ctx)
+		if res.Status != health.StatusUp {
+			return fmt.Errorf("health check failed: %v", res)
+		}
+		return nil
+	}
+	if address == "" {
+		return fmt.Errorf("no address configured")
+	}
+	return util.CheckConnection(ctx, address)
+}
+
+func (u *Upstream) Shutdown(_ context.Context) error {
+	u.mu.Lock()
+	if u.checker != nil {
+		if c, ok := u.checker.(interface{ Stop() }); ok {
+			c.Stop()
+		}
+	}
+	serviceID := u.serviceID
+	u.mu.Unlock()
+
+	u.poolManager.Deregister(serviceID)
+	return nil
+}
+
+func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
+	return &Upstream{
+		poolManager: poolManager,
+	}
+}
+
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

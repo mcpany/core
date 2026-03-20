@@ -2,6 +2,38 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package graphql provides GraphQL upstream integration.
+// Summary: Upstream implements the upstream.Upstream interface for GraphQL services.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: NewGraphQLUpstream creates a new GraphQL upstream.
+//
+// Returns:
+//   - upstream.Upstream: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: Shutdown shuts down the upstream.
+//
+// Parameters:
+//   - _ (context.Context): The parameter.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 package graphql
 
 import (
@@ -88,33 +120,12 @@ const introspectionQuery = `
   }
 `
 
-// Upstream implements the upstream.Upstream interface for GraphQL services.
 type Upstream struct{}
 
-// NewGraphQLUpstream creates a new GraphQL upstream.
-//
-// Returns:
-//   - upstream.Upstream: The result.
-//
-// Side Effects:
-//   - None.
 func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
-// Shutdown shuts down the upstream.
-//
-// Parameters:
-//   - _ (context.Context): The parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (g *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -139,10 +150,10 @@ type graphQLType struct {
 }
 
 type graphQLTypeWithFields struct {
-	Kind   string                 `json:"kind"`
-	Name   *string                `json:"name"`
+	Kind   string                  `json:"kind"`
+	Name   *string                 `json:"name"`
 	Fields []struct{ Name string } `json:"fields"`
-	OfType *graphQLTypeWithFields `json:"ofType"`
+	OfType *graphQLTypeWithFields  `json:"ofType"`
 }
 
 func getFieldsFromType(t *graphQLTypeWithFields) []struct{ Name string } {
@@ -179,6 +190,46 @@ func convertGraphQLTypeToJSONSchema(t *graphQLType) *structpb.Value {
 			},
 		}
 	default: // SCALAR, OBJECT, etc.
+		// Summary: Callable implements the Callable interface for GraphQL queries.
+		//
+		// Side Effects:
+		//   - None.
+		// Summary: Call executes the GraphQL query.
+		//
+		// Parameters:
+		//   - ctx (context.Context): The context for the request.
+		//   - req (*tool.ExecutionRequest): The parameter.
+		//
+		// Returns:
+		//   - any: The result.
+		//   - error: An error if the operation fails.
+		//
+		// Errors:
+		//   - Returns an error if ...
+		//
+		// Side Effects:
+		//   - None.
+		// Summary: Register inspects the GraphQL upstream service and registers its capabilities. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
+		//
+		// Parameters:
+		//   - ctx (context.Context): The context for the request.
+		//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
+		//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+		//   - _ (prompt.ManagerInterface): The _ parameter.
+		//   - _ (resource.ManagerInterface): The _ parameter.
+		//   - _ (bool): The _ parameter.
+		//
+		// Returns:
+		//   - string: The resulting string.
+		//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
+		//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
+		//   - error: An error if the operation fails.
+		//
+		// Errors:
+		//   - Returns an error if the operation fails or is invalid.
+		//
+		// Side Effects:
+		//   - None
 		typeName := ""
 		if t.Name != nil {
 			typeName = *t.Name
@@ -196,7 +247,6 @@ func convertGraphQLTypeToJSONSchema(t *graphQLType) *structpb.Value {
 	}
 }
 
-// Callable implements the Callable interface for GraphQL queries.
 type Callable struct {
 	client        *graphql.Client
 	query         string
@@ -204,21 +254,6 @@ type Callable struct {
 	address       string
 }
 
-// Call executes the GraphQL query.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The parameter.
-//
-// Returns:
-//   - any: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {
@@ -241,27 +276,6 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 	return respData, nil
 }
 
-// Register inspects the GraphQL upstream service and registers its capabilities. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
-//   - toolManager (tool.ManagerInterface): The toolManager parameter.
-//   - _ (prompt.ManagerInterface): The _ parameter.
-//   - _ (resource.ManagerInterface): The _ parameter.
-//   - _ (bool): The _ parameter.
-//
-// Returns:
-//   - string: The resulting string.
-//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
-//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
 func (g *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

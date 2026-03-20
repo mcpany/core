@@ -1,6 +1,9 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: OpenAPIProvider discovers services via OpenAPI specifications.
+//
+// Side Effects:
+//   - None.
 package discovery
 
 import (
@@ -10,17 +13,41 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// OpenAPIProvider discovers services via OpenAPI specifications.
 type OpenAPIProvider struct {
 	Endpoint string // e.g., "http://localhost:8080/openapi.json"
+	// Summary: Name returns the name of the provider.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - unnamed (string): description
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: Discover attempts to find services and return their configurations.
+	//
+	// Parameters:
+	//   - _ (context.Context): description
+	//
+	// Returns:
+	//   - unnamed (array/slice): description
+	//   - unnamed (error): description
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 }
 
-// Name returns the name of the provider.
 func (p *OpenAPIProvider) Name() string {
 	return "openapi"
 }
 
-// Discover attempts to find services and return their configurations.
 func (p *OpenAPIProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {
 		return nil, nil

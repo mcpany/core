@@ -1,27 +1,12 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"bytes"
-	"context"
-	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
-	"time"
-)
-
 // OllamaEmbeddingProvider implements EmbeddingProvider for Ollama.
 //
 // Summary: Provides an interface to generate text embeddings using the Ollama API.
-type OllamaEmbeddingProvider struct {
-	baseURL string
-	model   string
-	client  *http.Client
-}
-
+//
+// Side Effects:
+//   - None.
+//
 // NewOllamaEmbeddingProvider creates a new OllamaEmbeddingProvider.
 //
 // Summary: Initializes a new provider for Ollama embeddings.
@@ -35,6 +20,27 @@ type OllamaEmbeddingProvider struct {
 //
 // Side Effects:
 //   - Sets default values for baseURL and model if not provided.
+//
+// Errors:
+//   - None.
+package middleware
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"time"
+)
+
+type OllamaEmbeddingProvider struct {
+	baseURL string
+	model   string
+	client  *http.Client
+}
+
 func NewOllamaEmbeddingProvider(baseURL, model string) *OllamaEmbeddingProvider {
 	if baseURL == "" {
 		baseURL = "http://localhost:11434"

@@ -2,19 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 package util //nolint:revive,nolintlint // Package name 'util' is common in this codebase
-
-import (
-	"crypto/tls"
-	"crypto/x509"
-	"fmt"
-	"net/http"
-	"os"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/validation"
-)
-
-// NewHTTPClientWithTLS creates a new *http.Client configured with the specified
+// Summary: NewHTTPClientWithTLS creates a new *http.Client configured with the specified
 // TLS settings. It supports setting a custom CA certificate, a client
 // certificate and key, the server name for SNI, and skipping verification.
 //
@@ -27,6 +15,23 @@ import (
 // Returns:
 //   - *http.Client: A configured *http.Client.
 //   - error: An error if the TLS configuration is invalid or files cannot be read.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+import (
+	"crypto/tls"
+	"crypto/x509"
+	"fmt"
+	"net/http"
+	"os"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
+)
+
 func NewHTTPClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
 	var tlsClientConfig *tls.Config
 

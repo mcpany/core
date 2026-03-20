@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package alerts manages system alerts and incidents.
+// Summary: ManagerInterface defines the interface for managing alerts.
+//
+// Side Effects:
+//   - None.
 package alerts
 
 import (
@@ -17,7 +21,6 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// ManagerInterface defines the interface for managing alerts.
 type ManagerInterface interface {
 	// ListAlerts returns a list of all alerts.
 	ListAlerts() []*Alert
@@ -48,10 +51,26 @@ type ManagerInterface interface {
 	// UpdateRule updates an existing alert rule.
 	UpdateRule(id string, rule *AlertRule) *AlertRule
 	// DeleteRule deletes an alert rule by its ID.
+	// Summary: Manager implements ManagerInterface using in-memory storage.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: NewManager creates a new Manager and seeds it with initial data.
+	//
+	// Parameters:
+	//   - None
+	//
+	// Returns:
+	//   - *Manager: The resulting *Manager.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
 	DeleteRule(id string) error
 }
 
-// Manager implements ManagerInterface using in-memory storage.
 type Manager struct {
 	mu         sync.RWMutex
 	alerts     map[string]*Alert
@@ -59,19 +78,6 @@ type Manager struct {
 	webhookURL string
 }
 
-// NewManager creates a new Manager and seeds it with initial data.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *Manager: The resulting *Manager.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func NewManager() *Manager {
 	m := &Manager{
 		alerts: make(map[string]*Alert),
@@ -91,23 +97,23 @@ func (m *Manager) seedData() {
 	m.CreateAlert(&Alert{ID: "AL-1020", Title: "New Service Deployed", Message: "Service 'search-v2' detected", Severity: SeverityInfo, Status: StatusResolved, Service: "discovery", Source: "Orchestrator", Timestamp: now.Add(-5 * time.Hour)})
 
 	// Seed Rules
+	// Summary: ListAlerts returns all alerts sorted by timestamp descending.
+	//
+	// Parameters:
+	//   - None
+	//
+	// Returns:
+	//   - []*Alert: The resulting []*Alert.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
 	m.CreateRule(&AlertRule{ID: "rule-1", Name: "High CPU", Metric: "cpu_usage", Operator: ">", Threshold: 90, Duration: "5m", Severity: SeverityCritical, Enabled: true, LastUpdated: now})
 	m.CreateRule(&AlertRule{ID: "rule-2", Name: "High Latency", Metric: "http_latency_p99", Operator: ">", Threshold: 1000, Duration: "1m", Severity: SeverityWarning, Enabled: true, LastUpdated: now})
 }
 
-// ListAlerts returns all alerts sorted by timestamp descending.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []*Alert: The resulting []*Alert.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *Manager) ListAlerts() []*Alert {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -116,44 +122,44 @@ func (m *Manager) ListAlerts() []*Alert {
 		list = append(list, a)
 	}
 	// Sort by timestamp desc
+	// Summary: GetAlert returns an alert by ID, or nil if not found.
+	//
+	// Parameters:
+	//   - id (string): The id parameter.
+	//
+	// Returns:
+	//   - *Alert: The resulting *Alert.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
+	// Summary: CreateAlert creates a new alert.
+	//
+	// Parameters:
+	//   - alert (*Alert): The alert parameter.
+	//
+	// Returns:
+	//   - *Alert: The resulting *Alert.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
 	sort.Slice(list, func(i, j int) bool {
 		return list[i].Timestamp.After(list[j].Timestamp)
 	})
 	return list
 }
 
-// GetAlert returns an alert by ID, or nil if not found.
-//
-// Parameters:
-//   - id (string): The id parameter.
-//
-// Returns:
-//   - *Alert: The resulting *Alert.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *Manager) GetAlert(id string) *Alert {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	return m.alerts[id]
 }
 
-// CreateAlert creates a new alert.
-//
-// Parameters:
-//   - alert (*Alert): The alert parameter.
-//
-// Returns:
-//   - *Alert: The resulting *Alert.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *Manager) CreateAlert(alert *Alert) *Alert {
 	m.mu.Lock()
 	if alert.ID == "" {
@@ -167,6 +173,19 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 	m.mu.Unlock()
 
 	// Trigger webhook asynchronously
+	// Summary: GetAlertStats returns aggregated statistics for alerts.
+	//
+	// Parameters:
+	//   - None
+	//
+	// Returns:
+	//   - *AlertStats: The resulting *AlertStats.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
 	if webhookURL != "" {
 		go func(url string, a *Alert) {
 			body, err := json.Marshal(a)
@@ -195,19 +214,6 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 	return alert
 }
 
-// GetAlertStats returns aggregated statistics for alerts.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *AlertStats: The resulting *AlertStats.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *Manager) GetAlertStats() *AlertStats {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -231,25 +237,25 @@ func (m *Manager) GetAlertStats() *AlertStats {
 	}
 
 	// Mock MTTR for now as calculating true MTTR requires alert state transition history
+	// Summary: UpdateAlert updates an existing alert.
+	//
+	// Parameters:
+	//   - id (string): The id parameter.
+	//   - alert (*Alert): The alert parameter.
+	//
+	// Returns:
+	//   - *Alert: The resulting *Alert.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
 	stats.MTTR = "14m"
 
 	return stats
 }
 
-// UpdateAlert updates an existing alert.
-//
-// Parameters:
-//   - id (string): The id parameter.
-//   - alert (*Alert): The alert parameter.
-//
-// Returns:
-//   - *Alert: The resulting *Alert.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 	m.mu.Lock()
 	existing, ok := m.alerts[id]
@@ -267,6 +273,98 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 
 	// Trigger webhook asynchronously if status changed (or just on update?)
 	// For now trigger on any update as "Incident Response" implies updates are important.
+	// Summary: GetWebhookURL returns the configured global webhook URL.
+	//
+	// Parameters:
+	//   - None
+	//
+	// Returns:
+	//   - string: The resulting string.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
+	// Summary: SetWebhookURL sets the configured global webhook URL.
+	//
+	// Parameters:
+	//   - url (string): The url parameter.
+	//
+	// Returns:
+	//   - None
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
+	// Summary: ListRules returns all rules.
+	//
+	// Parameters:
+	//   - None
+	//
+	// Returns:
+	//   - []*AlertRule: The resulting []*AlertRule.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
+	// Summary: GetRule returns a rule by ID.
+	//
+	// Parameters:
+	//   - id (string): The id parameter.
+	//
+	// Returns:
+	//   - *AlertRule: The resulting *AlertRule.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
+	// Summary: CreateRule creates a new rule.
+	//
+	// Parameters:
+	//   - rule (*AlertRule): The rule parameter.
+	//
+	// Returns:
+	//   - *AlertRule: The resulting *AlertRule.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
+	// Summary: UpdateRule updates a rule.
+	//
+	// Parameters:
+	//   - id (string): The id parameter.
+	//   - rule (*AlertRule): The rule parameter.
+	//
+	// Returns:
+	//   - *AlertRule: The resulting *AlertRule.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
+	// Summary: DeleteRule deletes a rule.
+	//
+	// Parameters:
+	//   - id (string): The id parameter.
+	//
+	// Returns:
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if the operation fails or is invalid.
+	//
+	// Side Effects:
+	//   - None
 	if webhookURL != "" {
 		go func(url string, a *Alert) {
 			body, err := json.Marshal(a)
@@ -295,57 +393,18 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 	return existing
 }
 
-// GetWebhookURL returns the configured global webhook URL.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The resulting string.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *Manager) GetWebhookURL() string {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	return m.webhookURL
 }
 
-// SetWebhookURL sets the configured global webhook URL.
-//
-// Parameters:
-//   - url (string): The url parameter.
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *Manager) SetWebhookURL(url string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.webhookURL = url
 }
 
-// ListRules returns all rules.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []*AlertRule: The resulting []*AlertRule.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *Manager) ListRules() []*AlertRule {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -359,38 +418,12 @@ func (m *Manager) ListRules() []*AlertRule {
 	return list
 }
 
-// GetRule returns a rule by ID.
-//
-// Parameters:
-//   - id (string): The id parameter.
-//
-// Returns:
-//   - *AlertRule: The resulting *AlertRule.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *Manager) GetRule(id string) *AlertRule {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	return m.rules[id]
 }
 
-// CreateRule creates a new rule.
-//
-// Parameters:
-//   - rule (*AlertRule): The rule parameter.
-//
-// Returns:
-//   - *AlertRule: The resulting *AlertRule.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -402,20 +435,6 @@ func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 	return rule
 }
 
-// UpdateRule updates a rule.
-//
-// Parameters:
-//   - id (string): The id parameter.
-//   - rule (*AlertRule): The rule parameter.
-//
-// Returns:
-//   - *AlertRule: The resulting *AlertRule.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -434,19 +453,6 @@ func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 	return existing
 }
 
-// DeleteRule deletes a rule.
-//
-// Parameters:
-//   - id (string): The id parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
 func (m *Manager) DeleteRule(id string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

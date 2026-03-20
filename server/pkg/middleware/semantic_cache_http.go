@@ -1,6 +1,11 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// HTTPEmbeddingProvider implements a generic HTTP EmbeddingProvider.
+//
+// Summary: A generic provider that fetches embeddings from an arbitrary HTTP endpoint.
+//
+// Side Effects:
+//   - None.
 package middleware
 
 import (
@@ -16,9 +21,6 @@ import (
 	"github.com/PaesslerAG/jsonpath"
 )
 
-// HTTPEmbeddingProvider implements a generic HTTP EmbeddingProvider.
-//
-// Summary: A generic provider that fetches embeddings from an arbitrary HTTP endpoint.
 type HTTPEmbeddingProvider struct {
 	url              string
 	headers          map[string]string

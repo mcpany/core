@@ -1,6 +1,53 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: ZipProvider provides access to files within a zip archive.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: NewZipProvider creates a new ZipProvider from the given configuration.
+//
+// Parameters:
+//   - config (*configv1.ZipFs): The parameter.
+//
+// Returns:
+//   - *ZipProvider: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: GetFs returns the underlying filesystem.
+//
+// Returns:
+//   - afero.Fs: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: ResolvePath resolves the virtual path to a real path in the zip.
+//
+// Parameters:
+//   - virtualPath (string): The parameter.
+//
+// Returns:
+//   - string: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 package provider
 
 import (
@@ -15,26 +62,11 @@ import (
 	"github.com/spf13/afero/zipfs"
 )
 
-// ZipProvider provides access to files within a zip archive.
 type ZipProvider struct {
 	fs     afero.Fs
 	closer *os.File
 }
 
-// NewZipProvider creates a new ZipProvider from the given configuration.
-//
-// Parameters:
-//   - config (*configv1.ZipFs): The parameter.
-//
-// Returns:
-//   - *ZipProvider: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 	if err := validation.IsAllowedPath(config.GetFilePath()); err != nil {
 		return nil, fmt.Errorf("zip file path not allowed: %w", err)
@@ -65,46 +97,28 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 	}, nil
 }
 
-// GetFs returns the underlying filesystem.
-//
-// Returns:
-//   - afero.Fs: The result.
-//
-// Side Effects:
-//   - None.
 func (p *ZipProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
-// ResolvePath resolves the virtual path to a real path in the zip.
-//
-// Parameters:
-//   - virtualPath (string): The parameter.
-//
-// Returns:
-//   - string: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 	// For ZipFs, just clean the path. It's virtual (based on zip contents).
+	// Summary: Close closes the underlying zip file.
+	//
+	// Returns:
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if ...
+	//
+	// Side Effects:
+	//   - None.
+	//
+	// Parameters:
+	//   - None.
 	return filepath.Clean(virtualPath), nil
 }
 
-// Close closes the underlying zip file.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (p *ZipProvider) Close() error {
 	if p.closer != nil {
 		return p.closer.Close()

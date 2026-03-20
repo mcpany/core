@@ -1,6 +1,19 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// GitHub represents a client for interacting with the GitHub API to fetch
+// configuration files or directories.
+//
+// Summary: A client for fetching configuration from GitHub.
+//
+// Fields:
+//   - Owner (string): The owner of the repository (user or organization).
+//   - Repo (string): The repository name.
+//   - Path (string): The path to the file or directory within the repository.
+//   - Ref (string): The branch, tag, or commit hash.
+//   - URLType (string): The type of URL (tree or blob).
+//
+// Side Effects:
+//   - None.
 package config
 
 import (
@@ -32,17 +45,6 @@ var (
 	githubURLRe = regexp.MustCompile(githubURLRegexStr)
 )
 
-// GitHub represents a client for interacting with the GitHub API to fetch
-// configuration files or directories.
-//
-// Summary: A client for fetching configuration from GitHub.
-//
-// Fields:
-//   - Owner (string): The owner of the repository (user or organization).
-//   - Repo (string): The repository name.
-//   - Path (string): The path to the file or directory within the repository.
-//   - Ref (string): The branch, tag, or commit hash.
-//   - URLType (string): The type of URL (tree or blob).
 type GitHub struct {
 	Owner         string
 	Repo          string
@@ -71,6 +73,33 @@ type GitHub struct {
 //
 // Errors:
 //   - Returns an error if the URL cannot be parsed or does not match the GitHub URL format.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: ToRawContentURL constructs the raw content URL for the configured GitHub path.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - string: The resulting string.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+//
+// Content represents a file or directory in a GitHub repository.
+//
+// Summary: Metadata for a file or directory in a GitHub repository.
+//
+// Fields:
+//   - Name (string): The name of the file or directory.
+//   - Type (string): The type of content (e.g., "file", "dir").
+//   - HTMLURL (string): The URL to view the content on GitHub.
+//   - DownloadURL (string): The URL to download the content (only for files).
 //
 // Side Effects:
 //   - None.
@@ -117,32 +146,10 @@ func isGitHubURL(rawURL string) bool {
 	return githubURLRe.MatchString(rawURL)
 }
 
-// ToRawContentURL constructs the raw content URL for the configured GitHub path.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The resulting string.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (g *GitHub) ToRawContentURL() string {
 	return fmt.Sprintf("%s/%s/%s/%s/%s", g.rawContentURL, g.Owner, g.Repo, g.Ref, g.Path)
 }
 
-// Content represents a file or directory in a GitHub repository.
-//
-// Summary: Metadata for a file or directory in a GitHub repository.
-//
-// Fields:
-//   - Name (string): The name of the file or directory.
-//   - Type (string): The type of content (e.g., "file", "dir").
-//   - HTMLURL (string): The URL to view the content on GitHub.
-//   - DownloadURL (string): The URL to download the content (only for files).
 type Content struct {
 	Name        string `json:"name"`
 	Type        string `json:"type"`

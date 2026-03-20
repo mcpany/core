@@ -1,6 +1,9 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: GRPCProvider discovers services via gRPC reflection.
+//
+// Side Effects:
+//   - None.
 package discovery
 
 import (
@@ -10,17 +13,41 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// GRPCProvider discovers services via gRPC reflection.
 type GRPCProvider struct {
 	Endpoint string // e.g., "localhost:50051"
+	// Summary: Name returns the name of the provider.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - unnamed (string): description
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: Discover attempts to find services and return their configurations.
+	//
+	// Parameters:
+	//   - _ (context.Context): description
+	//
+	// Returns:
+	//   - unnamed (array/slice): description
+	//   - unnamed (error): description
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 }
 
-// Name returns the name of the provider.
 func (p *GRPCProvider) Name() string {
 	return "grpc"
 }
 
-// Discover attempts to find services and return their configurations.
 func (p *GRPCProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {
 		return nil, nil

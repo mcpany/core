@@ -1,29 +1,13 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package transformer
-
-import (
-	"encoding/json"
-	"fmt"
-	"io"
-	"strings"
-
-	"github.com/valyala/fasttemplate"
-)
-
 // TextTemplate provides a simple wrapper around Go's standard text/template
 // for rendering strings with dynamic data.
 //
 // Summary: High-performance template engine using fasttemplate.
-type TextTemplate struct {
-	template *fasttemplate.Template
-	raw      string
-	startTag string
-	endTag   string
-	IsJSON   bool
-}
-
+//
+// Side Effects:
+//   - None.
+//
 // NewTemplate parses a template string and creates a new TextTemplate.
 //
 // Summary: Initializes a new TextTemplate.
@@ -39,6 +23,28 @@ type TextTemplate struct {
 //
 // Side Effects:
 //   - Auto-detects if the template output is likely JSON to enable automatic escaping.
+//
+// Errors:
+//   - None.
+package transformer
+
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"strings"
+
+	"github.com/valyala/fasttemplate"
+)
+
+type TextTemplate struct {
+	template *fasttemplate.Template
+	raw      string
+	startTag string
+	endTag   string
+	IsJSON   bool
+}
+
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
 	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
 	if err != nil {

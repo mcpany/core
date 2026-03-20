@@ -1,6 +1,15 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: BuiltinTemplates contains the seed configurations for high-value MCP servers.
+// Deprecated: Use BuiltinServiceTemplates instead.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: BuiltinServiceTemplates contains the rich seed configurations for the UI wizard.
+//
+// Side Effects:
+//   - None.
 package app
 
 import (
@@ -8,11 +17,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// BuiltinTemplates contains the seed configurations for high-value MCP servers.
-// Deprecated: Use BuiltinServiceTemplates instead.
 var BuiltinTemplates []*configv1.UpstreamServiceConfig
 
-// BuiltinServiceTemplates contains the rich seed configurations for the UI wizard.
 var BuiltinServiceTemplates []*configv1.ServiceTemplate
 
 func init() {

@@ -1,6 +1,11 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// FileAuditStore writes audit logs to a file or stdout.
+//
+// Summary: Audit store implementation that appends newline-delimited JSON (NDJSON) to a file or standard output.
+//
+// Side Effects:
+//   - None.
 package audit
 
 import (
@@ -14,9 +19,6 @@ import (
 	"github.com/mcpany/core/server/pkg/validation"
 )
 
-// FileAuditStore writes audit logs to a file or stdout.
-//
-// Summary: Audit store implementation that appends newline-delimited JSON (NDJSON) to a file or standard output.
 type FileAuditStore struct {
 	mu   sync.Mutex
 	file *os.File
@@ -40,6 +42,23 @@ type FileAuditStore struct {
 //
 // Side Effects:
 //   - Opens (or creates) the specified file in append mode.
+//
+// Write writes an audit entry to the file.
+//
+// Summary: Appends a JSON-marshaled audit entry to the configured output.
+//
+// Parameters:
+//   - _: context.Context. Unused.
+//   - entry: Entry. The audit entry to write.
+//
+// Returns:
+//   - error: An error if writing fails.
+//
+// Side Effects:
+//   - Writes data to the file or stdout.
+//
+// Errors:
+//   - None.
 func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	var f *os.File
 	var err error
@@ -58,19 +77,6 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	}, nil
 }
 
-// Write writes an audit entry to the file.
-//
-// Summary: Appends a JSON-marshaled audit entry to the configured output.
-//
-// Parameters:
-//   - _: context.Context. Unused.
-//   - entry: Entry. The audit entry to write.
-//
-// Returns:
-//   - error: An error if writing fails.
-//
-// Side Effects:
-//   - Writes data to the file or stdout.
 func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	// ⚡ BOLT: Serialize JSON outside the lock to reduce critical section duration.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -79,6 +85,38 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 		return err
 	}
 	// json.NewEncoder.Encode appends a newline, so we must add it here too.
+	// Read implements the Store interface.
+	//
+	// Summary: Reads audit entries (Not implemented).
+	//
+	// Parameters:
+	//   - _: context.Context. Unused.
+	//   - _: Filter. Unused.
+	//
+	// Returns:
+	//   - []Entry: Nil.
+	//   - error: Always returns "not implemented".
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
+	// Close closes the file.
+	//
+	// Summary: Closes the underlying file handle if one exists.
+	//
+	// Returns:
+	//   - error: An error if closing the file fails.
+	//
+	// Side Effects:
+	//   - Closes the file descriptor.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
 	b = append(b, '\n')
 
 	s.mu.Lock()
@@ -95,30 +133,10 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	return err
 }
 
-// Read implements the Store interface.
-//
-// Summary: Reads audit entries (Not implemented).
-//
-// Parameters:
-//   - _: context.Context. Unused.
-//   - _: Filter. Unused.
-//
-// Returns:
-//   - []Entry: Nil.
-//   - error: Always returns "not implemented".
 func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for file audit store")
 }
 
-// Close closes the file.
-//
-// Summary: Closes the underlying file handle if one exists.
-//
-// Returns:
-//   - error: An error if closing the file fails.
-//
-// Side Effects:
-//   - Closes the file descriptor.
 func (s *FileAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

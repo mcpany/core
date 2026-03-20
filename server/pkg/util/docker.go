@@ -3,7 +3,11 @@
 
 // Package util provides utility functions for Docker and other shared functionality.
 package util //nolint:revive,nolintlint // Package name 'util' is intentional
-
+// Summary: IsDockerSocketAccessibleFunc is a variable to allow mocking in tests.
+// It checks if the Docker socket is accessible.
+//
+// Side Effects:
+//   - None.
 import (
 	"context"
 	"sync"
@@ -12,8 +16,6 @@ import (
 )
 
 var (
-	// IsDockerSocketAccessibleFunc is a variable to allow mocking in tests.
-	// It checks if the Docker socket is accessible.
 	IsDockerSocketAccessibleFunc = isDockerSocketAccessibleDefault
 
 	dockerClient     client.APIClient
@@ -29,16 +31,25 @@ var initDockerClientDefault = func() {
 	if err != nil {
 		// If we can't create the client, we can't ping the server.
 		// We'll set dockerClient to nil and handle this in the check.
+		// IsDockerSocketAccessible checks if the Docker daemon is accessible through the socket.
+		//
+		// Summary: Checks if the Docker daemon is accessible.
+		//
+		// Returns:
+		//   - bool: True if the Docker daemon is accessible, false otherwise.
+		//
+		// Parameters:
+		//   - None.
+		//
+		// Errors:
+		//   - None.
+		//
+		// Side Effects:
+		//   - None.
 		dockerClient = nil
 	}
 }
 
-// IsDockerSocketAccessible checks if the Docker daemon is accessible through the socket.
-//
-// Summary: Checks if the Docker daemon is accessible.
-//
-// Returns:
-//   - bool: True if the Docker daemon is accessible, false otherwise.
 func IsDockerSocketAccessible() bool {
 	return IsDockerSocketAccessibleFunc()
 }

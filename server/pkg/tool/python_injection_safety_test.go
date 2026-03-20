@@ -46,7 +46,7 @@ func TestPythonDoubleQuoteInjection(t *testing.T) {
 	payload := "user'); import sys; sys.exit(42); #"
 
 	req := &ExecutionRequest{
-		ToolName: "python_hello",
+		ToolName:   "python_hello",
 		ToolInputs: []byte(`{"name": "` + payload + `"}`),
 	}
 
@@ -57,34 +57,34 @@ func TestPythonDoubleQuoteInjection(t *testing.T) {
 		// If exit code is 42, it means RCE successful
 		// The error message for non-zero exit code usually contains the code
 		if assert.NotContains(t, err.Error(), "exit status 42") {
-             t.Log("Safe: Exit code was not 42")
-        } else {
-             t.Fatal("VULNERABILITY CONFIRMED: Python code injection successful (exit code 42)")
-        }
+			t.Log("Safe: Exit code was not 42")
+		} else {
+			t.Fatal("VULNERABILITY CONFIRMED: Python code injection successful (exit code 42)")
+		}
 	} else {
 		resMap, ok := result.(map[string]interface{})
 		require.True(t, ok)
 		returnCode, ok := resMap["return_code"].(int)
 		// return_code might be int or float64 depending on unmarshaling
-        if !ok {
-             // check float64
-             if rcFloat, ok := resMap["return_code"].(float64); ok {
-                 returnCode = int(rcFloat)
-             } else {
-                 // Might be 0 if not present?
-                 returnCode = 0
-             }
-        }
+		if !ok {
+			// check float64
+			if rcFloat, ok := resMap["return_code"].(float64); ok {
+				returnCode = int(rcFloat)
+			} else {
+				// Might be 0 if not present?
+				returnCode = 0
+			}
+		}
 
 		t.Logf("Return Code: %d", returnCode)
 
 		if returnCode == 42 {
 			t.Fatal("VULNERABILITY CONFIRMED: Python code injection successful (exit code 42)")
 		} else {
-            t.Log("Safe: Exit code was not 42")
-        }
+			t.Log("Safe: Exit code was not 42")
+		}
 
-        stdout, _ := resMap["stdout"].(string)
-        t.Logf("Stdout: %s", stdout)
+		stdout, _ := resMap["stdout"].(string)
+		t.Logf("Stdout: %s", stdout)
 	}
 }

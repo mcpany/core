@@ -15,23 +15,23 @@ import (
 
 func TestLocalCommandTool_Python_Space_Issue(t *testing.T) {
 	// This test demonstrates a usability issue where space is blocked in arguments
-    // for commands considered as shells/interpreters, even though exec.Command handles them safely.
+	// for commands considered as shells/interpreters, even though exec.Command handles them safely.
 
 	tool := configv1.ToolDefinition_builder{
 		Name: proto.String("python-print"),
 	}.Build()
 
-    toolProto := v1.Tool_builder{
-        Name: proto.String("python-print"),
-    }.Build()
+	toolProto := v1.Tool_builder{
+		Name: proto.String("python-print"),
+	}.Build()
 
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("python3"),
 		Local:   proto.Bool(true),
-        Tools:   []*configv1.ToolDefinition{tool},
+		Tools:   []*configv1.ToolDefinition{tool},
 	}.Build()
 
-    // python3 -c "print('{{msg}}')"
+	// python3 -c "print('{{msg}}')"
 	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"-c", "print('{{msg}}')"},
 		Parameters: []*configv1.CommandLineParameterMapping{
@@ -58,35 +58,35 @@ func TestLocalCommandTool_Python_Space_Issue(t *testing.T) {
 
 	_, err := localTool.Execute(context.Background(), req)
 
-    // This currently fails because ' is detected in checkSingleQuotedInjection (Wait, does it?)
-    // Template is "print('{{msg}}')". {{msg}} is inside ''.
-    // analyzeQuoteContext should return 2 (Single Quoted).
-    // checkSingleQuotedInjection should be called.
+	// This currently fails because ' is detected in checkSingleQuotedInjection (Wait, does it?)
+	// Template is "print('{{msg}}')". {{msg}} is inside ''.
+	// analyzeQuoteContext should return 2 (Single Quoted).
+	// checkSingleQuotedInjection should be called.
 
-    if err != nil {
-        t.Errorf("Execution failed with valid input: %v", err)
-    }
+	if err != nil {
+		t.Errorf("Execution failed with valid input: %v", err)
+	}
 }
 
 func TestLocalCommandTool_Python_Arg_Space_Issue(t *testing.T) {
-    // This test uses python as a script runner
+	// This test uses python as a script runner
 
 	tool := configv1.ToolDefinition_builder{
 		Name: proto.String("python-script"),
 	}.Build()
 
-    toolProto := v1.Tool_builder{
-        Name: proto.String("python-script"),
-    }.Build()
+	toolProto := v1.Tool_builder{
+		Name: proto.String("python-script"),
+	}.Build()
 
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("python3"),
 		Local:   proto.Bool(true),
-        Tools:   []*configv1.ToolDefinition{tool},
+		Tools:   []*configv1.ToolDefinition{tool},
 	}.Build()
 
-    // python3 script.py {{arg}}
-    // We mock script execution by using -c to print argv
+	// python3 script.py {{arg}}
+	// We mock script execution by using -c to print argv
 	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"-c", "import sys; print(sys.argv[1])", "{{arg}}"},
 		Parameters: []*configv1.CommandLineParameterMapping{
@@ -113,11 +113,11 @@ func TestLocalCommandTool_Python_Arg_Space_Issue(t *testing.T) {
 
 	_, err := localTool.Execute(context.Background(), req)
 
-    // Template is "{{arg}}". Unquoted.
-    // checkUnquotedInjection is called.
-    // It blocks space.
+	// Template is "{{arg}}". Unquoted.
+	// checkUnquotedInjection is called.
+	// It blocks space.
 
-    if err != nil {
-        t.Errorf("Execution failed with valid input containing space: %v", err)
-    }
+	if err != nil {
+		t.Errorf("Execution failed with valid input containing space: %v", err)
+	}
 }

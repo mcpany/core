@@ -51,22 +51,22 @@ var (
 			Help: "Total number of tokens in MCP operations.",
 		},
 		[]string{"method", "direction", "status"}, // direction: request, response
+		// Summary: PrometheusMetricsMiddleware provides protocol-level metrics for all MCP requests. It intercepts requests to track duration, success/failure counts, payload sizes, and token counts.
+		//
+		// Parameters:
+		//   - t (tokenizer.Tokenizer): The t parameter.
+		//
+		// Returns:
+		//   - mcp.Middleware: The resulting mcp.Middleware.
+		//
+		// Errors:
+		//   - None
+		//
+		// Side Effects:
+		//   - None
 	)
 )
 
-// PrometheusMetricsMiddleware provides protocol-level metrics for all MCP requests. It intercepts requests to track duration, success/failure counts, payload sizes, and token counts.
-//
-// Parameters:
-//   - t (tokenizer.Tokenizer): The t parameter.
-//
-// Returns:
-//   - mcp.Middleware: The resulting mcp.Middleware.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 	registerProtocolMetricsOnce.Do(func() {
 		prometheus.MustRegister(mcpOperationDuration)
@@ -208,18 +208,24 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 
 	// ⚡ BOLT: Avoid full JSON serialization for token counting
 	// Randomized Selection from Top 5 High-Impact Targets
+	// Summary: CalculateToolResultTokens calculates the number of tokens in a tool result.
+	//
+	// Parameters:
+	//   - t: tokenizer.Tokenizer. The tokenizer to use for counting.
+	//   - result: any. The result object to analyze (can be *mcp.CallToolResult, string, []byte, or others).
+	//
+	// Returns:
+	//   - int: The estimated token count.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	c, _ := tokenizer.CountTokensInValue(t, res)
 	return c
 }
 
-// CalculateToolResultTokens calculates the number of tokens in a tool result.
-//
-// Parameters:
-//   - t: tokenizer.Tokenizer. The tokenizer to use for counting.
-//   - result: any. The result object to analyze (can be *mcp.CallToolResult, string, []byte, or others).
-//
-// Returns:
-//   - int: The estimated token count.
 func CalculateToolResultTokens(t tokenizer.Tokenizer, result any) int {
 	if result == nil {
 		return 0

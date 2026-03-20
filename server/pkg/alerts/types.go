@@ -1,33 +1,76 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: Severity represents the severity level of an alert.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Status represents the status of an alert.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: SeverityCritical indicates a critical issue.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: SeverityWarning indicates a warning.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: SeverityInfo indicates an informational alert.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: StatusActive indicates the alert is currently active.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: StatusAcknowledged indicates the alert has been acknowledged.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: StatusResolved indicates the alert has been resolved.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Alert represents a system alert.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: AlertRule defines a condition for triggering an alert.
+//
+// Side Effects:
+//   - None.
 package alerts
 
 import "time"
 
-// Severity represents the severity level of an alert.
 type Severity string
 
-// Status represents the status of an alert.
 type Status string
 
 const (
-	// SeverityCritical indicates a critical issue.
 	SeverityCritical Severity = "critical"
-	// SeverityWarning indicates a warning.
+
 	SeverityWarning Severity = "warning"
-	// SeverityInfo indicates an informational alert.
+
 	SeverityInfo Severity = "info"
 
-	// StatusActive indicates the alert is currently active.
 	StatusActive Status = "active"
-	// StatusAcknowledged indicates the alert has been acknowledged.
+
 	StatusAcknowledged Status = "acknowledged"
-	// StatusResolved indicates the alert has been resolved.
+
 	StatusResolved Status = "resolved"
 )
 
-// Alert represents a system alert.
 type Alert struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
@@ -39,20 +82,22 @@ type Alert struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-// AlertRule defines a condition for triggering an alert.
 type AlertRule struct {
-	ID          string    `json:"id"`
-	Name        string    `json:"name"`
-	Metric      string    `json:"metric"`
-	Operator    string    `json:"operator"` // e.g. ">", "<", "="
-	Threshold   float64   `json:"threshold"`
-	Duration    string    `json:"duration"` // e.g. "5m"
+	ID        string  `json:"id"`
+	Name      string  `json:"name"`
+	Metric    string  `json:"metric"`
+	Operator  string  `json:"operator"` // e.g. ">", "<", "="
+	Threshold float64 `json:"threshold"`
+	Duration  string  `json:"duration"` // e.g. "5m"
+	// Summary: AlertStats represents aggregated statistics for alerts.
+	//
+	// Side Effects:
+	//   - None.
 	Severity    Severity  `json:"severity"`
 	Enabled     bool      `json:"enabled"`
 	LastUpdated time.Time `json:"last_updated"`
 }
 
-// AlertStats represents aggregated statistics for alerts.
 type AlertStats struct {
 	ActiveCritical int    `json:"activeCritical"`
 	ActiveWarning  int    `json:"activeWarning"`

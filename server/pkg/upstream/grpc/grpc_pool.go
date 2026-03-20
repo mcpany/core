@@ -26,26 +26,21 @@ import (
 
 // poolWithChecker wraps a pool.Pool and a health.Checker to ensure the checker
 // is stopped when the pool is closed.
-type poolWithChecker[T pool.ClosableClient] struct {
-	pool.Pool[T]
-	checker health.Checker
-}
-
-// Close stops the health checker and closes the underlying pool.
+// Summary: Close stops the health checker and closes the underlying pool.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Side Effects:
 //   - Stops the health checker.
-func (p *poolWithChecker[T]) Close() error {
-	if p.checker != nil {
-		p.checker.Stop()
-	}
-	return p.Pool.Close()
-}
-
-// NewGrpcPool creates a new connection pool for gRPC clients.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: NewGrpcPool creates a new connection pool for gRPC clients.
 //
 // It configures the pool with a factory function that establishes new gRPC connections with the
 // specified address, dialer, and credentials.
@@ -70,6 +65,18 @@ func (p *poolWithChecker[T]) Close() error {
 // Side Effects:
 //   - Reads certificate files if mTLS is configured.
 //   - Initializes gRPC clients.
+type poolWithChecker[T pool.ClosableClient] struct {
+	pool.Pool[T]
+	checker health.Checker
+}
+
+func (p *poolWithChecker[T]) Close() error {
+	if p.checker != nil {
+		p.checker.Stop()
+	}
+	return p.Pool.Close()
+}
+
 func NewGrpcPool(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

@@ -1,23 +1,11 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"net/http"
-	"sync"
-
-	"github.com/mcpany/core/server/pkg/logging"
-)
-
-// HTTPCORSMiddleware handles CORS for HTTP endpoints.
+// Summary: HTTPCORSMiddleware handles CORS for HTTP endpoints.
 // It is thread-safe and supports dynamic updates.
-type HTTPCORSMiddleware struct {
-	mu              sync.RWMutex
-	allowedOrigins  map[string]struct{}
-	wildcardAllowed bool
-}
-
+//
+// Side Effects:
+//   - None.
+//
 // NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware.
 //
 // Summary: Initializes HTTP CORS middleware.
@@ -30,18 +18,49 @@ type HTTPCORSMiddleware struct {
 //
 // Returns:
 //   - (*HTTPCORSMiddleware): The initialized middleware.
-func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
-	m := &HTTPCORSMiddleware{}
-	m.updateInternal(allowedOrigins)
-	return m
-}
-
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
 // Update updates the allowed origins.
 //
 // Summary: Updates the allowed origins dynamically.
 //
 // Parameters:
 //   - allowedOrigins ([]string): The new list of allowed origins.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+package middleware
+
+import (
+	"net/http"
+	"sync"
+
+	"github.com/mcpany/core/server/pkg/logging"
+)
+
+type HTTPCORSMiddleware struct {
+	mu              sync.RWMutex
+	allowedOrigins  map[string]struct{}
+	wildcardAllowed bool
+}
+
+func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
+	m := &HTTPCORSMiddleware{}
+	m.updateInternal(allowedOrigins)
+	return m
+}
+
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -51,6 +70,21 @@ func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 // updateInternal populates the internal map and flags.
 // It must be called with the lock held or during initialization.
 // ⚡ Bolt Optimization: Uses map for O(1) lookup instead of O(N) slice iteration.
+// Handler wraps an http.Handler with CORS logic.
+//
+// Summary: Middleware to handle CORS headers.
+//
+// Parameters:
+//   - next (http.Handler): The next handler in the chain.
+//
+// Returns:
+//   - (http.Handler): The wrapped handler.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 	m.allowedOrigins = make(map[string]struct{}, len(origins))
 	m.wildcardAllowed = false
@@ -63,15 +97,6 @@ func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 	}
 }
 
-// Handler wraps an http.Handler with CORS logic.
-//
-// Summary: Middleware to handle CORS headers.
-//
-// Parameters:
-//   - next (http.Handler): The next handler in the chain.
-//
-// Returns:
-//   - (http.Handler): The wrapped handler.
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")

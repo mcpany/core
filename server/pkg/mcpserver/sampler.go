@@ -1,23 +1,12 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package mcpserver
-
-import (
-	"context"
-	"fmt"
-
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
 // MCPSession wraps an MCP session to provide client interaction capabilities like sampling and roots.
 //
 // Summary: Provides a wrapper around the MCP server session to facilitate client interactions.
-type MCPSession struct {
-	session *mcp.ServerSession
-}
-
+//
+// Side Effects:
+//   - None.
+//
 // NewMCPSession creates a new MCPSession.
 //
 // Summary: Initializes a new MCPSession instance.
@@ -27,10 +16,13 @@ type MCPSession struct {
 //
 // Returns:
 //   - *MCPSession: A new instance of MCPSession.
-func NewMCPSession(session *mcp.ServerSession) *MCPSession {
-	return &MCPSession{session: session}
-}
-
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
 // NewMCPSampler is a deprecated alias for NewMCPSession.
 //
 // Summary: Creates a new MCPSession (deprecated alias).
@@ -43,10 +35,10 @@ func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 //
 // Side Effects:
 //   - This function is deprecated and should be replaced by NewMCPSession.
-func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
-	return NewMCPSession(session)
-}
-
+//
+// Errors:
+//   - None.
+//
 // CreateMessage requests a message creation from the client (sampling).
 //
 // Summary: Requests the client to create a message, effectively sampling the LLM.
@@ -61,13 +53,10 @@ func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 //
 // Throws/Errors:
 //   - Returns an error if the session is nil.
-func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
-	if s.session == nil {
-		return nil, fmt.Errorf("no active session available for sampling")
-	}
-	return s.session.CreateMessage(ctx, params)
-}
-
+//
+// Side Effects:
+//   - None.
+//
 // ListRoots requests the list of roots from the client.
 //
 // Summary: Requests the list of root directories from the client.
@@ -81,6 +70,38 @@ func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessag
 //
 // Throws/Errors:
 //   - Returns an error if the session is nil.
+//
+// Side Effects:
+//   - None.
+package mcpserver
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+)
+
+type MCPSession struct {
+	session *mcp.ServerSession
+}
+
+func NewMCPSession(session *mcp.ServerSession) *MCPSession {
+	return &MCPSession{session: session}
+}
+
+func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
+	return NewMCPSession(session)
+}
+
+func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
+	if s.session == nil {
+		return nil, fmt.Errorf("no active session available for sampling")
+	}
+	return s.session.CreateMessage(ctx, params)
+}
+
 func (s *MCPSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for roots inspection")

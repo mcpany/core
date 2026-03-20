@@ -1,19 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"context"
-	"log/slog"
-	"time"
-
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/metrics"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
-// LoggingMiddleware creates an MCP middleware that logs information about each
+// Summary: LoggingMiddleware creates an MCP middleware that logs information about each
 // incoming request. It records the start and completion of each request,
 // including the duration of the handling.
 //
@@ -29,6 +16,21 @@ import (
 // Side Effects:
 //   - Logs request start and end.
 //   - Updates metrics.
+//
+// Errors:
+//   - None.
+package middleware
+
+import (
+	"context"
+	"log/slog"
+	"time"
+
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/metrics"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+)
+
 func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	if log == nil {
 		log = logging.GetLogger()

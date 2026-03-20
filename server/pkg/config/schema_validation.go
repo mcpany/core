@@ -23,6 +23,35 @@ var (
 func ensureSchema() (*jsonschema.Schema, error) {
 	schemaOnce.Do(func() {
 		// 1. Generate JSON Schema from the Proto definition
+		// ValidateConfigAgainstSchema validates the raw configuration map against the generated JSON schema.
+		//
+		// Summary: Validates configuration against the JSON schema.
+		//
+		// Parameters:
+		//   - rawConfig: map[string]interface{}. The raw configuration data as a map.
+		//
+		// Returns:
+		//   - error: An error if validation fails.
+		//
+		// Errors:
+		//   - None.
+		//
+		// Side Effects:
+		//   - None.
+		// Summary: GenerateJSONSchemaBytes returns the JSON schema for McpAnyServerConfig as a byte slice. Side Effects: - None.
+		//
+		// Parameters:
+		//   - None
+		//
+		// Returns:
+		//   - []byte: The resulting []byte.
+		//   - error: An error if the operation fails.
+		//
+		// Errors:
+		//   - Returns an error if the operation fails or is invalid.
+		//
+		// Side Effects:
+		//   - None
 		cfg := configv1.McpAnyServerConfig_builder{}.Build()
 		var err error
 		compiledSchema, err = GenerateSchemaFromProto(cfg.ProtoReflect())
@@ -34,15 +63,6 @@ func ensureSchema() (*jsonschema.Schema, error) {
 	return compiledSchema, schemaGenErr
 }
 
-// ValidateConfigAgainstSchema validates the raw configuration map against the generated JSON schema.
-//
-// Summary: Validates configuration against the JSON schema.
-//
-// Parameters:
-//   - rawConfig: map[string]interface{}. The raw configuration data as a map.
-//
-// Returns:
-//   - error: An error if validation fails.
 func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 	schema, err := ensureSchema()
 	if err != nil {
@@ -55,20 +75,6 @@ func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 	return nil
 }
 
-// GenerateJSONSchemaBytes returns the JSON schema for McpAnyServerConfig as a byte slice. Side Effects: - None.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []byte: The resulting []byte.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
 func GenerateJSONSchemaBytes() ([]byte, error) {
 	cfg := configv1.McpAnyServerConfig_builder{}.Build()
 	schemaMap := GenerateSchemaMapFromProto(cfg.ProtoReflect())

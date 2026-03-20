@@ -1,26 +1,25 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package config
-
-// MockWatcher is a mock implementation of the Watcher for testing.
-type MockWatcher struct {
-	WatchFunc func(paths []string, reloadFunc func())
-	CloseFunc func()
-}
-
-// NewMockWatcher creates a new mock watcher.
+// Summary: MockWatcher is a mock implementation of the Watcher for testing.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: NewMockWatcher creates a new mock watcher.
 //
 // Returns:
 //   - *MockWatcher: The result.
 //
 // Side Effects:
 //   - None.
-func NewMockWatcher() *MockWatcher {
-	return &MockWatcher{}
-}
-
-// Watch mocks the Watch method.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: Watch mocks the Watch method.
 //
 // Parameters:
 //   - paths ([]string): The parameter.
@@ -34,6 +33,31 @@ func NewMockWatcher() *MockWatcher {
 //
 // Side Effects:
 //   - None.
+//
+// Summary: Close mocks the Close method.
+//
+// Parameters:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+package config
+
+type MockWatcher struct {
+	WatchFunc func(paths []string, reloadFunc func())
+	CloseFunc func()
+}
+
+func NewMockWatcher() *MockWatcher {
+	return &MockWatcher{}
+}
+
 func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 	if m.WatchFunc != nil {
 		m.WatchFunc(paths, reloadFunc)
@@ -41,13 +65,6 @@ func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 	return nil
 }
 
-// Close mocks the Close method.
-//
-// Parameters:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (m *MockWatcher) Close() {
 	if m.CloseFunc != nil {
 		m.CloseFunc()

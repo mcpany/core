@@ -1,6 +1,57 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: UpstreamWorker is a background worker that handles tool execution requests. It
+// listens for ToolExecutionRequest messages on the event bus, uses the
+// tool manager to execute the requested tool, and then publishes the outcome as
+// a ToolExecutionResult message.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: NewUpstreamWorker creates a new UpstreamWorker.
+//
+// Parameters:
+//   - bus: The event bus used for receiving requests and publishing results.
+//   - toolManager: The tool manager that will handle the actual tool execution.
+//
+// Returns:
+//   - *UpstreamWorker: A new upstream worker.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Start launches the worker in a new goroutine. It subscribes to tool execution
+// requests on the event bus and will continue to process them until the
+// provided context is canceled.
+//
+// Parameters:
+//   - ctx: The context that controls the lifecycle of the worker.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Stop waits for the worker to stop.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 package worker
 
 import (
@@ -15,24 +66,12 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// UpstreamWorker is a background worker that handles tool execution requests. It
-// listens for ToolExecutionRequest messages on the event bus, uses the
-// tool manager to execute the requested tool, and then publishes the outcome as
-// a ToolExecutionResult message.
 type UpstreamWorker struct {
 	bus         *bus.Provider
 	toolManager tool.ManagerInterface
 	wg          sync.WaitGroup
 }
 
-// NewUpstreamWorker creates a new UpstreamWorker.
-//
-// Parameters:
-//   - bus: The event bus used for receiving requests and publishing results.
-//   - toolManager: The tool manager that will handle the actual tool execution.
-//
-// Returns:
-//   - *UpstreamWorker: A new upstream worker.
 func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
 	return &UpstreamWorker{
 		bus:         bus,
@@ -40,12 +79,6 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 	}
 }
 
-// Start launches the worker in a new goroutine. It subscribes to tool execution
-// requests on the event bus and will continue to process them until the
-// provided context is canceled.
-//
-// Parameters:
-//   - ctx: The context that controls the lifecycle of the worker.
 func (w *UpstreamWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "UpstreamWorker")
@@ -97,19 +130,6 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 	}()
 }
 
-// Stop waits for the worker to stop.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (w *UpstreamWorker) Stop() {
 	w.wg.Wait()
 }

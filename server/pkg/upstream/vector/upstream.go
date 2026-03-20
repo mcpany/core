@@ -1,57 +1,30 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package vector
-
-import (
-	"context"
-	"crypto/sha256"
-	"encoding/hex"
-	"fmt"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/prompt"
-	"github.com/mcpany/core/server/pkg/resource"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/upstream"
-	"github.com/mcpany/core/server/pkg/util"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
-)
-
-// ClientFactory is a function that creates a VectorClient.
-type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
-
-// Upstream implements the upstream.Upstream interface for vector database services.
-type Upstream struct {
-	clientFactory ClientFactory
-}
-
-// NewUpstream creates a new instance of VectorUpstream.
+// Summary: ClientFactory is a function that creates a VectorClient.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Upstream implements the upstream.Upstream interface for vector database services.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: NewUpstream creates a new instance of VectorUpstream.
 //
 // Returns:
 //   - upstream.Upstream: The result.
 //
 // Side Effects:
 //   - None.
-func NewUpstream() upstream.Upstream {
-	return &Upstream{
-		clientFactory: defaultClientFactory,
-	}
-}
-
-func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error) {
-	if t := config.GetPinecone(); t != nil {
-		return NewPineconeClient(t)
-	}
-	if t := config.GetMilvus(); t != nil {
-		return NewMilvusClient(t)
-	}
-	return nil, fmt.Errorf("unsupported vector database type")
-}
-
-// Shutdown implements the upstream.Upstream interface.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Summary: Shutdown implements the upstream.Upstream interface.
 //
 // Parameters:
 //   - _ (context.Context): The parameter.
@@ -64,11 +37,8 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 //
 // Side Effects:
 //   - None.
-func (u *Upstream) Shutdown(_ context.Context) error {
-	return nil
-}
-
-// Register processes the configuration for a vector service. _ is an unused parameter. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
+//
+// Summary: Register processes the configuration for a vector service. _ is an unused parameter. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
 //   - _ (context.Context): The _ parameter.
@@ -89,6 +59,51 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - None
+package vector
+
+import (
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/prompt"
+	"github.com/mcpany/core/server/pkg/resource"
+	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/upstream"
+	"github.com/mcpany/core/server/pkg/util"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
+)
+
+type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
+
+type Upstream struct {
+	clientFactory ClientFactory
+}
+
+func NewUpstream() upstream.Upstream {
+	return &Upstream{
+		clientFactory: defaultClientFactory,
+	}
+}
+
+func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error) {
+	if t := config.GetPinecone(); t != nil {
+		return NewPineconeClient(t)
+	}
+	if t := config.GetMilvus(); t != nil {
+		return NewMilvusClient(t)
+	}
+	return nil, fmt.Errorf("unsupported vector database type")
+}
+
+func (u *Upstream) Shutdown(_ context.Context) error {
+	return nil
+}
+
 func (u *Upstream) Register(
 	_ context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -164,6 +179,27 @@ func (u *Upstream) Register(
 		callable := &vectorCallable{handler: handler}
 
 		// Create a callable tool
+		// Summary: Call executes the vector tool with the given arguments.
+		// It accepts a context and an execution request containing arguments,
+		// and returns the result of the tool execution or an error.
+		//
+		// Parameters:
+		//   - ctx (context.Context): The context for the request.
+		//   - req (*tool.ExecutionRequest): The parameter.
+		//
+		// Returns:
+		//   - any: The result.
+		//   - error: An error if the operation fails.
+		//
+		// Errors:
+		//   - Returns an error if ...
+		//
+		// Side Effects:
+		//   - None.
+		// Summary: Client interface for different vector DB implementations.
+		//
+		// Side Effects:
+		//   - None.
 		callableTool, err := tool.NewCallableTool(toolDef, serviceConfig, callable, inputSchema, outputSchema)
 		if err != nil {
 			log.Error("Failed to create callable tool", "tool", toolName, "error", err)
@@ -186,23 +222,6 @@ type vectorCallable struct {
 	handler func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
-// Call executes the vector tool with the given arguments.
-// It accepts a context and an execution request containing arguments,
-// and returns the result of the tool execution or an error.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The parameter.
-//
-// Returns:
-//   - any: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.handler(ctx, req.Arguments)
 }
@@ -215,7 +234,6 @@ type vectorToolDef struct {
 	Handler     func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
-// Client interface for different vector DB implementations.
 type Client interface {
 	// Query searches for the nearest vectors in the database.
 	// It accepts a context, a query vector, the number of results to return (topK),
