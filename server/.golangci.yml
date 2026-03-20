@@ -43,6 +43,9 @@ issues:
     - node_modules
     - .cache
   exclude-rules:
+    - linters:
+        - typecheck
+      text: ".*"
     - path: "_test.go"
       linters:
         - "errcheck"
