@@ -5,6 +5,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Trace } from "@/types/trace";
+import { apiClient } from "@/lib/client";
 
 interface UseTracesOptions {
     initialPaused?: boolean;
@@ -36,6 +37,17 @@ export function useTraces(options: UseTracesOptions = {}) {
     useEffect(() => {
         isPausedRef.current = isPaused;
     }, [isPaused]);
+
+    const fetchInitialTraces = async () => {
+        try {
+            const data = await apiClient.getTraces({ limit: 100 });
+            if (data && Array.isArray(data)) {
+                setTraces(data);
+            }
+        } catch (e) {
+            console.error("Failed to fetch initial traces", e);
+        }
+    };
 
     // ⚡ BOLT: Flush buffer periodically
     useEffect(() => {
@@ -164,7 +176,9 @@ export function useTraces(options: UseTracesOptions = {}) {
 
     useEffect(() => {
         isMountedRef.current = true;
-        connect();
+        fetchInitialTraces().then(() => {
+            connect();
+        });
         return () => {
             isMountedRef.current = false;
             if (wsRef.current) {
@@ -181,7 +195,9 @@ export function useTraces(options: UseTracesOptions = {}) {
 
     const refresh = () => {
         setTraces([]);
-        connect();
+        fetchInitialTraces().then(() => {
+            connect();
+        });
     };
 
     return {
