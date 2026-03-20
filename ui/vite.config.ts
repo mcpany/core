@@ -15,10 +15,11 @@ const localProto = path.join(__dirname, "proto");
 // bazel-bin/proto which is a symlink to the actual bazel-out directory.
 const bazelBinProto = path.join(__dirname, "../bazel-bin/proto");
 const rootProto = path.join(__dirname, "../proto");
-const protoPath = fs.existsSync(localProto)
-  ? localProto
-  : fs.existsSync(bazelBinProto)
-    ? bazelBinProto
+// For our environment, bazelBinProto exists and contains the generated .ts files.
+const protoPath = fs.existsSync(bazelBinProto)
+  ? bazelBinProto
+  : fs.existsSync(localProto)
+    ? localProto
     : rootProto;
 
 // Resolve the @bufbuild/protobuf/wire sub-path (needed by generated proto files)
