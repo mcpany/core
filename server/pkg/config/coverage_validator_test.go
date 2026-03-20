@@ -476,7 +476,7 @@ func TestValidateWebSocketService_Coverage(t *testing.T) {
         },
           {
             name: "output_schema_error",
-            			service: configv1.WebsocketUpstreamService_builder{
+				service: configv1.WebsocketUpstreamService_builder{
 				Address: proto.String("ws://example.com"),
 				Calls: map[string]*configv1.WebsocketCallDefinition{
 					"test": configv1.WebsocketCallDefinition_builder{
@@ -492,7 +492,7 @@ func TestValidateWebSocketService_Coverage(t *testing.T) {
         },
          {
             name: "valid_service",
-            			service: configv1.WebsocketUpstreamService_builder{
+				service: configv1.WebsocketUpstreamService_builder{
 				Address: proto.String("ws://example.com"),
 				Calls: map[string]*configv1.WebsocketCallDefinition{
 					"test": configv1.WebsocketCallDefinition_builder{
@@ -532,7 +532,7 @@ func TestValidateContainerEnvironment_Coverage(t *testing.T) {
             expectErr: "",
         },
         {
-            			name: "empty_host_path",
+				name: "empty_host_path",
 			env: configv1.ContainerEnvironment_builder{
 				Image: proto.String("alpine"),
 				Volumes: map[string]string{
@@ -542,7 +542,7 @@ func TestValidateContainerEnvironment_Coverage(t *testing.T) {
 			expectErr: "container environment volume host path is empty",
         },
         {
-            			name: "empty_container_path",
+				name: "empty_container_path",
 			env: configv1.ContainerEnvironment_builder{
 				Image: proto.String("alpine"),
 				Volumes: map[string]string{
@@ -552,7 +552,7 @@ func TestValidateContainerEnvironment_Coverage(t *testing.T) {
 			expectErr: "container environment volume container path is empty",
         },
         {
-            			name: "insecure_host_path",
+				name: "insecure_host_path",
 			env: configv1.ContainerEnvironment_builder{
 				Image: proto.String("alpine"),
 				Volumes: map[string]string{
@@ -584,7 +584,7 @@ func TestValidateAPIKeyAuth_Coverage(t *testing.T) {
         expectErr string
     }{
         {
-            			name: "empty_param_name",
+				name: "empty_param_name",
 			apiKey: configv1.APIKeyAuth_builder{
 				ParamName: proto.String(""),
 			}.Build(),
@@ -592,7 +592,7 @@ func TestValidateAPIKeyAuth_Coverage(t *testing.T) {
 			expectErr: "param_name",
         },
         {
-            			name: "outgoing_missing_value",
+				name: "outgoing_missing_value",
 			apiKey: configv1.APIKeyAuth_builder{
 				ParamName: proto.String("api_key"),
 			}.Build(),
@@ -600,7 +600,7 @@ func TestValidateAPIKeyAuth_Coverage(t *testing.T) {
 			expectErr: "api key 'value' is missing",
         },
         {
-            			name: "incoming_missing_config",
+				name: "incoming_missing_config",
 			apiKey: configv1.APIKeyAuth_builder{
 				ParamName:         proto.String("api_key"),
 				VerificationValue: proto.String(""),
@@ -610,7 +610,7 @@ func TestValidateAPIKeyAuth_Coverage(t *testing.T) {
         },
         {
              name: "invalid_secret_value",
-             			apiKey: configv1.APIKeyAuth_builder{
+				apiKey: configv1.APIKeyAuth_builder{
 				ParamName: proto.String("api_key"),
 				Value: configv1.SecretValue_builder{
 					EnvironmentVariable: proto.String("MISSING_VAR"),
@@ -620,7 +620,7 @@ func TestValidateAPIKeyAuth_Coverage(t *testing.T) {
              expectErr: "api key secret validation failed",
         },
         {
-            			name: "valid_incoming_api_key",
+				name: "valid_incoming_api_key",
 			apiKey: configv1.APIKeyAuth_builder{
 				ParamName:         proto.String("api_key"),
 				VerificationValue: proto.String("secret"),
@@ -697,7 +697,7 @@ func TestValidateBasicAuth_Coverage(t *testing.T) {
         expectErr string
     }{
         {
-            			name: "empty_username",
+				name: "empty_username",
 			auth: configv1.BasicAuth_builder{
 				Username: proto.String(""),
 			}.Build(),
