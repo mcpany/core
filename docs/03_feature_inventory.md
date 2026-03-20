@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Cross-Mesh Attestation Hub (CMAH)**: (P0) Advanced trust-persistence service implementing the CMAP protocol for cross-framework attestation leasing.
+- **Recursive Mission-Heartbeat Provider**: (P0) Security middleware that mandates and validates cryptographically signed, lineage-bound heartbeats for all sub-missions.
+- **Speculative Fragment Pinner (SFP)**: (P1) Stability extension for the Speculative Branching Guard that protects high-utility reasoning paths from R-GC.
+- **ZK-Stylometric Proof (ZKSP) Provider**: (P0) Privacy-preserving identity service allowing stylometric verification without raw multi-modal trace exposure.
+
+### Priority Shifts
+- **Speculative Branching Guard (SBG)**: (Re-affirmed P1) Now elevated with the requirement for **SFP-compliant** fragment pinning.
+- **Multi-Modal Behavioral Attestation (MMBA)**: (Re-affirmed P0) Designated as the primary data source for **ZKSP-protected** identity proofs.
+
 ## Evolution: [2026-06-16] Updates
 
 ### Proposed Additions

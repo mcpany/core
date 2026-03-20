@@ -586,6 +586,12 @@
 - [ ] **[P1] Attention-Locked Telemetry Viewer**: (2026-06-15) Security UI for reviewing sanitized reasoning traces and attention-mapping redactions.
 - [ ] **[P0] WASM-Hook Safety Reporter**: (2026-06-15) UI for viewing behavioral profiling results for un-attested configuration hooks.
 
+### Upcoming: [2026-06-18]
+- [ ] **[P0] Cross-Mesh Attestation Viewer**: (2026-06-18) Real-time visualization of hardware-attested trust leases across foreign meshes.
+- [ ] **[P0] Recursive Lineage Heartbeat Monitor**: (2026-06-18) Forensic UI for validating lineage-bound heartbeats and detecting RMH attempts.
+- [ ] **[P1] Speculative Fragment Pinning Dashboard**: (2026-06-18) Visual manager for "Pinned" speculative fragments and memory impact analysis.
+- [ ] **[P0] ZK-Stylometric Proof Workspace**: (2026-06-18) Authorization UI for reviewing ZKSPs without exposing multi-modal traces.
+
 ### Upcoming: [2026-06-17]
 - [ ] **[P0] Active Intent Alignment Monitor**: (2026-06-17) Visual indicator for AIA heartbeat status and semantic drift alerts.
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.

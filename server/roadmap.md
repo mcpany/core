@@ -748,6 +748,12 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Locked Telemetry Proxy**: (P1) Authoritative telemetry sanitizer for Gemini-compliant reasoning traces, ensuring attention-mapping privacy during RL feedback export. (Added: 2026-06-15)
 - **WASM-Hook Behavioral Profiler**: (P0) Mandatory extension for the SMS that performs sandboxed profiling of AI-generated configuration hooks to counter PR "Logic Bombs." (Added: 2026-06-15)
 
+### Upcoming: [2026-06-18]
+- **Cross-Mesh Attestation Hub (CMAH)**: (P0) Trust-persistence service for heterogeneous framework boundaries (Added: 2026-06-18).
+- **Recursive Mission-Heartbeat Provider**: (P0) Mandatory hardware-attested lineage-bound heartbeat validation for sub-missions (Added: 2026-06-18).
+- **Speculative Fragment Pinner (SFP)**: (P1) Efficiency middleware for pinning high-utility speculative reasoning paths (Added: 2026-06-18).
+- **ZK-Stylometric Proof (ZKSP) Provider**: (P0) Privacy-preserving identity verification for sharded meshes (Added: 2026-06-18).
+
 ### Upcoming: [2026-06-17]
 - **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment service issuing hardware-attested heartbeats for mission-anchored reasoning (Added: 2026-06-17).
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
