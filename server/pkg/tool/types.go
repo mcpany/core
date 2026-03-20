@@ -467,6 +467,7 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	if req.DryRun {
 		logging.GetLogger().Info("Dry run execution", "tool", req.ToolName)
 		jsonBytes, _ := protojson.Marshal(t.requestMessage)
+		jsonBytes = util.RedactJSON(jsonBytes)
 		var payloadMap map[string]any
 		_ = fastJSON.Unmarshal(jsonBytes, &payloadMap)
 		return map[string]any{
@@ -754,7 +755,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			"dry_run": true,
 			"request": map[string]any{
 				"method": t.cachedMethod,
-				"url":    urlString,
+				"url":    redactedURLString,
 				"headers": map[string]string{
 					"Content-Type": contentType,
 				},
@@ -765,7 +766,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 				_, _ = seeker.Seek(0, io.SeekStart)
 			}
 			bodyBytes, _ := io.ReadAll(body)
-			dryRunResult["request"].(map[string]any)["body"] = string(bodyBytes)
+			dryRunResult["request"].(map[string]any)["body"] = string(util.RedactJSON(bodyBytes))
 		}
 		return dryRunResult, nil
 	}
@@ -2234,30 +2235,35 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		}
 	}
 
+	// ⚡ BOLT: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
+	// Randomized Selection from Top 5 High-Impact Targets
+	redactor := util.NewSecretRedactor(secrets)
+
+	// Redact arguments and environment variables
+	redactedArgs := make([]string, len(args))
+	for i, arg := range args {
+		redactedArgs[i] = redactor.Redact(arg)
+	}
+
+	redactedEnv := make([]string, len(env))
+	for i, e := range env {
+		redactedEnv[i] = redactor.Redact(e)
+	}
+
 	if req.DryRun {
 		logging.GetLogger().Info("Dry run execution", "tool", req.ToolName)
 		return map[string]any{
 			"dry_run": true,
 			"request": map[string]any{
 				"command": t.service.GetCommand(),
-				"args":    args,
-				"env":     env,
+				"args":    redactedArgs,
+				"env":     redactedEnv,
 			},
 		}, nil
 	}
 
 	startTime := time.Now()
 	limit := getMaxCommandOutputSize()
-
-	// ⚡ BOLT: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
-	// Randomized Selection from Top 5 High-Impact Targets
-	redactor := util.NewSecretRedactor(secrets)
-
-	// Redact arguments before returning them in the result
-	redactedArgs := make([]string, len(args))
-	for i, arg := range args {
-		redactedArgs[i] = redactor.Redact(arg)
-	}
 
 	// Differentiate between JSON and environment variable-based communication
 	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
@@ -2633,30 +2639,35 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 	}
 
+	// ⚡ BOLT: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
+	// Randomized Selection from Top 5 High-Impact Targets
+	redactor := util.NewSecretRedactor(secrets)
+
+	// Redact arguments and environment variables
+	redactedArgs := make([]string, len(args))
+	for i, arg := range args {
+		redactedArgs[i] = redactor.Redact(arg)
+	}
+
+	redactedEnv := make([]string, len(env))
+	for i, e := range env {
+		redactedEnv[i] = redactor.Redact(e)
+	}
+
 	if req.DryRun {
 		logging.GetLogger().Info("Dry run execution", "tool", req.ToolName)
 		return map[string]any{
 			"dry_run": true,
 			"request": map[string]any{
 				"command": t.service.GetCommand(),
-				"args":    args,
-				"env":     env,
+				"args":    redactedArgs,
+				"env":     redactedEnv,
 			},
 		}, nil
 	}
 
 	startTime := time.Now()
 	limit := getMaxCommandOutputSize()
-
-	// ⚡ BOLT: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
-	// Randomized Selection from Top 5 High-Impact Targets
-	redactor := util.NewSecretRedactor(secrets)
-
-	// Redact arguments before returning them in the result
-	redactedArgs := make([]string, len(args))
-	for i, arg := range args {
-		redactedArgs[i] = redactor.Redact(arg)
-	}
 
 	// Differentiate between JSON and environment variable-based communication
 	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
