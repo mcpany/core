@@ -31,13 +31,10 @@ const (
 // String returns the string representation of the severity.
 //
 // Parameters:
-//   - None.
+//   - s (Severity): The severity level to convert to a string.
 //
 // Returns:
-//   - string: The string representation of the severity (e.g., "ERROR", "WARNING").
-//
-// Errors:
-//   - None.
+//   - string: The string representation of the severity (e.g., "ERROR").
 //
 // Side Effects:
 //   - None.
@@ -68,16 +65,13 @@ type Result struct {
 	Path string
 }
 
-// String returns the human-readable representation of the result.
+// String returns the human-readable string representation of the result.
 //
 // Parameters:
-//   - None.
+//   - r (Result): The linting result to format.
 //
 // Returns:
-//   - string: A formatted string containing severity, service name, path, and message.
-//
-// Errors:
-//   - None.
+//   - string: A formatted string containing severity, service, path, and message.
 //
 // Side Effects:
 //   - None.
@@ -108,9 +102,6 @@ type Linter struct {
 // Returns:
 //   - *Linter: A new Linter instance initialized with the provided configuration.
 //
-// Errors:
-//   - None.
-//
 // Side Effects:
 //   - None.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
@@ -123,11 +114,8 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 //   - ctx (context.Context): The context for the linting operation.
 //
 // Returns:
-//   - []Result: A slice containing all detected linting issues.
+//   - []Result: A list of detected linting findings.
 //   - error: An error if the linting process encounters a fatal issue (currently always nil).
-//
-// Errors:
-//   - None.
 //
 // Side Effects:
 //   - None.

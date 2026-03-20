@@ -759,7 +759,8 @@ These features represent the next logical steps for the product, focusing on Ent
   capability revocation (Added: 2026-06-18).
 - **Recursive Depth-Limit Enforcer (RDLE)**: (P0) Security middleware for
   mission-root bound delegation depth control (Added: 2026-06-18).
-- **Reasoning-Path Watermarking Provider**: (P1) Cryptographic identity service
-  for reasoning fragment non-repudiation (Added: 2026-06-18).
-- **Teammate-Aware Context Scrubber**: (P1) Optimization service prioritizing
-  high-trust teammate fragments during sharding (Added: 2026-06-18).
+- **Reasoning-Path Watermarking Provider**: (P1) Cryptographic identity
+  service for reasoning fragment non-repudiation (Added: 2026-06-18).
+- **Teammate-Aware Context Scrubber**: (P1) Optimization service
+  prioritizing high-trust teammate fragments during sharding (Added:
+  2026-06-18).

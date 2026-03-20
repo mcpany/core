@@ -599,5 +599,5 @@
   manifest-locked delegation depth and shadow-bid alerts.
 - [ ] **[P1] Reasoning Lineage Inspector**: (2026-06-18) Forensic UI for
   verifying reasoning-path watermarks and non-repudiation status.
-- [ ] **[P1] Teammate-Aware Context Dashboard**: (2026-06-18) Optimization view
-  for monitoring high-trust teammate fragment preservation.
+- [ ] **[P1] Teammate-Aware Context Dashboard**: (2026-06-18) Optimization
+  view for monitoring high-trust teammate fragment preservation.
