@@ -40,8 +40,8 @@ export function DiscoveryStatus() {
         try {
             const data = await apiClient.getDiscoveryStatus();
             setStatuses(data);
-        } catch (_e) {
-            console.error("Failed to fetch discovery status", _e);
+        } catch (e) {
+            console.error("Failed to fetch discovery status", e);
         } finally {
             setLoading(false);
         }
