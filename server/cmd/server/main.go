@@ -601,7 +601,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		Use:   "init",
 		Short: "Initialize a new MCP Any configuration file interactively",
 		RunE: func(cmd *cobra.Command, _ []string) error {
-						if _, err := fmt.Fprintln(cmd.OutOrStdout(), "MCP Any CLI: Initialization Wizard"); err != nil {
+			if _, err := fmt.Fprintln(cmd.OutOrStdout(), "MCP Any CLI: Initialization Wizard"); err != nil {
 				return err
 			}
 			if _, err := fmt.Fprintln(cmd.OutOrStdout(), "Generating a minimal config.yaml..."); err != nil {
@@ -629,11 +629,11 @@ upstream_services:
           endpoint_path: "/get"
 `
 			fs := afero.NewOsFs()
-			err := afero.WriteFile(fs, "config.yaml", []byte(minimalConfig), 0600)
+			err := afero.WriteFile(fs, "config.yaml", []byte(minimalConfig), 0o600)
 			if err != nil {
 				return fmt.Errorf("failed to write config.yaml: %w", err)
 			}
-						if _, err := fmt.Fprintln(cmd.OutOrStdout(), "Successfully created config.yaml in the current directory."); err != nil {
+			if _, err := fmt.Fprintln(cmd.OutOrStdout(), "Successfully created config.yaml in the current directory."); err != nil {
 				return err
 			}
 			if _, err := fmt.Fprintln(cmd.OutOrStdout(), "Run 'mcpany run' to start the server."); err != nil {
