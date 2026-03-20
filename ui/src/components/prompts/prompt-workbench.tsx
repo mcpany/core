@@ -1,3 +1,5 @@
+import { RichResultViewer } from "@/components/tools/rich-result-viewer";
+
 /**
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -429,8 +431,8 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                                                         )} />
                                                         {msg.role}
                                                      </div>
-                                                     <div className="bg-background border rounded-md p-3 text-sm whitespace-pre-wrap font-mono">
-                                                        {msg.content?.type === 'text' ? msg.content.text : typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}
+                                                     <div className="bg-background border rounded-md p-3 text-sm whitespace-pre-wrap">
+                                                        <RichResultViewer result={msg.content} />
                                                      </div>
                                                 </div>
                                             ))}
