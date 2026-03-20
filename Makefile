@@ -171,12 +171,16 @@ gen-protoset: prepare-proto
 			{} +
 
 gen-gateway-proto: prepare-proto
-	@echo "Generating protobuf files (gRPC gateway)..."
+	@echo "Generating protobuf files (Go, gRPC, and Gateway)..."
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 		find proto -name "*.proto" -not -path "proto/third_party/*" -not -path "proto/google/*" -exec protoc \
 			--proto_path=. \
 			--proto_path=$(BUILD_DIR)/grpc-gateway \
 			--proto_path=$(BUILD_DIR)/googleapis \
+			--go_out=. \
+			--go_opt=module=github.com/mcpany/core \
+			--go-grpc_out=. \
+			--go-grpc_opt=module=github.com/mcpany/core \
 			--grpc-gateway_out=. \
 			--grpc-gateway_opt=module=github.com/mcpany/core,use_opaque_api=true \
 			{} +
