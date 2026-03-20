@@ -204,12 +204,6 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
-### Upcoming: [2026-06-18]
-- [ ] **[P0] Active Intent Alignment Monitor**: (2026-06-18) Visual indicator for AIA heartbeat status and semantic drift alerts.
-- [ ] **[P0] Trace-Aware Identity (TAI) Explorer**: (2026-06-18) Security workspace for visualizing teammate lineage and reasoning-bound identity proofs.
-- [ ] **[P1] Mesh Reasoning-GC Status**: (2026-06-18) Real-time visualization of redundant fragment pruning and attention window efficiency.
-- [ ] **[P0] Semantic Entropy Alert Center**: (2026-06-18) UI for inspecting sharded memory fragments flagged for trace-injection patterns.
-
 ### Upcoming: [2026-06-17]
 - [ ] **[P0] Active Intent Alignment Monitor**: (2026-06-17) Visual indicator for AIA heartbeat status and semantic drift alerts.
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
