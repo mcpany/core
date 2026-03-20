@@ -3068,6 +3068,8 @@ func prettyPrint(input []byte, contentType string) string {
 		encoder := xml.NewEncoder(&buf)
 		encoder.Indent("", "  ")
 
+		var stack []string
+
 		// Attempt to decode and re-encode to format
 		for {
 			token, err := decoder.Token()
@@ -3162,34 +3164,34 @@ func isSensitiveHeader(key string) bool {
 }
 
 func checkForPathTraversal(val string) error {
-	val = strings.TrimSpace(val)
-	if val == ".." {
+	trimmedVal := strings.TrimSpace(val)
+	if trimmedVal == ".." {
 		return fmt.Errorf("path traversal attempt detected")
 	}
 	// Check for standard traversal sequences
-	if strings.HasPrefix(val, "../") || strings.HasPrefix(val, "..\\") {
+	if strings.HasPrefix(trimmedVal, "../") || strings.HasPrefix(trimmedVal, "..\\") {
 		return fmt.Errorf("path traversal attempt detected")
 	}
-	if strings.HasSuffix(val, "/..") || strings.HasSuffix(val, "\\..") {
+	if strings.HasSuffix(trimmedVal, "/..") || strings.HasSuffix(trimmedVal, "\\..") {
 		return fmt.Errorf("path traversal attempt detected")
 	}
-	if strings.Contains(val, "/../") || strings.Contains(val, "\\..\\") || strings.Contains(val, "/..\\") || strings.Contains(val, "\\../") {
+	if strings.Contains(trimmedVal, "/../") || strings.Contains(trimmedVal, "\\..\\") || strings.Contains(trimmedVal, "/..\\") || strings.Contains(trimmedVal, "\\../") {
 		return fmt.Errorf("path traversal attempt detected")
 	}
 
 	// Also check for encoded traversal sequences often used to bypass filters
 	// %2e%2e is ..
 	// ⚡ Bolt Optimization: Manual scan to avoid strings.ToLower allocation
-	for i := 0; i < len(val); {
-		idx := strings.IndexByte(val[i:], '%')
+	for i := 0; i < len(trimmedVal); {
+		idx := strings.IndexByte(trimmedVal[i:], '%')
 		if idx == -1 {
 			break
 		}
 		i += idx
-		if i+5 < len(val) {
-			if val[i+1] == '2' && (val[i+2]|0x20 == 'e') &&
-				val[i+3] == '%' &&
-				val[i+4] == '2' && (val[i+5]|0x20 == 'e') {
+		if i+5 < len(trimmedVal) {
+			if trimmedVal[i+1] == '2' && (trimmedVal[i+2]|0x20 == 'e') &&
+				trimmedVal[i+3] == '%' &&
+				trimmedVal[i+4] == '2' && (trimmedVal[i+5]|0x20 == 'e') {
 				return fmt.Errorf("path traversal attempt detected (encoded)")
 			}
 		}
@@ -3325,37 +3327,37 @@ func cleanPathPreserveDoubleSlash(p string) string {
 }
 
 func checkForLocalFileAccess(val string) error {
-	val = strings.TrimSpace(val)
-	if filepath.IsAbs(val) {
-		return fmt.Errorf("absolute path detected: %s (only relative paths are allowed for local execution)", val)
+	trimmedVal := strings.TrimSpace(val)
+	if filepath.IsAbs(trimmedVal) {
+		return fmt.Errorf("absolute path detected: %s (only relative paths are allowed for local execution)", trimmedVal)
 	}
 	// Also block "file:" scheme to prevent SSRF/LFI (e.g. curl file:///etc/passwd)
 	// We check for "file:" prefix case-insensitively.
-	if strings.HasPrefix(strings.ToLower(val), "file:") {
-		return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", val)
+	if strings.HasPrefix(strings.ToLower(trimmedVal), "file:") {
+		return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", trimmedVal)
 	}
 
 	// Sentinel Security Update: Ensure path is allowed and not sensitive.
 	// This prevents accessing sensitive files (e.g. .env) even if they are in the CWD,
 	// and resolves symlinks to ensure they don't point outside allowed paths or to sensitive files.
-	if err := validation.IsAllowedPath(val); err != nil {
+	if err := validation.IsAllowedPath(trimmedVal); err != nil {
 		return fmt.Errorf("path access denied: %w", err)
 	}
 	return nil
 }
 
 func checkForArgumentInjection(val string) error {
-	val = strings.TrimSpace(val)
-	if strings.HasPrefix(val, "-") {
+	trimmedVal := strings.TrimSpace(val)
+	if strings.HasPrefix(trimmedVal, "-") {
 		// Allow negative numbers
-		if _, err := strconv.ParseFloat(val, 64); err == nil {
+		if _, err := strconv.ParseFloat(trimmedVal, 64); err == nil {
 			return nil
 		}
 		return fmt.Errorf("argument injection detected: value starts with '-'")
 	}
-	if strings.HasPrefix(val, "+") {
+	if strings.HasPrefix(trimmedVal, "+") {
 		// Allow positive numbers (e.g. +10, +1.5)
-		if _, err := strconv.ParseFloat(val, 64); err == nil {
+		if _, err := strconv.ParseFloat(trimmedVal, 64); err == nil {
 			return nil
 		}
 		return fmt.Errorf("argument injection detected: value starts with '+'")
