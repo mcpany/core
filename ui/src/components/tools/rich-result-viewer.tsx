@@ -78,27 +78,64 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     const [content, isExtracted] = useMemo(() => {
         if (!result) return [result, false];
 
+        let extractedContent = result;
+        let didExtract = false;
+
         // Handle Command Execution Result (stdout contains JSON)
         if (typeof result === 'object' && 'stdout' in result && typeof result.stdout === 'string') {
             try {
                 // Only treat as extracted if parsing succeeds
-                const parsed = JSON.parse(result.stdout);
-                return [parsed, true];
+                extractedContent = JSON.parse(result.stdout);
+                didExtract = true;
             } catch {
-                return [result, false];
+                extractedContent = result;
             }
         }
 
         // Handle raw string that is JSON
-        if (typeof result === 'string') {
+        if (!didExtract && typeof result === 'string') {
             try {
-                const parsed = JSON.parse(result);
-                return [parsed, true];
+                extractedContent = JSON.parse(result);
+                didExtract = true;
             } catch {
-                return [result, false];
+                extractedContent = result;
             }
         }
-        return [result, false];
+
+        // Deep search for arrays to surface as table data
+        // e.g., { data: { items: [...] } } or { response: { data: [...] } }
+        if (extractedContent && typeof extractedContent === 'object' && !Array.isArray(extractedContent)) {
+            // Find the largest array in the object to use as the table
+            let largestArray: any[] | null = null;
+
+            const findArray = (obj: any, depth = 0) => {
+                if (depth > 3 || !obj || typeof obj !== 'object') return;
+
+                if (Array.isArray(obj)) {
+                    if (!largestArray || obj.length > largestArray.length) {
+                        largestArray = obj;
+                    }
+                    return;
+                }
+
+                for (const key in obj) {
+                    findArray(obj[key], depth + 1);
+                }
+            };
+
+            findArray(extractedContent);
+
+            const validLargestArray = largestArray as any[] | null;
+            if (validLargestArray && validLargestArray.length > 0 && typeof validLargestArray[0] === 'object') {
+                 // We found a meaningful array to display, but we also want to keep the original content
+                 // for the JSON view. So we'll just return the array as the content if it's large enough,
+                 // or maybe attach it as a separate view?
+                 // For simplicity, if we find an array inside an object, we just return the array.
+                 return [validLargestArray, true];
+            }
+        }
+
+        return [extractedContent, didExtract];
     }, [result]);
 
     const mcpContent = useMemo<McpContent[] | null>(() => {
@@ -129,6 +166,10 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return !mcpContent && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
     }, [content, mcpContent]);
 
+    const isCardsEligible = useMemo(() => {
+        return !mcpContent && !isTableEligible && content && typeof content === 'object' && !Array.isArray(content) && Object.keys(content).length > 0;
+    }, [content, mcpContent, isTableEligible]);
+
     // Get columns for table
     const columns = useMemo(() => {
         if (!isTableEligible) return [];
@@ -150,7 +191,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return <span className="truncate max-w-[300px] block" title={String(value)}>{String(value)}</span>;
     }
 
-    const defaultTab = mcpContent ? "rendered" : (isTableEligible ? "table" : "json");
+    const defaultTab = mcpContent ? "rendered" : (isTableEligible ? "table" : (isCardsEligible ? "cards" : "json"));
 
     return (
         <Tabs defaultValue={defaultTab} className="w-full">
@@ -164,6 +205,11 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                     {isTableEligible && (
                         <TabsTrigger value="table" className="flex items-center gap-2">
                             <TableIcon className="h-4 w-4" /> Table
+                        </TabsTrigger>
+                    )}
+                    {isCardsEligible && (
+                        <TabsTrigger value="cards" className="flex items-center gap-2">
+                            <FileText className="h-4 w-4" /> Data
                         </TabsTrigger>
                     )}
                     <TabsTrigger value="json" className="flex items-center gap-2">
@@ -192,15 +238,15 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                             <TableHeader>
                                 <TableRow>
                                     {columns.map(col => (
-                                        <TableHead key={col} className="whitespace-nowrap">{col}</TableHead>
+                                        <TableHead key={col} className="whitespace-nowrap font-semibold bg-muted/50">{col}</TableHead>
                                     ))}
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {content.map((row: any, i: number) => (
-                                    <TableRow key={i}>
+                                    <TableRow key={i} className="hover:bg-muted/30 transition-colors">
                                         {columns.map(col => (
-                                            <TableCell key={col} className="py-2">
+                                            <TableCell key={col} className="py-3 align-top">
                                                 {renderCell(row[col])}
                                             </TableCell>
                                         ))}
@@ -208,6 +254,23 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                                 ))}
                             </TableBody>
                         </Table>
+                    </ScrollArea>
+                </TabsContent>
+            )}
+
+            {isCardsEligible && (
+                <TabsContent value="cards" className="border rounded-md bg-card p-4">
+                    <ScrollArea className="h-[400px]">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {Object.entries(content).map(([key, val]) => (
+                                <div key={key} className="flex flex-col p-3 border rounded bg-background/50 hover:bg-muted/20 transition-colors shadow-sm">
+                                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">{key}</span>
+                                    <div className="text-sm break-words overflow-auto max-h-[150px]">
+                                        {renderCell(val)}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </ScrollArea>
                 </TabsContent>
             )}
