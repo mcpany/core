@@ -18,7 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { JsonView } from "@/components/ui/json-view";
+import { PayloadTableViewer } from "@/components/traces/payload-table-viewer";
 import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 import { analyzeTrace } from "@/lib/diagnostics";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -380,18 +380,39 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                 <TabsContent value="payload" className="flex-1 p-0 overflow-hidden m-0">
                      <ScrollArea className="h-full p-6">
                         <div className="grid grid-cols-1 gap-6">
-                            <div className="space-y-2">
-                                <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
-                                    <Code className="h-4 w-4" /> Request Payload
-                                </h3>
-                                <JsonView data={trace.rootSpan.input} maxHeight={400} />
-                            </div>
-                            <div className="space-y-2">
-                                <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
-                                    <Terminal className="h-4 w-4" /> Response Payload
-                                </h3>
-                                <JsonView data={trace.rootSpan.output} maxHeight={400} />
-                            </div>
+                            <Card className="shadow-sm border-border/50 bg-background/50">
+                                <CardHeader className="pb-3 border-b border-border/40 bg-muted/20">
+                                    <CardTitle className="text-sm font-medium flex items-center gap-2">
+                                        <Code className="h-4 w-4" /> Request Payload
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-0">
+                                    {trace.rootSpan.input ? (
+                                        <div className="bg-background rounded-b-lg">
+                                            <PayloadTableViewer data={trace.rootSpan.input} initiallyExpanded={true} />
+                                        </div>
+                                    ) : (
+                                        <div className="p-4 text-sm text-muted-foreground italic">No request payload</div>
+                                    )}
+                                </CardContent>
+                            </Card>
+
+                            <Card className="shadow-sm border-border/50 bg-background/50">
+                                <CardHeader className="pb-3 border-b border-border/40 bg-muted/20">
+                                    <CardTitle className="text-sm font-medium flex items-center gap-2">
+                                        <Terminal className="h-4 w-4" /> Response Payload
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-0">
+                                    {trace.rootSpan.output ? (
+                                        <div className="bg-background rounded-b-lg">
+                                            <PayloadTableViewer data={trace.rootSpan.output} initiallyExpanded={true} />
+                                        </div>
+                                    ) : (
+                                        <div className="p-4 text-sm text-muted-foreground italic">No response payload</div>
+                                    )}
+                                </CardContent>
+                            </Card>
                         </div>
                      </ScrollArea>
                 </TabsContent>

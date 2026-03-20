@@ -2001,7 +2001,7 @@ export const apiClient = {
      * Side Effects: Makes a GET request to /api/v1/doctor.
      */
     getDoctorStatus: async (): Promise<DoctorReport> => {
-        const res = await fetchWithAuth('/api/v1/doctor');
+        const res = await fetchWithAuth('/doctor');
         if (!res.ok) throw new Error('Failed to fetch doctor status');
         return res.json();
     },
