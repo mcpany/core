@@ -32,6 +32,9 @@ type Label = metrics.Label
 // Returns:
 //   - *prometheus.PrometheusSink: The initialized Prometheus sink.
 //   - error: An error if the sink creation fails.
+//
+// Side Effects:
+//   - None.
 func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
 	return prometheus.NewPrometheusSink()
 }
@@ -84,10 +87,13 @@ func Handler() http.Handler {
 // Summary: Starts the metrics server.
 //
 // Parameters:
-//   - addr: string. The address to listen on (e.g., ":8080").
+//   - addr (string): The address to listen on (e.g., ":8080").
 //
 // Returns:
 //   - error: An error if the server fails to start.
+//
+// Side Effects:
+//   - Starts an HTTP server.
 func StartServer(addr string) error {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", Handler())
@@ -118,9 +124,15 @@ func StartServer(addr string) error {
 // Summary: Sets a gauge metric.
 //
 // Parameters:
-//   - name: string. The name of the gauge.
-//   - val: float32. The value to set.
-//   - labels: ...string. A list of labels to apply to the gauge.
+//   - name (string): The name of the gauge.
+//   - val (float32): The value to set.
+//   - labels (...string): A list of labels to apply to the gauge.
+//
+// Returns:
+//   - None.
+//
+// Side Effects:
+//   - Updates a global gauge metric.
 func SetGauge(name string, val float32, labels ...string) {
 	var metricLabels []metrics.Label
 	if len(labels) > 0 {
@@ -136,8 +148,14 @@ func SetGauge(name string, val float32, labels ...string) {
 // Summary: Increments a counter metric.
 //
 // Parameters:
-//   - name: []string. The name of the counter (as a path).
-//   - val: float32. The amount to increment.
+//   - name ([]string): The name of the counter (as a path).
+//   - val (float32): The amount to increment.
+//
+// Returns:
+//   - None.
+//
+// Side Effects:
+//   - Increments a global counter metric.
 func IncrCounter(name []string, val float32) {
 	metrics.IncrCounter(name, val)
 }
@@ -147,9 +165,15 @@ func IncrCounter(name []string, val float32) {
 // Summary: Increments a labeled counter metric.
 //
 // Parameters:
-//   - name: []string. The name of the counter (as a path).
-//   - val: float32. The amount to increment.
-//   - labels: []metrics.Label. The labels to apply.
+//   - name ([]string): The name of the counter (as a path).
+//   - val (float32): The amount to increment.
+//   - labels ([]metrics.Label): The labels to apply.
+//
+// Returns:
+//   - None.
+//
+// Side Effects:
+//   - Increments a global labeled counter metric.
 func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.IncrCounterWithLabels(name, val, labels)
 }
@@ -159,8 +183,14 @@ func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 // Summary: Records latency metric.
 //
 // Parameters:
-//   - name: []string. The name of the metric (as a path).
-//   - start: time.Time. The start time.
+//   - name ([]string): The name of the metric (as a path).
+//   - start (time.Time): The start time.
+//
+// Returns:
+//   - None.
+//
+// Side Effects:
+//   - Records a latency sample in the global metrics collector.
 func MeasureSince(name []string, start time.Time) {
 	metrics.MeasureSince(name, start)
 }
@@ -170,9 +200,15 @@ func MeasureSince(name []string, start time.Time) {
 // Summary: Records labeled latency metric.
 //
 // Parameters:
-//   - name: []string. The name of the metric (as a path).
-//   - start: time.Time. The start time.
-//   - labels: []metrics.Label. The labels to apply.
+//   - name ([]string): The name of the metric (as a path).
+//   - start (time.Time): The start time.
+//   - labels ([]metrics.Label): The labels to apply.
+//
+// Returns:
+//   - None.
+//
+// Side Effects:
+//   - Records a labeled latency sample in the global metrics collector.
 func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Label) {
 	metrics.MeasureSinceWithLabels(name, start, labels)
 }
@@ -182,8 +218,14 @@ func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Lab
 // Summary: Adds a sample to a metric.
 //
 // Parameters:
-//   - name: []string. The name of the metric (as a path).
-//   - val: float32. The value to sample.
+//   - name ([]string): The name of the metric (as a path).
+//   - val (float32): The value to sample.
+//
+// Returns:
+//   - None.
+//
+// Side Effects:
+//   - Records a sample in the global metrics collector.
 func AddSample(name []string, val float32) {
 	metrics.AddSample(name, val)
 }
@@ -193,9 +235,15 @@ func AddSample(name []string, val float32) {
 // Summary: Adds a labeled sample to a metric.
 //
 // Parameters:
-//   - name: []string. The name of the metric (as a path).
-//   - val: float32. The value to sample.
-//   - labels: []metrics.Label. The labels to apply.
+//   - name ([]string): The name of the metric (as a path).
+//   - val (float32): The value to sample.
+//   - labels ([]metrics.Label): The labels to apply.
+//
+// Returns:
+//   - None.
+//
+// Side Effects:
+//   - Records a labeled sample in the global metrics collector.
 func AddSampleWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.AddSampleWithLabels(name, val, labels)
 }
