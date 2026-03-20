@@ -353,6 +353,12 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-15 Evolution)
+- [ ] **[P0] Relational Intent Inspector**: Security dashboard for visualizing mission-linkage proofs and blocking RCS attacks. (Added: 2026-05-15)
+- [ ] **[P0] Negotiation Arbiter Console**: UI for monitoring UACO bidding loops and reviewing automated deadlock resolution. (Added: 2026-05-15)
+- [ ] **[P0] UAB v2.5 Transport Monitor**: Real-time metrics for native high-speed routing and Task Object validation. (Added: 2026-05-15)
+- [ ] **[P1] Proactive Budget Visualizer**: Dashboard for monitoring `x-gemini-reasoning-budget` levels and AIB v2 efficiency. (Added: 2026-05-15)
+
 #### Upcoming (2026-05-14 Evolution)
 - [ ] **[P0] Swarm Attack Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and SAAD neutralization events. (Added: 2026-05-14)
 - [ ] **[P0] ContextEngine Plugin Manager**: Re-affirmed P0 for managing OpenClaw-compatible lifecycle hooks and "Mission-Root" anchors. (Added: 2026-05-14)
