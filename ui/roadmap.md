@@ -573,3 +573,9 @@
 - [ ] **[P0] HLCH Handshake Monitor**: (2026-06-14) Real-time status indicator for mandatory hardware-locked handshakes in horizontal meshes.
 - [ ] **[P1] Shadow-Channel Instruction Scanner**: (2026-06-14) Security dashboard for reviewing "Dormant" coordination patterns blocked by the SCI filter.
 - [ ] **[P0] Attention Sovereignty Dashboard**: (2026-06-14) Advanced visualization for REE noise levels and mission-root attention health.
+
+### Upcoming: [2026-06-14]
+- [ ] **[P0] Lineage Hash-Chain Inspector**: (2026-06-14) Forensic UI for visualizing TPM-backed coordination lineages and detecting spoofing attempts.
+- [ ] **[P0] HLCH Handshake Monitor**: (2026-06-14) Real-time status indicator for mandatory hardware-locked handshakes in horizontal meshes.
+- [ ] **[P1] Shadow-Channel Instruction Scanner**: (2026-06-14) Security dashboard for reviewing "Dormant" coordination patterns blocked by the SCI filter.
+- [ ] **[P0] Attention Sovereignty Dashboard**: (2026-06-14) Advanced visualization for REE noise levels and mission-root attention health.

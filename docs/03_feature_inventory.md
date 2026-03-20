@@ -1324,3 +1324,15 @@
 ### Priority Shifts
 - **Shadow Coordination Interceptor (SCI)**: (Re-affirmed P0) Elevated with the requirement for mandatory **MRA-compliant** metadata signing.
 - **Hardware-Locked Coordination Handshake**: (Re-affirmed P0) Designated as the mandatory standard for all horizontal teammate swarms.
+
+## Evolution: [2026-06-14] Updates
+
+### Proposed Additions
+- **MRA-Backed Lineage Provider**: (P0) Advanced extension for the ARI Hub that anchors every coordination fragment to a TPM-backed semantic hash-chain.
+- **HLCH-Compliant T2T Bridge**: (P0) Transition to mandatory Hardware-Locked Coordination Handshakes for all inter-teammate coordination to neutralize Identity-Decay.
+- **Side-Channel Immunity Filter**: (P1) Metadata-aware interceptor for the T2T bridge that detects and blocks "Dormant" coordination instructions in shadow channels.
+- **Attention Sovereignty Hub**: (P0) Stability middleware that performs real-time entropy analysis and gating to prevent mission-root eviction during REE attacks.
+
+### Priority Shifts
+- **Shadow Coordination Interceptor (SCI)**: (Re-affirmed P0) Elevated with the requirement for mandatory **MRA-compliant** metadata signing.
+- **Hardware-Locked Coordination Handshake**: (Re-affirmed P0) Designated as the mandatory standard for all horizontal teammate swarms.
