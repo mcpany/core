@@ -33,10 +33,6 @@ type TemplateManager struct {
 //
 // Returns:
 //   - *TemplateManager: The initialized manager.
-// Errors:
-//   - none.
-// Side Effects:
-//   - none.
 func NewTemplateManager(dataDir string) *TemplateManager {
 	tm := &TemplateManager{
 		filePath: filepath.Join(dataDir, "templates.json"),
@@ -138,10 +134,6 @@ func (tm *TemplateManager) save() error {
 //
 // Returns:
 //   - []*configv1.UpstreamServiceConfig: A list of templates.
-// Errors:
-//   - none.
-// Side Effects:
-//   - none.
 func (tm *TemplateManager) ListTemplates() []*configv1.UpstreamServiceConfig {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -162,10 +154,6 @@ func (tm *TemplateManager) ListTemplates() []*configv1.UpstreamServiceConfig {
 //
 // Returns:
 //   - error: An error if persistence fails.
-// Errors:
-//   - none.
-// Side Effects:
-//   - none.
 func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig) error {
 	tm.mu.Lock()
 	found := false
@@ -200,10 +188,6 @@ func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig
 //
 // Returns:
 //   - error: An error if deletion or persistence fails.
-// Errors:
-//   - none.
-// Side Effects:
-//   - none.
 func (tm *TemplateManager) DeleteTemplate(idOrName string) error {
 	tm.mu.Lock()
 	newTemplates := make([]*configv1.UpstreamServiceConfig, 0, len(tm.templates))

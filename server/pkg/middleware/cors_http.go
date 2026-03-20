@@ -32,10 +32,6 @@ type HTTPCORSMiddleware struct {
 //
 // Returns:
 //   - (*HTTPCORSMiddleware): The initialized middleware.
-// Errors:
-//   - none.
-// Side Effects:
-//   - none.
 func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 	m := &HTTPCORSMiddleware{}
 	m.updateInternal(allowedOrigins)
@@ -48,18 +44,6 @@ func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 //
 // Parameters:
 //   - allowedOrigins ([]string): The new list of allowed origins.
-//
-// Parameters:
-//   - args: Variable arguments.
-//
-// Returns:
-//   - none
-//
-// Errors:
-//   - none
-//
-// Side Effects:
-//   - none
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -90,10 +74,6 @@ func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 //
 // Returns:
 //   - (http.Handler): The wrapped handler.
-// Errors:
-//   - none.
-// Side Effects:
-//   - none.
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")

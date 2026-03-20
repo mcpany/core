@@ -52,10 +52,6 @@ type Provider struct {
 //
 // Returns:
 //   - *Provider: The initialized provider.
-// Errors:
-//   - none.
-// Side Effects:
-//   - none.
 func NewProvider() *Provider {
 	return &Provider{}
 }
@@ -75,8 +71,6 @@ func NewProvider() *Provider {
 // Errors:
 //   - Returns "url is required" if url is empty.
 //   - Returns "failed to start playwright" or "failed to launch browser" if the browser fails to start.
-// Side Effects:
-//   - none.
 func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 	if url == "" {
 		return "", fmt.Errorf("url is required")
@@ -98,10 +92,6 @@ func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 //
 // Returns:
 //   - map[string]interface{}: The JSON schema definition of the tool.
-// Errors:
-//   - none.
-// Side Effects:
-//   - none.
 func (b *Provider) ToolDefinition() map[string]interface{} {
 	return map[string]interface{}{
 		"name":        "browse_page",

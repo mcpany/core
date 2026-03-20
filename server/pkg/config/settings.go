@@ -57,8 +57,6 @@ var (
 //
 // Side Effects:
 //   - Initializes the singleton if it doesn't exist.
-// Errors:
-//   - none.
 func GlobalSettings() *Settings {
 	once.Do(func() {
 		globalSettings = &Settings{
@@ -80,8 +78,6 @@ func GlobalSettings() *Settings {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) ToProto() *configv1.GlobalSettings {
 	return s.proto
 }
@@ -101,8 +97,6 @@ func (s *Settings) ToProto() *configv1.GlobalSettings {
 //   - Modifies the global settings instance.
 //   - Initializes logging.
 //   - Reads environment variables.
-// Errors:
-//   - none.
 func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.cmd = cmd
 	s.fs = fs
@@ -207,8 +201,6 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) LogFormat() configv1.GlobalSettings_LogFormat {
 	format := viper.GetString("log-format")
 	key := "LOG_FORMAT_" + strings.ToUpper(format)
@@ -230,8 +222,6 @@ func (s *Settings) LogFormat() configv1.GlobalSettings_LogFormat {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) GRPCPort() string {
 	return s.grpcPort
 }
@@ -248,8 +238,6 @@ func (s *Settings) GRPCPort() string {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) MCPListenAddress() string {
 	return s.proto.GetMcpListenAddress()
 }
@@ -266,8 +254,6 @@ func (s *Settings) MCPListenAddress() string {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) MetricsListenAddress() string {
 	return viper.GetString("metrics-listen-address")
 }
@@ -284,8 +270,6 @@ func (s *Settings) MetricsListenAddress() string {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) Stdio() bool {
 	return s.stdio
 }
@@ -302,8 +286,6 @@ func (s *Settings) Stdio() bool {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) ConfigPaths() []string {
 	return s.configPaths
 }
@@ -320,8 +302,6 @@ func (s *Settings) ConfigPaths() []string {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) IsDebug() bool {
 	return s.debug
 }
@@ -338,8 +318,6 @@ func (s *Settings) IsDebug() bool {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) LogFile() string {
 	return s.logFile
 }
@@ -356,8 +334,6 @@ func (s *Settings) LogFile() string {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) PersistentLog() string {
 	return s.persistentLog
 }
@@ -374,8 +350,6 @@ func (s *Settings) PersistentLog() string {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) ShutdownTimeout() time.Duration {
 	return s.shutdownTimeout
 }
@@ -392,8 +366,6 @@ func (s *Settings) ShutdownTimeout() time.Duration {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) APIKey() string {
 	if s.proto.GetApiKey() != "" {
 		return s.proto.GetApiKey()
@@ -414,8 +386,6 @@ func (s *Settings) APIKey() string {
 //
 // Side Effects:
 //   - Updates the API key setting.
-// Errors:
-//   - none.
 func (s *Settings) SetAPIKey(key string) {
 	s.proto.SetApiKey(key)
 }
@@ -433,8 +403,6 @@ func (s *Settings) SetAPIKey(key string) {
 //
 // Side Effects:
 //   - Updates the middlewares setting.
-// Errors:
-//   - none.
 func (s *Settings) SetMiddlewares(middlewares []*configv1.Middleware) {
 	s.proto.SetMiddlewares(middlewares)
 }
@@ -451,8 +419,6 @@ func (s *Settings) SetMiddlewares(middlewares []*configv1.Middleware) {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) Profiles() []string {
 	if viper.IsSet("profiles") {
 		return getStringSlice("profiles")
@@ -475,8 +441,6 @@ func (s *Settings) Profiles() []string {
 //
 // Side Effects:
 //   - Logs a warning if the log level is invalid.
-// Errors:
-//   - none.
 func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 	if s.IsDebug() {
 		return configv1.GlobalSettings_LOG_LEVEL_DEBUG
@@ -516,8 +480,6 @@ func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) DBPath() string {
 	return s.dbPath
 }
@@ -534,8 +496,6 @@ func (s *Settings) DBPath() string {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) SetValues() []string {
 	return s.setValues
 }
@@ -552,8 +512,6 @@ func (s *Settings) SetValues() []string {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) GetDbDsn() string {
 	return s.proto.GetDbDsn()
 }
@@ -570,8 +528,6 @@ func (s *Settings) GetDbDsn() string {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) GetDbDriver() string {
 	return s.proto.GetDbDriver()
 }
@@ -588,8 +544,6 @@ func (s *Settings) GetDbDriver() string {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) Middlewares() []*configv1.Middleware {
 	return s.proto.GetMiddlewares()
 }
@@ -606,8 +560,6 @@ func (s *Settings) Middlewares() []*configv1.Middleware {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) GetDlp() *configv1.DLPConfig {
 	return s.proto.GetDlp()
 }
@@ -625,8 +577,6 @@ func (s *Settings) GetDlp() *configv1.DLPConfig {
 //
 // Side Effects:
 //   - Updates the DLP setting.
-// Errors:
-//   - none.
 func (s *Settings) SetDlp(dlp *configv1.DLPConfig) {
 	s.proto.SetDlp(dlp)
 }
@@ -643,8 +593,6 @@ func (s *Settings) SetDlp(dlp *configv1.DLPConfig) {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) GetOidc() *configv1.OIDCConfig {
 	return s.proto.GetOidc()
 }
@@ -661,8 +609,6 @@ func (s *Settings) GetOidc() *configv1.OIDCConfig {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) GetProfileDefinitions() []*configv1.ProfileDefinition {
 	return s.proto.GetProfileDefinitions()
 }
@@ -679,8 +625,6 @@ func (s *Settings) GetProfileDefinitions() []*configv1.ProfileDefinition {
 //
 // Side Effects:
 //   - None.
-// Errors:
-//   - none.
 func (s *Settings) GithubAPIURL() string {
 	return s.proto.GetGithubApiUrl()
 }

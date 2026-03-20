@@ -42,8 +42,6 @@ type JSONRPCResponse struct {
 //
 // Side Effects:
 //   - Intercepts and rewrites HTTP response bodies for error status codes.
-// Errors:
-//   - none.
 func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Only intercept POST requests (likely JSON-RPC)
@@ -103,10 +101,6 @@ type smartResponseWriter struct {
 //
 // Returns:
 //   - http.Header: The header map.
-// Errors:
-//   - none.
-// Side Effects:
-//   - none.
 func (w *smartResponseWriter) Header() http.Header {
 	return w.header
 }
@@ -117,18 +111,6 @@ func (w *smartResponseWriter) Header() http.Header {
 //
 // Parameters:
 //   - code: int. The HTTP status code.
-//
-// Parameters:
-//   - args: Variable arguments.
-//
-// Returns:
-//   - none
-//
-// Errors:
-//   - none
-//
-// Side Effects:
-//   - none
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
 		return
@@ -161,10 +143,6 @@ func (w *smartResponseWriter) WriteHeader(code int) {
 // Returns:
 //   - int: The number of bytes written.
 //   - error: An error if the write fails.
-// Errors:
-//   - none.
-// Side Effects:
-//   - none.
 func (w *smartResponseWriter) Write(b []byte) (int, error) {
 	if !w.committed {
 		w.WriteHeader(http.StatusOK)
@@ -208,10 +186,6 @@ func (w *smartResponseWriter) flushHeader() {
 // Returns:
 //
 //	None.
-// Errors:
-//   - none.
-// Side Effects:
-//   - none.
 func (w *smartResponseWriter) Flush() {
 	if w.passThrough {
 		if f, ok := w.w.(http.Flusher); ok {

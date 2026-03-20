@@ -21,8 +21,6 @@ var (
 )
 
 // AITool represents an AI tool used in testing.
-//
-// Summary: AITool definition.
 type AITool interface {
 	// Install performs any necessary installation steps for the AI tool.
 	Install()

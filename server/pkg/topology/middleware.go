@@ -26,8 +26,6 @@ import (
 //   - Extracts session ID from context or request.
 //   - Records duration, success/error status, and response size.
 //   - Calls m.RecordActivity to persist metrics.
-// Errors:
-//   - none.
 func (m *Manager) Middleware(next mcp.MethodHandler) mcp.MethodHandler {
 	return func(
 		ctx context.Context,

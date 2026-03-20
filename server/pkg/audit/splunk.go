@@ -46,8 +46,6 @@ type SplunkAuditStore struct {
 //
 // Side Effects:
 //   - Starts background workers.
-// Errors:
-//   - none.
 func NewSplunkAuditStore(config *configv1.SplunkConfig) *SplunkAuditStore {
 	if config == nil {
 		config = &configv1.SplunkConfig{}
@@ -189,10 +187,6 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 // Returns:
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
-// Errors:
-//   - none.
-// Side Effects:
-//   - none.
 func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for splunk audit store")
 }
@@ -207,8 +201,6 @@ func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 // Side Effects:
 //   - Closes channels.
 //   - Flushes pending batches.
-// Errors:
-//   - none.
 func (e *SplunkAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)

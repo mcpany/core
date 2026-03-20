@@ -17,8 +17,6 @@ import (
 )
 
 // CopilotCLI handles interactions with the GitHub Copilot CLI tool for testing.
-//
-// Summary: CopilotCLI definition.
 type CopilotCLI struct {
 	t         *testing.T
 	configDir string
@@ -26,8 +24,6 @@ type CopilotCLI struct {
 }
 
 // MCPServerConfig defines the configuration for an MCP server.
-//
-// Summary: MCPServerConfig definition.
 type MCPServerConfig struct {
 	Command string   `json:"command,omitempty"`
 	Args    []string `json:"args,omitempty"`
@@ -36,8 +32,6 @@ type MCPServerConfig struct {
 }
 
 // MCPConfig defines the configuration file structure.
-//
-// Summary: MCPConfig definition.
 type MCPConfig struct {
 	MCPServers map[string]MCPServerConfig `json:"mcpServers"`
 }
@@ -47,8 +41,6 @@ type MCPConfig struct {
 // t is the t.
 //
 // Returns the result.
-//
-// Summary: NewCopilotCLI definition.
 func NewCopilotCLI(t *testing.T) *CopilotCLI {
 	tempDir := t.TempDir()
 	return &CopilotCLI{
@@ -59,8 +51,6 @@ func NewCopilotCLI(t *testing.T) *CopilotCLI {
 }
 
 // Install installs the Copilot CLI tool.
-//
-// Summary: Install definition.
 func (c *CopilotCLI) Install() {
 	c.t.Helper()
 	root, err := integration.GetProjectRoot()
@@ -87,8 +77,6 @@ func (c *CopilotCLI) copilotCommand(args ...string) *exec.Cmd {
 //
 // name is the name of the resource.
 // endpoint is the endpoint.
-//
-// Summary: AddMCP definition.
 func (c *CopilotCLI) AddMCP(name, endpoint string) {
 	c.t.Helper()
 
@@ -107,8 +95,6 @@ func (c *CopilotCLI) AddMCP(name, endpoint string) {
 // RemoveMCP removes an MCP server.
 //
 // name is the name of the resource.
-//
-// Summary: RemoveMCP definition.
 func (c *CopilotCLI) RemoveMCP(name string) {
 	c.t.Helper()
 	delete(c.servers, name)
@@ -142,8 +128,6 @@ func (c *CopilotCLI) writeConfig() {
 //
 // Returns the result.
 // Returns an error if the operation fails.
-//
-// Summary: Run definition.
 func (c *CopilotCLI) Run(apiKey, prompt string) (string, error) {
 	c.t.Helper()
 	var outputBuffer strings.Builder

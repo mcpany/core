@@ -29,10 +29,6 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: The initialized manager.
-// Errors:
-//   - none.
-// Side Effects:
-//   - none.
 func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 	m := &Manager{
 		profiles: make(map[string]*configv1.ProfileDefinition),
@@ -47,18 +43,6 @@ func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 //
 // Parameters:
 //   - profiles: []*configv1.ProfileDefinition. The new list of profiles.
-//
-// Parameters:
-//   - args: Variable arguments.
-//
-// Returns:
-//   - none
-//
-// Errors:
-//   - none
-//
-// Side Effects:
-//   - none
 func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 	newProfiles := make(map[string]*configv1.ProfileDefinition)
 	for _, p := range profiles {
@@ -79,10 +63,6 @@ func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 // Returns:
 //   - *configv1.ProfileDefinition: The profile definition.
 //   - bool: True if found.
-// Errors:
-//   - none.
-// Side Effects:
-//   - none.
 func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -102,10 +82,6 @@ func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition
 //   - map[string]*configv1.ProfileServiceConfig: Merged service configs.
 //   - map[string]*configv1.SecretValue: Merged secrets.
 //   - error: Error if profile not found or cycle detected.
-// Errors:
-//   - none.
-// Side Effects:
-//   - none.
 func (m *Manager) ResolveProfile(profileName string) (map[string]*configv1.ProfileServiceConfig, map[string]*configv1.SecretValue, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

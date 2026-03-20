@@ -13,18 +13,6 @@ import (
 //
 // Parameters:
 //   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to strip secrets from.
-//
-// Parameters:
-//   - args: Variable arguments.
-//
-// Returns:
-//   - none
-//
-// Errors:
-//   - none
-//
-// Side Effects:
-//   - none
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	if svc == nil {
 		return
@@ -79,18 +67,6 @@ func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 //
 // Parameters:
 //   - profile (*configv1.ProfileDefinition): The profile definition to strip secrets from.
-//
-// Parameters:
-//   - args: Variable arguments.
-//
-// Returns:
-//   - none
-//
-// Errors:
-//   - none
-//
-// Side Effects:
-//   - none
 func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	if profile == nil {
 		return
@@ -106,18 +82,6 @@ func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 //
 // Parameters:
 //   - collection (*configv1.Collection): The service collection to strip secrets from.
-//
-// Parameters:
-//   - args: Variable arguments.
-//
-// Returns:
-//   - none
-//
-// Errors:
-//   - none
-//
-// Side Effects:
-//   - none
 func StripSecretsFromCollection(collection *configv1.Collection) {
 	if collection == nil {
 		return
@@ -133,18 +97,6 @@ func StripSecretsFromCollection(collection *configv1.Collection) {
 //
 // Parameters:
 //   - auth (*configv1.Authentication): The authentication configuration to strip secrets from.
-//
-// Parameters:
-//   - args: Variable arguments.
-//
-// Returns:
-//   - none
-//
-// Errors:
-//   - none
-//
-// Side Effects:
-//   - none
 func StripSecretsFromAuth(auth *configv1.Authentication) {
 	if auth == nil {
 		return
@@ -363,18 +315,6 @@ func scrubSecretValue(sv *configv1.SecretValue) {
 // Parameters:
 //   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to hydrate secrets into.
 //   - secrets (map[string]*configv1.SecretValue): A map of resolved secret values.
-//
-// Parameters:
-//   - args: Variable arguments.
-//
-// Returns:
-//   - none
-//
-// Errors:
-//   - none
-//
-// Side Effects:
-//   - none
 func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[string]*configv1.SecretValue) {
 	if svc == nil || len(secrets) == 0 {
 		return

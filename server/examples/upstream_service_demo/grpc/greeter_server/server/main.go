@@ -27,20 +27,6 @@ type server struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
-//
-// Summary: SayHello definition.
-//
-// Parameters:
-//   - args: Variable arguments.
-//
-// Returns:
-//   - none
-//
-// Errors:
-//   - none
-//
-// Side Effects:
-//   - none
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	log.Printf("Received: %v", in.GetName())
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil

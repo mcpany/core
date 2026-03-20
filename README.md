@@ -5,7 +5,7 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/mcpany/core/ci.yml?branch=main)](https://github.com/mcpany/core/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mcpany/core)](https://goreportcard.com/report/github.com/mcpany/core)
 
-## Project Identity (Elevator Pitch)
+## Elevator Pitch
 
 **What is this?**
 

@@ -57,10 +57,6 @@ type UpstreamServiceManager struct {
 //
 // Returns:
 //   - (*UpstreamServiceManager): A pointer to a fully initialized UpstreamServiceManager.
-// Errors:
-//   - none.
-// Side Effects:
-//   - none.
 func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager {
 	if len(enabledProfiles) == 0 {
 		enabledProfiles = []string{"default"}
@@ -96,8 +92,6 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 // Side Effects:
 //   - May clear existing services if a replace strategy is configured.
 //   - Fetches remote collections via HTTP.
-// Errors:
-//   - none.
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
 	// Respect merge strategy
 	if strategy := config.GetMergeStrategy(); strategy != nil {
