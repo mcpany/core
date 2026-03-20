@@ -133,9 +133,9 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
              const hasNonText = mcpContent.some(c => c.type !== 'text');
              if (hasNonText) return null;
 
-             if (mcpContent.length === 1 && (mcpContent[0] as TextContent).text) {
+             if (mcpContent.length === 1 && 'text' in mcpContent[0] && typeof mcpContent[0].text === 'string') {
                  try {
-                    const parsed = JSON.parse((mcpContent[0] as TextContent).text);
+                    const parsed = JSON.parse(mcpContent[0].text);
                     if (Array.isArray(parsed) && parsed.every(item => typeof item === 'object')) {
                         return parsed;
                     }
