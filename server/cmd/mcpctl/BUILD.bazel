@@ -10,6 +10,7 @@ go_library(
         "import.go",
         "main.go",
         "tool.go",
+        "init.go",
     ],
     importpath = "github.com/mcpany/core/server/cmd/mcpctl",
     visibility = ["//visibility:private"],
@@ -38,6 +39,7 @@ go_test(
         "main_test.go",
         "tool_test.go",
         "validate_test.go",
+        "init_test.go",
     ],
     embed = [":mcpctl_lib"],
     deps = [
