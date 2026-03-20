@@ -282,50 +282,18 @@ func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool { //nolint
 		return scanJSONForSensitiveKeys(input)
 	}
 
-	// Optimization: For short strings, IndexAny is faster (one pass).
-	// For long strings, multiple IndexByte calls are faster (SIMD).
-	// The crossover is around 128 bytes.
-	if len(input) < 128 {
-		// Use bitmap for faster check than IndexAny on short strings
-		for i := 0; i < len(input); i++ {
-			c := input[i]
-			if sensitiveStartCharBitmap[c] {
-				startChar := c | 0x20 // Normalize to lowercase
-				if checkPotentialMatch(input, i, startChar) {
-					return true
-				}
+	// ⚡ BOLT: Optimized sensitive key scanning by using a pre-computed bitmap unconditionally for O(1) start character lookup, avoiding expensive IndexAny calls in a loop.
+	// Randomized Selection from Top 5 High-Impact Targets
+	for i := 0; i < len(input); i++ {
+		c := input[i]
+		if sensitiveStartCharBitmap[c] {
+			startChar := c | 0x20 // Normalize to lowercase
+			if checkPotentialMatch(input, i, startChar) {
+				return true
 			}
 		}
-		return false
 	}
 
-	// Optimization: Use IndexAny to find the first occurrence of ANY sensitive start char.
-	// This reduces the number of passes over the data from N (number of unique start chars) to 1.
-	offset := 0
-	for offset < len(input) {
-		slice := input[offset:]
-		idx := bytes.IndexAny(slice, allSensitiveStartChars)
-		if idx == -1 {
-			break
-		}
-		matchStart := offset + idx
-		// Check bounds explicitly to satisfy gosec G602
-		if matchStart >= len(input) {
-			break
-		}
-		c := input[matchStart]
-
-		// We found a character 'c' which is a start char.
-		// We need to know which 'startChar' (lowercase) it corresponds to.
-		lowerC := c | 0x20 // Normalize to lowercase
-
-		// Check if it matches
-		if checkPotentialMatch(input, matchStart, lowerC) {
-			return true
-		}
-
-		offset = matchStart + 1
-	}
 	return false
 }
 
