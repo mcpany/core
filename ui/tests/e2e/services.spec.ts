@@ -68,7 +68,18 @@ test.describe('Services Feature', () => {
     });
 
     await page.route(url => /\/api\/v1\/services\/[^/]+$/.test(url.pathname), async route => {
+        const method = route.request().method();
         const serviceName = extractLastPathSegment(route.request().url());
+
+        if (method === 'DELETE') {
+            const index = services.findIndex((candidate) => candidate.name === serviceName);
+            if (index !== -1) {
+                services.splice(index, 1);
+            }
+            await route.fulfill({ json: {} });
+            return;
+        }
+
         const service = services.find((candidate) => candidate.name === serviceName);
         if (!service) {
             await route.fulfill({ status: 404, json: { error: 'service not found' } });
@@ -180,5 +191,35 @@ test.describe('Services Feature', () => {
 
     // Should navigate to logs page with query param
     await expect(page).toHaveURL(/.*\/logs.*source=Payment/);
+  });
+
+  test('supports bulk actions', async ({ page }) => {
+    // Navigate back to the services page
+    await page.goto('/upstream-services');
+    await expect(page.getByText('Payment Gateway')).toBeVisible();
+
+    // Find checkboxes for Payment Gateway and User Service
+    const paymentCheckbox = page.getByRole('checkbox', { name: 'Select Payment Gateway' });
+    const userCheckbox = page.getByRole('checkbox', { name: 'Select User Service' });
+
+    await paymentCheckbox.click();
+    await userCheckbox.click();
+
+    // Expect toolbar to appear with "2 selected"
+    await expect(page.getByText('2 selected')).toBeVisible();
+
+    // Set up a dialog handler to automatically accept the confirmation dialog
+    page.on('dialog', dialog => dialog.accept());
+
+    // Click Delete
+    const deleteBtn = page.getByRole('button', { name: 'Delete' });
+    await deleteBtn.click();
+
+    // Verify successful bulk delete toast
+    await expect(page.getByText('Bulk Delete Successful')).toBeVisible();
+
+    // Verify both services are no longer visible in the table
+    await expect(page.getByText('Payment Gateway')).toBeHidden();
+    await expect(page.getByText('User Service')).toBeHidden();
   });
 });
