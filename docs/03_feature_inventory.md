@@ -97,7 +97,7 @@
 - **`TeammateTool` Orchestration Adapter**: (Re-affirmed P0) Evolving to support
   ANB-native task auctions.
 
-## Evolution: [2026-05-23] Updates
+## Evolution: [2026-05-23] Updates (II)
 
 ### Proposed Additions
 
@@ -1322,7 +1322,7 @@
 
 ---
 
-## Evolution: [2026-03-14] Updates
+## Evolution: [2026-03-14] Updates (II)
 
 ### Proposed Additions
 
@@ -1396,7 +1396,7 @@
 
 ---
 
-## Evolution: [2026-03-17] Updates
+## Evolution: [2026-03-17] Updates (III)
 
 ### Proposed Additions
 

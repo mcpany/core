@@ -4,15 +4,15 @@
 
 ### 1. Persistent Supply Chain Threats & Metadata Exploits (SDMI)
 
-The discovery of **Shadow-Discovery via Metadata Injection (SDMI)** has catalyzed
-a shift in how agent discovery is governed. Malicious actors are weaponizing the
-documentation layer (descriptions, examples) to steer agent reasoning before
-tool-call interdiction. This is exacerbated by the **CVE-2026-2256**
-vulnerability in MS-Agent frameworks, which allowed for unsanitized shell
-command execution via prompt-based attacks. The ecosystem is moving toward
-mandatory **Structural Metadata Sanitization (SMS)** and **Sovereign Discovery
-Proxies (SDP)** to ensure that the discovery bus remains a high-trust
-environment.
+The discovery of **Shadow-Discovery via Metadata Injection (SDMI)** has
+catalyzed a shift in how agent discovery is governed. Malicious actors are
+weaponizing the documentation layer (descriptions, examples) to steer agent
+reasoning before tool-call interdiction. This is exacerbated by the
+**CVE-2026-2256** vulnerability in MS-Agent frameworks, which allowed for
+unsanitized shell command execution via prompt-based attacks. The ecosystem is
+moving toward mandatory **Structural Metadata Sanitization (SMS)** and
+**Sovereign Discovery Proxies (SDP)** to ensure that the discovery bus remains a
+high-trust environment.
 
 ### 2. Attention-Locked Context Sharding (ALCS)
 
