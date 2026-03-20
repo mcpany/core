@@ -139,7 +139,7 @@ test.describe('Services Feature', () => {
     await expect(page.getByText('Configure Service')).toBeVisible();
 
     const serviceName = `new-service-${Date.now()}`;
-    await page.fill('input[name="name"]', serviceName);
+    await page.fill('input[placeholder="my-service"]', serviceName);
 
     // Protocol selection is now a select dropdown named 'type'
     await page.locator('button[role="combobox"]').first().click();
