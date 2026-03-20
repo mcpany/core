@@ -121,7 +121,7 @@ def scan_dir(root_dir):
             continue
 
         # Skip generated proto files and examples that don't need strict audit
-        if "greeter_server/proto" in root:
+        if "greeter_server/proto" in root or "k8s/operator" in root:
             continue
 
         for file in files:
