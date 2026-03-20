@@ -2066,6 +2066,21 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	commandName := t.service.GetCommand()
 
+	// Load resolved secrets into inputs map so they can be substituted into args
+	for _, param := range t.callDefinition.GetParameters() {
+		name := param.GetSchema().GetName()
+		if secret := param.GetSecret(); secret != nil {
+			secretValue, err := util.ResolveSecret(ctx, secret)
+			if err != nil {
+				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
+			}
+			if inputs == nil {
+				inputs = make(map[string]any)
+			}
+			inputs[name] = secretValue
+		}
+	}
+
 	// Substitute placeholders in args with input values
 	if inputs != nil {
 		for i := range args {
@@ -2431,6 +2446,21 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	isDocker := t.service.GetContainerEnvironment() != nil && t.service.GetContainerEnvironment().GetImage() != ""
 
 	commandName := t.service.GetCommand()
+
+	// Load resolved secrets into inputs map so they can be substituted into args
+	for _, param := range t.callDefinition.GetParameters() {
+		name := param.GetSchema().GetName()
+		if secret := param.GetSecret(); secret != nil {
+			secretValue, err := util.ResolveSecret(ctx, secret)
+			if err != nil {
+				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
+			}
+			if inputs == nil {
+				inputs = make(map[string]any)
+			}
+			inputs[name] = secretValue
+		}
+	}
 
 	// Substitute placeholders in args with input values
 	if inputs != nil {
