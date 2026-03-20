@@ -5,6 +5,7 @@
 
 "use client";
 
+import { useMemo } from "react";
 import { useTraces } from "@/hooks/use-traces";
 import { InspectorTable } from "@/components/inspector/inspector-table";
 import { Button } from "@/components/ui/button";
@@ -36,9 +37,13 @@ export function ServiceInspector({ service }: ServiceInspectorProps) {
 
     // Filter traces by service name
     // The serviceName in rootSpan usually matches the service ID or Name
-    const filteredTraces = traces.filter(
-        t => t.rootSpan.serviceName === service.name || t.rootSpan.serviceName === service.id
-    );
+    // ⚡ BOLT: [Render Optimization] Memoized filtered traces to prevent passing a new array reference to InspectorTable on every render.
+    // Randomized Selection from Top 5 High-Impact Targets
+    const filteredTraces = useMemo(() => {
+        return traces.filter(
+            t => t.rootSpan.serviceName === service.name || t.rootSpan.serviceName === service.id
+        );
+    }, [traces, service.name, service.id]);
 
     return (
         <Card className="h-[600px] flex flex-col">
