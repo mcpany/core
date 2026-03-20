@@ -1729,12 +1729,6 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
 	callID := "call-" + toolDef.GetName()
-	callDef := configv1.HttpCallDefinition_builder{
-		Id:           &callID,
-		EndpointPath: &endpointPath,
-		Method:       &method,
-		Parameters:   params,
-	}.Build()
 	toolDef.SetCallId(callID)
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
@@ -1742,7 +1736,14 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 		HttpService: configv1.HttpUpstreamService_builder{
 			Address: &baseURL,
 			Tools:   []*configv1.ToolDefinition{toolDef},
-			Calls:   map[string]*configv1.HttpCallDefinition{callID: callDef},
+			Calls: map[string]*configv1.HttpCallDefinition{
+				callID: configv1.HttpCallDefinition_builder{
+					Id:           &callID,
+					EndpointPath: &endpointPath,
+					Method:       &method,
+					Parameters:   params,
+				}.Build(),
+			},
 		}.Build(),
 	}
 	if authConfig != nil {
@@ -2067,11 +2068,6 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 
 	toolDef := configv1.ToolDefinition_builder{Name: &operationID}.Build()
 	callID := "call-" + toolDef.GetName()
-	callDef := configv1.HttpCallDefinition_builder{
-		Id:           &callID,
-		EndpointPath: &endpointPath,
-		Method:       &method,
-	}.Build()
 	toolDef.SetCallId(callID)
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
@@ -2079,7 +2075,13 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 		HttpService: configv1.HttpUpstreamService_builder{
 			Address: &baseURL,
 			Tools:   []*configv1.ToolDefinition{toolDef},
-			Calls:   map[string]*configv1.HttpCallDefinition{callID: callDef},
+			Calls: map[string]*configv1.HttpCallDefinition{
+				callID: configv1.HttpCallDefinition_builder{
+					Id:           &callID,
+					EndpointPath: &endpointPath,
+					Method:       &method,
+				}.Build(),
+			},
 		}.Build(),
 	}
 	if authConfig != nil {
