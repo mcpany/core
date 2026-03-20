@@ -36,7 +36,7 @@ import { Switch } from "@/components/ui/switch";
 import { PromptEditor } from "./prompt-editor";
 import { SmartResultRenderer } from "@/components/playground/pro/smart-result-renderer";
 import { PromptTable } from "./prompt-table";
-import { LayoutList, List } from "lucide-react";
+import { LayoutList, List, ChevronLeft } from "lucide-react";
 
 interface PromptWorkbenchProps {
   initialPrompts?: PromptDefinition[];
