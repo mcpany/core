@@ -54,3 +54,7 @@ As agent swarms become deeper and more autonomous, a new class of exploit has em
 
 ## 7. Evolutionary Changelog
 *   **2026-06-18:** Initial Document Creation.
+*   **2026-06-19:** **Attention-Locking Alignment.**
+    *   Updated the design to include support for `x-gemini-attention-lock` compatibility.
+    *   Integrating the **Sovereign Shard Controller** to manage pinned fragments within lock-free meshes.
+    *   Addressing the "Reasoning Path Shadowing" threat by requiring hardware-attested lineage for all attention-lock requests.

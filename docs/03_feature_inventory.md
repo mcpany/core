@@ -1369,6 +1369,14 @@
 - **Reasoning-Aware Garbage Collection (R-GC) Manager**: (P1) Stability middleware for the Speculative Branching Guard that purges low-utility context fragments.
 - **Temporal Shard Jitter (TSJ) Injector**: (P0) Security extension for the ESB that injects hardware-attested timing jitter to neutralize CVE-2026-62001.
 
+## Evolution: [2026-06-19] Updates
+
+### Proposed Additions
+- **Hardware-Attested Intent Lineage (HAIL) Provider**: (P0) Authoritative security service for the SRM Provider that cryptographically signs "Reasoning Fragments" to link sub-instructions back to the mission root.
+- **Attention-Locking Middleware**: (P0) Security extension for the HLAG Provider supporting `x-gemini-attention-lock` to protect critical intent fragments from noise-driven eviction.
+- **Sovereign Shard Controller**: (P0) Advanced extension for the LFMC Hub that enforces intent-bound isolation for teammate shards to prevent "Semantic Smearing."
+- **Stylometric Verification Hub**: (P0) Behavioral security middleware for the SMM that performs real-time stylometric analysis to verify the author of reasoning fragments.
+
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.

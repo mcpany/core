@@ -574,6 +574,12 @@
 - [ ] **[P0] Attention-Locked Shard Viewer**: (2026-06-14) Dashboard for monitoring hardware-protected fragments in the ALCS attention tier.
 - [ ] **[P0] Sovereign Discovery Console**: (2026-06-14) Authorization workspace for hardware-attested SDP validation of capability cards.
 
+### Upcoming: [2026-06-19]
+- [ ] **[P0] Lineage Inspector**: (2026-06-19) Visual "Chain of Command" tracer for HAIL fragments, mapping tool calls back to the TPM-signed mission root.
+- [ ] **[P0] Stylometric Match Dashboard**: (2026-06-19) Real-time visualization of stylometric consistency scores for inter-agent messages.
+- [ ] **[P0] Sovereign Shard Visualizer**: (2026-06-19) Interactive map of sharded mailbox state, highlighting intent-bound isolation and sync status.
+- [ ] **[P0] Attention Lock Control**: (2026-06-19) UI for manually pinning and unpinning critical context fragments with hardware attestation.
+
 ### Upcoming: [2026-06-18]
 - [ ] **[P0] Attention Sovereignty Monitor**: (2026-06-18) Visual tracking of real-time attention-utilization and hardware-locked intent fragments.
 - [ ] **[P0] Lock-Free Mesh Arbiter UI**: (2026-06-18) Dashboard for visualizing parallel task-claiming events and CRDT convergence.

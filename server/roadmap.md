@@ -736,6 +736,12 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Locked Context Sharding (ALCS)**: (P0) Hardware-protected pinning of mission-critical fragments to prevent noise-driven eviction. (Added: 2026-06-14)
 - **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative discovery gateway for hardware-attested tool capability card validation. (Added: 2026-06-14)
 
+### Upcoming: [2026-06-19]
+- [ ] **[P0] HAIL Lineage Mint**: (2026-06-19) Authoritative security service for generating TPM-signed "Reasoning Fragments" to link sub-instructions back to the mission root.
+- [ ] **[P0] Attention-Locking Middleware**: (2026-06-19) Implementation of `x-gemini-attention-lock` compatibility to protect mission-root anchors from REE.
+- [ ] **[P0] Sovereign Shard Controller**: (2026-06-19) Advanced coordination service enforcing intent-bound isolation for lock-free teammate shards.
+- [ ] **[P0] Stylometric Verification Hub**: (2026-06-19) Behavioral security service performing real-time stylometric analysis to verify the author of reasoning fragments.
+
 ### Upcoming: [2026-06-18]
 - **[P0] Hardware-Locked Attention Governance (HLAG) Provider**: Authoritative attention guard using hardware-bound headers for Mission-Root pinning (REE defense). (Added: 2026-06-18)
 - **[P0] Lock-Free Mesh Coordination (LFMC) Hub**: Coordination service implementing CRDT-based task list synchronization for non-blocking parallel teammates. (Added: 2026-06-18)
