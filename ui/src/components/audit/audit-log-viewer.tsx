@@ -127,7 +127,7 @@ export function AuditLogViewer() {
         try {
             const obj = JSON.parse(jsonStr);
             return JSON.stringify(obj, null, 2);
-        } catch (e) {
+        } catch (_e) {
             return jsonStr;
         }
     };
