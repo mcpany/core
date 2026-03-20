@@ -273,7 +273,7 @@ func symlinkIfPresent(src, dst string) error {
 		if os.IsNotExist(err) {
 			return nil
 		}
-		return err
+		return fmt.Errorf("failed to stat source %s: %w", src, err)
 	}
 	if err := os.Symlink(src, dst); err != nil {
 		return fmt.Errorf("failed to symlink %s to %s: %w", src, dst, err)
