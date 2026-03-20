@@ -7,10 +7,11 @@ interface JsonNodeProps {
   value: any;
   isLast: boolean;
   depth: number;
+  defaultExpandedLevel: number;
 }
 
-const JsonNode: React.FC<JsonNodeProps> = ({ keyName, value, isLast, depth }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+const JsonNode: React.FC<JsonNodeProps> = ({ keyName, value, isLast, depth, defaultExpandedLevel }) => {
+  const [isExpanded, setIsExpanded] = useState(depth < defaultExpandedLevel);
 
   const isObject = value !== null && typeof value === 'object';
   const isArray = Array.isArray(value);
@@ -66,6 +67,7 @@ const JsonNode: React.FC<JsonNodeProps> = ({ keyName, value, isLast, depth }) =>
                 value={value[k as keyof typeof value]}
                 isLast={i === keys.length - 1}
                 depth={depth + 1}
+                defaultExpandedLevel={defaultExpandedLevel}
               />
             ))}
             <div className="flex items-start -ml-5 pl-5">
@@ -89,12 +91,13 @@ const JsonNode: React.FC<JsonNodeProps> = ({ keyName, value, isLast, depth }) =>
 export interface JsonTreeProps {
   data: any;
   className?: string;
+  defaultExpandedLevel?: number;
 }
 
-export const JsonTree: React.FC<JsonTreeProps> = ({ data, className }) => {
+export const JsonTree: React.FC<JsonTreeProps> = ({ data, className, defaultExpandedLevel = 3 }) => {
   return (
     <div className={cn("bg-background border rounded-md p-4 overflow-auto", className)}>
-      <JsonNode keyName="" value={data} isLast={true} depth={0} />
+      <JsonNode keyName="" value={data} isLast={true} depth={0} defaultExpandedLevel={defaultExpandedLevel} />
     </div>
   );
 };
