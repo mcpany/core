@@ -552,7 +552,7 @@ These features represent the next logical steps for the product, focusing on Ent
 #### Upcoming (2026-05-15 Evolution)
 *   **[P0] Consensus Tool Validation Hub**: Distributed security middleware requiring multi-agent signatures for high-risk delegations. (Added: 2026-05-15)
 *   **[P1] PNTD Discovery Provider**: Universal discovery bus for mapping MCP, gRPC, and UACO tasks into a single registry. (Added: 2026-05-15)
-*   **[P0] Intent-Bound Memory Isolation**: Cryptographically protected and semantically isolated mission-root anchors for ContextEngine. (Added: 2026-05-15)
+*   **[P0] Intent-Bound Memory Isolation**: cryptographically protected and semantically isolated mission-root anchors for ContextEngine. (Added: 2026-05-15)
 *   **[P0] Negative Discovery Attestation Provider**: Cryptographic proof of non-execution for restricted paths during the PNTD discovery phase. (Added: 2026-05-15)
 
 #### Upcoming (2026-05-14 Evolution)
@@ -758,18 +758,6 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
-
-#### Upcoming (2026-06-18 Evolution)
-*   **[P0] Teammate Sovereignty Enforcer (TSE)**: Authoritative isolation kernel providing cryptographically bound isolation for parallel teams. (Added: 2026-06-18)
-*   **[P0] Request-Side Injection Shield (RSIS)**: Advanced scanning for AI-generated code to block request-side prompt injection. (Added: 2026-06-18)
-*   **[P1] HADM Discovery Provider**: Support for hardware-attested discovery manifests to lock capabilities to pre-declared missions. (Added: 2026-06-18)
-*   **[P0] Lock-Free Coordination Buffers**: High-performance, atomic coordination data structures for parallel teammate messaging. (Added: 2026-06-18)
-
-#### Upcoming (2026-06-18 Evolution)
-*   **[P0] Teammate Sovereignty Enforcer (TSE)**: Authoritative isolation kernel providing cryptographically bound isolation for parallel teams. (Added: 2026-06-18)
-*   **[P0] Request-Side Injection Shield (RSIS)**: Advanced scanning for AI-generated code to block request-side prompt injection. (Added: 2026-06-18)
-*   **[P1] HADM Discovery Provider**: Support for hardware-attested discovery manifests to lock capabilities to pre-declared missions. (Added: 2026-06-18)
-*   **[P0] Lock-Free Coordination Buffers**: High-performance, atomic coordination data structures for parallel teammate messaging. (Added: 2026-06-18)
 
 #### Upcoming (2026-06-18 Evolution)
 *   **[P0] Teammate Sovereignty Enforcer (TSE)**: Authoritative isolation kernel providing cryptographically bound isolation for parallel teams. (Added: 2026-06-18)
