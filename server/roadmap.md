@@ -130,7 +130,7 @@
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
 
-## 2. Top 10 Recommended Features
+## 3. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
 
@@ -230,7 +230,7 @@ These features represent the next logical steps for the product, focusing on Ent
 | 78 | **Upstream Connectivity Debugger** | **DevX**: CLI tool to debug connectivity issues with upstreams (like `curl` but with MCP auth/headers injected from config). | Medium |
 | 79 | **Configuration Template Generator** | **DevX**: CLI command to generate a scaffold `config.yaml` based on a list of desired services (e.g. `mcpany config init --services github,postgres`). | Low |
 
-## 1. Completed Features
+## 4. Completed Features
 
 - **Interactive Doctor Resilience**
   - **Description**: Enhanced `doctor` command to gracefully handle missing environment variables in configuration files, allowing it to report specific missing variables and proceed with other checks instead of aborting.
@@ -269,7 +269,7 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Context Optimizer Middleware**
   - **Description**: Automatically truncates large text outputs in JSON responses to prevent "Context Bloat" and reduce token usage.
 
-## 3. Codebase Health
+## 5. Codebase Health
 
 ### Critical Areas (Refactoring Needed)
 

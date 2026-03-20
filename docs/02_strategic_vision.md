@@ -417,6 +417,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
 
 ---
+
 ---
 
 ## Strategic Evolution: [2026-03-09]
@@ -708,6 +709,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **DCA-Native Negotiation Broker**: To support Gemini's "Distributed Capability Auction," MCP Any will act as the high-speed "Auction House." We will provide a low-latency bus for agent bidding, ensuring that swarm coordination doesn't become a bottleneck while maintaining Zero-Trust validation of every bid.
 
 ---
+
 ---
 
 ## Strategic Evolution: [2026-06-08]
@@ -1045,6 +1047,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Reasoning-Aware Garbage Collection (R-GC)**: To neutralize "Speculative Overload," MCP Any will implement R-GC for the Speculative Branching Guard. This service automatically purges speculative context fragments that exhibit high reasoning entropy but low mission utility, preventing cognitive stall in deep swarms.
 - **Temporal Shard Jitter (TSJ) Injection**: To counter CVE-2026-62001, we are upgrading the ESB to include TSJ Injection. This layer will inject hardware-attested timing jitter into entangled state synchronization for non-primary mission-root requests, ensuring absolute temporal isolation in sharded meshes.
 
+---
 ## Strategic Evolution: [2026-06-18]
 ### Focus: Autonomous Capability Revocation & Recursive Delegation Sovereignty
 **Context**: The emergence of the **Autonomous Capability Revocation (ACR)** protocol and the disclosure of the **Recursive Shadow Handoff** vulnerability (CVE-2026-71001) confirm that **Security** must now be autonomously reactive and **Lineage** must be recursively enforced. As swarms become deeper and more horizontal, the "Universal Agent Bus" must provide **hardware-attested mission-root depth-limit enforcement** and **automatic capability revocation** triggered by alignment drift.
