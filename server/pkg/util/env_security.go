@@ -25,7 +25,6 @@ import (
 //
 // Returns:
 //   - bool: True if the environment variable is allowed, false otherwise.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

@@ -50,7 +50,6 @@ type Provider struct {
 //
 // Returns:
 //   - *Provider: The initialized provider.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:

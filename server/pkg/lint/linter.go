@@ -93,7 +93,6 @@ type Linter struct {
 //
 // Returns:
 //   - *Linter: A new Linter instance initialized with the provided configuration.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

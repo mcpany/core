@@ -34,7 +34,6 @@ type StaticResource struct {
 //
 // Returns:
 //   - *StaticResource: The initialized static resource.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

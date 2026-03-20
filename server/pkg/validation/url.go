@@ -147,7 +147,6 @@ var IsSafeURL = func(urlStr string) error {
 //
 // Returns:
 //   - error: An error if the IP matches a forbidden range.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

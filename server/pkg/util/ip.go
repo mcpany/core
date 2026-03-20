@@ -27,7 +27,6 @@ const remoteIPContextKey = contextKey("remote_ip")
 //
 // Returns:
 //   - context.Context: A new context with the remote IP attached.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -47,7 +46,6 @@ func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 //
 // Returns:
 //   - string: The cleaned IP address string, or an empty string if the address is invalid.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -83,7 +81,6 @@ func ExtractIP(addr string) string {
 //
 // Returns:
 //   - string: The best-effort client IP address.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -124,7 +121,6 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 // Returns:
 //   - string: The remote IP address.
 //   - bool: True if the IP was found, false otherwise.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -146,7 +142,6 @@ func RemoteIPFromContext(ctx context.Context) (string, bool) {
 //
 // Returns:
 //   - bool: True if the IP is a private network address.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -166,7 +161,6 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 //
 // Returns:
 //   - bool: True if the IP is private, link-local, or loopback.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

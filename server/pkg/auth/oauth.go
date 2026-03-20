@@ -31,7 +31,6 @@ type OAuth2Authenticator struct {
 // Returns:
 //   - A new OAuth2Authenticator.
 //   - An error if the OIDC provider cannot be initialized.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

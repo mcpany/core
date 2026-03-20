@@ -29,7 +29,6 @@ type ConnectionFactory struct {
 //
 // Side Effects:
 //   - None.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:

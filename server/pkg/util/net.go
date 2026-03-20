@@ -86,7 +86,6 @@ type SafeDialer struct {
 //
 // Returns:
 //   - (*SafeDialer): A new SafeDialer instance with restrictive defaults.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:
@@ -189,7 +188,6 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 // Returns:
 //   - (net.Conn): The established connection.
 //   - (error): An error if the connection is blocked by policy or fails.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -211,7 +209,6 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //
 // Returns:
 //   - (*http.Client): A configured HTTP client.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:
@@ -253,7 +250,6 @@ func NewSafeHTTPClient() *http.Client {
 //
 // Returns:
 //   - (error): nil if the connection succeeded, or an error if it failed.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -332,7 +328,6 @@ func CheckConnection(ctx context.Context, address string) error {
 // Returns:
 //   - (net.Listener): The successfully bound listener.
 //   - (error): An error if binding fails after all retries.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

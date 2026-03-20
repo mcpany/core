@@ -40,7 +40,6 @@ var (
 // Parameters:
 //   - name (string): The name of the resource.
 //   - factory (Factory): The factory.
-//
 // Returns:
 //   - outcome: The resulting data or value.
 // Errors:
@@ -58,7 +57,6 @@ func Register(name string, factory Factory) {
 // Parameters:
 //   - name (string): The name of the resource.
 //   - factory (MCPFactory): The factory.
-//
 // Returns:
 //   - outcome: The resulting data or value.
 // Errors:
@@ -78,7 +76,6 @@ func RegisterMCP(name string, factory MCPFactory) {
 //
 // Returns:
 //   - ([]func(http.Handler) http.Handler): The result.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -113,7 +110,6 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 //
 // Returns:
 //   - ([]func(mcp.MethodHandler) mcp.MethodHandler): The result.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -169,7 +165,6 @@ type StandardMiddlewares struct {
 // Returns:
 //   - (*StandardMiddlewares): The result.
 //   - (error): An error if the operation fails.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

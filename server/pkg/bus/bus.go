@@ -86,7 +86,6 @@ var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 // Returns:
 //   *Provider: The created Provider.
 //   error: An error if creation fails.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -141,7 +140,6 @@ var GetBusHook func(p *Provider, topic string) (any, error)
 // Returns:
 //   Bus[T]: The requested Bus instance.
 //   error: An error if retrieval or creation fails.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

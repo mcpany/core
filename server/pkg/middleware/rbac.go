@@ -24,7 +24,6 @@ type RBACMiddleware struct {
 //
 // Returns:
 //   - *RBACMiddleware: The initialized middleware.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:

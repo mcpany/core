@@ -221,7 +221,6 @@ const toolContextKey = contextKey("tool")
 //
 // Returns:
 //   - context.Context: A new context containing the tool.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -240,7 +239,6 @@ func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 // Returns:
 //   - Tool: The tool instance from the context.
 //   - bool: True if a tool was found, false otherwise.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -309,7 +307,6 @@ const cacheControlContextKey = contextKey("cache_control")
 //
 // Returns:
 //   - context.Context: A new context containing the CacheControl.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -328,7 +325,6 @@ func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.C
 // Returns:
 //   - *CacheControl: The CacheControl instance if found.
 //   - bool: True if CacheControl exists, false otherwise.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -389,7 +385,6 @@ type GRPCTool struct {
 //
 // Returns:
 //   - *GRPCTool: The initialized GRPCTool.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -579,7 +574,6 @@ type HTTPTool struct {
 //
 // Returns:
 //   - *HTTPTool: The initialized HTTPTool.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -1357,7 +1351,6 @@ type MCPTool struct {
 //
 // Returns:
 //   - *MCPTool: The initialized MCPTool.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -1600,7 +1593,6 @@ type OpenAPITool struct {
 //
 // Returns:
 //   - *OpenAPITool: The initialized OpenAPITool.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -1884,7 +1876,6 @@ type CommandTool struct {
 //
 // Returns:
 //   - Tool: The created CommandTool.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -1954,7 +1945,6 @@ type LocalCommandTool struct {
 //
 // Returns:
 //   - Tool: The created LocalCommandTool.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

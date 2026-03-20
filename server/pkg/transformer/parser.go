@@ -49,7 +49,6 @@ var (
 //
 // Side Effects:
 //   - Initializes the singleton on first call.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:

@@ -30,7 +30,6 @@ type JSONExecutor struct {
 //
 // Returns:
 //   - (*JSONExecutor): Result.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

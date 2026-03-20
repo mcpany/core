@@ -132,7 +132,6 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A new Manager instance.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:

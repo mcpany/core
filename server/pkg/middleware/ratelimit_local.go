@@ -85,7 +85,6 @@ type LocalStrategy struct{}
 //
 // Returns:
 //   - *LocalStrategy: The initialized strategy.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:

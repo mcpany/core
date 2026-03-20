@@ -18,7 +18,6 @@ import "unicode/utf8"
 //
 // Returns:
 //   - int: The Levenshtein distance.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
@@ -43,7 +42,6 @@ func LevenshteinDistance(s1, s2 string) int {
 //
 // Returns:
 //   - int: The Levenshtein distance, or limit + 1 if it exceeds the limit.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

@@ -57,7 +57,6 @@ type MockRuntime struct{}
 //
 // Returns:
 //   - *MockRuntime: A new mock runtime instance.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:

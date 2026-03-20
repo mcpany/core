@@ -39,7 +39,6 @@ var (
 // Side Effects:
 //   - Updates the global historyStore.
 //   - Prunes history if it exceeds 1000 points.
-//
 // Returns:
 //   - outcome: The resulting data or value.
 // Errors:
@@ -88,7 +87,6 @@ func AddHealthStatus(serviceName string, status string) {
 //
 // Side Effects:
 //   - Acquires a read lock on the history store.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:

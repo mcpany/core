@@ -56,7 +56,6 @@ var NewRegistrationServerHook func(bus interface{}, authManager interface{}) (*R
 //
 // Throws/Errors:
 //   - Returns an error if the bus is nil.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

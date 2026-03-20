@@ -28,7 +28,6 @@ type RedisStrategy struct {
 //
 // Returns:
 //   - *RedisStrategy: The initialized strategy.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:

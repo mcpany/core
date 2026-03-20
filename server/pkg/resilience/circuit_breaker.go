@@ -50,7 +50,6 @@ type CircuitBreaker struct {
 //
 // Side Effects:
 //   - None.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {

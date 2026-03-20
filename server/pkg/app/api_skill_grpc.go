@@ -29,7 +29,6 @@ type SkillServiceServer struct {
 //
 // Returns:
 //   - *SkillServiceServer: The initialized gRPC server.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

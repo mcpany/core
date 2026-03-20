@@ -53,7 +53,6 @@ type Doctor struct {
 //
 // Side Effects:
 //   - Initializes internal maps and HTTP client.
-//
 // Parameters:
 //   - params: Inputs expected by the function.
 // Errors:

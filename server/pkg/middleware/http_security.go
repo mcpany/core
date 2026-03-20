@@ -17,7 +17,6 @@ import (
 //
 // Returns:
 //   - http.Handler: The wrapped handler that sets security headers.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

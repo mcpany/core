@@ -33,7 +33,6 @@ type UpstreamWorker struct {
 //
 // Returns:
 //   - *UpstreamWorker: A new upstream worker.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:

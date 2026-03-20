@@ -28,7 +28,6 @@ type ResilienceMiddleware struct {
 //
 // Returns:
 //   - *ResilienceMiddleware: The initialized middleware.
-//
 // Errors:
 //   - err: Any error that occurs during execution.
 // Side Effects:
