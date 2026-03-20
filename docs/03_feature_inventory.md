@@ -1290,15 +1290,3 @@
 ### Priority Shifts
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **L7SIH** integration to counter semantic noise injection.
 - **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Evolving to act as the primary enforcement point for **ESE-compliant** environment scrubbing.
-
-## Evolution: [2026-06-11] Updates
-
-### Proposed Additions
-- **Layer-7 Semantic Inspection Hub (L7SIH)**: (P0) Advanced security middleware providing real-time, high-entropy semantic analysis of inter-agent coordination to neutralizing REE attacks.
-- **Environment Sovereignty Enforcer (ESE)**: (P0) Core security service mandating hardware-attested "Environment Scrubbing" to prevent ILPE exfiltration from sub-process environments.
-- **Attention-Gated State Provider**: (P0) Infrastructure for supporting OpenClaw AGSR, providing "Attention Decay" monitoring for prioritized state retrieval.
-- **Reasoning Effort Cap (REC) Controller**: (P0) Resource management service that enforces hardware-attested reasoning budgets to prevent unbounded cognitive loops.
-
-### Priority Shifts
-- **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **L7SIH** integration to counter semantic noise injection.
-- **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Evolving to act as the primary enforcement point for **ESE-compliant** environment scrubbing.
