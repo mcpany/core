@@ -552,7 +552,7 @@ These features represent the next logical steps for the product, focusing on Ent
 #### Upcoming (2026-05-15 Evolution)
 *   **[P0] Consensus Tool Validation Hub**: Distributed security middleware requiring multi-agent signatures for high-risk delegations. (Added: 2026-05-15)
 *   **[P1] PNTD Discovery Provider**: Universal discovery bus for mapping MCP, gRPC, and UACO tasks into a single registry. (Added: 2026-05-15)
-*   **[P0] Intent-Bound Memory Isolation**: cryptographically protected and semantically isolated mission-root anchors for ContextEngine. (Added: 2026-05-15)
+*   **[P0] Intent-Bound Memory Isolation**: Cryptographically protected and semantically isolated mission-root anchors for ContextEngine. (Added: 2026-05-15)
 *   **[P0] Negative Discovery Attestation Provider**: Cryptographic proof of non-execution for restricted paths during the PNTD discovery phase. (Added: 2026-05-15)
 
 #### Upcoming (2026-05-14 Evolution)

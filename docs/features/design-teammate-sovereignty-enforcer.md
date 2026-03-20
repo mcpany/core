@@ -8,29 +8,29 @@ SPDX-License-Identifier: Apache-2.0
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
-With the official transition of Claude Code to "Agent Teams," AI swarms are moving from sequential task execution to high-density parallel coordination. This shift introduces significant risks of "State Smearing," where parallel teammates accidentally pollute or exfiltrate each other's session state due to a lack of cryptographically bound isolation.
+With the transition of Claude Code and other frameworks to "Agent Teams," multiple agents now work in parallel on the same mission. Today's market sync revealed that these parallel teammates often share too much context or can be coerced into "State Smearing," where one teammate's lower-trust output pollutes the high-trust reasoning of another.
 
-The Teammate Sovereignty Enforcer (TSE) aims to act as the authoritative "Isolation Kernel" for these horizontal meshes. It ensures that every teammate in a team (e.g., Claude lead, OpenClaw specialist) operates within a cryptographically locked, mission-anchored boundary that persists across all inter-agent communications and state handoffs.
+The Teammate Sovereignty Enforcer (TSE) provides a kernel-level isolation layer within MCP Any. It ensures that every teammate in a swarm operates within a cryptographically isolated "Sovereignty Shard," preventing unauthorized state access and cross-teammate impersonation.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Provide hardware-attested isolation for parallel teammate sessions.
-    * Prevent cross-teammate "State Smearing" in the Shared Blackboard and Mailbox.
-    * Mandate mission-anchored identity tokens for all inter-teammate requests.
-    * Support heterogeneous teammate coordination (Claude Code + OpenClaw).
+    * Provide cryptographically bound isolation for parallel teammates within a single mission.
+    * Enforce "Auth-at-the-Pipe" for inter-agent communication using kernel-level named pipes.
+    * Bind teammate identities to hardware-attested (TPM) mission-root tokens.
+    * Automatically revoke all teammate-specific capabilities upon task completion.
 * **Non-Goals:**
-    * Replacing existing framework-specific coordination protocols (e.g., Anthropic's internal mailbox). TSE acts as the secure *bus* for these protocols.
-    * Providing full OS-level containerization for agents. TSE focuses on the *reasoning and state* isolation.
+    * Replacing the primary mission-root security policy.
+    * Providing OS-level virtualization (e.g., Docker) for the LLM itself.
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Enterprise Swarm Orchestrator
-* **Primary Goal:** Coordinate a team of 5 parallel agents to refactor a legacy codebase without sensitive environment variables leaking between "Auditor" and "Executor" teammates.
+* **User Persona:** Swarm Orchestrator (Lead Agent)
+* **Primary Goal:** Coordinate a specialist "Executor" and a "Security Auditor" teammate without the Auditor being able to see the Executor's privileged environment variables.
 * **The Happy Path (Tasks):**
-    1. The lead agent (Claude) requests the creation of a new "Team Mission" through MCP Any.
-    2. MCP Any initializes the TSE Kernel, generating a hardware-bound Mission Root token.
-    3. Each parallel teammate (Auditor, Executor, etc.) is spawned with a unique, cryptographically bound Teammate Identity token.
-    4. Teammates communicate via the T2T Encryption Bridge, which validates every mailbox message against the TSE Mission Root.
-    5. The Shared Blackboard enforces "Teammate-Locked Shards," ensuring the Auditor cannot see the Executor's high-trust connection strings.
+    1. The Lead Agent initializes a TSE mission with a TPM-signed root token.
+    2. The Lead spawns an "Executor" teammate; TSE issues a bound identity shard.
+    3. The Lead spawns an "Auditor" teammate; TSE issues a separate, isolated identity shard.
+    4. TSE mandates that all inter-teammate communication occurs via isolated named pipes managed by the gateway.
+    5. The TSE Kernel enforces "Teammate-Locked Shards," ensuring the Auditor cannot see the Executor's high-trust connection strings.
     6. Upon task completion, the TSE Kernel forcefully revokes all teammate-specific capabilities.
 
 ## 4. Design & Architecture
