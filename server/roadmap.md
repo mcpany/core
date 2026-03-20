@@ -770,3 +770,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Request-Side Injection Shield (RSIS)**: Advanced scanning for AI-generated code to block request-side prompt injection. (Added: 2026-06-18)
 *   **[P1] HADM Discovery Provider**: Support for hardware-attested discovery manifests to lock capabilities to pre-declared missions. (Added: 2026-06-18)
 *   **[P0] Lock-Free Coordination Buffers**: High-performance, atomic coordination data structures for parallel teammate messaging. (Added: 2026-06-18)
+
+#### Upcoming (2026-06-18 Evolution)
+*   **[P0] Teammate Sovereignty Enforcer (TSE)**: Authoritative isolation kernel providing cryptographically bound isolation for parallel teams. (Added: 2026-06-18)
+*   **[P0] Request-Side Injection Shield (RSIS)**: Advanced scanning for AI-generated code to block request-side prompt injection. (Added: 2026-06-18)
+*   **[P1] HADM Discovery Provider**: Support for hardware-attested discovery manifests to lock capabilities to pre-declared missions. (Added: 2026-06-18)
+*   **[P0] Lock-Free Coordination Buffers**: High-performance, atomic coordination data structures for parallel teammate messaging. (Added: 2026-06-18)
