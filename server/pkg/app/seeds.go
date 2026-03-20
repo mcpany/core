@@ -211,29 +211,19 @@ func init() {
 	BuiltinServiceTemplates = []*configv1.ServiceTemplate{
 		configv1.ServiceTemplate_builder{
 			Id:          proto.String("slack-integration"),
-			Name:        proto.String("Slack"),
-			Description: proto.String("Interact with Slack channels and messages."),
+			Name:        proto.String("Slack Local"),
+			Description: proto.String("Interact with Slack channels and messages locally."),
 			Icon:        proto.String("slack"),
 			Tags:        []string{"communication", "slack", "chat"},
 			ServiceConfig: configv1.UpstreamServiceConfig_builder{
-				Name: proto.String("slack"),
-				CommandLineService: configv1.CommandLineService_builder{
-					Command:          proto.String("npx"),
-					Args:             []string{"-y", "@modelcontextprotocol/server-slack"},
-					Env: map[string]*configv1.EnvVarValue{
-						"SLACK_BOT_TOKEN": {
-							Value: &configv1.EnvVarValue_PlainText{
-								PlainText: "xoxb-your-token-here",
-							},
-						},
-						"SLACK_TEAM_ID": {
-							Value: &configv1.EnvVarValue_PlainText{
-								PlainText: "T1234567",
-							},
-						},
-					},
+				Name: proto.String("slack-local"),
+				McpService: configv1.McpUpstreamService_builder{
+					StdioConnection: configv1.McpStdioConnection_builder{
+						Command: proto.String("npx"),
+						Args:    []string{"-y", "@modelcontextprotocol/server-slack"},
+					}.Build(),
+					ToolAutoDiscovery: proto.Bool(true),
 				}.Build(),
-				ToolAutoDiscovery: proto.Bool(true),
 			}.Build(),
 		}.Build(),
 		configv1.ServiceTemplate_builder{
