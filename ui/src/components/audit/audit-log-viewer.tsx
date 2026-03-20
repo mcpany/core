@@ -25,9 +25,8 @@ import { format } from "date-fns";
 import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
-import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
-import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
+import { RichResultViewer } from "@/components/tools/rich-result-viewer";
+import { JsonView } from "@/components/ui/json-view";
 
 interface AuditLogEntry {
     timestamp: string;
@@ -48,7 +47,6 @@ interface AuditLogEntry {
  * @returns The rendered AuditLogViewer component.
  */
 export function AuditLogViewer() {
-    SyntaxHighlighter.registerLanguage('json', json);
     const [logs, setLogs] = useState<AuditLogEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [exporting, setExporting] = useState(false);
@@ -121,13 +119,12 @@ export function AuditLogViewer() {
         }
     };
 
-    const formatJson = (jsonStr: string) => {
-        if (!jsonStr) return null;
+    const safeParse = (str: string) => {
+        if (!str) return null;
         try {
-            const obj = JSON.parse(jsonStr);
-            return JSON.stringify(obj, null, 2);
+            return JSON.parse(str);
         } catch (e) {
-            return jsonStr;
+            return str;
         }
     };
 
@@ -310,26 +307,14 @@ export function AuditLogViewer() {
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Arguments</h4>
                                 <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vs2015}
-                                        customStyle={{ margin: 0, fontSize: '12px' }}
-                                    >
-                                        {formatJson(selectedLog.arguments) || "{}"}
-                                    </SyntaxHighlighter>
+                                    <JsonView data={selectedLog.arguments ? (typeof selectedLog.arguments === 'string' ? safeParse(selectedLog.arguments) : selectedLog.arguments) : {}} />
                                 </div>
                             </div>
 
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Result</h4>
                                 <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vs2015}
-                                        customStyle={{ margin: 0, fontSize: '12px', maxHeight: '300px' }}
-                                    >
-                                        {formatJson(selectedLog.result) || (selectedLog.error ? "null" : "{}")}
-                                    </SyntaxHighlighter>
+                                    <RichResultViewer result={selectedLog.result ? (typeof selectedLog.result === 'string' ? safeParse(selectedLog.result) : selectedLog.result) : (selectedLog.error ? null : {})} />
                                 </div>
                             </div>
                         </div>
