@@ -195,7 +195,7 @@ export const ToolTable = memo(function ToolTable({
               )}
               {!isCompact && (
                   <TableCell className="text-right text-muted-foreground">
-                      {usageStats?.[tool.name]?.calls || 0} calls
+                      {usageStats?.[tool.name]?.totalCalls || 0} calls
                   </TableCell>
               )}
               <TableCell className="text-center">
