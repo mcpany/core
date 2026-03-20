@@ -7,7 +7,6 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode, useRef, useCallback, useMemo } from 'react';
 import { Graph, NodeStatus } from '@/types/topology';
-import { usePolling } from '@/hooks/use-polling';
 
 /**
  * MetricPoint represents a single data point for service health metrics at a specific time.
@@ -158,11 +157,22 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         void fetchTopology();
-    }, [fetchTopology]);
+        const interval = setInterval(() => {
+             if (!document.hidden) {
+                 void fetchTopology();
+             }
+        }, POLLING_INTERVAL);
 
-    // ⚡ BOLT: [Render Optimization] Use usePolling hook instead of raw setInterval
-    // Randomized Selection from Top 5 High-Impact Targets
-    usePolling(() => { void fetchTopology(); }, POLLING_INTERVAL);
+        const onVisibilityChange = () => {
+            if (!document.hidden) void fetchTopology();
+        };
+        document.addEventListener("visibilitychange", onVisibilityChange);
+
+        return () => {
+            clearInterval(interval);
+            document.removeEventListener("visibilitychange", onVisibilityChange);
+        };
+    }, [fetchTopology]);
 
     const getServiceHistory = useCallback((serviceId: string) => {
         return history[serviceId] || [];

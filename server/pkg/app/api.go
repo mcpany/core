@@ -195,16 +195,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/alerts/rules/", a.handleAlertRuleDetail())
 	mux.HandleFunc("/alerts/", a.handleAlertDetail())
 
-	mux.HandleFunc("/traces", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			a.handleTraces()(w, r)
-		case http.MethodDelete:
-			a.handleClearTraces()(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+	mux.HandleFunc("/traces", a.handleTraces())
 	mux.HandleFunc("/ws/logs", a.handleLogsWS())
 	mux.HandleFunc("/ws/traces", a.handleTracesWS())
 
@@ -962,6 +953,7 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 			if secret.GetName() == "" && secret.GetId() != "" {
 				secret.SetName(secret.GetId())
 			}
+
 
 			// Force ID
 			secret.SetId(path)

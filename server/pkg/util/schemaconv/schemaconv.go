@@ -16,28 +16,20 @@ import (
 // JSON schema types.
 const (
 	// TypeNumber represents a JSON number type.
-	// Summary: Defines TypeNumber.
 	TypeNumber = "number"
 	// TypeInteger represents a JSON integer type.
-	// Summary: Defines TypeInteger.
 	TypeInteger = "integer"
 	// TypeBoolean represents a JSON boolean type.
-	// Summary: Defines TypeBoolean.
 	TypeBoolean = "boolean"
 	// TypeObject represents a JSON object type.
-	// Summary: Defines TypeObject.
 	TypeObject = "object"
 	// TypeArray represents a JSON array type.
-	// Summary: Defines TypeArray.
 	TypeArray = "array"
 	// TypeString represents a JSON string type.
-	// Summary: Defines TypeString.
 	TypeString = "string"
 )
 
 // MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
-//
-// Summary: Represents a MaxRecursionDepth.
 const MaxRecursionDepth = 10
 
 // MethodDescriptorToProtoProperties converts the fields of a method's input
@@ -50,20 +42,6 @@ const MaxRecursionDepth = 10
 // Returns:
 //   - *structpb.Struct: The properties structure for the input schema.
 //   - error: An error if the conversion fails.
-//
-// Summary: Executes MethodDescriptorToProtoProperties operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	return fieldsToProperties(methodDesc.Input().Fields(), 0)
 }
@@ -78,20 +56,6 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 // Returns:
 //   - *structpb.Struct: The properties structure for the output schema.
 //   - error: An error if the conversion fails.
-//
-// Summary: Executes MethodOutputDescriptorToProtoProperties operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	return fieldsToProperties(methodDesc.Output().Fields(), 0)
 }
@@ -187,8 +151,6 @@ func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]in
 }
 
 // ConfigParameter an interface for config parameter schemas.
-//
-// Summary: Represents a ConfigParameter.
 type ConfigParameter interface {
 	// GetSchema returns the parameter schema.
 	//
@@ -198,8 +160,6 @@ type ConfigParameter interface {
 }
 
 // McpFieldParameter an interface for McpField parameter schemas.
-//
-// Summary: Represents a McpFieldParameter.
 type McpFieldParameter interface {
 	// GetName returns the name of the parameter.
 	//
@@ -234,20 +194,6 @@ type McpFieldParameter interface {
 //   - *structpb.Struct: The properties structure for the input schema.
 //   - []string: A list of required parameter names.
 //   - error: An error if the conversion fails.
-//
-// Summary: Executes ConfigSchemaToProtoProperties operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Struct, []string, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 	var required []string
@@ -293,20 +239,6 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 // Returns:
 //   - *structpb.Struct: The properties structure for the input schema.
 //   - error: An error if the conversion fails.
-//
-// Summary: Executes McpFieldsToProtoProperties operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func McpFieldsToProtoProperties[T McpFieldParameter](params []T) (*structpb.Struct, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 

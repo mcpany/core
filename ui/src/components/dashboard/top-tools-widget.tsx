@@ -5,12 +5,11 @@
 
 
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Cell } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiClient } from "@/lib/client";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
-import { usePolling } from "@/hooks/use-polling";
 
 interface ToolUsageStats {
   name: string;
@@ -27,24 +26,29 @@ export function TopToolsWidget() {
   const [loading, setLoading] = useState(true);
   const { serviceId } = useDashboard();
 
-  const fetchData = useCallback(async () => {
-    try {
-      const json = await apiClient.getTopTools(serviceId);
-      setData(json || []);
-    } catch (error) {
-      console.error("Failed to fetch top tools", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [serviceId]);
-
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    async function fetchData() {
+      try {
+        const json = await apiClient.getTopTools(serviceId);
+        setData(json || []);
+      } catch (error) {
+        console.error("Failed to fetch top tools", error);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  // ⚡ BOLT: [Render Optimization] Use usePolling hook instead of raw setInterval
-  // Randomized Selection from Top 5 High-Impact Targets
-  usePolling(fetchData, 30000);
+    fetchData();
+    // Refresh every 30s
+    // ⚡ BOLT: [Network/Resource Optimization] Pause polling when tab is not visible to save bandwidth
+    // Randomized Selection from Top 5 High-Impact Targets
+    const interval = setInterval(() => {
+        if (!document.hidden) {
+            fetchData();
+        }
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [serviceId]);
 
   if (loading && data.length === 0) {
       return (

@@ -4,17 +4,16 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedCollection, cleanupCollection, seedGlobalState } from './e2e/test-data';
+import { seedCollection, cleanupCollection } from './e2e/test-data';
 
 test.describe('Stack Editor', () => {
   test.beforeEach(async ({ request }) => {
-    await seedGlobalState(request);
-    await seedCollection('default-stack', request);
-    // Wait a bit for potential backend sync (though seedCollection awaits response)
+      await seedCollection('default-stack', request);
+      // Wait a bit for potential backend sync (though seedCollection awaits response)
   });
 
   test.afterEach(async ({ request }) => {
-    await cleanupCollection('default-stack', request);
+      await cleanupCollection('default-stack', request);
   });
 
   test('should load the editor and show initial config in graph', async ({ page }) => {
@@ -49,9 +48,10 @@ test.describe('Stack Editor', () => {
       await expect(visualizer.locator('.react-flow')).toBeVisible({ timeout: 45000 });
       await expect(page.getByText('Valid YAML')).toBeVisible();
 
-      const templateCard = page.getByText(/GitHub|Google Calendar|Linear/, { exact: true }).first();
-      await expect(templateCard).toBeVisible({ timeout: 30000 });
-      await templateCard.click();
+      // Click on a seeded built-in template in the palette.
+      const githubTemplate = page.getByText('GitHub', { exact: true });
+      await expect(githubTemplate).toBeVisible();
+      await githubTemplate.click();
 
       // Verify the editor remains valid and the visualizer stays rendered after inserting a template.
       await expect(page.getByText('Valid YAML')).toBeVisible();

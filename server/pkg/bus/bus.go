@@ -8,19 +8,17 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/mcpany/core/proto/bus"
 	"github.com/mcpany/core/server/pkg/bus/kafka"
 	"github.com/mcpany/core/server/pkg/bus/memory"
 	"github.com/mcpany/core/server/pkg/bus/nats"
 	"github.com/mcpany/core/server/pkg/bus/redis"
+	"github.com/mcpany/core/proto/bus"
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 
 // Bus defines the interface for a generic, type-safe event bus that facilitates
 // communication between different parts of the application. The type parameter T
 // specifies the type of message that the bus will handle.
-//
-// Summary: Represents a Bus.
 type Bus[T any] interface {
 	// Publish sends a message to all subscribers of a given topic. The message
 	// is sent to each subscriber's channel, and the handler is invoked by a
@@ -71,43 +69,23 @@ type Bus[T any] interface {
 // This allows different parts of the application to get a bus for a specific
 // message type and topic without needing to manage the lifecycle of the bus
 // instances themselves.
-//
-// Summary: Represents a Provider.
 type Provider struct {
 	buses  *xsync.Map[string, any]
 	config *bus.MessageBus
 }
 
 // NewProviderHook is a test hook for overriding the NewProvider logic.
-//
-// Summary: Represents a NewProviderHook.
 var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
 // NewProvider creates and returns a new Provider, which is used to manage
 // multiple topic-based bus instances.
 //
 // Parameters:
-//
-//	messageBus: The configuration for the message bus.
-//
-// Returns:
-//
-//	*Provider: The created Provider.
-//	error: An error if creation fails.
-//
-// Summary: Initializes NewProvider operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   messageBus: The configuration for the message bus.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   *Provider: The created Provider.
+//   error: An error if creation fails.
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
 		return NewProviderHook(messageBus)
@@ -142,8 +120,6 @@ func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 }
 
 // GetBusHook is a test hook for overriding the bus retrieval logic.
-//
-// Summary: Represents a GetBusHook.
 var GetBusHook func(p *Provider, topic string) (any, error)
 
 // GetBus retrieves a bus for the given topic. If a bus for the given topic
@@ -154,28 +130,12 @@ var GetBusHook func(p *Provider, topic string) (any, error)
 // type safety for each topic.
 //
 // Parameters:
-//
-//	p: The Provider instance.
-//	topic: The topic name.
-//
-// Returns:
-//
-//	Bus[T]: The requested Bus instance.
-//	error: An error if retrieval or creation fails.
-//
-// Summary: Retrieves GetBus operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   p: The Provider instance.
+//   topic: The topic name.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   Bus[T]: The requested Bus instance.
+//   error: An error if retrieval or creation fails.
 func GetBus[T any](p *Provider, topic string) (Bus[T], error) {
 	if GetBusHook != nil {
 		bus, err := GetBusHook(p, topic)

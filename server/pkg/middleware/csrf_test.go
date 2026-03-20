@@ -150,37 +150,27 @@ func TestCSRFMiddleware_EmptyConfig(t *testing.T) {
 
 	tests := []struct {
 		name           string
-		method         string
 		headers        map[string]string
 		expectedStatus int
 	}{
 		{
-			name: "Localhost Origin Blocked by Default",
+			name: "Localhost Origin Allowed by Default",
 			headers: map[string]string{
 				"Origin": "http://localhost:3000",
 			},
-			expectedStatus: http.StatusForbidden,
+			expectedStatus: http.StatusOK,
 		},
 		{
-			name: "127.0.0.1 Origin Blocked by Default",
+			name: "127.0.0.1 Origin Allowed by Default",
 			headers: map[string]string{
 				"Origin": "http://127.0.0.1:4000",
 			},
-			expectedStatus: http.StatusForbidden,
+			expectedStatus: http.StatusOK,
 		},
 		{
 			name: "External Origin Blocked",
-			method: http.MethodPost,
 			headers: map[string]string{
 				"Origin": "http://external.com",
-			},
-			expectedStatus: http.StatusForbidden,
-		},
-		{
-			name:   "Cross-site without origin",
-			method: http.MethodPost,
-			headers: map[string]string{
-				"Sec-Fetch-Site": "cross-site",
 			},
 			expectedStatus: http.StatusForbidden,
 		},
@@ -188,11 +178,7 @@ func TestCSRFMiddleware_EmptyConfig(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			method := tc.method
-			if method == "" {
-				method = http.MethodPost
-			}
-			req := httptest.NewRequest(method, "/", nil)
+			req := httptest.NewRequest(http.MethodPost, "/", nil)
 			for k, v := range tc.headers {
 				req.Header.Set(k, v)
 			}

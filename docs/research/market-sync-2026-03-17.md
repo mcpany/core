@@ -17,20 +17,3 @@
 
 ## Unique Findings Summary
 Today's research highlights that **"Local Trust" is the primary attack vector for 2026**. Between WebSocket brute-forcing of localhost and malicious skill payloads, the "Personal AI Assistant" model is under heavy fire. MCP Any must pivot to provide a hardened, rate-limited, and attested sanctuary for all agent communications, regardless of where they originate.
-
----
-
-## Strategic Evolution Research: Swarm Coordination & RL Scaling
-
-### 1. Ecosystem Shift: Verifiable RL Scaling (DeepSeek Influence)
-*   **Insight**: DeepSeek's 2024-2025 breakthroughs in scaling Reinforcement Learning (RL) with **verifiable binary rewards** (GRPO algorithm) have reached the agentic swarm layer. OpenClaw has pivoted to an "RL-First" framework where agent reasoning is optimized against deterministic checkers.
-*   **Impact on MCP Any**: We must evolve into a **Verifiable Reward Provider**. Agents need a standardized way to request "Truth Attestation" to feed their internal RL loops.
-
-### 2. Agent Teams & Swarm Coordination (Claude Code)
-*   **Insight**: Claude Code's "Agent Teams" rely on a **Shared Task List** and an **Inbox-based Messaging System** (Mailbox) for inter-agent communication.
-*   **Pain Point**: Potential for "Mailbox Injection" where a compromised teammate can spoof instructions to another.
-*   **Impact on MCP Any**: Implementation of a **Secure Mailbox Guard** is required to enforce Zero-Trust identity on inter-agent messages.
-
-### 3. A2A Authentication & Discovery (Gemini CLI)
-*   **Insight**: Gemini CLI has introduced mandatory **HTTP authentication for A2A remote agents** and "Authenticated A2A Agent Card Discovery."
-*   **Impact on MCP Any**: Our A2A Bridge must mandate **Identity-Bound Discovery (IBD)** to prevent agents from seeing unauthorized capabilities.
