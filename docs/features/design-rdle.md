@@ -25,11 +25,11 @@ recursive depth control.
 
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Local LLM Swarm Orchestrator
-* **Primary Goal:** Prevent a specialized subagent from recursively
-  delegating its task to an unauthorized subagent via nested bids.
+* **Primary Goal:** Prevent a specialized subagent from recursively delegating
+  its task to an unauthorized subagent via nested bids.
 * **The Happy Path (Tasks):**
-    1. Parent agent (Depth 0) delegates a task to Subagent A (Depth 1) with
-       a manifest-locked limit of 2.
+    1. Parent agent (Depth 0) delegates a task to Subagent A (Depth 1) with a
+       manifest-locked limit of 2.
     2. Subagent A attempts to delegate a sub-task to Subagent B (Depth 2).
     3. RDLE verifies the mission-root manifest and allows the Depth 2
        delegation.
@@ -38,8 +38,8 @@ recursive depth control.
        delegation, revoking Subagent B's bid-capability token.
 
 ## 4. Design & Architecture
-* **System Flow:** UACO Bid -> RDLE Validator -> Mission-Root Manifest
-  Check -> Delegation Grant.
+* **System Flow:** UACO Bid -> RDLE Validator -> Mission-Root Manifest Check ->
+  Delegation Grant.
 * **APIs / Interfaces:** `POST /api/v1/uaco/bid/validate` requiring a signed
   mission-root manifest and depth-token.
 * **Data Storage/State:** Merkle-tree based manifest storage for efficient

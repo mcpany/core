@@ -16,8 +16,7 @@ the mission-root identity and non-repudiable.
       fragments.
     * Mandate hardware-attested identity binding for every chain-of-thought
       step.
-    * Provide real-time "Reasoning Hijack" detection via watermark
-      validation.
+    * Provide real-time "Reasoning Hijack" detection via watermark validation.
 * **Non-Goals:**
     * Redacting sensitive PII from monologues (handled by the PII-Sovereign
       Scrubber).
@@ -25,8 +24,8 @@ the mission-root identity and non-repudiable.
 
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Local LLM Swarm Orchestrator
-* **Primary Goal:** Verify that a tool-calling instruction from a subagent
-  is a direct descendant of the parent agent's reasoning path.
+* **Primary Goal:** Verify that a tool-calling instruction from a subagent is a
+  direct descendant of the parent agent's reasoning path.
 * **The Happy Path (Tasks):**
     1. Parent agent (Mission Root) generates a reasoning fragment.
     2. Reasoning-Path Watermarking Provider signs the fragment with the
@@ -39,8 +38,8 @@ the mission-root identity and non-repudiable.
 ## 4. Design & Architecture
 * **System Flow:** LLM Output -> Watermarking Provider -> SRM Storage ->
   Mission-Root Identity Verification.
-* **APIs / Interfaces:** `POST /api/v1/reasoning/watermark/sign` requiring
-  a mission-root session-token.
+* **APIs / Interfaces:** `POST /api/v1/reasoning/watermark/sign` requiring a
+  mission-root session-token.
 * **Data Storage/State:** Cryptographic hash-chain storage for watermarked
   fragments.
 
