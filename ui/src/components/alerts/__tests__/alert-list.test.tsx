@@ -7,8 +7,9 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { AlertList } from "../alert-list";
 import React from "react";
 import userEvent from "@testing-library/user-event";
-import { vi, describe, it, expect } from "vitest";
+import { vi, describe, it, expect, beforeEach } from "vitest";
 import { AlertStatus } from "../types";
+import { apiClient } from "@/lib/client";
 
 // Mock resize observer which is used by some UI components (like Recharts or ScrollArea)
 class ResizeObserver {
@@ -82,5 +83,66 @@ describe("AlertList", () => {
 
     // This is a simplified check assuming default state is correct.
     expect(screen.getAllByRole("row").length).toBeGreaterThan(1); // Header + rows
+  });
+
+  describe("Bulk Actions", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it("can select all alerts and perform bulk acknowledge", async () => {
+        render(<AlertList />);
+
+        // Wait for data to load
+        await waitFor(() => {
+            expect(screen.getByText("High CPU Usage")).toBeInTheDocument();
+        });
+
+        // Click select all
+        const selectAllCheckbox = screen.getByRole("checkbox", { name: /select all/i });
+        await userEvent.click(selectAllCheckbox);
+
+        // Verify bulk actions are visible
+        const ackButton = screen.getByRole("button", { name: /acknowledge/i });
+        expect(ackButton).toBeInTheDocument();
+        expect(screen.getByText("2 selected")).toBeInTheDocument();
+
+        // Click acknowledge
+        await userEvent.click(ackButton);
+
+        // Verify API was called twice with 'acknowledged'
+        await waitFor(() => {
+            expect(apiClient.updateAlertStatus).toHaveBeenCalledTimes(2);
+            expect(apiClient.updateAlertStatus).toHaveBeenCalledWith("1", "acknowledged");
+            expect(apiClient.updateAlertStatus).toHaveBeenCalledWith("2", "acknowledged");
+        });
+    });
+
+    it("can select individual alerts and perform bulk resolve", async () => {
+        render(<AlertList />);
+
+        // Wait for data to load
+        await waitFor(() => {
+            expect(screen.getByText("High CPU Usage")).toBeInTheDocument();
+        });
+
+        // Click specific checkbox
+        const itemCheckbox = screen.getByRole("checkbox", { name: /select 1/i });
+        await userEvent.click(itemCheckbox);
+
+        // Verify bulk actions are visible
+        const resolveButton = screen.getByRole("button", { name: /resolve/i });
+        expect(resolveButton).toBeInTheDocument();
+        expect(screen.getByText("1 selected")).toBeInTheDocument();
+
+        // Click resolve
+        await userEvent.click(resolveButton);
+
+        // Verify API was called once with 'resolved'
+        await waitFor(() => {
+            expect(apiClient.updateAlertStatus).toHaveBeenCalledTimes(1);
+            expect(apiClient.updateAlertStatus).toHaveBeenCalledWith("1", "resolved");
+        });
+    });
   });
 });

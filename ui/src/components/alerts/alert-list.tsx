@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CheckCircle2, AlertCircle, AlertTriangle, Search, Filter, MoreHorizontal, Clock, RefreshCw, Activity, Loader2 } from "lucide-react";
 import {
   DropdownMenu,
@@ -46,6 +47,7 @@ export function AlertList() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
   const [filterSeverity, setFilterSeverity] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const { toast } = useToast();
@@ -70,6 +72,25 @@ export function AlertList() {
   useEffect(() => {
     fetchAlerts();
   }, []);
+
+  useEffect(() => {
+    setSelected(new Set());
+  }, [alerts]);
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelected(new Set(filteredAlerts.map(a => a.id)));
+    } else {
+      setSelected(new Set());
+    }
+  };
+
+  const handleSelectOne = (id: string, checked: boolean) => {
+    const newSelected = new Set(selected);
+    if (checked) newSelected.add(id);
+    else newSelected.delete(id);
+    setSelected(newSelected);
+  };
 
   const filteredAlerts = useMemo(() => {
     return alerts.filter(alert => {
@@ -103,6 +124,27 @@ export function AlertList() {
     }
   };
 
+  const handleBulkStatusChange = async (newStatus: AlertStatus) => {
+    try {
+      setLoading(true);
+      await Promise.all(Array.from(selected).map(id => apiClient.updateAlertStatus(id, newStatus)));
+      toast({
+        title: "Status Updated",
+        description: `${selected.size} alerts marked as ${newStatus}`,
+      });
+      setSelected(new Set());
+      await fetchAlerts();
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "Failed to update status for some alerts",
+        variant: "destructive",
+      });
+      setLoading(false);
+    }
+  };
+
   const getSeverityBadge = (severity: Severity) => {
     switch (severity) {
       case "critical": return <Badge variant="destructive" className="uppercase text-[10px]">Critical</Badge>;
@@ -121,8 +163,23 @@ export function AlertList() {
     }
   };
 
+  const isAllSelected = filteredAlerts.length > 0 && selected.size === filteredAlerts.length;
+
   return (
     <div className="space-y-4">
+      {selected.size > 0 && (
+        <div className="flex items-center gap-2 p-2 bg-muted/40 rounded-md animate-in fade-in slide-in-from-top-1 duration-200 sticky top-0 z-10 backdrop-blur-md border">
+          <span className="text-sm text-muted-foreground mr-2 font-medium px-2">{selected.size} selected</span>
+          <div className="h-4 w-px bg-border mx-1" />
+          <Button size="sm" variant="ghost" onClick={() => handleBulkStatusChange('acknowledged')} className="h-8 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-100 dark:hover:bg-yellow-900/20">
+            <AlertTriangle className="mr-2 h-4 w-4" /> Acknowledge
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => handleBulkStatusChange('resolved')} className="h-8 text-green-600 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/20">
+            <CheckCircle2 className="mr-2 h-4 w-4" /> Resolve
+          </Button>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
         <div className="relative w-full sm:w-96">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -172,6 +229,14 @@ export function AlertList() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[30px] pr-0">
+                <Checkbox
+                  checked={isAllSelected}
+                  onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                  aria-label="Select all"
+                  className="translate-y-[2px]"
+                />
+              </TableHead>
               <TableHead className="w-[100px]">Severity</TableHead>
               <TableHead className="w-[100px]">Status</TableHead>
               <TableHead>Summary</TableHead>
@@ -183,7 +248,7 @@ export function AlertList() {
           <TableBody>
             {loading && alerts.length === 0 ? (
                  <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                         <div className="flex items-center justify-center gap-2">
                             <Loader2 className="h-4 w-4 animate-spin" />
                             Loading alerts...
@@ -192,13 +257,21 @@ export function AlertList() {
                 </TableRow>
             ) : filteredAlerts.length === 0 ? (
                 <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                         No alerts match your filters.
                     </TableCell>
                 </TableRow>
             ) : (
                 filteredAlerts.map((alert) => (
-                <TableRow key={alert.id} className="group">
+                <TableRow key={alert.id} className={selected.has(alert.id) ? "bg-muted/50 group" : "group"}>
+                    <TableCell className="pr-0">
+                      <Checkbox
+                        checked={selected.has(alert.id)}
+                        onCheckedChange={(checked) => handleSelectOne(alert.id, !!checked)}
+                        aria-label={`Select ${alert.id}`}
+                        className="translate-y-[2px]"
+                      />
+                    </TableCell>
                     <TableCell>{getSeverityBadge(alert.severity)}</TableCell>
                     <TableCell>
                     <div className="flex items-center gap-2" title={alert.status}>
