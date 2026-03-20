@@ -15,7 +15,6 @@ test.describe('Resource Exploration', () => {
         // Seed service with actual resources to fetch
         const response = await request.post('/api/v1/services', {
             data: {
-                id: serviceName,
                 name: serviceName,
                 command_line_service: {
                     command: 'echo',
