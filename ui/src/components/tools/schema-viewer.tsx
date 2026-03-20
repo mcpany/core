@@ -5,11 +5,9 @@
 
 "use client";
 
-import React, { useState } from "react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronRight, ChevronDown, Info } from "lucide-react";
+import React from "react";
 import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 /**
  * Schema represents a JSON Schema object used for defining tool input parameters.
@@ -27,14 +25,6 @@ export interface Schema {
   default?: any;
   format?: string;
   [key: string]: any;
-}
-
-interface SchemaViewerProps {
-  schema: Schema;
-  name?: string;
-  required?: boolean;
-  depth?: number;
-  isLast?: boolean;
 }
 
 const getTypeColor = (type?: string | string[]) => {
@@ -79,94 +69,114 @@ const TypeBadge = ({ type, format }: { type?: string | string[], format?: string
  * @param props.depth - The nesting depth.
  * @returns The rendered component.
  */
-export function SchemaViewer({ schema, name, required = false, depth = 0 }: SchemaViewerProps) {
-  const [isOpen, setIsOpen] = useState(true);
+interface SchemaRow {
+  key: string;
+  name: string;
+  type?: string | string[];
+  description?: string;
+  required: boolean;
+  depth: number;
+  format?: string;
+  enum?: any[];
+}
 
-  if (!schema) return <div className="text-muted-foreground italic text-xs">No schema defined</div>;
+function flattenSchema(schema: Schema, keyPath: string = "", name: string = "", depth: number = 0, isRequired: boolean = false): SchemaRow[] {
+  let rows: SchemaRow[] = [];
+  if (!schema) return rows;
 
   const isObject = schema.type === "object" || !!schema.properties;
   const isArray = schema.type === "array" || !!schema.items;
-  const hasChildren = isObject || isArray;
 
-  // Handle recursion for objects
-  const properties = schema.properties ? Object.entries(schema.properties) : [];
+  if (name) {
+    rows.push({
+      key: keyPath,
+      name: name,
+      type: schema.type,
+      description: schema.description,
+      required: isRequired,
+      depth,
+      format: schema.format,
+      enum: schema.enum
+    });
+  }
 
-  // Handle recursion for arrays
-  const items = schema.items;
+  if (isObject && schema.properties) {
+    Object.entries(schema.properties).forEach(([k, propSchema]) => {
+      const newKeyPath = keyPath ? `${keyPath}.${k}` : k;
+      const propRequired = schema.required?.includes(k) || false;
+      const nextDepth = name ? depth + 1 : depth;
+      rows = rows.concat(flattenSchema(propSchema, newKeyPath, k, nextDepth, propRequired));
+    });
+  }
+
+  if (isArray && schema.items) {
+    const newKeyPath = keyPath ? `${keyPath}[]` : "[]";
+    const nextDepth = name ? depth + 1 : depth;
+    rows = rows.concat(flattenSchema(schema.items, newKeyPath, "[] (items)", nextDepth, false));
+  }
+
+  return rows;
+}
+
+/**
+ * SchemaViewer component.
+ * @param props - The component props.
+ * @param props.schema - The schema definition.
+ * @returns The rendered component.
+ */
+export function SchemaViewer({ schema }: { schema: Schema }) {
+  if (!schema) return <div className="text-muted-foreground italic text-xs p-4">No schema defined</div>;
+
+  const rows = flattenSchema(schema);
+
+  if (rows.length === 0) {
+    return <div className="text-muted-foreground italic text-xs p-4">Empty schema</div>;
+  }
 
   return (
-    <div className={cn("font-mono text-sm", depth > 0 && "ml-3 border-l pl-3 border-border/50")}>
-      <div className="flex items-start py-1 group">
-        {hasChildren ? (
-           <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
-             <div className="flex items-center gap-2 select-none">
-               <CollapsibleTrigger className="p-0.5 hover:bg-muted rounded transition-colors focus:outline-none focus:ring-1 focus:ring-ring">
-                 {isOpen ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : <ChevronRight className="h-3 w-3 text-muted-foreground" />}
-               </CollapsibleTrigger>
-               {name && <span className="font-semibold text-foreground">{name}</span>}
-               {required && <span className="text-red-500 text-xs font-bold" title="Required">*</span>}
-               <TypeBadge type={schema.type} format={schema.format} />
-               {schema.description && (
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <Info className="h-3 w-3 text-muted-foreground/70 hover:text-foreground transition-colors cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-[300px] text-xs">
-                        <p>{schema.description}</p>
-                      </TooltipContent>
-                    </Tooltip>
-               )}
-             </div>
-
-             <CollapsibleContent>
-               <div className="pt-1">
-                 {isObject && properties.map(([key, propSchema], idx) => (
-                   <SchemaViewer
-                     key={key}
-                     schema={propSchema}
-                     name={key}
-                     required={schema.required?.includes(key)}
-                     depth={depth + 1}
-                     isLast={idx === properties.length - 1}
-                   />
-                 ))}
-
-                 {isArray && items && (
-                   <div className="mt-1">
-                     <span className="text-xs text-muted-foreground mb-1 block pl-4">Items:</span>
-                     <SchemaViewer
-                       schema={items}
-                       depth={depth + 1}
-                     />
-                   </div>
-                 )}
-               </div>
-             </CollapsibleContent>
-           </Collapsible>
-        ) : (
-          <div className="flex items-center gap-2">
-             <span className="w-4"></span> {/* Spacer for alignment */}
-             {name && <span className="font-semibold text-foreground">{name}</span>}
-             {required && <span className="text-red-500 text-xs font-bold" title="Required">*</span>}
-             <TypeBadge type={schema.type} format={schema.format} />
-             {schema.enum && (
-                <span className="text-xs text-muted-foreground ml-1">
-                  Enum: [{schema.enum.join(", ")}]
-                </span>
-             )}
-              {schema.description && (
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <Info className="h-3 w-3 text-muted-foreground/70 hover:text-foreground transition-colors cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-[300px] text-xs">
-                        <p>{schema.description}</p>
-                      </TooltipContent>
-                    </Tooltip>
-               )}
-          </div>
-        )}
-      </div>
+    <div className="rounded-md border overflow-hidden">
+      <Table>
+        <TableHeader className="bg-muted/50">
+          <TableRow>
+            <TableHead className="w-[30%]">Property</TableHead>
+            <TableHead className="w-[20%]">Type</TableHead>
+            <TableHead className="w-[10%]">Required</TableHead>
+            <TableHead className="w-[40%]">Description</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow key={row.key} className="group hover:bg-muted/50 transition-colors">
+              <TableCell className="font-mono text-sm py-2">
+                <div className="flex items-center" style={{ paddingLeft: `${row.depth * 1.5}rem` }}>
+                  {row.depth > 0 && <span className="text-muted-foreground/40 mr-2">↳</span>}
+                  <span className="font-semibold">{row.name}</span>
+                </div>
+              </TableCell>
+              <TableCell className="py-2">
+                <TypeBadge type={row.type} format={row.format} />
+              </TableCell>
+              <TableCell className="py-2">
+                {row.required ? (
+                  <span className="text-red-500 font-bold text-xs uppercase tracking-wider">Yes</span>
+                ) : (
+                  <span className="text-muted-foreground text-xs uppercase tracking-wider">No</span>
+                )}
+              </TableCell>
+              <TableCell className="text-sm text-muted-foreground py-2">
+                <div className="flex flex-col gap-1">
+                  {row.description && <span>{row.description}</span>}
+                  {row.enum && (
+                    <span className="text-xs font-mono bg-muted/50 px-1.5 py-0.5 rounded border w-fit">
+                      Enum: [{row.enum.join(", ")}]
+                    </span>
+                  )}
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }
