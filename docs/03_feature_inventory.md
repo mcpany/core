@@ -1149,7 +1149,7 @@ limitations under the License.
 ### Priority Shifts
 - **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Elevated with the requirement for **Sovereign Teammate Mailboxes** to counter peer-to-peer coercion.
 
-## Evolution: [2026-05-29] Updates
+## Evolution: 2026-05-29 Updates
 
 ### Proposed Additions
 - **Collective Swarm Anomaly Detection (CSAD) Hub**: (P0) Advanced security middleware that performs cross-agent behavioral analysis to detect coordinated "Hivenet" swarm attacks.

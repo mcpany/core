@@ -852,7 +852,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Trace-Aware Identity Propagation (TAIP)**: Supporting the SMI standard, MCP Any will implement TAIP. This ensures that an agent's hardware-attested identity is propagation-aware, allowing receivers to verify not just the immediate caller, but the entire parentage of the reasoning path.
 - **Reasoning-Effort Attribution Middleware**: To counter "Resource Squatting," we are evolving the RBF to include attribution. Every token consumed and every reasoning fragment generated will be cryptographically attributed to its specific branch of the mission root, providing transparent economic accountability.
 
-## Strategic Evolution: [2026-05-29]
+## Strategic Evolution: 2026-05-29
 ### Focus: Collective Swarm Anomaly Detection & Cross-Mesh Command Sovereignty
 **Context**: The rise of "Hivenet" swarm attacks and the maturation of horizontal "Agent Teams" (Claude Code) confirm that individual agent security is no longer sufficient. We must protect the **collective integrity** of the mesh. Simultaneously, as agents move from linear sessions to parallel teammate coordination, command sovereignty must be enforced across heterogeneous framework boundaries.
 **Strategic Pivot**:
@@ -860,12 +860,3 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Cross-Mesh Command Sovereignty (CMCS)**: To neutralize "Teammate Impersonation" in horizontal swarms, we are introducing CMCS. Every inter-teammate mailbox request must be signed with a hardware-attested "Mesh Token" that binds the command to the mission root and its authorized role in the shared task list.
 - **Atomic Teammate Handshake (ATH)**: Supporting the SMI standard, MCP Any will implement the ATH. This ensures that teammates (Claude, OpenClaw, AutoGen) must complete a hardware-attested identity exchange before they can "claim" or "delegate" tasks from the shared mailbox.
 - **Mesh-Bound Context Sovereignty**: To counter "Context-Dump" exfiltration in deep teams, we are evolving the DCG middleware to support Mesh-Bound Sovereignty. This layer will perform semantic analysis of state fragments as they cross teammate boundaries, ensuring they remain anchored to the mission-root intent.
-
-## Strategic Evolution: 2026-05-30
-### Focus: Cognitive Integrity & The Context Arbiter Role
-**Context**: The emergence of "Reasoning Gaslighting" and "Context Mirroring" (CVE-2026-45012) confirms that securing the transport and identity layers is no longer sufficient. As agents move toward collaborative reasoning in horizontal teams (Claude Code), we must now protect the **cognitive integrity** of the swarm. Disparate agents are increasingly vulnerable to "Context Smearing" and "Teammate Coercion," where malicious peers manipulate shared reasoning traces.
-**Strategic Pivot**:
-- **Context Arbiter Framework**: MCP Any will evolve to act as the authoritative "Arbiter of Truth" for the swarm. We will implement the Arbiter Framework, utilizing semantic consistency checks to neutralize "Reasoning Gaslighting" before conflicting logic can pollute the mission root.
-- **Reasoning-Bound Context Sharding (RBCS) Hub**: Supporting the OpenClaw standard, we are introducing the RBCS Hub. This ensures that context shards are dynamically and cryptographically bound to an agent's active reasoning path, preventing "Context Smearing" from irrelevant or malicious state fragments.
-- **Monotonic Task Nonce (MTN) Provider**: To counter "Context Mirroring," we are mandating the use of MTNs for all inter-agent delegations. MCP Any will act as the central provider of nonces, ensuring that every task proposal is unique, time-bound, and resistant to capability-card spoofing.
-- **Sovereign Teammate Mailboxes**: Moving beyond shared state, we are implementing Sovereign Mailboxes for horizontal teams. Every teammate instruction must be hardware-attested and mission-signed, ensuring that "Teammate Coercion" is mitigated at the mailbox boundary.
