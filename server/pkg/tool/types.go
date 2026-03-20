@@ -89,12 +89,42 @@ type Tool interface {
 	//
 	// Returns:
 	//   - *v1.Tool: The protobuf tool definition.
+	// Tool ...
+	//
+	// Summary: Executes Tool operation.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - *v1.Tool: A pointer to the v1.Tool result.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	Tool() *v1.Tool
 
 	// MCPTool returns the MCP tool definition.
 	//
 	// Returns:
 	//   - *mcp.Tool: The MCP tool definition.
+	// MCPTool ...
+	//
+	// Summary: Executes MCPTool operation.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - *mcp.Tool: A pointer to the mcp.Tool result.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	MCPTool() *mcp.Tool
 
 	// Execute runs the tool with the provided context and request, returning
@@ -182,6 +212,22 @@ type ServiceRegistry interface {
 	// Returns:
 	//   - Tool: The tool instance if found.
 	//   - bool: True if the tool exists, false otherwise.
+	// GetTool ...
+	//
+	// Summary: Retrieves GetTool operation.
+	//
+	// Parameters:
+	//   - toolName: string. The name parameter.
+	//
+	// Returns:
+	//   - Tool: The Tool result.
+	//   - bool: A boolean indicating success or status.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	GetTool(toolName string) (Tool, bool)
 
 	// GetServiceInfo retrieves metadata for a service.
@@ -192,6 +238,22 @@ type ServiceRegistry interface {
 	// Returns:
 	//   - *ServiceInfo: The service metadata info if found.
 	//   - bool: True if the service exists, false otherwise.
+	// GetServiceInfo ...
+	//
+	// Summary: Retrieves GetServiceInfo operation.
+	//
+	// Parameters:
+	//   - serviceID: string. The identifier for the service.
+	//
+	// Returns:
+	//   - *ServiceInfo: A pointer to the ServiceInfo result.
+	//   - bool: A boolean indicating success or status.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
 }
 
@@ -254,6 +316,23 @@ type Callable interface {
 	// Returns:
 	//   - any: The result of the execution.
 	//   - error: An error if the operation fails.
+	// Call ...
+	//
+	// Summary: Executes Call operation.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The request context.
+	//   - req: *ExecutionRequest. The request parameters.
+	//
+	// Returns:
+	//   - any: The any result.
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns error if the operation fails or is invalid.
+	//
+	// Side Effects:
+	//   - None.
 	Call(ctx context.Context, req *ExecutionRequest) (any, error)
 }
 
@@ -325,6 +404,24 @@ func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 type PreCallHook interface {
 	// ExecutePre runs the hook. It returns an action (Allow/Deny),
 	// a potentially modified request (or nil if unchanged), and an error.
+	// ExecutePre ...
+	//
+	// Summary: Executes ExecutePre operation.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The request context.
+	//   - req: *ExecutionRequest. The request parameters.
+	//
+	// Returns:
+	//   - Action: The Action result.
+	//   - *ExecutionRequest: A pointer to the ExecutionRequest result.
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns error if the operation fails or is invalid.
+	//
+	// Side Effects:
+	//   - None.
 	ExecutePre(ctx context.Context, req *ExecutionRequest) (Action, *ExecutionRequest, error)
 }
 
@@ -334,6 +431,24 @@ type PreCallHook interface {
 type PostCallHook interface {
 	// ExecutePost runs the hook. It returns the potentially modified result
 	// (or original if unchanged) and an error.
+	// ExecutePost ...
+	//
+	// Summary: Executes ExecutePost operation.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The request context.
+	//   - req: *ExecutionRequest. The request parameters.
+	//   - result: any. The response result.
+	//
+	// Returns:
+	//   - any: The any result.
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns error if the operation fails or is invalid.
+	//
+	// Side Effects:
+	//   - None.
 	ExecutePost(ctx context.Context, req *ExecutionRequest, result any) (any, error)
 }
 

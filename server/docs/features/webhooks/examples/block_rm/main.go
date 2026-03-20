@@ -16,6 +16,9 @@ import (
 )
 
 // WebhookRequest matches the data payload sent by mcpany
+// WebhookRequest ...
+//
+// Summary: Represents a WebhookRequest.
 type WebhookRequest struct {
 	Kind     int            `json:"kind"` // 1=PreCall, 2=PostCall
 	ToolName string         `json:"tool_name"`
@@ -23,6 +26,9 @@ type WebhookRequest struct {
 }
 
 // WebhookResponse matches the expected response data
+// WebhookResponse ...
+//
+// Summary: Represents a WebhookResponse.
 type WebhookResponse struct {
 	Allowed bool    `json:"allowed"`
 	Status  *Status `json:"status,omitempty"`
@@ -30,6 +36,9 @@ type WebhookResponse struct {
 
 // Status represents the status of the webhook response.
 // It contains a code and a message.
+// Status ...
+//
+// Summary: Represents a Status.
 type Status struct {
 	Code    int32  `json:"code"`
 	Message string `json:"message"`
