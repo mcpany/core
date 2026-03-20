@@ -15,7 +15,7 @@ func newInitCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "init",
 		Short: "Interactively generate a valid configuration file",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			// A very simple interactive wizard simulation for now.
 			// Ideally we would use a library like survey or promptui.
 			fmt.Fprintln(cmd.OutOrStdout(), "Generating default MCP Any configuration...")
