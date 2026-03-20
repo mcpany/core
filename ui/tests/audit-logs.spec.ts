@@ -4,7 +4,7 @@
  */
 
 
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -59,5 +59,52 @@ test.describe('Feature Screenshot', () => {
         }
         await download.cancel();
     }
+    });
+
+    test('Seed data and verify Audit Logs Rich Rendering', async ({ page }) => {
+        // Step 1: Navigate to playground and execute a tool to seed an audit log
+        await page.goto('/playground');
+        await page.waitForLoadState('networkidle');
+
+        // Ensure playground loaded
+        await expect(page.locator('text=Console').first()).toBeVisible();
+
+        // The default config.minimal.yaml provides a 'get_weather' tool we can use.
+        const inputLocator = page.locator('input[placeholder="Enter command or select a tool..."]');
+        await inputLocator.fill('get_weather {"location": "San Francisco"}');
+        await inputLocator.press('Enter');
+
+        // Wait for the tool result to appear in the chat
+        await expect(page.locator('text=Success').or(page.locator('text=Failed')).first()).toBeVisible({ timeout: 10000 });
+
+        // Step 2: Navigate to Audit Logs page
+        await page.goto('/audit');
+        await page.waitForSelector('text=Audit Logs');
+
+        // Step 3: Find the generated log entry and click View
+        const row = page.locator('tr').filter({ hasText: 'get_weather' }).first();
+        await row.locator('button:has-text("View")').click();
+
+        // Step 4: Verify the Dialog opens and contains the Rich Renderers
+        const dialog = page.locator('div[role="dialog"]');
+        await expect(dialog).toBeVisible();
+        await expect(dialog.locator('text=Audit Log Detail')).toBeVisible();
+
+        // Check for the presence of JsonView in Arguments section
+        // JsonView renders a pre tag inside a div with group/code
+        const argumentsSection = dialog.locator('h4:has-text("Arguments") + div');
+        await expect(argumentsSection.locator('.group\\/code, table')).toBeVisible({ timeout: 5000 });
+
+        // Check for the presence of RichResultViewer in Result section
+        const resultSection = dialog.locator('h4:has-text("Result") + div');
+        // RichResultViewer uses Tabs, so we can check for the tablist or the JsonView inside it
+        await expect(resultSection.locator('[role="tablist"], .group\\/code, table')).toBeVisible({ timeout: 5000 });
+
+        // Step 5: Capture Screenshot
+        try {
+            await page.screenshot({ path: path.join(auditDir, 'audit_log_detail.png') });
+        } catch (e) {
+            console.warn('Failed to save screenshot:', e);
+        }
   });
 });
