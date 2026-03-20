@@ -1,7 +1,6 @@
 # MCP Any Helm Chart
 
-This Helm chart deploys the [MCP Any](https://github.com/mcpany/core) server to
-a Kubernetes cluster.
+This Helm chart deploys the [MCP Any](https://github.com/mcpany/core) server to a Kubernetes cluster.
 
 ## Prerequisites
 
@@ -16,13 +15,11 @@ To install the chart with the release name `my-mcpany`:
 helm install my-mcpany .
 ```
 
-The chart will deploy MCP Any with a default configuration. You can customize
-the installation by providing your own `values.yaml` file.
+The chart will deploy MCP Any with a default configuration. You can customize the installation by providing your own `values.yaml` file.
 
 ## Configuration
 
-The following table lists the configurable parameters of the MCP Any chart and
-their default values.
+The following table lists the configurable parameters of the MCP Any chart and their default values.
 
 | Parameter             | Description                           | Default                               |
 | --------------------- | ------------------------------------- | ------------------------------------- |
@@ -35,8 +32,7 @@ their default values.
 | `service.grpcPort`    | gRPC port.                            | `50051`                               |
 | `config`              | MCP Any configuration in YAML format. | See `values.yaml`                     |
 
-You can specify your configuration in a `values.yaml` file and install the chart
-with it:
+You can specify your configuration in a `values.yaml` file and install the chart with it:
 
 ```bash
 helm install my-mcpany . -f my-values.yaml

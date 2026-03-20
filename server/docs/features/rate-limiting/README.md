@@ -1,13 +1,10 @@
 # Rate Limiting
 
-Rate limiting protects your upstream services from being overwhelmed by too many
-requests. It uses a token bucket algorithm to enforce limits on a per-service
-basis.
+Rate limiting protects your upstream services from being overwhelmed by too many requests. It uses a token bucket algorithm to enforce limits on a per-service basis.
 
 ## Configuration
 
-Rate limiting is configured within the `rate_limit` block of an upstream
-service.
+Rate limiting is configured within the `rate_limit` block of an upstream service.
 
 ### Fields
 
@@ -36,12 +33,9 @@ upstream_services:
 
 ### Token-Based Rate Limiting
 
-In addition to request-based limiting, you can limit based on the number of
-"tokens" (e.g., words or characters) in the request arguments. This is useful
-for controlling costs when sending data to LLMs.
+In addition to request-based limiting, you can limit based on the number of "tokens" (e.g., words or characters) in the request arguments. This is useful for controlling costs when sending data to LLMs.
 
-To enable token-based limiting, set `cost_metric` to `COST_METRIC_TOKENS`. The
-system will estimate the token count of the request arguments.
+To enable token-based limiting, set `cost_metric` to `COST_METRIC_TOKENS`. The system will estimate the token count of the request arguments.
 
 ```yaml
 upstream_services:
@@ -57,8 +51,7 @@ upstream_services:
 
 ### Distributed Rate Limiting (Redis)
 
-By default, rate limiting is handled in-memory. To support distributed
-deployments (multiple replicas), you can configure a Redis backend.
+By default, rate limiting is handled in-memory. To support distributed deployments (multiple replicas), you can configure a Redis backend.
 
 ```yaml
 upstream_services:
@@ -78,17 +71,13 @@ upstream_services:
 
 ## Use Case
 
-If an upstream API charges you based on request volume or has strict quotas, you
-can use rate limiting to ensure you never exceed those quotas. For example,
-`requests_per_second: 10.0` ensures a steady flow of at most 10 requests/sec.
+If an upstream API charges you based on request volume or has strict quotas, you can use rate limiting to ensure you never exceed those quotas. For example, `requests_per_second: 10.0` ensures a steady flow of at most 10 requests/sec.
 
 ## Execution Order
 
 Rate limiting is applied **after** caching. This means that:
-1.  If a request is found in the cache, it is returned immediately and **does
-    not** count towards the rate limit.
-2.  If a request is not in the cache (cache miss), it passes through the rate
-    limiter.
+1.  If a request is found in the cache, it is returned immediately and **does not** count towards the rate limit.
+2.  If a request is not in the cache (cache miss), it passes through the rate limiter.
     - If allowed, it proceeds to the upstream tool.
     - If blocked, an error is returned.
 
@@ -102,21 +91,18 @@ The following metrics are exposed for rate limiting:
 
 ## Public API Example
 
-If a client sends requests faster than the limit, MCP Any will return an error
-indicating that the rate limit has been exceeded for the excess requests.
+If a client sends requests faster than the limit, MCP Any will return an error indicating that the rate limit has been exceeded for the excess requests.
 
 ## Tutorial: Verifying Rate Limiting with Gemini CLI
 
-This tutorial guides you through setting up a rate-limited service and verifying
-it using the Gemini CLI.
+This tutorial guides you through setting up a rate-limited service and verifying it using the Gemini CLI.
 
 ### Prerequisites
 - `mcp-any` binary installed (or run via `go run`)
 - `gemini` CLI tool installed
 
 ### 1. Create a Configuration File
-Create a file named `tutorial_config.yaml` with the following content (or use
-the provided `server/docs/features/rate-limiting/tutorial_config.yaml`):
+Create a file named `tutorial_config.yaml` with the following content (or use the provided `server/docs/features/rate-limiting/tutorial_config.yaml`):
 
 ```yaml
 upstream_services:
@@ -164,13 +150,11 @@ for i in {1..5}; do gemini run httpbin-rate-limited.get; echo "Request $i done";
 
 *Expected Output:*
 - The first request should succeed.
-- Subsequent requests (within the same second) should fail with an error similar
-  to:
+- Subsequent requests (within the same second) should fail with an error similar to:
   > Error: rate limit exceeded for service httpbin-rate-limited
 
 ### 4. Observe Metrics
-Visit the metrics endpoint (default: `http://localhost:8081/metrics`) to see the
-counters increase.
+Visit the metrics endpoint (default: `http://localhost:8081/metrics`) to see the counters increase.
 
 ```bash
 curl http://localhost:8081/metrics | grep rate_limit

@@ -1,21 +1,18 @@
 # Webhooks
 
-Webhooks in MCP Any allow you to intercept and modify tool executions. They
-utilize [CloudEvents](https://cloudevents.io/) for a standardized event format.
+Webhooks in MCP Any allow you to intercept and modify tool executions. They utilize [CloudEvents](https://cloudevents.io/) for a standardized event format.
 
 ## Overview
 
 You can configure webhooks to trigger at two stages of a tool call:
 
 1.  **Pre-Call (`pre_call_hooks`)**: Triggered _before_ the tool executes.
-    - **Validation**: specific arguments can be checked and the call denied if
-      invalid.
+    - **Validation**: specific arguments can be checked and the call denied if invalid.
     - **Policy Enforcement**: Prevent dangerous actions (like `rm -rf`).
     - **Input Transformation**: Modify arguments before they reach the tool.
 2.  **Post-Call (`post_call_hooks`)**: Triggered _after_ the tool executes.
     - **Auditing**: Log the result of the tool.
-    - **Output Transformation**: Convert the output format (e.g., HTML to
-      Markdown).
+    - **Output Transformation**: Convert the output format (e.g., HTML to Markdown).
     - **Sanitization**: Redact sensitive information from the result.
 
 ## Configuration
@@ -38,14 +35,12 @@ upstream_services:
 
 ## Standard Webhook Sidecar
 
-MCP Any includes a production-ready sidecar binary that provides common webhook
-utilities out-of-the-box.
+MCP Any includes a production-ready sidecar binary that provides common webhook utilities out-of-the-box.
 
 ### Features
 
 -   **/markdown**: Converts HTML input to Markdown (Post-Call Hook).
--   **/truncate**: Truncates long strings to a specified length (Post-Call
-    Hook).
+-   **/truncate**: Truncates long strings to a specified length (Post-Call Hook).
 -   **/paginate**: Splits long strings into pages (Post-Call Hook).
 
 ### Usage
@@ -75,8 +70,7 @@ utilities out-of-the-box.
 
 ### Signature Verification
 
-To secure your webhooks, set the `WEBHOOK_SECRET` environment variable for both
-the MCP Any server and the Sidecar.
+To secure your webhooks, set the `WEBHOOK_SECRET` environment variable for both the MCP Any server and the Sidecar.
 
 ```bash
 export WEBHOOK_SECRET="my-secret-value"
@@ -89,14 +83,11 @@ We provide ready-to-run examples to demonstrate the power of webhooks.
 
 ### 1. Blocking Dangerous Commands (`block_rm`)
 
-This example demonstrates a **Pre-Call Hook** that inspects arguments for a
-command-line tool and blocks execution if it contains the `rm` command.
+This example demonstrates a **Pre-Call Hook** that inspects arguments for a command-line tool and blocks execution if it contains the `rm` command.
 
 - **[View Example Code](./examples/block_rm)**
-- **Scenario**: A `busybox` container service that allows executing commands. We
-  want to prevent users from running `rm`.
-- **Mechanism**: The webhook receives the tool inputs, checks for "rm", and
-  returns `allowed: false` if found.
+- **Scenario**: A `busybox` container service that allows executing commands. We want to prevent users from running `rm`.
+- **Mechanism**: The webhook receives the tool inputs, checks for "rm", and returns `allowed: false` if found.
 
 #### Running the Example
 
@@ -113,9 +104,7 @@ command-line tool and blocks execution if it contains the `rm` command.
     go run main.go
     ```
 
-    > **Note**: If you prefer to build the binary, we recommend outputting it to
-a temporary location to avoid committing it: `go build -o /tmp/block_rm_server
-main.go && /tmp/block_rm_server`
+    > **Note**: If you prefer to build the binary, we recommend outputting it to a temporary location to avoid committing it: `go build -o /tmp/block_rm_server main.go && /tmp/block_rm_server`
 
 3.  In a separate terminal, start MCP Any with the example config:
     ```bash
@@ -134,8 +123,7 @@ main.go && /tmp/block_rm_server`
 
 #### Verification (E2E Test)
 
-You can also run the included End-to-End test to verify the behavior
-programmatically:
+You can also run the included End-to-End test to verify the behavior programmatically:
 
 ```bash
 # In docs/features/webhooks/examples/block_rm
@@ -144,14 +132,11 @@ go test -v e2e_test.go
 
 ### 2. HTML to Markdown Conversion (`html_to_md`)
 
-This example demonstrates a **Post-Call Hook** that transforms the output of a
-tool.
+This example demonstrates a **Post-Call Hook** that transforms the output of a tool.
 
 - **[View Example Code](./examples/html_to_md)**
-- **Scenario**: We fetch a webpage which returns raw HTML. We want the LLM to
-  receive clean Markdown.
-- **Mechanism**: The webhook receives the tool result (HTML), converts it to
-  Markdown, and returns the replacement object.
+- **Scenario**: We fetch a webpage which returns raw HTML. We want the LLM to receive clean Markdown.
+- **Mechanism**: The webhook receives the tool result (HTML), converts it to Markdown, and returns the replacement object.
 
 #### Running the Example
 
@@ -166,8 +151,7 @@ tool.
     go run main.go
     ```
 
-    > **Note**: If you build the binary, verify it outside the source tree: `go
-build -o /tmp/html_to_md_server main.go`
+    > **Note**: If you build the binary, verify it outside the source tree: `go build -o /tmp/html_to_md_server main.go`
 
 3.  Start MCP Any with the example config:
     ```bash

@@ -1,17 +1,14 @@
 # Stdio Service Example
 
-This example demonstrates how to expose a command-line tool as an MCP tool using
-the `stdio` service type.
+This example demonstrates how to expose a command-line tool as an MCP tool using the `stdio` service type.
 
 ## 1. The Command-Line Tool
 
-The `my-tool` is a simple Go program that reads a JSON object from stdin,
-extracts the `name` field, and writes a JSON object with a greeting to stdout.
+The `my-tool` is a simple Go program that reads a JSON object from stdin, extracts the `name` field, and writes a JSON object with a greeting to stdout.
 
 ## 2. The `mcpany` Configuration
 
-The `config.yaml` file tells `mcpany` how to register the `my-tool` program as a
-tool.
+The `config.yaml` file tells `mcpany` how to register the `my-tool` program as a tool.
 
 ```yaml
 # examples/demo/stdio/config.yaml
@@ -28,15 +25,13 @@ upstreamServices:
 
 1.  **Run the `mcpany` Server**
 
-    In a terminal, start the `mcpany` server using the provided shell script
-from the `examples/demo/stdio` directory:
+    In a terminal, start the `mcpany` server using the provided shell script from the `examples/demo/stdio` directory:
 
     ```bash
     ./start.sh
     ```
 
-    The `mcpany` server will start and listen for JSON-RPC requests on port
-`50050`.
+    The `mcpany` server will start and listen for JSON-RPC requests on port `50050`.
 
 2.  **Interact with the Tool**
 

@@ -1,7 +1,6 @@
 # wttr.in API
 
-This directory contains an example of how to use the [wttr.in](https://wttr.in)
-API.
+This directory contains an example of how to use the [wttr.in](https://wttr.in) API.
 
 ## Tools
 
@@ -20,8 +19,7 @@ Gets the Moon phase information. Returns text/ASCII art.
 
 **Parameters:**
 
-- `args`: Optional arguments to specify date or location context (defaults to
-  empty string).
+- `args`: Optional arguments to specify date or location context (defaults to empty string).
   - Date: Append `@YYYY-MM-DD` (e.g., `@2023-12-25`)
   - Location: Append `,Location` (e.g., `,London`)
 

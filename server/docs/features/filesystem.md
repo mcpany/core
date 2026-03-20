@@ -1,13 +1,10 @@
 # Filesystem Provider
 
-The Filesystem Provider allows the MCP Any server to expose a local or remote
-filesystem as a set of tools. This enables LLMs to read, write, list, and search
-files securely within configured root directories.
+The Filesystem Provider allows the MCP Any server to expose a local or remote filesystem as a set of tools. This enables LLMs to read, write, list, and search files securely within configured root directories.
 
 ## Configuration
 
-The filesystem provider is configured as an `upstream_service` with the
-`filesystem` block.
+The filesystem provider is configured as an `upstream_service` with the `filesystem` block.
 
 ### Fields
 
@@ -18,8 +15,7 @@ The filesystem provider is configured as an `upstream_service` with the
 
 ### Supported Backends
 
-The `filesystem` block supports multiple backend types. You must specify exactly
-one.
+The `filesystem` block supports multiple backend types. You must specify exactly one.
 
 #### 1. Local Filesystem (OS)
 
@@ -93,28 +89,21 @@ upstream_services:
 
 ## Tools Exposed
 
-When a filesystem service is configured, it automatically registers the
-following tools:
+When a filesystem service is configured, it automatically registers the following tools:
 
 - `list_directory`: List files and directories in a given path.
 - `read_file`: Read the content of a file.
 - `write_file`: Write content to a file (disabled if `read_only` is true).
-- `delete_file`: Delete a file or empty directory (disabled if `read_only` is
-  true).
+- `delete_file`: Delete a file or empty directory (disabled if `read_only` is true).
 - `search_files`: Search for a text pattern (regex) in files within a directory.
 - `get_file_info`: Get metadata (size, mod time) about a file or directory.
 
 ## Security Considerations
 
-- **Sandboxing**: Access is strictly limited to the directories specified in
-  `root_paths`. Attempts to access files outside these roots (e.g., via `..`)
-  are blocked.
-- **Read-Only Mode**: Use `read_only: true` for sensitive data that should not
-  be modified by the LLM.
-- **File Size Limits**: `read_file` enforces a 10MB limit to prevent memory
-  exhaustion.
-- **Hidden Files**: `search_files` skips hidden directories (starting with `.`)
-  by default.
+- **Sandboxing**: Access is strictly limited to the directories specified in `root_paths`. Attempts to access files outside these roots (e.g., via `..`) are blocked.
+- **Read-Only Mode**: Use `read_only: true` for sensitive data that should not be modified by the LLM.
+- **File Size Limits**: `read_file` enforces a 10MB limit to prevent memory exhaustion.
+- **Hidden Files**: `search_files` skips hidden directories (starting with `.`) by default.
 
 ## Example Usage
 
@@ -134,8 +123,7 @@ upstream_services:
 
 User: "List files in the source directory."
 
-Model calls `project-files` -> `list_directory` with arguments `{"path":
-"/src"}`.
+Model calls `project-files` -> `list_directory` with arguments `{"path": "/src"}`.
 
 **Response:**
 

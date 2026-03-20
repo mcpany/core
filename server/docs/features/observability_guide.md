@@ -4,12 +4,10 @@
 
 ## Pain Point: "Why did this tool fail?"
 
-When a tool execution returns an error or hangs, you need visibility into the
-request lifecycle.
+When a tool execution returns an error or hangs, you need visibility into the request lifecycle.
 
 ### 1. Tracing (OpenTelemetry)
-Tracing allows you to see the "Waterfall" of a request as it passes through
-middleware, auth, and reaches the upstream.
+Tracing allows you to see the "Waterfall" of a request as it passes through middleware, auth, and reaches the upstream.
 
 **Configuration:**
 ```yaml

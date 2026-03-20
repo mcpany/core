@@ -1,12 +1,10 @@
 # Structured Output Transformation
 
-Transform the output of your tools using powerful query languages like JQ and
-JSONPath.
+Transform the output of your tools using powerful query languages like JQ and JSONPath.
 
 ## Overview
 
-Sometimes raw API responses are too verbose or complex for an LLM.
-Transformation allows you to shape the data *before* it returns to the agent.
+Sometimes raw API responses are too verbose or complex for an LLM. Transformation allows you to shape the data *before* it returns to the agent.
 
 ## Features
 

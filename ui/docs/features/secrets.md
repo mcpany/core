@@ -3,9 +3,7 @@
 **Status:** Implemented
 
 ## Goal
-Securely store and manage sensitive information. The Secrets Vault enables you
-to inject API keys, passwords, and tokens into services without exposing them in
-plain text configuration files.
+Securely store and manage sensitive information. The Secrets Vault enables you to inject API keys, passwords, and tokens into services without exposing them in plain text configuration files.
 
 ## Usage Guide
 
@@ -28,14 +26,10 @@ Navigate to `/secrets` (or **Settings > Secrets**).
 
 ### 3. Usage in Services
 
-When configuring a service, you can reference the secret in environment variable
-fields.
+When configuring a service, you can reference the secret in environment variable fields.
 
 **YAML Configuration:**
-Use the `${secrets.KEY_NAME}` syntax in your `config.yaml` or `config.json`
-files.
+Use the `${secrets.KEY_NAME}` syntax in your `config.yaml` or `config.json` files.
 
 **UI Configuration:**
-The UI currently treats manual input as plain text. To use secrets in the UI,
-ensure they are loaded from the configuration file, or use the "Secrets"
-management interface to view existing secret references.
+The UI currently treats manual input as plain text. To use secrets in the UI, ensure they are loaded from the configuration file, or use the "Secrets" management interface to view existing secret references.

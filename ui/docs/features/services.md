@@ -4,10 +4,7 @@
 
 ## Goal
 
-Manage upstream services connected to the MCP Any platform. The Services
-Dashboard allows operators to view the health of connected services, enable or
-disable them, and configure connection details including authentications and
-environment variables.
+Manage upstream services connected to the MCP Any platform. The Services Dashboard allows operators to view the health of connected services, enable or disable them, and configure connection details including authentications and environment variables.
 
 ## Actors
 
@@ -18,8 +15,7 @@ environment variables.
 
 ### 1. View Service List
 
-Navigate to the **Services** page via the sidebar. This view provides a high-
-level overview of all registered upstream services.
+Navigate to the **Services** page via the sidebar. This view provides a high-level overview of all registered upstream services.
 
 ![Services List](screenshots/services_list.png)
 
@@ -29,8 +25,7 @@ Key columns:
 - **Type**: Protocol (HTTP, gRPC, CMD, MCP).
 - **Tools**: Count of registered tools.
 - **Version**: Version of the upstream service.
-- **Status**: Toggle switch to enable/disable traffic, plus diagnostic status
-  (Active, Error, Disabled).
+- **Status**: Toggle switch to enable/disable traffic, plus diagnostic status (Active, Error, Disabled).
 - **Priority**: Service priority order.
 - **Actions**: Menu with options like "Configure" and "Delete".
 
@@ -40,8 +35,7 @@ To register a new upstream service:
 
 1. Click the **"Add Service"** button.
 2. A **Configuration Sheet** will open.
-3. Select a service template (e.g., PostgreSQL, HTTP) or configure a custom
-   type.
+3. Select a service template (e.g., PostgreSQL, HTTP) or configure a custom type.
 4. Follow the configuration wizard to register the service.
 
 ![Add Service Sheet](screenshots/services_add_dialog.png)
@@ -50,18 +44,15 @@ To register a new upstream service:
 
 To edit an existing service:
 
-1. Click on the service name in the list (or select "Configure" from the Actions
-   menu).
+1. Click on the service name in the list (or select "Configure" from the Actions menu).
 2. A detailed **Configuration Sheet** will open.
-3. Here you can update the endpoint, manage **Environment Variables**, and view
-   specialized settings.
+3. Here you can update the endpoint, manage **Environment Variables**, and view specialized settings.
 
 ![Service Configuration](screenshots/service_config.png)
 
 ### 4. Toggle Service State
 
-You can instantly stop routing traffic to a service by toggling the switch in
-the main list.
+You can instantly stop routing traffic to a service by toggling the switch in the main list.
 
 - **On**: Service is active and receiving traffic.
 - **Off**: Service is disconnected; dependent tools will be unavailable.
@@ -70,17 +61,12 @@ the main list.
 
 ### Supported Service Types
 
-- **HTTP (OpenAPI)**: Connects to REST/OpenAPI endpoints. Ideal for third-party
-  SaaS (e.g., GitHub, Stripe).
-- **gRPC**: Connects to high-performance internal microservices using Protobuf
-  reflection.
+- **HTTP (OpenAPI)**: Connects to REST/OpenAPI endpoints. Ideal for third-party SaaS (e.g., GitHub, Stripe).
+- **gRPC**: Connects to high-performance internal microservices using Protobuf reflection.
 - **MCP**: Connects to other Model Context Protocol servers.
-- **CMD (Local)**: Executes local command-line tools (stdio). Perfect for
-  scripts, Python environments, or CLI utilities.
+- **CMD (Local)**: Executes local command-line tools (stdio). Perfect for scripts, Python environments, or CLI utilities.
 
 ### Special Configuration
 
-- **Environment Variables**: Define key-value pairs injected into the process
-  (for CMD) or sent as metadata. Supports `secrets.*` references.
-- **Health Checks**: The system periodically pings the `health_check_endpoint`
-  (default `/health`) to update the status.
+- **Environment Variables**: Define key-value pairs injected into the process (for CMD) or sent as metadata. Supports `secrets.*` references.
+- **Health Checks**: The system periodically pings the `health_check_endpoint` (default `/health`) to update the status.

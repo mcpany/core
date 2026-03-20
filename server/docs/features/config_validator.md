@@ -2,18 +2,13 @@
 
 ## Overview
 
-The Config Validation Playground is a dedicated UI tool that allows developers
-and operators to validate their `config.yaml` or JSON configuration files
-against the server's schema without needing to reload the server or run CLI
-commands.
+The Config Validation Playground is a dedicated UI tool that allows developers and operators to validate their `config.yaml` or JSON configuration files against the server's schema without needing to reload the server or run CLI commands.
 
 ## Features
 
 - **Real-time Validation**: Paste your configuration and get immediate feedback.
-- **Schema Compliance**: Validates against the exact JSON schema generated from
-  the server's internal Protocol Buffers definitions.
-- **Visual Feedback**: Clear success/error indicators with detailed error
-  messages.
+- **Schema Compliance**: Validates against the exact JSON schema generated from the server's internal Protocol Buffers definitions.
+- **Visual Feedback**: Clear success/error indicators with detailed error messages.
 
 ## Usage
 

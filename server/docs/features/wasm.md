@@ -1,8 +1,6 @@
 # WASM Plugin System
 
-MCP Any provides a WebAssembly (WASM) plugin system for safe, sandboxed
-execution of custom logic, such as transformations or custom tool
-implementations.
+MCP Any provides a WebAssembly (WASM) plugin system for safe, sandboxed execution of custom logic, such as transformations or custom tool implementations.
 
 ## Features
 

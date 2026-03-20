@@ -2,8 +2,7 @@
 
 ## Date: 2025-05-15
 
-This document serves as proof of implementation for the UI overhaul and feature
-additions.
+This document serves as proof of implementation for the UI overhaul and feature additions.
 
 ### 1. Dashboard
 The dashboard provides real-time metrics and service health status.

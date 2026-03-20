@@ -1,8 +1,6 @@
 # Resilience
 
-Resilience features help your MCP server handle failures in upstream services
-gracefully. The primary mechanisms supported are **Retry Policy** and **Circuit
-Breaker**.
+Resilience features help your MCP server handle failures in upstream services gracefully. The primary mechanisms supported are **Retry Policy** and **Circuit Breaker**.
 
 ## Configuration
 
@@ -41,13 +39,8 @@ upstream_services:
 
 ## Use Case
 
-If an upstream service starts failing, continuing to send requests wastes
-resources and slows down your server. A retry policy will attempt to recover
-from transient failures automatically. A circuit breaker will detect consistent
-failure rates and "open", immediately failing subsequent requests locally for a
-set duration (`open_duration`), giving the upstream service time to recover.
+If an upstream service starts failing, continuing to send requests wastes resources and slows down your server. A retry policy will attempt to recover from transient failures automatically. A circuit breaker will detect consistent failure rates and "open", immediately failing subsequent requests locally for a set duration (`open_duration`), giving the upstream service time to recover.
 
 ## Public API Example
 
-When the circuit is open, MCP Any will return an error indicating the service is
-unavailable, without attempting to contact the upstream.
+When the circuit is open, MCP Any will return an error indicating the service is unavailable, without attempting to contact the upstream.

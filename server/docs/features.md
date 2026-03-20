@@ -3,13 +3,10 @@
 This section details the capabilities of the MCP Any Server.
 
 ## Core Config & Operations
-- [Configuration Guide](reference/configuration.md) - Best practices for setting
-  up `config.yaml`.
-- [Service Types](features/service-types.md) - Deep dive into HTTP, gRPC, and
-  Stdio upstreams.
+- [Configuration Guide](reference/configuration.md) - Best practices for setting up `config.yaml`.
+- [Service Types](features/service-types.md) - Deep dive into HTTP, gRPC, and Stdio upstreams.
 - [Security](features/security.md) - Authentication, DLP, and Secrets.
-- [Dynamic Registration](features/dynamic_registration.md) - Adding services at
-  runtime.
+- [Dynamic Registration](features/dynamic_registration.md) - Adding services at runtime.
 
 ## Observability & Debugging
 - [Audit Logging](features/audit_logging.md) - Compliance and activity tracking.

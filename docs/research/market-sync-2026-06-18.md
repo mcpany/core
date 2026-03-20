@@ -3,10 +3,10 @@
 ## Ecosystem Shifts & Findings
 
 ### 1. OpenClaw: Autonomous Capability Revocation (ACR) Protocol (v3.3.0)
-**Finding:** OpenClaw has introduced the ACR Protocol, which integrates
-directly with the Active Intent Alignment (AIA) heartbeats. If a specialist
-agent reasoning trace fails an alignment check, the mesh now automatically
-revokes all hardware-attested tool capabilities in sub-millisecond time.
+**Finding:** OpenClaw has introduced the ACR Protocol, which integrates directly
+with the Active Intent Alignment (AIA) heartbeats. If a specialist agent
+reasoning trace fails an alignment check, the mesh now automatically revokes all
+hardware-attested tool capabilities in sub-millisecond time.
 **Impact:** Eliminates the "Drift Window" where a misaligned agent could still
 execute authorized tools before a human or parent-agent intervention.
 

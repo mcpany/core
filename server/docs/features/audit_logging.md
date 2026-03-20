@@ -1,13 +1,10 @@
 # Audit Logging
 
-MCP Any provides a built-in audit logging capability to record details about
-every tool execution. This is essential for compliance, security monitoring, and
-debugging.
+MCP Any provides a built-in audit logging capability to record details about every tool execution. This is essential for compliance, security monitoring, and debugging.
 
 ## Overview
 
-When enabled, the audit logger intercepts every tool execution request and
-records structured data about the event to a specified file.
+When enabled, the audit logger intercepts every tool execution request and records structured data about the event to a specified file.
 
 The audit log captures:
 - **Timestamp**: When the execution started.
@@ -21,8 +18,7 @@ The audit log captures:
 
 ## Configuration
 
-Audit logging is configured in the `GlobalSettings` section of your MCP Any
-configuration file.
+Audit logging is configured in the `GlobalSettings` section of your MCP Any configuration file.
 
 ### Example Configuration
 
@@ -96,14 +92,11 @@ global_settings:
 | `log_arguments` | `bool` | `false` | If true, logs the input arguments. **Warning:** May log sensitive data. |
 | `log_results` | `bool` | `false` | If true, logs the execution result. **Warning:** May log sensitive data. |
 
-**Note on Webhook Performance:** The webhook storage makes a synchronous HTTP
-call for every audit log entry. To prevent slowing down tool execution, a short
-timeout (3 seconds) is applied. Ensure your webhook endpoint is performant.
+**Note on Webhook Performance:** The webhook storage makes a synchronous HTTP call for every audit log entry. To prevent slowing down tool execution, a short timeout (3 seconds) is applied. Ensure your webhook endpoint is performant.
 
 ## Log Format
 
-Audit logs are written as newline-delimited JSON (NDJSON). Each line represents
-a single tool execution event.
+Audit logs are written as newline-delimited JSON (NDJSON). Each line represents a single tool execution event.
 
 ### Example Log Entry
 
@@ -127,8 +120,5 @@ a single tool execution event.
 
 ## Security Considerations
 
-- **Sensitive Data**: By default, `log_arguments` and `log_results` are
-  disabled. Enable them with caution, as they may expose API keys, PII, or
-  other sensitive information handled by your tools.
-- **File Permissions**: Ensure that the `output_path` is writable by the MCP Any
-  server process and readable only by authorized personnel.
+- **Sensitive Data**: By default, `log_arguments` and `log_results` are disabled. Enable them with caution, as they may expose API keys, PII, or other sensitive information handled by your tools.
+- **File Permissions**: Ensure that the `output_path` is writable by the MCP Any server process and readable only by authorized personnel.

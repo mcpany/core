@@ -3,9 +3,7 @@
 **Status:** Implemented
 
 ## Goal
-Navigate the entire system from the keyboard. The Global Search (Command
-Palette) allows users to jump to pages, run tools, or find specific resources
-instantly.
+Navigate the entire system from the keyboard. The Global Search (Command Palette) allows users to jump to pages, run tools, or find specific resources instantly.
 
 ## Usage Guide
 

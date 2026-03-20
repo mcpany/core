@@ -1,7 +1,6 @@
 # GraphQL Upstream Example
 
-This example demonstrates how to configure MCP Any to connect to a GraphQL
-upstream service.
+This example demonstrates how to configure MCP Any to connect to a GraphQL upstream service.
 
 ## Running the Example
 

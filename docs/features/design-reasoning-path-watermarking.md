@@ -3,79 +3,58 @@
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
-As multi-agent swarms grow in depth and horizontal complexity, the risk of
-"Reasoning Hijacking" increases. A subagent may attempt to inject its own
-unauthorized logic into the parent's reasoning stream, leading to a loss of
-mission-root control. Current transport-layer security and binary handoffs are
-insufficient to protect the semantic integrity of the chain-of-thought.
-
-The Reasoning-Path Watermarking Provider addresses this by cryptographically
-watermarking every step in an agent's reasoning process. These watermarks are
-bound to the hardware-attested mission-root identity, providing a
-non-repudiable and lineage-aware audit trail that ensures absolute provenance
-of the cognitive path.
+In deep swarms, tracing the "Reasoning Lineage" of a high-risk tool call is
+difficult, leading to "Reasoning Hijacking" (e.g., Gemini CLI v0.41.0 issues).
+Misaligned subagents can inject their own logic into a parent's stream,
+altering the mission root without detection. The Reasoning-Path Watermarking
+Provider ensures that every reasoning fragment is cryptographically bound to
+the mission-root identity and non-repudiable.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Implement a system for cryptographically watermarking reasoning
+    * Implement cryptographically signed watermarking for all reasoning
       fragments.
-    * Bind watermarks to hardware-attested mission-root session tokens.
-    * Provide a validation utility for verifying the integrity and lineage of a
-      reasoning chain.
-    * Ensure watermarks are resilient to common context compression and
-      sharding techniques.
+    * Mandate hardware-attested identity binding for every chain-of-thought
+      step.
+    * Provide real-time "Reasoning Hijack" detection via watermark
+      validation.
 * **Non-Goals:**
-    * Modifying the underlying LLM weights (watermarking occurs at the
-      infrastructure/proxy layer).
-    * Enforcing reasoning policies (watermarking provides the provenance for
-      enforcement).
+    * Redacting sensitive PII from monologues (handled by the PII-Sovereign
+      Scrubber).
+    * Summarizing long reasoning traces (handled by the ContextEngine).
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Swarm Governance Auditor
-* **Primary Goal:** Verify that a tool call was initiated by a legitimate
-  reasoning sequence originating from the mission root.
+* **User Persona:** Local LLM Swarm Orchestrator
+* **Primary Goal:** Verify that a tool-calling instruction from a subagent
+  is a direct descendant of the parent agent's reasoning path.
 * **The Happy Path (Tasks):**
-    1. An agent generates a reasoning fragment.
-    2. The fragment is intercepted by the Watermarking Provider.
-    3. The Provider appends a hardware-attested cryptographic watermark bound
-       to the mission-root ID.
-    4. The fragment is propagated through the mesh.
-    5. A downstream specialist agent or tool gateway receives the fragment and
-       validates the watermark signature against the mission root.
-    6. If valid, the fragment is accepted as authentic; if missing or invalid,
-       it is flagged as unauthorized.
+    1. Parent agent (Mission Root) generates a reasoning fragment.
+    2. Reasoning-Path Watermarking Provider signs the fragment with the
+       mission-root TPM key.
+    3. Specialist subagent generates a sub-instruction.
+    4. Reasoning-Path Watermarking Provider binds the sub-instruction to the
+       parent's signed watermark.
+    5. Tool execution is only granted if the watermarked lineage is verified.
 
 ## 4. Design & Architecture
-* **System Flow:**
-    ```mermaid
-    graph LR
-        Agent[Agent] -->|Reasoning Fragment| WP[Watermarking Provider]
-        WP -->|Sign with TPM/Session Key| FragmentW[Watermarked Fragment]
-        FragmentW -->|Propagate| Peer[Peer Agent / Gateway]
-        Peer -->|Verify Signature| WP
-        WP -->|VALID| Accept[Accepted]
-    ```
-* **APIs / Interfaces:**
-    * `POST /v1/watermark/apply`: Endpoint to apply a watermark to a fragment.
-    * `POST /v1/watermark/verify`: Endpoint to verify a fragment's watermark.
-* **Data Storage/State:**
-    * Session keys are managed in a hardware-isolated environment (TPM).
-    * Watermark metadata is stored alongside reasoning traces in the
-      Blackboard.
+* **System Flow:** LLM Output -> Watermarking Provider -> SRM Storage ->
+  Mission-Root Identity Verification.
+* **APIs / Interfaces:** `POST /api/v1/reasoning/watermark/sign` requiring
+  a mission-root session-token.
+* **Data Storage/State:** Cryptographic hash-chain storage for watermarked
+  fragments.
 
 ## 5. Alternatives Considered
-* **Plaintext Header Metadata:** Rejected because it is easily spoofed by
-  compromised agents.
-* **Full Chain-of-Thought Encryption:** Rejected due to the performance
-  overhead and the need for some transparency for intermediate alignment checks.
-  Watermarking provides a balance of integrity and observability.
+* **Lineage-Header Injection:** Rejected as headers are easily evictable during
+  aggressive context compression.
+* **Centralized Reasoning Audit:** Rejected due to performance and privacy
+  constraints.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** The watermarking logic relies on hardware-attested
-  identity to ensure that only authorized agents can apply mission-root
-  watermarks.
-* **Observability:** Watermarks are visualized in the "Mesh-Resident Lineage
-  Tracker," allowing users to audit the authenticity of the reasoning chain.
+* **Security (Zero Trust):** All watermarks must be hardware-attested and
+  mission-bound.
+* **Observability:** Every reasoning fragment is audit-ready for non-repudiation
+  analysis.
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.

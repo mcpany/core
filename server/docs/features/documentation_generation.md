@@ -1,8 +1,6 @@
 # Automated Documentation Generation
 
-MCP Any includes a built-in tool to generate Markdown documentation for your
-configured services and tools. This ensures that your documentation always stays
-in sync with your configuration.
+MCP Any includes a built-in tool to generate Markdown documentation for your configured services and tools. This ensures that your documentation always stays in sync with your configuration.
 
 ## Usage
 
@@ -25,5 +23,4 @@ The documentation includes:
 *   Tool names, descriptions, and arguments
 *   Prompts and resources (if applicable)
 
-This is useful for providing up-to-date reference material for the AI assistants
-or developers using your MCP Any server.
+This is useful for providing up-to-date reference material for the AI assistants or developers using your MCP Any server.

@@ -1,14 +1,10 @@
 # Admin Management API
 
-The Admin Management API provides a set of gRPC endpoints to inspect and manage
-the internal state of the MCP Any server. This is useful for building
-dashboards, debugging, and monitoring the server's configuration and registered
-tools.
+The Admin Management API provides a set of gRPC endpoints to inspect and manage the internal state of the MCP Any server. This is useful for building dashboards, debugging, and monitoring the server's configuration and registered tools.
 
 ## Service Definition
 
-The Admin API is exposed as a gRPC service defined in
-`proto/admin/v1/admin.proto`.
+The Admin API is exposed as a gRPC service defined in `proto/admin/v1/admin.proto`.
 
 ### Endpoints
 
@@ -17,8 +13,7 @@ The Admin API is exposed as a gRPC service defined in
 Returns a list of all currently registered upstream services.
 
 - **Request**: `ListServicesRequest` (empty)
-- **Response**: `ListServicesResponse` containing a list of
-  `UpstreamServiceConfig`.
+- **Response**: `ListServicesResponse` containing a list of `UpstreamServiceConfig`.
 
 #### `GetService`
 
@@ -94,15 +89,12 @@ Returns the status of auto-discovery providers.
 
 Returns audit logs matching the filter.
 
-- **Request**: `ListAuditLogsRequest` containing filters (`start_time`,
-  `end_time`, `tool_name`, `user_id`, `profile_id`, `limit`, `offset`).
+- **Request**: `ListAuditLogsRequest` containing filters (`start_time`, `end_time`, `tool_name`, `user_id`, `profile_id`, `limit`, `offset`).
 - **Response**: `ListAuditLogsResponse` containing a list of `entries`.
 
 ## Usage
 
-You can interact with the Admin API using any gRPC client, such as `grpcurl` or
-by generating a client in your preferred language using the provided protobuf
-definition.
+You can interact with the Admin API using any gRPC client, such as `grpcurl` or by generating a client in your preferred language using the provided protobuf definition.
 
 ### Example with `grpcurl`
 

@@ -8,22 +8,16 @@
 
 ## Overview
 
-The MCP Any management console has been overhauled to provide a modern,
-enterprise-grade experience. This update focuses on observability, ease of
-management, and advanced configuration capabilities, all wrapped in a premium,
-responsive design.
+The MCP Any management console has been overhauled to provide a modern, enterprise-grade experience. This update focuses on observability, ease of management, and advanced configuration capabilities, all wrapped in a premium, responsive design.
 
 ## Features
 
 ### 1. Dashboard & Observability
 
-The new dashboard provides immediate visibility into the health and performance
-of your MCP infrastructure.
+The new dashboard provides immediate visibility into the health and performance of your MCP infrastructure.
 
-*   **Real-time Metrics:** key performance indicators including Request Volume,
-    Active Services, Latency, and Active Users.
-*   **Service Health:** Live status monitoring for all connected upstream
-    services.
+*   **Real-time Metrics:** key performance indicators including Request Volume, Active Services, Latency, and Active Users.
+*   **Service Health:** Live status monitoring for all connected upstream services.
 
 ![Dashboard Preview](../.audit/ui/2025-12-31/dashboard.png)
 
@@ -31,11 +25,9 @@ of your MCP infrastructure.
 
 Manage your upstream services with precision.
 
-*   **Service Listing:** View all registered services with their type, version,
-    and status.
+*   **Service Listing:** View all registered services with their type, version, and status.
 *   **One-click Toggles:** Enable or disable services instantly.
-*   **Quick Editing:** Modify service configurations via a slide-over panel
-    without leaving the context.
+*   **Quick Editing:** Modify service configurations via a slide-over panel without leaving the context.
 
 ![Services Management](../.audit/ui/2025-12-31/services.png)
 
@@ -79,8 +71,7 @@ Visual management of the request processing pipeline.
 
 Configure and test outbound webhooks for system events.
 
-*   **Event Subscription:** Subscribe to specific events like `service.down` or
-    `error.critical`.
+*   **Event Subscription:** Subscribe to specific events like `service.down` or `error.critical`.
 *   **Status Management:** Enable or disable webhooks as needed.
 *   **Testing:** Trigger test events to verify connectivity.
 

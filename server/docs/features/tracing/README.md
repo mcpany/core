@@ -1,8 +1,6 @@
 # Distributed Tracing
 
-MCP Any supports [OpenTelemetry](https://opentelemetry.io/) for distributed
-tracing. This allows you to trace requests as they flow from the MCP client,
-through the MCP Any server, to the upstream services.
+MCP Any supports [OpenTelemetry](https://opentelemetry.io/) for distributed tracing. This allows you to trace requests as they flow from the MCP client, through the MCP Any server, to the upstream services.
 
 ## Configuration
 
@@ -12,13 +10,11 @@ Tracing is configured using standard OpenTelemetry environment variables.
 
 - `otlp`: Exports traces via OTLP/HTTP.
 - `stdout`: Prints traces to stderr. Useful for debugging and development.
-- `none`: Disables tracing (default behavior if no specific configuration is
-  provided).
+- `none`: Disables tracing (default behavior if no specific configuration is provided).
 
 ### Enabling OTLP Tracing
 
-To enable OTLP tracing, set the `OTEL_EXPORTER_OTLP_ENDPOINT` environment
-variable. The server uses the OTLP/HTTP exporter.
+To enable OTLP tracing, set the `OTEL_EXPORTER_OTLP_ENDPOINT` environment variable. The server uses the OTLP/HTTP exporter.
 
 ```bash
 export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318

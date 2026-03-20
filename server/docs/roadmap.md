@@ -8,20 +8,15 @@ This document outlines the current status and future plans for MCP Any.
 
 ### Market Research & Alignment
 
-Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we
-identified key opportunities:
+Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we identified key opportunities:
 
-- **"Debugging is Hell"**: Developers need "Traffic Replay" and "Agent Debugger"
-  (Solution: Observability++).
-- **Security & Trust**: Prompt Injection and Data Exfiltration risks (Solution:
-  Guardrails & Granular Scopes).
-- **Tool Discovery & Config**: Manual config is error-prone (Solution: K8s
-  Operator & Terraform Provider).
+- **"Debugging is Hell"**: Developers need "Traffic Replay" and "Agent Debugger" (Solution: Observability++).
+- **Security & Trust**: Prompt Injection and Data Exfiltration risks (Solution: Guardrails & Granular Scopes).
+- **Tool Discovery & Config**: Manual config is error-prone (Solution: K8s Operator & Terraform Provider).
 
 ### GitHub Issue Insights
 
-- **Context Bloat**: Token explosions in large repos (Action: Context
-  Optimization).
+- **Context Bloat**: Token explosions in large repos (Action: Context Optimization).
 - **Installation Failures**: Environment mismatches (Action: Doctor API).
 - **Security**: Command injection fears (Action: WASM Sandboxing).
 
@@ -53,57 +48,35 @@ identified key opportunities:
 
 ### Enterprise & Operations
 
-1.  **Kubernetes Operator**: Automate deployment, scaling, and lifecycle
-    management of MCP Any instances in K8s. (Partially implemented in
-    `k8s/operator`)
-2.  **Multi-Region Federation**: Link multiple MCP Any instances across regions
-    for low-latency tool access.
-3.  **Active-Active High Availability**: Support leaderless clustering for zero-
-    downtime upgrades and failure tolerance.
-4.  **Disaster Recovery Playbook**: Automated backup/restore of state and
-    configuration to S3/GCS.
-5.  **Dynamic Secret Rotation**: Integration with HashiCorp Vault / AWS Secrets
-    Manager for zero-touch secret handling.
-6.  **Automated Dependency Updates**: "Dependabot" for MCP Tools - auto-update
-    tool definitions when upstreams change.
-7.  **Service Mesh Sidecar Mode**: Run MCP Any as a lightweight sidecar for
-    application pods.
+1.  **Kubernetes Operator**: Automate deployment, scaling, and lifecycle management of MCP Any instances in K8s. (Partially implemented in `k8s/operator`)
+2.  **Multi-Region Federation**: Link multiple MCP Any instances across regions for low-latency tool access.
+3.  **Active-Active High Availability**: Support leaderless clustering for zero-downtime upgrades and failure tolerance.
+4.  **Disaster Recovery Playbook**: Automated backup/restore of state and configuration to S3/GCS.
+5.  **Dynamic Secret Rotation**: Integration with HashiCorp Vault / AWS Secrets Manager for zero-touch secret handling.
+6.  **Automated Dependency Updates**: "Dependabot" for MCP Tools - auto-update tool definitions when upstreams change.
+7.  **Service Mesh Sidecar Mode**: Run MCP Any as a lightweight sidecar for application pods.
 
 ### Security & Compliance
 
-8.  **Downstream mTLS**: Enforce mutual TLS for agents collecting to MCP Any
-    (Zero Trust).
-9.  **Just-In-Time (JIT) Access**: Temporary elevation of privileges for
-    specific tools (e.g., "Grant Write access for 1 hour").
-10. **Fine-Grained ABAC**: Attribute-Based Access Control (e.g. "Only allow
-    production tools during business hours").
-11. **Tool Signature Verification**: Enforce that loaded WASM/Binary tools are
-    signed by a trusted key.
-12. **Vulnerability Scanning Integration**: Auto-scan registered tool container
-    images for CVEs.
-13. **Policy dry-run mode**: Test new security policies on traffic without
-    blocking (shadow mode).
-14. **Compliance Reports**: Generate PDF reports of user activity for SOC2/ISO
-    audits.
+8.  **Downstream mTLS**: Enforce mutual TLS for agents collecting to MCP Any (Zero Trust).
+9.  **Just-In-Time (JIT) Access**: Temporary elevation of privileges for specific tools (e.g., "Grant Write access for 1 hour").
+10. **Fine-Grained ABAC**: Attribute-Based Access Control (e.g. "Only allow production tools during business hours").
+11. **Tool Signature Verification**: Enforce that loaded WASM/Binary tools are signed by a trusted key.
+12. **Vulnerability Scanning Integration**: Auto-scan registered tool container images for CVEs.
+13. **Policy dry-run mode**: Test new security policies on traffic without blocking (shadow mode).
+14. **Compliance Reports**: Generate PDF reports of user activity for SOC2/ISO audits.
 
 ### Observability & Insights
 
-16. **Custom Dashboards**: Drag-and-drop UI to create dashboards from MCP
-    metrics.
-17. **Alerting Rules Integration**: Built-in Prometheus alerting rules for high
-    error rates or latency.
-18. **Request/Response Replay**: "TiVo" for tool interactions - replay past
-    requests for debugging.
-19. **Distributed Tracing Sampling Control**: Dynamic sampling rates based on
-    tenant or error-rate.
-20. **SLO Management**: Define and track Service Level Objectives (availability,
-    latency) within the UI.
-21. **Semantic Search over Logs**: Use embeddings to search audit logs (e.g.,
-    "Show me all database drops").
+16. **Custom Dashboards**: Drag-and-drop UI to create dashboards from MCP metrics.
+17. **Alerting Rules Integration**: Built-in Prometheus alerting rules for high error rates or latency.
+18. **Request/Response Replay**: "TiVo" for tool interactions - replay past requests for debugging.
+19. **Distributed Tracing Sampling Control**: Dynamic sampling rates based on tenant or error-rate.
+20. **SLO Management**: Define and track Service Level Objectives (availability, latency) within the UI.
+21. **Semantic Search over Logs**: Use embeddings to search audit logs (e.g., "Show me all database drops").
 22. **Tool Usage Analytics**: Heatmaps of most used tools and arguments.
 23. **Anomaly Detection**: ML-based detection of unusual tool usage patterns.
-24. **Webhook Notifications**: Slack/PagerDuty alerts for critical system
-    events.
+24. **Webhook Notifications**: Slack/PagerDuty alerts for critical system events.
 
 ### Connectivity & Integration
 
@@ -111,38 +84,26 @@ identified key opportunities:
 27. **Jira/Confluence Connector**: Read/Write tickets and docs.
 28. **Slack/Discord Bot Gateway**: Expose tools directly as chat commands.
 29. **Email Server Gateway**: Trigger tools via inbound email (SMTP/IMAP).
-30. **Browser Automation Provider**: [Completed] Headless browser tool for "Read
-    Webpage" capabilities.
-31. **GraphQL Subscriptions**: Support real-time data push from GraphQL
-    upstreams.
-32. **Binary Protocol Support**: Protobuf over WebSocket for high-performance
-    low-bandwidth agents.
-33. **Edge Computing Support**: Optimized build for Cloudflare Workers / AWS
-    Lambda.
-34. **Air-Gapped Mode**: Full offline operation with bundled dependencies and
-    local docs.
+30. **Browser Automation Provider**: [Completed] Headless browser tool for "Read Webpage" capabilities.
+31. **GraphQL Subscriptions**: Support real-time data push from GraphQL upstreams.
+32. **Binary Protocol Support**: Protobuf over WebSocket for high-performance low-bandwidth agents.
+33. **Edge Computing Support**: Optimized build for Cloudflare Workers / AWS Lambda.
+34. **Air-Gapped Mode**: Full offline operation with bundled dependencies and local docs.
 
 ### Developer Experience
 
-35. **Enhanced Configuration Validation**: Implement strict schema validation
-    (using JSON Schema) to catch structure errors like `service_config`
-    wrapper usage at parsing time.
-36. **Interactive `mcp init` CLI**: A wizard to generate valid configuration
-    files interactively, reducing copy-paste errors from docs.
+35. **Enhanced Configuration Validation**: Implement strict schema validation (using JSON Schema) to catch structure errors like `service_config` wrapper usage at parsing time.
+36. **Interactive `mcp init` CLI**: A wizard to generate valid configuration files interactively, reducing copy-paste errors from docs.
 
 ## Codebase Health Report
 
 ### Critical Areas
 
-- **Webhooks "Test" Code**: `server/cmd/webhooks` needs formalization if
-  intended for production (Sidecar pattern).
-- **SDK Consolidation**: `server/pkg/client` should ideally be in a separate
-  repository to be used by other Go clients without pulling in the whole
-  server.
+- **Webhooks "Test" Code**: `server/cmd/webhooks` needs formalization if intended for production (Sidecar pattern).
+- **SDK Consolidation**: `server/pkg/client` should ideally be in a separate repository to be used by other Go clients without pulling in the whole server.
 
 ### Recommendations
 
 1.  **Formalize Webhook Server**: Polish `server/cmd/webhooks` as a Sidecar.
-4.  **Standardize Configuration**: Consistent config patterns (Done: fixed
-    documentation/error handling for `service_config`).
+4.  **Standardize Configuration**: Consistent config patterns (Done: fixed documentation/error handling for `service_config`).
 5.  **Consolidate SDKs**: Move `server/pkg/client` to separate repo.

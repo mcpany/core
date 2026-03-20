@@ -3,9 +3,7 @@
 **Status:** Planned / Partially Implemented
 
 ## Goal
-Secure access to the MCP Any dashboard and control user permissions. The
-Authentication system supports multiple providers (OAuth, OIDC) and granular
-role-based access control.
+Secure access to the MCP Any dashboard and control user permissions. The Authentication system supports multiple providers (OAuth, OIDC) and granular role-based access control.
 
 ## Usage Guide
 

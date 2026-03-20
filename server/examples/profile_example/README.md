@@ -1,13 +1,11 @@
 # Profile Example
-This example demonstrates how to use the *Profile* feature with authenticated
-users.
+This example demonstrates how to use the *Profile* feature with authenticated users.
 This example demonstrates how to use the server with profiles.
 
 ## Configuration
 The `config.json` defines:
 - A user `alice` with a user-specific API key `alice-secret`.
-- A service `echo-service` that exposes a profile `dev` with its own API key
-  `dev-secret`.
+- A service `echo-service` that exposes a profile `dev` with its own API key `dev-secret`.
 - `alice` is granted access to the `dev` profile.
 
 ## Running the Example
@@ -25,8 +23,7 @@ make build
 The server will start on port `8082` (as defined in `config.json`).
 
 ## Authentication Testing
-You can authenticate using either the Profile Key (higher priority) or the User
-Key.
+You can authenticate using either the Profile Key (higher priority) or the User Key.
 
 ### 1. Using Profile Key
 ```bash

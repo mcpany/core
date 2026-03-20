@@ -1,13 +1,10 @@
 # Connection Pooling
 
-Connection pooling allows MCP Any to maintain a pool of open connections to
-upstream services, reducing the overhead of establishing a new connection for
-every request. This is critical for high-throughput services.
+Connection pooling allows MCP Any to maintain a pool of open connections to upstream services, reducing the overhead of establishing a new connection for every request. This is critical for high-throughput services.
 
 ## Configuration
 
-Connection pooling is configured within the `connection_pool` block of an
-upstream service.
+Connection pooling is configured within the `connection_pool` block of an upstream service.
 
 ### Fields
 
@@ -32,12 +29,8 @@ upstream_services:
 
 ## Use Case
 
-When connecting to a database proxy or a legacy backend that is sensitive to the
-number of concurrent connections, you can use connection pooling to limit the
-load. For example, setting `max_connections: 100` ensures that MCP Any will
-never open more than 100 connections to that service, queuing excess requests.
+When connecting to a database proxy or a legacy backend that is sensitive to the number of concurrent connections, you can use connection pooling to limit the load. For example, setting `max_connections: 100` ensures that MCP Any will never open more than 100 connections to that service, queuing excess requests.
 
 ## Public API Example
 
-The pooling behavior is internal. Clients simply make tool calls, and MCP Any
-manages the connections transparently.
+The pooling behavior is internal. Clients simply make tool calls, and MCP Any manages the connections transparently.

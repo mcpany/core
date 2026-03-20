@@ -1,7 +1,6 @@
 # Context Optimizer Middleware
 
-The Context Optimizer middleware automatically truncates large text outputs in
-JSON responses to prevent "Context Bloat" and reduce token usage.
+The Context Optimizer middleware automatically truncates large text outputs in JSON responses to prevent "Context Bloat" and reduce token usage.
 
 ## Configuration
 
@@ -14,8 +13,6 @@ context_optimizer:
 
 ## How it works
 
-The middleware intercepts JSON responses. If it detects a `result.content` array
-with `text` fields exceeding the configured `max_chars`, it truncates them and
-appends a notice (e.g., `...[TRUNCATED X chars]`).
+The middleware intercepts JSON responses. If it detects a `result.content` array with `text` fields exceeding the configured `max_chars`, it truncates them and appends a notice (e.g., `...[TRUNCATED X chars]`).
 
 If `max_chars` is not set, it defaults to 32000.

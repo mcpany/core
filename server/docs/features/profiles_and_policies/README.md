@@ -1,31 +1,23 @@
 # Profiles and Call Policies
 
-MCP Any provides powerful mechanisms to control which tools are exposed to the
-AI agent and how they can be used. This is crucial for managing complexity,
-ensuring security, and tailoring the agent's environment.
+MCP Any provides powerful mechanisms to control which tools are exposed to the AI agent and how they can be used. This is crucial for managing complexity, ensuring security, and tailoring the agent's environment.
 
 ## Strategies
 
 There are two primary strategies for controlling access:
 
-1.  **Call Policy**: Best for restricting specific APIs within a service,
-    especially when auto-discovery logic (like OpenAPI or gRPC reflection)
-    exposes too many tools.
-2.  **Profiles**: Best for creating different "views" of the system for
-    different environments (Dev vs Prod) or different types of agents.
+1.  **Call Policy**: Best for restricting specific APIs within a service, especially when auto-discovery logic (like OpenAPI or gRPC reflection) exposes too many tools.
+2.  **Profiles**: Best for creating different "views" of the system for different environments (Dev vs Prod) or different types of agents.
 
 ---
 
 ## 1. Call Policy (Restricting APIs)
 
-When you enable `auto_discover_tool: true` for an OpenAPI or gRPC service, it
-might expose hundreds of endpoints. You may want to restrict the AI agent to
-only a safe subset.
+When you enable `auto_discover_tool: true` for an OpenAPI or gRPC service, it might expose hundreds of endpoints. You may want to restrict the AI agent to only a safe subset.
 
 ### Configuration
 
-Call Policies are defined under `upstream_services`. You can set a
-`default_action` (ALLOW or DENY) and then provide specific exceptions.
+Call Policies are defined under `upstream_services`. You can set a `default_action` (ALLOW or DENY) and then provide specific exceptions.
 
 #### Example: Default Deny (Whitelist)
 
@@ -51,8 +43,7 @@ upstream_services:
 
 #### Example: Default Allow (Blacklist)
 
-Use this if you generally trust the service but want to block specific dangerous
-actions.
+Use this if you generally trust the service but want to block specific dangerous actions.
 
 ```yaml
 upstream_services:
@@ -75,14 +66,11 @@ upstream_services:
 
 ## 2. Profiles (Agent-Specific Views)
 
-Profiles allow you to group services or resources and selectively enable them at
-runtime. This is perfect for presenting different toolsets to different agents.
+Profiles allow you to group services or resources and selectively enable them at runtime. This is perfect for presenting different toolsets to different agents.
 
 ### Configuration
 
-You tag each upstream service with one or more profiles. Note that you should
-set both `id` and `name` for the profile to ensure consistent behavior across
-the system.
+You tag each upstream service with one or more profiles. Note that you should set both `id` and `name` for the profile to ensure consistent behavior across the system.
 
 ```yaml
 global_settings:
@@ -111,9 +99,7 @@ upstream_services:
 
 ### Usage
 
-When starting the MCP Any server, you specify which profiles are active. This
-can be done via `global_settings` in the config file (recommended) or via
-command line flags.
+When starting the MCP Any server, you specify which profiles are active. This can be done via `global_settings` in the config file (recommended) or via command line flags.
 
 - **Development Agent**:
 

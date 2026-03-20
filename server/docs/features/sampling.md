@@ -1,19 +1,12 @@
 # Server-Initiated Sampling
 
-MCP Any supports the MCP "Sampling" capability, which allows tools running on
-the server to request content generation (sampling) from the connected client
-(e.g., an LLM). This enables "agentic" workflows where tools can ask clarifying
-questions, request intermediate thoughts, or generate code snippets using the
-client's intelligence.
+MCP Any supports the MCP "Sampling" capability, which allows tools running on the server to request content generation (sampling) from the connected client (e.g., an LLM). This enables "agentic" workflows where tools can ask clarifying questions, request intermediate thoughts, or generate code snippets using the client's intelligence.
 
 ## How it Works
 
-When a tool is executed, it receives a `context.Context`. If the tool is running
-within an active MCP session (which is the case for tools invoked by an MCP
-client), the context contains an `MCPSession` (or `Sampler`) interface.
+When a tool is executed, it receives a `context.Context`. If the tool is running within an active MCP session (which is the case for tools invoked by an MCP client), the context contains an `MCPSession` (or `Sampler`) interface.
 
-The tool can use this interface to call `CreateMessage`, which sends a
-`sampling/createMessage` request to the client.
+The tool can use this interface to call `CreateMessage`, which sends a `sampling/createMessage` request to the client.
 
 ## Usage for Tool Developers
 
@@ -64,14 +57,9 @@ func (t *MyTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, 
 
 ## Protocol Support
 
-The server fully handles the underlying JSON-RPC communication for
-`sampling/createMessage`. It acts as a bridge between the internal tool
-execution and the connected MCP client.
+The server fully handles the underlying JSON-RPC communication for `sampling/createMessage`. It acts as a bridge between the internal tool execution and the connected MCP client.
 
 ## Limitations
 
-*   Sampling is only available when the tool is invoked by an MCP client that
-    supports the `sampling` capability.
-*   If the tool is invoked via other means (e.g., direct HTTP API call without
-    an MCP session), `tool.GetSession(ctx)` will return `false`. Tools
-    should handle this case gracefully.
+*   Sampling is only available when the tool is invoked by an MCP client that supports the `sampling` capability.
+*   If the tool is invoked via other means (e.g., direct HTTP API call without an MCP session), `tool.GetSession(ctx)` will return `false`. Tools should handle this case gracefully.

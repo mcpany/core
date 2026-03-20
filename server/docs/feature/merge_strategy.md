@@ -1,13 +1,10 @@
 # Merge Strategy and Profile-Based Tool Selection
 
-This document describes the new configuration merge strategies and profile-based
-tool selection capabilities options to give users more control over how
-configurations are combined and which tools are active.
+This document describes the new configuration merge strategies and profile-based tool selection capabilities options to give users more control over how configurations are combined and which tools are active.
 
 ## Merge Strategy
 
-When loading configurations from multiple sources (e.g., base config and overlay
-config), you can now control how lists and maps are merged.
+When loading configurations from multiple sources (e.g., base config and overlay config), you can now control how lists and maps are merged.
 
 ### Configuration
 
@@ -25,8 +22,7 @@ merge_strategy:
 
 - **`extend` (Default)**:
   - **Lists**: The new list is appended to the existing list.
-  - **Maps**: New keys are added. Existing keys are overwritten (deep merge is
-    NOT supported for values yet, they are replaced).
+  - **Maps**: New keys are added. Existing keys are overwritten (deep merge is NOT supported for values yet, they are replaced).
 - **`replace`**:
   - **Lists**: The new list completely replaces the existing list.
   - **Maps**: The new map completely replaces the existing map.
@@ -64,10 +60,7 @@ upstream_services:
 
 ## Profile-Based Tool Selection
 
-Tools can be associated with "profiles" (e.g., `dev`, `prod`, `readonly`). When
-starting the server, you specify which profiles to enable. Only tools belonging
-to enabled profiles (or available to all if no profiles are enforcing) are
-loaded.
+Tools can be associated with "profiles" (e.g., `dev`, `prod`, `readonly`). When starting the server, you specify which profiles to enable. Only tools belonging to enabled profiles (or available to all if no profiles are enforcing) are loaded.
 
 ### 1. Explicit Association
 
@@ -83,8 +76,7 @@ If you start the server with `--profiles admin`, this tool is included.
 
 ### 2. Dynamic Association (Selectors)
 
-You can define profiles that dynamically select tools based on **Tags** or
-**Properties**.
+You can define profiles that dynamically select tools based on **Tags** or **Properties**.
 
 **Configuration in `GlobalSettings`:**
 
@@ -108,8 +100,7 @@ tools:
       read_only: true
 ```
 
-If you start the server with `--profiles safe-mode`, the `read-file` tool is
-included because it matches the selector criteria.
+If you start the server with `--profiles safe-mode`, the `read-file` tool is included because it matches the selector criteria.
 
 ### Logic Details
 
@@ -121,10 +112,8 @@ A tool is allowed if **ANY** of the following are true:
 
 Selectors match if:
 
-- **Tags**: The tool has **AT LEAST ONE** of the selector's tags (if selector
-  tags are present).
-- **Properties**: The tool matches **ALL** specified properties (e.g.
-  `read_only=true`) (if selector properties are present).
+- **Tags**: The tool has **AT LEAST ONE** of the selector's tags (if selector tags are present).
+- **Properties**: The tool matches **ALL** specified properties (e.g. `read_only=true`) (if selector properties are present).
 - If both are present, typically both must match.
 
 ## CLI Usage

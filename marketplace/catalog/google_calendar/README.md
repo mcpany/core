@@ -1,20 +1,16 @@
 # Google Calendar
 
-This example demonstrates how to use `mcpany` to connect to the Google Calendar
-API to list events from a public calendar.
+This example demonstrates how to use `mcpany` to connect to the Google Calendar API to list events from a public calendar.
 
 ## Prerequisites
 
-- An API key for the Google Calendar API. You can obtain one from the [Google
-  Cloud Console](https://console.cloud.google.com/).
+- An API key for the Google Calendar API. You can obtain one from the [Google Cloud Console](https://console.cloud.google.com/).
 
 ## Configuration
 
-The configuration for this example is in `config.yaml`. It defines a single
-upstream service for Google Calendar.
+The configuration for this example is in `config.yaml`. It defines a single upstream service for Google Calendar.
 
-To use this example, you need to set the `GOOGLE_API_KEY` environment variable
-to your Google Calendar API key.
+To use this example, you need to set the `GOOGLE_API_KEY` environment variable to your Google Calendar API key.
 
 ## Usage
 

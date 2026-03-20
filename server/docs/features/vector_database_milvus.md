@@ -1,13 +1,10 @@
 # Milvus Vector Database
 
-The `milvus` vector database provider allows you to connect to a
-[Milvus](https://milvus.io/) instance or Zilliz Cloud and expose it as a set of
-MCP tools.
+The `milvus` vector database provider allows you to connect to a [Milvus](https://milvus.io/) instance or Zilliz Cloud and expose it as a set of MCP tools.
 
 ## Configuration
 
-To use Milvus, you need to configure it in your `config.yaml` file under the
-`vector_service` section.
+To use Milvus, you need to configure it in your `config.yaml` file under the `vector_service` section.
 
 ```yaml
 upstream_services:
@@ -25,8 +22,7 @@ upstream_services:
 
 ## Tools
 
-When a Milvus service is registered, the following tools are automatically
-available:
+When a Milvus service is registered, the following tools are automatically available:
 
 ### `query_vectors`
 
@@ -35,8 +31,7 @@ Searches for vectors similar to the provided query vector.
 *   **Input**:
     *   `vector` (array of numbers): The query vector.
     *   `top_k` (integer): The number of results to return (default: 10).
-    *   `filter` (object): Optional metadata filter (e.g., `{"category":
-        "news"}`).
+    *   `filter` (object): Optional metadata filter (e.g., `{"category": "news"}`).
     *   `namespace` (string): Optional partition name.
 
 *   **Output**:
@@ -47,8 +42,7 @@ Searches for vectors similar to the provided query vector.
 Inserts or updates vectors in the collection.
 
 *   **Input**:
-    *   `vectors` (array of objects): List of vectors to upsert. Each object
-        must have:
+    *   `vectors` (array of objects): List of vectors to upsert. Each object must have:
         *   `id` (string): Unique identifier.
         *   `values` (array of numbers): The vector embedding.
         *   `metadata` (object): Optional metadata fields.
@@ -82,5 +76,4 @@ Retrieves statistics about the collection.
 ## Prerequisites
 
 *   A running Milvus instance (v2.3+ recommended).
-*   A collection created with appropriate schema (ID field, vector field, and
-    metadata fields).
+*   A collection created with appropriate schema (ID field, vector field, and metadata fields).

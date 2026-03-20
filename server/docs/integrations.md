@@ -1,20 +1,13 @@
 # 🔌 Integrating with AI Assistants
 
-This guide explains how to connect `mcpany` to various AI assistant clients,
-enabling them to leverage the tools exposed by your `mcpany` server. By
-integrating `mcpany`, you can give your AI assistant access to gRPC services,
-REST APIs, local command-line tools, and more.
+This guide explains how to connect `mcpany` to various AI assistant clients, enabling them to leverage the tools exposed by your `mcpany` server. By integrating `mcpany`, you can give your AI assistant access to gRPC services, REST APIs, local command-line tools, and more.
 
 1. **As a Local Binary**: Run the `mcpany` server directly on your machine.
 2. **With Docker Compose**: Run `mcpany` as a containerized service.
 3. **With Helm**: Deploy `mcpany` to a Kubernetes cluster.
 
 > [!TIP] > **Best Practice: One Server, Many Tools**
-> You don't need to run a separate `mcpany` instance for every tool you want to
-use. Instead, point your initialized `mcpany` server to multiple configuration
-files or a directory of configs using `--config-paths`. This way, you only need
-to register **one** MCP server with your AI assistant to access **all** your
-tools.
+> You don't need to run a separate `mcpany` instance for every tool you want to use. Instead, point your initialized `mcpany` server to multiple configuration files or a directory of configs using `--config-paths`. This way, you only need to register **one** MCP server with your AI assistant to access **all** your tools.
 
 ---
 
@@ -24,8 +17,7 @@ This is the most direct method for running `mcpany` on your local machine.
 
 ### Prerequisites
 
-Before you begin, you need to have the `mcpany` server binary built and
-available on your system.
+Before you begin, you need to have the `mcpany` server binary built and available on your system.
 
 1. **Clone the `mcpany` repository:**
 
@@ -35,15 +27,13 @@ available on your system.
    ```
 
 2. **Build the application:**
-   This command compiles the server and places the executable binary in the
-`build/bin` directory.
+   This command compiles the server and places the executable binary in the `build/bin` directory.
 
    ```bash
    make build
    ```
 
-   The server binary will be located at `./build/bin/server`. You will need to
-use the **absolute path** to this binary when configuring your AI assistant.
+   The server binary will be located at `./build/bin/server`. You will need to use the **absolute path** to this binary when configuring your AI assistant.
 
 ### AI Client Setup
 
@@ -51,8 +41,7 @@ Most AI clients require you to specify the command to start the `mcpany` server.
 
 #### General JSON Configuration
 
-This generic JSON configuration can be adapted for most clients that support it
-(e.g., VS Code, JetBrains, Cursor).
+This generic JSON configuration can be adapted for most clients that support it (e.g., VS Code, JetBrains, Cursor).
 
 ```json
 {
@@ -88,25 +77,21 @@ claude mcp add mcpany "./build/bin/server"
 
 #### Copilot CLI
 
-Use the interactive prompt (`/mcp add`) and provide the absolute path to the
-`server` binary and any optional arguments.
+Use the interactive prompt (`/mcp add`) and provide the absolute path to the `server` binary and any optional arguments.
 
 ---
 
 ## 2. Docker Compose Integration
 
-You can run `mcpany` and its upstream services in a containerized environment
-using Docker Compose. This is ideal for creating reproducible setups.
+You can run `mcpany` and its upstream services in a containerized environment using Docker Compose. This is ideal for creating reproducible setups.
 
 ### Prerequisites
 
-- [Docker](https://docs.docker.com/get-docker/) and [Docker
-  Compose](https://docs.docker.com/compose/install/) are installed.
+- [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) are installed.
 
 ### Running with Docker Compose
 
-The repository includes a `docker-compose.yml` file that starts `mcpany` and a
-sample upstream service.
+The repository includes a `docker-compose.yml` file that starts `mcpany` and a sample upstream service.
 
 1. **Start the services:**
 
@@ -117,8 +102,7 @@ sample upstream service.
    The `mcpany` server will be available on `localhost:50050`.
 
 2. **Configure your AI Assistant:**
-   Since `mcpany` is running as a networked service (not a local process), you
-need to configure your AI assistant to connect to its TCP port.
+   Since `mcpany` is running as a networked service (not a local process), you need to configure your AI assistant to connect to its TCP port.
 
    For clients like Gemini, you can add it as an HTTP extension:
 
@@ -127,35 +111,30 @@ need to configure your AI assistant to connect to its TCP port.
    gemini http add mcpany-docker http://localhost:50050
    ```
 
-   Or, to run it in **stdio mode** via Docker (slower than HTTP mode, but more
-secure):
+   Or, to run it in **stdio mode** via Docker (slower than HTTP mode, but more secure):
 
    ```bash
    gemini mcp add --transport stdio mcpany-docker docker -- run -i --rm -v /absolute/path/to/config.yaml:/etc/mcpany/config.yaml ghcr.io/mcpany/server:latest run --config-path /etc/mcpany/config.yaml --stdio
    ```
 
-   For clients with a UI (like VS Code or JetBrains), look for an option to add
-an "HTTP" or "Remote" MCP server and point it to `http://localhost:50050`.
+   For clients with a UI (like VS Code or JetBrains), look for an option to add an "HTTP" or "Remote" MCP server and point it to `http://localhost:50050`.
 
 ---
 
 ## 3. Helm Integration
 
-For production or staging environments, you can deploy `mcpany` to a Kubernetes
-cluster using the provided Helm chart.
+For production or staging environments, you can deploy `mcpany` to a Kubernetes cluster using the provided Helm chart.
 
 ### Prerequisites
 
 - A running Kubernetes cluster.
-- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) configured
-  to connect to your cluster.
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) configured to connect to your cluster.
 - [Helm](https://helm.sh/docs/intro/install/) installed.
 
 ### Deployment
 
 1. **Install the Helm Chart:**
-   Navigate to the `k8s/helm/mcpany` directory in this repository and install
-the chart.
+   Navigate to the `k8s/helm/mcpany` directory in this repository and install the chart.
 
    ```bash
    cd k8s/helm/mcpany
@@ -165,8 +144,7 @@ the chart.
    This will deploy `mcpany` into your Kubernetes cluster.
 
 2. **Expose the Service:**
-   To access `mcpany` from your local machine, you can use `kubectl port-
-forward`.
+   To access `mcpany` from your local machine, you can use `kubectl port-forward`.
 
    ```bash
    # Forward a local port (e.g., 50050) to the mcpany service in the cluster
@@ -174,9 +152,7 @@ forward`.
    ```
 
 3. **Configure your AI Assistant:**
-   With the port forward running, `mcpany` is now accessible at
-`localhost:50050`. You can configure your AI assistant the same way as in the
-Docker Compose example.
+   With the port forward running, `mcpany` is now accessible at `localhost:50050`. You can configure your AI assistant the same way as in the Docker Compose example.
 
    ```bash
    gemini http add mcpany http://localhost:50050
@@ -186,9 +162,7 @@ Docker Compose example.
 
 ## 4. Claude Desktop
 
-To use `mcpany` with [Claude
-Desktop](https://modelcontextprotocol.io/quickstart/user), configure it to run
-the `mcpany` Docker container.
+To use `mcpany` with [Claude Desktop](https://modelcontextprotocol.io/quickstart/user), configure it to run the `mcpany` Docker container.
 
 Add the following to your `claude_desktop_config.json`:
 
@@ -214,18 +188,15 @@ Add the following to your `claude_desktop_config.json`:
 }
 ```
 
-> **Note:** Replace `/absolute/path/to/your/config.yaml` with the actual path to
-your MCP Any configuration file.
+> **Note:** Replace `/absolute/path/to/your/config.yaml` with the actual path to your MCP Any configuration file.
 
-This setup ensures Claude launches a fresh `mcpany` container whenever it needs
-to access your tools.
+This setup ensures Claude launches a fresh `mcpany` container whenever it needs to access your tools.
 
 ---
 
 ## 5. Claude Code CLI
 
-To integrate `mcpany` with the [Claude Code
-CLI](https://www.npmjs.com/package/@anthropic-ai/claude-code):
+To integrate `mcpany` with the [Claude Code CLI](https://www.npmjs.com/package/@anthropic-ai/claude-code):
 
 ```bash
 # Register mcpany
@@ -236,12 +207,9 @@ claude mcp add mcpany --transport http http://localhost:50050
 
 ## 6. GitHub Copilot CLI
 
-The GitHub Copilot CLI does not currently support a non-interactive `mcp add`
-command for remote servers. Instead, you should configure it using an `mcp-
-config.json` file.
+The GitHub Copilot CLI does not currently support a non-interactive `mcp add` command for remote servers. Instead, you should configure it using an `mcp-config.json` file.
 
-1.  Create an `mcp-config.json` file in your `~/.copilot` directory (or a
-    directory specified by `XDG_CONFIG_HOME`).
+1.  Create an `mcp-config.json` file in your `~/.copilot` directory (or a directory specified by `XDG_CONFIG_HOME`).
 
 ```json
 {
@@ -270,8 +238,7 @@ You can add `mcpany` to GitHub Copilot in VS Code using the command line:
 code --add-mcp '{"name":"mcpany","command":"docker","args":["run","-i","--rm","-v","/absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml","ghcr.io/mcpany/server:latest","run","--config-path","/etc/mcpany/config.yaml","--stdio"]}'
 ```
 
-Alternatively, you can manually edit your VS Code `settings.json` or use the
-**"Add MCP Server"** command in the command palette.
+Alternatively, you can manually edit your VS Code `settings.json` or use the **"Add MCP Server"** command in the command palette.
 
 ---
 
@@ -284,10 +251,7 @@ To integrate with [Cursor](https://cursor.sh/):
 3.  Fill in the details:
     - **Name**: `mcpany`
     - **Type**: `command`
-    - **Command**: `docker run -i --rm -v
-      /absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml
-      ghcr.io/mcpany/server:latest run --config-path
-      /etc/mcpany/config.yaml --stdio`
+    - **Command**: `docker run -i --rm -v /absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml ghcr.io/mcpany/server:latest run --config-path /etc/mcpany/config.yaml --stdio`
 4.  Click **Add**.
 
 ---
@@ -302,10 +266,7 @@ To integrate with JetBrains IDEs (IntelliJ IDEA, PyCharm, GoLand, etc.):
 4.  Configure the server:
     - **Name**: `mcpany`
     - **Command**: `docker`
-    - **Args**: `run -i --rm -v
-      /absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml
-      ghcr.io/mcpany/server:latest run --config-path
-      /etc/mcpany/config.yaml --stdio`
+    - **Args**: `run -i --rm -v /absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml ghcr.io/mcpany/server:latest run --config-path /etc/mcpany/config.yaml --stdio`
 5.  Click **OK** or **Apply**.
 
 ---

@@ -3,8 +3,7 @@
 **Status:** Implemented
 
 ## Goal
-Manage the MCP ecosystem from any device. The UI is fully responsive, adapting
-layouts for tablets and mobile phones.
+Manage the MCP ecosystem from any device. The UI is fully responsive, adapting layouts for tablets and mobile phones.
 
 ## Usage Guide
 

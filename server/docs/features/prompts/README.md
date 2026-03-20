@@ -1,7 +1,6 @@
 # Prompts
 
-Prompts allow you to define reusable templates for user input, often used when
-integrating with LLMs.
+Prompts allow you to define reusable templates for user input, often used when integrating with LLMs.
 
 ## Configuration
 
@@ -33,13 +32,10 @@ upstream_services:
 
 ## Use Case
 
-You want to provide a standard "Summarize this" prompt to your users. Instead of
-them typing it out, they can select the "summarize" prompt from the list exposed
-by your MCP server.
+You want to provide a standard "Summarize this" prompt to your users. Instead of them typing it out, they can select the "summarize" prompt from the list exposed by your MCP server.
 
 ## Public API Example
 
 Clients call `prompts/get` with the prompt name and arguments.
 
-> **Note:** Prompt names are namespaced by the service ID (e.g.,
-`serviceName.promptName`). Check `prompts/list` to see the full names.
+> **Note:** Prompt names are namespaced by the service ID (e.g., `serviceName.promptName`). Check `prompts/list` to see the full names.

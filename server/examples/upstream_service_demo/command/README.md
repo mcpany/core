@@ -1,24 +1,19 @@
 # Example: Wrapping a Command-Line Tool
 
-This example demonstrates how to wrap the `date` command-line tool and expose
-its functionality as tools through `MCP Any`. This powerful feature allows you
-to integrate any command-line tool into your AI assistant's workflow.
+This example demonstrates how to wrap the `date` command-line tool and expose its functionality as tools through `MCP Any`. This powerful feature allows you to integrate any command-line tool into your AI assistant's workflow.
 
 ## Overview
 
 This example consists of two main components:
 
-1. **`MCP Any` Configuration**: A YAML file (`config/mcp_any_config.yaml`) that
-   defines how to translate `MCP Any` tool calls into `date` commands.
-2. **`MCP Any` Server**: The `MCP Any` instance that executes the `date`
-   commands.
+1. **`MCP Any` Configuration**: A YAML file (`config/mcp_any_config.yaml`) that defines how to translate `MCP Any` tool calls into `date` commands.
+2. **`MCP Any` Server**: The `MCP Any` instance that executes the `date` commands.
 
 ## Running the Example
 
 ### 1. Build the `MCP Any` Binary
 
-First, ensure the `MCP Any` binary is built. From the root of the repository,
-run:
+First, ensure the `MCP Any` binary is built. From the root of the repository, run:
 
 ```bash
 make build
@@ -36,8 +31,7 @@ The `MCP Any` server will start and listen for JSON-RPC requests on port `8080`.
 
 ## Interacting with the Tool
 
-Once the server is running, you can interact with the tools using the `gemini`
-CLI.
+Once the server is running, you can interact with the tools using the `gemini` CLI.
 
 ### Using the `gemini` CLI
 
@@ -47,12 +41,10 @@ Now, you can call the `get_current_date` tool by sending a `tools/call` request.
 gemini --allowed-mcp-server-names mcpany-command -p "call the tool datetime-service.get_current_date"
 ```
 
-You can also call the `get_current_date_iso` tool to get the date in ISO 8601
-format:
+You can also call the `get_current_date_iso` tool to get the date in ISO 8601 format:
 
 ```bash
 gemini --allowed-mcp-server-names mcpany-command -p "call the tool datetime-service.get_current_date_iso"
 ```
 
-This example shows how easily you can extend your AI assistant with any command-
-line tool, opening up endless possibilities for automation and integration.
+This example shows how easily you can extend your AI assistant with any command-line tool, opening up endless possibilities for automation and integration.

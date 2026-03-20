@@ -4,8 +4,7 @@ RBAC allows you to manage user permissions by assigning roles to users.
 
 ## Overview
 
-The RBAC implementation is located in `server/pkg/middleware/rbac.go` and
-`server/pkg/auth/rbac.go`.
+The RBAC implementation is located in `server/pkg/middleware/rbac.go` and `server/pkg/auth/rbac.go`.
 
 It provides:
 - **RBACEnforcer**: Checks if a user has a specific role.
@@ -44,8 +43,7 @@ global_settings:
 
 ## Middleware Usage
 
-The `RBACMiddleware` provides methods to enforce role requirements on HTTP
-handlers.
+The `RBACMiddleware` provides methods to enforce role requirements on HTTP handlers.
 
 ### `RequireRole`
 

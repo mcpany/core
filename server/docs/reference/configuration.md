@@ -1,21 +1,12 @@
 # MCP Any Configuration Reference
 
-> **Disclaimer:** This document is a reference for all the configuration options
-available in the `proto/config/v1/config.proto` file. While these settings are
-defined in the configuration schema, not all of them have been fully implemented
-in the server logic. Please refer to the project's roadmap for the current
-implementation status of each feature.
+> **Disclaimer:** This document is a reference for all the configuration options available in the `proto/config/v1/config.proto` file. While these settings are defined in the configuration schema, not all of them have been fully implemented in the server logic. Please refer to the project's roadmap for the current implementation status of each feature.
 
-This document provides a comprehensive reference for configuring the MCP Any
-server. The configuration is defined in the `McpAnyServerConfig` protobuf
-message and can be provided to the server in YAML or JSON format.
+This document provides a comprehensive reference for configuring the MCP Any server. The configuration is defined in the `McpAnyServerConfig` protobuf message and can be provided to the server in YAML or JSON format.
 
 ## Using Environment Variables
 
-MCP Any supports the use of environment variables within configuration files to
-enhance security and portability. You can reference environment variables using
-the `${VAR_NAME}` syntax. Default values are also supported using the
-`${VAR_NAME:default_value}` syntax.
+MCP Any supports the use of environment variables within configuration files to enhance security and portability. You can reference environment variables using the `${VAR_NAME}` syntax. Default values are also supported using the `${VAR_NAME:default_value}` syntax.
 
 ### Example
 
@@ -31,14 +22,11 @@ upstream_services:
           plain_text: "${API_KEY:my-secret-key}"
 ```
 
-In this example, the `api_key` will be set to the value of the `API_KEY`
-environment variable. If `API_KEY` is not set, it will default to `my-secret-
-key`.
+In this example, the `api_key` will be set to the value of the `API_KEY` environment variable. If `API_KEY` is not set, it will default to `my-secret-key`.
 
 ## Root Server Configuration (`McpAnyServerConfig`)
 
-The `McpAnyServerConfig` is the top-level configuration object for the entire
-MCP Any server.
+The `McpAnyServerConfig` is the top-level configuration object for the entire MCP Any server.
 
 | Field                          | Type                                 | Description                                                                                                                          |
 | ------------------------------ | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
@@ -48,8 +36,7 @@ MCP Any server.
 
 ### Use Case and Example
 
-A top-level configuration for an MCP Any server that connects to a local gRPC
-service and a remote HTTP service.
+A top-level configuration for an MCP Any server that connects to a local gRPC service and a remote HTTP service.
 
 ```yaml
 global_settings:
@@ -67,8 +54,7 @@ upstream_services:
 
 ### `Collection`
 
-Defines a collection of upstream services that can be loaded from a remote
-source.
+Defines a collection of upstream services that can be loaded from a remote source.
 
 | Field            | Type                     | Description                                                         |
 | ---------------- | ------------------------ | ------------------------------------------------------------------- |
@@ -79,9 +65,7 @@ source.
 
 ### Use Case and Example
 
-Dynamically load a collection of upstream services from a remote URL. This is
-useful for managing a large number of services or for updating service
-configurations without restarting the MCP Any server.
+Dynamically load a collection of upstream services from a remote URL. This is useful for managing a large number of services or for updating service configurations without restarting the MCP Any server.
 
 ```yaml
 upstream_service_collections:
@@ -168,8 +152,7 @@ global_settings:
 
 ## Upstream Service Configuration (`UpstreamServiceConfig`)
 
-This is the top-level configuration for a single upstream service that MCP Any
-will proxy.
+This is the top-level configuration for a single upstream service that MCP Any will proxy.
 
 | Field                     | Type                     | Description                                                                                   |
 | ------------------------- | ------------------------ | --------------------------------------------------------------------------------------------- |
@@ -190,15 +173,10 @@ will proxy.
 
 ### Profiles
 
-Profiles allow you to categorize and selectively enable services, tools,
-resources, and prompts based on the runtime environment (e.g., "dev", "prod",
-"staging"). You can start the server with specific profiles enabled using the
-`--profiles` command-line flag (e.g., `--profiles=dev,staging`).
+Profiles allow you to categorize and selectively enable services, tools, resources, and prompts based on the runtime environment (e.g., "dev", "prod", "staging"). You can start the server with specific profiles enabled using the `--profiles` command-line flag (e.g., `--profiles=dev,staging`).
 
-If a configuration item (service, tool, etc.) has an empty `profiles` list, it
-is treated as belonging to the "default" profile.
-Items are enabled if they share at least one profile with the enabled profiles
-list.
+If a configuration item (service, tool, etc.) has an empty `profiles` list, it is treated as belonging to the "default" profile.
+Items are enabled if they share at least one profile with the enabled profiles list.
 
 #### Use Case and Example
 
@@ -214,13 +192,11 @@ upstream_services:
       # ...
 ```
 
-To run this service, start the server with `--profiles=dev` (or
-`--profiles=dev,default`).
+To run this service, start the server with `--profiles=dev` (or `--profiles=dev,default`).
 
 ### Use Case and Example
 
-A gRPC service with a connection pool, rate limiting, a circuit breaker, and API
-key authentication for the upstream.
+A gRPC service with a connection pool, rate limiting, a circuit breaker, and API key authentication for the upstream.
 
 ```yaml
 upstream_services:
@@ -253,15 +229,12 @@ The `service_config` oneof field can contain one of the following service types:
 
 - **`GrpcUpstreamService`**: For gRPC services.
 - **`HttpUpstreamService`**: For generic HTTP services.
-- **`OpenapiUpstreamService`**: For services defined by an OpenAPI (Swagger)
-  specification.
-- **`CommandLineUpstreamService`**: For services that communicate over standard
-  I/O.
+- **`OpenapiUpstreamService`**: For services defined by an OpenAPI (Swagger) specification.
+- **`CommandLineUpstreamService`**: For services that communicate over standard I/O.
 - **`McpUpstreamService`**: For proxying another MCP Any instance.
 - **`GraphqlUpstreamService`**: For GraphQL services.
 - **`WebsocketUpstreamService`**: For services that communicate over Websocket.
-- **`WebrtcUpstreamService`**: For services that communicate over WebRTC data
-  channels.
+- **`WebrtcUpstreamService`**: For services that communicate over WebRTC data channels.
 
 #### `GrpcUpstreamService`
 
@@ -280,8 +253,7 @@ The `service_config` oneof field can contain one of the following service types:
 
 ##### Use Case and Example
 
-Expose a gRPC service that requires TLS and has its protobuf definitions stored
-locally.
+Expose a gRPC service that requires TLS and has its protobuf definitions stored locally.
 
 ```yaml
 grpc_service:
@@ -448,8 +420,7 @@ mcp_service:
 
 #### Proxying CLI-based MCP Servers (Python/Node)
 
-You can also proxy MCP servers that run as a local command (stdio) or in a
-container. This is useful for using the growing ecosystem of MCP servers.
+You can also proxy MCP servers that run as a local command (stdio) or in a container. This is useful for using the growing ecosystem of MCP servers.
 
 ##### Example: Python MCP Server
 
@@ -468,8 +439,7 @@ mcp_service:
 
 ##### Example: NPX MCP Server (Puppeteer)
 
-This example runs the [`@modelcontextprotocol/server-
-puppeteer`](https://github.com/modelcontextprotocol/servers) using `npx`.
+This example runs the [`@modelcontextprotocol/server-puppeteer`](https://github.com/modelcontextprotocol/servers) using `npx`.
 
 ```yaml
 mcp_service:
@@ -526,8 +496,7 @@ upstream_services:
 ```
 
 - **`WebsocketUpstreamService`**: For services that communicate over Websocket.
-- **`WebrtcUpstreamService`**: For services that communicate over WebRTC data
-  channels.
+- **`WebrtcUpstreamService`**: For services that communicate over WebRTC data channels.
 
 #### `WebsocketUpstreamService`
 
@@ -564,8 +533,7 @@ websocket_service:
 
 ##### Use Case and Example
 
-Expose a WebRTC service for real-time communication, connecting to its signaling
-server.
+Expose a WebRTC service for real-time communication, connecting to its signaling server.
 
 ```yaml
 webrtc_service:
@@ -600,8 +568,7 @@ webrtc_service:
 
 ### Service Policies and Advanced Configuration
 
-MCP Any supports several advanced policies that can be applied to upstream
-services.
+MCP Any supports several advanced policies that can be applied to upstream services.
 
 #### `ConnectionPoolConfig`
 
@@ -648,9 +615,7 @@ rate_limit:
 | `is_enabled` | `bool`     | Whether caching is enabled.                                   |
 | `ttl`        | `duration` | The duration for which a cached response is considered valid. |
 
-**Priority Note:** When defined at the call level (e.g., inside
-`HttpCallDefinition.cache`), this configuration **overrides** the service-level
-cache settings.
+**Priority Note:** When defined at the call level (e.g., inside `HttpCallDefinition.cache`), this configuration **overrides** the service-level cache settings.
 
 ##### Use Case and Example
 
@@ -668,8 +633,7 @@ Contains configurations for circuit breakers and retries.
 
 ##### Use Case and Example
 
-Improve the reliability of a connection to a occasionally unstable upstream
-service.
+Improve the reliability of a connection to a occasionally unstable upstream service.
 
 ```yaml
 resilience:
@@ -685,14 +649,10 @@ resilience:
 ```
 
 - **`circuit_breaker` (`CircuitBreakerConfig`)**:
-  - `failure_rate_threshold`: The failure rate threshold to open the circuit
-    (e.g., 0.5 for 50%).
-  - `consecutive_failures`: The number of consecutive failures required to open
-    the circuit.
-  - `open_duration`: The duration the circuit remains open before transitioning
-    to half-open.
-  - `half_open_requests`: The number of requests to allow in the half-open state
-    to test for recovery.
+  - `failure_rate_threshold`: The failure rate threshold to open the circuit (e.g., 0.5 for 50%).
+  - `consecutive_failures`: The number of consecutive failures required to open the circuit.
+  - `open_duration`: The duration the circuit remains open before transitioning to half-open.
+  - `half_open_requests`: The number of requests to allow in the half-open state to test for recovery.
 - **`retry_policy` (`RetryConfig`)**:
   - `number_of_retries`: The number of times to retry a failed request.
   - `base_backoff`: The base duration for the backoff between retries.
@@ -701,9 +661,7 @@ resilience:
 
 #### `Call Policy`
 
-Call Policies allow you to fine-tune which calls are allowed or denied based on
-the request's properties. These policies are evaluated before any request is
-forwarded to the upstream service.
+Call Policies allow you to fine-tune which calls are allowed or denied based on the request's properties. These policies are evaluated before any request is forwarded to the upstream service.
 
 | Field             | Type                    | Description                                |
 | ----------------- | ----------------------- | ------------------------------------------ |
@@ -734,9 +692,7 @@ call_policies:
 
 #### `Hooks` (Pre-Call and Post-Call)
 
-Hooks allow you to execute custom logic before (`pre_call_hooks`) or after
-(`post_call_hooks`) a tool is executed. This is useful for validation, auditing,
-transformation, or enforcing complex policies.
+Hooks allow you to execute custom logic before (`pre_call_hooks`) or after (`post_call_hooks`) a tool is executed. This is useful for validation, auditing, transformation, or enforcing complex policies.
 
 | Field   | Type     | Description             |
 | ------- | -------- | ----------------------- |
@@ -774,8 +730,7 @@ pre_call_hooks:
 
 ### Health Checks
 
-MCP Any can perform health checks on upstream services to ensure they are
-available.
+MCP Any can perform health checks on upstream services to ensure they are available.
 
 #### `HttpHealthCheck`
 
@@ -820,14 +775,11 @@ available.
 
 ### Authentication
 
-MCP Any supports authentication for both incoming requests (securing access to
-the MCP Any service itself) and outgoing requests (authenticating with upstream
-services).
+MCP Any supports authentication for both incoming requests (securing access to the MCP Any service itself) and outgoing requests (authenticating with upstream services).
 
 #### `AuthenticationConfig` (Incoming)
 
-Configures the authentication method for incoming requests to the MCP Any
-server.
+Configures the authentication method for incoming requests to the MCP Any server.
 
 | Field     | Type         | Description                                     |
 | --------- | ------------ | ----------------------------------------------- |
@@ -866,8 +818,7 @@ authentication:
 
 #### `UpstreamAuthentication` (Outgoing)
 
-Configures the authentication method for MCP Any to use when connecting to an
-upstream service.
+Configures the authentication method for MCP Any to use when connecting to an upstream service.
 
 | Field          | Type                      | Description                                        |
 | -------------- | ------------------------- | -------------------------------------------------- |
@@ -878,8 +829,7 @@ upstream service.
 
 ##### Use Case and Example
 
-Authenticate with an upstream service using the OAuth 2.0 client credentials
-flow.
+Authenticate with an upstream service using the OAuth 2.0 client credentials flow.
 
 ```yaml
 upstream_auth:
@@ -894,8 +844,7 @@ upstream_auth:
 
 ##### Use Case and Example with Vault
 
-Authenticate with an upstream service using an API key stored in HashiCorp
-Vault.
+Authenticate with an upstream service using an API key stored in HashiCorp Vault.
 
 ```yaml
 upstream_auth:
@@ -955,9 +904,7 @@ upstream_auth:
 
 ##### `SecretValue`
 
-The `SecretValue` message provides a secure way to manage sensitive information
-like API keys, passwords, and tokens. It can be defined in one of the following
-ways:
+The `SecretValue` message provides a secure way to manage sensitive information like API keys, passwords, and tokens. It can be defined in one of the following ways:
 
 | Field                  | Type            | Description                                                    |
 | ---------------------- | --------------- | -------------------------------------------------------------- |
@@ -1014,9 +961,7 @@ tls_config:
 
 ## Defining Prompts
 
-MCP Any allows you to define and execute prompts directly from your
-configuration files. This is useful for integrating with AI models and other
-services that require dynamic, template-based inputs.
+MCP Any allows you to define and execute prompts directly from your configuration files. This is useful for integrating with AI models and other services that require dynamic, template-based inputs.
 
 | Field         | Type                     | Description                            |
 | ------------- | ------------------------ | -------------------------------------- |
@@ -1026,8 +971,7 @@ services that require dynamic, template-based inputs.
 
 ### Use Case and Example
 
-Here's an example of how to define a prompt in any service configuration (e.g.,
-`http_service`):
+Here's an example of how to define a prompt in any service configuration (e.g., `http_service`):
 
 ```yaml
 upstream_services:
@@ -1043,5 +987,4 @@ upstream_services:
                 text: "Hello, {{name}}!"
 ```
 
-You can then execute this prompt by sending a `prompts/get` request to the
-server.
+You can then execute this prompt by sending a `prompts/get` request to the server.

@@ -4,8 +4,7 @@
 
 ## Pain Point: "Where do I start?"
 
-The server is driven by a YAML configuration file. By default, it looks for
-`config.yaml` in the current directory.
+The server is driven by a YAML configuration file. By default, it looks for `config.yaml` in the current directory.
 
 ### Quick Start
 1. Create `config.yaml`:
@@ -43,11 +42,9 @@ upstream_services:
 
 ## Pain Point: "My Config is huge!"
 
-Split your configuration using `imports` or directory scanning (if supported) or
-keep it modular by functionality.
+Split your configuration using `imports` or directory scanning (if supported) or keep it modular by functionality.
 
 ### Best Practices
 - **Global Settings** at the top.
 - **Group Services** by team or domain (comments help).
-- **Use Validation**: Run `mcpctl validate --config-path config.yaml` before
-  restarting.
+- **Use Validation**: Run `mcpctl validate --config-path config.yaml` before restarting.

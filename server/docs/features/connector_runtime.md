@@ -1,7 +1,6 @@
 # Universal Connector Runtime
 
-The Universal Connector Runtime allows running MCP connectors (stdio-based
-tools) as managed sidecar processes.
+The Universal Connector Runtime allows running MCP connectors (stdio-based tools) as managed sidecar processes.
 
 ## Usage
 

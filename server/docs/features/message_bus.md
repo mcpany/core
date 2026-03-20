@@ -1,7 +1,6 @@
 # Message Bus Integration
 
-MCP Any uses a message bus for asynchronous communication and decoupled
-architecture.
+MCP Any uses a message bus for asynchronous communication and decoupled architecture.
 
 ## Supported Brokers
 

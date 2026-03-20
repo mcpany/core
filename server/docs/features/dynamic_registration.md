@@ -1,13 +1,10 @@
 # Dynamic Tool Registration
 
-MCP Any supports dynamic registration and auto-discovery of tools from upstream
-services.
+MCP Any supports dynamic registration and auto-discovery of tools from upstream services.
 
 ## Overview
 
-Instead of manually defining every tool, you can point MCP Any to a service
-definition (e.g., OpenAPI spec, gRPC reflection, GraphQL schema), and it will
-automatically generate the corresponding MCP tools.
+Instead of manually defining every tool, you can point MCP Any to a service definition (e.g., OpenAPI spec, gRPC reflection, GraphQL schema), and it will automatically generate the corresponding MCP tools.
 
 ## Supported Sources
 
