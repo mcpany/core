@@ -20,6 +20,7 @@ go_library(
         "debug.go",
         "debugger.go",
         "dlp.go",
+        "esb.go",
         "global_ratelimit.go",
         "guardrails.go",
         "gzip.go",
