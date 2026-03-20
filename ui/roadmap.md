@@ -3,10 +3,10 @@
 ## Status: Active Development
 
 ### Upcoming: [2026-06-18]
-- [ ] **[P0] Active Intent Alignment Monitor**: (2026-06-18) Visual indicator for AIA heartbeat status and semantic drift alerts.
-- [ ] **[P0] Trace-Aware Identity (TAI) Explorer**: (2026-06-18) Security workspace for visualizing teammate lineage and reasoning-bound identity proofs.
-- [ ] **[P1] Mesh Reasoning-GC Status**: (2026-06-18) Real-time visualization of redundant fragment pruning and attention window efficiency.
-- [ ] **[P0] Semantic Entropy Alert Center**: (2026-06-18) UI for inspecting sharded memory fragments flagged for trace-injection patterns.
+- [ ] **[P0] Active Intent Alignment Monitor**: (Added: 2026-06-18) Visual indicator for AIA heartbeat status and semantic drift alerts.
+- [ ] **[P0] Trace-Aware Identity (TAI) Explorer**: (Added: 2026-06-18) Security workspace for visualizing teammate lineage and reasoning-bound identity proofs.
+- [ ] **[P1] Mesh Reasoning-GC Status**: (Added: 2026-06-18) Real-time visualization of redundant fragment pruning and attention window efficiency.
+- [ ] **[P0] Semantic Entropy Alert Center**: (Added: 2026-06-18) UI for inspecting sharded memory fragments flagged for trace-injection patterns.
 
 ### Universal Agent Bus (New Strategic Priorities)
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
