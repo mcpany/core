@@ -2386,7 +2386,14 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 
 	for k, v := range resolvedServiceEnv {
-		env = append(env, fmt.Sprintf("%s=%s", k, v))
+		safeForEnv := true
+		if isDangerousEnvVar(k) {
+			logging.GetLogger().Warn("Skipping dangerous environment variable", "parameter", k)
+			safeForEnv = false
+		}
+		if safeForEnv {
+			env = append(env, fmt.Sprintf("%s=%s", k, v))
+		}
 	}
 
 	for _, param := range t.callDefinition.GetParameters() {
@@ -2800,7 +2807,20 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	for k, v := range resolvedServiceEnv {
-		env = append(env, fmt.Sprintf("%s=%s", k, v))
+		safeForEnv := true
+		if isShellCommand(t.service.GetCommand()) {
+			if err := checkEnvInjection(v); err != nil {
+				logging.GetLogger().Warn("Skipping environment variable due to potential shell injection risk", "parameter", k, "error", err)
+				safeForEnv = false
+			}
+		}
+		if isDangerousEnvVar(k) {
+			logging.GetLogger().Warn("Skipping dangerous environment variable", "parameter", k)
+			safeForEnv = false
+		}
+		if safeForEnv {
+			env = append(env, fmt.Sprintf("%s=%s", k, v))
+		}
 	}
 
 	if ce := t.service.GetContainerEnvironment(); ce != nil {
@@ -2812,7 +2832,14 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			secrets = append(secrets, v)
 		}
 		for k, v := range resolvedContainerEnv {
-			env = append(env, fmt.Sprintf("%s=%s", k, v))
+			safeForEnv := true
+			if isDangerousEnvVar(k) {
+				logging.GetLogger().Warn("Skipping dangerous environment variable", "parameter", k)
+				safeForEnv = false
+			}
+			if safeForEnv {
+				env = append(env, fmt.Sprintf("%s=%s", k, v))
+			}
 		}
 	}
 
