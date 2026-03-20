@@ -4193,14 +4193,16 @@ func checkRubyInjection(val, base string, quoteLevel int) error {
 	// Unquoted Ruby: @var and $var are dangerous.
 	// $var is blocked by generic checks. @var is not.
 	if quoteLevel == 0 {
-		// Sentinel Security Update: Block %x(...) execution syntax
-		// %x is dangerous in Unquoted contexts (code execution)
-		if strings.Contains(val, "%x") {
-			return fmt.Errorf("ruby execution injection detected: value contains '%%x'")
-		}
 		if strings.Contains(val, "@") {
 			return fmt.Errorf("ruby variable injection detected: value contains '@'")
 		}
+	}
+
+	// Sentinel Security Update: Block %x(...) execution syntax
+	// %x is dangerous in Unquoted contexts (code execution), but can also be triggered
+	// in nested shell evaluations where quotes are stripped.
+	if strings.Contains(val, "%x") {
+		return fmt.Errorf("ruby execution injection detected: value contains '%%x'")
 	}
 
 	// Sentinel Security Update:
@@ -4333,6 +4335,9 @@ func checkAwkInjection(val, base string) error {
 			continue
 		}
 
+			// Awk uses double quotes for string literals. Awk scripts are often passed via single quotes
+			// from bash (e.g. bash -c "awk '{print}'"). `val` is the payload string.
+			// We track if we are in an awk string (double quotes). Single quotes are not awk string quotes.
 		if char == '"' {
 			inDouble = !inDouble
 			continue
@@ -4342,7 +4347,7 @@ func checkAwkInjection(val, base string) error {
 			continue
 		}
 
-		// Not in quote, not in comment
+			// Not in awk quote (double quote), not in comment
 		if char == '#' {
 			inComment = true
 			continue
