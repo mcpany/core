@@ -147,7 +147,7 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 // Summary: Creates a new Deployment for the MCPServer resource.
 //
 // Parameters:
-//   - m: The MCPServer resource.
+//   - m (*mcpv1alpha1.MCPServer): The MCPServer resource.
 //
 // Returns:
 //   - *appsv1.Deployment: The created Deployment.
@@ -215,7 +215,7 @@ func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *
 // Summary: Creates a new Service for the MCPServer resource.
 //
 // Parameters:
-//   - m: The MCPServer resource.
+//   - m (*mcpv1alpha1.MCPServer): The MCPServer resource.
 //
 // Returns:
 //   - *corev1.Service: The created Service.
@@ -254,7 +254,7 @@ func (r *MCPServerReconciler) serviceForMCPServer(m *mcpv1alpha1.MCPServer) *cor
 // Summary: Returns labels for selecting resources by MCPServer CR name.
 //
 // Parameters:
-//   - name: The name of the MCPServer resource.
+//   - name (string): The name of the MCPServer resource.
 //
 // Returns:
 //   - map[string]string: A map of labels.
