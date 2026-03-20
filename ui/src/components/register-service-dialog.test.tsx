@@ -16,6 +16,7 @@ vi.mock('@/lib/client', () => ({
     updateService: vi.fn(),
     listCredentials: vi.fn().mockResolvedValue([]),
     validateService: vi.fn().mockResolvedValue({ valid: true, message: "Valid" }),
+    initiateOAuth: vi.fn().mockResolvedValue({}),
   },
 }));
 
@@ -113,4 +114,17 @@ describe('RegisterServiceDialog', () => {
         expect(screen.getByText('Valid Configuration')).toBeInTheDocument();
     });
   });
+
+
+
+
+
+
+
+
+
+
+
+
+
 });

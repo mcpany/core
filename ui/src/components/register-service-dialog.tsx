@@ -613,28 +613,41 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                                         // We need to call initiate first.
 
                                         try {
-                                            // If we are editing an existing service, use serviceId.
-                                            // If new service, we can't easily associate without ID.
-                                            // Limitation: Must save service first?
-                                            // Or use Credential flow?
-                                            // Let's assume editing for now.
+                                            let serviceId = serviceToEdit?.id;
 
-                                            if (!serviceToEdit?.id && !form.getValues("upstreamAuth")) {
-                                                 toast({ title: "Save Service First", description: "Please register the service before authenticating.", variant: "default" });
-                                                 return;
-                                            }
-
-                                            // If we have a selected Credential, we can auth that Credential?
-                                            // But the UI logic for selecting credential just copies the config.
-                                            // It doesn't link it by ID in the UpstreamServiceConfig (it copies the AuthConfig).
-                                            // Unless we change that behavior.
-
-                                            // Let's rely on service_id if editing.
-                                            // If creating new, warn user.
-                                            const serviceId = serviceToEdit?.id;
+                                            // If not editing an existing service, automatically save it first
                                             if (!serviceId) {
-                                                 toast({ title: "Save Required", description: "Please save the service before authenticating.", variant: "destructive" });
-                                                 return;
+                                                const isValid = await form.trigger();
+                                                if (!isValid) {
+                                                    toast({
+                                                        title: "Validation Error",
+                                                        description: "Please fix the form errors before authenticating.",
+                                                        variant: "destructive"
+                                                    });
+                                                    return;
+                                                }
+
+                                                const values = form.getValues();
+                                                const configToSave = constructConfig(values);
+
+                                                try {
+                                                    await apiClient.registerService(configToSave);
+                                                    toast({
+                                                        title: "Service Registered",
+                                                        description: `Draft configuration saved. Proceeding to authenticate...`
+                                                    });
+                                                    serviceId = configToSave.name; // Use name as ID since it's uniquely generated/hashed server-side
+
+                                                    // Give the backend a brief moment to stabilize the new registration
+                                                    await new Promise(r => setTimeout(r, 500));
+                                                } catch (e: any) {
+                                                    toast({
+                                                        title: "Registration Failed",
+                                                        description: e.message || "Failed to save the service before authenticating.",
+                                                        variant: "destructive"
+                                                    });
+                                                    return;
+                                                }
                                             }
 
                                             const redirectUrl = `${window.location.origin}/oauth/callback`;
