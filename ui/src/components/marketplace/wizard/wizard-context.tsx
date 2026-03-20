@@ -4,7 +4,7 @@
  */
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { UpstreamServiceConfig } from '@/lib/client';
+import { UpstreamServiceConfig, CallHook } from '@/lib/client';
 
 /**
  * WizardStep defines the sequence of steps in the configuration wizard.
@@ -26,7 +26,7 @@ export interface WizardState {
     // Temporary state for the wizard that might not map 1:1 to config yet
     selectedTemplateId?: string;
     params: Record<string, string>; // Key-Value pairs for parameters/env vars
-    webhooks: any[]; // TODO: Define webhook type
+    webhooks: CallHook[];
     transformers: any[];
     authType?: 'local' | 'new';
     authCredentialId?: string;
