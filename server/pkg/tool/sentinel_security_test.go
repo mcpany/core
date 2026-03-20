@@ -55,7 +55,7 @@ func TestSentinelRCE_AwkInShell(t *testing.T) {
 	inputBytes, _ := json.Marshal(inputMap)
 
 	req := &ExecutionRequest{
-		ToolName: "awk_wrapper",
+		ToolName:   "awk_wrapper",
 		ToolInputs: inputBytes,
 	}
 
@@ -111,7 +111,7 @@ func TestSentinelRCE_Backticks(t *testing.T) {
 	inputBytes, _ := json.Marshal(inputMap)
 
 	req := &ExecutionRequest{
-		ToolName: "perl_wrapper",
+		ToolName:   "perl_wrapper",
 		ToolInputs: inputBytes,
 	}
 
@@ -166,7 +166,7 @@ func TestSentinelRCE_WhitespaceEvasion(t *testing.T) {
 	inputBytes, _ := json.Marshal(inputMap)
 
 	req := &ExecutionRequest{
-		ToolName: "awk_wrapper_evasion",
+		ToolName:   "awk_wrapper_evasion",
 		ToolInputs: inputBytes,
 	}
 
@@ -225,7 +225,7 @@ func TestSentinelRCE_QuoteParsingBypass(t *testing.T) {
 	inputBytes, _ := json.Marshal(inputMap)
 
 	req := &ExecutionRequest{
-		ToolName: "vulnerable_template",
+		ToolName:   "vulnerable_template",
 		ToolInputs: inputBytes,
 	}
 
