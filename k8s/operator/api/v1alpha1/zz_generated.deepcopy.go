@@ -500,3 +500,4 @@ func (in *ToolStatus) DeepCopy() *ToolStatus {
 	in.DeepCopyInto(out)
 	return out
 }
+// just empty modification
