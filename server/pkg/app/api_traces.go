@@ -107,6 +107,15 @@ func toTrace(entry audit.Entry) *Trace {
 
 func (a *Application) handleTraces() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodDelete {
+			if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
+				a.standardMiddlewares.Audit.ClearHistory()
+			}
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{}`))
+			return
+		}
+
 		if r.Method != http.MethodGet {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return

@@ -67,7 +67,7 @@ test.describe('Trace Viewer', () => {
     }
 
     // Wait for traces to load
-    await page.waitForSelector('text=Loading traces...', { state: 'detached' });
+    await page.waitForSelector('.space-y-2', { state: 'detached' }); // wait for skeleton to disappear
 
     // Check if list is populated (should have at least one trace from mock)
     // Check if list is populated (should have at least one trace from mock)
@@ -86,11 +86,12 @@ test.describe('Trace Viewer', () => {
     await expect(page.locator('text=Root Input')).toBeVisible();
   });
 
+
   test('should filter traces', async ({ page }) => {
     await page.goto('/traces');
 
     // Wait for traces
-    await page.waitForSelector('text=Loading traces...', { state: 'detached' });
+    await page.waitForSelector('.space-y-2', { state: 'detached' });
 
     // Type in search box
     await page.fill('input[placeholder="Search traces..."]', 'calculate');
@@ -104,7 +105,7 @@ test.describe('Trace Viewer', () => {
     await page.goto('/traces');
 
     // Ensure we have a trace to click
-    await page.waitForSelector('text=Loading traces...', { state: 'detached' });
+    await page.waitForSelector('.space-y-2', { state: 'detached' });
     const firstTrace = page.locator('button.flex.flex-col').first();
     await expect(firstTrace).toBeVisible();
     await firstTrace.click();
