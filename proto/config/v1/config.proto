@@ -145,6 +145,16 @@ message GlobalSettings {
   AlertConfig alerts = 27 [json_name = "alerts"];
   // Smart Recovery configuration.
   SmartRecoveryConfig smart_recovery = 28 [json_name = "smart_recovery"];
+  // SSO configuration.
+  SSOConfig sso = 29 [json_name = "sso"];
+}
+
+// SSOConfig configures Single Sign-On integration.
+message SSOConfig {
+  // Whether SSO is enabled.
+  bool enabled = 1 [json_name = "enabled"];
+  // The URL of the Identity Provider.
+  string idp_url = 2 [json_name = "idp_url"];
 }
 
 // SmartRecoveryConfig configures automatic error recovery using an LLM.

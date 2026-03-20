@@ -1651,6 +1651,18 @@ func (a *Application) runServerMode(
 		authMiddleware = a.createAuthMiddleware(false, trustProxy)
 	}
 
+	// Set up SSO Middleware if configured
+	var ssoMiddleware func(http.Handler) http.Handler
+	if a.GlobalSettings != nil && a.GlobalSettings.GetSso() != nil {
+		ssoCfg := a.GlobalSettings.GetSso()
+		if ssoCfg.GetEnabled() {
+			ssoMiddleware = middleware.SSOMiddleware(middleware.SSOConfig{
+				Enabled: true,
+				IDPURL:  ssoCfg.GetIdpUrl(),
+			})
+		}
+	}
+
 	mux := http.NewServeMux()
 
 	// UI Handler
@@ -2155,6 +2167,10 @@ func (a *Application) runServerMode(
 
 	// Prepare final handler (Mux wrapped with Content Optimizer and Debugger)
 	var finalHandler http.Handler = mux
+
+	if ssoMiddleware != nil {
+		finalHandler = ssoMiddleware(finalHandler)
+	}
 
 	if standardMiddlewares != nil {
 		// Context Optimizer (inner)
