@@ -3,7 +3,7 @@
 **Created:** 2026-04-19
 
 ## 1. Context and Scope
-As agent swarms grow deeper and more autonomous, the "Attestation Tax"--the latency introduced by performing a hardware-bound security check for every single tool call--has become the primary bottleneck for real-time agentic reasoning. The Distributed Trust Lease Broker implements the UACO v2.5 "Low-Frequency Trust Attestation" (LFTA) standard, allowing agents to "lease" an attested security posture for a time-bound burst of activity.
+As agent swarms grow deeper and more autonomous, the "Attestation Tax"—the latency introduced by performing a hardware-bound security check for every single tool call—has become the primary bottleneck for real-time agentic reasoning. The Distributed Trust Lease Broker implements the UACO v2.5 "Low-Frequency Trust Attestation" (LFTA) standard, allowing agents to "lease" an attested security posture for a time-bound burst of activity.
 
 ## 2. Goals & Non-Goals
 * **Goals:**

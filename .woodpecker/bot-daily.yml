@@ -22,7 +22,7 @@ steps:
         echo "Closing PRs updated before $DATE_THRESHOLD..."
         gh pr list --repo $CI_REPO --search "state:open updated:<$DATE_THRESHOLD" --limit 1000 --json number --jq '.[].number' | while read pr_number; do
           echo "Closing stale PR #$pr_number"
-          gh pr comment $pr_number --repo $CI_REPO --body " **Automated Cleanup:** This PR has been inactive for more than $DAYS_THRESHOLD days. Closing it now."
+          gh pr comment $pr_number --repo $CI_REPO --body "🤖 **Automated Cleanup:** This PR has been inactive for more than $DAYS_THRESHOLD days. Closing it now."
           gh pr close $pr_number --repo $CI_REPO
         done
 
