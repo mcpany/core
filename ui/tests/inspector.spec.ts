@@ -68,8 +68,8 @@ test.describe('Inspector Page', () => {
     // After the POST succeeds, inject the trace into the active WebSocket
     // connection.
     if (wsSend) {
-      // @ts-ignore
-      wsSend(JSON.stringify(MOCK_TRACE));
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+      (wsSend as Function)(JSON.stringify(MOCK_TRACE));
     }
 
     // Wait briefly to allow React state to update based on WebSocket message
@@ -108,8 +108,8 @@ test.describe('Inspector Page', () => {
     await expect(page.getByRole('heading', { name: 'Inspector' })).toBeVisible();
 
     if (wsSend) {
-      // @ts-ignore
-      wsSend(JSON.stringify(MOCK_TRACE));
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+      (wsSend as Function)(JSON.stringify(MOCK_TRACE));
     }
 
     const row = page.locator('text=orchestrator-task').first();
