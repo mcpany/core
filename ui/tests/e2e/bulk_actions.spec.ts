@@ -8,35 +8,32 @@ import { test, expect } from '@playwright/test';
 test.describe('Bulk Service Actions', () => {
 
   const testServices = [
-    { id: "service-1-bulk", name: "service-1-bulk", version: "1.0.0", http_service: { address: "http://localhost:8001" }, disable: false, tags: ["prod"] },
-    { id: "service-2-bulk", name: "service-2-bulk", version: "1.0.0", http_service: { address: "http://localhost:8002" }, disable: true, tags: ["dev"] },
-    { id: "service-3-bulk", name: "service-3-bulk", version: "1.0.0", http_service: { address: "http://localhost:8003" }, disable: false, tags: ["prod"] }
+    { id: "service-1-bulk", name: "service-1-bulk", version: "1.0.0", disable: false, tags: ["prod"], http_service: { address: "http://localhost:8001" } },
+    { id: "service-2-bulk", name: "service-2-bulk", version: "1.0.0", disable: true, tags: ["dev"], http_service: { address: "http://localhost:8002" } },
+    { id: "service-3-bulk", name: "service-3-bulk", version: "1.0.0", disable: false, tags: ["prod"], http_service: { address: "http://localhost:8003" } }
   ];
 
-  test.beforeEach(async ({ page }) => {
-    // We will use Playwright's route interception to mock the API response,
-    // since the real backend might not be consistently available in the CI pipeline
-    // or might have missing schema dependencies (e.g. protoc issues during build).
-    // The main focus of this test is the UI behavior of the bulk actions and AlertDialogs.
+  test.beforeEach(async ({ request }) => {
+    // Seed real services to backend
+    for (const svc of testServices) {
+      await request.delete(`/api/v1/services/${svc.name}`, { headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' } }).catch(() => {});
 
-    await page.route('**/api/v1/services', async route => {
-        if (route.request().method() === 'GET') {
-            await route.fulfill({
-                status: 200,
-                json: testServices
-            });
-        } else {
-            await route.continue();
-        }
-    });
+      const res = await request.post('/api/v1/services', {
+        data: svc,
+        headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' }
+      });
+      if (!res.ok()) {
+          console.error(`Failed to seed service: ${await res.text()}`);
+      }
+      expect(res.ok()).toBeTruthy();
+    }
+  });
 
-    await page.route('**/doctor', async route => {
-        await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ status: 'healthy', checks: {} })
-        });
-    });
+  test.afterEach(async ({ request }) => {
+    // Clean up
+    for (const svc of testServices) {
+      await request.delete(`/api/v1/services/${svc.name}`, { headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' } }).catch(() => {});
+    }
   });
 
   test('should select all services and show bulk actions', async ({ page }) => {
@@ -78,18 +75,7 @@ test.describe('Bulk Service Actions', () => {
      await expect(page.getByText('2 selected')).toBeVisible();
   });
 
-  test('should toggle services', async ({ page }) => {
-      // Mock the toggle API
-      const toggleRequests: string[] = [];
-      await page.route('**/api/v1/services/*', async route => {
-          if (route.request().method() === 'PUT') {
-              toggleRequests.push(route.request().url());
-              await route.fulfill({ status: 200, json: {} });
-          } else {
-              await route.continue();
-          }
-      });
-
+  test('should toggle services', async ({ page, request }) => {
       await page.goto('/upstream-services');
       await expect(page.getByText('service-1-bulk')).toBeVisible();
 
@@ -103,24 +89,19 @@ test.describe('Bulk Service Actions', () => {
       // Wait for the UI toast
       await expect(page.getByText('Services Disabled')).toBeVisible();
 
-      // Verify requests were made
-      await expect.poll(() => toggleRequests.length).toBe(2);
-      expect(toggleRequests.some(url => url.includes('service-1-bulk'))).toBeTruthy();
-      expect(toggleRequests.some(url => url.includes('service-3-bulk'))).toBeTruthy();
+      // Allow a brief moment for state sync to database before asserting
+      await page.waitForTimeout(500);
+
+      const s1 = await request.get('/api/v1/services/service-1-bulk', { headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' } });
+      const s1Data = await s1.json();
+      expect(s1Data.service.disable).toBeTruthy();
+
+      const s3 = await request.get('/api/v1/services/service-3-bulk', { headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' } });
+      const s3Data = await s3.json();
+      expect(s3Data.service.disable).toBeTruthy();
   });
 
-  test('should delete services via bulk action', async ({ page }) => {
-      // Mock the delete API
-      const deleteRequests: string[] = [];
-      await page.route('**/api/v1/services/*', async route => {
-          if (route.request().method() === 'DELETE') {
-            deleteRequests.push(route.request().url());
-            await route.fulfill({ status: 200 });
-          } else {
-            await route.continue();
-          }
-      });
-
+  test('should delete services via bulk action', async ({ page, request }) => {
       await page.goto('/upstream-services');
       await expect(page.getByText('service-1-bulk')).toBeVisible();
 
@@ -146,9 +127,9 @@ test.describe('Bulk Service Actions', () => {
       // Wait for success toast
       await expect(page.getByText('Services Deleted')).toBeVisible();
 
-      // Verify delete API was called
-      await expect.poll(() => deleteRequests.length).toBe(1);
-      expect(deleteRequests[0]).toContain('service-2-bulk');
+      // Verify request in backend
+      const res = await request.get('/api/v1/services/service-2-bulk', { headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' } });
+      expect(res.status()).toBe(404);
   });
 
 });
