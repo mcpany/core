@@ -817,32 +817,31 @@ func (a *Application) handleTools(store storage.Storage) http.HandlerFunc {
 
 func (a *Application) setToolDisableFlag(service *configv1.UpstreamServiceConfig, toolName string, disable bool) error {
 	var toolList []*configv1.ToolDefinition
-	switch cfg := service.GetServiceConfig().(type) {
-	case *configv1.UpstreamServiceConfig_McpService:
-		toolList = cfg.McpService.Tools
-	case *configv1.UpstreamServiceConfig_HttpService:
-		toolList = cfg.HttpService.Tools
-	case *configv1.UpstreamServiceConfig_GrpcService:
-		toolList = cfg.GrpcService.Tools
-	case *configv1.UpstreamServiceConfig_OpenapiService:
-		toolList = cfg.OpenapiService.Tools
-	case *configv1.UpstreamServiceConfig_CommandLineService:
-		toolList = cfg.CommandLineService.Tools
-	case *configv1.UpstreamServiceConfig_FilesystemService:
-		toolList = cfg.FilesystemService.Tools
-	case *configv1.UpstreamServiceConfig_VectorService:
-		toolList = cfg.VectorService.Tools
-	case *configv1.UpstreamServiceConfig_BrowserService:
-		toolList = cfg.BrowserService.Tools
-	case *configv1.UpstreamServiceConfig_WebsocketService:
-		toolList = cfg.WebsocketService.Tools
-	case *configv1.UpstreamServiceConfig_WebrtcService:
-		toolList = cfg.WebrtcService.Tools
-	case *configv1.UpstreamServiceConfig_GraphqlService:
-		toolList = cfg.GraphqlService.Tools
-	case *configv1.UpstreamServiceConfig_SqlService:
-		toolList = cfg.SqlService.Tools
-	default:
+	if mcp := service.GetMcpService(); mcp != nil {
+		toolList = mcp.Tools
+	} else if httpSvc := service.GetHttpService(); httpSvc != nil {
+		toolList = httpSvc.Tools
+	} else if grpcSvc := service.GetGrpcService(); grpcSvc != nil {
+		toolList = grpcSvc.Tools
+	} else if openapiSvc := service.GetOpenapiService(); openapiSvc != nil {
+		toolList = openapiSvc.Tools
+	} else if cmdSvc := service.GetCommandLineService(); cmdSvc != nil {
+		toolList = cmdSvc.Tools
+	} else if fsSvc := service.GetFilesystemService(); fsSvc != nil {
+		toolList = fsSvc.Tools
+	} else if vectorSvc := service.GetVectorService(); vectorSvc != nil {
+		toolList = vectorSvc.Tools
+	} else if browserSvc := service.GetBrowserService(); browserSvc != nil {
+		toolList = browserSvc.Tools
+	} else if websocketSvc := service.GetWebsocketService(); websocketSvc != nil {
+		toolList = websocketSvc.Tools
+	} else if webrtcSvc := service.GetWebrtcService(); webrtcSvc != nil {
+		toolList = webrtcSvc.Tools
+	} else if graphqlSvc := service.GetGraphqlService(); graphqlSvc != nil {
+		toolList = graphqlSvc.Tools
+	} else if sqlSvc := service.GetSqlService(); sqlSvc != nil {
+		toolList = sqlSvc.Tools
+	} else {
 		return fmt.Errorf("unknown service config type")
 	}
 
@@ -861,31 +860,30 @@ func (a *Application) setToolDisableFlag(service *configv1.UpstreamServiceConfig
 			Name:    toolName,
 			Disable: disable,
 		}
-		switch cfg := service.GetServiceConfig().(type) {
-		case *configv1.UpstreamServiceConfig_McpService:
-			cfg.McpService.Tools = append(cfg.McpService.Tools, newTool)
-		case *configv1.UpstreamServiceConfig_HttpService:
-			cfg.HttpService.Tools = append(cfg.HttpService.Tools, newTool)
-		case *configv1.UpstreamServiceConfig_GrpcService:
-			cfg.GrpcService.Tools = append(cfg.GrpcService.Tools, newTool)
-		case *configv1.UpstreamServiceConfig_OpenapiService:
-			cfg.OpenapiService.Tools = append(cfg.OpenapiService.Tools, newTool)
-		case *configv1.UpstreamServiceConfig_CommandLineService:
-			cfg.CommandLineService.Tools = append(cfg.CommandLineService.Tools, newTool)
-		case *configv1.UpstreamServiceConfig_FilesystemService:
-			cfg.FilesystemService.Tools = append(cfg.FilesystemService.Tools, newTool)
-		case *configv1.UpstreamServiceConfig_VectorService:
-			cfg.VectorService.Tools = append(cfg.VectorService.Tools, newTool)
-		case *configv1.UpstreamServiceConfig_BrowserService:
-			cfg.BrowserService.Tools = append(cfg.BrowserService.Tools, newTool)
-		case *configv1.UpstreamServiceConfig_WebsocketService:
-			cfg.WebsocketService.Tools = append(cfg.WebsocketService.Tools, newTool)
-		case *configv1.UpstreamServiceConfig_WebrtcService:
-			cfg.WebrtcService.Tools = append(cfg.WebrtcService.Tools, newTool)
-		case *configv1.UpstreamServiceConfig_GraphqlService:
-			cfg.GraphqlService.Tools = append(cfg.GraphqlService.Tools, newTool)
-		case *configv1.UpstreamServiceConfig_SqlService:
-			cfg.SqlService.Tools = append(cfg.SqlService.Tools, newTool)
+		if mcp := service.GetMcpService(); mcp != nil {
+			mcp.Tools = append(mcp.Tools, newTool)
+		} else if httpSvc := service.GetHttpService(); httpSvc != nil {
+			httpSvc.Tools = append(httpSvc.Tools, newTool)
+		} else if grpcSvc := service.GetGrpcService(); grpcSvc != nil {
+			grpcSvc.Tools = append(grpcSvc.Tools, newTool)
+		} else if openapiSvc := service.GetOpenapiService(); openapiSvc != nil {
+			openapiSvc.Tools = append(openapiSvc.Tools, newTool)
+		} else if cmdSvc := service.GetCommandLineService(); cmdSvc != nil {
+			cmdSvc.Tools = append(cmdSvc.Tools, newTool)
+		} else if fsSvc := service.GetFilesystemService(); fsSvc != nil {
+			fsSvc.Tools = append(fsSvc.Tools, newTool)
+		} else if vectorSvc := service.GetVectorService(); vectorSvc != nil {
+			vectorSvc.Tools = append(vectorSvc.Tools, newTool)
+		} else if browserSvc := service.GetBrowserService(); browserSvc != nil {
+			browserSvc.Tools = append(browserSvc.Tools, newTool)
+		} else if websocketSvc := service.GetWebsocketService(); websocketSvc != nil {
+			websocketSvc.Tools = append(websocketSvc.Tools, newTool)
+		} else if webrtcSvc := service.GetWebrtcService(); webrtcSvc != nil {
+			webrtcSvc.Tools = append(webrtcSvc.Tools, newTool)
+		} else if graphqlSvc := service.GetGraphqlService(); graphqlSvc != nil {
+			graphqlSvc.Tools = append(graphqlSvc.Tools, newTool)
+		} else if sqlSvc := service.GetSqlService(); sqlSvc != nil {
+			sqlSvc.Tools = append(sqlSvc.Tools, newTool)
 		}
 	}
 
