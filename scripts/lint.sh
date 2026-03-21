@@ -37,11 +37,21 @@ fi
 if [ "$CI" = "true" ] || [ "$GITHUB_ACTIONS" = "true" ]; then
     export GOGC=10
     export GOMEMLIMIT=512MiB
-    "$GOLANGCI_LINT_BIN" run --concurrency 1 --timeout 30m ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
+    # Split directories into separate runs to reduce peak memory usage
+    for dir in "cmd" "pkg" "tests" "examples"; do
+        if [ -d "server/$dir" ]; then
+            "$GOLANGCI_LINT_BIN" run --concurrency 1 --timeout 30m ./server/$dir/...
+        fi
+    done
 else
     export GOGC=10
     export GOMEMLIMIT=512MiB
-    "$GOLANGCI_LINT_BIN" run --concurrency 1 --timeout 30m --fix ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
+    # Split directories into separate runs to reduce peak memory usage
+    for dir in "cmd" "pkg" "tests" "examples"; do
+        if [ -d "server/$dir" ]; then
+            "$GOLANGCI_LINT_BIN" run --concurrency 1 --timeout 30m --fix ./server/$dir/...
+        fi
+    done
 fi
 
 echo "Running pre-commit..."
