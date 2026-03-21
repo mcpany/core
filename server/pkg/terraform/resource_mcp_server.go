@@ -17,6 +17,8 @@ import (
 // This would map to hashicorp/terraform-plugin-sdk in a real provider.
 //
 // Summary: Represents a ResourceMCPServer.
+var httpClient = &http.Client{Timeout: 10 * time.Second}
+
 type ResourceMCPServer struct {
 	Name    string `json:"name"`
 	Port    int    `json:"port"`
@@ -87,7 +89,7 @@ func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) 
 		return fmt.Errorf("request creation failed: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := (&http.Client{Timeout: 10 * time.Second}).Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("request failed: %w", err)
 	}
@@ -121,7 +123,7 @@ func Read(ctx context.Context, serverURL string, name string) (*ResourceMCPServe
 	if err != nil {
 		return nil, fmt.Errorf("request creation failed: %w", err)
 	}
-	resp, err := (&http.Client{Timeout: 10 * time.Second}).Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %w", err)
 	}
