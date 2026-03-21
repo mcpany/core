@@ -10,9 +10,8 @@ import { seedPrompts, cleanupPrompts, seedUser, cleanupUser } from './test-data'
 test.describe('Prompts Workbench', () => {
   test.beforeEach(async ({ page, request }) => {
       await seedPrompts(request);
-      await seedUser(request, "e2e-admin-core");
 
-      // Login
+      // Login using the known e2e-admin-core user seeded by default test-data
       await page.goto('/login');
       await page.fill('input[name="username"]', 'e2e-admin-core');
       await page.fill('input[name="password"]', 'password');
@@ -24,7 +23,6 @@ test.describe('Prompts Workbench', () => {
 
   test.afterEach(async ({ request }) => {
       await cleanupPrompts(request);
-      await cleanupUser(request, "e2e-admin-core");
   });
 
   test('should load prompts list and allow selection', async ({ page }) => {
