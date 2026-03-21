@@ -39,6 +39,15 @@ type ResourceMCPServer struct {
 //
 // Summary: Executes Schema operation.
 //
+// Parameters:
+//   - None
+//
+// Returns:
+//   - map[string]interface{}: The resulting schema map.
+//
+// Errors:
+//   - None
+//
 // Side Effects:
 //   - None.
 func Schema() map[string]interface{} {
@@ -77,12 +86,23 @@ func Schema() map[string]interface{} {
 //   - Returns an error if the HTTP request fails or the status is not created/ok.
 //
 // Side Effects:
-//   - None
+//   - Makes an HTTP POST request to the serverURL.
 //
 // Summary: Initializes Create operation.
 //
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - serverURL (string): The URL of the MCP server API.
+//   - resource (*ResourceMCPServer): The resource to create.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the HTTP request fails or the status is not created/ok.
+//
 // Side Effects:
-//   - None.
+//   - Makes an HTTP POST request to the serverURL.
 func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) error {
 	payload, err := json.Marshal(resource)
 	if err != nil {
@@ -119,12 +139,24 @@ func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) 
 //   - Returns an error if the HTTP request fails or the status is not ok.
 //
 // Side Effects:
-//   - None
+//   - Makes an HTTP GET request to the serverURL.
 //
 // Summary: Retrieves Read operation.
 //
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - serverURL (string): The URL of the MCP server API.
+//   - name (string): The name of the resource.
+//
+// Returns:
+//   - *ResourceMCPServer: The resulting *ResourceMCPServer.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the HTTP request fails or the status is not ok.
+//
 // Side Effects:
-//   - None.
+//   - Makes an HTTP GET request to the serverURL.
 func Read(ctx context.Context, serverURL string, name string) (*ResourceMCPServer, error) {
 	req, err := http.NewRequestWithContext(ctx, "GET", serverURL+"/api/v1/servers/"+name, nil) //nolint:gosec
 	if err != nil {
