@@ -284,7 +284,8 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 		if a.standardMiddlewares == nil || a.standardMiddlewares.Audit == nil {
 			// If audit is disabled, just close or keep open but send nothing?
 			// Better to send a close message.
-			_ = conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Audit disabled"), time.Now().Add(time.Second))
+			closeMsg := websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Audit disabled")
+			_ = conn.WriteControl(websocket.CloseMessage, closeMsg, time.Now().Add(time.Second))
 			return
 		}
 
