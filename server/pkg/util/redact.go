@@ -36,10 +36,6 @@ var (
 	// sensitiveStartCharBitmap is a bitmap for fast checking if a character is a start char.
 	// It's faster than bytes.IndexAny for short strings because it avoids overhead.
 	sensitiveStartCharBitmap [256]bool
-
-	// allSensitiveStartChars is a string containing all characters that can start a sensitive key.
-	// Used for optimized scanning with bytes.IndexAny.
-	allSensitiveStartChars string
 )
 
 func init() {
@@ -75,15 +71,6 @@ func init() {
 		upper := c - 32
 		sensitiveStartCharBitmap[upper] = true
 	}
-
-	// Build allSensitiveStartChars
-	var sb bytes.Buffer
-	for c := 0; c < 256; c++ {
-		if sensitiveStartCharBitmap[c] {
-			sb.WriteByte(byte(c))
-		}
-	}
-	allSensitiveStartChars = sb.String()
 
 	// Build next char masks
 	for start, keys := range sensitiveKeyGroups {
