@@ -638,3 +638,8 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+### Upcoming: [2026-06-25]
+- [ ] **[P0] Subagent Lineage Auditor**: (2026-06-25) Forensic UI for visualizing hardware-attested RMRA tokens and sub-process lineage.
+- [ ] **[P0] Attention-Density Monitor**: (2026-06-25) Real-time heatmap of LLM attention layer locking and noise-injection alerts.
+- [ ] **[P0] Atomic Shard Synchronization Viewer**: (2026-06-25) Visualizer for lock-free state streaming and shard-level consistency status.

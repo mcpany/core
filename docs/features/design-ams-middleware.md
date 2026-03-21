@@ -62,3 +62,4 @@ The AMS Middleware solves this by sharding the inter-agent mailbox based on the 
 
 ## 7. Evolutionary Changelog
 * **2026-03-20:** Initial Document Creation.
+* **2026-06-25:** Upgraded to support **Atomic Shard Synchronization** (Claude Code v2.5.0 compliance). Shards now facilitate lock-free state streaming for high-density teammate swarms.

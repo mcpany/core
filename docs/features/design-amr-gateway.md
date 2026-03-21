@@ -49,3 +49,4 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+* **2026-06-25:** Document status promoted to **Approved** following the OpenClaw v3.2.0 GA release. Added requirements for RIV (Recursive Integrity Verification) integration to support deep delegation chains.

@@ -1461,3 +1461,15 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Recursive Mission-Root Attestation (RMRA) Provider**: (P0) Advanced security service mandating hardware-bound re-attestation of sub-process lineage back to the primary mission-root at each turn.
+- **Attention-Density Guard (ADG)**: (P0) Cognitive security service utilizing hardware-bound attention-locking headers to "pin" mission-critical intent fragments at the LLM attention layer.
+- **Stylometric Mesh Sovereignty (SMS) Provider**: (P0) Behavioral security middleware for the AID Hub that performs real-time stylometric analysis to detect mimicry-based intent hijacking.
+- **Atomic Shard Synchronization Bridge**: (P0) Scaling extension for the AMS that facilitates non-blocking state streaming via granular, task-bound shards.
+
+### Priority Shifts
+- **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Atomic Shard Synchronization** to support high-density parallel swarms.
+- **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
