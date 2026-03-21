@@ -18,30 +18,36 @@ import (
 //
 // It is used to categorize findings based on their impact and urgency.
 //
-// Summary: Represents a Severity.
+// Summary: Represents a Severity level.
 type Severity int
 
 const (
-	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
-	// Summary: Defines Erro.
+	// Error indicates a critical issue that must be fixed.
+	// Summary: Defines the Error severity level.
 	Error Severity = iota
-	// Warning indicates a potential issue or best practice violation that should be addressed.
-	// Summary: Defines Warnin.
+	// Warning indicates a potential issue or best practice violation.
+	// Summary: Defines the Warning severity level.
 	Warning
-	// Info indicates a suggestion or informational message for optimization or clarity.
-	// Summary: Defines Inf.
+	// Info indicates a suggestion or informational message.
+	// Summary: Defines the Info severity level.
 	Info
 )
 
 // String returns the string representation of the severity.
 //
-// It converts the Severity enum to its string counterpart (ERROR, WARNING, INFO).
-//
 // Parameters:
-//   - s: The severity level to convert.
+//   - s (Severity): The severity level to convert.
 //
 // Returns:
-//   - The string representation of the severity.
+//   - string: The string representation (e.g., "ERROR").
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes String operation.
 func (s Severity) String() string {
 	switch s {
 	case Error:
@@ -57,29 +63,35 @@ func (s Severity) String() string {
 
 // Result represents a single linting finding.
 //
-// It encapsulates all details about a detected issue, including its severity, location, and description.
+// It encapsulates details about a detected issue.
 //
-// Summary: Represents a Result.
+// Summary: Represents a linting finding.
 type Result struct {
-	// Severity indicates how critical the finding is (Error, Warning, Info).
+	// Severity indicates how critical the finding is.
 	Severity Severity
-	// ServiceName is the name of the service associated with the finding, if any.
+	// ServiceName is the name of the service associated with the finding.
 	ServiceName string
 	// Message is the descriptive text of the finding.
 	Message string
-	// Path is the location in the configuration where the issue was found (e.g., "upstream_services[0].auth").
+	// Path is the location in the configuration where the issue was found.
 	Path string
 }
 
-// String returns the string representation of the result.
-//
-// It formats the result into a human-readable string suitable for CLI output.
+// String returns the human-readable representation of the result.
 //
 // Parameters:
-//   - r: The linting finding to format.
+//   - r (Result): The result instance to format.
 //
 // Returns:
-//   - A formatted string containing severity, service, path, and message.
+//   - string: A formatted string containing result details.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes String operation.
 func (r Result) String() string {
 	pathStr := ""
 	if r.Path != "" {
@@ -94,9 +106,7 @@ func (r Result) String() string {
 
 // Linter performs static analysis on the configuration.
 //
-// It holds the configuration to be analyzed and provides methods to execute various checks.
-//
-// Summary: Represents a Linter.
+// Summary: Represents a configuration linter.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
@@ -104,31 +114,41 @@ type Linter struct {
 // NewLinter creates a new Linter instance.
 //
 // Parameters:
-//   - cfg: The server configuration to be linted.
+//   - cfg (*configv1.McpAnyServerConfig): The configuration to analyze.
 //
 // Returns:
-//   - A new Linter instance initialized with the provided configuration.
+//   - *Linter: A new Linter instance.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewLinter operation.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
 
-// Run executes all linting checks.
-//
-// It aggregates results from multiple check categories including standard
-// validation, secret usage, shell injection risks, insecure HTTP, and cache
-// settings.
+// Run executes all configured linting checks.
 //
 // Parameters:
-//   - ctx: The context for the request.
+//   - ctx (context.Context): The context for the operation.
 //
 // Returns:
-//   - A list of linting findings.
-//   - An error if the linting process encounters a fatal issue.
+//   - []Result: A slice of linting findings.
+//   - error: Encounters a fatal issue.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Run operation.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
-	// Pre-allocate to avoid performance warnings, though initial size is a guess.
 	results := make([]Result, 0, 10)
 
-	// 1. Run standard validation first (Errors)
 	validationErrors := config.Validate(ctx, l.cfg, config.Server)
 	for _, err := range validationErrors {
 		results = append(results, Result{
@@ -138,16 +158,9 @@ func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 		})
 	}
 
-	// 2. Check for Plain Text Secrets (Warning)
 	results = append(results, l.checkPlainTextSecrets()...)
-
-	// 3. Check for Shell Injection Risks (Warning)
 	results = append(results, l.checkShellInjection()...)
-
-	// 4. Check for Insecure HTTP (Warning)
 	results = append(results, l.checkInsecureHTTP()...)
-
-	// 5. Check for Missing Cache TTL (Info)
 	results = append(results, l.checkCacheSettings()...)
 
 	return results, nil
@@ -164,8 +177,9 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 			results = append(results, Result{
 				Severity:    Warning,
 				ServiceName: serviceName,
-				Message:     "Secret is stored in plain text. Use environment variables or file references for better security.",
-				Path:        path,
+				Message: "Secret is stored in plain text. Use environment " +
+					"variables or file references for better security.",
+				Path: path,
 			})
 		}
 	}
@@ -173,27 +187,32 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 	for _, s := range l.cfg.GetUpstreamServices() {
 		if auth := s.GetUpstreamAuth(); auth != nil {
 			if apiKey := auth.GetApiKey(); apiKey != nil {
-				checkSecret(apiKey.GetValue(), "upstream_auth.api_key.value", s.GetName())
+				checkSecret(apiKey.GetValue(), "upstream_auth.api_key.value",
+					s.GetName())
 			}
 			if bearer := auth.GetBearerToken(); bearer != nil {
-				checkSecret(bearer.GetToken(), "upstream_auth.bearer_token.token", s.GetName())
+				checkSecret(bearer.GetToken(),
+					"upstream_auth.bearer_token.token", s.GetName())
 			}
 			if basic := auth.GetBasicAuth(); basic != nil {
-				checkSecret(basic.GetPassword(), "upstream_auth.basic_auth.password", s.GetName())
+				checkSecret(basic.GetPassword(),
+					"upstream_auth.basic_auth.password", s.GetName())
 			}
 			if oauth := auth.GetOauth2(); oauth != nil {
-				checkSecret(oauth.GetClientSecret(), "upstream_auth.oauth2.client_secret", s.GetName())
+				checkSecret(oauth.GetClientSecret(),
+					"upstream_auth.oauth2.client_secret", s.GetName())
 			}
 		}
 
-		// Check command env vars
 		if cmd := s.GetCommandLineService(); cmd != nil {
 			for k, v := range cmd.GetEnv() {
-				checkSecret(v, fmt.Sprintf("command_line_service.env[%s]", k), s.GetName())
+				checkSecret(v, fmt.Sprintf("command_line_service.env[%s]", k),
+					s.GetName())
 			}
 			if ce := cmd.GetContainerEnvironment(); ce != nil {
 				for k, v := range ce.GetEnv() {
-					checkSecret(v, fmt.Sprintf("command_line_service.container_environment.env[%s]", k), s.GetName())
+					checkSecret(v, fmt.Sprintf("command_line_service."+
+						"container_environment.env[%s]", k), s.GetName())
 				}
 			}
 		}
@@ -201,23 +220,21 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 		if mcp := s.GetMcpService(); mcp != nil {
 			if stdio := mcp.GetStdioConnection(); stdio != nil {
 				for k, v := range stdio.GetEnv() {
-					checkSecret(v, fmt.Sprintf("mcp_service.stdio.env[%s]", k), s.GetName())
+					checkSecret(v, fmt.Sprintf("mcp_service.stdio.env[%s]", k),
+						s.GetName())
 				}
 			}
 			if bundle := mcp.GetBundleConnection(); bundle != nil {
 				for k, v := range bundle.GetEnv() {
-					checkSecret(v, fmt.Sprintf("mcp_service.bundle.env[%s]", k), s.GetName())
+					checkSecret(v, fmt.Sprintf("mcp_service.bundle.env[%s]", k),
+						s.GetName())
 				}
 			}
 		}
 	}
 
-	// Check users
 	for _, u := range l.cfg.GetUsers() {
 		if auth := u.GetAuthentication(); auth != nil {
-			// Similar checks for user auth if applicable
-			// (Assuming user auth structure mirrors upstream auth mostly or has secrets)
-			// ...
 			_ = auth
 		}
 	}
@@ -245,8 +262,10 @@ func (l *Linter) checkShellInjection() []Result {
 					results = append(results, Result{
 						Severity:    Warning,
 						ServiceName: s.GetName(),
-						Message:     fmt.Sprintf("Command uses shell invocation (%q). Ensure inputs are properly sanitized to prevent shell injection.", pattern),
-						Path:        "command",
+						Message: fmt.Sprintf("Command uses shell invocation "+
+							"(%q). Ensure inputs are properly sanitized to "+
+							"prevent shell injection.", pattern),
+						Path: "command",
 					})
 				}
 			}
@@ -260,12 +279,14 @@ func (l *Linter) checkInsecureHTTP() []Result {
 	for _, s := range l.cfg.GetUpstreamServices() {
 		checkInsecure := func(url, path string) {
 			if url != "" && strings.HasPrefix(strings.ToLower(url), "http://") {
-				if !strings.Contains(url, "localhost") && !strings.Contains(url, "127.0.0.1") {
+				if !strings.Contains(url, "localhost") &&
+					!strings.Contains(url, "127.0.0.1") {
 					results = append(results, Result{
 						Severity:    Warning,
 						ServiceName: s.GetName(),
-						Message:     fmt.Sprintf("Service uses insecure HTTP connection to %q. Consider using HTTPS.", url),
-						Path:        path,
+						Message: fmt.Sprintf("Service uses insecure HTTP "+
+							"connection to %q. Consider using HTTPS.", url),
+						Path: path,
 					})
 				}
 			}
@@ -278,7 +299,8 @@ func (l *Linter) checkInsecureHTTP() []Result {
 			checkInsecure(openapi.GetSpecUrl(), "openapi_service.spec_url")
 		} else if mcp := s.GetMcpService(); mcp != nil {
 			if conn := mcp.GetHttpConnection(); conn != nil {
-				checkInsecure(conn.GetHttpAddress(), "mcp_service.http_connection.http_address")
+				checkInsecure(conn.GetHttpAddress(),
+					"mcp_service.http_connection.http_address")
 			}
 		}
 	}
@@ -296,8 +318,10 @@ func (l *Linter) checkCacheSettings() []Result {
 			results = append(results, Result{
 				Severity:    Info,
 				ServiceName: s.GetName(),
-				Message:     "Cache is configured but has 0 TTL (infinite or disabled depending on implementation). Verify this is intended.",
-				Path:        "cache.ttl",
+				Message: "Cache is configured but has 0 TTL (infinite or " +
+					"disabled depending on implementation). Verify this is " +
+					"intended.",
+				Path: "cache.ttl",
 			})
 		}
 	}
