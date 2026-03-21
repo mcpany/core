@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 
 /**
@@ -19,7 +21,6 @@ import {
   Sparkles,
   Loader2,
   ExternalLink,
-  Bug,
   Plus,
   Pencil,
   Trash2
