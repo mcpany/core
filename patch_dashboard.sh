@@ -1,1 +1,1 @@
-sed -i 's/it("opens customization menu", async () => { vi.useRealTimers(); /it("opens customization menu", async () => { /' ui/src/components/dashboard/dashboard-grid.test.tsx
+sed -i 's/it("toggles widget visibility via customization menu", async () => {/it("toggles widget visibility via customization menu", async () => { vi.useFakeTimers({ shouldAdvanceTime: true }); /' ui/src/components/dashboard/dashboard-grid.test.tsx
