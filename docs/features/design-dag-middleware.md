@@ -59,3 +59,9 @@ The Dynamic Attention Gating (DAG) Middleware acts as a cognitive stability laye
 
 ## 7. Evolutionary Changelog
 * **2026-06-13:** Initial Document Creation. Introducing Dynamic Attention Gating to counter Reasoning Entropy Exhaustion (REE) attacks.
+*   **2026-06-25: - HLAM Broker Integration**
+    **Context:** Gemini CLI v0.43.0 introduced Hardware-Locked Attention Masks (HLAM) for active context isolation.
+    **Architecture Adjustment:**
+    *   DAG (now evolving into the **ADG v3**) will act as the primary broker for HLAMs.
+    *   Implementing hardware-attested mask distribution to ensure that security-critical reasoning fragments are cryptographically "masked" from unauthorized subagents.
+    **Security Impact:** Moves from passive attention pinning to active, hardware-enforced isolation of sensitive reasoning paths.

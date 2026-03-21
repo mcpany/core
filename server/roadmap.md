@@ -149,6 +149,12 @@
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
 *   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Temporal Intent Aggregation (TIA) Hub**: Rolling-window semantic analysis to neutralize Semantic Intent Tunneling (SIT). (Added: 2026-06-25)
+*   **[P0] Lineage-Aware CRDT Shard Manager**: Hardware-attested lineage for CRDT state mutations in sharded mailboxes. (Added: 2026-06-25)
+*   **[P0] HLAM Broker for ADG**: Distribution of hardware-locked attention masks for active context isolation. (Added: 2026-06-25)
+*   **[P0] Multi-Modal Stylometric Anchoring (MMSA)**: Higher-dimensional identity service anchoring signatures to SVG/Audio traces. (Added: 2026-06-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

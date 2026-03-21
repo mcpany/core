@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+#### Upcoming (2026-06-25 Evolution)
+- [ ] **[P0] TIA Aggregation Monitor**: (2026-06-25) Real-time visualization of rolling-window intent reconstruction and SIT detection events.
+- [ ] **[P0] Lineage-Aware CRDT Inspector**: (2026-06-25) Forensic UI for visualizing hardware-attested lineage in shared mailbox shards.
+- [ ] **[P0] HLAM Distribution Dashboard**: (2026-06-25) UI for configuring and monitoring hardware-locked attention masks across the mesh.
+- [ ] **[P0] Multi-Modal Behavioral Profile Viewer**: (2026-06-25) Security workspace for visualizing MMSA-anchored identity signatures and multi-modal trace history.

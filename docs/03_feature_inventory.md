@@ -1461,3 +1461,15 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Temporal Intent Aggregation (TIA) Hub**: (P0) Semantic integrity service that performs rolling-window analysis across reasoning fragments to neutralize "SIT" (Semantic Intent Tunneling).
+- **Lineage-Aware CRDT Shard Manager**: (P0) Upgrade for the Sharded Mailbox Hub implementing hardware-attested lineage for every CRDT state mutation.
+- **HLAM Broker for ADG**: (P0) Security middleware facilitating the distribution of hardware-locked attention masks (HLAM) across heterogeneous meshes.
+- **Multi-Modal Stylometric Anchoring (MMSA)**: (P0) Advanced identity service anchoring behavioral signatures to multi-modal traces and mission-root manifests.
+
+### Priority Shifts
+- **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support the new **TIA-compliant** rolling-window aggregation.
+- **Lock-Free Sharded Mailbox Hub**: (Re-affirmed P0) Now elevated with the requirement for **Lineage-Aware CRDT** synchronization.

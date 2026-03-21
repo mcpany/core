@@ -61,3 +61,9 @@ MCP Any needs to provide a robust defense mechanism that performs active deconst
 ## 7. Evolutionary Changelog
 * **2026-06-06:** Initial Document Creation.
 * **2026-06-07:** Integration of Semantic Shadowing Mitigator (SSM) for stylometric and contextual consistency checks.
+* **2026-06-25: - Integration with Temporal Intent Aggregation (TIA) Hub**
+    **Context:** Today's market sync revealed the **Semantic Intent Tunneling (SIT)** exploit, which bypasses fragment-level deconstruction.
+    **Architecture Adjustment:**
+    *   ISD now forwards all deconstructed fragments to the **TIA Hub** for rolling-window analysis.
+    *   Validation is now asynchronous and collective; fragments are "provisionally clear" until the TIA window confirms aggregate intent alignment.
+    **Security Impact:** Prevents instruction smuggling through low-entropy reasoning fragments that appear benign in isolation but malicious when reconstructed.

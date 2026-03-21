@@ -59,3 +59,9 @@ The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-bl
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+*   **2026-06-25: - Implementation of Lineage-Aware CRDTs**
+    **Context:** Emerging "Teammate State-Splicing" attacks in sharded mailboxes demonstrate that lock-free coordination lacks sufficient attribution for state changes.
+    **Architecture Adjustment:**
+    *   LFMA now utilizes **Lineage-Aware CRDTs** (L-CRDTs). Every mutation in the task list must carry a hardware-attested **RIV (Recursive Integrity Verification)** token.
+    *   Conflicts are now resolved based on **Lineage Strength** (proximity to mission root) rather than simple wall-clock timestamps.
+    **Security Impact:** Prevents malicious specialists from injecting unauthorized tasks into the shared mailbox during lock-free synchronization.
