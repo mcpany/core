@@ -50,7 +50,54 @@ func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)
 	}
-	return nil, nil
+
+	// Fallback mock data if ExecuteFunc is not set.
+	// Returns a complex, nested JSON array structure for testing table rendering.
+	return []map[string]any{
+		{
+			"id":   1,
+			"name": "Alice Smith",
+			"contact": map[string]any{
+				"email": "alice@example.com",
+				"phone": map[string]any{
+					"mobile": "555-1234",
+					"home":   "555-5678",
+				},
+			},
+			"tags": []string{"admin", "active"},
+			"metadata": map[string]any{
+				"lastLogin": "2023-01-01T12:00:00Z",
+				"preferences": map[string]any{
+					"theme": "dark",
+					"notifications": true,
+				},
+			},
+		},
+		{
+			"id":   2,
+			"name": "Bob Jones",
+			"contact": map[string]any{
+				"email": "bob@example.com",
+			},
+			"tags": []string{"user"},
+			"metadata": map[string]any{
+				"lastLogin": "2023-01-02T12:00:00Z",
+				"preferences": map[string]any{
+					"theme": "light",
+					"notifications": false,
+				},
+			},
+		},
+		{
+			"id":   3,
+			"name": "Charlie Brown",
+			"contact": nil,
+			"tags": []string{},
+			"metadata": map[string]any{
+				"lastLogin": "2023-01-03T12:00:00Z",
+			},
+		},
+	}, nil
 }
 
 // GetCacheConfig returns nil for the mock tool.
