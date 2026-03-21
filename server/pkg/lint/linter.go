@@ -43,10 +43,13 @@ const (
 // Summary: Executes String operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -89,10 +92,13 @@ type Result struct {
 // Summary: Executes String operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -128,10 +134,13 @@ type Linter struct {
 // Summary: Initializes NewLinter operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -154,10 +163,13 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 // Summary: Executes Run operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

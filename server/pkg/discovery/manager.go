@@ -49,10 +49,13 @@ type Manager struct {
 // Summary: Initializes NewManager operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -79,10 +82,13 @@ func NewManager() *Manager {
 // Summary: Executes RegisterProvider operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -113,10 +119,13 @@ func (m *Manager) RegisterProvider(p Provider) {
 // Summary: Executes Run operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -184,10 +193,13 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 // Summary: Retrieves GetStatuses operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -224,10 +236,13 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 // Summary: Retrieves GetProviderStatus operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

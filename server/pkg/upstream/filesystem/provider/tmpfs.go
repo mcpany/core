@@ -27,10 +27,13 @@ type TmpfsProvider struct {
 // Summary: Initializes NewTmpfsProvider operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -51,10 +54,13 @@ func NewTmpfsProvider() *TmpfsProvider {
 // Summary: Retrieves GetFs operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -80,10 +86,13 @@ func (p *TmpfsProvider) GetFs() afero.Fs {
 // Summary: Executes ResolvePath operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -106,10 +115,13 @@ func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 // Summary: Executes Close operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

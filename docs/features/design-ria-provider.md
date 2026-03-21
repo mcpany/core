@@ -3,60 +3,46 @@
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
-As AI agent swarms grow in complexity, often reaching depths of 10 or more delegation hops, the ability to verify the absolute provenance of an instruction becomes a critical security frontier. Current "Point-to-Point" attestation models fail to account for "Lineage Hijacking," where a subagent may spoof its immediate parent to inherit unauthorized context. The RIA Provider is needed to provide a continuous, hardware-attested chain of custody for every intent fragment.
+As agent swarms become deeper and more horizontal, the risk of "Intent Hijacking" or "Instruction Splicing" increases. Current security models rely on point-to-point attestation which fails in multi-hop delegations (A -> B -> C). If agent B is compromised, it can coerce agent C into actions that violate the original mission root intent of agent A.
+
+The RIA Provider solves this by facilitating a cryptographic chain of custody for intent. Every sub-mission spawned within the mesh must carry a hardware-attested token that is mathematically derived from its parent intent, allowing any downstream tool or agent to verify the entire lineage back to the mission root.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Issue hardware-attested "Lineage Proofs" for every delegation hop.
-    * Enable specialist agents to verify the entire chain of command back to the mission-root.
-    * Prevent "Lineage Hijacking" and unauthorized context inheritance.
-    * Support recursive verification across heterogeneous framework boundaries.
+    * Implement a recursive cryptographic signing mechanism for agent intents.
+    * Provide a verification interface for downstream tools to validate intent lineage.
+    * Ensure multi-framework compatibility (Claude, OpenClaw, AutoGen).
 * **Non-Goals:**
-    * Storing the full reasoning trace of every agent (handled by SRM).
-    * Enforcing tool-level permissions (handled by Policy Firewall).
+    * This system will NOT perform semantic analysis of the intent (handled by the AID Hub).
+    * It will NOT manage agent identity (handled by FSI/SMI).
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Deep Swarm Orchestrator (e.g., Enterprise Agent Mesh Administrator)
-* **Primary Goal:** Ensure that a tool call made by a 10th-level subagent is legitimately authorized by the original human-initiated mission-root.
+* **User Persona:** Multi-Agent Swarm Orchestrator
+* **Primary Goal:** Securely delegate a file-writing task to a specialist sub-agent without risking host-level command execution.
 * **The Happy Path (Tasks):**
-    1. The mission-root agent initializes a RIA session with a hardware-attested root token.
-    2. Each subsequent subagent spawn requests a "Lineage Extension" from the RIA Provider.
-    3. The RIA Provider validates the parent's proof and issues a new, hash-chained token for the child.
-    4. Upon tool execution, the final subagent presents the complete RIA chain.
-    5. The RIA Provider verifies the entire chain's integrity against the hardware TPM.
-    6. The tool call is authorized only if the lineage is valid and unbroken.
+    1. Primary Agent A generates a signed Mission-Root Intent (MRI) token.
+    2. Agent A spawns Sub-Agent B, passing a derived RIA token for "File Access: /tmp".
+    3. Sub-Agent B calls a file-write tool.
+    4. The Tool-Sovereignty middleware uses the RIA Provider to verify that the "File Access" intent is a valid child of the original MRI.
+    5. Tool execution is granted based on the verified lineage.
 
 ## 4. Design & Architecture
 * **System Flow:**
-    ```mermaid
-    graph TD
-        MR[Mission Root] -->|Init Lineage| RIA[RIA Provider]
-        RIA -->|Root Proof| MR
-        MR -->|Delegate| S1[Subagent 1]
-        S1 -->|Request Extension| RIA
-        RIA -->|Verify MR Proof| TPM[Hardware TPM]
-        TPM -->|Valid| RIA
-        RIA -->|Child Proof| S1
-        S1 -->|Delegate| S2[Subagent 2]
-        S2 -->|...| RIA
-        S10[Subagent 10] -->|Execute Tool| RIA
-        RIA -->|Full Chain Verify| TPM
-        TPM -->|Authorized| Tool[Tool Execution]
-    ```
+    [User] -> MRI Token -> [Agent A] -> Derived RIA Token -> [Agent B] -> [Tool]
+    The RIA Provider sits as a middleware component that intercepts intent creation and tool execution.
 * **APIs / Interfaces:**
-    * `POST /v1/ria/lineage/init`: Initialize a new mission-root lineage.
-    * `POST /v1/ria/lineage/extend`: Generate a child proof bound to a parent proof.
-    * `POST /v1/ria/lineage/verify`: Verify the integrity of a complete lineage chain.
+    * `DeriveIntent(parentToken, subIntent) -> riaToken`: Generates a child token.
+    * `VerifyLineage(riaToken) -> rootIntent`: Validates the chain back to MRI.
 * **Data Storage/State:**
-    * Lineage hashes are stored in a tamper-proof, hardware-locked merkle tree within the mission enclave.
+    Tokens are session-bound and ephemeral; the RIA Provider maintains a transient cache of verified chain-hashes for performance.
 
 ## 5. Alternatives Considered
-* **Flat Token Inheritance:** Rejected as it cannot detect man-in-the-middle subagent spoofing.
-* **Full Reasoning Trace Verification:** Rejected due to extreme latency and token costs in deep swarms.
+* **Flat Intent Tokens:** Rejected because they don't prevent sub-agents from escalating their own privileges by generating new tokens.
+* **Centralized Attestation Server:** Rejected due to the latency requirements of machine-speed meshes.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** All proofs are cryptographically bound to the hardware TPM. Any break in the chain results in immediate revocation of all descendant capabilities.
-* **Observability:** Complete audit logs of lineage extensions and verification events in the Mesh-Resident Lineage Tracker.
+* **Security (Zero Trust):** RIA enforces the principle of least privilege by ensuring children can only have a subset of parent intents.
+* **Observability:** Every RIA derivation and verification event is logged in the structured audit trail with full lineage metadata.
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.

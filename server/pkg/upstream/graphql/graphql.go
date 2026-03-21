@@ -104,10 +104,13 @@ type Upstream struct{}
 // Summary: Initializes NewGraphQLUpstream operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -132,10 +135,13 @@ func NewGraphQLUpstream() upstream.Upstream {
 // Summary: Executes Shutdown operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -249,10 +255,13 @@ type Callable struct {
 // Summary: Executes Call operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -303,10 +312,13 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 // Summary: Executes Register operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

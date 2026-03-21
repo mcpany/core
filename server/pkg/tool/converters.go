@@ -30,10 +30,13 @@ import (
 // Summary: Executes ConvertMCPToolToProto operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -130,10 +133,13 @@ func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 // Summary: Executes ConvertMcpFieldsToInputSchemaProperties operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -175,10 +181,13 @@ func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 // Summary: Executes ConvertToolDefinitionToProto operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -236,10 +245,13 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 // Summary: Retrieves GetJSONSchemaForScalarType operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -281,10 +293,13 @@ func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 // Summary: Executes ConvertProtoToMCPTool operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

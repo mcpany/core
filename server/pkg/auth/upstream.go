@@ -67,10 +67,13 @@ type UpstreamAuthenticator interface {
 // Summary: Initializes NewUpstreamAuthenticator operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -158,10 +161,13 @@ type APIKeyAuth struct {
 // Summary: Executes Authenticate operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -211,10 +217,13 @@ type BearerTokenAuth struct {
 // Summary: Executes Authenticate operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -250,10 +259,13 @@ type BasicAuth struct {
 // Summary: Executes Authenticate operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -315,10 +327,13 @@ func (o *OAuth2Auth) getTokenURL(ctx context.Context) (string, error) {
 // Summary: Executes Authenticate operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

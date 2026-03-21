@@ -52,10 +52,13 @@ type BaseMessage struct {
 // Summary: Executes CorrelationID operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -80,10 +83,13 @@ func (m *BaseMessage) CorrelationID() string {
 // Summary: Updates SetCorrelationID operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

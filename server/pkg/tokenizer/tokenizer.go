@@ -49,10 +49,13 @@ type SimpleTokenizer struct{}
 // Summary: Initializes NewSimpleTokenizer operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -78,10 +81,13 @@ func NewSimpleTokenizer() *SimpleTokenizer {
 // Summary: Executes CountTokens operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -121,10 +127,13 @@ type WordTokenizer struct {
 // Summary: Initializes NewWordTokenizer operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -150,10 +159,13 @@ func NewWordTokenizer() *WordTokenizer {
 // Summary: Executes CountTokens operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -252,10 +264,13 @@ func countWords(text string) int {
 // Summary: Executes CountTokensInValue operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -305,10 +320,13 @@ type rawWordCounter struct{}
 // Summary: Executes CountTokens operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

@@ -218,9 +218,6 @@ func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) 
 //
 // Side Effects:
 //   - Reads all rows from the audit_logs table.
-//
-// Parameters:
-//   - None
 func (s *PostgresAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

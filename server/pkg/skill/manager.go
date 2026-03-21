@@ -55,10 +55,13 @@ type Manager struct {
 // Summary: Initializes NewManager operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -89,10 +92,13 @@ func NewManager(rootDir string) (*Manager, error) {
 // Summary: Executes ListSkills operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -154,10 +160,13 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 // Summary: Retrieves GetSkill operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -184,10 +193,13 @@ func (m *Manager) GetSkill(name string) (*Skill, error) {
 // Summary: Initializes CreateSkill operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -237,10 +249,13 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 // Summary: Executes UpdateSkill operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -292,10 +307,13 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 // Summary: Executes DeleteSkill operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -334,10 +352,13 @@ func (m *Manager) DeleteSkill(name string) error {
 // Summary: Executes SaveAsset operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

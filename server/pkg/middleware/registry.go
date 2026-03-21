@@ -17,7 +17,7 @@ import (
 
 // Registry manages available middlewares.
 //
-// Summary: Registry operation.
+// Summary: Represents a Registry.
 type Registry struct {
 	mu           sync.RWMutex
 	factories    map[string]Factory
@@ -26,12 +26,12 @@ type Registry struct {
 
 // Factory is a function that creates a HTTP middleware from configuration.
 //
-// Summary: Factory for middlewares.
+// Summary: Represents a Factory.
 type Factory func(config *configv1.Middleware) func(http.Handler) http.Handler
 
 // MCPFactory is a function that creates an MCP middleware from configuration.
 //
-// Summary: Factory for MCP middlewares.
+// Summary: Represents a MCPFactory.
 type MCPFactory func(config *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler
 
 var (
@@ -47,16 +47,19 @@ var (
 //   - name (string): The name of the resource.
 //   - factory (Factory): The factory.
 //
+// Summary: Executes Register operation.
+//
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Register operation.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -69,16 +72,19 @@ func Register(name string, factory Factory) {
 //   - name (string): The name of the resource.
 //   - factory (MCPFactory): The factory.
 //
+// Summary: Executes RegisterMCP operation.
+//
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
-//
-// Summary: RegisterMCP operation.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -93,16 +99,19 @@ func RegisterMCP(name string, factory MCPFactory) {
 // Returns:
 //   - ([]func(http.Handler) http.Handler): The result.
 //
+// Summary: Retrieves GetHTTPMiddlewares operation.
+//
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
-//
-// Summary: GetHTTPMiddlewares operation.
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -134,16 +143,19 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 // Returns:
 //   - ([]func(mcp.MethodHandler) mcp.MethodHandler): The result.
 //
+// Summary: Retrieves GetMCPMiddlewares operation.
+//
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
-//
-// Summary: GetMCPMiddlewares operation.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -169,7 +181,7 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 
 // StandardMiddlewares holds the standard middlewares that might need to be updated.
 //
-// Summary: StandardMiddlewares operation.
+// Summary: Represents a StandardMiddlewares.
 type StandardMiddlewares struct {
 	Audit            *AuditMiddleware
 	GlobalRateLimit  *GlobalRateLimitMiddleware
@@ -198,11 +210,16 @@ type StandardMiddlewares struct {
 //   - (*StandardMiddlewares): The result.
 //   - (error): An error if the operation fails.
 //
+// Summary: Executes InitStandardMiddlewares operation.
+//
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

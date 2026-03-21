@@ -40,10 +40,13 @@ import (
 // Summary: Executes InitiateOAuth operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -126,6 +129,7 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 
 	if conf.Endpoint.AuthURL == "" {
 		if oauthConfig.GetIssuerUrl() != "" {
+			// TODO: Add OIDC discovery
 			return "", "", fmt.Errorf("OIDC discovery not implemented")
 		}
 		if conf.Endpoint.AuthURL == "" {
@@ -166,10 +170,13 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 // Summary: Executes HandleOAuthCallback operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

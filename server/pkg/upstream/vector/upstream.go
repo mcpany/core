@@ -43,10 +43,13 @@ type Upstream struct {
 // Summary: Initializes NewUpstream operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -83,10 +86,13 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 // Summary: Executes Shutdown operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -119,10 +125,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Summary: Executes Register operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -244,10 +253,13 @@ type vectorCallable struct {
 // Summary: Executes Call operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

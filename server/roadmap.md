@@ -748,6 +748,12 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Locked Telemetry Proxy**: (P1) Authoritative telemetry sanitizer for Gemini-compliant reasoning traces, ensuring attention-mapping privacy during RL feedback export. (Added: 2026-06-15)
 - **WASM-Hook Behavioral Profiler**: (P0) Mandatory extension for the SMS that performs sandboxed profiling of AI-generated configuration hooks to counter PR "Logic Bombs." (Added: 2026-06-15)
 
+### Upcoming: [2026-06-18]
+- **RIA Provider (Recursive Intent Attestation)**: (P0) Authoritative root for multi-hop intent attestation (Added: 2026-06-18).
+- **Mesh-Resident Cognitive Load Balancer (MCLB)**: (P0) Dynamic task redistribution service for the agent mesh (Added: 2026-06-18).
+- **IBET (Intent-Bound Ephemeral Tunnels)**: (P0) Secure inter-agent communication layer to neutralize CVE-2026-65002 (Added: 2026-06-18).
+- **CFIA (Chain-of-Custody Lineage Tracker)**: (P0) Absolute provenance ledger for all agentic actions (Added: 2026-06-18).
+
 ### Upcoming: [2026-06-17]
 - **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment service issuing hardware-attested heartbeats for mission-anchored reasoning (Added: 2026-06-17).
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
@@ -755,7 +761,7 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
 
 ### Upcoming: [2026-06-18]
-- **Recursive Intent Attestation (RIA) Provider**: (P0) Authoritative lineage proof issuer for deep agent swarms. (Added: 2026-06-18)
-- **Mesh-Resident Cognitive Load Balancer (MCLB)**: (P0) Dynamic task redistribution service for horizontal teammates based on real-time ARE scores. (Added: 2026-06-18)
-- **Intent-Bound Ephemeral Tunnels (IBET)**: (P0) Cryptographically bound transport standard for task-specific inter-agent communication. (Added: 2026-06-18)
-- **Continuous Fragment-Integrity Attestation (CFIA) Provider**: (P0) High-frequency integrity monitoring for sharded meshes to counter Intent-Grafting. (Added: 2026-06-18)
+- **RIA Provider (Recursive Intent Attestation)**: (P0) Authoritative root for multi-hop intent attestation (Added: 2026-06-18).
+- **Mesh-Resident Cognitive Load Balancer (MCLB)**: (P0) Dynamic task redistribution service for the agent mesh (Added: 2026-06-18).
+- **IBET (Intent-Bound Ephemeral Tunnels)**: (P0) Secure inter-agent communication layer to neutralize CVE-2026-65002 (Added: 2026-06-18).
+- **CFIA (Chain-of-Custody Lineage Tracker)**: (P0) Absolute provenance ledger for all agentic actions (Added: 2026-06-18).

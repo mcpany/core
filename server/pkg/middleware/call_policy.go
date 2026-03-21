@@ -25,10 +25,10 @@ type CallPolicyMiddleware struct {
 // Summary: Initializes a new CallPolicyMiddleware.
 //
 // Parameters:
-//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - toolManager: tool.ManagerInterface. The tool manager to access tool and service information.
 //
 // Returns:
-//   - *CallPolicyMiddleware: The resulting *CallPolicyMiddleware.
+//   - *CallPolicyMiddleware: The initialized middleware.
 func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
 	return &CallPolicyMiddleware{
 		toolManager: toolManager,
@@ -40,13 +40,22 @@ func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddl
 // Summary: Checks if the tool execution is allowed by the service's policies.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The req parameter.
-//   - next (tool.ExecutionFunc): The next parameter.
+//   - ctx: context.Context. The execution context.
+//   - req: *tool.ExecutionRequest. The tool execution request.
+//   - next: tool.ExecutionFunc. The next handler in the chain.
 //
 // Returns:
-//   - any: The result.
-//   - error: An error if the operation fails.
+//   - any: The execution result if allowed.
+//   - error: An error if the policy blocks execution or policy evaluation fails.
+//
+// Errors:
+//   - Returns error if service info is not found (fail closed).
+//   - Returns error if policy evaluation fails.
+//   - Returns "execution denied by policy" if the policy denies the request.
+//
+// Side Effects:
+//   - Logs errors if service info is missing or policy evaluation fails.
+//   - Increments a metric counter when a call is blocked.
 func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

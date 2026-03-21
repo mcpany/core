@@ -31,10 +31,13 @@ type MockClientConn struct {
 // Summary: Initializes NewMockClientConn operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -54,10 +57,13 @@ func NewMockClientConn(t *testing.T) *MockClientConn {
 // Summary: Updates SetClient operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -80,10 +86,13 @@ func (m *MockClientConn) SetClient(method string, client interface{}) {
 // Summary: Executes Invoke operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -107,10 +116,13 @@ func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ in
 // Summary: Initializes NewStream operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

@@ -29,10 +29,13 @@ type MockUpstreamAuthenticator struct {
 // Summary: Executes Authenticate operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

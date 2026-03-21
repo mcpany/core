@@ -33,10 +33,13 @@ import (
 // Summary: Executes BindRootFlags operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -108,10 +111,13 @@ func BindRootFlags(cmd *cobra.Command) {
 // Summary: Executes BindServerFlags operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -168,10 +174,13 @@ func BindServerFlags(cmd *cobra.Command) {
 // Summary: Executes BindFlags operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

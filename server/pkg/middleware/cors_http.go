@@ -13,7 +13,7 @@ import (
 // HTTPCORSMiddleware handles CORS for HTTP endpoints.
 // It is thread-safe and supports dynamic updates.
 //
-// Summary: HTTPCORSMiddleware operation.
+// Summary: Represents a HTTPCORSMiddleware.
 type HTTPCORSMiddleware struct {
 	mu              sync.RWMutex
 	allowedOrigins  map[string]struct{}
@@ -21,6 +21,8 @@ type HTTPCORSMiddleware struct {
 }
 
 // NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware.
+//
+// Summary: Initializes HTTP CORS middleware.
 //
 // If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin).
 // To allow all, pass []string{"*"}.
@@ -30,8 +32,6 @@ type HTTPCORSMiddleware struct {
 //
 // Returns:
 //   - (*HTTPCORSMiddleware): The initialized middleware.
-//
-// Summary: NewHTTPCORSMiddleware operation.
 func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 	m := &HTTPCORSMiddleware{}
 	m.updateInternal(allowedOrigins)
@@ -40,10 +40,10 @@ func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 
 // Update updates the allowed origins.
 //
+// Summary: Updates the allowed origins dynamically.
+//
 // Parameters:
 //   - allowedOrigins ([]string): The new list of allowed origins.
-//
-// Summary: Update operation.
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -67,13 +67,13 @@ func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 
 // Handler wraps an http.Handler with CORS logic.
 //
+// Summary: Middleware to handle CORS headers.
+//
 // Parameters:
 //   - next (http.Handler): The next handler in the chain.
 //
 // Returns:
 //   - (http.Handler): The wrapped handler.
-//
-// Summary: Handler operation.
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")

@@ -42,10 +42,13 @@ var (
 // Summary: Initializes NewBroadcaster operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -74,10 +77,13 @@ func NewBroadcaster() *Broadcaster {
 // Summary: Executes Reset operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -107,10 +113,13 @@ func (b *Broadcaster) Reset() {
 // Summary: Executes Subscribe operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -135,10 +144,13 @@ func (b *Broadcaster) Subscribe() chan any {
 // Summary: Executes SubscribeBuffered operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -168,10 +180,13 @@ func (b *Broadcaster) SubscribeBuffered(size int) chan any {
 // Summary: Executes SubscribeWithHistory operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -197,10 +212,13 @@ func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
 // Summary: Executes SubscribeWithHistoryBuffered operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -254,10 +272,13 @@ func (b *Broadcaster) SubscribeWithHistoryBuffered(size int) (chan any, []any) {
 // Summary: Executes Unsubscribe operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -287,10 +308,13 @@ func (b *Broadcaster) Unsubscribe(ch chan any) {
 // Summary: Executes Broadcast operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -326,10 +350,13 @@ func (b *Broadcaster) Broadcast(msg any) {
 // Summary: Executes ClearHistory operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -358,10 +385,13 @@ func (b *Broadcaster) ClearHistory() {
 // Summary: Retrieves GetHistory operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -409,10 +439,13 @@ func (b *Broadcaster) GetHistory() []any {
 // Summary: Executes Hydrate operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

@@ -132,10 +132,13 @@ type yamlEngine struct {
 // Summary: Updates SetSkipValidation operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -157,10 +160,13 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 // Summary: Updates SetIgnoreEnv operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -186,10 +192,13 @@ func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 // Summary: Executes Unmarshal operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -230,10 +239,13 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 // Summary: Executes UnmarshalFromMap operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -359,10 +371,13 @@ type textprotoEngine struct{}
 // Summary: Executes Unmarshal operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -391,10 +406,13 @@ type jsonEngine struct{}
 // Summary: Executes Unmarshal operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -733,10 +751,13 @@ type FileStore struct {
 // Summary: Updates SetSkipValidation operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -755,10 +776,13 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 // Summary: Updates SetIgnoreMissingEnv operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -811,10 +835,13 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 // Summary: Checks HasConfigSources operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -1449,10 +1476,13 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 // Summary: Checks HasConfigSources operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

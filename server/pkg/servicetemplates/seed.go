@@ -47,10 +47,13 @@ type ConfigFile struct {
 // Summary: Executes Seed operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -109,6 +112,7 @@ func (s *Seeder) Seed(ctx context.Context) error {
 		// Note: We need to handle potential specific YAML types?
 		// yaml.v3 is usually compatible with json marshaling if types are basic.
 
+		// TODO: This is a simplification. Real implementation might need robust conversion.
 		// For now, we manually construct the Template for popular services we know.
 		// Or deeper: we just store the "ServiceConfig" as part of the template.
 

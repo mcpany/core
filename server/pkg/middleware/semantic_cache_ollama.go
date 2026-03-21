@@ -15,7 +15,7 @@ import (
 
 // OllamaEmbeddingProvider implements EmbeddingProvider for Ollama.
 //
-// Summary: OllamaEmbeddingProvider operation.
+// Summary: Provides an interface to generate text embeddings using the Ollama API.
 type OllamaEmbeddingProvider struct {
 	baseURL string
 	model   string
@@ -23,6 +23,8 @@ type OllamaEmbeddingProvider struct {
 }
 
 // NewOllamaEmbeddingProvider creates a new OllamaEmbeddingProvider.
+//
+// Summary: Initializes a new provider for Ollama embeddings.
 //
 // Parameters:
 //   - baseURL: string. The base URL of the Ollama API (defaults to "http://localhost:11434" if empty).
@@ -33,8 +35,6 @@ type OllamaEmbeddingProvider struct {
 //
 // Side Effects:
 //   - Sets default values for baseURL and model if not provided.
-//
-// Summary: NewOllamaEmbeddingProvider operation.
 func NewOllamaEmbeddingProvider(baseURL, model string) *OllamaEmbeddingProvider {
 	if baseURL == "" {
 		baseURL = "http://localhost:11434"
@@ -60,6 +60,8 @@ type ollamaEmbeddingResponse struct {
 
 // Embed generates an embedding for the given text using Ollama.
 //
+// Summary: Calls the Ollama API to generate a vector embedding for the input text.
+//
 // Parameters:
 //   - ctx: context.Context. The context for the HTTP request.
 //   - text: string. The input text to be embedded.
@@ -76,8 +78,6 @@ type ollamaEmbeddingResponse struct {
 //
 // Side Effects:
 //   - Makes an HTTP POST request to the configured Ollama API endpoint.
-//
-// Summary: Embed operation.
 func (p *OllamaEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := ollamaEmbeddingRequest{
 		Model:  p.model,

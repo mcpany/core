@@ -40,10 +40,13 @@ type MilvusClient struct {
 // Summary: Initializes NewMilvusClient operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -105,10 +108,13 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 // Summary: Executes Query operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -239,10 +245,13 @@ func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, 
 // Summary: Executes Upsert operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -466,10 +475,13 @@ func fillMetadataColumn(col entity.Column, i int, val interface{}) {
 // Summary: Executes Delete operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -546,10 +558,13 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 // Summary: Executes DescribeIndexStats operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

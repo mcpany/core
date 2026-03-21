@@ -50,10 +50,13 @@ type Watcher struct {
 // Summary: Initializes NewWatcher operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -206,10 +209,13 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 // Summary: Executes Close operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

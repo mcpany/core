@@ -591,7 +591,3 @@
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
-- [ ] **[P0] Recursive Lineage Explorer**: (2026-06-18) Visual tracer for hardware-attested intent lineages across deep multi-hop delegations.
-- [ ] **[P0] Cognitive Load Balancing Dashboard**: (2026-06-18) Real-time visualization of teammate ARE scores and dynamic task migration events.
-- [ ] **[P0] Intent-Bound Tunnel Monitor**: (2026-06-18) UI for monitoring task-specific communication channels and blocked transport reuse attempts.
-- [ ] **[P0] Continuous Integrity Status Widget**: (2026-06-18) Real-time indicator for CFIA shard-level integrity checks and Intent-Grafting alerts.

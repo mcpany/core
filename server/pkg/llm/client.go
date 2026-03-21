@@ -89,10 +89,13 @@ type OpenAIClient struct {
 // Summary: Initializes NewOpenAIClient operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -142,10 +145,13 @@ type openAIChatResponse struct {
 // Summary: Executes ChatCompletion operation.
 //
 // Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
 //
 // Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
