@@ -47,8 +47,8 @@ func (m *mockBus[T]) Subscribe(ctx context.Context, topic string, handler func(T
 
 type mockServiceRegistry struct {
 	serviceregistry.ServiceRegistryInterface
-	registerFunc    func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
-	registerResFunc func(ctx context.Context, resourceConfig *configv1.ResourceDefinition) error
+	registerFunc       func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
+	registerResFunc    func(ctx context.Context, resourceConfig *configv1.ResourceDefinition) error
 	getAllServicesFunc func() ([]*configv1.UpstreamServiceConfig, error)
 }
 

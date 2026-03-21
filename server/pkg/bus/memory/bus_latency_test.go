@@ -65,5 +65,5 @@ func TestDefaultBus_Latency(t *testing.T) {
 
 	// Assert that it is fast (Parallel)
 	// This assertion is expected to FAIL before the fix is implemented.
-	assert.Less(t, duration, 300 * time.Millisecond, "Publish took too long, expected parallel execution")
+	assert.Less(t, duration, 300*time.Millisecond, "Publish took too long, expected parallel execution")
 }

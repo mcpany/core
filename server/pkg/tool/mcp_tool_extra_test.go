@@ -64,7 +64,7 @@ func TestMCPTool_Execute_InputTransformation_Webhook(t *testing.T) {
 	}.Build()
 
 	mcpTool := v1.Tool_builder{
-		Name:                proto.String("test-tool"),
+		Name: proto.String("test-tool"),
 	}.Build()
 
 	toolInstance := tool.NewMCPTool(mcpTool, mcpClient, callDef)

@@ -82,8 +82,8 @@ func validateHandler(w http.ResponseWriter, r *http.Request) {
 			// Also checking for " rm " in case of chained commands
 			cleaned := strings.TrimSpace(strVal)
 			if strings.HasPrefix(cleaned, "rm ") ||
-			   cleaned == "rm" ||
-			   strings.Contains(cleaned, " rm ") {
+				cleaned == "rm" ||
+				strings.Contains(cleaned, " rm ") {
 				allowed = false
 				message = fmt.Sprintf("Command contains restricted keyword 'rm' in input '%s'", k)
 				break

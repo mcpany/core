@@ -377,7 +377,7 @@ func TestTools_ErrorPaths(t *testing.T) {
 		os.WriteFile(binPath, []byte{0, 1, 2, 3}, 0644)
 
 		res, err := search.Execute(context.Background(), &tool.ExecutionRequest{
-			ToolName: "search_files",
+			ToolName:  "search_files",
 			Arguments: map[string]interface{}{"path": "/data", "pattern": ".*"},
 		})
 		require.NoError(t, err)
@@ -420,7 +420,7 @@ func TestTools_ErrorPaths(t *testing.T) {
 		}
 
 		res, err := search.Execute(context.Background(), &tool.ExecutionRequest{
-			ToolName: "search_files",
+			ToolName:  "search_files",
 			Arguments: map[string]interface{}{"path": "/data/manyfiles", "pattern": "match me"},
 		})
 		require.NoError(t, err)
@@ -438,7 +438,7 @@ func TestTools_ErrorPaths(t *testing.T) {
 		cancel() // Cancel immediately
 
 		_, err := search.Execute(ctx, &tool.ExecutionRequest{
-			ToolName: "search_files",
+			ToolName:  "search_files",
 			Arguments: map[string]interface{}{"path": "/data", "pattern": "foo"},
 		})
 		assert.Error(t, err)
@@ -470,7 +470,7 @@ func TestTools_ErrorPaths(t *testing.T) {
 		defer os.Chmod(fPath, 0644)
 
 		_, err := readTool.Execute(context.Background(), &tool.ExecutionRequest{
-			ToolName: "read_file",
+			ToolName:  "read_file",
 			Arguments: map[string]interface{}{"path": "/data/unreadable"},
 		})
 		assert.Error(t, err)
@@ -485,7 +485,7 @@ func TestTools_ErrorPaths(t *testing.T) {
 		defer os.Chmod(fPath, 0644)
 
 		res, err := search.Execute(context.Background(), &tool.ExecutionRequest{
-			ToolName: "search_files",
+			ToolName:  "search_files",
 			Arguments: map[string]interface{}{"path": "/data", "pattern": "secret"},
 		})
 		require.NoError(t, err)

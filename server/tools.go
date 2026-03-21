@@ -4,6 +4,7 @@
 //go:build tools
 // +build tools
 
+// Package main provides toolchain dependencies.
 package main
 
 import (

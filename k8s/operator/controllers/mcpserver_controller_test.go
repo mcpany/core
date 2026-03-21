@@ -3,6 +3,8 @@
 
 package controllers
 
+// Package controllers provides the controllers logic.
+
 import (
 	"context"
 	"testing"

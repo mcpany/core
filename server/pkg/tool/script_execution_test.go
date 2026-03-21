@@ -18,7 +18,7 @@ func TestShellInjection_ScriptExecution(t *testing.T) {
 		cmd := "./myscript.sh" // Not in the static list, but is a script
 		tool := createTestScriptTool(cmd)
 		req := &ExecutionRequest{
-			ToolName: "test-script",
+			ToolName:   "test-script",
 			ToolInputs: []byte(`{"input": "'; echo 'pwned'; '"}`),
 		}
 
@@ -37,7 +37,7 @@ func TestShellInjection_ScriptExecution(t *testing.T) {
 		cmd := "deploy.bat"
 		tool := createTestScriptTool(cmd)
 		req := &ExecutionRequest{
-			ToolName: "test-script",
+			ToolName:   "test-script",
 			ToolInputs: []byte(`{"input": "& calc.exe"}`),
 		}
 

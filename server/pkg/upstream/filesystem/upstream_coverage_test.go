@@ -38,7 +38,7 @@ func TestFilesystemUpstream_UnsupportedTypes(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			config := configv1.UpstreamServiceConfig_builder{
-				Name: proto.String("test_" + tt.name),
+				Name:              proto.String("test_" + tt.name),
 				FilesystemService: tt.config,
 			}.Build()
 			_, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
@@ -62,7 +62,7 @@ func TestFilesystemUpstream_InputValidation(t *testing.T) {
 		Name: proto.String("test_validation"),
 		FilesystemService: configv1.FilesystemUpstreamService_builder{
 			RootPaths: map[string]string{"/": tempDir},
-			Os: configv1.OsFs_builder{}.Build(),
+			Os:        configv1.OsFs_builder{}.Build(),
 		}.Build(),
 	}.Build()
 
@@ -152,7 +152,7 @@ func TestFilesystemUpstream_PathResolution(t *testing.T) {
 		Name: proto.String("test_no_root"),
 		FilesystemService: configv1.FilesystemUpstreamService_builder{
 			RootPaths: map[string]string{},
-			Os: configv1.OsFs_builder{}.Build(),
+			Os:        configv1.OsFs_builder{}.Build(),
 		}.Build(),
 	}.Build()
 	id, _, _, err := u.Register(context.Background(), configNoRoot, tm, nil, nil, false)
@@ -173,7 +173,7 @@ func TestFilesystemUpstream_PathResolution(t *testing.T) {
 		Name: proto.String("test_mismatch"),
 		FilesystemService: configv1.FilesystemUpstreamService_builder{
 			RootPaths: map[string]string{"/app": tempDir},
-			Os: configv1.OsFs_builder{}.Build(),
+			Os:        configv1.OsFs_builder{}.Build(),
 		}.Build(),
 	}.Build()
 	id2, _, _, err := u.Register(context.Background(), configMismatch, tm, nil, nil, false)
@@ -203,7 +203,7 @@ func TestFilesystemUpstream_SearchEdgeCases(t *testing.T) {
 		Name: proto.String("test_search_edge"),
 		FilesystemService: configv1.FilesystemUpstreamService_builder{
 			RootPaths: map[string]string{"/": tempDir},
-			Os: configv1.OsFs_builder{}.Build(),
+			Os:        configv1.OsFs_builder{}.Build(),
 		}.Build(),
 	}.Build()
 	id, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
@@ -264,7 +264,7 @@ func TestFilesystemUpstream_FileOperations(t *testing.T) {
 		Name: proto.String("test_ops"),
 		FilesystemService: configv1.FilesystemUpstreamService_builder{
 			RootPaths: map[string]string{"/": tempDir},
-			Os: configv1.OsFs_builder{}.Build(),
+			Os:        configv1.OsFs_builder{}.Build(),
 		}.Build(),
 	}.Build()
 	id, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
@@ -295,7 +295,7 @@ func TestFilesystemUpstream_SanitizeError(t *testing.T) {
 	u := NewUpstream()
 	tm := tool.NewManager(nil)
 	config := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String(""), // Invalid name
+		Name:              proto.String(""), // Invalid name
 		FilesystemService: configv1.FilesystemUpstreamService_builder{}.Build(),
 	}.Build()
 	_, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
