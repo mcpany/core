@@ -90,6 +90,10 @@ func getBuffer() *bytes.Buffer {
 
 // putBuffer returns a bytes.Buffer to the pool after resetting it.
 func putBuffer(b *bytes.Buffer) {
+	if b.Cap() > 64*1024 {
+		// Do not pool very large buffers to prevent temporary memory spikes
+		return
+	}
 	b.Reset()
 	bufferPool.Put(b)
 }
@@ -2278,7 +2282,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool for O(1) memory reuse during command execution streams.
 		// Randomized Selection from Top 5 High-Impact Targets (Memory)
 		stderrBuf := getBuffer()
-		defer putBuffer(stderrBuf)
+		// We cannot defer putBuffer here because the goroutine below writes to it.
+		// It will be manually returned to the pool only after stderrDone is closed.
 		stderrDone := make(chan struct{})
 		go func() {
 			defer close(stderrDone)
@@ -2303,10 +2308,19 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		}()
 
 		var result map[string]interface{}
-		if err := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
-			<-stderrDone
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, redactor.Redact(stderrBuf.String()))
+		decodeErr := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result)
+		<-stderrDone
+
+		if decodeErr != nil {
+			// Get string before returning buffer
+			errMsg := redactor.Redact(stderrBuf.String())
+			putBuffer(stderrBuf)
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", decodeErr, errMsg)
 		}
+
+		// Now that the goroutine has definitively exited, we can safely return the buffer.
+		putBuffer(stderrBuf)
+
 		return result, nil
 	}
 
@@ -2318,9 +2332,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool for O(1) memory reuse during command execution streams.
 	// Randomized Selection from Top 5 High-Impact Targets (Memory)
 	stdoutBuf := getBuffer()
-	defer putBuffer(stdoutBuf)
 	stderrBuf := getBuffer()
-	defer putBuffer(stderrBuf)
+	// We cannot defer putBuffer here because the goroutines below write to them.
+	// They will be manually returned to the pool only after wg.Wait() completes.
 
 	var combinedBuf threadSafeBuffer
 	var wg sync.WaitGroup
@@ -2671,7 +2685,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool for O(1) memory reuse during command execution streams.
 		// Randomized Selection from Top 5 High-Impact Targets (Memory)
 		stderrBuf := getBuffer()
-		defer putBuffer(stderrBuf)
+		// We cannot defer putBuffer here because the goroutine below writes to it.
+		// It will be manually returned to the pool only after stderrDone is closed.
 		stderrDone := make(chan struct{})
 		go func() {
 			defer close(stderrDone)
@@ -2696,10 +2711,19 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}()
 
 		var result map[string]interface{}
-		if err := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
-			<-stderrDone
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, redactor.Redact(stderrBuf.String()))
+		decodeErr := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result)
+		<-stderrDone
+
+		if decodeErr != nil {
+			// Get string before returning buffer
+			errMsg := redactor.Redact(stderrBuf.String())
+			putBuffer(stderrBuf)
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", decodeErr, errMsg)
 		}
+
+		// Now that the goroutine has definitively exited, we can safely return the buffer.
+		putBuffer(stderrBuf)
+
 		return result, nil
 	}
 
@@ -2711,9 +2735,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool for O(1) memory reuse during command execution streams.
 	// Randomized Selection from Top 5 High-Impact Targets (Memory)
 	stdoutBuf := getBuffer()
-	defer putBuffer(stdoutBuf)
 	stderrBuf := getBuffer()
-	defer putBuffer(stderrBuf)
+	// We cannot defer putBuffer here because the goroutines below write to them.
+	// They will be manually returned to the pool only after wg.Wait() completes.
 
 	var combinedBuf threadSafeBuffer
 	var wg sync.WaitGroup
