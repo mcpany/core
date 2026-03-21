@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SystemHealthCard } from "./system-health-card";
+import { WidgetSkeleton } from "./widget-skeleton";
 
 // Metric interface now imported from @/lib/client
 

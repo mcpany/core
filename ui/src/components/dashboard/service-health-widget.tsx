@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { analyzeConnectionError } from "@/lib/diagnostics-utils";
 import { useServiceHealthHistory, ServiceHealth, HealthHistoryPoint } from "@/hooks/use-service-health-history";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { WidgetSkeleton } from "./widget-skeleton";
 
 const getStatusIcon = (status: string) => {
   switch (status) {

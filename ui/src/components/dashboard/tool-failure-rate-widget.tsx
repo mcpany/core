@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { AlertCircle, ArrowUpRight } from "lucide-react";
 import { apiClient } from "@/lib/client";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
+import { WidgetSkeleton } from "./widget-skeleton";
 
 interface ToolFailureRate {
     name: string;

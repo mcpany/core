@@ -9,6 +9,7 @@ import { Activity, Globe, ShieldAlert, Clock, Terminal } from "lucide-react"
 
 import { apiClient, SystemStatus } from "@/lib/client"
 import { usePolling } from "@/hooks/use-polling"
+import { WidgetSkeleton } from "./widget-skeleton"
 
 const formatUptime = (seconds: number) => {
   const hrs = Math.floor(seconds / 3600)
