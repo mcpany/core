@@ -1,0 +1,11 @@
+--- server/pkg/app/api_stacks.go	2023-10-10 10:10:10.000000000 +0000
++++ server/pkg/app/api_stacks.go	2023-10-10 10:10:10.000000000 +0000
+@@ -10,7 +10,7 @@
+	"strings"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+-	"gopkg.in/yaml.v3"
++	yaml "gopkg.in/yaml.v3"
+	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/storage"
