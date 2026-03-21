@@ -46,7 +46,7 @@ go_deps.gazelle_override(
 )
 
 # Disable proto generation for grpc-gateway so Gazelle uses pre-generated .pb.go
-# files directly and does not try to resolve @googleapis (requested via @org_golang_google_genproto_googleapis_api).
+# files directly and does not try to resolve @googleapis.
 go_deps.gazelle_override(
     build_file_generation = "off",
     path = "github.com/grpc-ecosystem/grpc-gateway/v2",
@@ -60,7 +60,7 @@ go_deps.module_override(
     path = "github.com/grpc-ecosystem/grpc-gateway/v2",
 )
 
-# Explicitly map the required direct dependencies.
+# Add required repositories explicitly to go_deps
 use_repo(
     go_deps,
     "com_github_alexliesenfeld_health",
