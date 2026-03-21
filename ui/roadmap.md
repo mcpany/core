@@ -267,7 +267,7 @@ SPDX-License-Identifier: Apache-2.0
 - [ ] **[P1] Context Lifecycle Visualizer**: (2026-03-14) Debugger for visualizing context compression hooks and intent-preserving scores. (Added: 2026-03-14)
 - [ ] **[P0] A2A Authenticated Discovery Monitor**: (2026-03-14) UI for viewing and approving authenticated agent cards in the A2A mesh. (Added: 2026-03-14)
 - [ ] **[P0] Prompt Path Alert Dashboard**: (2026-03-13) UI for visualizing and responding to indirect prompt injection attempts. (Added: 2026-03-13)
-- [ ] **[P0] OpenClaw Context Sync Viewer**: (2026-03-13) Visualize shared context state between MCP Any and OpenClaw agents. (Promoted to P0 on 2026-03-14) (Added: 2026-03-13)
+- [ ] **[P0] OpenClaw ContextSync Viewer**: (2026-03-13) Visualize shared context state between MCP Any and OpenClaw agents. (Promoted to P0 on 2026-03-14) (Added: 2026-03-13)
 - [ ] **[P0] Verified Skill Safety Report**: (2026-03-12) UI for viewing behavioral profiling results and safety scores for agent skills. (Added: 2026-03-12)
 - [ ] **[P0] MFA Attestation Dialog**: (2026-03-12) Secure UI component for multi-factor approval of high-risk configuration changes. (Added: 2026-03-12)
 - [ ] **[P0] Outbound Traffic Security Map**: (2026-03-11) Real-time visualization of agent outbound requests, highlighted by attestation status. (Added: 2026-03-11)

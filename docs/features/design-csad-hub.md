@@ -49,4 +49,8 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 
 ## 7. Evolutionary Changelog
 * **2026-05-29:** Initial Document Creation.
-* **2026-05-30:** **Integration of Monotonic Task Nonces (MTN)**. Added support for detecting hivenet-driven **Context Mirroring** probes (CVE-2026-45012) by integrating with the MTN Provider. Replay attempts on shared context windows are now flagged as P0 anomaly events.
+* **2026-05-30:** **Update: Integrating MTN for Mirroring Detection**
+    * **Context:** Today's market sync revealed the "Context Mirroring" exploit (CVE-2026-45012).
+    * **Architecture Adjustment:** CSAD Hub now integrates with the **MTN Provider**.
+    * **Detection Logic:** Monitoring for duplicate context windows appearing across disparate agents without a corresponding monotonic task nonce.
+    * **Security Impact:** Neutralizes replay-based context mirroring by detecting hivenet-driven probes that bypass the primary reasoning engine.

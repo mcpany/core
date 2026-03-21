@@ -10,81 +10,18 @@ SPDX-License-Identifier: Apache-2.0
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
-## Evolution: 2026-05-30 Updates
+## Evolution: [2026-05-23] Updates
 
 ### Proposed Additions
-- **Cognitive Integrity Arbiter (CIA)**: (P0) Authoritative "Reasoning Validator" performing real-time semantic analysis of internal monologues to detect and block "Reasoning Gaslighting."
-- **Reasoning-Bound Context Sharding (RBCS) Hub**: (P0) A core context management service that cryptographically isolates context fragments based on the active reasoning branch.
-- **Monotonic Task Nonce (MTN) Provider**: (P0) High-speed security service that issues unique, session-bound task nonces to neutralize "Context Mirroring" replay attacks.
-- **Reasoning-Gaslighting Detection (RGD) Middleware**: (P0) Security extension for the CIA that monitors semantic drift in subagent monologues to prevent teammate coercion.
+- **Federated Swarm Identity (FSI) Provider**: (P0) A local identity service that issues hardware-attested, cross-framework tokens for secure teammate verification in heterogeneous meshes.
+- **Intent-Leakage Shielding (ILS) Middleware**: (P0) Security extension for the MRP middleware that monitors semantic entropy and blocks subagent requests designed to probe mission-root constraints.
+- **Hardware-Attested Discovery Handshake (HADH) Gateway**: (P0) Advanced discovery service that mandates hardware-bound handshakes before revealing any agent capabilities to peers.
+- **Reasoning-Effort Quota Controller**: (P0) Resource management middleware that dynamically throttles high-intensity reasoning (e.g., `x-gemini-reasoning-effort`) to prevent Agentic DoS.
 
-### Priority Shifts
-- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory MTN validation to counter CVE-2026-45012.
-- **ContextEngine Lifecycle Adapter**: (Re-affirmed P0) Evolving to support RBCS-native context isolation.
-
-## Evolution: 2026-05-29 Updates
+## Evolution: [2026-05-24] Updates
 
 ### Proposed Additions
-- **Collective Swarm Anomaly Detection (CSAD) Hub**: (P0) Advanced security middleware that performs cross-agent behavioral analysis to detect coordinated "Hivenet" swarm attacks.
-- **Cross-Mesh Command Sovereignty (CMCS) Provider**: (P0) Identity service that issues hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms.
-- **Atomic Teammate Handshake (ATH) Gateway**: (P0) Security middleware mandating hardware-attested identity exchange before teammate task delegation.
-- **Mesh-Bound Context Sovereignty Bridge**: (P0) Security extension for the DCG middleware that performs semantic fragment analysis across teammate boundaries.
-
-### Priority Shifts
-- **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
-- **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
-
-## Evolution: 2026-05-28 Updates
-
-### Proposed Additions
-- **Command Traceability Provider (CTP)**: (P0) Authoritative security middleware that issues cryptographically signed "Chain of Command" tokens for every instruction.
-- **Autonomous PR Integrity Gate (APRIG)**: (P0) Multi-agent security quorum for code-generating tool calls, requiring independent attestation for pull request safety.
-- **Trace-Aware Identity Propagation (TAIP)**: (P0) Extension for the SMI Relay that ensures hardware-attested identities carry full lineage metadata.
-- **Reasoning-Effort Attribution Middleware**: (P1) Resource management service that cryptographically attributes token and compute usage to specific mission-root branches.
-
-### Priority Shifts
-- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Reasoning-Effort Attribution**.
-- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to support the new APRIG multi-agent quorum for PR safety.
-
-## Evolution: 2026-05-27 Updates
-
-### Proposed Additions
-- **Sovereign Mesh Identity (SMI) Relay**: (P0) Federated identity service that provides hardware-attested identity fragments that persist across local and multi-cloud environments.
-- **Fragment-Aware Mailbox Isolation (FAMI)**: (P0) Security extension for the Mailbox Integrity Middleware that performs semantic analysis of state fragments to prevent "State Splicing" exfiltration.
-- **Recursive Delegation Reaper (RDR)**: (P0) Stability middleware that monitors branching depth and semantic redundancy to prune non-convergent or redundant subagent branches.
-- **Cross-Mission Budget Continuity Provider**: (P1) Resource management service allowing reasoning budgets to be reconciled across mission phases and framework-neutral handoffs.
-
-### Priority Shifts
-- **Federated Swarm Identity (FSI) Provider**: (Re-affirmed P0) Evolving to act as the authoritative "SMI Relay" for cross-cloud agent swarms.
-- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for "Cross-Mission Budget Continuity."
-
-## Evolution: 2026-05-26 Updates
-
-### Proposed Additions
-- **Foundation Governance Sync**: (P0) Neutral coordination middleware for cross-framework agent coordination, implementing OpenClaw Foundation standards.
-- **Asynchronous Mailbox Sharding (AMS) Middleware**: (P0) Scaling extension for the T2T Bridge that hosts granular, task-bound mailbox shards to eliminate "Mailbox Lock" bottlenecks.
-- **Hardware-Attested Monologue Provider**: (P0) Advanced security service mandating hardware-bound encryption for subagent reasoning monologues to ensure cognitive privacy.
-
-### Priority Shifts
-- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for **Intent-Scoped ARE Enforcement** to counter subagent spoofing.
-- **T2T Encryption Bridge**: (Re-affirmed P0) Designated as the primary infrastructure for AMS-based non-blocking teammate coordination.
-
-## Evolution: 2026-05-25 Updates
-
-### Proposed Additions
-- **Reasoning-Budget Firewall (RBF)**: (P0) Authoritative economic gatekeeper that enforces strictly scoped, hardware-attested token and ARE budgets for subagents to prevent Reasoning-Budget Hijacking.
-- **Asynchronous Mailbox Sharding (AMS) Middleware**: (P0) Upgrade for the T2T Encryption Bridge that hosts granular, task-bound mailbox shards to eliminate "Mailbox Lock" bottlenecks.
-- **Cognitive Stall Arbitrator (CSA)**: (P0) Stability middleware that monitors semantic entropy and refinement drift to detect and terminate non-convergent subagent loops.
-- **Identity Fragment Attestation (IFA) Provider**: (P0) Security extension for the T2T Bridge mandating hardware-attested, session-bound tokens for every mailbox request to prevent identity spoofing.
-
-### Priority Shifts
-- **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Now elevated with the requirement for AMS to support high-density parallel swarms.
-- **Reasoning-Effort Quota Controller**: (Evolved to Reasoning-Budget Firewall) Now designated as a mandatory defense against Reasoning-Budget Hijacking (RBH).
-
-## Evolution: 2026-05-24 Updates
-
-### Proposed Additions
-- **Active Negotiation Broker (ANB)**: (P0) Authoritative bidding bus for multi-agent auctions, utilizing hardware-attested Capability Cards to filter and validate bids locally.
+- **Active Negotiation Broker (ANB)**: (P0) Authoritative bidding bus for multi-agent auctions, utilizing hardware-attested Capability Cards to filter and validate bids locally, preventing token exhaustion from recursive bidding loops.
 - **Differential Context Guarding (DCG) Middleware**: (P0) Security extension for the Mailbox Integrity Middleware that performs semantic analysis of tool outputs to prevent context-dump exfiltration.
 - **Zero-Knowledge Capability Proof (ZKCP) Provider**: (P1) Advanced discovery service allowing agents to prove skill possession without revealing sensitive implementation details during the discovery phase.
 - **Self-Correction Loop Arbiter**: (P0) Lifecycle security middleware that monitors subagent refinement drift and terminates sessions bypassing parent intent constraints.
@@ -93,15 +30,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory DCG to counter CVE-2026-39102.
 - **`TeammateTool` Orchestration Adapter**: (Re-affirmed P0) Evolving to support ANB-native task auctions.
 
-## Evolution: 2026-05-23 Updates
-
-### Proposed Additions
-- **Federated Swarm Identity (FSI) Provider**: (P0) A local identity service that issues hardware-attested, cross-framework tokens for secure teammate verification in heterogeneous meshes.
-- **Intent-Leakage Shielding (ILS) Middleware**: (P0) Security extension for the MRP middleware that monitors semantic entropy and blocks subagent requests designed to probe mission-root constraints.
-- **Hardware-Attested Discovery Handshake (HADH) Gateway**: (P0) Advanced discovery service that mandates hardware-bound handshakes before revealing any agent capabilities to peers.
-- **Reasoning-Effort Quota Controller**: (P0) Resource management middleware that dynamically throttles high-intensity reasoning (e.g., `x-gemini-reasoning-effort`) to prevent Agentic DoS.
-
-## Evolution: 2026-05-23 Updates
+## Evolution: [2026-05-23] Updates
 
 ### Proposed Additions
 - **Local-Only WebSocket Auth (LOWA) Gateway**: (P0) A mandatory security layer for all local listeners that enforces session-bound authentication to neutralize "ClawJacked" style brute-force attacks.
@@ -113,7 +42,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Inter-Agent Mailbox Guard (IAMG)**: (Evolved to Mailbox Integrity Middleware) Now designated as a mandatory requirement for all mesh-based teammate coordination.
 - **Origin-Locked Agent Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory session-bound LOWA authentication.
 
-## Evolution: 2026-05-21 Updates
+## Evolution: [2026-05-21] Updates
 
 ### Proposed Additions
 - **Cognitive Load Shedding (CLS) Controller**: (P0) A high-speed stability middleware that dynamically throttles or revokes subagent capabilities based on real-time reasoning intensity and mission stability scores.
@@ -125,18 +54,18 @@ SPDX-License-Identifier: Apache-2.0
 - **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory TRA to prevent context-switch hijacking.
 - **TeammateTool Orchestration Adapter**: (Re-affirmed P0) Evolving to support CFRR-native state reconciliation.
 
-## Evolution: 2026-05-20 Updates
+## Evolution: [2026-05-20] Updates
 
 ### Proposed Additions
 - **Policy-Bound Reasoning (PBR) Adapter**: (P0) Infrastructure for hosting and enforcing immutable "Policy Anchors" at the pre-reasoning layer, ensuring cross-framework cognitive governance.
 - **Multi-modal Integrity Bridge (MIB)**: (P0) Upgrade for the Semantic Integrity Bridge providing real-time sanitization of non-textual traces (SVG, CSS, Audio metadata) to prevent context smuggling.
-- **AIR Reconciliation Broker**: (P1) Decentralized intent reconciliation service utilizing hardware-attested multi-signature quorums to resolve conflicting swarm objectives.
+- **AIR (Autonomous Intent Reconciliation) Broker**: (P1) Decentralized intent reconciliation service utilizing hardware-attested multi-signature quorums to resolve conflicting swarm objectives.
 
 ### Priority Shifts
 - **Semantic Integrity Bridge**: (Evolved to MIB) Now designated as the primary defense against multi-modal "Context Smuggling" exploits.
 - **Cognitive Truth Attestation Hub**: (Promoted to P0) Critical for providing the verifiable proof required for AIR-mediated intent reconciliation.
 
-## Evolution: 2026-05-19 Updates
+## Evolution: [2026-05-19] Updates
 
 ### Proposed Additions
 - **Signed Reasoning Monologue (SRM) Provider**: (P0) A core security middleware that cryptographically binds internal monologues to hardware-attested sessions, neutralizing "Reasoning Hijacking."
@@ -148,11 +77,11 @@ SPDX-License-Identifier: Apache-2.0
 - **Project-Local Snapshot (PLSS) Sync**: (Promoted to P0) Now critical for implementing HASS-compliant "Point-in-Time Integrity."
 - **PNTD Discovery Provider**: (Re-affirmed P0) Now designated as the mandatory registry for all enterprise swarms to support NLD.
 
-## Evolution: 2026-05-18 Updates
+## Evolution: [2026-05-18] Updates
 
 ### Proposed Additions
 - **Mission-Root Pinning (MRP) Middleware**: (P0) A transport-level security component that protects the "Mission Root" from context-window eviction during high-frequency "noise" injections (MRE defense).
-- **State-Trust Labeling (STL) Provider**: (P0) Security extension for the Blackboard to tag all KV data with the trust level of its origin framework, neutralizing PASI (Protocol-Agnostic State Injection).
+- **State-Trust Labeling (STL) Provider**: (P0) Security extension for the Blackboard that tags all KV data with the trust level of its origin framework, neutralizing PASI (Protocol-Agnostic State Injection).
 - **Wait-Graph Deadlock Resolver**: (P1) Advanced orchestration service for the `TeammateTool` Adapter that proactively breaks circular task dependencies in parallel swarms.
 - **Intent-Weighted Context Summarizer**: (P1) Upgrade for the ContextEngine Adapter supporting RCE v2.0 logic for mission-anchored context compression.
 
@@ -160,7 +89,7 @@ SPDX-License-Identifier: Apache-2.0
 - **TeammateTool Orchestration Adapter**: (Re-affirmed P0) Now elevated with the requirement for "Multi-Agent Quorum" (MAQ) cross-framework coordination.
 - **Contextual Quorum (CQ) Hub**: (Promoted to P0) Critical for supporting the new Claude-led MAQ protocol for high-risk actions.
 
-## Evolution: 2026-05-17 Updates
+## Evolution: [2026-05-17] Updates
 
 ### Proposed Additions
 - **`TeammateTool` Orchestration Adapter**: (P0) Infrastructure for cross-framework "Agent Teams," facilitating Claude-style delegation and synchronization for heterogeneous swarms.
@@ -172,7 +101,7 @@ SPDX-License-Identifier: Apache-2.0
 - **A2A Messaging Hub**: (Re-affirmed P0) Designated as the primary gateway for the new "Authenticated Agent Card Discovery."
 - **Isolated Named-Pipe Transport Middleware**: (Re-affirmed P0) Elevated with the requirement for mandatory TLSB to prevent "Team Ghosting."
 
-## Evolution: 2026-05-16 Updates
+## Evolution: [2026-05-16] Updates
 
 ### Proposed Additions
 - **Reasoning Quorum Middleware**: (P0) Infrastructure for agents to reach a cryptographically bound quorum on non-deterministic reasoning outputs, neutralizing "Hallucination Variance."
@@ -184,7 +113,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Coordination Token Optimizer**: (Promoted to P0) Critical for neutralizing the overhead and "Team Ghosting" risks in parallel swarm coordination.
 - **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to support the new Reasoning-Level Consensus (RLC) requirements.
 
-## Evolution: 2026-05-15 Updates
+## Evolution: [2026-05-15] Updates
 
 ### Proposed Additions
 - **Consensus Tool Validation Hub**: (P0) Distributed security middleware requiring multi-agent signatures for high-risk tool calls and task delegations, neutralizing "Agentic Social Engineering."
@@ -196,7 +125,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Consensus Tool Validation Gateway**: (Re-affirmed P0) Designated as a mandatory requirement for all enterprise swarm deployments to counter machine-speed coercion.
 - **Shared KV Store (Blackboard)**: (Re-affirmed P0) Expanded to support "Intent-Bound Memory Isolation" as the primary state persistence model.
 
-## Evolution: 2026-05-14 Updates
+## Evolution: [2026-05-14] Updates
 
 ### Proposed Additions
 - **ContextEngine Lifecycle Adapter**: (P0) A native implementation of the OpenClaw v2026.3.7 ContextEngine lifecycle hooks, enabling MCP Any to act as a universal host for pluggable context plugins.
@@ -208,7 +137,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Injection-Shielding Middleware**: (Re-affirmed P0) Designated as a mandatory prerequisite for all tool-driven code commits to counter high vulnerability rates in agent-generated PRs.
 - **A2A Messaging Hub**: (Re-affirmed P0) Expanded to support "Hardware-Attested NHI Wallets" as the primary identity transport.
 
-## Evolution: 2026-05-13 Updates
+## Evolution: [2026-05-13] Updates
 
 ### Proposed Additions
 - **Loopback Authentication Proxy**: (P0) A mandatory security interceptor for all local network ports that enforces origin-locked authentication, neutralizing "ClawdBot" style loopback hijacking.
@@ -219,7 +148,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Isolated Named-Pipe Transport Middleware**: (Re-affirmed P0) Designated as the mandatory replacement for all local TCP/UDP coordination channels.
 - **Pre-Flight Sandbox Validator**: (Promoted to P0) Critical for integrating the new Injection-Shielding logic before agent boot.
 
-## Evolution: 2026-05-12 Updates
+## Evolution: [2026-05-12] Updates
 
 ### Proposed Additions
 - **Isolated Named-Pipe Transport Middleware**: (P0) A high-performance inter-agent transport layer using Docker-bound named pipes (UNIX domain sockets) to eliminate local port exposure.
@@ -230,7 +159,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Parallel Team Coordination Hub**: (Re-affirmed P0) Evolved to mandate the use of Isolated Named-Pipe Transport for all inter-teammate coordination.
 - **A2A Messaging Hub**: (Promoted to P0) Critical requirement for managing "Auth-at-the-Pipe" tokens across heterogeneous agent swarms.
 
-## Evolution: 2026-05-11 Updates
+## Evolution: [2026-05-11] Updates
 
 ### Proposed Additions
 - **Parallel Team Coordination Hub**: (P0) High-speed coordination bus for Claude Code-style "Agent Teams," providing message passing and Snapshot-and-Merge state reconciliation for parallel branches.
@@ -241,7 +170,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Discovery Sandbox Middleware**: (Re-affirmed P0) Evolved with the requirement for "Mandatory Discovery-Phase Isolation" to counter CVE-2026-0628.
 - **Shared KV Store (Blackboard)**: (Promoted to P0) Critical for implementing the "Snapshot-and-Merge" reconciliation needed for parallel agent teams.
 
-## Evolution: 2026-05-10 Updates
+## Evolution: [2026-05-10] Updates
 
 ### Proposed Additions
 - **Discovery Sandbox Middleware**: (P0) A secure, ephemeral execution environment for MCP discovery commands (e.g., Gemini's `discoveryCommand`), preventing host-level "Ghost-Execution" exploits.
@@ -252,7 +181,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Deterministic Absence Proof (DAP) Generator**: (Promoted to P0) Critical for neutralizing CVE-2026-25725 style sandbox escapes in multi-agent environments.
 - **RL Telemetry Provider**: (Re-affirmed P0) Evolved with the requirement for "Asynchronous Rollout Collection" to support the OpenClaw-RL v1.0 standard.
 
-## Evolution: 2026-05-09 Updates
+## Evolution: [2026-05-09] Updates
 
 ### Proposed Additions
 - **Cryptographic Lineage Validator**: (P0) A core security middleware that enforces mandatory parent-child token binding for all subagent spawns, neutralizing "Shadow Subagent" context contamination.
@@ -263,7 +192,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Deterministic Permission Guard (DPG)**: (Re-affirmed P0) Evolved with the requirement for "Per-Call Integrity" mapping to the CPCP standard.
 - **Recursive Depth-Limit Middleware**: (Promoted to P0) Critical for preventing infinite "Shadow Spawning" loops in autonomous swarms.
 
-## Evolution: 2026-05-08 Updates
+## Evolution: [2026-05-08] Updates
 
 ### Proposed Additions
 - **Context Sealed-Fragment Hub**: (P0) Implementation of "Active Fragment Sealing" to protect context shards from semantic side-channel exfiltration (defense against "EchoLeak").
@@ -274,7 +203,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Distributed Supervisor Mesh (DSM) Orchestrator**: (Promoted to P0) Designated as a critical infrastructure requirement for the 2026 enterprise swarm pivot.
 - **Programmatic SDK Boundary Enforcer**: (Re-affirmed P0) Evolved with the requirement for "Context-Poisoning" defense in automated scripts.
 
-## Evolution: 2026-05-07 Updates
+## Evolution: [2026-05-07] Updates
 
 ### Proposed Additions
 - **Programmatic SDK Boundary Enforcer**: (P0) Mandatory security gating for SDK-driven agent interactions (e.g., OpenCode SDK), ensuring programmatic tool calls comply with Zero-Trust policies.
@@ -285,7 +214,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Inter-Swarm Deadlock Detector**: (Promoted to P0) Critical for neutralizing resource exhaustion in autonomous production swarms.
 - **Hierarchical Intent Lease (HIL) Broker**: (Re-affirmed P0) Essential for managing the lifecycle of decentralized supervisors in a DSM.
 
-## Evolution: 2026-05-06 Updates
+## Evolution: [2026-05-06] Updates
 
 ### Proposed Additions
 - **Origin-Locked Agent Gateway**: (P0) A mandatory security layer for all local listeners that enforces `Origin`, `Sec-Fetch-Site`, and session-token binding to neutralize "ClawJacked" style hijacking.
@@ -296,7 +225,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Reasoning-Aware Memory Segmentation (RAMS) Hub**: (Re-affirmed P0) Evolved into the "Intent-Sealed Shards" model for default isolation.
 - **Same-Origin Policy (SOP) Enforcer**: (Promoted to P0) Designated as a mandatory prerequisite for all local tool connectivity.
 
-## Evolution: 2026-05-05 Updates
+## Evolution: [2026-05-05] Updates
 
 ### Proposed Additions
 - **Reasoning-Aware Memory Segmentation (RAMS) Hub**: (P0) A core extension for the Blackboard that provides cryptographically isolated "Intent-Sealed Shards" for subagents, neutralizing "Memory Smearing."
@@ -307,7 +236,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Kernel-Bound FD Persistence**: (Evolved to HEPA) Upgraded with hardware enclave support for stronger path-resolution guarantees.
 - **Semantic Integrity Bridge**: (Promoted to P0) Critical requirement for detecting "Recursive Context Splicing" (RCS) in multi-modal reasoning traces.
 
-## Evolution: 2026-05-04 Updates
+## Evolution: [2026-05-04] Updates
 
 ### Proposed Additions
 - **Semantic Integrity Bridge**: (P0) A monitoring extension for the CQ Hub that utilizes "Intent Drift Detection" and SGC-aware analysis to prevent Recursive Intent Poisoning (RIP).
@@ -318,7 +247,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Depth-Aware Inode Pinning (DAIP)**: (Evolved to Kernel-Bound FD Persistence) Upgraded to handle FD-passing for stronger immutability guarantees.
 - **A2UI Native Gateway**: (Evolved to Bi-directional Bridge) Now requires support for user-initiated state pushes back to the agent.
 
-## Evolution: 2026-05-03 Updates
+## Evolution: [2026-05-03] Updates
 
 ### Proposed Additions
 - **Deadlock-Resilient CQ Controller**: (P0) Advanced extension of the CQ Hub that performs "Wait-Graph Analysis" to identify and break circular attestation dependencies in multi-agent swarms.
@@ -329,7 +258,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Inter-Swarm Deadlock Detector**: (Promoted to P0) Critical for preventing resource exhaustion in the face of malicious attestation loops.
 - **KLIP Enforcement**: (Evolved to DAIP) Now requires depth-aware validation to counter recursive symlink tunnels.
 
-## Evolution: 2026-05-02 Updates
+## Evolution: [2026-05-02] Updates
 
 ### Proposed Additions
 - **Risk-Adaptive CQ Controller**: (P0) A dynamic policy engine for the CQ Hub that scales the quorum threshold (number of required signatures) based on real-time tool risk scores and reasoning confidence.
@@ -340,7 +269,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Project-Local Snapshot (PLSS) Sync**: (Promoted to P0) Now critical for implementing the Deterministic Sandbox Recovery (DSR) patterns standardized by Claude Code.
 - **Contextual Quorum (CQ) Hub**: (Re-affirmed P0) Evolving to support OpenClaw v2026.5.1 AQT (Adaptive Quorum Thresholds).
 
-## Evolution: 2026-05-01 Updates
+## Evolution: [2026-05-01] Updates
 
 ### Proposed Additions
 - **Contextual Quorum (CQ) Hub**: (P0) Coordination service for multi-agent attestation, requiring a consensus of specialized subagents before high-risk tool execution.
@@ -351,7 +280,7 @@ SPDX-License-Identifier: Apache-2.0
 - **S2S Trust Broker**: (Promoted to P0) Critical for neutralizing negotiation overhead in maturing inter-swarm coordination.
 - **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving into the CQ Hub to support OpenClaw v2026.5.0 requirements.
 
-## Evolution: 2026-04-30 Updates
+## Evolution: [2026-04-30] Updates
 
 ### Proposed Additions
 - **Mesh-Aware Blackboard Adaptor**: (P0) Transformation of the Shared KV Store into a graph-based intent mesh, enabling complex intent reconciliation for multi-agent swarms.
@@ -362,7 +291,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Mesh-Aware Intelligence**: (Promoted to P0) Critical for reconciling conflicting intents in deep, heterogeneous swarms.
 - **KLIP Enforcement**: (Promoted to P0) Designated as the primary defense against the evolved BoryptGrab SIR exploit.
 
-## Evolution: 2026-04-29 Updates
+## Evolution: [2026-04-29] Updates
 
 ### Proposed Additions
 - **PII-Sovereign Context Scrubber**: (P0) Mandatory sanitization middleware for hybrid-cloud deployments, ensuring de-biometricization of context before cloud propagation.
@@ -373,7 +302,7 @@ SPDX-License-Identifier: Apache-2.0
 - **De-biometricization Sanitizer**: (Promoted to P0) Critical for data sovereignty in hybrid reasoning loops.
 - **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Now elevated with the requirement for "Lifecycle-Bound" revocation.
 
-## Evolution: 2026-04-28 Updates
+## Evolution: [2026-04-28] Updates
 
 ### Proposed Additions
 - **Ephemeral Privilege Manager (EPM)**: (P0) Core security service that manages "Just-in-Time" privilege escalation for high-risk tools, neutralizing the "BoryptGrab" persistent access vector.
@@ -384,7 +313,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Semantic Risk HITL Arbiter**: (Promoted to P0) Upgrading the HITL Middleware with context-aware risk assessment to reduce user approval fatigue.
 - **LFTA ARL Middleware**: (Re-affirmed P0) Critical for immediate revocation of privileges during the ongoing "BoryptGrab" crisis.
 
-## Evolution: 2026-04-27 Updates
+## Evolution: [2026-04-27] Updates
 
 ### Proposed Additions
 - **LFTA ARL Middleware**: (P0) A high-priority security listener that ingests Attestation Revocation Lists from trust-roots to provide sub-millisecond revocation of compromised trust leases.
@@ -395,7 +324,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Cognitive Anchor Manager**: (Re-affirmed P0) Now elevated with the requirement for "Smart Pruning" to support deep, long-running agent swarms.
 - **A2A Safety Proof Validator**: (Re-affirmed P0) Expanded to integrate with the LFTA ARL Middleware for real-time reputation and revocation checks.
 
-## Evolution: 2026-04-26 Updates
+## Evolution: [2026-04-26] Updates
 
 ### Proposed Additions
 - **Multi-Hop Trust Relay**: (P0) Security middleware implementing LFTA v2.0 multi-hop trust delegation, allowing attestation strength to persist across deep agent swarms.
@@ -406,7 +335,7 @@ SPDX-License-Identifier: Apache-2.0
 - **A2A Session Persistence Middleware**: (Re-affirmed P0) Now integrates with the Multi-Hop Trust Relay for long-haul reasoning sessions.
 - **ContextEngine Plugin Adapter**: (Re-affirmed P0) Expanded to support Cognitive Anchoring as a core sovereignty utility.
 
-## Evolution: 2026-04-25 Updates
+## Evolution: [2026-04-25] Updates
 
 ### Proposed Additions
 - **A2A Session Persistence Middleware**: (P0) A core security service that manages token refresh and trust persistence for long-running A2A reasoning sessions, neutralizing "Session Decay."
@@ -416,7 +345,7 @@ SPDX-License-Identifier: Apache-2.0
 - **ContextEngine Plugin Adapter**: (Re-affirmed P0) Now elevated to a critical requirement for supporting "Cognitive Anchoring" and "Context-Splicing" defense.
 - **A2A Authenticated Handshake Provider**: (Re-affirmed P0) Now designated as the primary backend for the A2A Session Persistence Middleware.
 
-## Evolution: 2026-04-24 Updates
+## Evolution: [2026-04-24] Updates
 
 ### Proposed Additions
 - **A2A Authenticated Handshake Provider**: (P0) Native security middleware implementing Gemini CLI v0.33.0 style HTTP authentication for all agent-to-agent remote communications and card discovery.
@@ -427,7 +356,7 @@ SPDX-License-Identifier: Apache-2.0
 - **A2A Messaging Hub**: (Re-affirmed P0) Now designated as the primary enforcement point for Authenticated Handshakes.
 - **OpenClaw ContextEngine Lifecycle Adapter**: (Re-affirmed P0) Evolving into the ContextEngine Plugin Adapter for broader sovereignty support.
 
-## Evolution: 2026-04-23 Updates
+## Evolution: [2026-04-23] Updates
 
 ### Proposed Additions
 - **OpenClaw ContextEngine Lifecycle Adapter**: (P0) A native middleware that implements OpenClaw's matured ContextEngine hooks, allowing MCP Any to act as the authoritative provider for context compression, summarization, and state persistence.
@@ -438,7 +367,7 @@ SPDX-License-Identifier: Apache-2.0
 - **RL Telemetry Provider**: (Promoted to P0) Now essential for providing high-frequency feedback tokens to OpenClaw-RL asynchronous training loops.
 - **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include DAP as a mandatory boot requirement for all compliant agent environments.
 
-## Evolution: 2026-04-22 Updates
+## Evolution: [2026-04-22] Updates
 
 ### Proposed Additions
 - **A2A Replay Guard**: (P0) Security middleware for the A2A Messaging Hub that enforces monotonic sequence nonces and session-bound validation to prevent task-proposal replay attacks.
@@ -449,7 +378,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Agent-Aware Blackboard Isolation**: (Re-affirmed P0) Expanded to support "Cognitive Sovereignty" via hardware-bound encryption for subagent monologues.
 - **A2UI Native Gateway**: (Re-affirmed P0) Now designated as the authoritative decryption point for "Encrypted Monologues" during user reviews.
 
-## Evolution: 2026-04-21 Updates
+## Evolution: [2026-04-21] Updates
 
 ### Proposed Additions
 - **A2UI Native Gateway**: (P0) Secure bridge for the Agent-to-User Interface protocol, allowing agents to surface sandboxed, interactive UI fragments.
@@ -460,7 +389,7 @@ SPDX-License-Identifier: Apache-2.0
 - **ASH Consensus Broker**: (Re-affirmed P0) Now integrates with the A2UI Native Gateway for interactive user-in-the-loop consensus voting.
 - **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include DAP as a mandatory boot requirement.
 
-## Evolution: 2026-04-20 Updates
+## Evolution: [2026-04-20] Updates
 
 ### Proposed Additions
 - **ASH Consensus Broker**: (P0) Coordination service facilitating swarm-wide voting on reasoning paths and state re-alignment for Autonomous Self-Healing.
@@ -471,7 +400,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Blackboard Versioning Hub**: (Re-affirmed P0) Now designated as the authoritative state provider for ASH Consensus voting.
 - **Distributed Trust Lease Broker**: (Re-affirmed P0) Essential for sub-millisecond validation of A2A Safety Proofs in deep swarms.
 
-## Evolution: 2026-04-19 Updates
+## Evolution: [2026-04-19] Updates
 
 ### Proposed Additions
 - **Distributed Trust Lease Broker**: (P0) A high-performance security utility implementing UACO v2.5 LFTA. Manages time-bound, hardware-attested trust leases to reduce per-call attestation latency.
@@ -483,7 +412,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Atomic State Rollback Middleware**: Promoted to **P0**. Now a critical dependency for OpenClaw v2.8 ASH compliance.
 - **Resident Integrity Monitor (RIM)**: (Re-affirmed P0) Expanded to act as the primary attestation source for the Distributed Trust Lease Broker.
 
-## Evolution: 2026-04-18 Updates
+## Evolution: [2026-04-18] Updates
 
 ### Proposed Additions
 - **Foundation Governance Adapter**: (P1) A bridge and translation layer that implements the OpenClaw Foundation's neutral governance protocols for cross-framework agent coordination.
@@ -494,7 +423,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Resident Integrity Monitor (RIM)**: (Re-affirmed P0) Now elevated to the primary mechanism for supporting "Continuous Sandbox Persistence Proofs."
 - **LFTA Trust Lease Manager**: Promoted to **P0**. Essential for scaling high-frequency attestation in deep swarms.
 
-## Evolution: 2026-04-17 Updates
+## Evolution: [2026-04-17] Updates
 
 ### Proposed Additions
 - **LFTA Trust Lease Manager**: (P1) A performance-optimizing security middleware that manages "Trust Leases" for high-frequency agent tool calls, reducing hardware attestation overhead while maintaining mission integrity.
@@ -505,7 +434,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Resident Integrity Monitor (RIM)**: Promoted to **P0**. Now a critical requirement for "Sandbox Persistence Proofs" and continuous hardware-bound security.
 - **Reactive Intent Gateway (RIG)**: Re-affirmed as **P0** and evolved into the Arbitration Hub.
 
-## Evolution: 2026-04-14 Updates
+## Evolution: [2026-04-14] Updates
 
 ### Proposed Additions
 - **Context Sidecar Adapter**: (P1) Middleware that synchronizes state with external Context Engines (like OpenClaw v2026.3.7) via their native plugin interfaces, ensuring consistent "Intent-Bound" context across frameworks.
@@ -516,7 +445,7 @@ SPDX-License-Identifier: Apache-2.0
 - **A2A Messaging Hub**: (Re-affirmed P0) Expanded to include native support for the Delegation Attestation Layer.
 - **Settings Injection Guard**: (Re-affirmed P0) Now mandates TPM-bound attestation for all security-critical configuration overrides.
 
-## Evolution: 2026-04-12 Updates
+## Evolution: [2026-04-12] Updates
 
 ### Proposed Additions
 - **A2A Messaging Hub**: (P0) Native messaging hub for the A2A protocol, facilitating secure task delegation and coordination between disparate frameworks with integrated Zero-Trust policy enforcement.
@@ -527,7 +456,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include Non-Existence Proofs as a mandatory "Deterministic Boot" prerequisite.
 - **A2A Interoperability Layer**: (Re-affirmed P0) Transitioning from a bridge to a full Messaging Hub.
 
-## Evolution: 2026-03-17 Updates
+## Evolution: [2026-03-17] Updates
 
 ### Proposed Additions
 - **Local-Loopback Rate Limiter**: (P0) Mandatory rate limiting and auditing for all 127.0.0.1 / ::1 traffic to mitigate high-frequency brute-force and token hijacking attempts.
@@ -541,7 +470,7 @@ SPDX-License-Identifier: Apache-2.0
 - **A2A Messaging Hub**: (Re-affirmed P0) Evolving to act as the primary transport for the Inter-Agent Mailbox Guard.
 - **RL Telemetry Provider**: (Promoted to P0) Essential for feeding verifiable rewards back to OpenClaw-RL policy engines.
 
-## Evolution: 2026-03-14 Updates
+## Evolution: [2026-03-14] Updates
 
 ### Proposed Additions
 - **Same-Origin Policy (SOP) Enforcer for MCP**: (P0) Middleware that validates `Origin` and `Sec-Fetch-Site` headers for all local requests to prevent cross-site hijacking (CVE-2026-25253).
@@ -556,7 +485,7 @@ SPDX-License-Identifier: Apache-2.0
 ### Deprecations / Monitoring
 - **Unvalidated Local WebSockets**: Monitoring for total deprecation. All local WebSocket connections must provide a valid, allow-listed `Origin` header.
 
-## Evolution: 2026-04-10 Updates
+## Evolution: [2026-04-10] Updates
 
 ### Proposed Additions
 - **Inference-Time Data Sanitizer (IDS)**: (P0) Semantic context governance middleware that sanitizes textual and multimodal data fragments using matured OpenClaw `ContextEngine` hooks.
@@ -567,7 +496,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Pre-Flight Sandbox Validator**: (Re-affirmed P0) Promoted to a mandatory "Deterministic Boot" prerequisite.
 - **Cross-Framework Skill Reputation Engine**: (P1) Re-affirmed as the primary mechanism for swarm-based consensus on tool safety.
 
-## Evolution: 2026-04-09 Updates
+## Evolution: [2026-04-09] Updates
 
 ### Proposed Additions
 - **Pre-Flight Sandbox Validator**: (P0) Core security service that generates a "Full-State Manifest" before agent execution, addressing environment-escape vulnerabilities like CVE-2026-25725.
@@ -578,7 +507,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Verified Skill Auction (VSA)**: (Re-affirmed P0) Expanded to integrate with the new Reputation Engine for real-time capability revoking.
 - **Hardware-Linked Inode Pinning**: (Re-affirmed P0) Promoted as a mandatory requirement for the Pre-Flight Sandbox Validator.
 
-## Evolution: 2026-04-08 Updates
+## Evolution: [2026-04-08] Updates
 
 ### Proposed Additions
 - **Pre-Flight Sandbox Validator**: (P0) Core security service that generates a "Full-State Manifest" before agent execution, addressing environment-escape vulnerabilities like CVE-2026-25725.
@@ -589,7 +518,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Verified Skill Auction (VSA)**: (Re-affirmed P0) Expanded to integrate with the new Reputation Engine for real-time capability revoking.
 - **Hardware-Linked Inode Pinning**: (Re-affirmed P0) Promoted as a mandatory requirement for the Pre-Flight Sandbox Validator.
 
-## Evolution: 2026-04-07 Updates
+## Evolution: [2026-04-07] Updates
 
 ### Proposed Additions
 - **Verified Skill Auction (VSA)**: (P0) Integrating the DCA Auction Broker with skill attestation to ensure only verified agents can bid on sensitive tasks.
@@ -600,7 +529,7 @@ SPDX-License-Identifier: Apache-2.0
 - **DCA Negotiation Guard**: (Re-affirmed P0) Expanded to support the new VSA protocol and mitigate negotiation exhaustion.
 - **Attested Discovery Authority**: (Re-affirmed P0) Promoted as the mandatory gate for all marketplace-sourced skills.
 
-## Evolution: 2026-02-23 Updates
+## Evolution: [2026-02-23] Updates
 
 ### Proposed Additions
 - **Environment Bridging Middleware**: (P1) Bridge between cloud-sandboxed agents (e.g., Claude Code Sandbox) and local MCP Any tools. Enables seamless state transfer.
@@ -614,7 +543,7 @@ SPDX-License-Identifier: Apache-2.0
 ### Deprecations / Monitoring
 - *None today.*
 
-## Evolution: 2026-02-24 Updates
+## Evolution: [2026-02-24] Updates
 
 ### Proposed Additions
 - **Advanced Multi-Agent Session Management**: (P0) A session-aware middleware that tracks tool state and handoffs between multiple specialized agents.
@@ -624,7 +553,7 @@ SPDX-License-Identifier: Apache-2.0
 ### Priority Shifts
 - **Policy Firewall**: Promoted to **P0** to support secure "Zero Trust" subagent isolation as ecosystems become more complex.
 
-## Evolution: 2026-02-25 Updates
+## Evolution: [2026-02-25] Updates
 
 ### Proposed Additions
 - **On-Demand Discovery Middleware (Lazy-MCP)**: (P0) Implements similarity-based tool searching to prevent context pollution. Essential for massive (100+) tool libraries.
@@ -638,7 +567,7 @@ SPDX-License-Identifier: Apache-2.0
 ### Deprecations / Monitoring
 - **Upfront Tool Schema Pushing**: Monitoring for deprecation in favor of Lazy-Discovery.
 
-## Evolution: 2026-02-26 Updates
+## Evolution: [2026-02-26] Updates
 
 ### Proposed Additions
 - **A2A Interop Bridge (Pseudo-MCP)**: (P0) Allows agents to interact with other agent frameworks using the A2A protocol, exposed as standard MCP tools.
@@ -652,14 +581,14 @@ SPDX-License-Identifier: Apache-2.0
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
 
-## Evolution: 2026-02-28 Updates
+## Evolution: [2026-02-28] Updates
 
 ### Proposed Additions
 - **"Safe-by-Default" Network Hardening**: (P0) Transition to local-only default bindings for all services. Requires explicit MFA/Attestation for remote exposure.
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
-## Evolution: 2026-03-09 Updates
+## Evolution: [2026-03-09] Updates
 
 ### Proposed Additions
 - **Project Configuration Security Guard**: (P0) Validating proxy for project-local agent configurations (e.g., `.claude/settings.json`) to prevent RCE via malicious hooks.
@@ -673,7 +602,7 @@ SPDX-License-Identifier: Apache-2.0
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
 
-## Evolution: 2026-03-10 Updates
+## Evolution: [2026-03-10] Updates
 
 ### Proposed Additions
 - **Sandbox-as-a-Service for Config Hooks**: (P0) A natively managed, ultra-lightweight execution environment for approved hooks found in project-local settings.
@@ -687,21 +616,21 @@ SPDX-License-Identifier: Apache-2.0
 ### Deprecations / Monitoring
 - **Implicit Hook Execution**: All "hooks" or "auto-exec" commands in configurations are now **Deprecated**. They must be explicitly moved to an "Attested Hooks" registry.
 
-## Evolution: 2026-03-11 Updates
+## Evolution: [2026-03-11] Updates
 
 ### Proposed Additions
 - **Project-Local Config Attestation Engine**: (P0) A core service that intercepts and verifies cryptographic signatures on project-local configuration files.
 - **Base-URL Hijack Protection (Exfiltration Guard)**: (P0) A middleware that enforces a strict "Allow-List" for LLM base URLs, preventing silent redirection of API traffic.
 - **Active Config Rewriter**: (P1) A daemon that monitors agent configuration files and automatically reverts unauthorized changes to security-critical fields.
 
-## Evolution: 2026-03-12 Updates
+## Evolution: [2026-03-12] Updates
 
 ### Proposed Additions
 - **Verified Skill Registry**: (P0) A security-first marketplace/registry for agent skills, requiring behavioral profiling and cryptographic signing before installation.
 - **Offline-First Resilient Proxy**: (P1) A hardened gateway that handles complex proxy configurations and provides a stable LLM interface for air-gapped or restricted environments.
 - **MFA for Project-Local Hooks**: (P0) Extends the HITL Middleware to require multi-factor attestation for any executable hook found in project configurations.
 
-## Evolution: 2026-03-13 Updates
+## Evolution: [2026-03-13] Updates
 
 ### Proposed Additions
 - **OpenClaw ContextEngine Bridge**: (P1) A middleware that enables MCP Any to synchronize state with OpenClaw's new pluggable ContextEngine.
@@ -717,7 +646,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Direct Agent-to-LLM Communication**: Monitoring for deprecation in favor of **Exfiltration-Resistant Transport** (Proxied via MCP Any).
 - **Unsigned/Unverified Skills**: Moving towards a default-block policy for any skill not present in the Verified Skill Registry.
 
-## Evolution: 2026-03-14 Updates
+## Evolution: [2026-03-14] Updates
 
 ### Proposed Additions
 - **Same-Origin Policy (SOP) Enforcer for MCP**: (P0) Middleware that validates `Origin` and `Sec-Fetch-Site` headers for all local requests to prevent cross-site hijacking (CVE-2026-25253).
@@ -732,14 +661,14 @@ SPDX-License-Identifier: Apache-2.0
 ### Deprecations / Monitoring
 - **Unvalidated Local WebSockets**: Monitoring for total deprecation. All local WebSocket connections must provide a valid, allow-listed `Origin` header.
 
-## Evolution: 2026-03-15 Updates
+## Evolution: [2026-03-15] Updates
 
 ### Proposed Additions
 - **Call-Graph Loop Monitor**: (P0) Middleware to detect and prevent recursive "M2M" tool loops that cause resource exhaustion.
 - **Signed Context Chain Protocol**: (P0) Cryptographic signing of subagent requests to prevent identity spoofing (CVE-2026-28190).
 - **Universal Agent Bus (UAB) Adapter**: (P1) Native support for the UAB protocol, enabling seamless task handoffs between OpenClaw and AutoGen frameworks.
 
-## Evolution: 2026-03-16 Updates
+## Evolution: [2026-03-16] Updates
 
 ### Proposed Additions
 - **Browser-Origin Validation Middleware**: (P0) Mandatory validation of `Origin` and `Sec-Fetch-Site` headers for all local listeners to mitigate cross-site hijacking (CVE-2026-25253).
@@ -754,7 +683,7 @@ SPDX-License-Identifier: Apache-2.0
 ### Deprecations / Monitoring
 - **Implicit Local Trust**: All listeners must now explicitly validate request origins. Standard `localhost` binding without header checks is now **Deprecated**.
 
-## Evolution: 2026-03-17 Updates
+## Evolution: [2026-03-17] Updates
 
 ### Proposed Additions
 - **Local-Loopback Rate Limiter**: (P0) Mandatory rate limiting for all `127.0.0.1` and `::1` connections to prevent brute-force attacks on gateway credentials.
@@ -769,7 +698,7 @@ SPDX-License-Identifier: Apache-2.0
 ### Deprecations / Monitoring
 - **Unthrottled Local Access**: All local interfaces must now implement rate limiting. Unthrottled loopback access is now **Deprecated**.
 
-## Evolution: 2026-03-18 Updates
+## Evolution: [2026-03-18] Updates
 
 ### Proposed Additions
 - **Local Listener Origin Enforcement**: (P0) Mandatory `Origin` and `Sec-Fetch-Site` validation for all local API/WebSocket listeners to prevent cross-site hijacking.
@@ -777,14 +706,14 @@ SPDX-License-Identifier: Apache-2.0
 - **UAB Authenticated Task Delegation Core**: (P0) Full implementation of UAB task card verification, ensuring all cross-framework delegations are authenticated.
 - **Lineage-Aware Context Signing**: (P1) Cryptographic signing of the entire context chain to prevent subagent identity spoofing.
 
-## Evolution: 2026-03-19 Updates
+## Evolution: [2026-03-19] Updates
 
 ### Proposed Additions
 - **UACO-Native Coordination Middleware**: (P0) Full implementation of the Universal Agent Coordination Protocol for task negotiation, bidding, and stateful handoffs.
 - **Unified RL Feedback Telemetry Bridge**: (P1) Middleware for collecting and normalizing agent performance and conversation feedback for RL training loops (e.g., OpenClaw-RL).
 - **Enterprise Policy Sync Engine**: (P1) Core service for synchronizing security policies and allowed-origin lists from a centralized enterprise management server.
 
-## Evolution: 2026-03-20 Updates
+## Evolution: [2026-03-20] Updates
 
 ### Proposed Additions
 - **Ephemeral Workspace Trust Middleware**: (P0) A session-bound attestation service that translates desktop-level trust tokens into persistent agent capabilities.
@@ -799,7 +728,7 @@ SPDX-License-Identifier: Apache-2.0
 ### Deprecations / Monitoring
 - **Framework-Specific Feedback Logs**: Monitoring for deprecation. Feedback should be normalized via the Unified Telemetry Bridge.
 
-## Evolution: 2026-03-21 Updates
+## Evolution: [2026-03-21] Updates
 
 ### Proposed Additions
 - **Content-Addressable Config (CAC) Validator**: (P0) A core security service that enforces hash-based validation for all executable hooks and settings, preventing "Binary Smuggling."
@@ -807,7 +736,7 @@ SPDX-License-Identifier: Apache-2.0
 - **DNS/ICMP Exfiltration Monitor**: (P1) L4 telemetry middleware to detect and block non-HTTP exfiltration attempts by compromised agents.
 - **Hardware-Bound Trust Continuity**: (P1) Extension for the Ephemeral Workspace Trust Middleware that uses TPM/Secure Enclave signatures to persist trust for headless agents.
 
-## Evolution: 2026-03-22 Updates
+## Evolution: [2026-03-22] Updates
 
 ### Proposed Additions
 - **UACO Agentic SLA Middleware**: (P0) Enforcement layer for resource contracts (token budget, reasoning time) during UACO task delegation.
@@ -821,7 +750,7 @@ SPDX-License-Identifier: Apache-2.0
 ### Deprecations / Monitoring
 - **Unbounded Task Delegation**: Moving toward total deprecation. All UACO delegations must eventually include a resource contract (SLA).
 
-## Evolution: 2026-03-23 Updates
+## Evolution: [2026-03-23] Updates
 
 ### Proposed Additions
 - **Proof-of-Intent (PoI) Validator**: (P0) Middleware that implements UACO v1.7 headers to verify that tool calls align with cryptographically signed session intents.
@@ -835,7 +764,7 @@ SPDX-License-Identifier: Apache-2.0
 ### Deprecations / Monitoring
 - **JSON-only State Handoffs**: Monitoring for deprecation in favor of **BSH** for high-frequency agent swarms.
 
-## Evolution: 2026-03-24 Updates
+## Evolution: [2026-03-24] Updates
 
 ### Proposed Additions
 - **Relational PoI Validator**: (P0) Extends PoI validation to verify the entire "Intent Chain," ensuring subagents cannot be coerced into actions outside the parent's verified goal.
@@ -846,7 +775,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
 
-## Evolution: 2026-03-25 Updates
+## Evolution: [2026-03-25] Updates
 
 ### Proposed Additions
 - **WASM-BSH State Sanitizer**: (P0) Pluggable WASM sandbox for the BSH Gateway that validates and sanitizes binary context during handoffs.
@@ -858,14 +787,14 @@ SPDX-License-Identifier: Apache-2.0
 - **Relational PoI Validator**: Re-affirmed as **P0**. Critical foundation for supporting UACO v1.8 RID.
 - **Ghost Shell Hook Profiler**: Re-affirmed as **P0**. Expanded to include "WASM-BSH Pattern Matching" to detect malicious state transformation logic.
 
-## Evolution: 2026-03-26 Updates
+## Evolution: [2026-03-26] Updates
 
 ### Proposed Additions
 - **Modular Context Hook Adapter**: (P0) A bridge that maps MCP Any's internal state to the pluggable lifecycle hooks of external frameworks (e.g., OpenClaw ContextEngine).
 - **RID Mutation Boundary Enforcer**: (P0) Middleware that validates UACO v1.8 tokens, ensuring subagents cannot exceed their assigned delegation depth or mutate intents beyond authorized boundaries.
 - **WASM-BSH Active Sanitizer**: (P0) Integrated WASM sandbox for the BSH Gateway that performs schema-based validation on binary context buffers during handoffs.
 
-## Evolution: 2026-03-27 Updates
+## Evolution: [2026-03-27] Updates
 
 ### Proposed Additions
 - **Live Context Sharding Middleware**: (P0) Core service for managing the lifecycle of granular, addressable context shards. Enables on-demand mounting/unmounting of sub-state.
@@ -881,7 +810,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Single-Agent HITL for High-Risk Actions**: Monitoring for deprecation in enterprise profiles in favor of **Consensus-Based Validation**.
 - **Monolithic Context Handoffs**: Moving toward deprecation for deep swarms in favor of **Context Sharding**.
 
-## Evolution: 2026-03-28 Updates
+## Evolution: [2026-03-28] Updates
 
 ### Proposed Additions
 - **Atomic State Rollback Middleware**: (P0) Enables swarm-wide state checkpoints and rollbacks for the Blackboard and Context Shards.
@@ -896,7 +825,7 @@ SPDX-License-Identifier: Apache-2.0
 ### Deprecations / Monitoring
 - **Legacy HITL Approval Tokens**: Monitoring for deprecation in favor of UACO-MAQ compliant multi-signature tokens.
 
-## Evolution: 2026-03-29 Updates
+## Evolution: [2026-03-29] Updates
 
 ### Proposed Additions
 - **Proactive State Alignment (PSA) Middleware**: (P1) Background service for continuous synchronization of agent-local state with the global Blackboard.
@@ -904,7 +833,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Hardware-Bound Attestation Provider (HAFP)**: (P0) Native integration with TPM/Secure Enclave for zero-latency mission validation.
 - **Context Pinning Middleware**: (P1) Implements immutable prompt segments to neutralize Context Smearing attacks.
 
-## Evolution: 2026-03-31 Updates
+## Evolution: [2026-03-31] Updates
 
 ### Proposed Additions
 - **UACO v2.2 Intent Barrier Middleware**: (P0) Synchronization engine for parallel sub-intents to prevent race conditions in the Blackboard.
@@ -931,7 +860,7 @@ SPDX-License-Identifier: Apache-2.0
 - **OS-Specific Path Joins**: Monitoring for deprecation in favor of the **Path Normalization Engine**.
 - **Static Discovery Quorums**: Moving toward **Optimistic Loading** with background attestation.
 
-## Evolution: 2026-03-30 Updates
+## Evolution: [2026-03-30] Updates
 
 ### Proposed Additions
 - **UACO v2.1 IPSC Middleware**: (P0) Implementation of Intent-Preserving Self-Correction to prevent "Cognitive Lock" refinement loops.
@@ -946,7 +875,7 @@ SPDX-License-Identifier: Apache-2.0
 ### Deprecations / Monitoring
 - **Unbounded Self-Correction**: Moving toward total deprecation. All self-correction loops must eventually be bound by an IPSC token and Correction Budget.
 
-## Evolution: 2026-04-02 Updates
+## Evolution: [2026-04-02] Updates
 
 ### Proposed Additions
 - **Speculative Execution Guard**: (P0) Middleware that manages "Shadow State" for speculative tool calls, ensuring rollbacks on attestation failure.
@@ -954,7 +883,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Consensus Delegation Gateway**: (P1) Implementation of "Delegated Authority" models where trusted monitor agents can authorize time-critical tasks.
 - **Branch-Purity Blackboard Validator**: (P0) Integrity layer for the Shared KV Store to prevent "Branch Contamination" between divergent reasoning paths.
 
-## Evolution: 2026-04-03 Updates
+## Evolution: [2026-04-03] Updates
 
 ### Proposed Additions
 - **Active Subagent Reaper**: (P0) Lifecycle monitor that forcefully terminates orphaned or "Ghost" subagent sessions when their parent intent branch is pruned.
@@ -970,7 +899,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Unmanaged Subagent Lifecycle**: Moving toward total deprecation. All subagent sessions must be bound to a supervised intent lifecycle.
 - **Unsanitized Structural Metadata**: Monitoring for deprecation. Tool schemas will require "Safe Metadata" attestation.
 
-## Evolution: 2026-04-04 Updates
+## Evolution: [2026-04-04] Updates
 
 ### Proposed Additions
 - **DCA Negotiation Guard**: (P0) Hardware-accelerated (HAN) broker for subagent bidding, mitigating "Negotiation Exhaustion."
@@ -981,7 +910,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Tool Metadata Sanitizer**: Promoted from **P1** to **P0**. Critical for mitigating CVE-2026-42001.
 - **DCA Auction Broker**: Re-affirmed as **P0** (Already P0, but expanded to include HAN requirements).
 
-## Evolution: 2026-04-05 Updates
+## Evolution: [2026-04-05] Updates
 
 ### Proposed Additions
 - **RL Telemetry Provider**: (P1) Standardized middleware for exporting tool performance and feedback metrics to agent training frameworks (e.g., OpenClaw-RL).
@@ -995,21 +924,21 @@ SPDX-License-Identifier: Apache-2.0
 ### Deprecations / Monitoring
 - **Implicitly Trusted Local Discovery**: Moving toward total deprecation. All local tool discovery must eventually be backed by an Attested Discovery signal.
 
-## Evolution: 2026-04-06 Updates
+## Evolution: [2026-04-06] Updates
 
 ### Proposed Additions
 - **Structural Metadata Sanitizer Middleware**: (P0) A security service that treats tool descriptions and schemas as untrusted input, scanning them for imperative instructions or "Context Poisoning" patterns.
 - **Hardware-Linked Inode Pinning**: (P0) Extends path validation to include hardware-bound Inode checks, preventing TOCTOU races in project-local configurations.
 - **Speculative Auction Broker (SAB)**: (P1) High-speed negotiation bus for Gemini-style "Intent Probability" bidding in agent swarms.
 
-## Evolution: 2026-04-11 Updates
+## Evolution: [2026-04-11] Updates
 
 ### Proposed Additions
 - **A2A Interoperability Layer**: (P0) Native messaging hub implementation for the Agent2Agent (A2A) protocol, facilitating secure task delegation and coordination between disparate frameworks.
 - **Deterministic Environment Attestation Gateway**: (P0) Advanced pre-execution security service that generates signed environment manifests, including non-existence proofs for restricted configuration hooks.
 - **Structured Context Propagation Middleware**: (P1) Implementation of emerging context propagation standards to ensure rich, structured contextual data (trace IDs, session IDs) flows securely across the agentic lifecycle.
 
-## Evolution: 2026-04-13 Updates
+## Evolution: [2026-04-13] Updates
 
 ### Proposed Additions
 - **CLAW-10 Compliance Mapper**: (P1) Middleware that maps MCP Any's internal security state to the CLAW-10 Enterprise Evaluation Matrix for automated compliance reporting.
@@ -1019,7 +948,7 @@ SPDX-License-Identifier: Apache-2.0
 - **A2A Messaging Hub**: (Re-affirmed P0) Evolving to support the finalized Linux Foundation open governance model for inter-agent task brokering.
 - **Settings Injection Guard**: (Re-affirmed P0) Promoted as the primary defense against "Shadow Agent" configuration overrides identified in recent enterprise audits.
 
-## Evolution: 2026-04-16 Updates
+## Evolution: [2026-04-16] Updates
 
 ### Proposed Additions
 - **Reactive Intent Gateway (RIG)**: (P0) Security middleware that mediates agent "Boundary Expansion" requests, validating them against the Root Mission Intent to prevent Intent Smuggling.
@@ -1030,7 +959,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to support the new Resident Integrity Monitor for continuous lifecycle protection.
 - **TPM-Bound Configuration Boot**: (Re-affirmed P0) Now considered the prerequisite foundation for RIG-mediated boundary expansions.
 
-## Evolution: 2026-04-15 Updates
+## Evolution: [2026-04-15] Updates
 
 ### Proposed Additions
 - **Standardized Context Sidecar Interface**: (P1) A core API and "Context Bus" that allows MCP Any to host and bridge framework-specific context strategies (OpenClaw, etc.) across different agent frameworks.
@@ -1040,3 +969,74 @@ SPDX-License-Identifier: Apache-2.0
 ### Priority Shifts
 - **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Now elevated as the primary solution for the "Approval Fatigue" scaling bottleneck.
 - **Pluggable Context Bridge**: (Re-affirmed P0) Expanded to support the new Standardized Context Sidecar Interface.
+
+## Evolution: [2026-05-25] Updates
+
+### Proposed Additions
+- **Reasoning-Budget Firewall (RBF)**: (P0) Authoritative economic gatekeeper that enforces strictly scoped, hardware-attested token and ARE budgets for subagents to prevent Reasoning-Budget Hijacking.
+- **Asynchronous Mailbox Sharding (AMS) Middleware**: (P0) Upgrade for the T2T Encryption Bridge that hosts granular, task-bound mailbox shards to eliminate "Mailbox Lock" bottlenecks.
+- **Cognitive Stall Arbitrator (CSA)**: (P0) Stability middleware that monitors semantic entropy and refinement drift to detect and terminate non-convergent subagent loops.
+- **Identity Fragment Attestation (IFA) Provider**: (P0) Security extension for the T2T Bridge mandating hardware-attested, session-bound tokens for every mailbox request to prevent identity spoofing.
+
+### Priority Shifts
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Now elevated with the requirement for AMS to support high-density parallel swarms.
+- **Reasoning-Effort Quota Controller**: (Evolved to Reasoning-Budget Firewall) Now designated as a mandatory defense against Reasoning-Budget Hijacking (RBH).
+
+## Evolution: [2026-05-26] Updates
+
+### Proposed Additions
+- **Foundation Governance Sync**: (P0) Neutral coordination middleware for cross-framework agent coordination, implementing OpenClaw Foundation standards.
+- **Asynchronous Mailbox Sharding (AMS) Middleware**: (P0) Scaling extension for the T2T Bridge that hosts granular, task-bound mailbox shards to eliminate "Mailbox Lock" bottlenecks.
+- **Hardware-Attested Monologue Provider**: (P0) Advanced security service mandating hardware-bound encryption for subagent reasoning monologues to ensure cognitive privacy.
+
+### Priority Shifts
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for **Intent-Scoped ARE Enforcement** to counter subagent spoofing.
+- **T2T Encryption Bridge**: (Re-affirmed P0) Designated as the primary infrastructure for AMS-based non-blocking teammate coordination.
+
+## Evolution: [2026-05-27] Updates
+
+### Proposed Additions
+- **Sovereign Mesh Identity (SMI) Relay**: (P0) Federated identity service that provides hardware-attested identity fragments that persist across local and multi-cloud environments.
+- **Fragment-Aware Mailbox Isolation (FAMI)**: (P0) Security extension for the Mailbox Integrity Middleware that performs semantic analysis of state fragments to prevent "State Splicing" exfiltration.
+- **Recursive Delegation Reaper (RDR)**: (P0) Stability middleware that monitors branching depth and semantic redundancy to prune non-convergent or redundant subagent branches.
+- **Cross-Mission Budget Continuity Provider**: (P1) Resource management service allowing reasoning budgets to be reconciled across mission phases and framework-neutral handoffs.
+
+### Priority Shifts
+- **Federated Swarm Identity (FSI) Provider**: (Re-affirmed P0) Evolving to act as the authoritative "SMI Relay" for cross-cloud agent swarms.
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for "Cross-Mission Budget Continuity."
+
+## Evolution: [2026-05-28] Updates
+
+### Proposed Additions
+- **Command Traceability Provider (CTP)**: (P0) Authoritative security middleware that issues cryptographically signed "Chain of Command" tokens for every instruction.
+- **Autonomous PR Integrity Gate (APRIG)**: (P0) Multi-agent security quorum for code-generating tool calls, requiring independent attestation for pull request safety.
+- **Trace-Aware Identity Propagation (TAIP)**: (P0) Extension for the SMI Relay that ensures hardware-attested identities carry full lineage metadata.
+- **Reasoning-Effort Attribution Middleware**: (P1) Resource management service that cryptographically attributes token and compute usage to specific mission-root branches.
+
+### Priority Shifts
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Reasoning-Effort Attribution**.
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to support the new APRIG multi-agent quorum for PR safety.
+
+## Evolution: [2026-05-29] Updates
+
+### Proposed Additions
+- **Collective Swarm Anomaly Detection (CSAD) Hub**: (P0) Advanced security middleware that performs cross-agent behavioral analysis to detect coordinated "Hivenet" swarm attacks.
+- **Cross-Mesh Command Sovereignty (CMCS) Provider**: (P0) Identity service that issues hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms.
+- **Atomic Teammate Handshake (ATH) Gateway**: (P0) Security middleware mandating hardware-attested identity exchange before teammate task delegation.
+- **Mesh-Bound Context Sovereignty Bridge**: (P0) Security extension for the DCG middleware that performs semantic fragment analysis across teammate boundaries.
+
+### Priority Shifts
+- **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
+- **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
+
+## Evolution: [2026-05-30] Updates
+
+### Proposed Additions
+- **Cognitive Integrity Arbiter (CIA)**: (P0) Authoritative "Reasoning Validator" performing real-time semantic analysis of internal monologues to detect and block "Reasoning Gaslighting."
+- **Reasoning-Bound Context Sharding (RBCS) Hub**: (P0) A core context management service that cryptographically isolates context fragments based on the active reasoning branch.
+- **Monotonic Task Nonce (MTN) Provider**: (P0) High-speed security service that issues unique, session-bound task nonces to neutralize "Context Mirroring" replay attacks.
+- **Reasoning-Gaslighting Detection (RGD) Middleware**: (P0) Security extension for the CIA that monitors semantic drift in subagent monologues to prevent teammate coercion.
+
+### Priority Shifts
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory MTN validation to counter CVE-2026-45012.
+- **ContextEngine Lifecycle Adapter**: (Re-affirmed P0) Evolving to support RBCS-native context isolation.
