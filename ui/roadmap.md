@@ -604,3 +604,8 @@
 - [ ] **[P0] Entanglement Privacy Auditor**: (2026-06-18) Security dashboard for reviewing SES-redacted fragments and monologue smearing alerts.
 - [ ] **[P0] Logic Grafting Alert Console**: (2026-06-18) Forensic UI for inspecting the ARI Hub "Reasoning Mainline" and blocked branch proposals.
 - [ ] **[P0] Hardware Monotonic Counter Monitor**: (2026-06-18) Status widget for visualizing mission-root continuity and TPM-attestation provenance.
+
+### Upcoming: [2026-06-19]
+- [ ] **[P1] Visual Attention Dashboard**: (2026-06-19) Heatmap visualization of context fragments (User, System, Injected) driving agent tool-call reasoning.
+- [ ] **[P0] CFIA Signature Reviewer**: (2026-06-19) UI for reviewing and hardware-signing project-local context files.
+- [ ] **[P0] Attention-Locked Tool Trigger Visualization**: (2026-06-19) Real-time alerts and visualization when a high-risk tool call is interdicted by the ALT middleware.
