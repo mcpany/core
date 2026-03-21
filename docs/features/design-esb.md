@@ -65,3 +65,8 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
 **Context:** Market research identified a "Fragment-Ghosting" exploit where orphaned state fragments are re-ingested by unauthorized agents.
 **Architecture Adjustment:** Introducing an **Active Fragment Garbage Collection (AF-GC)** cycle to the ESB state-machine. State shards will now be explicitly revoked and purged upon mission-root rotation.
 **Security Impact:** Prevents cross-shard data leakage during rapid orchestration shifts.
+
+### Update: 2026-06-18 - Mitigating Fragment-Ghosting
+**Context:** Market research identified a "Fragment-Ghosting" exploit where orphaned state fragments are re-ingested by unauthorized agents.
+**Architecture Adjustment:** Introducing an **Active Fragment Garbage Collection (AF-GC)** cycle to the ESB state-machine. State shards will now be explicitly revoked and purged upon mission-root rotation.
+**Security Impact:** Prevents cross-shard data leakage during rapid orchestration shifts.

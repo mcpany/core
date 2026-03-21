@@ -48,6 +48,9 @@ export const CallPolicy = {};
 export const CallPolicyRule = {};
 export const ExportPolicy = {};
 export const ExportRule = {};
+export const CallPolicyRule = {};
+export const ExportPolicy = {};
+export const ExportRule = {};
 
 /**
  * Mock constant for ProfileDefinition used in tests.

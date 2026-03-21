@@ -16,21 +16,23 @@ import (
 
 // Severity indicates the importance of a linting result.
 //
-// Summary: Represents a Severity level.
+// It is used to categorize findings based on their impact and urgency.
+//
+// Summary: Represents a Severity.
 type Severity int
 
 const (
 	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
 	//
-	// Summary: Defines Error severity.
+	// Summary: Defines Error.
 	Error Severity = iota
 	// Warning indicates a potential issue or best practice violation that should be addressed.
 	//
-	// Summary: Defines Warning severity.
+	// Summary: Defines Warning.
 	Warning
 	// Info indicates a suggestion or informational message for optimization or clarity.
 	//
-	// Summary: Defines Info severity.
+	// Summary: Defines Info.
 	Info
 )
 
@@ -64,7 +66,9 @@ func (s Severity) String() string {
 
 // Result represents a single linting finding.
 //
-// Summary: Represents a Result of a linting check.
+// It encapsulates all details about a detected issue, including its severity, location, and description.
+//
+// Summary: Represents a Result.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -105,7 +109,9 @@ func (r Result) String() string {
 
 // Linter performs static analysis on the configuration.
 //
-// Summary: Represents a Linter for server configuration.
+// It holds the configuration to be analyzed and provides methods to execute various checks.
+//
+// Summary: Represents a Linter.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
@@ -131,6 +137,9 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 
 // Run executes all linting checks on the server configuration.
 //
+// It aggregates results from multiple check categories including standard validation,
+// secret usage, shell injection risks, insecure HTTP, and cache settings.
+//
 // Summary: Executes Run operation.
 //
 // Parameters:
@@ -138,10 +147,10 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 //
 // Returns:
 //   - []Result: A list of linting findings.
-//   - error: An error if the linting process encounters a fatal issue.
+//   - error: An error if the linting process encounters a fatal issue (currently always nil).
 //
 // Errors:
-//   - None (currently).
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -60,3 +60,8 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
 **Context:** Research identified "Boundary Smearing" where subagents traverse intent shards with low latency, bypassing behavioral monitors.
 **Architecture Adjustment:** Integrating **Intent-Boundary Telemetry (IBT)** into the stylometric Extraction phase. The SMM will now utilize sub-millisecond boundary traversal metrics to refine its confidence scores.
 **Security Impact:** Enhances detection of "Low-and-Slow" mimicry attempts that occur during rapid inter-intent context shifts.
+
+### Update: 2026-06-18 - Sub-Millisecond Boundary Traversal
+**Context:** Research identified "Boundary Smearing" where subagents traverse intent shards with low latency, bypassing behavioral monitors.
+**Architecture Adjustment:** Integrating **Intent-Boundary Telemetry (IBT)** into the stylometric Extraction phase. The SMM will now utilize sub-millisecond boundary traversal metrics to refine its confidence scores.
+**Security Impact:** Enhances detection of "Low-and-Slow" mimicry attempts that occur during rapid inter-intent context shifts.
