@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+#### Upcoming (2026-03-22 Evolution)
+- [ ] **[P0] Real-time Audit Stream**: Visual dashboard for the Enterprise Visibility Sidecar, showing attested agent tool calls. (Added: 2026-03-22)
+- [ ] **[P0] Structured I/O Debugger**: Visualizer for framed JSON command outputs and schema mapping results. (Added: 2026-03-22)
+- [ ] **[P0] API Allow-list Manager**: UI for configuring and monitoring the Base-URL Hijack Shield. (Added: 2026-03-22)
+- [ ] **[P1] Context Density Heatmap**: Dashboard for the Intelligent Context Budgeter showing tool-output density and truncation triggers. (Added: 2026-03-22)

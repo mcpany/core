@@ -1121,3 +1121,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Stylometric Mesh Sovereignty (SMS) Provider**: To neutralize "Stylometric Splicing," we are introducing SMS. This layer will perform real-time stylometric analysis of inter-agent messages, ensuring that subagent reasoning fragments cannot mimic the signature of the parent agent to bypass mission-root constraints.
 - **Lock-Free Sharded Mailbox Hub**: Supporting the efficiency of horizontal Agent Teams, MCP Any will implement "Sharded Mailbox Hub." This service will host granular, task-bound mailbox shards that allow parallel teammates to synchronize state without global coordination locks, ensuring non-blocking performance.
 - **Zero-Knowledge Discovery (ZKD) Proxy**: Leveraging Gemini CLI v0.42.0 patterns, we are mandating ZKD. Agent capabilities will remain cryptographically masked until a mission-bound, identity-verified handshake is completed, neutralizing "Shadow Capability" mapping by malicious subagents.
+
+---
+
+## Strategic Evolution: [2026-03-22] (Update)
+### Focus: Structured I/O Sovereignty & Enterprise Visibility Sidecars
+**Context**: The shift toward the "Universal Agent I/O Bus" and the disclosure of the Gravitee "Governance Gap" report confirm that raw PTY streams and unmonitored tool access are no longer viable for enterprise swarms. Simultaneously, CVE-2026-21852 (Base URL Hijacking) proves that agent settings must be treated as high-risk executable code.
+**Strategic Pivot**:
+- **Structured I/O Bus Adapter**: MCP Any will transition its Command Adapter from raw PTY emulation to a "Structured Event Bus." We will implement framed JSON I/O, allowing real-time semantic sanitization of command outputs before they reach the agent's context window.
+- **Enterprise Visibility Sidecar**: To address the 79% visibility gap, we are evolving the gateway to act as a mandatory "Governance Sidecar." Every tool call and capability discovery will be logged to a centralized, hardware-attested audit trail, providing organizations with real-time visibility into agent reach.
+- **Base-URL Hijack Shield**: We are mandating a strict "Allow-List" for all agent outbound traffic. MCP Any will intercept and validate LLM base URL settings in project-local configurations, neutralizing settings-based redirection attacks.
+- **Intelligent Context Budgeting**: Supporting Claude Code's v2.1.74 patterns, we will implement a "Context Budgeter" that monitors tool-output density and provides real-time "Truncation Hints" to the agent to prevent window exhaustion.

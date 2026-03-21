@@ -1461,3 +1461,15 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-03-22] (Update)
+
+### Proposed Additions
+- **Structured I/O Bus Adapter**: (P0) Transition the Command Adapter to framed JSON I/O to enable deep inspection of CLI outputs.
+- **Enterprise Visibility Sidecar**: (P0) A mandatory audit and logging utility that provides real-time visibility into agent tool access and capability discovery.
+- **Base-URL Hijack Shield**: (P0) Security middleware that enforces a strict allow-list for LLM API endpoints, neutralizing CVE-2026-21852.
+- **Intelligent Context Budgeter**: (P1) Resource monitor that calculates tool-output density and suggests optimal truncation strategies to prevent context bloat.
+
+### Priority Shifts
+- **Command Adapter**: (Elevated to P0) Now requires mandatory transition to the **Structured I/O Bus** model.
+- **Local Security Audit Log**: (Elevated to P0) Re-affirmed as a critical component of the **Enterprise Visibility Sidecar**.

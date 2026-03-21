@@ -800,3 +800,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Density Guard (ADG)**: (P0) Cognitive security layer utilizing hardware-bound headers to "pin" mission-critical fragments at the LLM attention layer.
 - **Headless Handoff Continuity (HHC)**: (P0) Orchestration bridge facilitating signed intent transfers for process-based subagent spawning.
 - **Multi-Modal Attention Sanitizer**: (P1) Advanced security extension for the MIB to neutralize attention-eviction probes in non-textual traces.
+
+#### Upcoming (2026-03-22 Evolution)
+*   **[P0] Structured I/O Bus Adapter**: Transition the Command Adapter to framed JSON I/O for machine-readable CLI execution. (Added: 2026-03-22)
+*   **[P0] Enterprise Visibility Sidecar**: Mandatory governance sidecar providing hardware-attested real-time visibility into agent tool reach. (Added: 2026-03-22)
+*   **[P0] Base-URL Hijack Shield**: Security middleware enforcing strict allow-lists for LLM API endpoints (CVE-2026-21852 defense). (Added: 2026-03-22)
+*   **[P1] Intelligent Context Budgeter**: Resource monitor providing real-time truncation hints to prevent agent context window exhaustion. (Added: 2026-03-22)
