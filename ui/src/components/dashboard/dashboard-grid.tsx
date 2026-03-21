@@ -136,7 +136,7 @@ export function DashboardGrid() {
                          setWidgets(DEFAULT_LAYOUT);
                      }
                 }
-            } catch (err) {
+             } catch (_err) {
                  console.warn("Failed to fetch preferences, falling back to local/default");
                  // Fallback to local storage or default
                  const local = localStorage.getItem("dashboard-layout");
@@ -182,8 +182,8 @@ export function DashboardGrid() {
                 });
                 // Sync to local storage as backup/cache
                 localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
-            } catch (err) {
-                console.error("Failed to save layout", err);
+            } catch (_err) {
+                console.error("Failed to save layout", _err);
             }
         }, 1000); // Increased debounce to 1s for network
 
