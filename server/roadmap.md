@@ -143,6 +143,12 @@
 *   **[P0] Active Intent Sanitizer (AIS)**: Real-time semantic deconstruction of coordination messages crossing multi-channel boundaries. (Added: 2026-06-23)
 *   **[P0] SMM v2 (Stylometric Anchoring)**: Higher-dimensional behavioral anchoring of reasoning traces against the mission-root manifest. (Added: 2026-06-23)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Attention-Locked Reasoning (ALR) Guard**: Implementation of hardware-attested headers to pin mission-root intents in the context window. (Added: 2026-06-25)
+*   **[P0] HART Trace Validator**: Upgrade for the SRM Provider to support cryptographically signed "Cognitive Lineage" proofs. (Added: 2026-06-25)
+*   **[P0] Cognitive Lineage Attestation (CLA)**: Security identity service for teammate mailbox access. (Added: 2026-06-25)
+*   **[P1] Dynamic Attention Sharding (DAS)**: Attention-weighted coordination service for parallel swarms. (Added: 2026-06-25)
+
 #### Upcoming (2026-06-24 Evolution)
 *   **[P0] Atomic Mission-Resumption (AMR) Gateway**: Hardware-locked resumption of agent states across cold-boots via BSH snapshots. (Added: 2026-06-24)
 *   **[P0] Stylometric Mesh Sovereignty (SMS) Provider**: Behavioral security layer detecting mimicry-based hijacking via real-time stylometry. (Added: 2026-06-24)

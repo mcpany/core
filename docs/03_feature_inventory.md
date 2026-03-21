@@ -18,6 +18,18 @@
 - **Semantic Integrity Bridge**: (Re-affirmed P0) Evolving into the **MITS** to support multimodal trace sanitization.
 - **Negative Discovery Attestation Provider**: (Re-affirmed P0) Designated as a critical component of the **Ephemeral Discovery Sandbox** for pre-flight safety proofs.
 
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Attention-Locked Reasoning (ALR) Guard**: (P0) Core security middleware utilizing hardware-attested attention-locking headers to protect mission-root intents from context-window eviction.
+- **HART-Native Trace Validator**: (P0) Advanced extension for the SRM Provider to verify cryptographically signed reasoning traces from subagents.
+- **Cognitive Lineage Attestation (CLA)**: (P0) Mandatory identity service requiring hardware-bound reasoning-trace proofs for teammate mailbox access.
+- **Dynamic Attention Sharding (DAS)**: (P1) High-efficiency coordination middleware for granular, attention-weighted state synchronization.
+
+### Priority Shifts
+- **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **HART-compliant** trace validation.
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support the new **CLA-compliant** teammate verification.
+
 ## Evolution: [2026-06-16] Updates
 
 ### Proposed Additions

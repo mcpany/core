@@ -633,6 +633,12 @@
 - [ ] **[P0] Cross-Channel Sanitization Log**: Security dashboard for reviewing AIS-redacted coordination messages. (Added: 2026-06-23)
 - [ ] **[P0] Behavioral Anchoring Monitor**: Real-time visualization of stylometric consistency scores vs. mission-root manifest. (Added: 2026-06-23)
 
+### Upcoming: [2026-06-25]
+- [ ] **[P0] Attention Sovereignty Dashboard**: (2026-06-25) Visual tracker for ALR-pinned fragments and context-eviction alerts.
+- [ ] **[P0] HART Trace Inspector**: (2026-06-25) Forensic UI for verifying cryptographically signed cognitive lineage tokens.
+- [ ] **[P0] CLA Identity Manager**: (2026-06-25) Security workspace for managing hardware-bound trace-verified teammate access.
+- [ ] **[P1] Attention-Weighted Mesh Map**: (2026-06-25) Real-time visualization of sharded teammate meshes and attention-density heatmap.
+
 ### Upcoming: [2026-06-24]
 - [ ] **[P0] Mission Resumption Manager**: (2026-06-24) UI for monitoring and manually triggering AMR-mediated mission recovery checkpoints.
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
