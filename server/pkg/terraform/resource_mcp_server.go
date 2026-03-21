@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 // ResourceMCPServer represents the configuration schema for an MCP Server resource
@@ -110,11 +111,11 @@ func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) 
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := (&http.Client{}).Do(req)
+	resp, err := (&http.Client{Timeout: 10 * time.Second}).Do(req)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close() //nolint:errcheck
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("failed to create server: status %d", resp.StatusCode)
 	}
@@ -156,11 +157,11 @@ func Read(ctx context.Context, serverURL string, name string) (*ResourceMCPServe
 	if err != nil {
 		return nil, err
 	}
-	resp, err := (&http.Client{}).Do(req)
+	resp, err := (&http.Client{Timeout: 10 * time.Second}).Do(req)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close() //nolint:errcheck
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode == http.StatusNotFound {
 		return nil, nil // not found
 	}
