@@ -86,7 +86,6 @@ test.describe('Trace Viewer', () => {
     await expect(page.locator('text=Root Input')).toBeVisible();
   });
 
-
   test('should filter traces', async ({ page }) => {
     await page.goto('/traces');
 
