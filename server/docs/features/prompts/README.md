@@ -21,13 +21,13 @@ upstream_services:
   - name: "prompt-service"
     http_service:
       address: "https://example.com"
-    prompts:
-      - name: "welcomer"
-        description: "Welcomes the user"
-        messages:
-          - role: "USER"
-            text:
-              text: "Hello, {{name}}!"
+      prompts:
+        - name: "welcomer"
+          description: "Welcomes the user"
+          messages:
+            - role: "USER"
+              text:
+                text: "Hello, {{name}}!"
 ```
 
 ## Use Case
