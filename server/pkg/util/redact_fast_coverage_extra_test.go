@@ -32,11 +32,11 @@ func TestRedactJSON_EscapedKeys_Coverage(t *testing.T) {
 			input:    `{"pass\uZZZZord": "val"}`, // -> passuZZZZord (not sensitive)
 			expected: `{"pass\uZZZZord": "val"}`,
 		},
-        {
-            name:     "short unicode escape",
-            input:    `{"pass\u12": "val"}`, // -> passu12 (not sensitive)
-            expected: `{"pass\u12": "val"}`,
-        },
+		{
+			name:     "short unicode escape",
+			input:    `{"pass\u12": "val"}`, // -> passu12 (not sensitive)
+			expected: `{"pass\u12": "val"}`,
+		},
 	}
 
 	for _, tt := range tests {
@@ -48,22 +48,22 @@ func TestRedactJSON_EscapedKeys_Coverage(t *testing.T) {
 }
 
 func TestRedactJSON_LargeKey_Coverage(t *testing.T) {
-    // Test large key to force fallback or streaming path
-    // 256 is unescapeStackLimit
-    // We need a key > 256 chars that contains escapes.
+	// Test large key to force fallback or streaming path
+	// 256 is unescapeStackLimit
+	// We need a key > 256 chars that contains escapes.
 
-    longKey := "x"
-    for i := 0; i < 300; i++ {
-        longKey += "x"
-    }
-    longKey += "password"
+	longKey := "x"
+	for i := 0; i < 300; i++ {
+		longKey += "x"
+	}
+	longKey += "password"
 
-    // With escape to force isKeySensitive to go to unescape path
-    escapedKey := strings.Replace(longKey, "password", "pass\\u0077ord", 1)
+	// With escape to force isKeySensitive to go to unescape path
+	escapedKey := strings.Replace(longKey, "password", "pass\\u0077ord", 1)
 
-    input := `{"` + escapedKey + `": "secret"}`
-    expected := `{"` + escapedKey + `": "[REDACTED]"}`
+	input := `{"` + escapedKey + `": "secret"}`
+	expected := `{"` + escapedKey + `": "[REDACTED]"}`
 
-    actual := RedactJSON([]byte(input))
-    assert.Equal(t, expected, string(actual))
+	actual := RedactJSON([]byte(input))
+	assert.Equal(t, expected, string(actual))
 }

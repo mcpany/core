@@ -199,25 +199,25 @@ func TestRedactJSON_UnescapeKeyCoverage(t *testing.T) {
 }
 
 func TestRedactJSON_UnescapeKeyCoverage_Complex(t *testing.T) {
-    // Test with more complex escapes
-    input := `{
+	// Test with more complex escapes
+	input := `{
         "a\u0070\u0069_key": "val"
     }`
-    // api_key
-    expectedOutput := `{
+	// api_key
+	expectedOutput := `{
         "a\u0070\u0069_key": "[REDACTED]"
     }`
-     got := RedactJSON([]byte(input))
+	got := RedactJSON([]byte(input))
 
-    var gotJS interface{}
-    json.Unmarshal(got, &gotJS)
-    gotBytes, _ := json.Marshal(gotJS)
+	var gotJS interface{}
+	json.Unmarshal(got, &gotJS)
+	gotBytes, _ := json.Marshal(gotJS)
 
-    var expectedJS interface{}
-    json.Unmarshal([]byte(expectedOutput), &expectedJS)
-    expectedBytes, _ := json.Marshal(expectedJS)
+	var expectedJS interface{}
+	json.Unmarshal([]byte(expectedOutput), &expectedJS)
+	expectedBytes, _ := json.Marshal(expectedJS)
 
-    assert.JSONEq(t, string(expectedBytes), string(gotBytes))
+	assert.JSONEq(t, string(expectedBytes), string(gotBytes))
 }
 
 func TestRedactJSON_SkipObjectCoverage(t *testing.T) {

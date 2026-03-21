@@ -55,9 +55,9 @@ func TestValidateConfigHandler(t *testing.T) {
 			expectedStatus: http.StatusBadRequest,
 		},
 		{
-			name:           "Request Body Too Large",
-			method:         http.MethodPost,
-			body:           `{"content": "` + strings.Repeat("a", 6<<20) + `"}`, // 6MB > 5MB limit
+			name:   "Request Body Too Large",
+			method: http.MethodPost,
+			body:   `{"content": "` + strings.Repeat("a", 6<<20) + `"}`, // 6MB > 5MB limit
 			// http.MaxBytesReader causes Read to return error, JSON decoder fails, handler returns 400.
 			expectedStatus: http.StatusBadRequest,
 		},
