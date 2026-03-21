@@ -394,10 +394,10 @@ func NewApplication() *Application {
 //   - Initializes background workers.
 //   - Loads configuration.
 //
-//nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
-//
 // Errors:
 //   - None.
+//
+//nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
 func (a *Application) Run(opts RunOptions) error {
 	log := logging.GetLogger()
 	fs, err := setup(opts.Fs)
