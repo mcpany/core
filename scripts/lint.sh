@@ -43,7 +43,16 @@ find_tool() {
 echo "==> Running Buildifier..."
 BUILDIFIER_BIN="$(find_tool buildifier)"
 if [[ -n "$BUILDIFIER_BIN" && -x "$BUILDIFIER_BIN" ]]; then
-    "$BUILDIFIER_BIN" -mode=check $(find . -not -path "./build/*" -not -path "./bazel-*" -not -path "*/node_modules/*" \( -name "BUILD" -o -name "BUILD.bazel" -o -name "WORKSPACE" -o -name "*.bzl" \) -type f)
+    # Use -prune to efficiently skip directories that should not be searched.
+    BUILDIFIER_FILES=$(find . \
+        -path "./build" -prune -o \
+        -path "./bazel-*" -prune -o \
+        -path "*/node_modules" -prune -o \
+        \( -name "BUILD" -o -name "BUILD.bazel" -o -name "WORKSPACE" -o -name "*.bzl" \) -type f -print)
+
+    if [[ -n "$BUILDIFIER_FILES" ]]; then
+        "$BUILDIFIER_BIN" -mode=check $BUILDIFIER_FILES
+    fi
     echo "    Buildifier OK."
 else
     echo "    Warning: buildifier not found."
