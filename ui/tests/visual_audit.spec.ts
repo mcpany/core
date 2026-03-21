@@ -16,11 +16,11 @@ test.describe('Visual Audit', () => {
 
     // 2. Login
     await page.goto('/login');
-    await page.fill('input[name="username"]', USER_ID);
-    await page.fill('input[name="password"]', 'password'); // From test-data hash
+    await page.getByLabel('Username').fill(USER_ID);
+    await page.getByLabel('Password').fill('password'); // From test-data hash
     await Promise.all([
       page.waitForURL('/', { timeout: 30000 }),
-      page.click('button[type="submit"]', { force: true })
+      page.getByRole('button', { name: 'Sign in' }).click({ force: true })
     ]);
   });
 
