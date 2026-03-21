@@ -60,16 +60,23 @@ test.describe('Services Feature', () => {
   });
 
   test('should render schema visualizer in service tools dialog', async ({ page }) => {
-    // Navigate straight to the service page
+    // Navigate straight to the specific service page
     await page.goto('/upstream-services/Payment%20Gateway');
-    await page.waitForTimeout(2000); // Give the page a moment to load
-
-    // Wait for network requests to finish settling
     await page.waitForLoadState('networkidle');
 
-    // Look for the View Schema button directly - it's the only one that exists on the tools section
-    const viewSchemaBtn = page.locator('button[title="View Schema"], .lucide-file-json, button:has(.lucide-file-json)').first();
-    await expect(viewSchemaBtn).toBeVisible({ timeout: 15000 });
+    // Wait for the service page to render
+    await expect(page.locator('h1').filter({ hasText: 'Payment Gateway' })).toBeVisible({ timeout: 10000 });
+
+    // Switch to the Tools tab
+    const toolsTab = page.locator('[role="tab"], button').filter({ hasText: 'Tools' }).first();
+    await toolsTab.click();
+
+    // Look for process_payment tool card
+    const processPaymentTitle = page.locator('div, span, p, h1, h2, h3, h4').filter({ hasText: 'process_payment' }).first();
+    await expect(processPaymentTitle).toBeVisible({ timeout: 10000 });
+
+    // Click the specific View Schema button for this tool.
+    const viewSchemaBtn = page.locator('button[title="View Schema"], .lucide-file-json').first();
     await viewSchemaBtn.click();
 
     // Validate the Schema Visualizer opens and displays the seeded input schema properties
