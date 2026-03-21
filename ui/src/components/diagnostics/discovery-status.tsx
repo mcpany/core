@@ -64,7 +64,7 @@ export function DiscoveryStatus() {
                 description: "Auto-discovery process has been triggered in the background.",
             });
             fetchStatus();
-        } catch (e) {
+        } catch (_e) {
             toast({
                 title: "Scan Failed",
                 description: "Failed to trigger discovery process.",
