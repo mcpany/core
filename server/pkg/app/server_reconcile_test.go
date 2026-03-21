@@ -15,16 +15,16 @@ import (
 
 // MockServiceRegistry for testing reconcileServices
 type mockServiceRegistry struct {
-	services map[string]*configv1.UpstreamServiceConfig
+	services     map[string]*configv1.UpstreamServiceConfig
 	registered   []*configv1.UpstreamServiceConfig
 	unregistered []string
-	errors map[string]string
+	errors       map[string]string
 }
 
 func newMockServiceRegistry() *mockServiceRegistry {
 	return &mockServiceRegistry{
-		services:     make(map[string]*configv1.UpstreamServiceConfig),
-		errors:       make(map[string]string),
+		services: make(map[string]*configv1.UpstreamServiceConfig),
+		errors:   make(map[string]string),
 	}
 }
 
@@ -51,7 +51,7 @@ func (m *mockServiceRegistry) GetServiceConfig(name string) (*configv1.UpstreamS
 }
 
 func (m *mockServiceRegistry) GetServiceInfo(name string) (*tool.ServiceInfo, bool) {
-    return nil, false
+	return nil, false
 }
 
 func (m *mockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
@@ -90,7 +90,7 @@ func TestReconcileServices(t *testing.T) {
 		expectRemoved []string // Names of services expected to be unregistered
 	}{
 		{
-			name:    "no changes",
+			name: "no changes",
 			initial: []*configv1.UpstreamServiceConfig{
 				configv1.UpstreamServiceConfig_builder{Name: proto.String("svc1"), Id: proto.String("id1"), SanitizedName: proto.String("svc1")}.Build(),
 			},
@@ -104,7 +104,7 @@ func TestReconcileServices(t *testing.T) {
 			expectUnreg: 0,
 		},
 		{
-			name:    "add new service",
+			name: "add new service",
 			initial: []*configv1.UpstreamServiceConfig{
 				configv1.UpstreamServiceConfig_builder{Name: proto.String("svc1"), Id: proto.String("id1"), SanitizedName: proto.String("svc1")}.Build(),
 			},
@@ -120,7 +120,7 @@ func TestReconcileServices(t *testing.T) {
 			expectNames: []string{"svc2"},
 		},
 		{
-			name:    "remove service",
+			name: "remove service",
 			initial: []*configv1.UpstreamServiceConfig{
 				configv1.UpstreamServiceConfig_builder{Name: proto.String("svc1"), Id: proto.String("id1"), SanitizedName: proto.String("svc1")}.Build(),
 				configv1.UpstreamServiceConfig_builder{Name: proto.String("svc2"), Id: proto.String("id2"), SanitizedName: proto.String("svc2")}.Build(),
@@ -136,7 +136,7 @@ func TestReconcileServices(t *testing.T) {
 			expectRemoved: []string{"svc2"},
 		},
 		{
-			name:    "update service",
+			name: "update service",
 			initial: []*configv1.UpstreamServiceConfig{
 				configv1.UpstreamServiceConfig_builder{Name: proto.String("svc1"), Id: proto.String("id1"), SanitizedName: proto.String("svc1"), Version: proto.String("old")}.Build(),
 			},
@@ -152,7 +152,7 @@ func TestReconcileServices(t *testing.T) {
 			expectRemoved: []string{"svc1"},
 		},
 		{
-			name:    "disable service acts as removal",
+			name: "disable service acts as removal",
 			initial: []*configv1.UpstreamServiceConfig{
 				configv1.UpstreamServiceConfig_builder{Name: proto.String("svc1"), Id: proto.String("id1"), SanitizedName: proto.String("svc1")}.Build(),
 			},
@@ -185,10 +185,10 @@ func TestReconcileServices(t *testing.T) {
 
 			app.reconcileServices(context.Background(), tc.config)
 
-            var registeredNames []string
-            for _, svc := range registry.registered {
-                registeredNames = append(registeredNames, svc.GetName())
-            }
+			var registeredNames []string
+			for _, svc := range registry.registered {
+				registeredNames = append(registeredNames, svc.GetName())
+			}
 
 			assert.Equal(t, tc.expectReg, len(registry.registered), "registered count mismatch, got: %v", registeredNames)
 			assert.Equal(t, tc.expectUnreg, len(registry.unregistered), "unregistered count mismatch, got: %v", registry.unregistered)
@@ -196,14 +196,14 @@ func TestReconcileServices(t *testing.T) {
 			if len(tc.expectNames) > 0 {
 				assert.ElementsMatch(t, tc.expectNames, registeredNames)
 			} else {
-                assert.Empty(t, registeredNames)
-            }
+				assert.Empty(t, registeredNames)
+			}
 
 			if len(tc.expectRemoved) > 0 {
 				assert.ElementsMatch(t, tc.expectRemoved, registry.unregistered)
 			} else {
-                assert.Empty(t, registry.unregistered)
-            }
+				assert.Empty(t, registry.unregistered)
+			}
 		})
 	}
 }
