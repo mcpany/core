@@ -89,7 +89,7 @@ layer.
 - **2026-06-14:** Initial Document Creation. Addressing the Shadow-Discovery via
   Metadata Injection (SDMI) vulnerability.
 
-### Update: [2026-06-15] - Mitigating SDMI and Reasoning Hijacking
+### Update: [2026-06-15] - SDMI Mitigation
 
 **Context:** Today's market sync revealed Shadow-Discovery via Metadata
 Injection (SDMI) as a primary exploit vector for steering agent reasoning.
@@ -100,7 +100,7 @@ Injection (SDMI) as a primary exploit vector for steering agent reasoning.
   **Security Impact:** Prevents malicious tool-descriptions from hijacking the
   master agent's intent loop.
 
-### Update: [2026-06-15] - Mitigating SDMI and Reasoning Hijacking (2)
+### Update: [2026-06-15] - SDMI Mitigation (2)
 
 **Context:** Today's market sync revealed Shadow-Discovery via Metadata
 Injection (SDMI) as a primary exploit vector for reasoning hijacking.
@@ -111,3 +111,11 @@ Injection (SDMI) as a primary exploit vector for reasoning hijacking.
   validated by the recipient framework. **Security Impact:** Prevents subagents
   from assuming control of the master reasoning chain via malicious
   tool-description injections.
+
+**Context:** Today's market sync revealed Shadow-Discovery via Metadata
+Injection (SDMI) as a primary exploit vector for steering agent reasoning.
+**Architecture Adjustment:**
+- Introducing **Recursive Metadata Attestation (RMA)** in Section 4.
+- Sanitized tool schemas must now carry a hardware-bound "Sanitization Proof".
+**Security Impact:** Prevents malicious tool-descriptions from hijacking the
+master agent's intent loop.

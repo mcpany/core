@@ -1175,9 +1175,14 @@
 - **SDP Policy Editor**: UI for managing hardware-attested discovery rules.
   (Added: 2026-06-15)
 
-### Upcoming: [2026-06-15]
+### Upcoming: [2026-06-15] - UI Updates
 
 - **ALCS Attention Dashboard**: Visual representation of context shard priority
   and attention levels. (Added: 2026-06-15)
+- **SDP Policy Editor**: UI for managing hardware-attested discovery rules.
+  (Added: 2026-06-15)
+
+- **ALCS Attention Dashboard**: Visual representation of context shard
+  priority and attention levels. (Added: 2026-06-15)
 - **SDP Policy Editor**: UI for managing hardware-attested discovery rules.
   (Added: 2026-06-15)

@@ -1479,7 +1479,14 @@ _None at this time._
 - **Multi-Hop Persistence Relay (MHPR)**: (P1) Trust lease propagation for deep
   meshes. (Added: 2026-06-15)
 
-### Upcoming: [2026-06-15]
+### Upcoming: [2026-06-15] - Core Features
+
+- **Attention-Locked Context Sharding (ALCS)**: (P0) Middleware for
+  hardware-attested context pinning. (Added: 2026-06-15)
+- **Sovereign Discovery Proxy (SDP)**: (P0) Hardware-attested tool discovery
+  gateway. (Added: 2026-06-15)
+- **Multi-Hop Persistence Relay (MHPR)**: (P1) Trust lease propagation for deep
+  meshes. (Added: 2026-06-15)
 
 - **Attention-Locked Context Sharding (ALCS)**: (P0) Middleware for
   hardware-attested context pinning. (Added: 2026-06-15)

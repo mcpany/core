@@ -2833,7 +2833,7 @@ trust can scale across deep, multi-framework swarms without "Cognitive Stall."
   exposed to the "Discovery Bus," ensuring that high-trust tools cannot be
   "shadowed" by malicious SDMI-compliant subagents.
 
-## Strategic Evolution: [2026-06-15] - Sovereignty Pivot
+## Strategic Evolution: [2026-06-15] - Sovereignty Pivot (Final)
 
 ### Focus: Cognitive Sovereignty & Attention Governance (2026-06-15)
 
@@ -2866,3 +2866,16 @@ noise. **Strategic Pivot**:
 - **Attention-Locked Context Sharding (ALCS)**: To neutralize REE attacks, we
   are introducing ALCS. This layer will utilize hardware-bound attention-locking
   headers to "pin" mission-critical intent fragments at the LLM attention layer.
+
+**Context**: Today's findings on **SDMI** and **Attention Entropy** confirm that
+transport-level security is insufficient for autonomous swarms. MCP Any must now
+provide **Cognitive Sovereignty**—ensuring that the agent's reasoning loop is
+protected from documentation-layer poisoning and its attention is shielded from
+adversarial noise.
+**Strategic Pivot**:
+- **Structural Metadata Sanitization (SMS)**: Evolving from simple schema
+  validation to active semantic deconstruction of tool documentation to block
+  SDMI.
+- **Attention-Locked Context Sharding (ALCS)**: Implementing hardware-bound
+  "Context Pinning" to ensure that mission-root directives are never evicted
+  from the LLM's active reasoning tiers.
