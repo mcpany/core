@@ -2,48 +2,31 @@
 
 ## Ecosystem Shifts & Findings
 
-### 1. Persistent Supply Chain Threats & Metadata Exploits (SDMI)
+### 1. Shadow-Discovery via Metadata Injection (SDMI)
 
-The discovery of **Shadow-Discovery via Metadata Injection (SDMI)** has
-catalyzed a shift in how agent discovery is governed. Malicious actors are
-weaponizing the documentation layer (descriptions, examples) to steer agent
-reasoning before tool-call interdiction. This is exacerbated by the
-**CVE-2026-2256** vulnerability in MS-Agent frameworks, which allowed for
-unsanitized shell command execution via prompt-based attacks. The ecosystem is
-moving toward mandatory **Structural Metadata Sanitization (SMS)** and
-**Sovereign Discovery Proxies (SDP)** to ensure that the discovery bus remains a
-high-trust environment.
+Recent exploits in **OpenClaw** and **Gemini CLI** have demonstrated that agents
+can be "steered" by malicious metadata in tool definitions. Attackers are
+injecting instructions into the `description` and `example` fields of tool
+schemas, which are then ingested by the agent during discovery, leading to
+pre-flight reasoning hijacking.
 
 ### 2. Attention-Locked Context Sharding (ALCS)
 
-As swarms scale horizontally, the risk of **Reasoning Entropy Exhaustion (REE)**
-has forced the adoption of ALCS. This protocol utilizes hardware-bound
-attention-locking headers to "pin" mission-critical intent fragments at the LLM
-attention layer. By preventing the eviction of "Mission Root" anchors by
-high-entropy noise injected by subagents, ALCS ensures reasoning stability in
-deep, multi-agent swarms.
+As agent swarms scale, "Attention Entropy" is becoming a critical failure point.
+High-entropy noise injected by subagents can evict mission-critical intent
+fragments from the LLM context window. The industry is moving toward
+"Attention-Locked" headers that use hardware-bound attestation to ensure
+specific shards remain prioritized in the attention layer.
 
 ### 3. Multi-Swarm Handshake Exhaustion (MSHE)
 
-High-security coordination mandates are causing **MSHE** in deep delegation
-chains (e.g., A -> B -> C -> D). The cumulative latency of redundant hardware
-signatures is leading to "Cognitive Stall." The industry is responding with
-**Multi-Hop Persistence Relays (MHPR)** and "Leased Mesh Identity" models to
-reconcile the conflict between Zero-Trust sovereignty and the performance
-requirements of autonomous swarms.
-
-### 4. Autonomous Agent Pain Points
-
-- **Uncontrolled Retrieval**: Agents inadvertently exfiltrating PII due to lack
-  of semantic validation in RAG pipelines.
-- **Identity Spoofing**: Vulnerabilities in frameworks like Moltbook where human
-  users can exploit credential gaps to impersonate agents.
-- **Supply Chain Backdoors**: 43% of framework components identified with
-  embedded vulnerabilities via November 2026 Barracuda report.
+Recursive agent calls are triggering high latency due to redundant security
+handshakes. **Claude Code**'s latest update addresses this via "Trust Leases,"
+allowing hardware-attested sessions to persist across multiple subagent hops
+without re-verification.
 
 ## Strategic Implications for MCP Any
 
-MCP Any must prioritize the **Structural Metadata Sanitizer (SMS)** and
-**Attention-Locked Context Sharding (ALCS)**. These features move the gateway
-from a passive tool proxy to an active guardian of the agent's cognitive path
-and environmental sovereignty.
+MCP Any must transition from a passive gateway to an active **Reasoning
+Guardian**. Priority must be given to **Structural Metadata Sanitization** and
+**Attention Governance**.

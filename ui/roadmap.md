@@ -1168,9 +1168,8 @@
 - [ ] **[P0] Sovereign Discovery Console**: (2026-06-14) Authorization workspace
       for hardware-attested SDP validation of capability cards.
 
-### Upcoming: [2026-06-15]
+### Upcoming (2026-06-15 Evolution)
 
-- **ALCS Dashboard**: Real-time visualization of cognitive attention sharding
-  and pinning across active swarms. (Added: 2026-06-15)
-- **SDP Policy Editor**: Hardware-attested UI for managing trust-lease
-  propagation rules across deep agentic sub-graphs. (Added: 2026-06-15)
+- **ALCS Attention Dashboard**: Visual representation of context shard priority
+  and attention levels.
+- **SDP Policy Editor**: UI for managing hardware-attested discovery rules.

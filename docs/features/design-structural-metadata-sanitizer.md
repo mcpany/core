@@ -60,8 +60,7 @@ layer.
       F -- Yes --> G[Redact & Flag Tool]
       F -- No --> H[Sign & Publish to Discovery Bus]
       I[TPM Metadata Signer] --> H
-```
-
+  ```
 - **APIs / Interfaces:**
   - `sms.SanitizeSchema(schema) -> SanitizedSchema`: Processes a full tool
     schema.
@@ -92,11 +91,11 @@ layer.
 
 ### Update: [2026-06-15] - Mitigating SDMI and Reasoning Hijacking
 
-**Context:** Today's market sync identified Shadow-Discovery via Metadata
-Injection (SDMI) as a primary exploit vector for reasoning hijacking in deep
-agent swarms. **Architecture Adjustment:**
+**Context:** Today's market sync revealed Shadow-Discovery via Metadata
+Injection (SDMI) as a primary exploit vector for steering agent reasoning.
+**Architecture Adjustment:**
 
-- Extending Section 4: Introducing **Recursive Metadata Attestation (RMA)**.
-- Deprecating simple text-based sanitization in favor of hardware-bound context
-  verifiers. **Security Impact:** Prevents subagents from assuming control of
-  the master reasoning chain via malicious tool-description injections.
+- Introducing **Recursive Metadata Attestation (RMA)** in Section 4.
+- Sanitized tool schemas must now carry a hardware-bound "Sanitization Proof"
+  before they are exposed to the Discovery Bus. **Security Impact:** Prevents
+  malicious tool-descriptions from hijacking the master agent's intent loop.

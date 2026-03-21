@@ -109,7 +109,7 @@ Mesh Governance. **Strategic Pivot**:
 
 ---
 
-## Strategic Evolution: [2026-05-23] (2)
+## Strategic Evolution: [2026-05-23] (2026-05-23 - Part 2)
 
 ### Focus: Local Zero-Trust (LOWA) & Peer-to-Peer Agent Orchestration
 
@@ -1306,9 +1306,9 @@ _data_ flowing through them to prevent agent hijacking. **Strategic Pivot**:
 
 ---
 
-## Strategic Evolution: [2026-03-14] (2)
+## Strategic Evolution: [2026-03-14] (2026-03-14 - Part 2)
 
-### Focus: Browser-Origin Validation & Intent-Preserving Context (2)
+### Focus: Browser-Origin Validation & Intent-Preserving Context (2026-03-14 - Part 2)
 
 **Context**: The OpenClaw security crisis (CVE-2026-25253) reveals that "Local
 Trust" is a flawed assumption when browser-based attacks can bridge the gap.
@@ -1375,7 +1375,7 @@ agent control planes. **Strategic Pivot**:
 
 ---
 
-## Strategic Evolution: [2026-03-17] (2)
+## Strategic Evolution: [2026-03-17] (2026-03-17 - Part 2)
 
 ### Focus: Swarm Messaging Integrity & Verifiable Reward Infrastructure
 
@@ -1430,7 +1430,7 @@ Any matures from a tool gateway into a secure, cross-framework Relational Hub.
 
 ---
 
-## Strategic Evolution: [2026-03-17] (3)
+## Strategic Evolution: [2026-03-17] (2026-03-17 - Part 3)
 
 ### Focus: Local Zero-Trust & Behavioral Skill Attestation
 
@@ -2835,33 +2835,17 @@ trust can scale across deep, multi-framework swarms without "Cognitive Stall."
 
 ## Strategic Evolution: [2026-06-15]
 
-### Focus: Attention-Bound Sovereignty & Structural Metadata Governance
+### Focus: Cognitive Sovereignty & Attention Governance
 
-**Context**: The emergence of **Shadow-Discovery via Metadata Injection (SDMI)**
-and the persistent risk of **Reasoning Entropy Exhaustion (REE)** confirm that
-infrastructure must move beyond transport security to **Cognitive Sovereignty**.
-As agents become more autonomous, their reasoning can be hijacked via the
-documentation layer (metadata) or evicted via noise injection (attention).
-Simultaneously, the latency of high-security handshakes in deep swarms leads to
-**Multi-Swarm Handshake Exhaustion (MSHE)**, demanding a reconcile between
-Zero-Trust and performance. **Strategic Pivot**:
+**Context**: Today's findings on **SDMI** and **Attention Entropy** confirm that
+transport-level security is insufficient for autonomous swarms. MCP Any must now
+provide **Cognitive Sovereignty**—ensuring that the agent's reasoning loop is
+protected from metadata poisoning and its attention is shielded from adversarial
+noise. **Strategic Pivot**:
 
-- **Structural Metadata Sanitization (SMS)**: MCP Any will evolve to treat all
-  tool schemas, descriptions, and examples as untrusted, high-entropy content.
-  We will implement the SMS, performing real-time semantic deconstruction of
-  discovery-time metadata to detect and block SDMI instruction injection before
-  they reach the agent reasoning loop.
-- **Attention-Locked Context Sharding (ALCS)**: To neutralize REE attacks, we
-  are introducing ALCS. This layer will utilize hardware-bound attention-locking
-  headers to "pin" mission-critical intent and lineage fragments at the LLM
-  attention layer, ensuring they cannot be evicted by high-entropy noise
-  injected by subagents.
-- **Sovereign Discovery Proxy (SDP)**: To counter discovery hijacking and supply
-  chain compromises, we are mandating the use of the SDP. This authoritative
-  gateway will perform hardware-attested validation of all tool capability cards
-  before they are exposed to the "Discovery Bus," ensuring that high-trust tools
-  cannot be "shadowed" by malicious SDMI-compliant subagents.
-- **Multi-Hop Persistence Relay (MHPR)**: Supporting the performance of deep
-  swarms, MCP Any will implement MHPR. This allows hardware-attested trust
-  leases to persist across multiple delegation hops, neutralizing "Handshake
-  Exhaustion" without degrading the security posture.
+- **Structural Metadata Sanitization (SMS)**: Evolving from simple schema
+  validation to active semantic deconstruction of tool documentation to block
+  SDMI.
+- **Attention-Locked Context Sharding (ALCS)**: Implementing hardware-bound
+  "Context Pinning" to ensure that mission-root directives are never evicted
+  from the LLM's active reasoning tiers.
