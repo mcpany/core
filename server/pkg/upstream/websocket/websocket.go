@@ -59,13 +59,13 @@ type Upstream struct {
 // Summary: Executes CheckHealth operation.
 //
 // Parameters:
-//   - Parameters for the operation.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - The result of the operation.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - An error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -96,13 +96,13 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Summary: Executes Shutdown operation.
 //
 // Parameters:
-//   - Parameters for the operation.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - The result of the operation.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - An error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -131,13 +131,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Summary: Initializes NewUpstream operation.
 //
 // Parameters:
-//   - Parameters for the operation.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - The result of the operation.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - An error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -168,13 +168,13 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Summary: Executes Register operation.
 //
 // Parameters:
-//   - Parameters for the operation.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - The result of the operation.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - An error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

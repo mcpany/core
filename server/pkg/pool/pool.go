@@ -606,13 +606,13 @@ func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 // Summary: Executes CloseAll operation.
 //
 // Parameters:
-//   - Parameters for the operation.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - The result of the operation.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - An error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

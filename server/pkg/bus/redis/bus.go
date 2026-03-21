@@ -33,13 +33,13 @@ type Bus[T any] struct {
 // Summary: Initializes New operation.
 //
 // Parameters:
-//   - Parameters for the operation.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - The result of the operation.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - An error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -68,13 +68,13 @@ func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 // Summary: Initializes NewWithClient operation.
 //
 // Parameters:
-//   - Parameters for the operation.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - The result of the operation.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - An error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -99,13 +99,13 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 // Summary: Executes Publish operation.
 //
 // Parameters:
-//   - Parameters for the operation.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - The result of the operation.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - An error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -133,13 +133,13 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 // Summary: Executes Subscribe operation.
 //
 // Parameters:
-//   - Parameters for the operation.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - The result of the operation.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - An error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -207,13 +207,13 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 // Summary: Executes SubscribeOnce operation.
 //
 // Parameters:
-//   - Parameters for the operation.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - The result of the operation.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - An error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

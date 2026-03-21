@@ -53,13 +53,13 @@ type OIDCProvider struct {
 // Summary: Initializes NewOIDCProvider operation.
 //
 // Parameters:
-//   - Parameters for the operation.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - The result of the operation.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - An error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -105,13 +105,13 @@ func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, err
 // Summary: Executes HandleLogin operation.
 //
 // Parameters:
-//   - Parameters for the operation.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - The result of the operation.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - An error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -155,13 +155,13 @@ func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
 // Summary: Executes HandleCallback operation.
 //
 // Parameters:
-//   - Parameters for the operation.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - The result of the operation.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - An error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

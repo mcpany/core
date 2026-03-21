@@ -20,28 +20,64 @@ type ActionableError struct {
 	Suggestion string
 }
 
-// Error error error.
-//
-// Summary: Error error.
+// Error implements the error interface. Side Effects: - None.
 //
 // Parameters:
-//   None.
+//   - None
 //
 // Returns:
-//   - string: The result.
+//   - string: The resulting string.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+//
+// Summary: Executes Error operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (e *ActionableError) Error() string {
 	return fmt.Sprintf("%v\n\t-> Fix: %s", e.Err, e.Suggestion)
 }
 
-// Unwrap unwrap unwrap.
-//
-// Summary: Unwrap unwrap.
+// Unwrap returns the underlying error. Side Effects: - None.
 //
 // Parameters:
-//   None.
+//   - None
 //
 // Returns:
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None
+//
+// Summary: Executes Unwrap operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (e *ActionableError) Unwrap() error {
 	return e.Err
 }

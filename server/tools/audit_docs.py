@@ -120,10 +120,6 @@ def scan_dir(root_dir):
         if "vendor" in root or "node_modules" in root or "test" in root and "pkg" not in root:
             continue
 
-        # Skip generated proto files and examples that don't need strict audit
-        if "greeter_server/proto" in root or "k8s/operator" in root:
-            continue
-
         for file in files:
             if file.endswith('.go') and not file.endswith('_test.go'):
                 path = os.path.join(root, file)

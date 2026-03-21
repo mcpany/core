@@ -317,9 +317,6 @@ func (m *AuditMiddleware) ClearHistory() {
 //
 // Summary: Subscribes to audit events with history.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - chan any: A channel receiving new audit entries.
 //   - []any: A slice of historical audit entries.
@@ -333,9 +330,6 @@ func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 // GetHistory returns the current broadcast history.
 //
 // Summary: Retrieves the audit history from the broadcaster.
-//
-// Parameters:
-//   - None.
 //
 // Returns:
 //   - []any: A slice of audit entries.
@@ -407,17 +401,26 @@ func (m *AuditMiddleware) Close() error {
 
 // Write writes an audit entry directly to the store.
 //
-// Summary: Writes an audit entry directly to the store.
-//
 // Parameters:
-//   - ctx (context.Context): The context for the operation.
-//   - entry (audit.Entry): The audit entry to write.
+//   - ctx: context.Context for the operation.
+//   - entry: The audit.Entry to write.
 //
 // Returns:
 //   - error: An error if the write fails, or nil on success.
 //
 // Errors:
 //   - Returns an error if the audit store is not initialized.
+//
+// Summary: Updates Write operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
