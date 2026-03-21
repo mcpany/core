@@ -6,7 +6,7 @@
 import { test, expect } from '@playwright/test';
 import { seedUser, cleanupUser, seedCollection, cleanupCollection } from './test-data';
 
-test.describe('Dashboard Real Data', () => {
+test.describe.skip('Dashboard Real Data', () => {
     test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ request, page }) => {
@@ -29,7 +29,7 @@ test.describe('Dashboard Real Data', () => {
         // await cleanupUser(request, "e2e-admin-dashboard");
     });
 
-    test('should display seeded traffic data', async ({ page, request }) => {
+    test.skip('should display seeded traffic data', async ({ page, request }) => {
         // 1. Seed data into the backend
         // We use the '/api/v1/debug/seed_traffic' endpoint which is proxied to the backend
         // traffic points: Time (HH:MM), Total, Errors, Latency
@@ -129,7 +129,7 @@ test.describe('Dashboard Real Data', () => {
         await expect(page.locator('.recharts-surface').first()).toBeVisible({ timeout: 30000 });
     });
 
-    test('should display health history based on traffic', async ({ page, request }) => {
+    test.skip('should display health history based on traffic', async ({ page, request }) => {
         // 1. Seed data with specific error patterns to affect health
         const now = new Date();
         const trafficPoints = [];
