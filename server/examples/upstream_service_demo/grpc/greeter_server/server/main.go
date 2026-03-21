@@ -27,22 +27,6 @@ type server struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
-//
-// Summary: Executes the logic associated with say hello.
-//
-// Parameters:
-//   - ctx (context.Context): The context for managing request deadlines and cancellations.
-//   - in (*pb.HelloRequest): The in used in the execution.
-//
-// Returns:
-//   - *pb.HelloReply: A pointer to the initialized pb. hello reply structure.
-//   - error: An error encountered during execution, or nil if successful.
-//
-// Errors:
-//   - Returns an error if the operation fails or inputs are invalid.
-//
-// Side Effects:
-//   - None.
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	log.Printf("Received: %v", in.GetName())
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil

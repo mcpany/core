@@ -18,9 +18,6 @@ import (
 // Returns:
 //   - http.Handler: The wrapped handler that sets security headers.
 //
-// Errors:
-//   - None.
-//
 // Side Effects:
 //   - Makes network calls via HTTP or gRPC.
 func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {

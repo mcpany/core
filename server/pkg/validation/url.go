@@ -153,9 +153,6 @@ var IsSafeURL = func(urlStr string) error {
 //   - Returns "link-local address is not allowed (metadata service protection)" if triggered.
 //   - Returns "link-local multicast address is not allowed" if triggered.
 //   - And potentially other underlying errors.
-//
-// Side Effects:
-//   - None.
 func ValidateIP(ip net.IP, allowLoopback, allowPrivate bool) error {
 	if !allowLoopback && (ip.IsLoopback() || IsNAT64Loopback(ip) || (IsIPv4Compatible(ip) && ip[12] == 127)) {
 		return fmt.Errorf("loopback address is not allowed")

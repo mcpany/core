@@ -330,9 +330,6 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 //
 // Side Effects:
 //   - Scans the entire audit_logs table.
-//
-// Parameters:
-//   - None.
 func (s *SQLiteAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -389,9 +386,6 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 //
 // Side Effects:
 //   - Closes the DB connection.
-//
-// Parameters:
-//   - None.
 //
 // Errors:
 //   - Returns an error if the operation fails or inputs are invalid.

@@ -21,7 +21,7 @@ var upgrader = websocket.Upgrader{
 
 // Signal represents a WebRTC signal.
 //
-// Summary: Represents the signal component, defining its structure and state.
+// Summary: Represents the signal component, defining its structure and configuration properties.
 type Signal struct {
 	Type    string `json:"type"`
 	Payload string `json:"payload"`

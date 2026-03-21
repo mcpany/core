@@ -71,9 +71,6 @@ var byteBufferPool = sync.Pool{
 // Side Effects:
 //   - Intercepts the response writer to buffer and compress content.
 //   - Modifies the Content-Encoding header.
-//
-// Errors:
-//   - None.
 func GzipCompressionMiddleware(next http.Handler) http.Handler {
 	pool := sync.Pool{
 		New: func() interface{} {
@@ -196,12 +193,6 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 // Side Effects:
 //   - Sets the internal status code.
 //   - May trigger an immediate flush if the content type is not compressible.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
 func (w *gzipResponseWriter) WriteHeader(code int) {
 	if w.headerWritten {
 		return

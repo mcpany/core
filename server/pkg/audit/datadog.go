@@ -48,9 +48,6 @@ type DatadogAuditStore struct {
 //
 // Side Effects:
 //   - Starts background workers to process the log queue.
-//
-// Errors:
-//   - None.
 func NewDatadogAuditStore(config *configv1.DatadogConfig) *DatadogAuditStore {
 	if config == nil {
 		config = &configv1.DatadogConfig{}
@@ -201,9 +198,6 @@ func (e *DatadogAuditStore) sendBatch(batch []Entry) {
 //
 // Errors:
 //   - Returns "read not implemented for datadog audit store" if triggered.
-//
-// Side Effects:
-//   - None.
 func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for datadog audit store")
 }
@@ -218,9 +212,6 @@ func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 // Side Effects:
 //   - Closes internal channels.
 //   - Flushes pending logs.
-//
-// Parameters:
-//   - None.
 //
 // Errors:
 //   - Returns an error if the operation fails or inputs are invalid.

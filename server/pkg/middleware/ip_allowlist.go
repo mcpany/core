@@ -33,9 +33,6 @@ type IPAllowlistMiddleware struct {
 //
 // Errors:
 //   - Returns an error if the operation fails or inputs are invalid.
-//
-// Side Effects:
-//   - None.
 func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, error) {
 	m := &IPAllowlistMiddleware{}
 	if err := m.Update(allowedCIDRs); err != nil {
@@ -99,9 +96,6 @@ func (m *IPAllowlistMiddleware) Update(allowedCIDRs []string) error {
 // Returns:
 //   - bool: True if allowed, false otherwise.
 //
-// Errors:
-//   - None.
-//
 // Side Effects:
 //   - Makes network calls via HTTP or gRPC.
 func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
@@ -147,9 +141,6 @@ func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 //
 // Returns:
 //   - http.Handler: The wrapped handler.
-//
-// Errors:
-//   - None.
 //
 // Side Effects:
 //   - Makes network calls via HTTP or gRPC.

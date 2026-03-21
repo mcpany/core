@@ -86,15 +86,6 @@ type SafeDialer struct {
 //
 // Returns:
 //   - (*SafeDialer): A new SafeDialer instance with restrictive defaults.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewSafeDialer() *SafeDialer {
 	return &SafeDialer{
 		AllowLoopback:  false,
@@ -203,9 +194,6 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 //
 // Errors:
 //   - Returns an error if the operation fails or inputs are invalid.
-//
-// Side Effects:
-//   - None.
 func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }
@@ -223,12 +211,6 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //
 // Returns:
 //   - (*http.Client): A configured HTTP client.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
 //
 // Side Effects:
 //   - Makes network calls via HTTP or gRPC.

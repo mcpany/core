@@ -57,9 +57,6 @@ type CircuitBreaker struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors:
-//   - None.
 func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	return &CircuitBreaker{
 		config: config,
@@ -253,9 +250,6 @@ type CircuitBreakerOpenError struct{}
 //   - string: The error message.
 //
 // Side Effects:
-//   - None.
-//
-// Errors:
 //   - None.
 func (e *CircuitBreakerOpenError) Error() string {
 	return "circuit breaker is open"

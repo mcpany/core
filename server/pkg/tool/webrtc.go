@@ -36,14 +36,8 @@ type peerConnectionWrapper struct {
 // Returns:
 //   - error: An error if the operation fails.
 //
-// Parameters:
-//   - None.
-//
 // Errors:
 //   - Returns an error if the operation fails or inputs are invalid.
-//
-// Side Effects:
-//   - None.
 func (w *peerConnectionWrapper) Close() error {
 	if w.PeerConnection == nil {
 		return nil
@@ -60,12 +54,6 @@ func (w *peerConnectionWrapper) Close() error {
 //
 // Returns:
 //   - bool: True if the connection state is valid (New, Checking, Connected, Completed).
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (w *peerConnectionWrapper) IsHealthy(_ context.Context) bool {
 	if w.PeerConnection == nil {
 		return false
@@ -115,9 +103,6 @@ type WebrtcTool struct {
 //
 // Errors:
 //   - Returns "failed to create webrtc pool: %w" if triggered.
-//
-// Side Effects:
-//   - None.
 func NewWebrtcTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,
@@ -177,15 +162,6 @@ func (t *WebrtcTool) newPeerConnection(_ context.Context) (*peerConnectionWrappe
 //
 // Returns:
 //   - *v1.Tool: The tool definition.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (t *WebrtcTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -196,15 +172,6 @@ func (t *WebrtcTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (t *WebrtcTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -222,15 +189,6 @@ func (t *WebrtcTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -253,9 +211,6 @@ func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Errors:
 //   - Returns "failed to get peer connection from pool: %w" if triggered.
-//
-// Side Effects:
-//   - None.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized
@@ -413,14 +368,8 @@ func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *Executi
 // Returns:
 //   - error: Always nil.
 //
-// Parameters:
-//   - None.
-//
 // Errors:
 //   - Returns an error if the operation fails or inputs are invalid.
-//
-// Side Effects:
-//   - None.
 func (t *WebrtcTool) Close() error {
 	if t.webrtcPool != nil {
 		_ = t.webrtcPool.Close()

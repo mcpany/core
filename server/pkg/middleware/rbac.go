@@ -24,15 +24,6 @@ type RBACMiddleware struct {
 //
 // Returns:
 //   - *RBACMiddleware: The initialized middleware.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewRBACMiddleware() *RBACMiddleware {
 	return &RBACMiddleware{
 		enforcer: auth.NewRBACEnforcer(),
@@ -48,9 +39,6 @@ func NewRBACMiddleware() *RBACMiddleware {
 //
 // Returns:
 //   - func(http.Handler) http.Handler: The middleware function.
-//
-// Errors:
-//   - None.
 //
 // Side Effects:
 //   - Makes network calls via HTTP or gRPC.
@@ -85,9 +73,6 @@ func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handle
 //
 // Returns:
 //   - func(http.Handler) http.Handler: The middleware function.
-//
-// Errors:
-//   - None.
 //
 // Side Effects:
 //   - Makes network calls via HTTP or gRPC.
@@ -124,9 +109,6 @@ func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http
 //
 // Returns:
 //   - func(http.Handler) http.Handler: The middleware function.
-//
-// Errors:
-//   - None.
 //
 // Side Effects:
 //   - Makes network calls via HTTP or gRPC.

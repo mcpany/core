@@ -120,15 +120,6 @@ func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string)
 //
 // Returns:
 //   - *mcp.Prompt: The MCP prompt definition.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
 	args := make([]*mcp.PromptArgument, 0)
 	if p.definition.GetInputSchema() != nil {
@@ -188,15 +179,6 @@ func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
 //
 // Returns:
 //   - string: The service ID.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (p *TemplatedPrompt) Service() string {
 	return p.serviceID
 }
@@ -207,15 +189,6 @@ func (p *TemplatedPrompt) Service() string {
 //
 // Returns:
 //   - *configv1.PromptDefinition: The definition proto.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (p *TemplatedPrompt) Definition() *configv1.PromptDefinition {
 	return p.definition
 }
@@ -237,9 +210,6 @@ func (p *TemplatedPrompt) Definition() *configv1.PromptDefinition {
 // Errors:
 //   - Returns error if args cannot be unmarshaled.
 //   - Returns error if template rendering fails.
-//
-// Side Effects:
-//   - None.
 func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var inputs map[string]any
 	if err := json.Unmarshal(args, &inputs); err != nil {
@@ -282,9 +252,6 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 //
 // Errors:
 //   - Returns an error if the operation fails or inputs are invalid.
-//
-// Side Effects:
-//   - None.
 func NewPromptFromConfig(definition *configv1.PromptDefinition, serviceID string) (Prompt, error) {
 	return NewTemplatedPrompt(definition, serviceID)
 }

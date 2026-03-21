@@ -70,12 +70,6 @@ func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 //
 // Side Effects:
 //   - Modifies the underlying rate.Limiter state.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
 func (l *LocalLimiter) Update(rps float64, burst int) {
 	limit := rate.Limit(rps)
 	if l.Limit() != limit {
@@ -97,15 +91,6 @@ type LocalStrategy struct{}
 //
 // Returns:
 //   - *LocalStrategy: The initialized strategy.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewLocalStrategy() *LocalStrategy {
 	return &LocalStrategy{}
 }

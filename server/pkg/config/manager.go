@@ -58,9 +58,6 @@ type UpstreamServiceManager struct {
 // Returns:
 //   - (*UpstreamServiceManager): A pointer to a fully initialized UpstreamServiceManager.
 //
-// Errors:
-//   - None.
-//
 // Side Effects:
 //   - Makes network calls via HTTP or gRPC.
 func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager {

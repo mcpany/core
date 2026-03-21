@@ -42,9 +42,6 @@ type JSONRPCResponse struct {
 //
 // Side Effects:
 //   - Intercepts and rewrites HTTP response bodies for error status codes.
-//
-// Errors:
-//   - None.
 func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Only intercept POST requests (likely JSON-RPC)
@@ -104,15 +101,6 @@ type smartResponseWriter struct {
 //
 // Returns:
 //   - http.Header: The header map.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (w *smartResponseWriter) Header() http.Header {
 	return w.header
 }
@@ -123,15 +111,6 @@ func (w *smartResponseWriter) Header() http.Header {
 //
 // Parameters:
 //   - code: int. The HTTP status code.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
 		return
@@ -213,12 +192,6 @@ func (w *smartResponseWriter) flushHeader() {
 // Returns:
 //
 //	None.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
 //
 // Side Effects:
 //   - Makes network calls via HTTP or gRPC.

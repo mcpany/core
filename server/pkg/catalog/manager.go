@@ -39,12 +39,6 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: The initialized manager.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewManager(fs afero.Fs, catalogPath string) *Manager {
 	return &Manager{
 		fs:          fs,
@@ -149,9 +143,6 @@ func (m *Manager) Load(ctx context.Context) error {
 //
 // Errors:
 //   - Returns an error if the operation fails or inputs are invalid.
-//
-// Side Effects:
-//   - None.
 func (m *Manager) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

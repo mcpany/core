@@ -52,12 +52,6 @@ type WebsocketTool struct {
 //
 // Returns:
 //   - *WebsocketTool: A new instance of WebsocketTool.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewWebsocketTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,
@@ -83,15 +77,6 @@ func NewWebsocketTool(
 //
 // Returns:
 //   - *v1.Tool: The tool definition.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (t *WebsocketTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -102,15 +87,6 @@ func (t *WebsocketTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (t *WebsocketTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -128,15 +104,6 @@ func (t *WebsocketTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -161,9 +128,6 @@ func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Returns "failed to get websocket connection from pool: %w" if triggered.
 //   - Returns "failed to unmarshal tool inputs: %w" if triggered.
 //   - And potentially other underlying errors.
-//
-// Side Effects:
-//   - None.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

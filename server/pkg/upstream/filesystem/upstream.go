@@ -269,9 +269,6 @@ type fsCallable struct {
 //
 // Errors:
 //   - Returns "failed to unmarshal arguments: %w" if triggered.
-//
-// Side Effects:
-//   - None.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

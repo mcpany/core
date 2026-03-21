@@ -26,9 +26,6 @@ import (
 // Returns:
 //   - bool: True if the environment variable is allowed, false otherwise.
 //
-// Errors:
-//   - None.
-//
 // Side Effects:
 //   - Interacts with the local filesystem.
 func IsEnvVarAllowed(name string) bool {

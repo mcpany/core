@@ -314,15 +314,6 @@ type statsCacheEntry struct {
 //
 // Returns:
 //   - (*Application): The initialized application.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -1384,9 +1375,6 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 //
 // Errors:
 //   - Returns an error if the operation fails or inputs are invalid.
-//
-// Side Effects:
-//   - None.
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1520,9 +1508,6 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 //
 // Errors:
 //   - Returns an error if the operation fails or inputs are invalid.
-//
-// Side Effects:
-//   - None.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -2587,9 +2572,6 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 //
 // Returns:
 //   - (http.Handler): The wrapped handler.
-//
-// Errors:
-//   - None.
 //
 // Side Effects:
 //   - Makes network calls via HTTP or gRPC.

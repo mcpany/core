@@ -63,12 +63,6 @@ type UpstreamServiceFactory struct {
 //
 // Returns:
 //   - Factory: A new Factory instance.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *configv1.GlobalSettings) Factory {
 	return &UpstreamServiceFactory{
 		poolManager:    poolManager,

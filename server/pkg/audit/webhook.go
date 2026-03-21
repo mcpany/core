@@ -46,9 +46,6 @@ type WebhookAuditStore struct {
 //
 // Side Effects:
 //   - Starts background workers.
-//
-// Errors:
-//   - None.
 func NewWebhookAuditStore(webhookURL string, headers map[string]string) *WebhookAuditStore {
 	store := &WebhookAuditStore{
 		webhookURL: webhookURL,

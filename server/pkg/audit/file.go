@@ -112,9 +112,6 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 //
 // Errors:
 //   - Returns "read not implemented for file audit store" if triggered.
-//
-// Side Effects:
-//   - None.
 func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for file audit store")
 }
@@ -128,9 +125,6 @@ func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 //
 // Side Effects:
 //   - Closes the file descriptor.
-//
-// Parameters:
-//   - None.
 //
 // Errors:
 //   - Returns an error if the operation fails or inputs are invalid.

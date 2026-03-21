@@ -23,12 +23,6 @@ var redisClientCreator = redis.NewClient
 //
 // Side Effects:
 //   - Modifies the global redisClientCreator variable.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
 	redisClientCreator = creator
 }
@@ -132,12 +126,6 @@ func NewRedisLimiterWithPartition(serviceID, limitScopeKey, partitionKey string,
 //
 // Returns:
 //   - *RedisLimiter: The initialized limiter.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewRedisLimiterWithClient(client *redis.Client, serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) *RedisLimiter {
 	key := "ratelimit:" + serviceID
 	if limitScopeKey != "" {
@@ -283,12 +271,6 @@ func (l *RedisLimiter) AllowN(ctx context.Context, n int) (bool, error) {
 //
 // Side Effects:
 //   - Modifies the internal state of the limiter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
 func (l *RedisLimiter) Update(rps float64, burst int) {
 	l.rps = rps
 	l.burst = burst
@@ -301,15 +283,6 @@ func (l *RedisLimiter) Update(rps float64, burst int) {
 //
 // Returns:
 //   - string: The configuration hash string.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (l *RedisLimiter) GetConfigHash() string {
 	return l.configHash
 }
@@ -323,9 +296,6 @@ func (l *RedisLimiter) GetConfigHash() string {
 //
 // Side Effects:
 //   - Closes the TCP connection to Redis.
-//
-// Parameters:
-//   - None.
 //
 // Errors:
 //   - Returns an error if the operation fails or inputs are invalid.

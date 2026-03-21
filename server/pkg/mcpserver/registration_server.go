@@ -56,9 +56,6 @@ var NewRegistrationServerHook func(bus interface{}, authManager interface{}) (*R
 //
 // Throws/Errors:
 //   - Returns an error if the bus is nil.
-//
-// Side Effects:
-//   - None.
 func NewRegistrationServer(bus *bus.Provider, authManager *auth.Manager) (*RegistrationServer, error) {
 	if NewRegistrationServerHook != nil {
 		// The type assertion is safe because this is a test-only hook.
@@ -242,9 +239,6 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 //
 // Errors:
 //   - Returns "method UnregisterService not implemented" if triggered.
-//
-// Side Effects:
-//   - None.
 func (s *RegistrationServer) UnregisterService(_ context.Context, _ *v1.UnregisterServiceRequest) (*v1.UnregisterServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnregisterService not implemented")
 }
@@ -265,9 +259,6 @@ func (s *RegistrationServer) UnregisterService(_ context.Context, _ *v1.Unregist
 //   - codes.InvalidArgument: If required parameters are missing.
 //   - codes.Unauthenticated: If the user is not authenticated.
 //   - codes.Internal: If an internal error occurs.
-//
-// Side Effects:
-//   - None.
 func (s *RegistrationServer) InitiateOAuth2Flow(ctx context.Context, req *v1.InitiateOAuth2FlowRequest) (*v1.InitiateOAuth2FlowResponse, error) {
 	if req.GetServiceId() == "" && req.GetCredentialId() == "" {
 		return nil, status.Error(codes.InvalidArgument, "either service_id or credential_id is required")
@@ -311,9 +302,6 @@ func (s *RegistrationServer) InitiateOAuth2Flow(ctx context.Context, req *v1.Ini
 //
 // Errors:
 //   - Returns "method RegisterTools not implemented" if triggered.
-//
-// Side Effects:
-//   - None.
 func (s *RegistrationServer) RegisterTools(_ context.Context, _ *v1.RegisterToolsRequest) (*v1.RegisterToolsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterTools not implemented")
 }
@@ -332,9 +320,6 @@ func (s *RegistrationServer) RegisterTools(_ context.Context, _ *v1.RegisterTool
 //
 // Errors:
 //   - Returns "method GetServiceStatus not implemented" if triggered.
-//
-// Side Effects:
-//   - None.
 func (s *RegistrationServer) GetServiceStatus(_ context.Context, _ *v1.GetServiceStatusRequest) (*v1.GetServiceStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceStatus not implemented")
 }
@@ -355,9 +340,6 @@ func (s *RegistrationServer) GetServiceStatus(_ context.Context, _ *v1.GetServic
 //   - codes.InvalidArgument: If the service name is missing.
 //   - codes.NotFound: If the service is not found.
 //   - codes.DeadlineExceeded: If the request times out.
-//
-// Side Effects:
-//   - None.
 func (s *RegistrationServer) GetService(ctx context.Context, req *v1.GetServiceRequest) (*v1.GetServiceResponse, error) {
 	if req.GetServiceName() == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "service_name is required")
@@ -414,9 +396,6 @@ func (s *RegistrationServer) mustEmbedUnimplementedRegistrationServiceServer() {
 // Throws/Errors:
 //   - codes.DeadlineExceeded: If the request times out.
 //   - codes.Internal: If an internal error occurs.
-//
-// Side Effects:
-//   - None.
 func (s *RegistrationServer) ListServices(ctx context.Context, _ *v1.ListServicesRequest) (*v1.ListServicesResponse, error) {
 	correlationID := uuid.New().String()
 	resultChan := make(chan *bus.ServiceListResult, 1)

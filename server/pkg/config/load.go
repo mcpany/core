@@ -33,9 +33,6 @@ import (
 //   - Returns "unknown binary type: %s" if triggered.
 //   - Returns "global settings validation failed, check logs for details" if triggered.
 //   - And potentially other underlying errors.
-//
-// Side Effects:
-//   - None.
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
@@ -127,9 +124,6 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 //   - Returns "failed to load config from store: %w" if triggered.
 //   - Returns "configuration sources provided but loaded configuration is empty. Check if the sources are empty or invalid" if triggered.
 //   - Returns "failed to load and merge services: %w" if triggered.
-//
-// Side Effects:
-//   - None.
 func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 

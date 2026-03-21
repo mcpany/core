@@ -152,15 +152,6 @@ var (
 //
 // Parameters:
 //   - paths: []string. The list of allowed paths.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func SetAllowedPaths(paths []string) {
 	allowedPaths = paths
 }
@@ -346,12 +337,6 @@ var allowedOpaqueSchemes = map[string]bool{
 //
 // Returns:
 //   - bool: True if valid.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func IsValidURL(s string) bool {
 	if len(s) > 2048 || strings.TrimSpace(s) != s {
 		return false
@@ -413,9 +398,6 @@ func IsValidURL(s string) bool {
 //   - Returns "path is required" if triggered.
 //   - Returns "path must start with a '/'" if triggered.
 //   - And potentially other underlying errors.
-//
-// Side Effects:
-//   - None.
 func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 	if def == nil {
 		return fmt.Errorf("http call definition cannot be nil")

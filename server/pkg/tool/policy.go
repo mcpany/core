@@ -24,12 +24,6 @@ var exportRegexCache sync.Map
 //
 // Returns:
 //   - bool: True if the item should be exported, false otherwise.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 	if policy == nil {
 		// Default to Allow/Export if no policy is present?
@@ -91,9 +85,6 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 //
 // Errors:
 //   - Returns an error if the operation fails or inputs are invalid.
-//
-// Side Effects:
-//   - None.
 func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	// Fallback to slower implementation if not using compiled policies
 	for _, policy := range policies {
@@ -175,9 +166,6 @@ type CompiledCallPolicy struct {
 //
 // Errors:
 //   - Returns an error if the operation fails or inputs are invalid.
-//
-// Side Effects:
-//   - None.
 func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy, error) {
 	compiled := make([]*CompiledCallPolicy, 0, len(policies))
 	for _, p := range policies {
@@ -208,9 +196,6 @@ func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy
 //   - Returns "invalid tool name regex %q: %w" if triggered.
 //   - Returns "invalid call ID regex %q: %w" if triggered.
 //   - Returns "invalid argument regex %q: %w" if triggered.
-//
-// Side Effects:
-//   - None.
 func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, error) {
 	compiledRules := make([]compiledCallPolicyRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -267,9 +252,6 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 //
 // Errors:
 //   - Returns an error if the operation fails or inputs are invalid.
-//
-// Side Effects:
-//   - None.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	for _, policy := range policies {
 		policyBlocked := false
