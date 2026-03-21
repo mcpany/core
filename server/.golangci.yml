@@ -1,8 +1,7 @@
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-service:
-  golangci-lint-version: v1.64.5 # Ensure compatibility
+version: "2" # Try version 2 as suggested by some migration guides for modern golangci-lint
 
 run:
   timeout: 5m
