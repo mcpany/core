@@ -36,4 +36,31 @@ test.describe('Inspector Page', () => {
     await expect(sheet).toBeVisible();
     await expect(sheet.locator('text=orchestrator-task').first()).toBeVisible();
   });
+
+  test('should clear traces permanently on backend when Clear is clicked', async ({ page }) => {
+    // Navigate to the Inspector page
+    await page.goto('/inspector');
+
+    // Wait for the page to load by checking for the "Inspector" header
+    await expect(page.getByRole('heading', { name: 'Inspector' })).toBeVisible();
+
+    // Click the "Seed Trace" button
+    const seedTraceBtn = page.getByRole('button', { name: 'Seed Trace' });
+    await expect(seedTraceBtn).toBeVisible();
+    await seedTraceBtn.click();
+
+    // Expect the toast notification
+    await expect(page.getByText('Trace Seeded').first()).toBeVisible({ timeout: 5000 });
+
+    const row = page.locator('text=orchestrator-task').first();
+    await expect(row).toBeVisible({ timeout: 10000 });
+
+    // Click the Clear button
+    const clearBtn = page.getByRole('button', { name: 'Clear' });
+    await expect(clearBtn).toBeVisible();
+    await clearBtn.click();
+
+    // Verify the table is empty
+    await expect(row).not.toBeVisible();
+  });
 });
