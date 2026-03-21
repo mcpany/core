@@ -39,7 +39,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-05-23]
+## Strategic Evolution: [2026-05-23] (2026-05-23 - Part 2)
 ### Focus: Local Zero-Trust (LOWA) & Peer-to-Peer Agent Orchestration
 **Context**: The disclosure of "ClawJacked" (CVE-2026-25253) proves that "Implicit Local Trust" for loopback WebSocket traffic is a critical failure point. Simultaneously, the rise of Claude Code's "Agent Teams" signals a shift toward horizontal (mesh) collaboration. The "Universal Agent Bus" must now act as the secure, authenticated bridge for both local control and peer-to-peer teammate communication.
 **Strategic Pivot**:
@@ -469,8 +469,8 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-03-14]
-### Focus: Browser-Origin Validation & Intent-Preserving Context
+## Strategic Evolution: [2026-03-14] (2026-03-14 - Part 2)
+### Focus: Browser-Origin Validation & Intent-Preserving Context (2026-03-14 - Part 2)
 **Context**: The OpenClaw security crisis (CVE-2026-25253) reveals that "Local Trust" is a flawed assumption when browser-based attacks can bridge the gap. Simultaneously, the rise of "Context Ghosting" in swarms emphasizes that context compression must be intent-aware to maintain mission stability.
 **Strategic Pivot**:
 - **Zero-Trust Browser Origin Validation**: MCP Any will implement mandatory `Origin` and `Sec-Fetch-Site` header verification for all local API/WebSocket endpoints. This ensures that only authorized local applications (not malicious websites) can communicate with the gateway.
@@ -499,7 +499,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-03-17]
+## Strategic Evolution: [2026-03-17] (2026-03-17 - Part 2)
 ### Focus: Swarm Messaging Integrity & Verifiable Reward Infrastructure
 **Context**: The rapid adoption of "Agent Teams" (Claude Code) and the pivot to "RL-driven Reasoning" (DeepSeek/OpenClaw) confirm that the "Universal Agent Bus" must move from simple connectivity to **Active Inter-Agent Governance**. As swarms become deeper and more autonomous, the security frontier is no longer just the "tool," but the **Inbox** where agents coordinate and the **Reward** that optimizes their reasoning.
 **Strategic Pivot**:
@@ -519,7 +519,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-03-17]
+## Strategic Evolution: [2026-03-17] (2026-03-17 - Part 3)
 ### Focus: Local Zero-Trust & Behavioral Skill Attestation
 **Context**: The Oasis Security report on OpenClaw's loopback vulnerability and the "Delayed Payload" tactics in ClawHavoc skills demonstrate that the "Local Intranet" is the new frontier for AI agent exploits.
 **Strategic Pivot**:
@@ -1026,5 +1026,3 @@ adversarial noise.
 - **Attention-Locked Context Sharding (ALCS)**: Implementing hardware-bound
   "Context Pinning" to ensure that mission-root directives are never evicted
   from the LLM's active reasoning tiers.
-- **Multi-Hop Persistence Relay (MHPR)**: Facilitating hardware-attested trust
-  leases across deep swarms to neutralize MSHE.

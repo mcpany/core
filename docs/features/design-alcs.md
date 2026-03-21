@@ -16,7 +16,7 @@ attention layers using hardware-bound attestation.
   - Real-time monitoring of attention occupancy.
 - **Non-Goals:**
   - Increasing raw context window size.
-  - Managing long-term memory.
+  - Managing long-term agent memory.
 
 ## 3. Critical User Journey (CUJ)
 
