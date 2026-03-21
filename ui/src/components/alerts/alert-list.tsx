@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
 import { useState, useMemo, useEffect, useCallback } from "react";
 import {
   Table,
@@ -25,7 +23,18 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CheckCircle2, AlertCircle, AlertTriangle, Search, Filter, MoreHorizontal, Clock, RefreshCw, Activity, Loader2 } from "lucide-react";
+import {
+  CheckCircle2,
+  AlertCircle,
+  AlertTriangle,
+  Search,
+  Filter,
+  MoreHorizontal,
+  Clock,
+  RefreshCw,
+  Activity,
+  Loader2,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -75,14 +84,16 @@ export function AlertList() {
   }, []);
 
   const filteredAlerts = useMemo(() => {
-    return alerts.filter(alert => {
+    return alerts.filter((alert) => {
       const matchesSearch =
         alert.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         alert.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
         alert.service.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesSeverity = filterSeverity === "all" || alert.severity === filterSeverity;
-      const matchesStatus = filterStatus === "all" || alert.status === filterStatus;
+      const matchesSeverity =
+        filterSeverity === "all" || alert.severity === filterSeverity;
+      const matchesStatus =
+        filterStatus === "all" || alert.status === filterStatus;
 
       return matchesSearch && matchesSeverity && matchesStatus;
     });
@@ -95,27 +106,33 @@ export function AlertList() {
 
   const handleStatusChange = async (id: string, newStatus: AlertStatus) => {
     try {
-        const updated = await apiClient.updateAlertStatus(id, newStatus);
-        setAlerts(prev => prev.map(a => a.id === id ? updated : a));
-        toast({
-            title: "Status Updated",
-            description: `Alert marked as ${newStatus}`,
-        });
+      const updated = await apiClient.updateAlertStatus(id, newStatus);
+      setAlerts((prev) => prev.map((a) => (a.id === id ? updated : a)));
+      toast({
+        title: "Status Updated",
+        description: `Alert marked as ${newStatus}`,
+      });
     } catch (error) {
-        console.error(error);
-        toast({
-            title: "Error",
-            description: "Failed to update status",
-            variant: "destructive",
-        });
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "Failed to update status",
+        variant: "destructive",
+      });
     }
   };
 
   const handleBulkStatusChange = async (newStatus: AlertStatus) => {
     const alertIds = Array.from(selectedAlerts);
     try {
-      await Promise.all(alertIds.map(id => apiClient.updateAlertStatus(id, newStatus)));
-      setAlerts(prev => prev.map(a => alertIds.includes(a.id) ? { ...a, status: newStatus } : a));
+      await Promise.all(
+        alertIds.map((id) => apiClient.updateAlertStatus(id, newStatus)),
+      );
+      setAlerts((prev) =>
+        prev.map((a) =>
+          alertIds.includes(a.id) ? { ...a, status: newStatus } : a,
+        ),
+      );
       setSelectedAlerts(new Set());
       toast({
         title: "Alerts Updated",
@@ -131,43 +148,77 @@ export function AlertList() {
     }
   };
 
-  const handleSelectAll = useCallback((checked: boolean) => {
-    if (checked) {
-      setSelectedAlerts(new Set(filteredAlerts.map(a => a.id)));
-    } else {
-      setSelectedAlerts(new Set());
-    }
-  }, [filteredAlerts]);
+  const handleSelectAll = useCallback(
+    (checked: boolean) => {
+      if (checked) {
+        setSelectedAlerts(new Set(filteredAlerts.map((a) => a.id)));
+      } else {
+        setSelectedAlerts(new Set());
+      }
+    },
+    [filteredAlerts],
+  );
 
   const handleSelectOne = useCallback((id: string, checked: boolean) => {
-    setSelectedAlerts(prev => {
-        const newSelected = new Set(prev);
-        if (checked) {
-          newSelected.add(id);
-        } else {
-          newSelected.delete(id);
-        }
-        return newSelected;
+    setSelectedAlerts((prev) => {
+      const newSelected = new Set(prev);
+      if (checked) {
+        newSelected.add(id);
+      } else {
+        newSelected.delete(id);
+      }
+      return newSelected;
     });
   }, []);
 
-  const isAllSelected = filteredAlerts.length > 0 && selectedAlerts.size === filteredAlerts.length;
+  const isAllSelected =
+    filteredAlerts.length > 0 && selectedAlerts.size === filteredAlerts.length;
 
   const getSeverityBadge = (severity: Severity) => {
     switch (severity) {
-      case "critical": return <Badge variant="destructive" className="uppercase text-[10px]">Critical</Badge>;
-      case "warning": return <Badge variant="secondary" className="bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/25 uppercase text-[10px]">Warning</Badge>;
-      case "info": return <Badge variant="outline" className="text-blue-500 border-blue-200 dark:border-blue-800 uppercase text-[10px]">Info</Badge>;
-      default: return <Badge variant="outline" className="uppercase text-[10px]">{severity}</Badge>;
+      case "critical":
+        return (
+          <Badge variant="destructive" className="uppercase text-[10px]">
+            Critical
+          </Badge>
+        );
+      case "warning":
+        return (
+          <Badge
+            variant="secondary"
+            className="bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/25 uppercase text-[10px]"
+          >
+            Warning
+          </Badge>
+        );
+      case "info":
+        return (
+          <Badge
+            variant="outline"
+            className="text-blue-500 border-blue-200 dark:border-blue-800 uppercase text-[10px]"
+          >
+            Info
+          </Badge>
+        );
+      default:
+        return (
+          <Badge variant="outline" className="uppercase text-[10px]">
+            {severity}
+          </Badge>
+        );
     }
   };
 
   const getStatusIcon = (status: AlertStatus) => {
     switch (status) {
-      case "active": return <AlertCircle className="h-4 w-4 text-red-500 animate-pulse" />;
-      case "acknowledged": return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
-      case "resolved": return <CheckCircle2 className="h-4 w-4 text-green-500" />;
-      default: return <Activity className="h-4 w-4 text-muted-foreground" />;
+      case "active":
+        return <AlertCircle className="h-4 w-4 text-red-500 animate-pulse" />;
+      case "acknowledged":
+        return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
+      case "resolved":
+        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+      default:
+        return <Activity className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -175,12 +226,24 @@ export function AlertList() {
     <div className="space-y-4 relative">
       {selectedAlerts.size > 0 && (
         <div className="flex items-center gap-2 p-2 bg-muted/40 rounded-md animate-in fade-in slide-in-from-top-1 duration-200 sticky top-0 z-10 backdrop-blur-md border">
-          <span className="text-sm text-muted-foreground mr-2 font-medium px-2">{selectedAlerts.size} selected</span>
+          <span className="text-sm text-muted-foreground mr-2 font-medium px-2">
+            {selectedAlerts.size} selected
+          </span>
           <div className="h-4 w-px bg-border mx-1" />
-          <Button size="sm" variant="ghost" onClick={() => handleBulkStatusChange('acknowledged')} className="h-8 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-100 dark:hover:bg-yellow-900/20">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => handleBulkStatusChange("acknowledged")}
+            className="h-8 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-100 dark:hover:bg-yellow-900/20"
+          >
             <AlertTriangle className="mr-2 h-4 w-4" /> Acknowledge
           </Button>
-          <Button size="sm" variant="ghost" onClick={() => handleBulkStatusChange('resolved')} className="h-8 text-green-600 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/20">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => handleBulkStatusChange("resolved")}
+            className="h-8 text-green-600 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/20"
+          >
             <CheckCircle2 className="mr-2 h-4 w-4" /> Resolve
           </Button>
         </div>
@@ -197,11 +260,11 @@ export function AlertList() {
           />
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
-           <Select value={filterSeverity} onValueChange={setFilterSeverity}>
+          <Select value={filterSeverity} onValueChange={setFilterSeverity}>
             <SelectTrigger className="w-[130px]">
               <div className="flex items-center gap-2">
-                 <Filter className="h-3.5 w-3.5 text-muted-foreground" />
-                 <SelectValue placeholder="Severity" />
+                <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+                <SelectValue placeholder="Severity" />
               </div>
             </SelectTrigger>
             <SelectContent>
@@ -212,10 +275,10 @@ export function AlertList() {
             </SelectContent>
           </Select>
           <Select value={filterStatus} onValueChange={setFilterStatus}>
-             <SelectTrigger className="w-[130px]">
+            <SelectTrigger className="w-[130px]">
               <div className="flex items-center gap-2">
-                 <Activity className="h-3.5 w-3.5 text-muted-foreground" />
-                 <SelectValue placeholder="Status" />
+                <Activity className="h-3.5 w-3.5 text-muted-foreground" />
+                <SelectValue placeholder="Status" />
               </div>
             </SelectTrigger>
             <SelectContent>
@@ -225,8 +288,13 @@ export function AlertList() {
               <SelectItem value="resolved">Resolved</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" size="icon" onClick={fetchAlerts} disabled={loading}>
-             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={fetchAlerts}
+            disabled={loading}
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           </Button>
         </div>
       </div>
@@ -253,78 +321,117 @@ export function AlertList() {
           </TableHeader>
           <TableBody>
             {loading && alerts.length === 0 ? (
-                 <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
-                        <div className="flex items-center justify-center gap-2">
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                            Loading alerts...
-                        </div>
-                    </TableCell>
-                </TableRow>
+              <TableRow>
+                <TableCell
+                  colSpan={7}
+                  className="h-24 text-center text-muted-foreground"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Loading alerts...
+                  </div>
+                </TableCell>
+              </TableRow>
             ) : filteredAlerts.length === 0 ? (
-                <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
-                        No alerts match your filters.
-                    </TableCell>
-                </TableRow>
+              <TableRow>
+                <TableCell
+                  colSpan={7}
+                  className="h-24 text-center text-muted-foreground"
+                >
+                  No alerts match your filters.
+                </TableCell>
+              </TableRow>
             ) : (
-                filteredAlerts.map((alert) => (
-                <TableRow key={alert.id} className={cn("group", selectedAlerts.has(alert.id) ? "bg-muted/50" : "")}>
-                    <TableCell className="pr-0">
-                      <Checkbox
-                        checked={selectedAlerts.has(alert.id)}
-                        onCheckedChange={(checked) => handleSelectOne(alert.id, !!checked)}
-                        aria-label={`Select alert ${alert.id}`}
-                        className="translate-y-[2px]"
-                      />
-                    </TableCell>
-                    <TableCell>{getSeverityBadge(alert.severity)}</TableCell>
-                    <TableCell>
-                    <div className="flex items-center gap-2" title={alert.status}>
-                        {getStatusIcon(alert.status)}
-                        <span className="capitalize text-xs hidden sm:inline">{alert.status}</span>
+              filteredAlerts.map((alert) => (
+                <TableRow
+                  key={alert.id}
+                  className={cn(
+                    "group",
+                    selectedAlerts.has(alert.id) ? "bg-muted/50" : "",
+                  )}
+                >
+                  <TableCell className="pr-0">
+                    <Checkbox
+                      checked={selectedAlerts.has(alert.id)}
+                      onCheckedChange={(checked) =>
+                        handleSelectOne(alert.id, !!checked)
+                      }
+                      aria-label={`Select alert ${alert.id}`}
+                      className="translate-y-[2px]"
+                    />
+                  </TableCell>
+                  <TableCell>{getSeverityBadge(alert.severity)}</TableCell>
+                  <TableCell>
+                    <div
+                      className="flex items-center gap-2"
+                      title={alert.status}
+                    >
+                      {getStatusIcon(alert.status)}
+                      <span className="capitalize text-xs hidden sm:inline">
+                        {alert.status}
+                      </span>
                     </div>
-                    </TableCell>
-                    <TableCell>
+                  </TableCell>
+                  <TableCell>
                     <div className="flex flex-col">
-                        <span className="font-medium text-sm">{alert.title}</span>
-                        <span className="text-xs text-muted-foreground">{alert.message}</span>
+                      <span className="font-medium text-sm">{alert.title}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {alert.message}
+                      </span>
                     </div>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                        <Badge variant="outline" className="font-mono text-xs">{alert.service}</Badge>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell text-xs text-muted-foreground whitespace-nowrap">
-                        <div className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {formatDistanceToNow(new Date(alert.timestamp), { addSuffix: true })}
-                        </div>
-                    </TableCell>
-                    <TableCell>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    <Badge variant="outline" className="font-mono text-xs">
+                      {alert.service}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell text-xs text-muted-foreground whitespace-nowrap">
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {formatDistanceToNow(new Date(alert.timestamp), {
+                        addSuffix: true,
+                      })}
+                    </div>
+                  </TableCell>
+                  <TableCell>
                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                      <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Open menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
                         </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(alert.id)}>
-                            Copy Alert ID
+                        <DropdownMenuItem
+                          onClick={() =>
+                            navigator.clipboard.writeText(alert.id)
+                          }
+                        >
+                          Copy Alert ID
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleStatusChange(alert.id, 'acknowledged')} disabled={alert.status !== 'active'}>
-                            Acknowledge
+                        <DropdownMenuItem
+                          onClick={() =>
+                            handleStatusChange(alert.id, "acknowledged")
+                          }
+                          disabled={alert.status !== "active"}
+                        >
+                          Acknowledge
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleStatusChange(alert.id, 'resolved')} disabled={alert.status === 'resolved'}>
-                            Resolve
+                        <DropdownMenuItem
+                          onClick={() =>
+                            handleStatusChange(alert.id, "resolved")
+                          }
+                          disabled={alert.status === "resolved"}
+                        >
+                          Resolve
                         </DropdownMenuItem>
-                        </DropdownMenuContent>
+                      </DropdownMenuContent>
                     </DropdownMenu>
-                    </TableCell>
+                  </TableCell>
                 </TableRow>
-                ))
+              ))
             )}
           </TableBody>
         </Table>
