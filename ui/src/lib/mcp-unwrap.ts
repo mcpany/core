@@ -50,7 +50,7 @@ export function unwrapMcpResult(result: any): any {
                 try {
                     const parsed = JSON.parse(content[0].text);
                     if (typeof parsed === 'object' && parsed !== null) {
-                        return parsed;
+                        return unwrapMcpResult(parsed);
                     }
                 } catch (e) {
                     // Not JSON inside text
@@ -78,6 +78,18 @@ export function deepParseJson(obj: any): any {
             const parsed = JSON.parse(obj);
             if (typeof parsed === 'object' && parsed !== null) {
                 return deepParseJson(parsed);
+            }
+            // Only recurse for strings if the parsed string is still valid JSON
+            // and it is different from the original string.
+            // But if it's a primitive string (e.g. "just a string"), we shouldn't return parsed,
+            // we should return obj to match previous behavior unless it's double escaped JSON.
+            if (typeof parsed === 'string' && parsed !== obj) {
+                 try {
+                     const innerParsed = JSON.parse(parsed);
+                     if (typeof innerParsed === 'object' && innerParsed !== null) {
+                          return deepParseJson(parsed);
+                     }
+                 } catch (e) {}
             }
         } catch (e) {
             // Not a JSON string
