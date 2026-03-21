@@ -632,3 +632,9 @@
 - [ ] **[P0] Mission-Root Lineage Visualizer**: Enhanced visualizer for RMRA-compliant headless mission chains. (Added: 2026-06-23)
 - [ ] **[P0] Cross-Channel Sanitization Log**: Security dashboard for reviewing AIS-redacted coordination messages. (Added: 2026-06-23)
 - [ ] **[P0] Behavioral Anchoring Monitor**: Real-time visualization of stylometric consistency scores vs. mission-root manifest. (Added: 2026-06-23)
+
+### Upcoming: [2026-06-24]
+- [ ] **[P0] Mission Resumption Manager**: (2026-06-24) UI for monitoring and manually triggering AMR-mediated mission recovery checkpoints.
+- [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
+- [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
+- [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
