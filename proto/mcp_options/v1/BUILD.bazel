@@ -13,8 +13,8 @@ proto_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "@protobuf//:descriptor_proto",
-        "@protobuf//:go_features_proto",
+        "@protobuf//:go_default_library",
+        "@protobuf//:go_default_library",
     ],
 )
 

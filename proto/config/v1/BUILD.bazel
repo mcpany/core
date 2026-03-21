@@ -35,10 +35,10 @@ proto_library(
     visibility = ["//visibility:public"],
     deps = [
         "//proto/bus:bus_proto",
-        "@protobuf//:duration_proto",
-        "@protobuf//:go_features_proto",
-        "@protobuf//:struct_proto",
-        "@protobuf//:timestamp_proto",
+        "@protobuf//:go_default_library",
+        "@protobuf//:go_default_library",
+        "@protobuf//:go_default_library",
+        "@protobuf//:go_default_library",
     ],
 )
 

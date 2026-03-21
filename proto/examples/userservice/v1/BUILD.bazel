@@ -11,7 +11,7 @@ proto_library(
     visibility = ["//visibility:public"],
     deps = [
         "//proto/mcp_options/v1:v1_proto",
-        "@protobuf//:go_features_proto",
+        "@protobuf//:go_default_library",
     ],
 )
 
