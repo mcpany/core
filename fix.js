@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 const fs = require('fs');
 let content = fs.readFileSync('ui/src/mocks/proto/mock-proto.ts', 'utf8');
 content = content.replace('export const CallPolicyRule = {};', '/**\n * Mock type placeholders for policy-related proto messages.\n */\nexport const CallPolicyRule = {};');
