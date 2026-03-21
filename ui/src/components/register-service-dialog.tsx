@@ -631,7 +631,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                                                 const configToSave = constructConfig(values);
 
                                                 try {
-                                                    const res: any = await apiClient.registerService(configToSave);
+                                                    const res = await apiClient.registerService(configToSave) as { service?: { id?: string; sanitizedName?: string; name?: string } };
                                                     toast({
                                                         title: "Service Registered",
                                                         description: `Draft configuration saved. Proceeding to authenticate...`
