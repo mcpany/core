@@ -40,6 +40,7 @@ go_proto_library(
     visibility = ["//visibility:public"],
     deps = [
         "//proto/config/v1:config",
+        "@org_golang_google_genproto_googleapis_api//annotations",
         "@org_golang_google_protobuf//types/gofeaturespb",
     ],
 )
@@ -57,7 +58,6 @@ go_library(
     deps = [
         "@com_github_grpc_ecosystem_grpc_gateway_v2//runtime",
         "@com_github_grpc_ecosystem_grpc_gateway_v2//utilities",
-        "@org_golang_google_genproto_googleapis_api//annotations",
         "@org_golang_google_grpc//:grpc",
         "@org_golang_google_grpc//codes",
         "@org_golang_google_grpc//grpclog",
