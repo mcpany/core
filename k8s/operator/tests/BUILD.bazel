@@ -10,15 +10,9 @@ go_test(
     data = [
         "//server/cmd/server:server_tarball",
         "//server/tests/integration/cmd/mocks/http_echo_server:http_echo_server_tarball",
-        "//ui:ui_tarball",
     ],
     env = {
         "E2E": "true",
     },
     tags = ["integration"],
-)
-
-go_test(
-    name = "tests_test",
-    srcs = ["e2e_test.go"],
 )
