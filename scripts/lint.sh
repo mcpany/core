@@ -51,28 +51,18 @@ echo "==> Running golangci-lint..."
 GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    # Verify Go version of the linter if possible
+    # Verify Go version of the linter
     LINT_VERSION_OUT=$("$GOLANGCI_LINT_BIN" --version)
     echo "    Using linter: $LINT_VERSION_OUT"
 
-    # Filter modules to only those that exist and contain Go files
-    MODULES=()
-    for d in server proto k8s/operator server/examples/upstream_service_demo/grpc/greeter_server; do
-        if [ -d "$d" ]; then
-            if find "$d" -maxdepth 3 -name "*.go" | grep -q .; then
-                MODULES+=("./$d/...")
-            fi
-        fi
-    done
+    # We run on specific directories to avoid workspace boundary issues and "no Go files" errors.
+    # Note: we run from root so it sees go.work.
+    # We use space-separated list of paths.
+    TARGETS="./server/... ./proto/... ./k8s/operator/... ./server/examples/upstream_service_demo/grpc/greeter_server/..."
 
-    if [ ${#MODULES[@]} -gt 0 ]; then
-        echo "    Linting ${MODULES[*]}..."
-        # We run from root to respect go.work if present, but specify paths
-        "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --config server/.golangci.yml "${MODULES[@]}"
-        echo "    golangci-lint OK."
-    else
-        echo "    Warning: No Go modules found to lint."
-    fi
+    echo "    Linting targets..."
+    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --config server/.golangci.yml $TARGETS
+    echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found."
 fi
