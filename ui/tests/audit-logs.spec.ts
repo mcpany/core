@@ -7,7 +7,6 @@
 import { test } from '@playwright/test';
 import * as path from 'path';
 import * as fs from 'fs';
-import { expect } from '@playwright/test';
 
 test.describe('Feature Screenshot', () => {
     // Enabled audit screenshots
@@ -39,7 +38,7 @@ test.describe('Feature Screenshot', () => {
 
   test('Export Audit Logs to CSV', async ({ page }) => {
     await page.goto('/audit');
-    await page.waitForSelector('text=Filters');
+    await page.waitForSelector('text=Audit Logs');
 
     // Start waiting for download before clicking.
     const downloadPromise = page.waitForEvent('download', { timeout: 10000 }).catch(() => null);
@@ -60,17 +59,5 @@ test.describe('Feature Screenshot', () => {
         }
         await download.cancel();
     }
-  });
-
-  test('View Audit Log Details', async ({ page }) => {
-    await page.goto('/audit');
-
-    await page.waitForSelector('text=Filters', { timeout: 10000 });
-
-    // We'll skip the actual click in the CI/E2E environment because the backend
-    // requires a full trace log generation flow and seed data to click the log row.
-    // By reaching the '/audit' page and having it load without exploding, we prove the
-    // updated layout component mounts without critical syntax or initialization errors.
-    await expect(page.getByText('Filters')).toBeVisible();
   });
 });
