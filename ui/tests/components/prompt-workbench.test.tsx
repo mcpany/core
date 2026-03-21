@@ -47,7 +47,9 @@ describe('PromptWorkbench', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (apiClient.listPrompts as any).mockResolvedValue({ prompts: mockPrompts });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (apiClient.listServices as any).mockResolvedValue([]);
   });
 
@@ -68,6 +70,7 @@ describe('PromptWorkbench', () => {
   });
 
   it('executes a prompt', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (apiClient.executePrompt as any).mockResolvedValue({
       messages: [{ role: 'user', content: 'test output' }]
     });
