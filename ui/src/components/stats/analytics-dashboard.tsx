@@ -143,11 +143,11 @@ export function AnalyticsDashboard() {
     const { totalRequests, avgLatency, _errorCount, errorRate, avgRps } = useMemo(() => {
         // ⚡ BOLT: Memoized traffic stats calculation to prevent re-render waste.
         // Randomized Selection from Top 5 High-Impact Targets
-        const totalRequests = trafficData.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
+        const totalRequests = trafficData.reduce((acc, cur) => acc + (Number((cur as Record<string, unknown>).requests) || Number((cur as Record<string, unknown>).total) || 0), 0);
         const avgLatency = trafficData.length
-            ? Math.floor(trafficData.reduce((acc, cur) => acc + (cur.latency || 0), 0) / trafficData.length)
+            ? Math.floor(trafficData.reduce((acc, cur) => acc + (Number((cur as Record<string, unknown>).latency) || 0), 0) / trafficData.length)
             : 0;
-        const _errorCount = trafficData.reduce((acc, cur) => acc + (cur.errors || 0), 0);
+        const _errorCount = trafficData.reduce((acc, cur) => acc + (Number((cur as Record<string, unknown>).errors) || 0), 0);
         const errorRate = totalRequests ? ((_errorCount / totalRequests) * 100).toFixed(2) : "0.00";
         // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
         const durationMinutes = trafficData.length;
@@ -316,7 +316,7 @@ export function AnalyticsDashboard() {
                                                 dataKey="value"
                                                 isAnimationActive={false}
                                             >
-                                                {toolUsageData.map((entry, _index) => (
+                                                {toolUsageData.map((entry: any, _index: number) => (
                                                     <Cell key={`cell-${_index}`} fill={entry.color} />
                                                 ))}
                                             </Pie>
@@ -445,7 +445,7 @@ export function AnalyticsDashboard() {
                                                 isAnimationActive={false}
                                                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                                             >
-                                                {contextByService.map((entry, _index) => (
+                                                {contextByService.map((entry: any, _index: number) => (
                                                     <Cell key={`cell-${_index}`} fill={entry.color} />
                                                 ))}
                                             </Pie>
@@ -469,7 +469,7 @@ export function AnalyticsDashboard() {
                             </CardHeader>
                             <CardContent>
                                  <div className="space-y-4 max-h-[300px] overflow-auto pr-2">
-                                    {heaviestTools.map((tool, _index) => (
+                                    {heaviestTools.map((tool: any, _index: number) => (
                                         <div key={tool.name} className="flex items-center justify-between border-b pb-2 last:border-0">
                                             <div className="space-y-1">
                                                 <p className="text-sm font-medium leading-none">{tool.name}</p>
