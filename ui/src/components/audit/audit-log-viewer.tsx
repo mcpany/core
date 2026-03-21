@@ -143,7 +143,8 @@ export function AuditLogViewer() {
       console.error("Failed to export audit logs", e);
       toast({
         title: "Export Failed",
-        description: e instanceof Error ? e.message : "Failed to export audit logs.",
+        description:
+          e instanceof Error ? e.message : "Failed to export audit logs.",
         variant: "destructive",
       });
     } finally {
