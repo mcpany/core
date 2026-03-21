@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-06-19] Updates
+
+### Proposed Additions
+- **RAS Controller (Recursive Attention Sovereignty)**: (P0) Authoritative attention guard utilizing HAAL v2.0 headers to protect mission-root anchors from subagent "Attention-Eviction" (AE-26).
+- **MRIR Broker (Mesh-Resident Intent Reconciliation)**: (P0) Coordination service for horizontal swarms that hosts mesh-local "Intent Heartbeats" to eliminate shard-collision race conditions.
+- **ZTMB Sanitizer (Zero-Trust Multi-Modal Bridge)**: (P1) Advanced security service performing hardware-attested semantic hash-chaining for non-textual reasoning traces (SVG, Audio).
+- **Recursive Styling Attestation Provider**: (P0) Behavioral security service mandating stylometric-signature validation for all inter-teammate coordination.
+
+### Priority Shifts
+- **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MRIR-compliant** state reconciliation.
+- **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Recursive Styling Attestation** requirements.
+
 ## Evolution: [2026-06-16] Updates
 
 ### Proposed Additions

@@ -598,6 +598,12 @@
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
 
+### Upcoming: [2026-06-19]
+- [ ] **[P0] RAS Attention Guard Monitor**: (2026-06-19) Real-time visualization of HAAL-v2 attention tiers and entropy-throttling events.
+- [ ] **[P0] Mesh Intent Heartbeat Viewer**: (2026-06-19) Interactive dashboard for monitoring mesh-local reconciliation and MRIR state alignment.
+- [ ] **[P1] Multi-Modal Trace Sanitizer**: (2026-06-19) Security UI for inspecting ZTMB-sanitized non-textual fragments and semantic hash-chains.
+- [ ] **[P0] Stylometric Signature Inspector**: (2026-06-19) Forensic UI for verifying behavioral consistency and detecting Mimicry-v2 attempts.
+
 ### Upcoming: [2026-06-18]
 - [ ] **[P0] Mission Resumption Status Widget**: (2026-06-18) Real-time monitor for hardware-locked re-attestation events and AMRA session health.
 - [ ] **[P0] Entanglement Privacy Auditor**: (2026-06-18) Security dashboard for reviewing SES-redacted fragments and monologue smearing alerts.

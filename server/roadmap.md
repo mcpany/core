@@ -760,6 +760,12 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
 
+### Upcoming: [2026-06-19]
+- **RAS Controller (Recursive Attention Sovereignty)**: (P0) Authoritative attention guard utilizing HAAL v2.0 headers to protect mission-root anchors. (Added: 2026-06-19)
+- **MRIR Broker (Mesh-Resident Intent Reconciliation)**: (P0) Coordination service for horizontal swarms hosting mesh-local "Intent Heartbeats." (Added: 2026-06-19)
+- **ZTMB Sanitizer (Zero-Trust Multi-Modal Bridge)**: (P1) Hardware-attested semantic hash-chaining for non-textual reasoning traces (SVG, Audio). (Added: 2026-06-19)
+- **Recursive Styling Attestation Provider**: (P0) Behavioral security service mandating stylometric-signature validation for inter-teammate requests. (Added: 2026-06-19)
+
 ### Upcoming: [2026-06-18]
 - **Autonomous Mission Resumption (AMRA) Hub**: (P0) Authoritative resumption service with hardware-locked re-attestation (Added: 2026-06-18).
 - **Semantic Entanglement Sanitizer (SES)**: (P0) High-entropy semantic analyzer for entangled state shards (Added: 2026-06-18).
