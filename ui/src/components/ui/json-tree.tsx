@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from "react";
-import { ChevronRight, ChevronDown, Copy, Check } from "lucide-react";
+import { ChevronDown, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -97,7 +97,7 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
 
       {expanded && (
         <div className="border-l-[1.5px] border-border/40 ml-[6px] pl-4 flex flex-col my-1 relative before:absolute before:inset-y-0 before:-left-[1.5px] before:w-[1.5px] before:bg-gradient-to-b before:from-transparent before:via-border/40 before:to-transparent">
-          {entries.map(([key, value], idx) => (
+          {entries.map(([key, value]) => (
             <div key={key} className="flex items-start gap-2 py-0.5">
                {/* Key */}
                <div className="pt-[2px] shrink-0 text-purple-600 dark:text-purple-400 font-medium">
