@@ -685,19 +685,6 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Temporal Decay Orchestrator**: (P1) Lifecycle management service for handling "Graceful Mission Decay" signals. (Added: 2026-06-08)
 - **Fragment-Level Sovereignty Attestation**: (P0) Advanced security service mandating ARI-attestation for A2A teammates. (Added: 2026-06-08)
 
-- **Semantic Shadowing Mitigator (SSM)**: (P0) A behavioral security middleware for the AID Hub performing stylometric and contextual consistency checks to detect mimicry-based intent hijacking.
-- **Mission-Locked Execution (MLE) Gateway**: (P0) Core security service that enforces cryptographic locking of tool calls and sub-delegations to a hardware-attested mission-root intent.
-- **STR-Native Discovery Provider**: (P1) Upgrade for the PNTD Provider to support "Sovereign Tool Registry" (STR) manifests and TPM-signed behavioral baselines.
-- **Temporal Sovereignty Controller**: (P1) Lifecycle management service implementing "Ephemeral Mission Roots" to prevent long-term session hijacking.
-
-### Upcoming: [2026-06-05]
-- **Intent-Splicing Detector (ISD)**: (P0) Structural validation middleware for the Semantic Integrity Bridge to prevent malicious instruction splicing in inter-agent streams.
-- **Recursive Accountability Tracker (RAT)**: (P0) Lifecycle-aware accounting service ensuring immediate revocation of session-bound capabilities upon task completion.
-- **HAIL Lineage Provider**: (P0) Identity middleware supporting Hardware-Attested Intent Lineage (HAIL) for non-repudiable mission-root attestation.
-- **Synthetic Policy Synthesizer**: (P1) Experimental mesh-local policy generation service backed by hardware attestation.
-
-### Upcoming: [2026-06-04]
-- **Pre-Commit Speculative Sanitizer (PCSS)**: Mandatory security middleware for the Speculative Execution Guard to neutralize "Speculative Fragment Poisoning."
 - **Mission-Root Gravity (MRG) Middleware**: Advanced extension for Live Context Sharding to prevent "Semantic Drift" in granular meshes.
 - **Multi-Hop Persistence Relay (MHPR)**: Performance-optimizing security service for the LFTA Trust Lease Manager to support persistent hardware-attested trust across multiple delegation hops.
 - **Sub-Millisecond ARL Synchronizer**: High-speed listener for the LFTA ARL Middleware to support ARL v3.0 synchronization in sub-100ms intervals.

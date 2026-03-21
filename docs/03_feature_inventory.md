@@ -4,8 +4,6 @@
 - **Policy Firewall**: Rego/CEL based hooking for tool calls.
 - **HITL Middleware**: Suspension protocol for user approval flows.
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
-- **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
-
 ## Evolution: [2026-06-07] Updates
 
 ### Proposed Additions
@@ -17,6 +15,8 @@
 ### Priority Shifts
 - **Sharded Mailbox Sovereignty (SMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **CASI** to prevent horizontal shard pollution.
 - **Active Negotiation Broker (ANB)**: (Re-affirmed P0) Evolving to support the new **CFIB-v1** bidding protocol for heterogeneous swarms.
+
+- **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
 ## Evolution: [2026-06-16] Updates
 
@@ -42,13 +42,6 @@
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ARI** integration to counter fragment-level state-splicing.
 - **Mission-Locked Execution (MLE) Gateway**: (Re-affirmed P0) Designated as the primary enforcement point for **HAMM-compliant** mission manifests.
 
-## Evolution: [2026-05-23] Updates
-
-### Proposed Additions
-- **Federated Swarm Identity (FSI) Provider**: (P0) A local identity service that issues hardware-attested, cross-framework tokens for secure teammate verification in heterogeneous meshes.
-- **Intent-Leakage Shielding (ILS) Middleware**: (P0) Security extension for the MRP middleware that monitors semantic entropy and blocks subagent requests designed to probe mission-root constraints.
-- **Hardware-Attested Discovery Handshake (HADH) Gateway**: (P0) Advanced discovery service that mandates hardware-bound handshakes before revealing any agent capabilities to peers.
-- **Reasoning-Effort Quota Controller**: (P0) Resource management middleware that dynamically throttles high-intensity reasoning (e.g., `x-gemini-reasoning-effort`) to prevent Agentic DoS.
 
 ## Evolution: [2026-05-24] Updates
 

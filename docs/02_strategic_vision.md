@@ -732,10 +732,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-
-## Strategic Evolution: [2026-06-05]
-### Focus: Intent-Splicing Defense & Recursive Accountability
-**Context**: The emergence of "Intent-Splicing" (OpenClaw v3.0.0-rc1) and the persistence of "Capability Squatting" due to accountability debt reveal that **Reasoning Integrity** must now be structurally validated, and **Capability Lifecycle** must be recursively tracked. As swarms become deeper, the risk of subagents "splicing" malicious instructions into parent streams demands a move toward active semantic deconstruction.
 **Strategic Pivot**:
 - **Intent-Splicing Detector (ISD)**: MCP Any will evolve its semantic integrity middleware to perform active deconstruction and structural validation of inter-agent messages. We will implement ISD, ensuring that subagent inputs cannot "splice" unauthorized intents into the parent's verified instruction stream.
 - **Recursive Accountability Tracker (RAT)**: To neutralize "Capability Squatting," we are introducing the RAT. This service will recursively track the lineage and expiration of all session-bound capabilities, ensuring that tool access is forcefully revoked immediately upon sub-intent termination.
