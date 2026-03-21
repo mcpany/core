@@ -216,7 +216,7 @@ test.describe('Services Feature', () => {
     await deleteBtn.click();
 
     // Give the UI a moment to update/toast to appear
-    await page.waitForTimeout(500);
+
 
     // Verify successful bulk delete toast
     await expect(page.getByText('Services Deleted', { exact: true })).toBeVisible();
