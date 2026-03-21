@@ -69,7 +69,7 @@ test.describe('Inspector Page', () => {
     // connection.
     if (wsSend) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-      (wsSend as Function)(JSON.stringify(MOCK_TRACE));
+      (wsSend as (...args: any[]) => any)(JSON.stringify(MOCK_TRACE));
     }
 
     // Wait briefly to allow React state to update based on WebSocket message
@@ -109,7 +109,7 @@ test.describe('Inspector Page', () => {
 
     if (wsSend) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-      (wsSend as Function)(JSON.stringify(MOCK_TRACE));
+      (wsSend as (...args: any[]) => any)(JSON.stringify(MOCK_TRACE));
     }
 
     const row = page.locator('text=orchestrator-task').first();
