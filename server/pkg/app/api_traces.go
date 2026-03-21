@@ -257,18 +257,6 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 					logging.GetLogger().Error("failed to write trace to websocket", "error", err)
 					return
 				}
-			case trace, ok := <-seededSubCh:
-				if !ok {
-					return
-				}
-				if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-					logging.GetLogger().Error("failed to set write deadline", "error", err)
-					return
-				}
-				if err := conn.WriteJSON(trace); err != nil {
-					logging.GetLogger().Error("failed to write seeded trace to websocket", "error", err)
-					return
-				}
 			}
 		}
 	}
