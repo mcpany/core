@@ -38,21 +38,16 @@ const (
 
 // String returns the string representation of the severity.
 //
-// It converts the Severity enum to its string counterpart (ERROR, WARNING, INFO).
+// Summary: Executes String operation.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
 //   - string: The string representation of the severity.
 //
-// Summary: Executes String operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -87,21 +82,16 @@ type Result struct {
 
 // String returns the string representation of the result.
 //
-// It formats the result into a human-readable string suitable for CLI output.
+// Summary: Executes String operation.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
 //   - string: A formatted string containing severity, service, path, and message.
 //
-// Summary: Executes String operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -128,22 +118,16 @@ type Linter struct {
 
 // NewLinter creates a new Linter instance.
 //
+// Summary: Initializes NewLinter operation.
+//
 // Parameters:
-//   - cfg: *configv1.McpAnyServerConfig. The server configuration to be linted.
+//   - cfg (*configv1.McpAnyServerConfig): The server configuration to be linted.
 //
 // Returns:
 //   - *Linter: A new Linter instance initialized with the provided configuration.
 //
-// Summary: Initializes NewLinter operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -151,28 +135,22 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
 
-// Run executes all linting checks.
+// Run executes all linting checks on the server configuration.
 //
 // It aggregates results from multiple check categories including standard validation,
 // secret usage, shell injection risks, insecure HTTP, and cache settings.
 //
+// Summary: Executes Run operation.
+//
 // Parameters:
-//   - ctx: context.Context. The context for the request (currently unused but reserved for future async checks).
+//   - ctx (context.Context): The context for the request.
 //
 // Returns:
 //   - []Result: A list of linting findings.
 //   - error: An error if the linting process encounters a fatal issue (currently always nil).
 //
-// Summary: Executes Run operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
