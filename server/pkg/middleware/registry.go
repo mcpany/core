@@ -505,7 +505,7 @@ func InitStandardMiddlewares(
 					// Convert `any` back to `mcp.Result` safely
 					mcpResult, ok := result.(mcp.Result)
 					if ok {
-					    return mcpResult, nil
+						return mcpResult, nil
 					}
 					return &mcp.CallToolResult{}, nil
 				}
