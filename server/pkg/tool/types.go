@@ -2367,13 +2367,13 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 // Summary: Executes Tool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - arg: The parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - result: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - err: The error if any.
 //
 // Side Effects:
 //   - None.
@@ -2391,13 +2391,13 @@ func (t *CommandTool) Tool() *v1.Tool {
 // Summary: Executes MCPTool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - arg: The parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - result: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - err: The error if any.
 //
 // Side Effects:
 //   - None.
@@ -2420,13 +2420,13 @@ func (t *CommandTool) MCPTool() *mcp.Tool {
 // Summary: Retrieves GetCacheConfig operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - arg: The parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - result: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - err: The error if any.
 //
 // Side Effects:
 //   - None.

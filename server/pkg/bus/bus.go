@@ -83,31 +83,16 @@ type Provider struct {
 // Summary: Represents a NewProviderHook.
 var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
-// NewProvider creates and returns a new Provider, which is used to manage
-// multiple topic-based bus instances.
-//
-// Parameters:
-//
-//	messageBus: The configuration for the message bus.
-//
-// Returns:
-//
-//	*Provider: The created Provider.
-//	error: An error if creation fails.
+// NewProvider creates and returns a new Provider.
 //
 // Summary: Initializes NewProvider operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - messageBus (*bus.MessageBus): The configuration for the message bus.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - *Provider: The created Provider instance.
+//   - error: An error if creation fails.
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
 		return NewProviderHook(messageBus)
@@ -146,36 +131,17 @@ func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 // Summary: Represents a GetBusHook.
 var GetBusHook func(p *Provider, topic string) (any, error)
 
-// GetBus retrieves a bus for the given topic. If a bus for the given topic
-// already exists, it is returned; otherwise, a new one is created and stored for
-// future use.
-//
-// The type parameter T specifies the message type for the bus, ensuring
-// type safety for each topic.
-//
-// Parameters:
-//
-//	p: The Provider instance.
-//	topic: The topic name.
-//
-// Returns:
-//
-//	Bus[T]: The requested Bus instance.
-//	error: An error if retrieval or creation fails.
+// GetBus retrieves a bus for the given topic.
 //
 // Summary: Retrieves GetBus operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p (*Provider): The Provider instance.
+//   - topic (string): The topic name.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - Bus[T]: The requested Bus instance.
+//   - error: An error if retrieval or creation fails.
 func GetBus[T any](p *Provider, topic string) (Bus[T], error) {
 	if GetBusHook != nil {
 		bus, err := GetBusHook(p, topic)

@@ -41,16 +41,11 @@ type S3Provider struct {
 // Summary: Initializes NewS3Provider operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - config (*configv1.S3Fs): The S3 configuration.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - *S3Provider: The new S3 provider instance.
+//   - error: An error if initialization fails.
 func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 	if config == nil {
 		return nil, fmt.Errorf("s3 config is nil")
@@ -98,17 +93,8 @@ func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 //
 // Summary: Retrieves GetFs operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - afero.Fs: The underlying afero filesystem.
 func (p *S3Provider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -131,16 +117,11 @@ func (p *S3Provider) GetFs() afero.Fs {
 // Summary: Executes ResolvePath operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - virtualPath (string): The virtual path to resolve.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - string: The resolved bucket path.
+//   - error: An error if resolution fails.
 func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 	// For S3, just clean the path. It's virtual relative to the bucket.
 	// Join with "/" to ensure we resolve relative paths against a root, preventing ".." traversal
@@ -170,17 +151,8 @@ func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 //
 // Summary: Executes Close operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: Nil.
 func (p *S3Provider) Close() error {
 	// S3 provider doesn't hold open connections that need explicit closing typically,
 	// but satisfy the interface.

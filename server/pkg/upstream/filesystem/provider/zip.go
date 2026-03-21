@@ -41,16 +41,11 @@ type ZipProvider struct {
 // Summary: Initializes NewZipProvider operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - config (*configv1.ZipFs): The zip configuration.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - *ZipProvider: The new zip provider instance.
+//   - error: An error if initialization fails.
 func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 	if err := validation.IsAllowedPath(config.GetFilePath()); err != nil {
 		return nil, fmt.Errorf("zip file path not allowed: %w", err)
@@ -91,17 +86,8 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 //
 // Summary: Retrieves GetFs operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - afero.Fs: The underlying afero filesystem.
 func (p *ZipProvider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -124,16 +110,11 @@ func (p *ZipProvider) GetFs() afero.Fs {
 // Summary: Executes ResolvePath operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - virtualPath (string): The virtual path to resolve.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - string: The resolved local path.
+//   - error: An error if resolution fails.
 func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 	// For ZipFs, just clean the path. It's virtual (based on zip contents).
 	return filepath.Clean(virtualPath), nil
@@ -152,17 +133,8 @@ func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 //
 // Summary: Executes Close operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: An error if closure fails.
 func (p *ZipProvider) Close() error {
 	if p.closer != nil {
 		return p.closer.Close()

@@ -95,56 +95,23 @@ type Upstream struct{}
 
 // NewGraphQLUpstream creates a new GraphQL upstream.
 //
-// Returns:
-//   - upstream.Upstream: The result.
-//
-// Side Effects:
-//   - None.
-//
 // Summary: Initializes NewGraphQLUpstream operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - upstream.Upstream: The new GraphQL upstream instance.
 func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
 // Shutdown shuts down the upstream.
 //
-// Parameters:
-//   - _ (context.Context): The parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Shutdown operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused context.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: Nil.
 func (g *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -238,33 +205,15 @@ type Callable struct {
 
 // Call executes the GraphQL query.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The parameter.
-//
-// Returns:
-//   - any: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Call operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The execution request.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - any: The GraphQL response data.
+//   - error: An error if the execution fails.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {
@@ -287,41 +236,23 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 	return respData, nil
 }
 
-// Register inspects the GraphQL upstream service and registers its capabilities. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
+// Register inspects the GraphQL upstream service and registers its capabilities.
+//
+// Summary: Executes Register operation for GraphQL service.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
-//   - toolManager (tool.ManagerInterface): The toolManager parameter.
-//   - _ (prompt.ManagerInterface): The _ parameter.
-//   - _ (resource.ManagerInterface): The _ parameter.
-//   - _ (bool): The _ parameter.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The upstream service configuration.
+//   - toolManager (tool.ManagerInterface): The tool manager.
+//   - _ (prompt.ManagerInterface): Unused prompt manager.
+//   - _ (resource.ManagerInterface): Unused resource manager.
+//   - _ (bool): Unused reload flag.
 //
 // Returns:
-//   - string: The resulting string.
-//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
-//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - string: The service ID.
+//   - []*configv1.ToolDefinition: The list of registered tools.
+//   - []*configv1.ResourceDefinition: Always nil.
+//   - error: An error if registration fails.
 func (g *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

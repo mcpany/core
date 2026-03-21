@@ -49,16 +49,12 @@ var newStorageClient = storage.NewClient
 // Summary: Initializes NewGcsProvider operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused context.
+//   - config (*configv1.GcsFs): The GCS configuration.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - *GcsProvider: The new GcsProvider instance.
+//   - error: An error if initialization fails.
 func NewGcsProvider(_ context.Context, config *configv1.GcsFs) (*GcsProvider, error) {
 	if config == nil {
 		return nil, fmt.Errorf("gcs config is nil")
@@ -77,25 +73,10 @@ func NewGcsProvider(_ context.Context, config *configv1.GcsFs) (*GcsProvider, er
 
 // GetFs returns the underlying filesystem.
 //
-// Returns:
-//   - afero.Fs: The result.
-//
-// Side Effects:
-//   - None.
-//
 // Summary: Retrieves GetFs operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - afero.Fs: The underlying afero filesystem.
 func (p *GcsProvider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -118,16 +99,11 @@ func (p *GcsProvider) GetFs() afero.Fs {
 // Summary: Executes ResolvePath operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - virtualPath (string): The virtual path to resolve.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - string: The resolved bucket path.
+//   - error: An error if resolution fails.
 func (p *GcsProvider) ResolvePath(virtualPath string) (string, error) {
 	// Same as S3
 	cleanPath := path.Clean("/" + virtualPath)
@@ -152,17 +128,8 @@ func (p *GcsProvider) ResolvePath(virtualPath string) (string, error) {
 //
 // Summary: Executes Close operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: An error if closure fails.
 func (p *GcsProvider) Close() error {
 	if p.client != nil {
 		return p.client.Close()
@@ -196,16 +163,11 @@ type gcsFs struct {
 // Summary: Initializes Create operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name of the file to create.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - afero.File: The created file.
+//   - error: An error if creation fails.
 func (fs *gcsFs) Create(name string) (afero.File, error) {
 	return fs.OpenFile(name, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 }
@@ -228,16 +190,11 @@ func (fs *gcsFs) Create(name string) (afero.File, error) {
 // Summary: Executes Mkdir operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (string): Unused name.
+//   - _ (os.FileMode): Unused mode.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: Always nil (flat namespace).
 func (fs *gcsFs) Mkdir(_ string, _ os.FileMode) error {
 	return nil // Flat namespace
 }
@@ -260,16 +217,11 @@ func (fs *gcsFs) Mkdir(_ string, _ os.FileMode) error {
 // Summary: Executes MkdirAll operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (string): Unused path.
+//   - _ (os.FileMode): Unused mode.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: Always nil (flat namespace).
 func (fs *gcsFs) MkdirAll(_ string, _ os.FileMode) error {
 	return nil // Flat namespace
 }
@@ -292,16 +244,11 @@ func (fs *gcsFs) MkdirAll(_ string, _ os.FileMode) error {
 // Summary: Executes Open operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name of the file to open.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - afero.File: The opened file.
+//   - error: An error if opening fails.
 func (fs *gcsFs) Open(name string) (afero.File, error) {
 	return fs.OpenFile(name, os.O_RDONLY, 0)
 }
@@ -326,16 +273,13 @@ func (fs *gcsFs) Open(name string) (afero.File, error) {
 // Summary: Executes OpenFile operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name of the file.
+//   - flag (int): Opening flags.
+//   - _ (os.FileMode): Unused mode.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - afero.File: The opened file.
+//   - error: An error if opening fails.
 func (fs *gcsFs) OpenFile(name string, flag int, _ os.FileMode) (afero.File, error) {
 	f := &gcsFile{
 		fs:   fs,
@@ -378,16 +322,10 @@ func (fs *gcsFs) OpenFile(name string, flag int, _ os.FileMode) (afero.File, err
 // Summary: Executes Remove operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name of the file to remove.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: An error if removal fails.
 func (fs *gcsFs) Remove(name string) error {
 	return fs.client.Bucket(fs.bucket).Object(name).Delete(fs.ctx)
 }
@@ -409,16 +347,10 @@ func (fs *gcsFs) Remove(name string) error {
 // Summary: Executes RemoveAll operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - path (string): The path to remove.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: An error if removal fails.
 func (fs *gcsFs) RemoveAll(path string) error {
 	// Delete everything with prefix
 	it := fs.client.Bucket(fs.bucket).Objects(fs.ctx, &storage.Query{Prefix: path})
@@ -455,16 +387,11 @@ func (fs *gcsFs) RemoveAll(path string) error {
 // Summary: Executes Rename operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - oldname (string): The original name.
+//   - newname (string): The new name.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: An error if renaming fails.
 func (fs *gcsFs) Rename(oldname, newname string) error {
 	src := fs.client.Bucket(fs.bucket).Object(oldname)
 	dst := fs.client.Bucket(fs.bucket).Object(newname)
@@ -475,34 +402,16 @@ func (fs *gcsFs) Rename(oldname, newname string) error {
 	return src.Delete(fs.ctx)
 }
 
-// Stat returns a FileInfo describing the named file, or an error, if any happens.
-//
-// Parameters:
-//   - name (string): The parameter.
-//
-// Returns:
-//   - os.FileInfo: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
+// Stat returns a FileInfo describing the named file.
 //
 // Summary: Executes Stat operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name of the file.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - os.FileInfo: File information.
+//   - error: An error if stat fails.
 func (fs *gcsFs) Stat(name string) (os.FileInfo, error) {
 	attrs, err := fs.client.Bucket(fs.bucket).Object(name).Attrs(fs.ctx)
 	if err != nil {
@@ -529,115 +438,52 @@ func (fs *gcsFs) Stat(name string) (os.FileInfo, error) {
 //
 // Summary: Executes Name operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - string: The name of the filesystem.
 func (fs *gcsFs) Name() string {
 	return "gcs"
 }
 
-// Chmod changes the mode of the named file to mode.
-//
-// Parameters:
-//   - _ (string): The parameter.
-//   - _ (os.FileMode): The parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
+// Chmod changes the mode of the named file.
 //
 // Summary: Executes Chmod operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (string): Unused name.
+//   - _ (os.FileMode): Unused mode.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: Nil (not supported).
 func (fs *gcsFs) Chmod(_ string, _ os.FileMode) error {
 	return nil // Not supported
 }
 
 // Chown changes the uid and gid of the named file.
 //
-// Parameters:
-//   - _ (string): The parameter.
-//   - (_): The parameter.
-//   - _ (int): The parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Chown operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (string): Unused name.
+//   - _ (int): Unused uid.
+//   - _ (int): Unused gid.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: Nil (not supported).
 func (fs *gcsFs) Chown(_ string, _, _ int) error {
 	return nil // Not supported
 }
 
 // Chtimes changes the access and modification times of the named file.
 //
-// Parameters:
-//   - _ (string): The parameter.
-//   - (_): The parameter.
-//   - _ (time.Time): The parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Chtimes operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (string): Unused name.
+//   - _ (time.Time): Unused atime.
+//   - _ (time.Time): Unused mtime.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: Nil (not supported).
 func (fs *gcsFs) Chtimes(_ string, _, _ time.Time) error {
 	return nil // Not supported
 }
@@ -662,17 +508,8 @@ type gcsFile struct {
 //
 // Summary: Executes Close operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: An error if closure fails.
 func (f *gcsFile) Close() error {
 	if f.writer != nil {
 		return f.writer.Close()
@@ -701,16 +538,11 @@ func (f *gcsFile) Close() error {
 // Summary: Retrieves Read operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): Destination buffer.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - n (int): Bytes read.
+//   - err (error): An error if reading fails.
 func (f *gcsFile) Read(p []byte) (n int, err error) {
 	if f.reader == nil {
 		return 0, fmt.Errorf("file not opened for reading")
@@ -737,16 +569,12 @@ func (f *gcsFile) Read(p []byte) (n int, err error) {
 // Summary: Retrieves ReadAt operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): Destination buffer.
+//   - off (int64): Offset.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - n (int): Bytes read.
+//   - err (error): An error if reading fails.
 func (f *gcsFile) ReadAt(p []byte, off int64) (n int, err error) {
 	// storage.Reader doesn't support ReadAt directly unless created with range?
 	// But afero.File requires ReadAt.
@@ -778,16 +606,12 @@ func (f *gcsFile) ReadAt(p []byte, off int64) (n int, err error) {
 // Summary: Executes Seek operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (int64): Unused offset.
+//   - _ (int): Unused whence.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - int64: 0.
+//   - error: Error (not supported).
 func (f *gcsFile) Seek(_ int64, _ int) (int64, error) {
 	return 0, fmt.Errorf("seek not supported")
 }
@@ -810,16 +634,11 @@ func (f *gcsFile) Seek(_ int64, _ int) (int64, error) {
 // Summary: Updates Write operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): Data to write.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - n (int): Bytes written.
+//   - err (error): An error if writing fails.
 func (f *gcsFile) Write(p []byte) (n int, err error) {
 	if f.writer == nil {
 		return 0, fmt.Errorf("file not opened for writing")
@@ -846,16 +665,12 @@ func (f *gcsFile) Write(p []byte) (n int, err error) {
 // Summary: Updates WriteAt operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ ([]byte): Unused data.
+//   - _ (int64): Unused offset.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - int: 0.
+//   - error: Error (not supported).
 func (f *gcsFile) WriteAt(_ []byte, _ int64) (n int, err error) {
 	return 0, fmt.Errorf("writeat not supported")
 }
@@ -870,17 +685,8 @@ func (f *gcsFile) WriteAt(_ []byte, _ int64) (n int, err error) {
 //
 // Summary: Executes Name operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - string: The file name.
 func (f *gcsFile) Name() string {
 	return f.name
 }
@@ -904,16 +710,11 @@ func (f *gcsFile) Name() string {
 // Summary: Retrieves Readdir operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (int): Unused count.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - []os.FileInfo: Directory entries.
+//   - error: An error if reading fails.
 func (f *gcsFile) Readdir(_ int) ([]os.FileInfo, error) {
 	// List objects with prefix name/
 	prefix := f.name
@@ -975,16 +776,11 @@ func (f *gcsFile) Readdir(_ int) ([]os.FileInfo, error) {
 // Summary: Retrieves Readdirnames operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - n (int): Number of names to return.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - []string: Entry names.
+//   - error: An error if reading fails.
 func (f *gcsFile) Readdirnames(n int) ([]string, error) {
 	infos, err := f.Readdir(n)
 	if err != nil {
@@ -1009,19 +805,11 @@ func (f *gcsFile) Readdirnames(n int) ([]string, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Stat operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+// Summary: Executes Stat operation on file.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - os.FileInfo: File information.
+//   - error: An error if stat fails.
 func (f *gcsFile) Stat() (os.FileInfo, error) {
 	if f.reader != nil {
 		return &gcsFileInfo{
@@ -1056,17 +844,8 @@ func (f *gcsFile) Stat() (os.FileInfo, error) {
 //
 // Summary: Executes Sync operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: Nil.
 func (f *gcsFile) Sync() error {
 	return nil
 }
@@ -1088,16 +867,10 @@ func (f *gcsFile) Sync() error {
 // Summary: Executes Truncate operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (int64): Unused size.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: Error (not supported).
 func (f *gcsFile) Truncate(_ int64) error {
 	return fmt.Errorf("truncate not supported")
 }
@@ -1120,16 +893,11 @@ func (f *gcsFile) Truncate(_ int64) error {
 // Summary: Updates WriteString operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - s (string): String to write.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - int: Bytes written.
+//   - error: An error if writing fails.
 func (f *gcsFile) WriteString(s string) (ret int, err error) {
 	return f.Write([]byte(s))
 }
@@ -1151,17 +919,8 @@ type gcsFileInfo struct {
 //
 // Summary: Executes Name operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - string: Base name of the file.
 func (fi *gcsFileInfo) Name() string {
 	return fi.name
 }
@@ -1176,17 +935,8 @@ func (fi *gcsFileInfo) Name() string {
 //
 // Summary: Executes Size operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - int64: File size.
 func (fi *gcsFileInfo) Size() int64 {
 	return fi.size
 }
@@ -1201,17 +951,8 @@ func (fi *gcsFileInfo) Size() int64 {
 //
 // Summary: Executes Mode operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - os.FileMode: File mode.
 func (fi *gcsFileInfo) Mode() os.FileMode {
 	if fi.isDir {
 		return os.ModeDir | 0755
@@ -1229,17 +970,8 @@ func (fi *gcsFileInfo) Mode() os.FileMode {
 //
 // Summary: Executes ModTime operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - time.Time: Modification time.
 func (fi *gcsFileInfo) ModTime() time.Time {
 	return fi.modTime
 }
@@ -1254,17 +986,8 @@ func (fi *gcsFileInfo) ModTime() time.Time {
 //
 // Summary: Checks IsDir operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - bool: True if it is a directory.
 func (fi *gcsFileInfo) IsDir() bool {
 	return fi.isDir
 }
@@ -1279,17 +1002,8 @@ func (fi *gcsFileInfo) IsDir() bool {
 //
 // Summary: Executes Sys operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - any: Nil.
 func (fi *gcsFileInfo) Sys() interface{} {
 	return nil
 }

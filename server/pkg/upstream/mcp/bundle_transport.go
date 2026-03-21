@@ -32,25 +32,10 @@ type transportError struct {
 
 // Error returns the error message.
 //
-// Returns:
-//   - string: The result.
-//
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Error operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - string: The error message.
 func (e *transportError) Error() string {
 	return e.Message
 }
@@ -74,32 +59,14 @@ type BundleDockerTransport struct {
 
 // Connect establishes a connection to the service within the Docker container.
 //
+// Summary: Executes Connect operation to start and connect to the bundle Docker container.
+//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - mcp.Connection: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Connect operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - mcp.Connection: The established connection.
+//   - error: An error if connection fails.
 func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
@@ -212,32 +179,14 @@ type bundleDockerConn struct {
 
 // Read reads a JSON-RPC message from the connection.
 //
-// Parameters:
-//   - _ (context.Context): The parameter.
-//
-// Returns:
-//   - jsonrpc.Message: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves Read operation.
+// Summary: Retrieves Read operation for bundle Docker connection.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused context.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - jsonrpc.Message: The read message.
+//   - error: An error if reading fails.
 func (c *bundleDockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -368,32 +317,14 @@ func setUnexportedID(idPtr interface{}, val interface{}) error {
 
 // Write writes a JSON-RPC message to the connection.
 //
-// Parameters:
-//   - _ (context.Context): The parameter.
-//   - msg (jsonrpc.Message): The parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Updates Write operation.
+// Summary: Updates Write operation for bundle Docker connection.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused context.
+//   - msg (jsonrpc.Message): The message to write.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: An error if writing fails.
 func (c *bundleDockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	// Workaround: jsonrpc.ID in the SDK marshals to {} because of unexported fields.
 	// We extract the value manually and send an intermediate struct.
@@ -515,53 +446,20 @@ func fixIDExtracted(val interface{}) interface{} {
 
 // Close closes the connection.
 //
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+// Summary: Executes Close operation for bundle Docker connection.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - error: An error if closing fails.
 func (c *bundleDockerConn) Close() error {
 	return c.rwc.Close()
 }
 
 // SessionID returns the session ID of the connection.
 //
-// Returns:
-//   - string: The result.
-//
-// Side Effects:
-//   - None.
-//
 // Summary: Executes SessionID operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - string: The session ID.
 func (c *bundleDockerConn) SessionID() string {
 	return "bundle-docker"
 }
@@ -574,32 +472,14 @@ type bundleSlogWriter struct {
 
 // Write writes the log message to the logger.
 //
-// Parameters:
-//   - p ([]byte): The parameter.
-//
-// Returns:
-//   - n (int): The result.
-//   - err (error): An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Updates Write operation.
+// Summary: Updates Write operation for bundle slog writer.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): The bytes to log.
 //
 // Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - int: Number of bytes written.
+//   - error: Always nil.
 func (s *bundleSlogWriter) Write(p []byte) (n int, err error) {
 	msg := string(p)
 	s.log.Log(context.Background(), s.level, msg)
