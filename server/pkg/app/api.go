@@ -32,6 +32,24 @@ import (
 
 // readBodyWithLimit reads the request body with a limit and returns the bytes.
 // If the body exceeds the limit, it writes an error response and returns nil, error.
+//
+// Summary: Reads request body with limit.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The HTTP response writer.
+//   - r: *http.Request. The HTTP request.
+//   - limit: int64. The maximum number of bytes to read.
+//
+// Returns:
+//   - []byte: The read body bytes.
+//   - error: An error if the read fails.
+//
+// Errors:
+//   - Returns an error if reading from the request body fails.
+//
+// Side Effects:
+//   - Reads from the request body stream.
+//   - Modifies the response writer on error.
 func readBodyWithLimit(w http.ResponseWriter, r *http.Request, limit int64) ([]byte, error) {
 	r.Body = http.MaxBytesReader(w, r.Body, limit)
 	body, err := io.ReadAll(r.Body)
@@ -445,6 +463,22 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 	}
 }
 
+// checkURLReachability verifies if a URL is reachable.
+//
+// Summary: Checks URL reachability.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - urlStr: string. The URL to check.
+//
+// Returns:
+//   - error: An error if the URL is unreachable.
+//
+// Errors:
+//   - Returns an error if the URL cannot be reached.
+//
+// Side Effects:
+//   - Makes an HTTP request to the given URL.
 func checkURLReachability(ctx context.Context, urlStr string) error {
 	client := util.NewSafeHTTPClient()
 	client.Timeout = 5 * time.Second
@@ -479,6 +513,21 @@ func checkURLReachability(ctx context.Context, urlStr string) error {
 	return nil
 }
 
+// checkFilesystemAccess verifies if a file or directory exists.
+//
+// Summary: Checks filesystem access.
+//
+// Parameters:
+//   - path: string. The file or directory path.
+//
+// Returns:
+//   - error: An error if the path cannot be accessed.
+//
+// Errors:
+//   - Returns an error if the path does not exist or stat fails.
+//
+// Side Effects:
+//   - Performs file system stat operations.
 func checkFilesystemAccess(path string) error {
 	_, err := os.Stat(path)
 	if err != nil {
@@ -491,6 +540,22 @@ func checkFilesystemAccess(path string) error {
 	return nil
 }
 
+// checkCommandAvailability verifies if a command exists in the environment.
+//
+// Summary: Checks command availability.
+//
+// Parameters:
+//   - command: string. The command to check.
+//   - workDir: string. The optional working directory.
+//
+// Returns:
+//   - error: An error if the command is unavailable.
+//
+// Errors:
+//   - Returns an error if the command is not found.
+//
+// Side Effects:
+//   - Performs file system stat and path lookups.
 func checkCommandAvailability(command string, workDir string) error {
 	if command == "" {
 		return fmt.Errorf("command is empty")
@@ -1588,6 +1653,21 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 	_, _ = w.Write([]byte("{}"))
 }
 
+// isUnsafeConfig determines if a service configuration is potentially unsafe.
+//
+// Summary: Checks if a configuration is unsafe.
+//
+// Parameters:
+//   - service: *configv1.UpstreamServiceConfig. The service configuration to check.
+//
+// Returns:
+//   - bool: True if the configuration is unsafe.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func isUnsafeConfig(service *configv1.UpstreamServiceConfig) bool {
 	if mcp := service.GetMcpService(); mcp != nil {
 		connType := mcp.WhichConnectionType()
