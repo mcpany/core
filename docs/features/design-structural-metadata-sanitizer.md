@@ -59,6 +59,7 @@ The Structural Metadata Sanitizer (SMS) treats all tool structural metadata as u
 ## 7. Evolutionary Changelog
 * **2026-06-14:** Initial Document Creation. Addressing the Shadow-Discovery via Metadata Injection (SDMI) vulnerability.
 
+
 ### Update: [2026-06-15] - Mitigating SDMI and Reasoning Hijacking
 **Context:** Today's market sync revealed Shadow-Discovery via Metadata
 Injection (SDMI) as a primary exploit vector for steering agent reasoning.
