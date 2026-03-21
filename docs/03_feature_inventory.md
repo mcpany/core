@@ -1401,3 +1401,14 @@
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SES-compliant** state sanitization to protect monologue privacy and mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Evolving to support the new **Logic-Grafting Interceptor** to counter CVE-2026-71002.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-20] Updates
+
+### Proposed Additions
+- **Context-File Integrity Attestation (CFIA)**: (P0) Authoritative security service mandating hardware-attested hash signatures for all project-local natural language context files (e.g., `GEMINI.md`).
+- **Attention-Locked Tooling (ALT)**: (P0) Security middleware that cryptographically locks high-risk tool calls to user-verified reasoning anchors, neutralizing context-hijacking.
+- **Semantic Lineage Tracking**: (P1) Security extension providing a cryptographically signed "Chain of Reason" for tool calls.
+
+### Priority Shifts
+- **Visual Attention Dashboard**: (P1) Now elevated to a critical requirement for supporting the **ALT** user-verification flow.
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support the new **Teammate Mailbox** security requirements.
