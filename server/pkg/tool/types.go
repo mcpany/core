@@ -2479,7 +2479,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
-						// If running a shell, validate that inputs are safe for shell execution
+						// If running a shell or interpreter, validate that inputs are safe
 						cmd := t.service.GetCommand()
 						if isShellCommand(cmd) {
 							if err := checkForShellInjection(argStr, "", "", cmd, isShell(cmd)); err != nil {
