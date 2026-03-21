@@ -5,41 +5,137 @@ package alerts
 
 import "time"
 
-// Severity represents the severity level of an alert.
+// Summary: Severity represents the severity level of an alert. Represents a Severity.
 //
-// Summary: Represents a Severity.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Severity string
 
-// Status represents the status of an alert.
+// Summary: Status represents the status of an alert. Represents a Status.
 //
-// Summary: Represents a Status.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Status string
 
 const (
-	// SeverityCritical indicates a critical issue.
-	// Summary: Defines SeverityCritica.
+// Summary: SeverityCritical indicates a critical issue. Defines SeverityCritica.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	SeverityCritical Severity = "critical"
-	// SeverityWarning indicates a warning.
-	// Summary: Defines SeverityWarnin.
+// Summary: SeverityWarning indicates a warning. Defines SeverityWarnin.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	SeverityWarning Severity = "warning"
-	// SeverityInfo indicates an informational alert.
-	// Summary: Defines SeverityInf.
+// Summary: SeverityInfo indicates an informational alert. Defines SeverityInf.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	SeverityInfo Severity = "info"
 
-	// StatusActive indicates the alert is currently active.
-	// Summary: Defines StatusActiv.
+// Summary: StatusActive indicates the alert is currently active. Defines StatusActiv.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	StatusActive Status = "active"
-	// StatusAcknowledged indicates the alert has been acknowledged.
-	// Summary: Defines StatusAcknowledge.
+// Summary: StatusAcknowledged indicates the alert has been acknowledged. Defines StatusAcknowledge.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	StatusAcknowledged Status = "acknowledged"
-	// StatusResolved indicates the alert has been resolved.
-	// Summary: Defines StatusResolve.
+// Summary: StatusResolved indicates the alert has been resolved. Defines StatusResolve.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	StatusResolved Status = "resolved"
 )
 
-// Alert represents a system alert.
+// Summary: Alert represents a system alert. Represents a Alert.
 //
-// Summary: Represents a Alert.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Alert struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
@@ -51,9 +147,19 @@ type Alert struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-// AlertRule defines a condition for triggering an alert.
+// Summary: AlertRule defines a condition for triggering an alert. Represents a AlertRule.
 //
-// Summary: Represents a AlertRule.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type AlertRule struct {
 	ID          string    `json:"id"`
 	Name        string    `json:"name"`
@@ -66,9 +172,19 @@ type AlertRule struct {
 	LastUpdated time.Time `json:"last_updated"`
 }
 
-// AlertStats represents aggregated statistics for alerts.
+// Summary: AlertStats represents aggregated statistics for alerts. Represents a AlertStats.
 //
-// Summary: Represents a AlertStats.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type AlertStats struct {
 	ActiveCritical int    `json:"activeCritical"`
 	ActiveWarning  int    `json:"activeWarning"`

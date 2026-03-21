@@ -13,23 +13,33 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-// Retry implements a retry policy for failed operations.
+// Summary: Retry implements a retry policy for failed operations. Represents a Retry.
 //
-// Summary: Represents a Retry.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Retry struct {
 	config *configv1.RetryConfig
 }
 
-// NewRetry creates a new Retry instance with the given configuration.
-// It sets default values for base and max backoff if they are not provided.
-//
-// Summary: Creates a new retry policy.
+// Summary: NewRetry creates a new Retry instance with the given configuration. It sets default values for base and max backoff if they are not provided. Creates a new retry policy.
 //
 // Parameters:
-//   - config (*configv1.RetryConfig): The configuration for the retry policy.
+//   - config (*configv1.RetryConfig): The config parameter.
 //
 // Returns:
-//   - *Retry: A new Retry instance.
+//   - *Retry: The resulting *Retry.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -48,20 +58,20 @@ func NewRetry(config *configv1.RetryConfig) *Retry {
 	}
 }
 
-// Execute runs the provided work function, retrying it if it fails according
-// to the configured policy.
-//
-// Summary: Executes a function with retries.
+// Summary: Execute runs the provided work function, retrying it if it fails according to the configured policy. Executes a function with retries.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - work (func(context.Context) error): The function to execute.
+//   - ctx (context.Context): The ctx parameter.
+//   - work (func(context.Context) error): The work parameter.
 //
 // Returns:
-//   - error: An error if all retries fail.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - Executes the provided function multiple times.
+//   - None.
 func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) error {
 	var err error
 	// Use int64 for attempts to match usage, though retries count is usually small.

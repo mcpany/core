@@ -8,13 +8,19 @@ import (
 	"fmt"
 )
 
-// ActionableError is an error that includes a suggestion for fixing the issue.
+// Summary: ActionableError is an error that includes a suggestion for fixing the issue. An error type that pairs an underlying error with a user-facing suggestion. Fields: - Err: error. The original error that occurred. - Suggestion: string. A human-readable suggestion on how to resolve the error.
 //
-// Summary: An error type that pairs an underlying error with a user-facing suggestion.
+// Parameters:
+//   - None.
 //
-// Fields:
-//   - Err: error. The original error that occurred.
-//   - Suggestion: string. A human-readable suggestion on how to resolve the error.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ActionableError struct {
 	Err        error
 	Suggestion string
@@ -82,19 +88,17 @@ func (e *ActionableError) Unwrap() error {
 	return e.Err
 }
 
-// WrapActionableError wraps an error with context, preserving ActionableError semantics if present.
-//
-// Summary: Wraps an error with context, preserving ActionableError semantics.
-//
-// If the cause is an ActionableError, it returns a new ActionableError with the context added to the error message.
-// Otherwise, it returns a standard wrapped error.
+// Summary: WrapActionableError wraps an error with context, preserving ActionableError semantics if present. Wraps an error with context, preserving ActionableError semantics. If the cause is an ActionableError, it returns a new ActionableError with the context added to the error message. Otherwise, it returns a standard wrapped error.
 //
 // Parameters:
-//   - context (string): The context message to prefix to the error.
-//   - err (error): The error to wrap.
+//   - context (string): The context parameter.
+//   - err (error): The err parameter.
 //
 // Returns:
-//   - error: The wrapped error.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.

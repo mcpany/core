@@ -5,19 +5,20 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 
 import "unicode/utf8"
 
-// LevenshteinDistance calculates the Levenshtein distance between two strings.
-//
-// Summary: Calculates the Levenshtein edit distance.
-//
-// It returns the minimum number of single-character edits (insertions, deletions, or substitutions)
-// required to change one string into the other.
+// Summary: LevenshteinDistance calculates the Levenshtein distance between two strings. Calculates the Levenshtein edit distance. It returns the minimum number of single-character edits (insertions, deletions, or substitutions) required to change one string into the other.
 //
 // Parameters:
-//   - s1: string. The first string.
-//   - s2: string. The second string.
+//   - s1 (string): The s1 parameter.
+//   - s2 (string): The s2 parameter.
 //
 // Returns:
-//   - int: The Levenshtein distance.
+//   - int: The resulting int.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func LevenshteinDistance(s1, s2 string) int {
 	// Pass a very large limit so it behaves like the unbounded version.
 	// The maximum possible distance is max(len(s1), len(s2)).
@@ -25,19 +26,21 @@ func LevenshteinDistance(s1, s2 string) int {
 	return LevenshteinDistanceWithLimit(s1, s2, len(s1)+len(s2))
 }
 
-// LevenshteinDistanceWithLimit calculates the Levenshtein distance with an upper limit.
-//
-// Summary: Calculates the Levenshtein edit distance with a limit.
-//
-// If the distance is strictly greater than limit, it returns a value > limit (specifically limit + 1).
+// Summary: LevenshteinDistanceWithLimit calculates the Levenshtein distance with an upper limit. Calculates the Levenshtein edit distance with a limit. If the distance is strictly greater than limit, it returns a value > limit (specifically limit + 1).
 //
 // Parameters:
-//   - s1: string. The first string.
-//   - s2: string. The second string.
-//   - limit: int. The maximum distance to compute.
+//   - s1 (string): The s1 parameter.
+//   - s2 (string): The s2 parameter.
+//   - limit (int): The limit parameter.
 //
 // Returns:
-//   - int: The Levenshtein distance, or limit + 1 if it exceeds the limit.
+//   - int: The resulting int.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func LevenshteinDistanceWithLimit(s1, s2 string, limit int) int {
 	// Optimization: If both strings are ASCII, we can avoid rune conversion
 	// and use stack-based allocation for small strings.

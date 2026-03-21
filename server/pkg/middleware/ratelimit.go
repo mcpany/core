@@ -28,10 +28,19 @@ import (
 // Pre-allocated to avoid allocation on every request.
 var metricRateLimitRequestsTotal = []string{"rate_limit", "requests_total"}
 
-// RateLimitMiddleware is a tool execution middleware that provides rate limiting
-// functionality for upstream services.
+// Summary: RateLimitMiddleware is a tool execution middleware that provides rate limiting functionality for upstream services. Middleware for rate limiting tool execution.
 //
-// Summary: Middleware for rate limiting tool execution.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type RateLimitMiddleware struct {
 	toolManager tool.ManagerInterface
 	tokenizer   tokenizer.Tokenizer
@@ -41,36 +50,54 @@ type RateLimitMiddleware struct {
 	strategies map[configv1.RateLimitConfig_Storage]RateLimitStrategy
 }
 
-// Option defines a functional option for RateLimitMiddleware.
-//
-// Summary: Functional option for RateLimitMiddleware.
-type Option func(*RateLimitMiddleware)
-
-// WithTokenizer sets a custom tokenizer for the middleware.
-//
-// Summary: Configures a custom tokenizer.
+// Summary: Option defines a functional option for RateLimitMiddleware. Functional option for RateLimitMiddleware.
 //
 // Parameters:
-//   - t (tokenizer.Tokenizer): The tokenizer to use.
+//   - None.
 //
 // Returns:
-//   - (Option): The configured option.
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+type Option func(*RateLimitMiddleware)
+
+// Summary: WithTokenizer sets a custom tokenizer for the middleware. Configures a custom tokenizer.
+//
+// Parameters:
+//   - t (tokenizer.Tokenizer): The t parameter.
+//
+// Returns:
+//   - Option: The resulting Option.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func WithTokenizer(t tokenizer.Tokenizer) Option {
 	return func(m *RateLimitMiddleware) {
 		m.tokenizer = t
 	}
 }
 
-// NewRateLimitMiddleware creates a new RateLimitMiddleware.
-//
-// Summary: Initializes the rate limit middleware.
+// Summary: NewRateLimitMiddleware creates a new RateLimitMiddleware. Initializes the rate limit middleware.
 //
 // Parameters:
-//   - toolManager (tool.ManagerInterface): The tool manager.
-//   - opts (...Option): Optional configuration settings.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - opts (...Option): The opts parameter.
 //
 // Returns:
-//   - (*RateLimitMiddleware): The initialized middleware.
+//   - *RateLimitMiddleware: The resulting *RateLimitMiddleware.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,
@@ -93,22 +120,22 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 	return m
 }
 
-// Execute executes the rate limiting middleware.
-//
-// Summary: Executes rate limiting logic before passing to the next handler.
+// Summary: Execute executes the rate limiting middleware. Executes rate limiting logic before passing to the next handler.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The execution request.
-//   - next (tool.ExecutionFunc): The next handler.
+//   - ctx (context.Context): The ctx parameter.
+//   - req (*tool.ExecutionRequest): The req parameter.
+//   - next (tool.ExecutionFunc): The next parameter.
 //
 // Returns:
-//   - (any): The result of the execution.
-//   - (error): An error if the limit is exceeded or the operation fails.
+//   - any: The resulting any.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - Checks against rate limits in memory or Redis.
-//   - Increments counters.
+//   - None.
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

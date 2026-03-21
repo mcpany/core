@@ -24,17 +24,34 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// ErrServiceAlreadyRegistered is returned when attempting to register a service that is already active.
+// Summary: ErrServiceAlreadyRegistered is returned when attempting to register a service that is already active. Represents a ErrServiceAlreadyRegistered.
 //
-// Summary: Represents a ErrServiceAlreadyRegistered.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var ErrServiceAlreadyRegistered = errors.New("service already registered")
 
-// ServiceRegistryInterface defines the interface for a service registry.
+// Summary: ServiceRegistryInterface defines the interface for a service registry. It manages the registration, lifecycle, and discovery of upstream services and their associated capabilities (tools, resources, prompts). Represents a ServiceRegistryInterface.
 //
-// It manages the registration, lifecycle, and discovery of upstream services
-// and their associated capabilities (tools, resources, prompts).
+// Parameters:
+//   - None.
 //
-// Summary: Represents a ServiceRegistryInterface.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
 	//
@@ -101,12 +118,19 @@ type ServiceRegistryInterface interface { //nolint:revive
 	GetServiceError(serviceID string) (string, bool)
 }
 
-// ServiceRegistry is the concrete implementation of ServiceRegistryInterface.
+// Summary: ServiceRegistry is the concrete implementation of ServiceRegistryInterface. It serves as the central hub for managing upstream services, coordinating with tool, prompt, and resource managers. Represents a ServiceRegistry.
 //
-// It serves as the central hub for managing upstream services, coordinating
-// with tool, prompt, and resource managers.
+// Parameters:
+//   - None.
 //
-// Summary: Represents a ServiceRegistry.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig

@@ -11,25 +11,37 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Service handles the business logic for the prompts feature. It provides
-// methods for listing available prompts and retrieving a specific prompt by
-// name.
+// Summary: Service handles the business logic for the prompts feature. It provides methods for listing available prompts and retrieving a specific prompt by name. Represents a Service.
 //
-// Summary: Represents a Service.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Service struct {
 	promptManager ManagerInterface
 	mcpServer     *mcp.Server
 }
 
-// NewService creates and returns a new Service instance.
-//
-// Summary: Initializes a new Prompt Service.
+// Summary: NewService creates and returns a new Service instance. Initializes a new Prompt Service.
 //
 // Parameters:
-//   - promptManager: ManagerInterface. The manager handling prompt lifecycle.
+//   - promptManager (ManagerInterface): The promptManager parameter.
 //
 // Returns:
-//   - *Service: The initialized service.
+//   - *Service: The resulting *Service.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
 		promptManager: promptManager,
@@ -38,16 +50,19 @@ func NewService(promptManager ManagerInterface) *Service {
 	return s
 }
 
-// SetMCPServer sets the MCP server instance for the service.
-//
-// Summary: Configures the underlying MCP server.
+// Summary: SetMCPServer sets the MCP server instance for the service. Configures the underlying MCP server.
 //
 // Parameters:
-//   - mcpServer: *mcp.Server. The MCP server instance.
+//   - mcpServer (*mcp.Server): The mcpServer parameter.
 //
 // Returns:
+//   - None.
 //
-//	None.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.mcpServer = mcpServer
 	s.promptManager.SetMCPServer(NewMCPServerProvider(mcpServer))
@@ -61,17 +76,21 @@ func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 //	  // log.Warn("Prompt list changed notification not sent (SDK limitation)")
 // }
 
-// ListPrompts handles the "prompts/list" MCP request.
-//
-// Summary: Lists all available prompts.
+// Summary: ListPrompts handles the "prompts/list" MCP request. Lists all available prompts.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: *mcp.ListPromptsRequest. The request object.
+//   - _ (context.Context): The _ parameter.
+//   - _ (*mcp.ListPromptsRequest): The _ parameter.
 //
 // Returns:
-//   - *mcp.ListPromptsResult: The list of prompts.
+//   - *mcp.ListPromptsResult: The resulting *mcp.ListPromptsResult.
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
 func (s *Service) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,
@@ -86,20 +105,21 @@ func (s *Service) ListPrompts(
 	}, nil
 }
 
-// GetPrompt handles the "prompts/get" MCP request.
-//
-// Summary: Retrieves and executes a specific prompt.
+// Summary: GetPrompt handles the "prompts/get" MCP request. Retrieves and executes a specific prompt.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: *mcp.GetPromptRequest. The request containing the prompt name and arguments.
+//   - ctx (context.Context): The ctx parameter.
+//   - req (*mcp.GetPromptRequest): The req parameter.
 //
 // Returns:
-//   - *mcp.GetPromptResult: The result of the prompt execution.
-//   - error: An error if the prompt is not found or execution fails.
+//   - *mcp.GetPromptResult: The resulting *mcp.GetPromptResult.
+//   - error: An error if the operation fails.
 //
-// Throws/Errors:
-//   - ErrPromptNotFound: If the prompt does not exist.
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
 func (s *Service) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,

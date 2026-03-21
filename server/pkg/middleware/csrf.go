@@ -13,26 +13,37 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// CSRFMiddleware protects against Cross-Site Request Forgery attacks.
+// Summary: CSRFMiddleware protects against Cross-Site Request Forgery attacks. Middleware that blocks unauthorized cross-origin requests.
 //
-// Summary: Middleware that blocks unauthorized cross-origin requests.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CSRFMiddleware struct {
 	allowedOrigins map[string]bool
 	mu             sync.RWMutex
 }
 
-// NewCSRFMiddleware creates a new CSRFMiddleware.
-//
-// Summary: Initializes a new CSRFMiddleware with a list of allowed origins.
+// Summary: NewCSRFMiddleware creates a new CSRFMiddleware. Initializes a new CSRFMiddleware with a list of allowed origins.
 //
 // Parameters:
-//   - allowedOrigins: []string. A list of origin strings (e.g., "https://example.com") allowed to make requests.
+//   - allowedOrigins ([]string): The allowedOrigins parameter.
 //
 // Returns:
-//   - *CSRFMiddleware: The initialized middleware.
+//   - *CSRFMiddleware: The resulting *CSRFMiddleware.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Populates the internal allowed origins map.
+//   - None.
 func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 	m := &CSRFMiddleware{
 		allowedOrigins: make(map[string]bool),
@@ -41,15 +52,19 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 	return m
 }
 
-// Update updates the allowed origins.
-//
-// Summary: Updates the list of allowed origins at runtime.
+// Summary: Update updates the allowed origins. Updates the list of allowed origins at runtime.
 //
 // Parameters:
-//   - origins: []string. The new list of allowed origins.
+//   - origins ([]string): The origins parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Replaces the existing allowed origins map in a thread-safe manner.
+//   - None.
 func (m *CSRFMiddleware) Update(origins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -59,20 +74,19 @@ func (m *CSRFMiddleware) Update(origins []string) {
 	}
 }
 
-// Handler returns the HTTP handler.
-//
-// Summary: Returns an HTTP handler that enforces CSRF protection checks.
+// Summary: Handler returns the HTTP handler. Returns an HTTP handler that enforces CSRF protection checks.
 //
 // Parameters:
-//   - next: http.Handler. The next handler in the chain.
+//   - next (http.Handler): The next parameter.
 //
 // Returns:
-//   - http.Handler: The wrapped handler.
+//   - http.Handler: The resulting http.Handler.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Inspects Method, Headers, Origin, and Referer of incoming requests.
-//   - Blocks requests with 403 Forbidden if validation fails.
-//   - Logs warnings for blocked requests.
+//   - None.
 func (m *CSRFMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 1. Safe Methods are always allowed

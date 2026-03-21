@@ -11,9 +11,19 @@ import (
 	"time"
 )
 
-// CheckResult represents a single check result.
+// Summary: CheckResult represents a single check result. The outcome of a single health check execution.
 //
-// Summary: The outcome of a single health check execution.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CheckResult struct {
 	Status  string `json:"status"`
 	Message string `json:"message,omitempty"`
@@ -21,38 +31,72 @@ type CheckResult struct {
 	Diff    string `json:"diff,omitempty"`
 }
 
-// CheckFunc is a function that performs a health check.
+// Summary: CheckFunc is a function that performs a health check. Function signature for a health check execution logic.
 //
-// Summary: Function signature for a health check execution logic.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CheckFunc func(context.Context) CheckResult
 
-// DoctorReport represents the full doctor report.
+// Summary: DoctorReport represents the full doctor report. Aggregated health report containing all check results.
 //
-// Summary: Aggregated health report containing all check results.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type DoctorReport struct {
 	Status    string                 `json:"status"`
 	Timestamp time.Time              `json:"timestamp"`
 	Checks    map[string]CheckResult `json:"checks"`
 }
 
-// Doctor is the health check handler.
+// Summary: Doctor is the health check handler. Registry and handler for system health checks (Doctor).
 //
-// Summary: Registry and handler for system health checks (Doctor).
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Doctor struct {
 	checks     map[string]CheckFunc
 	mu         sync.RWMutex
 	httpClient *http.Client
 }
 
-// NewDoctor creates a new Doctor.
+// Summary: NewDoctor creates a new Doctor. Initializes a new Doctor instance.
 //
-// Summary: Initializes a new Doctor instance.
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *Doctor: The initialized doctor registry.
+//   - *Doctor: The resulting *Doctor.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Initializes internal maps and HTTP client.
+//   - None.
 func NewDoctor() *Doctor {
 	return &Doctor{
 		checks:     make(map[string]CheckFunc),
@@ -60,34 +104,39 @@ func NewDoctor() *Doctor {
 	}
 }
 
-// AddCheck adds a named health check.
-//
-// Summary: Registers a custom health check function.
+// Summary: AddCheck adds a named health check. Registers a custom health check function.
 //
 // Parameters:
-//   - name: string. The unique name of the check.
-//   - check: CheckFunc. The function to execute.
+//   - name (string): The name parameter.
+//   - check (CheckFunc): The check parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Updates the internal checks map.
+//   - None.
 func (d *Doctor) AddCheck(name string, check CheckFunc) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.checks[name] = check
 }
 
-// Handler returns the http handler.
+// Summary: Handler returns the http handler. Returns an HTTP handler that runs all checks and returns a JSON report.
 //
-// Summary: Returns an HTTP handler that runs all checks and returns a JSON report.
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - http.HandlerFunc: The HTTP handler.
+//   - http.HandlerFunc: The resulting http.HandlerFunc.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Executes all registered health checks.
-//   - Makes an external network call to google.com (connectivity check).
-//   - Reads environment variables (Auth checks).
-//   - Writes JSON response to the client.
+//   - None.
 func (d *Doctor) Handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		report := DoctorReport{

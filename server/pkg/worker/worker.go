@@ -13,17 +13,37 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Config holds the configuration for the worker.
+// Summary: Config holds the configuration for the worker. Configuration for worker pool.
 //
-// Summary: Configuration for worker pool.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Config struct {
 	MaxWorkers   int
 	MaxQueueSize int
 }
 
-// Worker is responsible for processing jobs from the bus.
+// Summary: Worker is responsible for processing jobs from the bus. Processes background jobs.
 //
-// Summary: Processes background jobs.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Worker struct {
 	busProvider *bus.Provider
 	pond        pond.Pool
@@ -32,16 +52,20 @@ type Worker struct {
 	wg          sync.WaitGroup
 }
 
-// New creates a new Worker.
-//
-// Summary: Initializes a new Worker.
+// Summary: New creates a new Worker. Initializes a new Worker.
 //
 // Parameters:
-//   - busProvider: *bus.Provider. The bus provider.
-//   - cfg: *Config. The worker configuration.
+//   - busProvider (*bus.Provider): The busProvider parameter.
+//   - cfg (*Config): The cfg parameter.
 //
 // Returns:
-//   - *Worker: The initialized worker.
+//   - *Worker: The resulting *Worker.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	return &Worker{
 		busProvider: busProvider,
@@ -52,12 +76,19 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	}
 }
 
-// Start starts the worker and its background tasks.
-//
-// Summary: Starts the worker processing loop.
+// Summary: Start starts the worker and its background tasks. Starts the worker processing loop.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the worker.
+//   - ctx (context.Context): The ctx parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *Worker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)

@@ -57,20 +57,21 @@ func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTe
 	return templates, nil
 }
 
-// GetServiceTemplate retrieves a service template by ID.
-//
-// Summary: Fetches a single service template by its unique identifier.
+// Summary: GetServiceTemplate retrieves a service template by ID. Fetches a single service template by its unique identifier.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - id: string. The unique identifier of the template.
+//   - ctx (context.Context): The ctx parameter.
+//   - id (string): The id parameter.
 //
 // Returns:
-//   - *configv1.ServiceTemplate: The requested template, or nil if not found.
-//   - error: An error if the query fails (excluding ErrNoRows).
+//   - *configv1.ServiceTemplate: The resulting *configv1.ServiceTemplate.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - Executes a SELECT query on the service_templates table.
+//   - None.
 func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
 	query := "SELECT config_json FROM service_templates WHERE id = $1"
 	row := s.db.QueryRowContext(ctx, query, id)
@@ -135,19 +136,20 @@ func (s *Store) SaveServiceTemplate(ctx context.Context, template *configv1.Serv
 	return nil
 }
 
-// DeleteServiceTemplate deletes a service template by ID.
-//
-// Summary: Removes a service template from the database.
+// Summary: DeleteServiceTemplate deletes a service template by ID. Removes a service template from the database.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - id: string. The unique identifier of the template to delete.
+//   - ctx (context.Context): The ctx parameter.
+//   - id (string): The id parameter.
 //
 // Returns:
-//   - error: An error if the deletion fails.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - Deletes a row from the service_templates table.
+//   - None.
 func (s *Store) DeleteServiceTemplate(ctx context.Context, id string) error {
 	query := "DELETE FROM service_templates WHERE id = $1"
 	_, err := s.db.ExecContext(ctx, query, id)

@@ -14,9 +14,19 @@ import (
 	"time"
 )
 
-// Client is the interface for an LLM client.
+// Summary: Client is the interface for an LLM client. Represents a Client.
 //
-// Summary: Represents a Client.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Client interface {
 	// ChatCompletion sends a chat request to the LLM and returns the response.
 	//
@@ -39,32 +49,72 @@ type Client interface {
 	ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error)
 }
 
-// ChatRequest represents a chat completion request.
+// Summary: ChatRequest represents a chat completion request. Represents a ChatRequest.
 //
-// Summary: Represents a ChatRequest.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ChatRequest struct {
 	Model    string    `json:"model"`
 	Messages []Message `json:"messages"`
 }
 
-// Message represents a chat message.
+// Summary: Message represents a chat message. Represents a Message.
 //
-// Summary: Represents a Message.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Message struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
 }
 
-// ChatResponse represents a chat completion response.
+// Summary: ChatResponse represents a chat completion response. Represents a ChatResponse.
 //
-// Summary: Represents a ChatResponse.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ChatResponse struct {
 	Content string `json:"content"`
 }
 
-// OpenAIClient implements Client for OpenAI.
+// Summary: OpenAIClient implements Client for OpenAI. Represents a OpenAIClient.
 //
-// Summary: Represents a OpenAIClient.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type OpenAIClient struct {
 	apiKey  string
 	baseURL string

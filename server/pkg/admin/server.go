@@ -27,9 +27,19 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// Server implements the AdminServiceServer interface.
+// Summary: Server implements the AdminServiceServer interface. Represents a Server.
 //
-// Summary: Represents a Server.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Server struct {
 	pb.UnimplementedAdminServiceServer
 	cache            *middleware.CachingMiddleware

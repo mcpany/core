@@ -13,45 +13,56 @@ import (
 	_ "github.com/lib/pq" // Register postgres driver
 )
 
-// DB wraps the sql.DB connection.
+// Summary: DB wraps the sql.DB connection. Represents a DB.
 //
-// Summary: Represents a DB.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type DB struct {
 	*sql.DB
 }
 
-// NewDB opens a PostgreSQL database connection.
-//
-// Summary: Initializes a PostgreSQL database connection.
+// Summary: NewDB opens a PostgreSQL database connection. Initializes a PostgreSQL database connection.
 //
 // Parameters:
-//   - dsn (string): The data source name (connection string).
+//   - dsn (string): The dsn parameter.
 //
 // Returns:
-//   - *DB: The database connection.
-//   - error: An error if the connection fails.
+//   - *DB: The resulting *DB.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - Opens a network connection to the database.
+//   - None.
 func NewDB(dsn string) (*DB, error) {
 	return NewDBWithDriver("postgres", dsn)
 }
 
-// NewDBWithDriver opens a database connection with the specified driver.
-//
-// Summary: Initializes a database connection with a custom driver.
+// Summary: NewDBWithDriver opens a database connection with the specified driver. Initializes a database connection with a custom driver.
 //
 // Parameters:
-//   - driver (string): The database driver name.
-//   - dsn (string): The data source name.
+//   - driver (string): The driver parameter.
+//   - dsn (string): The dsn parameter.
 //
 // Returns:
-//   - *DB: The database connection.
-//   - error: An error if the connection fails.
+//   - *DB: The resulting *DB.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - Opens a network connection to the database.
-//   - Initializes the schema.
+//   - None.
 func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
@@ -78,20 +89,20 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	return &DB{db}, nil
 }
 
-// NewDBFromSQLDB creates a new DB wrapper from an existing sql.DB connection.
-//
-// Summary: Wraps an existing sql.DB connection.
+// Summary: NewDBFromSQLDB creates a new DB wrapper from an existing sql.DB connection. Wraps an existing sql.DB connection.
 //
 // Parameters:
-//   - db (*sql.DB): The existing database connection.
+//   - db (*sql.DB): The db parameter.
 //
 // Returns:
-//   - *DB: The wrapped database connection.
-//   - error: An error if the connection is invalid (ping fails).
+//   - *DB: The resulting *DB.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - Pings the database.
-//   - Initializes the schema.
+//   - None.
 func NewDBFromSQLDB(db *sql.DB) (*DB, error) {
 	if err := db.PingContext(context.Background()); err != nil {
 		return nil, fmt.Errorf("failed to ping db: %w", err)

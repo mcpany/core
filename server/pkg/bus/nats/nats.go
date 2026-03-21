@@ -15,9 +15,19 @@ import (
 	natsgo "github.com/nats-io/nats.go"
 )
 
-// Bus is a message bus implementation using NATS.
+// Summary: Bus is a message bus implementation using NATS. Represents a Bus.
 //
-// Summary: Represents a Bus.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Bus[T any] struct {
 	nc     *natsgo.Conn
 	config *bus.NatsBus
@@ -75,13 +85,19 @@ func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 	}, nil
 }
 
-// Close closes the NATS bus connection and shuts down the embedded server if applicable.
+// Summary: Close closes the NATS bus connection and shuts down the embedded server if applicable. Closes the NATS connection.
 //
-// Summary: Closes the NATS connection.
+// Parameters:
+//   - None.
 //
 // Returns:
+//   - None.
 //
-//	None.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Close() {
 	if b.nc != nil {
 		b.nc.Close()

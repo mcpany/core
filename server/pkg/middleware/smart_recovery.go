@@ -17,9 +17,19 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// SmartRecoveryMiddleware handles automatic error recovery using LLM.
+// Summary: SmartRecoveryMiddleware handles automatic error recovery using LLM. Represents a SmartRecoveryMiddleware.
 //
-// Summary: Represents a SmartRecoveryMiddleware.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type SmartRecoveryMiddleware struct {
 	config      *configv1.SmartRecoveryConfig
 	llmClient   llm.Client

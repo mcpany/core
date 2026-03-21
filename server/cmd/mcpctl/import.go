@@ -13,74 +13,107 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// ClaudeDesktopConfig represents the structure of claude_desktop_config.json.
+// Summary: ClaudeDesktopConfig represents the structure of claude_desktop_config.json. Configuration format used by Claude Desktop. Fields: - MCPServers: map[string]MCPServerConfig. A map of server names to their configurations.
 //
-// Summary: Configuration format used by Claude Desktop.
+// Parameters:
+//   - None.
 //
-// Fields:
-//   - MCPServers: map[string]MCPServerConfig. A map of server names to their configurations.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ClaudeDesktopConfig struct {
 	MCPServers map[string]MCPServerConfig `json:"mcpServers"`
 }
 
-// MCPServerConfig represents a single server configuration in Claude Desktop.
+// Summary: MCPServerConfig represents a single server configuration in Claude Desktop. Configuration for a single MCP server in Claude Desktop. Fields: - Command: string. The command to execute to start the server. - Args: []string. The arguments to pass to the command. - Env: map[string]string. Environment variables to set for the server process.
 //
-// Summary: Configuration for a single MCP server in Claude Desktop.
+// Parameters:
+//   - None.
 //
-// Fields:
-//   - Command: string. The command to execute to start the server.
-//   - Args: []string. The arguments to pass to the command.
-//   - Env: map[string]string. Environment variables to set for the server process.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MCPServerConfig struct {
 	Command string            `json:"command"`
 	Args    []string          `json:"args"`
 	Env     map[string]string `json:"env,omitempty"`
 }
 
-// McpAnyConfig represents the target configuration structure for MCP Any.
+// Summary: McpAnyConfig represents the target configuration structure for MCP Any.  Configuration for the MCP Any server. Fields: - UpstreamServices: []UpstreamService. A list of upstream services to configure.
 //
-// Summary:
-//   Configuration for the MCP Any server.
+// Parameters:
+//   - None.
 //
-// Fields:
-//   - UpstreamServices: []UpstreamService. A list of upstream services to configure.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type McpAnyConfig struct {
 	UpstreamServices []UpstreamService `yaml:"upstream_services"`
 }
 
-// UpstreamService represents a single upstream service configuration.
+// Summary: UpstreamService represents a single upstream service configuration.  Configuration for a single upstream service. Fields: - Name: string. The name of the service. - McpService: *McpService. The MCP service configuration (optional).
 //
-// Summary:
-//   Configuration for a single upstream service.
+// Parameters:
+//   - None.
 //
-// Fields:
-//   - Name: string. The name of the service.
-//   - McpService: *McpService. The MCP service configuration (optional).
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type UpstreamService struct {
 	Name       string      `yaml:"name"`
 	McpService *McpService `yaml:"mcp_service,omitempty"`
 }
 
-// McpService defines the configuration for an MCP-based service.
+// Summary: McpService defines the configuration for an MCP-based service.  Configuration for a service using the Model Context Protocol (MCP). Fields: - StdioConnection: *StdioConnection. Parameters for connecting via standard I/O (optional).
 //
-// Summary:
-//   Configuration for a service using the Model Context Protocol (MCP).
+// Parameters:
+//   - None.
 //
-// Fields:
-//   - StdioConnection: *StdioConnection. Parameters for connecting via standard I/O (optional).
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type McpService struct {
 	StdioConnection *StdioConnection `yaml:"stdio_connection,omitempty"`
 }
 
-// StdioConnection defines the parameters for connecting to an MCP server via standard I/O.
+// Summary: StdioConnection defines the parameters for connecting to an MCP server via standard I/O.  Parameters for connecting to an MCP server using standard input/output streams. Fields: - Command: string. The command to execute. - Args: []string. The arguments to pass to the command. - Env: map[string]string. The environment variables to set for the command.
 //
-// Summary:
-//   Parameters for connecting to an MCP server using standard input/output streams.
+// Parameters:
+//   - None.
 //
-// Fields:
-//   - Command: string. The command to execute.
-//   - Args: []string. The arguments to pass to the command.
-//   - Env: map[string]string. The environment variables to set for the command.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type StdioConnection struct {
 	Command string            `yaml:"command"`
 	Args    []string          `yaml:"args"`

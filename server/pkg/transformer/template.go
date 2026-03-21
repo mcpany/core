@@ -12,10 +12,19 @@ import (
 	"github.com/valyala/fasttemplate"
 )
 
-// TextTemplate provides a simple wrapper around Go's standard text/template
-// for rendering strings with dynamic data.
+// Summary: TextTemplate provides a simple wrapper around Go's standard text/template for rendering strings with dynamic data. High-performance template engine using fasttemplate.
 //
-// Summary: High-performance template engine using fasttemplate.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type TextTemplate struct {
 	template *fasttemplate.Template
 	raw      string
@@ -24,21 +33,22 @@ type TextTemplate struct {
 	IsJSON   bool
 }
 
-// NewTemplate parses a template string and creates a new TextTemplate.
-//
-// Summary: Initializes a new TextTemplate.
+// Summary: NewTemplate parses a template string and creates a new TextTemplate. Initializes a new TextTemplate.
 //
 // Parameters:
-//   - templateString: string. The template source.
-//   - startTag: string. The start delimiter (e.g. "{{").
-//   - endTag: string. The end delimiter (e.g. "}}").
+//   - templateString (string): The templateString parameter.
+//   - startTag (string): The startTag parameter.
+//   - endTag (string): The endTag parameter.
 //
 // Returns:
-//   - *TextTemplate: The parsed template.
-//   - error: An error if parsing fails.
+//   - *TextTemplate: The resulting *TextTemplate.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - Auto-detects if the template output is likely JSON to enable automatic escaping.
+//   - None.
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
 	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
 	if err != nil {

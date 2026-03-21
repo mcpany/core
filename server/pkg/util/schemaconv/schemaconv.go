@@ -15,29 +15,105 @@ import (
 
 // JSON schema types.
 const (
-	// TypeNumber represents a JSON number type.
-	// Summary: Defines TypeNumber.
+// Summary: TypeNumber represents a JSON number type. Defines TypeNumber.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	TypeNumber = "number"
-	// TypeInteger represents a JSON integer type.
-	// Summary: Defines TypeInteger.
+// Summary: TypeInteger represents a JSON integer type. Defines TypeInteger.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	TypeInteger = "integer"
-	// TypeBoolean represents a JSON boolean type.
-	// Summary: Defines TypeBoolean.
+// Summary: TypeBoolean represents a JSON boolean type. Defines TypeBoolean.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	TypeBoolean = "boolean"
-	// TypeObject represents a JSON object type.
-	// Summary: Defines TypeObject.
+// Summary: TypeObject represents a JSON object type. Defines TypeObject.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	TypeObject = "object"
-	// TypeArray represents a JSON array type.
-	// Summary: Defines TypeArray.
+// Summary: TypeArray represents a JSON array type. Defines TypeArray.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	TypeArray = "array"
-	// TypeString represents a JSON string type.
-	// Summary: Defines TypeString.
+// Summary: TypeString represents a JSON string type. Defines TypeString.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	TypeString = "string"
 )
 
-// MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
+// Summary: MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion. Represents a MaxRecursionDepth.
 //
-// Summary: Represents a MaxRecursionDepth.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 const MaxRecursionDepth = 10
 
 // MethodDescriptorToProtoProperties converts the fields of a method's input
@@ -186,9 +262,19 @@ func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]in
 	return schema, nil
 }
 
-// ConfigParameter an interface for config parameter schemas.
+// Summary: ConfigParameter an interface for config parameter schemas. Represents a ConfigParameter.
 //
-// Summary: Represents a ConfigParameter.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ConfigParameter interface {
 	// GetSchema returns the parameter schema.
 	//
@@ -197,9 +283,19 @@ type ConfigParameter interface {
 	GetSchema() *configv1.ParameterSchema
 }
 
-// McpFieldParameter an interface for McpField parameter schemas.
+// Summary: McpFieldParameter an interface for McpField parameter schemas. Represents a McpFieldParameter.
 //
-// Summary: Represents a McpFieldParameter.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type McpFieldParameter interface {
 	// GetName returns the name of the parameter.
 	//

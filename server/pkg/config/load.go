@@ -15,18 +15,22 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// LoadServices loads, validates, and processes the MCP Any server configuration from a given store.
-//
-// Summary: Loads and validates the server configuration.
+// Summary: LoadServices loads, validates, and processes the MCP Any server configuration from a given store. Loads and validates the server configuration.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the operation.
-//   - store: Store. The configuration store from which to load the configuration.
-//   - binaryType: string. The type of binary running the code (e.g., "server", "worker").
+//   - ctx (context.Context): The ctx parameter.
+//   - store (Store): The store parameter.
+//   - binaryType (string): The binaryType parameter.
 //
 // Returns:
-//   - *configv1.McpAnyServerConfig: A validated configuration object.
-//   - error: An error if loading or validation fails.
+//   - *configv1.McpAnyServerConfig: The resulting *configv1.McpAnyServerConfig.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
@@ -102,17 +106,21 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 	return fileConfig, nil
 }
 
-// LoadResolvedConfig loads key resolved configuration (merging services, setting defaults) without performing strict validation.
-//
-// Summary: Loads configuration with merging and defaults but without strict validation.
+// Summary: LoadResolvedConfig loads key resolved configuration (merging services, setting defaults) without performing strict validation. Loads configuration with merging and defaults but without strict validation.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the operation.
-//   - store: Store. The configuration store.
+//   - ctx (context.Context): The ctx parameter.
+//   - store (Store): The store parameter.
 //
 // Returns:
-//   - *configv1.McpAnyServerConfig: The resolved configuration.
-//   - error: An error if loading fails.
+//   - *configv1.McpAnyServerConfig: The resulting *configv1.McpAnyServerConfig.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
 func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 

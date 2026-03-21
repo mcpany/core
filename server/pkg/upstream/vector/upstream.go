@@ -20,14 +20,34 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// ClientFactory is a function that creates a VectorClient.
+// Summary: ClientFactory is a function that creates a VectorClient. Represents a ClientFactory.
 //
-// Summary: Represents a ClientFactory.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
 
-// Upstream implements the upstream.Upstream interface for vector database services.
+// Summary: Upstream implements the upstream.Upstream interface for vector database services. Represents a Upstream.
 //
-// Summary: Represents a Upstream.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Upstream struct {
 	clientFactory ClientFactory
 }
@@ -275,9 +295,19 @@ type vectorToolDef struct {
 	Handler     func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
-// Client interface for different vector DB implementations.
+// Summary: Client interface for different vector DB implementations. Represents a Client.
 //
-// Summary: Represents a Client.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Client interface {
 	// Query searches for the nearest vectors in the database.
 	// It accepts a context, a query vector, the number of results to return (topK),

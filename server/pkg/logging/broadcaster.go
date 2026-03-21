@@ -7,9 +7,19 @@ import (
 	"sync"
 )
 
-// Broadcaster manages a set of subscribers and broadcasts messages to them.
+// Summary: Broadcaster manages a set of subscribers and broadcasts messages to them. Represents a Broadcaster.
 //
-// Summary: Represents a Broadcaster.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Broadcaster struct {
 	mu          sync.RWMutex
 	subscribers map[chan any]struct{}
@@ -19,6 +29,20 @@ type Broadcaster struct {
 	limit       int
 }
 
+var (
+// Summary: GlobalBroadcaster is the shared broadcaster instance for logs. Defines GlobalBroadcaster.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var (
 	// GlobalBroadcaster is the shared broadcaster instance for logs.
 	// Summary: Defines GlobalBroadcaster.

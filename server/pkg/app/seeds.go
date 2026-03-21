@@ -8,15 +8,34 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// BuiltinTemplates contains the seed configurations for high-value MCP servers.
-// Deprecated: Use BuiltinServiceTemplates instead.
+// Summary: BuiltinTemplates contains the seed configurations for high-value MCP servers. Deprecated: Use BuiltinServiceTemplates instead. Represents a BuiltinTemplates.
 //
-// Summary: Represents a BuiltinTemplates.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var BuiltinTemplates []*configv1.UpstreamServiceConfig
 
-// BuiltinServiceTemplates contains the rich seed configurations for the UI wizard.
+// Summary: BuiltinServiceTemplates contains the rich seed configurations for the UI wizard. Represents a BuiltinServiceTemplates.
 //
-// Summary: Represents a BuiltinServiceTemplates.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var BuiltinServiceTemplates []*configv1.ServiceTemplate
 
 func init() {

@@ -14,9 +14,19 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// Bus is a Redis-backed implementation of the Bus interface.
+// Summary: Bus is a Redis-backed implementation of the Bus interface. Represents a Bus.
 //
-// Summary: Represents a Bus.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Bus[T any] struct {
 	client *redis.Client
 }
@@ -248,12 +258,19 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 	return proxyUnsub
 }
 
-// Close closes the Redis client connection.
+// Summary: Close closes the Redis client connection. Closes the Redis connection.
 //
-// Summary: Closes the Redis connection.
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - error: An error if closing fails.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Close() error {
 	return b.client.Close()
 }

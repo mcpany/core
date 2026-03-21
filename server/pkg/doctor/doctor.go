@@ -23,33 +23,93 @@ import (
 	_ "modernc.org/sqlite" // Register SQLite driver
 )
 
-// Status represents the status of a check.
+// Summary: Status represents the status of a check. It is an enumerated string type used to indicate the outcome of a health or connectivity check. Represents a Status.
 //
-// It is an enumerated string type used to indicate the outcome of a health or connectivity check.
+// Parameters:
+//   - None.
 //
-// Summary: Represents a Status.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Status string
 
 const (
-	// StatusOk indicates the check passed successfully.
-	// Summary: Defines StatusO.
+// Summary: StatusOk indicates the check passed successfully. Defines StatusO.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	StatusOk Status = "OK"
-	// StatusWarning indicates a partial failure or non-critical issue that should be investigated.
-	// Summary: Defines StatusWarnin.
+// Summary: StatusWarning indicates a partial failure or non-critical issue that should be investigated. Defines StatusWarnin.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	StatusWarning Status = "WARNING"
-	// StatusError indicates a critical failure that prevents the service from functioning correctly.
-	// Summary: Defines StatusErro.
+// Summary: StatusError indicates a critical failure that prevents the service from functioning correctly. Defines StatusErro.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	StatusError Status = "ERROR"
-	// StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
-	// Summary: Defines StatusSkippe.
+// Summary: StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service). Defines StatusSkippe.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	StatusSkipped Status = "SKIPPED"
 )
 
-// CheckResult represents the result of a single service check.
+// Summary: CheckResult represents the result of a single service check. It aggregates the status, any message, and potential error encountered during the check. Represents a CheckResult.
 //
-// It aggregates the status, any message, and potential error encountered during the check.
+// Parameters:
+//   - None.
 //
-// Summary: Represents a CheckResult.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CheckResult struct {
 	// ServiceName is the name of the service being checked.
 	ServiceName string

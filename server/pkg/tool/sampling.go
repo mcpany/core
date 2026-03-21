@@ -9,10 +9,19 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Session defines the interface for tools to interact with the client session.
-// It includes capabilities like Sampling (CreateMessage) and Roots inspection.
+// Summary: Session defines the interface for tools to interact with the client session. It includes capabilities like Sampling (CreateMessage) and Roots inspection. Represents a Session.
 //
-// Summary: Represents a Session.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Session interface {
 	// CreateMessage requests a message creation (sampling) from the client.
 	//
@@ -40,70 +49,92 @@ type Session interface {
 	ListRoots(ctx context.Context) (*mcp.ListRootsResult, error)
 }
 
-// Sampler is an alias for Session for backward compatibility.
+// Summary: Sampler is an alias for Session for backward compatibility. Represents a Sampler.
 //
-// Summary: Represents a Sampler.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Sampler = Session
 
 type sessionContextKey struct{}
 
-// NewContextWithSession creates a new context with the given Session.
-//
-// Summary: Injects Session into context.
+// Summary: NewContextWithSession creates a new context with the given Session. Injects Session into context.
 //
 // Parameters:
-//   - ctx: context.Context. The parent context.
-//   - s: Session. The session to inject.
+//   - ctx (context.Context): The ctx parameter.
+//   - s (Session): The s parameter.
 //
 // Returns:
-//   - context.Context: The new context.
+//   - context.Context: The resulting context.Context.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewContextWithSession(ctx context.Context, s Session) context.Context {
 	return context.WithValue(ctx, sessionContextKey{}, s)
 }
 
-// GetSession retrieves the Session from the context.
-//
-// Summary: Retrieves Session from context.
+// Summary: GetSession retrieves the Session from the context. Retrieves Session from context.
 //
 // Parameters:
-//   - ctx: context.Context. The context.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - Session: The session if found.
-//   - bool: True if the session exists.
+//   - Session: The resulting Session.
+//   - bool: The resulting bool.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func GetSession(ctx context.Context) (Session, bool) {
 	s, ok := ctx.Value(sessionContextKey{}).(Session)
 	return s, ok
 }
 
-// NewContextWithSampler creates a new context with the given Sampler.
-//
-// Summary: Injects Sampler into context.
-//
-// Deprecated: Use NewContextWithSession instead.
+// Summary: NewContextWithSampler creates a new context with the given Sampler. Injects Sampler into context. Deprecated: Use NewContextWithSession instead.
 //
 // Parameters:
-//   - ctx: context.Context. The parent context.
-//   - s: Sampler. The sampler to inject.
+//   - ctx (context.Context): The ctx parameter.
+//   - s (Sampler): The s parameter.
 //
 // Returns:
-//   - context.Context: The new context.
+//   - context.Context: The resulting context.Context.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewContextWithSampler(ctx context.Context, s Sampler) context.Context {
 	return NewContextWithSession(ctx, s)
 }
 
-// GetSampler retrieves the Sampler from the context.
-//
-// Summary: Retrieves Sampler from context.
-//
-// Deprecated: Use GetSession instead.
+// Summary: GetSampler retrieves the Sampler from the context. Retrieves Sampler from context. Deprecated: Use GetSession instead.
 //
 // Parameters:
-//   - ctx: context.Context. The context.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - Sampler: The sampler if found.
-//   - bool: True if the sampler exists.
+//   - Sampler: The resulting Sampler.
+//   - bool: The resulting bool.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func GetSampler(ctx context.Context) (Sampler, bool) {
 	return GetSession(ctx)
 }

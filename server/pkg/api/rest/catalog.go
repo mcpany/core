@@ -10,11 +10,19 @@ import (
 	"github.com/mcpany/core/server/pkg/catalog"
 )
 
-// CatalogServer implements the CatalogService API.
+// Summary: CatalogServer implements the CatalogService API. Server implementation for the Catalog Service. It handles requests to list available services from the dynamic catalog.
 //
-// Summary: Server implementation for the Catalog Service.
+// Parameters:
+//   - None.
 //
-// It handles requests to list available services from the dynamic catalog.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CatalogServer struct {
 	manager *catalog.Manager
 }

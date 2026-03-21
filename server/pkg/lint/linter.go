@@ -14,22 +14,63 @@ import (
 	"github.com/mcpany/core/server/pkg/config"
 )
 
-// Severity indicates the importance of a linting result.
+// Summary: Severity indicates the importance of a linting result. It is used to categorize findings based on their impact and urgency. Represents a Severity.
 //
-// It is used to categorize findings based on their impact and urgency.
+// Parameters:
+//   - None.
 //
-// Summary: Represents a Severity.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Severity int
 
 const (
-	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
-	// Summary: Defines Erro.
+// Summary: Error indicates a critical issue that must be fixed for the system to function correctly or securely. Defines Erro.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	Error Severity = iota
-	// Warning indicates a potential issue or best practice violation that should be addressed.
-	// Summary: Defines Warnin.
+// Summary: Warning indicates a potential issue or best practice violation that should be addressed. Defines Warnin.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	Warning
-	// Info indicates a suggestion or informational message for optimization or clarity.
-	// Summary: Defines Inf.
+// Summary: Info indicates a suggestion or informational message for optimization or clarity. Defines Inf.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	Info
 )
 
@@ -66,11 +107,19 @@ func (s Severity) String() string {
 	}
 }
 
-// Result represents a single linting finding.
+// Summary: Result represents a single linting finding. It encapsulates all details about a detected issue, including its severity, location, and description. Represents a Result.
 //
-// It encapsulates all details about a detected issue, including its severity, location, and description.
+// Parameters:
+//   - None.
 //
-// Summary: Represents a Result.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -114,11 +163,19 @@ func (r Result) String() string {
 	return fmt.Sprintf("[%s]%s%s: %s", r.Severity, serviceStr, pathStr, r.Message)
 }
 
-// Linter performs static analysis on the configuration.
+// Summary: Linter performs static analysis on the configuration. It holds the configuration to be analyzed and provides methods to execute various checks. Represents a Linter.
 //
-// It holds the configuration to be analyzed and provides methods to execute various checks.
+// Parameters:
+//   - None.
 //
-// Summary: Represents a Linter.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }

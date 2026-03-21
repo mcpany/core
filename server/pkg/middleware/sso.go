@@ -10,28 +10,37 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// SSOConfig defines the SSO configuration.
+// Summary: SSOConfig defines the SSO configuration. Configuration options for Single Sign-On (SSO) middleware.
 //
-// Summary: Configuration options for Single Sign-On (SSO) middleware.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type SSOConfig struct {
 	Enabled bool
 	IDPURL  string
 }
 
-// SSOMiddleware creates a new SSO middleware.
-//
-// Summary: Middleware that enforces SSO authentication via trusted headers or bearer tokens.
+// Summary: SSOMiddleware creates a new SSO middleware. Middleware that enforces SSO authentication via trusted headers or bearer tokens.
 //
 // Parameters:
-//   - config: SSOConfig. The configuration settings for SSO.
+//   - config (SSOConfig): The config parameter.
 //
 // Returns:
-//   - gin.HandlerFunc: The Gin middleware handler.
+//   - gin.HandlerFunc: The resulting gin.HandlerFunc.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Inspects headers for authentication information.
-//   - Aborts the request with 401 Unauthorized if authentication is missing or invalid.
-//   - Sets "UserID" in the context on successful authentication.
+//   - None.
 func SSOMiddleware(config SSOConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !config.Enabled {

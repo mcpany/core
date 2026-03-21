@@ -10,28 +10,41 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// CallableTool implements the Tool interface for a tool that is executed by a
-// Callable.
+// Summary: CallableTool implements the Tool interface for a tool that is executed by a Callable. Represents a CallableTool.
 //
-// Summary: Represents a CallableTool.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CallableTool struct {
 	*baseTool
 }
 
-// NewCallableTool creates a new CallableTool.
-//
-// Summary: Creates a new tool that wraps a Callable interface.
+// Summary: NewCallableTool creates a new CallableTool. Creates a new tool that wraps a Callable interface.
 //
 // Parameters:
-//   - toolDef: *configv1.ToolDefinition. The definition of the tool.
-//   - serviceConfig: *configv1.UpstreamServiceConfig. The configuration of the service the tool belongs to.
-//   - callable: Callable. The callable implementation for execution.
-//   - inputSchema: *structpb.Struct. The input schema for the tool.
-//   - outputSchema: *structpb.Struct. The output schema for the tool.
+//   - toolDef (*configv1.ToolDefinition): The toolDef parameter.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
+//   - callable (Callable): The callable parameter.
+//   - inputSchema (*structpb.Struct): The inputSchema parameter.
+//   - outputSchema (*structpb.Struct): The outputSchema parameter.
 //
 // Returns:
-//   - *CallableTool: A pointer to the created CallableTool.
-//   - error: An error if creation fails.
+//   - *CallableTool: The resulting *CallableTool.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
 func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.UpstreamServiceConfig, callable Callable, inputSchema, outputSchema *structpb.Struct) (*CallableTool, error) {
 	base, err := newBaseTool(toolDef, serviceConfig, callable, inputSchema, outputSchema)
 	if err != nil {
@@ -40,27 +53,38 @@ func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.U
 	return &CallableTool{base}, nil
 }
 
-// Execute handles the execution of the tool.
-//
-// Summary: Executes the underlying callable.
+// Summary: Execute handles the execution of the tool. Executes the underlying callable.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: *ExecutionRequest. The request object containing parameters.
+//   - ctx (context.Context): The ctx parameter.
+//   - req (*ExecutionRequest): The req parameter.
 //
 // Returns:
-//   - any: The result of the execution.
+//   - any: The resulting any.
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
 func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	return t.callable.Call(ctx, req)
 }
 
-// Callable returns the underlying Callable of the tool.
+// Summary: Callable returns the underlying Callable of the tool. Retrieves the underlying Callable interface.
 //
-// Summary: Retrieves the underlying Callable interface.
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - Callable: The underlying callable.
+//   - Callable: The resulting Callable.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *CallableTool) Callable() Callable {
 	return t.callable
 }

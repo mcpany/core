@@ -8,9 +8,19 @@ import (
 	"time"
 )
 
-// EmbeddingProvider defines the interface for fetching text embeddings.
+// Summary: EmbeddingProvider defines the interface for fetching text embeddings. Interface for services that can generate vector embeddings from text.
 //
-// Summary: Interface for services that can generate vector embeddings from text.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type EmbeddingProvider interface {
 	// Embed generates an embedding vector for the given text.
 	//
@@ -24,9 +34,19 @@ type EmbeddingProvider interface {
 	Embed(ctx context.Context, text string) ([]float32, error)
 }
 
-// VectorStore defines the interface for storing and searching vectors.
+// Summary: VectorStore defines the interface for storing and searching vectors. Interface for storage backends that support vector similarity search.
 //
-// Summary: Interface for storage backends that support vector similarity search.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type VectorStore interface {
 	// Add adds a new entry to the vector store.
 	//
@@ -62,30 +82,40 @@ type VectorStore interface {
 	Prune(ctx context.Context, key string)
 }
 
-// SemanticCache implements a semantic cache using embeddings and cosine similarity.
+// Summary: SemanticCache implements a semantic cache using embeddings and cosine similarity. A cache implementation that uses semantic similarity rather than exact key matching.
 //
-// Summary: A cache implementation that uses semantic similarity rather than exact key matching.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type SemanticCache struct {
 	provider  EmbeddingProvider
 	store     VectorStore
 	threshold float32
 }
 
-// NewSemanticCache creates a new SemanticCache.
-//
-// Summary: Initializes a new SemanticCache.
+// Summary: NewSemanticCache creates a new SemanticCache. Initializes a new SemanticCache.
 //
 // Parameters:
-//   - provider: EmbeddingProvider. The service to generate embeddings.
-//   - store: VectorStore. The storage backend for vectors.
-//   - threshold: float32. The minimum similarity score (0-1) to consider a hit.
+//   - provider (EmbeddingProvider): The provider parameter.
+//   - store (VectorStore): The store parameter.
+//   - threshold (float32): The threshold parameter.
 //
 // Returns:
-//   - *SemanticCache: The initialized semantic cache.
+//   - *SemanticCache: The resulting *SemanticCache.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Sets a default threshold of 0.9 if the provided threshold is <= 0.
-//   - Creates a memory-based vector store if store is nil.
+//   - None.
 func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold float32) *SemanticCache {
 	if threshold <= 0 {
 		threshold = 0.9 // Default high threshold
@@ -134,22 +164,23 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 	return nil, embedding, false, nil
 }
 
-// Set adds a result to the cache using the provided embedding.
-//
-// Summary: Caches a result associated with a specific embedding.
+// Summary: Set adds a result to the cache using the provided embedding. Caches a result associated with a specific embedding.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - key: string. The semantic key or scope.
-//   - embedding: []float32. The embedding vector (usually returned from Get).
-//   - result: any. The result data to cache.
-//   - ttl: time.Duration. The expiration time for the cache entry.
+//   - ctx (context.Context): The ctx parameter.
+//   - key (string): The key parameter.
+//   - embedding ([]float32): The embedding parameter.
+//   - result (any): The result parameter.
+//   - ttl (time.Duration): The ttl parameter.
 //
 // Returns:
-//   - error: An error if the storage operation fails.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - Writes to the underlying VectorStore.
+//   - None.
 func (c *SemanticCache) Set(ctx context.Context, key string, embedding []float32, result any, ttl time.Duration) error {
 	return c.store.Add(ctx, key, embedding, result, ttl)
 }

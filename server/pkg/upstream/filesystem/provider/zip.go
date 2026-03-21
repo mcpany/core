@@ -15,9 +15,19 @@ import (
 	"github.com/spf13/afero/zipfs"
 )
 
-// ZipProvider provides access to files within a zip archive.
+// Summary: ZipProvider provides access to files within a zip archive. Represents a ZipProvider.
 //
-// Summary: Represents a ZipProvider.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ZipProvider struct {
 	fs     afero.Fs
 	closer *os.File

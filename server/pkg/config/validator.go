@@ -24,9 +24,19 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// BinaryType defines the type of the binary being validated.
+// Summary: BinaryType defines the type of the binary being validated. Enumeration of binary types for validation context.
 //
-// Summary: Enumeration of binary types for validation context.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type BinaryType int
 
 const (
@@ -35,42 +45,127 @@ const (
 )
 
 const (
-	// Server represents the server binary.
-	// Summary: Defines Serve.
+// Summary: Server represents the server binary. Defines Serve.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	Server BinaryType = iota
-	// Worker represents the worker binary.
-	// Summary: Defines Worke.
+// Summary: Worker represents the worker binary. Defines Worke.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	Worker
-	// Client represents the client binary.
-	// Summary: Defines Clien.
+// Summary: Client represents the client binary. Defines Clien.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	Client
 )
 
-// AuthValidationContext defines the context for authentication validation.
+// Summary: AuthValidationContext defines the context for authentication validation. Enumeration of authentication validation contexts.
 //
-// Summary: Enumeration of authentication validation contexts.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type AuthValidationContext int
 
 const (
-	// AuthValidationContextIncoming represents incoming authentication (e.g., Users).
-	// Summary: Defines AuthValidationContextIncomin.
+// Summary: AuthValidationContextIncoming represents incoming authentication (e.g., Users). Defines AuthValidationContextIncomin.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	AuthValidationContextIncoming AuthValidationContext = iota
-	// AuthValidationContextOutgoing represents outgoing authentication (e.g., Upstream Services).
-	// Summary: Defines AuthValidationContextOutgoin.
+// Summary: AuthValidationContextOutgoing represents outgoing authentication (e.g., Upstream Services). Defines AuthValidationContextOutgoin.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	AuthValidationContextOutgoing
 )
 
 type contextKey string
 
 const (
-	// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
-	// Value should be a boolean.
-	// Summary: Defines SkipSecretValidationKey.
+// Summary: SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API). Value should be a boolean. Defines SkipSecretValidationKey.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	SkipSecretValidationKey contextKey = "skip_secret_validation"
 
-	// SkipFilesystemCheckKey is the context key to skip filesystem existence checks (e.g. for config check API).
-	// Value should be a boolean.
-	// Summary: Defines SkipFilesystemCheckKey.
+// Summary: SkipFilesystemCheckKey is the context key to skip filesystem existence checks (e.g. for config check API). Value should be a boolean. Defines SkipFilesystemCheckKey.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	SkipFilesystemCheckKey contextKey = "skip_filesystem_check"
 )
 
@@ -79,9 +174,19 @@ var (
 	execLookPath = exec.LookPath
 )
 
-// ValidationError encapsulates a validation error for a specific service.
+// Summary: ValidationError encapsulates a validation error for a specific service. Represents a configuration validation error.
 //
-// Summary: Represents a configuration validation error.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ValidationError struct {
 	ServiceName string
 	Err         error
@@ -118,17 +223,21 @@ func (e *ValidationError) Error() string {
 	return fmt.Sprintf("service %q: %v", e.ServiceName, e.Err)
 }
 
-// Validate inspects the given McpAnyServerConfig for correctness and consistency.
-//
-// Summary: Validates the entire server configuration.
+// Summary: Validate inspects the given McpAnyServerConfig for correctness and consistency. Validates the entire server configuration.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the validation (used for secret resolution).
-//   - config (*configv1.McpAnyServerConfig): The server configuration to be validated.
-//   - binaryType (BinaryType): The type of binary (server, worker) which might affect validation rules.
+//   - ctx (context.Context): The ctx parameter.
+//   - config (*configv1.McpAnyServerConfig): The config parameter.
+//   - binaryType (BinaryType): The binaryType parameter.
 //
 // Returns:
-//   - ([]ValidationError): A slice of ValidationErrors, which will be empty if the configuration is valid.
+//   - []ValidationError: The resulting []ValidationError.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
 	serviceNames := make(map[string]bool)
@@ -525,16 +634,20 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 	return nil
 }
 
-// ValidateOrError validates a single upstream service configuration and returns an error if it's invalid.
-//
-// Summary: Validates a single upstream service.
+// Summary: ValidateOrError validates a single upstream service configuration and returns an error if it's invalid. Validates a single upstream service.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the validation.
-//   - service (*configv1.UpstreamServiceConfig): The upstream service configuration to validate.
+//   - ctx (context.Context): The ctx parameter.
+//   - service (*configv1.UpstreamServiceConfig): The service parameter.
 //
 // Returns:
-//   - (error): An error if validation fails.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
 func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(ctx, service)
 }

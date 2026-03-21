@@ -12,36 +12,57 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// JSONRPCError represents a JSON-RPC 2.0 error object.
+// Summary: JSONRPCError represents a JSON-RPC 2.0 error object. Represents a JSONRPCError.
 //
-// Summary: Represents a JSONRPCError.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type JSONRPCError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 	Data    any    `json:"data,omitempty"`
 }
 
-// JSONRPCResponse represents a JSON-RPC 2.0 response object.
+// Summary: JSONRPCResponse represents a JSON-RPC 2.0 response object. Represents a JSONRPCResponse.
 //
-// Summary: Represents a JSONRPCResponse.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type JSONRPCResponse struct {
 	JSONRPC string        `json:"jsonrpc"`
 	ID      any           `json:"id"`
 	Error   *JSONRPCError `json:"error,omitempty"`
 }
 
-// JSONRPCComplianceMiddleware ensures that errors are returned as valid JSON-RPC responses.
-//
-// Summary: Wraps non-JSON error responses in a JSON-RPC error format.
+// Summary: JSONRPCComplianceMiddleware ensures that errors are returned as valid JSON-RPC responses. Wraps non-JSON error responses in a JSON-RPC error format.
 //
 // Parameters:
-//   - next: http.Handler. The next handler in the chain.
+//   - next (http.Handler): The next parameter.
 //
 // Returns:
-//   - http.Handler: The wrapped handler that enforces JSON-RPC compliance for errors.
+//   - http.Handler: The resulting http.Handler.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Intercepts and rewrites HTTP response bodies for error status codes.
+//   - None.
 func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Only intercept POST requests (likely JSON-RPC)
@@ -95,22 +116,36 @@ type smartResponseWriter struct {
 	passThrough bool
 }
 
-// Header returns the header map that will be sent by WriteHeader.
+// Summary: Header returns the header map that will be sent by WriteHeader. Returns the response headers.
 //
-// Summary: Returns the response headers.
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - http.Header: The header map.
+//   - http.Header: The resulting http.Header.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *smartResponseWriter) Header() http.Header {
 	return w.header
 }
 
-// WriteHeader sends an HTTP response header with the provided status code.
-//
-// Summary: Writes the status code to the response.
+// Summary: WriteHeader sends an HTTP response header with the provided status code. Writes the status code to the response.
 //
 // Parameters:
-//   - code: int. The HTTP status code.
+//   - code (int): The code parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
 		return
@@ -133,16 +168,20 @@ func (w *smartResponseWriter) WriteHeader(code int) {
 	}
 }
 
-// Write writes the data to the connection as part of an HTTP reply.
-//
-// Summary: Writes data to the response body, buffering if necessary.
+// Summary: Write writes the data to the connection as part of an HTTP reply. Writes data to the response body, buffering if necessary.
 //
 // Parameters:
-//   - b: []byte. The data to write.
+//   - b ([]byte): The b parameter.
 //
 // Returns:
-//   - int: The number of bytes written.
-//   - error: An error if the write fails.
+//   - int: The resulting int.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
 func (w *smartResponseWriter) Write(b []byte) (int, error) {
 	if !w.committed {
 		w.WriteHeader(http.StatusOK)
@@ -179,13 +218,19 @@ func (w *smartResponseWriter) flushHeader() {
 	w.w.WriteHeader(w.statusCode)
 }
 
-// Flush implements http.Flusher to support streaming.
+// Summary: Flush implements http.Flusher to support streaming. Flushes the response buffer to the client.
 //
-// Summary: Flushes the response buffer to the client.
+// Parameters:
+//   - None.
 //
 // Returns:
+//   - None.
 //
-//	None.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *smartResponseWriter) Flush() {
 	if w.passThrough {
 		if f, ok := w.w.(http.Flusher); ok {

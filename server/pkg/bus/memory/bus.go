@@ -18,11 +18,19 @@ const (
 	defaultPublishTimeout = 1 * time.Second
 )
 
-// DefaultBus is the default, thread-safe implementation of the Bus interface.
-// It uses channels to deliver messages to subscribers, with each subscriber
-// having its own dedicated goroutine for message processing.
+// Summary: DefaultBus is the default, thread-safe implementation of the Bus interface. It uses channels to deliver messages to subscribers, with each subscriber having its own dedicated goroutine for message processing. Represents a DefaultBus.
 //
-// Summary: Represents a DefaultBus.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type DefaultBus[T any] struct {
 	mu             sync.RWMutex
 	subscribers    map[string]map[uintptr]chan T

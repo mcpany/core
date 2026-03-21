@@ -10,9 +10,19 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// GraphQLProvider discovers services via GraphQL introspection.
+// Summary: GraphQLProvider discovers services via GraphQL introspection. Represents a GraphQLProvider.
 //
-// Summary: Represents a GraphQLProvider.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type GraphQLProvider struct {
 	Endpoint string // e.g., "http://localhost:8080/graphql"
 }

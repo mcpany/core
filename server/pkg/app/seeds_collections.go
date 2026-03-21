@@ -8,9 +8,19 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// BuiltinServiceCollections contains the official service collections.
+// Summary: BuiltinServiceCollections contains the official service collections. Represents a BuiltinServiceCollections.
 //
-// Summary: Represents a BuiltinServiceCollections.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var BuiltinServiceCollections []*configv1.Collection
 
 func init() {

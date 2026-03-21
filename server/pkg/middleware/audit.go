@@ -22,9 +22,19 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// AuditMiddleware provides audit logging for tool executions.
+// Summary: AuditMiddleware provides audit logging for tool executions. Middleware for auditing tool execution.
 //
-// Summary: Middleware for auditing tool execution.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type AuditMiddleware struct {
 	mu          sync.RWMutex
 	config      *configv1.AuditConfig
@@ -98,16 +108,19 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 	return nil
 }
 
-// SetStore sets the audit store.
-// This is primarily used for testing.
-//
-// Summary: Sets the audit store implementation.
+// Summary: SetStore sets the audit store. This is primarily used for testing. Sets the audit store implementation.
 //
 // Parameters:
-//   - store (audit.Store): The audit store to use.
+//   - store (audit.Store): The store parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Replaces the current audit store.
+//   - None.
 func (m *AuditMiddleware) SetStore(store audit.Store) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -172,21 +185,22 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 	return nil
 }
 
-// Execute intercepts tool execution to log audit events.
-//
-// Summary: Intercepts and logs tool execution requests and results.
+// Summary: Execute intercepts tool execution to log audit events. Intercepts and logs tool execution requests and results.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The tool execution request.
-//   - next (tool.ExecutionFunc): The next handler in the chain.
+//   - ctx (context.Context): The ctx parameter.
+//   - req (*tool.ExecutionRequest): The req parameter.
+//   - next (tool.ExecutionFunc): The next parameter.
 //
 // Returns:
-//   - any: The result of the tool execution.
-//   - error: An error if the tool execution fails.
+//   - any: The resulting any.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - Writes an audit log entry to the configured store.
+//   - None.
 func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	m.mu.RLock()
 	auditConfig := m.config
@@ -300,39 +314,53 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 	}
 }
 
-// ClearHistory clears the audit history from the broadcaster.
+// Summary: ClearHistory clears the audit history from the broadcaster. Clears the audit history.
 //
-// Summary: Clears the audit history.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Clears the history in the broadcaster.
+//   - None.
 func (m *AuditMiddleware) ClearHistory() {
 	if m.broadcaster != nil {
 		m.broadcaster.ClearHistory()
 	}
 }
 
-// SubscribeWithHistory returns a channel that will receive broadcast messages,
-// and the current history of messages.
+// Summary: SubscribeWithHistory returns a channel that will receive broadcast messages, and the current history of messages. Subscribes to audit events with history.
 //
-// Summary: Subscribes to audit events with history.
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - chan any: A channel receiving new audit entries.
-//   - []any: A slice of historical audit entries.
+//   - any: The resulting any.
+//   - []any: The resulting []any.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Adds a new subscriber to the broadcaster.
+//   - None.
 func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 	return m.broadcaster.SubscribeWithHistory()
 }
 
-// GetHistory returns the current broadcast history.
+// Summary: GetHistory returns the current broadcast history. Retrieves the audit history from the broadcaster.
 //
-// Summary: Retrieves the audit history from the broadcaster.
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - []any: A slice of audit entries.
+//   - []any: The resulting []any.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -340,15 +368,19 @@ func (m *AuditMiddleware) GetHistory() []any {
 	return m.broadcaster.GetHistory()
 }
 
-// Unsubscribe removes a subscriber channel.
-//
-// Summary: Unsubscribes from audit events.
+// Summary: Unsubscribe removes a subscriber channel. Unsubscribes from audit events.
 //
 // Parameters:
-//   - ch (chan any): The channel to unsubscribe.
+//   - ch (chan any): The ch parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Removes the subscriber from the broadcaster.
+//   - None.
 func (m *AuditMiddleware) Unsubscribe(ch chan any) {
 	m.broadcaster.Unsubscribe(ch)
 }
@@ -381,15 +413,19 @@ func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audi
 	return store.Read(ctx, filter)
 }
 
-// Close closes the underlying store.
+// Summary: Close closes the underlying store. Closes the audit store.
 //
-// Summary: Closes the audit store.
+// Parameters:
+//   - None.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
 // Side Effects:
-//   - Closes the audit store connection.
+//   - None.
 func (m *AuditMiddleware) Close() error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

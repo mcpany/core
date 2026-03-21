@@ -14,19 +14,19 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// NewTestPoolManager creates a new pool.Manager for testing purposes.
-// It initializes a default HTTP connection pool and registers it with the manager.
-//
-// Summary: Helper to create a pool manager with a default "test-service" HTTP pool.
+// Summary: NewTestPoolManager creates a new pool.Manager for testing purposes. It initializes a default HTTP connection pool and registers it with the manager. Helper to create a pool manager with a default "test-service" HTTP pool.
 //
 // Parameters:
-//   - t: *testing.T. The testing object.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
-//   - *pool.Manager: The initialized pool manager.
+//   - *pool.Manager: The resulting *pool.Manager.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Registers "test-service" in the manager.
+//   - None.
 func NewTestPoolManager(t *testing.T) *pool.Manager {
 	t.Helper()
 	pm := pool.NewManager()
@@ -45,25 +45,36 @@ func NewTestPoolManager(t *testing.T) *pool.Manager {
 	return pm
 }
 
-// MockAuthenticator is a mock implementation of the auth.UpstreamAuthenticator interface.
+// Summary: MockAuthenticator is a mock implementation of the auth.UpstreamAuthenticator interface. Mock authenticator for testing upstream requests.
 //
-// Summary: Mock authenticator for testing upstream requests.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MockAuthenticator struct {
 	AuthenticateFunc func(req *http.Request) error
 }
 
-// Authenticate calls the mock AuthenticateFunc if set, otherwise returns nil.
-//
-// Summary: Authenticates a request using the mock function.
+// Summary: Authenticate calls the mock AuthenticateFunc if set, otherwise returns nil. Authenticates a request using the mock function.
 //
 // Parameters:
-//   - req: *http.Request. The request to authenticate.
+//   - req (*http.Request): The req parameter.
 //
 // Returns:
-//   - error: The error from AuthenticateFunc.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - Invokes the injected AuthenticateFunc.
+//   - None.
 func (m *MockAuthenticator) Authenticate(req *http.Request) error {
 	if m.AuthenticateFunc != nil {
 		return m.AuthenticateFunc(req)

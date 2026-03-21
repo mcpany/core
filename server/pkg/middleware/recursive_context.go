@@ -14,9 +14,19 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// SessionState represents the shared state for a recursive context session.
+// Summary: SessionState represents the shared state for a recursive context session. Represents a SessionState.
 //
-// Summary: Represents a SessionState.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type SessionState struct {
 	ID        string                 `json:"id"`
 	Data      map[string]interface{} `json:"data"`
@@ -24,9 +34,19 @@ type SessionState struct {
 	ExpiresAt time.Time              `json:"expires_at"`
 }
 
-// RecursiveContextManager manages the shared context sessions (Blackboard).
+// Summary: RecursiveContextManager manages the shared context sessions (Blackboard). Represents a RecursiveContextManager.
 //
-// Summary: Represents a RecursiveContextManager.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type RecursiveContextManager struct {
 	mu       sync.RWMutex
 	sessions map[string]*SessionState
@@ -244,11 +264,35 @@ func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 
 // contextKey is a custom type for context keys to avoid collisions.
 
-// RecursiveContextKeyType is a custom type for context keys to avoid collisions.
+// Summary: RecursiveContextKeyType is a custom type for context keys to avoid collisions. Represents a RecursiveContextKeyType.
 //
-// Summary: Represents a RecursiveContextKeyType.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type RecursiveContextKeyType string
 
+const (
+// Summary: RecursiveContextDataKey is the key used to store the recursive context data in the request context. Defines RecursiveContextDataKe.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 const (
 	// RecursiveContextDataKey is the key used to store the recursive context data in the request context.
 	// Summary: Defines RecursiveContextDataKe.

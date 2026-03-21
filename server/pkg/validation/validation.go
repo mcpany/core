@@ -16,16 +16,19 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// IsValidBindAddress checks if a given string is a valid bind address.
-// A valid bind address is in the format "host:port".
-//
-// Summary: Validates a bind address string.
+// Summary: IsValidBindAddress checks if a given string is a valid bind address. A valid bind address is in the format "host:port". Validates a bind address string.
 //
 // Parameters:
-//   - s: string. The address string to validate.
+//   - s (string): The s parameter.
 //
 // Returns:
-//   - error: An error if validation fails.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
 func IsValidBindAddress(s string) error {
 	_, port, err := net.SplitHostPort(s)
 	if err != nil {
@@ -60,20 +63,19 @@ func IsValidBindAddress(s string) error {
 	return nil
 }
 
-// IsSecurePath checks if a given file path is secure and does not contain any
-// path traversal sequences ("../" or "..\\"). This function is crucial for
-// preventing directory traversal attacks, where a malicious actor could
-// otherwise access or manipulate files outside of the intended directory.
-//
-// Summary: Checks for path traversal attempts.
+// Summary: IsSecurePath checks if a given file path is secure and does not contain any path traversal sequences ("../" or "..\\"). This function is crucial for preventing directory traversal attacks, where a malicious actor could otherwise access or manipulate files outside of the intended directory. Checks for path traversal attempts.
 //
 // Parameters:
-//   - path: string. The path to check.
+//   - None.
 //
 // Returns:
-//   - error: An error if the path is insecure.
+//   - None.
 //
-// IsSecurePath is a variable to allow mocking in tests.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var IsSecurePath = func(path string) error {
 	// ⚡ BOLT: Fast path to avoid expensive string splitting for safe paths.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -97,10 +99,19 @@ var IsSecurePath = func(path string) error {
 	return nil
 }
 
-// IsSecureRelativePath checks if a given file path is secure, relative, and does not contain any
-// path traversal sequences. It strictly disallows absolute paths and drive letters.
+// Summary: IsSecureRelativePath checks if a given file path is secure, relative, and does not contain any path traversal sequences. It strictly disallows absolute paths and drive letters. Checks if a path is secure and relative.
 //
-// Summary: Checks if a path is secure and relative.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var IsSecureRelativePath = func(path string) error {
 	// 1. Basic security check (no ..)
 	if err := IsSecurePath(path); err != nil {
@@ -138,25 +149,36 @@ var (
 	allowedPaths []string
 )
 
-// SetAllowedPaths sets the list of allowed paths for file operations.
-//
-// Summary: Sets the global allowed paths list.
+// Summary: SetAllowedPaths sets the list of allowed paths for file operations. Sets the global allowed paths list.
 //
 // Parameters:
-//   - paths: []string. The list of allowed paths.
+//   - paths ([]string): The paths parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func SetAllowedPaths(paths []string) {
 	allowedPaths = paths
 }
 
-// IsSensitivePath checks if a given file path points to a sensitive file or directory.
-// It blocks access to:
-// - .env files and variants
-// - .git directory
-// - Server configuration files (config.yaml, config.json)
-// - Database files (mcpany.db)
-// - Private keys (id_rsa, id_dsa, *.pem, *.key)
+// Summary: IsSensitivePath checks if a given file path points to a sensitive file or directory. It blocks access to: - .env files and variants - .git directory - Server configuration files (config.yaml, config.json) - Database files (mcpany.db) - Private keys (id_rsa, id_dsa, *.pem, *.key) Checks for sensitive file patterns.
 //
-// Summary: Checks for sensitive file patterns.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var IsSensitivePath = func(path string) error {
 	base := filepath.Base(path)
 	baseLower := strings.ToLower(base)
@@ -199,11 +221,19 @@ var IsSensitivePath = func(path string) error {
 	return nil
 }
 
-// IsAllowedPath checks if a given file path is allowed (inside CWD or AllowedPaths)
-// and does not contain any path traversal sequences ("../").
-// It is a variable to allow mocking in tests.
+// Summary: IsAllowedPath checks if a given file path is allowed (inside CWD or AllowedPaths) and does not contain any path traversal sequences ("../"). It is a variable to allow mocking in tests. Checks if a path is within allowed directories.
 //
-// Summary: Checks if a path is within allowed directories.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var IsAllowedPath = func(path string) error {
 	// 1. Basic security check (no .. in the path string itself)
 	if err := IsSecurePath(path); err != nil {
@@ -317,18 +347,19 @@ var allowedOpaqueSchemes = map[string]bool{
 	"file":        true,
 }
 
-// IsValidURL checks if a given string is a valid URL. This function performs
-// several checks, including for length, whitespace, the presence of a scheme,
-// and host, considering special cases for schemes like "unix" or "mailto" that
-// do not require a host.
-//
-// Summary: Validates a URL string.
+// Summary: IsValidURL checks if a given string is a valid URL. This function performs several checks, including for length, whitespace, the presence of a scheme, and host, considering special cases for schemes like "unix" or "mailto" that do not require a host. Validates a URL string.
 //
 // Parameters:
-//   - s: string. The URL string.
+//   - s (string): The s parameter.
 //
 // Returns:
-//   - bool: True if valid.
+//   - bool: The resulting bool.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func IsValidURL(s string) bool {
 	if len(s) > 2048 || strings.TrimSpace(s) != s {
 		return false
@@ -373,17 +404,19 @@ func IsValidURL(s string) bool {
 	return true
 }
 
-// ValidateHTTPServiceDefinition checks the validity of an HttpCallDefinition.
-// It ensures that the endpoint path is specified and correctly formatted, and
-// that a valid HTTP method is set.
-//
-// Summary: Validates an HTTP service definition.
+// Summary: ValidateHTTPServiceDefinition checks the validity of an HttpCallDefinition. It ensures that the endpoint path is specified and correctly formatted, and that a valid HTTP method is set. Validates an HTTP service definition.
 //
 // Parameters:
-//   - def: *configv1.HttpCallDefinition. The definition to validate.
+//   - def (*configv1.HttpCallDefinition): The def parameter.
 //
 // Returns:
-//   - error: An error if validation fails.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
 func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 	if def == nil {
 		return fmt.Errorf("http call definition cannot be nil")
@@ -407,9 +440,19 @@ func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 	return nil
 }
 
-// FileExists checks if a file exists at the given path.
+// Summary: FileExists checks if a file exists at the given path. Checks file existence.
 //
-// Summary: Checks file existence.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var FileExists = func(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return err

@@ -9,24 +9,38 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Manager orchestrates resilience features like circuit breakers, retries, and timeouts.
+// Summary: Manager orchestrates resilience features like circuit breakers, retries, and timeouts. Central manager for applying resilience patterns to operations.
 //
-// Summary: Central manager for applying resilience patterns to operations.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Manager struct {
 	circuitBreaker *CircuitBreaker
 	retry          *Retry
 	timeout        *Timeout
 }
 
-// NewManager creates a new Manager with the given resilience configuration.
-//
-// Summary: Initializes a new Resilience Manager.
+// Summary: NewManager creates a new Manager with the given resilience configuration. Initializes a new Resilience Manager.
 //
 // Parameters:
-//   - config: *configv1.ResilienceConfig. The resilience configuration.
+//   - config (*configv1.ResilienceConfig): The config parameter.
 //
 // Returns:
-//   - *Manager: The initialized manager, or nil if no resilience features are enabled.
+//   - *Manager: The resulting *Manager.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewManager(config *configv1.ResilienceConfig) *Manager {
 	if config == nil {
 		return nil
@@ -58,21 +72,20 @@ func NewManager(config *configv1.ResilienceConfig) *Manager {
 	}
 }
 
-// Execute wraps the given function with resilience features.
-//
-// Summary: Executes the work function with configured resilience policies (timeout, retry, circuit breaker).
+// Summary: Execute wraps the given function with resilience features. Executes the work function with configured resilience policies (timeout, retry, circuit breaker).
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - work: func(context.Context) error. The operation to execute.
+//   - ctx (context.Context): The ctx parameter.
+//   - work (func(context.Context) error): The work parameter.
 //
 // Returns:
-//   - error: An error if the operation fails after all resilience attempts.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - Applies timeout context.
-//   - Retries operation on failure.
-//   - Checks and updates circuit breaker state.
+//   - None.
 func (m *Manager) Execute(ctx context.Context, work func(context.Context) error) error {
 	if m == nil {
 		return work(ctx)

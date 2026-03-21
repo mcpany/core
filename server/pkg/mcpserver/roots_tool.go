@@ -15,12 +15,19 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// RootsTool implements the Tool interface for listing roots.
+// Summary: RootsTool implements the Tool interface for listing roots. It provides a built-in tool ("mcp:list_roots") that allows the server to query the client for available filesystem roots. Represents a RootsTool.
 //
-// It provides a built-in tool ("mcp:list_roots") that allows the server to query the client
-// for available filesystem roots.
+// Parameters:
+//   - None.
 //
-// Summary: Represents a RootsTool.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type RootsTool struct {
 	tool    *v1.Tool
 	mcpTool *mcp.Tool
