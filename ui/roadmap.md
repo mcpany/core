@@ -626,3 +626,9 @@
 - [ ] **[P0] Attention-Locking Visualizer**: (2026-06-22) Dashboard for monitoring mission-root "pinning" status and attention-density alerts.
 - [ ] **[P0] Headless Handoff Continuity Tracker**: (2026-06-22) Visual hierarchical tracer for signed intent transfers across process boundaries.
 - [ ] **[P1] Multi-Modal Attention Probe Alert**: (2026-06-22) Security UI for inspecting blocked attention-eviction attempts in non-textual reasoning traces.
+
+### Upcoming: [2026-06-23]
+- [ ] **[P0] Attention Masking Interface**: UI for configuring and monitoring ADG v2 hardware-attested attention masks. (Added: 2026-06-23)
+- [ ] **[P0] Mission-Root Lineage Visualizer**: Enhanced visualizer for RMRA-compliant headless mission chains. (Added: 2026-06-23)
+- [ ] **[P0] Cross-Channel Sanitization Log**: Security dashboard for reviewing AIS-redacted coordination messages. (Added: 2026-06-23)
+- [ ] **[P0] Behavioral Anchoring Monitor**: Real-time visualization of stylometric consistency scores vs. mission-root manifest. (Added: 2026-06-23)
