@@ -54,6 +54,7 @@ jobs:
       - run:
           name: Run Lint
           command: |
+            npm install -g @bazel/bazelisk
             bazelisk test //ui:lint //ui:typecheck
             bazelisk run //:lint
       - save_cache:
