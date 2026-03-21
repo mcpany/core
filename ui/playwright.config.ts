@@ -13,7 +13,7 @@ const NEXT_DEV_COMMAND = process.env.NEXT_DEV_COMMAND || `npx next dev -p ${PORT
 const TEST_MATCH = process.env.PLAYWRIGHT_TEST_MATCH;
 
 export default defineConfig({
-  testDir: './tests',
+  testDir: '.',
   testMatch: TEST_MATCH ? new RegExp(TEST_MATCH) : ['**/*.spec.ts'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
