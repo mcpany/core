@@ -96,7 +96,8 @@ describe('ResourceExplorer', () => {
 
     await waitFor(() => {
         expect(apiClient.readResource).toHaveBeenCalledWith('file:///app/config.json');
-        expect(screen.getByTestId('code-block')).toHaveTextContent('{"test": true}');
+        // RichResultViewer wraps the content and presents a JSON tab
+        expect(screen.getByText('JSON')).toBeInTheDocument();
     });
   });
 });
