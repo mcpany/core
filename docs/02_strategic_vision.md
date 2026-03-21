@@ -557,6 +557,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Immutable State Trails**: Moving from "Shared State" to "Verifiable Lineage." Every change to the Blackboard (Shared KV Store) must be accompanied by a cryptographic proof of the agent's current "Intent Scope" and its parentage, creating an audit trail that resists "State Injection."
 - **Active UACO Bid Validation**: Instead of just facilitating bids, MCP Any will perform "Pre-Flight Profiling" on agents submitting UACO bids. If an agent's historical behavior or current "Skill Profile" doesn't align with the task card, the bid will be automatically quarantined.
 
+## Strategic Evolution: [2026-03-20]
+### Focus: Hardware-Attested Mission Manifests (HAMM) & Asynchronous Mailbox Sharding (AMS)
+**Context**: The emergence of "Process-Based Agency" in Claude Code and the consolidation of the OpenClaw "Gateway" architecture reveal that the "Universal Agent Bus" must now move from simple connectivity to **Active Mission Governance**. As swarms become more parallel and autonomous, the security frontier is no longer just the "tool," but the **Mission Manifest** that defines the agent's authorized capabilities before it even begins to reason. Simultaneously, the "Mailbox Lock" bottleneck in high-density teams confirms that teammate coordination must move from synchronous locks to **Asynchronous Mailbox Sharding**.
+**Strategic Pivot**:
+- **Hardware-Attested Mission Manifests (HAMM)**: MCP Any will evolve to act as the authoritative "Manifest Enforcer." We will implement HAMM, allowing users to define a TPM-signed, immutable list of authorized tools and capabilities for a specific mission branch. Subagents will be cryptographically restricted to this manifest, neutralizing "Privilege Escalation" through autonomous discovery.
+- **Asynchronous Mailbox Sharding (AMS)**: To resolve coordination bottlenecks in horizontal swarms (e.g., Claude Code Agent Teams), we are introducing AMS. This service will host granular, task-bound mailbox shards that allow parallel teammates to synchronize state without global coordination locks, ensuring non-blocking performance as swarms scale.
+- **Mission-Root Budget Enforcement**: Leveraging Claude Code's "effort" and "maxTurns" patterns, MCP Any will implement native support for "Mission Budgets." We will provide the infrastructure to enforce hardware-attested reasoning and token limits at the transport layer, ensuring that sub-missions cannot exceed parent-imposed constraints.
+- **A2A Multi-Channel Inbox Bridge**: Supporting the OpenClaw signature feature, MCP Any will act as a "Unified Inbox Hub." We will provide the secure coordination and translation layer for agents to handle messages from 20+ platforms simultaneously, ensuring context is preserved across disparate platform sessions.
+
 ---
 
 ## Strategic Evolution: [2026-03-21]
@@ -1044,3 +1053,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Multi-Modal Behavioral Attestation (MMBA)**: Supporting the sovereignty of the teammate mesh, we are introducing MMBA. This anchors the agent's stylometric profile to its multi-modal trace history (SVG/Audio), providing a higher-dimensional identity signature that is resilient to reasoning-path shadowing.
 - **Reasoning-Aware Garbage Collection (R-GC)**: To neutralize "Speculative Overload," MCP Any will implement R-GC for the Speculative Branching Guard. This service automatically purges speculative context fragments that exhibit high reasoning entropy but low mission utility, preventing cognitive stall in deep swarms.
 - **Temporal Shard Jitter (TSJ) Injection**: To counter CVE-2026-62001, we are upgrading the ESB to include TSJ Injection. This layer will inject hardware-attested timing jitter into entangled state synchronization for non-primary mission-root requests, ensuring absolute temporal isolation in sharded meshes.
+
+---
+
+## Strategic Evolution: [2026-06-18]
+### Focus: Autonomous Mission Resumption & Semantic Entanglement Sanitization
+**Context**: The discovery of **Logic-Grafting** (CVE-2026-71002) and the emergence of **Long-Haul Identity Decay** in swarms prove that static mission manifests and session-bound tokens are no longer sufficient. As agents run for days, infrastructure must provide **Autonomous Mission Resumption** with hardware-locked re-attestation. Simultaneously, the rise of "Monologue Smearing" in entangled meshes demands **Semantic Entanglement Sanitization** to protect subagent reasoning privacy.
+**Strategic Pivot**:
+- **Autonomous Mission Resumption (AMRA) Hub**: MCP Any will evolve to act as the authoritative "Resumption Hub." We will implement AMRA, providing hardware-locked, monotonic re-attestation for long-running missions, ensuring that mission-root sovereignty is maintained even after the initial session tokens decay.
+- **Semantic Entanglement Sanitizer (SES)**: To neutralize "Monologue Smearing," we are introducing the SES. This layer will perform real-time, high-entropy semantic analysis of entangled state shards, ensuring that private reasoning monologues are redacted before they are synchronized to the shared teammate mesh.
+- **Logic-Grafting Interceptor (LGI)**: Supporting the stability of horizontal meshes, MCP Any will implement the LGI. This service will perform fragment-level "Semantic Hash-Chaining" for inter-agent coordination, detecting and blocking unauthorized reasoning paths appended to shared shards before ingestion.
+- **Hardware-Locked Monotonic Re-Attestation**: We are mandating the use of hardware-bound (TPM) monotonic counters for all mission-resumption handshakes, providing a cryptographically signed proof of mission continuity that survives session-token decay in deep, multi-day swarms.

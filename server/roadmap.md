@@ -124,6 +124,12 @@
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral profiling of un-attested configuration hooks. (Added: 2026-03-24)
 *   **[P1] BSH State Differential Sync**: Optimized binary state transfer that only sends deltas between agent handoffs. (Added: 2026-03-24)
 
+#### Upcoming (2026-03-20 Evolution)
+*   **[P0] Hardware-Attested Mission Manifest (HAMM) Provider**: Authoritative service for enforcing TPM-signed capability manifests. (Added: 2026-03-20)
+*   **[P0] Asynchronous Mailbox Sharding (AMS) Middleware**: High-density teammate coordination service with granular mailbox shards. (Added: 2026-03-20)
+*   **[P0] Mission-Root Budget Enforcer**: Resource management for reasoning effort and token limits based on process-bound agency. (Added: 2026-03-20)
+*   **[P1] A2A Multi-Channel Inbox Bridge**: Secure coordination and translation for handling 20+ messaging platforms simultaneously. (Added: 2026-03-20)
+
 #### Upcoming (2026-03-25 Evolution)
 *   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary context handoffs. (Added: 2026-03-25)
 *   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
@@ -622,10 +628,10 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Identity Fragment Attestation (IFA)**: Security extension mandating hardware-attested, session-bound identity tokens for mailbox requests. (Added: 2026-05-25)
 
 #### Upcoming (2026-05-26 Evolution)
-*   **[P0] Foundation Governance Sync**: Implementation of neutral lifecycle hooks for OpenClaw Foundation compliance. (Added: 2026-05-26)
-*   **[P0] Non-Blocking AMS Core**: Kernel-level lock-free buffers for high-density horizontal teammate coordination. (Added: 2026-05-26)
-*   **[P0] Intent-Scoped ARE Validator**: Cryptographic pinning of reasoning budgets to mission-root intent branches. (Added: 2026-05-26)
-*   **[P0] Hardware-Attested Monologue Vault**: Encrypted SQLite sidecar for subagent reasoning monologues with TPM-bound keys. (Added: 2026-05-26)
+*   **[P0] LOWA HMAC Challenge-Response**: Implementation of cryptographically bound handshakes for local WebSocket listeners to neutralize CSWSH. (Added: 2026-05-26)
+*   **[P0] T2T Mailbox Sharding Middleware**: Performance optimization for horizontal teammate meshes, supporting 5+ concurrent agents. (Added: 2026-05-26)
+*   **[P0] Full-Mesh Discovery Auth (v2)**: Advanced "Auth-before-Discovery" protocol requiring mission-root attestation before revealing capabilities. (Added: 2026-05-26)
+*   **[P1] A2A Capability Masking**: Implementation of schema-masking for agent capability cards during the initial handshake. (Added: 2026-05-26)
 
 #### Upcoming (2026-05-27 Evolution)
 *   **[P0] SMI Relay Provider**: Implementation of Sovereign Mesh Identity standard for cross-cloud agent identity persistence. (Added: 2026-05-27)
@@ -753,3 +759,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+### Upcoming: [2026-06-18]
+- **Autonomous Mission Resumption (AMRA) Hub**: (P0) Authoritative resumption service with hardware-locked re-attestation (Added: 2026-06-18).
+- **Semantic Entanglement Sanitizer (SES)**: (P0) High-entropy semantic analyzer for entangled state shards (Added: 2026-06-18).
+- **Logic-Grafting Interceptor (LGI)**: (P0) Advanced security extension for the ARI Hub to counter CVE-2026-71002 (Added: 2026-06-18).
+- **Hardware-Locked Monotonic Re-Attestation Provider**: (P0) Authoritative security service mandating TPM-bound counters for mission continuity (Added: 2026-06-18).

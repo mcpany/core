@@ -6,6 +6,7 @@
 
 
 import React, { useState, useEffect, useMemo } from "react";
+import { usePolling } from "@/hooks/use-polling";
 import {
     Area,
     AreaChart,
@@ -72,16 +73,14 @@ export function AnalyticsDashboard() {
     const [isMounted, setIsMounted] = useState(false);
     const tokenCacheRef = React.useRef<Record<string, number>>({});
 
-    useEffect(() => {
-        setIsMounted(true);
-        const fetchDashboardData = async () => {
-            try {
-                const [traffic, topTools, toolsResponse, toolUsageStats] = await Promise.all([
-                    apiClient.getDashboardTraffic(),
-                    apiClient.getTopTools(),
-                    apiClient.listTools().catch(() => ({ tools: [] })),
-                    apiClient.getToolUsage().catch(() => [])
-                ]);
+    const fetchDashboardData = React.useCallback(async () => {
+        try {
+            const [traffic, topTools, toolsResponse, toolUsageStats] = await Promise.all([
+                apiClient.getDashboardTraffic(),
+                apiClient.getTopTools(),
+                apiClient.listTools().catch(() => ({ tools: [] })),
+                apiClient.getToolUsage().catch(() => [])
+            ]);
                 setTrafficData(traffic || []);
 
                 // Format tool usage data
@@ -138,15 +137,20 @@ export function AnalyticsDashboard() {
                 // Top heaviest tools
                 setHeaviestTools(toolTokens.sort((a, b) => b.tokens - a.tokens).slice(0, 10));
 
-            } catch (error) {
-                console.error("Failed to fetch dashboard data", error);
-            }
-        };
-
-        fetchDashboardData();
-        const interval = setInterval(fetchDashboardData, 30000);
-        return () => clearInterval(interval);
+        } catch (error) {
+            console.error("Failed to fetch dashboard data", error);
+        }
     }, [timeRange]);
+
+    useEffect(() => {
+        setIsMounted(true);
+        fetchDashboardData();
+    }, [fetchDashboardData]);
+
+    // ⚡ BOLT: [Render Optimization] Use usePolling hook instead of raw setInterval
+    // Randomized Selection from Top 5 High-Impact Targets (Network Category)
+    // Avoids network waste when tab is backgrounded
+    usePolling(fetchDashboardData, 30000);
 
     const { totalRequests, avgLatency, errorCount, errorRate, avgRps } = useMemo(() => {
         // ⚡ BOLT: Memoized traffic stats calculation to prevent re-render waste.

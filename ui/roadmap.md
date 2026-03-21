@@ -198,6 +198,12 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-03-20 Evolution)
+- [ ] **[P0] Mission Manifest Editor**: (2026-03-20) UI for defining and TPM-signing Hardware-Attested Mission Manifests (HAMM).
+- [ ] **[P0] Mailbox Shard Monitor**: (2026-03-20) Real-time visualization of task-bound mailbox shards and coordination throughput.
+- [ ] **[P0] Mission Budget Dashboard**: (2026-03-20) Visual tracker for reasoning effort, token limits, and `maxTurns` consumption per mission.
+- [ ] **[P1] Multi-Channel Inbox Hub**: (2026-03-20) Unified UI for managing and monitoring agent messages across 20+ platform channels.
+
 #### Upcoming (2026-03-17 Evolution)
 - [ ] **[P0] Local Security Violation Monitor**: (2026-03-17) Real-time visualization of blocked loopback requests and origin violations. (Added: 2026-03-17)
 - [ ] **[P0] Origin-Bound Session Manager**: (2026-03-17) UI for managing and reviewing session-to-origin bindings. (Added: 2026-03-17)
@@ -592,8 +598,8 @@
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
 
-#### Upcoming (2026-05-26 Evolution)
-- [ ] **[P0] LOWA Challenge Visualizer**: Real-time monitor of HMAC-based pairing requests and CSWSH violation attempts. (Added: 2026-05-26)
-- [ ] **[P0] T2T Mailbox Mesh Map**: Interactive graph visualization of teammate-to-teammate communication shards and state alignment. (Added: 2026-05-26)
-- [ ] **[P0] A2A Capability Masking Interface**: Management console for configuring schema masks and "Auth-before-Discovery" rules. (Added: 2026-05-26)
-- [ ] **[P1] Shared Task List Real-time Diff**: Visual diff engine for synchronizing the Blackboard across multiple parallel teammates. (Added: 2026-05-26)
+### Upcoming: [2026-06-18]
+- [ ] **[P0] Mission Resumption Status Widget**: (2026-06-18) Real-time monitor for hardware-locked re-attestation events and AMRA session health.
+- [ ] **[P0] Entanglement Privacy Auditor**: (2026-06-18) Security dashboard for reviewing SES-redacted fragments and monologue smearing alerts.
+- [ ] **[P0] Logic Grafting Alert Console**: (2026-06-18) Forensic UI for inspecting the ARI Hub "Reasoning Mainline" and blocked branch proposals.
+- [ ] **[P0] Hardware Monotonic Counter Monitor**: (2026-06-18) Status widget for visualizing mission-root continuity and TPM-attestation provenance.
