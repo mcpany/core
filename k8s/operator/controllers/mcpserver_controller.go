@@ -118,17 +118,6 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	}
 
 	// 4. Update the MCPServer status with the pod names
-	// List the pods for this mcpServer's deployment
-	// podList := &corev1.PodList{}
-	// listOpts := []client.ListOption{
-	// 	client.InNamespace(mcpServer.Namespace),
-	// 	client.MatchingLabels(labelsForMCPServer(mcpServer.Name)),
-	// }
-	// if err = r.List(ctx, podList, listOpts...); err != nil {
-	// 	return ctrl.Result{}, err
-	// }
-	// podNames := getPodNames(podList.Items)
-
 	// Update status.Status if needed (simple check)
 	if mcpServer.Status.AvailableReplicas != found.Status.AvailableReplicas {
 		mcpServer.Status.AvailableReplicas = found.Status.AvailableReplicas

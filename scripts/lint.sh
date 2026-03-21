@@ -43,8 +43,6 @@ find_tool() {
 echo "==> Running Buildifier..."
 BUILDIFIER_BIN="$(find_tool buildifier)"
 if [[ -n "$BUILDIFIER_BIN" && -x "$BUILDIFIER_BIN" ]]; then
-    # Format first, then check
-    "$BUILDIFIER_BIN" $(find . -not -path "./build/*" -not -path "./bazel-*" -not -path "*/node_modules/*" \( -name "BUILD" -o -name "BUILD.bazel" -o -name "WORKSPACE" -o -name "*.bzl" \) -type f)
     "$BUILDIFIER_BIN" -mode=check $(find . -not -path "./build/*" -not -path "./bazel-*" -not -path "*/node_modules/*" \( -name "BUILD" -o -name "BUILD.bazel" -o -name "WORKSPACE" -o -name "*.bzl" \) -type f)
     echo "    Buildifier OK."
 else

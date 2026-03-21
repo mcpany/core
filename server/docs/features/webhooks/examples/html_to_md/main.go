@@ -49,7 +49,7 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to read body", http.StatusInternalServerError)
 		return
 	}
-	defer r.Body.Close()
+	defer func() { _ = r.Body.Close() }()
 
 	var req WebhookRequest
 	if err := json.Unmarshal(body, &req); err != nil {
@@ -62,39 +62,28 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 
 	converter := md.NewConverter("", true, nil)
 
-	// We expect result to be a map or string potentially?
-	// The prompt says "gemini cli to grab a webpage, (upstream returns html), then webhook converts to markdown".
-	// Usually the result from an HTTP tool is the body (string) or JSON.
-	// If it's raw HTML string:
 	var markdown string
 	var processingErr error
 
-	// Handle different result types
 	switch v := req.Result.(type) {
 	case string:
-		// Direct HTML string
 		markdown, processingErr = converter.ConvertString(v)
 	case map[string]interface{}:
-		// Maybe inside a "content" field? Or "raw"?
 		if val, ok := v["raw"]; ok {
 			if s, ok := val.(string); ok {
 				markdown, processingErr = converter.ConvertString(s)
 			}
 		}
-		// If generic JSON, we might not want to convert.
 	}
 
 	if processingErr != nil {
 		log.Printf("Conversion failed: %v", processingErr)
-		// Return original if failure? Or empty?
-		// We'll just return original (no replacement)
 		w.WriteHeader(StatusOK)
 		_, _ = w.Write([]byte("{}"))
 		return
 	}
 
 	if markdown == "" {
-		// Nothing converted or empty
 		w.WriteHeader(StatusOK)
 		_, _ = w.Write([]byte("{}"))
 		return
@@ -109,7 +98,6 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 
 	respBytes, _ := json.Marshal(respData)
 
-	// CloudEvents Headers
 	w.Header().Set("Ce-Id", uuid.New().String())
 	w.Header().Set("Ce-Type", "com.mcpany.webhook.response")
 	w.Header().Set("Ce-Source", "/webhook/convert")

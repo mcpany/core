@@ -40,7 +40,7 @@ type ToolReconciler struct {
 //   - error: Any error that occurred.
 //
 // Errors:
-//   - None.
+//   - Returns error if the Tool cannot be read from the cluster.
 //
 // Side Effects:
 //   - Reads and updates Tool resources in the cluster.

@@ -64,7 +64,7 @@ func validateHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to read body", http.StatusInternalServerError)
 		return
 	}
-	defer r.Body.Close()
+	defer func() { _ = r.Body.Close() }()
 
 	var req WebhookRequest
 	if err := json.Unmarshal(body, &req); err != nil {
@@ -75,16 +75,11 @@ func validateHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Received request for tool: %s, inputs: %v", req.ToolName, req.Inputs)
 
-	// Validation Logic
 	allowed := true
 	message := "Allowed"
 
-	// Iterate over inputs to check for "rm"
-	// In a real scenario, you might check specific fields like "command"
 	for k, v := range req.Inputs {
 		if strVal, ok := v.(string); ok {
-			// Check if command starts with "rm " or is exactly "rm"
-			// Also checking for " rm " in case of chained commands
 			cleaned := strings.TrimSpace(strVal)
 			if strings.HasPrefix(cleaned, "rm ") ||
 				cleaned == "rm" ||
@@ -106,7 +101,6 @@ func validateHandler(w http.ResponseWriter, r *http.Request) {
 
 	respBytes, _ := json.Marshal(respData)
 
-	// Set CloudEvents Response Headers
 	w.Header().Set("Ce-Id", uuid.New().String())
 	w.Header().Set("Ce-Type", "com.mcpany.webhook.response")
 	w.Header().Set("Ce-Source", "/webhook/validate")
