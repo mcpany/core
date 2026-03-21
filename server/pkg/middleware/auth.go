@@ -80,20 +80,11 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 			// Special handling for resources/read
 			if method == consts.MethodResourcesRead {
 				if r, ok := req.(*mcp.ReadResourceRequest); ok && r != nil && r.Params != nil {
+					// Resource URI format is typically serviceID://...
 					if before, _, found := strings.Cut(r.Params.URI, "://"); found {
 						serviceID = before
 					}
 				} else if r, ok := req.(mcp.ReadResourceRequest); ok && r.Params.URI != "" {
-					if before, _, found := strings.Cut(r.Params.URI, "://"); found {
-						serviceID = before
-					}
-				}
-			}
-
-			// Special handling for resources/read
-			if method == consts.MethodResourcesRead {
-				if r, ok := req.(*mcp.ReadResourceRequest); ok && r != nil && r.Params != nil {
-					// Resource URI format is typically serviceID://...
 					if before, _, found := strings.Cut(r.Params.URI, "://"); found {
 						serviceID = before
 					}
