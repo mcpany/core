@@ -1135,7 +1135,7 @@
 - **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
 - **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
 
-## Evolution: 2026-05-30 Update (Execution Sovereignty)
+## Feature Inventory Update: 2026-05-30 (Execution Sovereignty Expansion)
 
 ### Proposed Additions (2026-05-30 Expansion)
 
@@ -1145,4 +1145,5 @@
   wrapper using ephemeral namespaces (runc/Firecracker) for tool execution.
 - **Mission Anchor Host (MAH)**: (P0) Orchestration service for pinned,
   team-wide context anchors to reduce swarm coordination latency.
-- **Zero-Knowledge (ZK) Capability Masker**: (P1) Advanced discovery component.
+- **Zero-Knowledge (ZK) Capability Masker**: (P1) Advanced discovery component
+  facilitating capability proving without metadata exposure.

@@ -485,7 +485,7 @@
 - [ ] **[P0] Teammate Handshake Monitor**: Real-time status indicator for ATH identity exchange in horizontal swarms. (Added: 2026-05-29)
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
 
-#### Upcoming (2026-05-30 Infrastructure Evolution Expansion)
+#### Upcoming (2026-05-30 Infra Evolution)
 
 - [ ] **[P0] Mission Anchor Visualization**: Real-time display of pinned context
   fragments and their cryptographic integrity status. (Added: 2026-05-30)

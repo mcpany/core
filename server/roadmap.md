@@ -645,11 +645,13 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Atomic Teammate Handshake (ATH) Gateway**: Mandatory identity exchange before teammate task delegation in horizontal teams. (Added: 2026-05-29)
 *   **[P0] Mesh-Bound Context Sovereignty Bridge**: Semantic fragment analysis across teammate boundaries for horizontal team stability. (Added: 2026-05-29)
 
-#### Upcoming (2026-05-30 Infrastructure Evolution Expansion)
+#### Upcoming (2026-05-30 Infra Evolution)
 
 * **[P0] Intent Hierarchy Enforcer (IHE)**: Mandatory priority-based state
   validation for the Shared Blackboard. (Added: 2026-05-30)
 * **[P0] Kernel-Namespace (KNS) Command Runner**: High-performance isolation
   wrapper (runc/Firecracker) for tool execution. (Added: 2026-05-30)
-* **[P0] Mission Anchor Host (MAH)**: Orchestration service for pinned anchors.
-* **[P1] Zero-Knowledge Capability Masker**: Advanced discovery component.
+* **[P0] Mission Anchor Host (MAH)**: Orchestration service for pinned,
+  team-wide context anchors. (Added: 2026-05-30)
+* **[P1] Zero-Knowledge Capability Masker**: Advanced discovery component for
+  metadata-less capability proving. (Added: 2026-05-30)

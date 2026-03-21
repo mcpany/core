@@ -845,7 +845,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Atomic Teammate Handshake (ATH)**: Supporting the SMI standard, MCP Any will implement the ATH. This ensures that teammates (Claude, OpenClaw, AutoGen) must complete a hardware-attested identity exchange before they can "claim" or "delegate" tasks from the shared mailbox.
 - **Mesh-Bound Context Sovereignty**: To counter "Context-Dump" exfiltration in deep teams, we are evolving the DCG middleware to support Mesh-Bound Sovereignty. This layer will perform semantic analysis of state fragments as they cross teammate boundaries, ensuring they remain anchored to the mission-root intent.
 
-## Strategic Evolution: 2026-05-30 (Intent Hierarchy)
+## Strategic Evolution: 2026-05-30 (Execution Sovereignty)
 
 ### Focus: Intent Hierarchy Enforcement & Isolated Execution Contexts
 
@@ -854,10 +854,14 @@ micro-VM isolation (IEC) signal a transition to **Active Execution
 Sovereignty**.
 
 **Strategic Pivot**:
-- **Enforced Intent Hierarchies (EIH)**: MCP Any will evolve the Blackboard into
-  an Intent-Hierarchical store. State fragments will carry a "Lineage Priority,"
-  ensuring that Mission Root instructions cannot be shadowed.
+
+- **Enforced Intent Hierarchies (EIH)**: MCP Any will evolve the Blackboard
+  into an Intent-Hierarchical store. State fragments will carry a "Lineage
+  Priority," ensuring that Mission Root instructions cannot be shadowed or
+  overridden by subagent inputs.
 - **Kernel-Namespace Tool Isolation (KNTI)**: To neutralize RCE vulnerabilities
-  we are transitioning our command runner to utilize ephemeral kernel-namespaces.
-- **A2A v1.0 Trusted Discovery**: We are adopting the official GA release of the
-  A2A Trust Protocol.
+  and meet the IEC standard, we are transitioning our command runner to utilize
+  ephemeral kernel-namespaces (runc/Firecracker).
+- **A2A v1.0 Trusted Discovery**: We are adopting the official GA release of
+  the A2A Trust Protocol. This enables "Zero-Knowledge Discovery," allowing
+  agents to advertise capabilities within the mesh without revealing metadata.
