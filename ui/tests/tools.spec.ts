@@ -98,8 +98,9 @@ test.describe('Tool Exploration', () => {
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Change grouping to "service"
-        // Target the Radix UI Select trigger by clicking its placeholder text directly.
-        await page.getByText('Group By', { exact: true }).click();
+        // Target the Radix UI Select trigger by clicking its current active value.
+        // Since `groupBy` initializes to "none", it displays "No Grouping", not the placeholder.
+        await page.getByText('No Grouping', { exact: true }).click();
         await page.getByRole('option', { name: 'Group by Service' }).click();
 
         // Verify that the Payment Gateway service grouping header is visible
