@@ -1379,3 +1379,13 @@
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **ACR Hub Controller**: (P0) Authoritative coordination service for the OpenClaw ACR Protocol, facilitating autonomous capability revocation and recursive lock-down.
+- **Recursive Depth-Limit Enforcer (RDLE)**: (P0) Security middleware that recursively tracks and enforces hardware-attested handoff limits across deep swarms.
+
+### Priority Shifts
+- **Active Intent Alignment (AIA) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory ACR-compliant revocation signals.
+- **Recursive Accountability Tracker (RAT)**: (Re-affirmed P0) Designated as the primary infrastructure for the new RDLE depth-limit enforcement.
