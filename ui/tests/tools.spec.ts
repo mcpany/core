@@ -98,15 +98,21 @@ test.describe('Tool Exploration', () => {
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Change grouping to "service"
-        // Use keyboard interaction to open and select from the Shadcn/Radix Select.
-        // This is often the most robust way to interact with custom accessible dropdowns
-        // that rely on focus management and portals, avoiding click actionability timeouts.
+        // Try multiple robust fallback strategies to interact with the Radix Select dropdown
+        // to bypass flakiness due to hydration, overlays, or headless pointer events.
         const groupByTrigger = page.locator('button[role="combobox"]').first();
-        await groupByTrigger.focus();
-        await page.keyboard.press('Enter'); // Open dropdown
-        await page.waitForTimeout(200);     // Brief pause for portal/animation
-        await page.keyboard.press('ArrowDown'); // Move from 'none' to 'service'
-        await page.keyboard.press('Enter'); // Select it
+        await groupByTrigger.waitFor({ state: 'attached', timeout: 10000 });
+
+        try {
+            await groupByTrigger.click({ force: true, timeout: 5000 });
+        } catch (e) {
+            await groupByTrigger.focus();
+            await page.keyboard.press('Enter');
+        }
+
+        const option = page.getByRole('option', { name: 'Group by Service' });
+        await option.waitFor({ state: 'attached', timeout: 5000 });
+        await option.click({ force: true });
 
         // Verify that the Payment Gateway service grouping header is visible
         // We use a regex because the AccordionTrigger button's accessible name includes the tool count badge (e.g. "Payment Gateway 1")
