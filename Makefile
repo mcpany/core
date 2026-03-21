@@ -6,7 +6,7 @@
 prepare:
 
 lint:
-	cd ui && npm ci && npm run lint
+	cd ui && npm install && npm run lint
 	npx @bazel/bazelisk run //:lint
 
 test:
