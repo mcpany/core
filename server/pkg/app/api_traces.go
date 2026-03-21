@@ -216,20 +216,6 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 			}
 		}
 
-		// Send seeded traces
-		a.seededTracesMu.RLock()
-		for _, t := range a.seededTraces {
-			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-				logging.GetLogger().Error("failed to set write deadline", "error", err)
-				break
-			}
-			if err := conn.WriteJSON(t); err != nil {
-				logging.GetLogger().Error("failed to write seeded trace to websocket", "error", err)
-				break
-			}
-		}
-		a.seededTracesMu.RUnlock()
-
 		pingTicker := time.NewTicker(5 * time.Second)
 		defer pingTicker.Stop()
 
