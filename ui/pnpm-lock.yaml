@@ -11,6 +11,9 @@ importers:
       '@babel/runtime':
         specifier: ^7.28.6
         version: 7.28.6
+      '@bufbuild/protobuf':
+        specifier: ^2.10.2
+        version: 2.11.0
       '@bufbuild/protoc-gen-es':
         specifier: ^2.11.0
         version: 2.11.0(@bufbuild/protobuf@2.11.0)
@@ -450,9 +453,6 @@ importers:
         specifier: ^5.0.0
         version: 5.0.11(@types/react@18.3.28)(react@18.3.1)(use-sync-external-store@1.6.0(react@18.3.1))
     devDependencies:
-      '@bufbuild/protobuf':
-        specifier: latest
-        version: 2.11.0
       '@next/eslint-plugin-next':
         specifier: ^16.1.6
         version: 16.1.6

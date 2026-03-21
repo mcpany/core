@@ -140,7 +140,7 @@ export function AnalyticsDashboard() {
         return () => clearInterval(interval);
     }, [timeRange]);
 
-    const { totalRequests, avgLatency, errorCount, errorRate, avgRps } = useMemo(() => {
+    const { totalRequests, avgLatency, errorRate, avgRps } = useMemo(() => {
         // ⚡ BOLT: [Algorithmic Optimization] Consolidated three O(N) array reductions into a single O(N) pass to minimize iteration overhead over traffic data.
         // Randomized Selection from Top 5 High-Impact Targets
         let reqs = 0;
