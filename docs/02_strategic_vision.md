@@ -223,7 +223,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ## Strategic Evolution: [2026-05-05]
 
 ### Focus: Reasoning-Aware Memory Segmentation (RAMS)
-**Context**: OpenClaw's prototyping of "Intent-Bound Memory Isolation" and the emergence of "Recursive Context Splicing" (RCS) explo -- its reveal that shared state is the new primary attack surface. As swarms become more complex, "Memory Smearing" and "Ghost Fragment" injection demand a move from simple isolation to "Active Reasoning Segmentation."
+**Context**: OpenClaw's prototyping of "Intent-Bound Memory Isolation" and the emergence of "Recursive Context Splicing" (RCS) exploits reveal that shared state is the new primary attack surface. As swarms become more complex, "Memory Smearing" and "Ghost Fragment" injection demand a move from simple isolation to "Active Reasoning Segmentation."
 **Strategic Pivot**:
 - **Reasoning-Aware Memory Segmentation (RAMS)**: MCP Any will evolve the "Blackboard" into a RAMS-compliant architecture. We will implement "Intent-Sealed Shards" that provide cryptographically isolated memory regions for subagents, ensuring that a compromised agent can -- not "smear" or exfiltrate state from siblings.
 - **Hardware-Enclave Path Attestation (HEPA)**: We are evolving "Kernel-Bound FD Persistence" into HEPA. MCP Any will now utilize Secure Enclaves (TPM/SEP) to provide hardware-bound path validation at the point of initial file open, neutralizing the gap between path resolution and FD pinning.
@@ -272,7 +272,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ## Strategic Evolution: [2026-04-30]
 
 ### Focus: Mesh-Aware Intelligence & Kernel-Bound Persistence
-**Context**: The release of OpenClaw v2026.4.1 (Mesh-Aware Context) and the emergence of "Symlink-to-Inode Racing" (SIR) explo -- its mark a shift from linear state to "Mesh-Bound Intelligence." Security must now be kernel-resident to prevent race conditions, while state management must evolve to handle multi-swarm negotiations.
+**Context**: The release of OpenClaw v2026.4.1 (Mesh-Aware Context) and the emergence of "Symlink-to-Inode Racing" (SIR) exploits mark a shift from linear state to "Mesh-Bound Intelligence." Security must now be kernel-resident to prevent race conditions, while state management must evolve to handle multi-swarm negotiations.
 **Strategic Pivot**:
 - **Mesh-Aware Blackboard**: MCP Any will evolve the Shared KV Store into a graph-based "Intent Mesh." This allows agents to reconcile conflicting intents and share state as a cohesive cognitive graph, neutralizing "Context Fragmentation" in deep swarms.
 - **Kernel-Level Inode Pinning (KLIP)**: To counter the SIR exploit pattern, we are implementing KLIP. MCP Any will move beyond path-based validation to hardware-bound file handle persistence, ensuring that once a file is validated, its underlying Inode is pinned for the duration of the session.
@@ -285,7 +285,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Strategic Pivot**:
 - **Lifecycle-Bound Privilege (LBP)**: MCP Any will integrate with the ContextEngine lifecycle to provide "Session-Bound Capabilities." Privileges will be cryptographically tied to the active subagent or task lifecycle, ensuring that background "Squatting" is impossible.
 - **PII-Sovereign Context Scrubber**: We are introducing a mandatory sanitization layer for hybrid-cloud deployments. MCP Any will act as the authoritative "Local Scrubber," ensuring that data is de-biometricized before it is propagated to external LLM providers.
-- **Speculative Integrity Quorums**: Leveraging the Shadow-FS, we will implement "Integrity Quorums" for comm -- its. High-risk filesystem changes will require a consensus between the primary agent and an independent "Monitor Agent" before being merged to the host.
+- **Speculative Integrity Quorums**: Leveraging the Shadow-FS, we will implement "Integrity Quorums" for commits. High-risk filesystem changes will require a consensus between the primary agent and an independent "Monitor Agent" before being merged to the host.
 
 ## Strategic Evolution: [2026-04-28]
 
@@ -294,7 +294,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Strategic Pivot**:
 - **Ephemeral Privilege Escalation (EPE)**: MCP Any will move to a default "Zero-Privilege" state. High-level capabilities (e.g., sudo, SSH) will be granted as time-bound, task-specific "Leases" that expire automatically upon task completion.
 - **De-biometricization Middleware**: Integrating local scrubbers that "de-biometricize" data before it is propagated to external LLMs. This ensures that agent context remains sovereignty-aware even in hybrid cloud/local deployments.
-- **Shadow-FS Virtualization**: To mitigate the risk of rogue file ed -- its, MCP Any will implement a "Shadow-FS" overlay. Agents will operate on a virtualized filesystem, and changes will only be committed to the host after passing local integrity quorums.
+- **Shadow-FS Virtualization**: To mitigate the risk of rogue file edits, MCP Any will implement a "Shadow-FS" overlay. Agents will operate on a virtualized filesystem, and changes will only be committed to the host after passing local integrity quorums.
 
 ## Strategic Evolution: [2026-04-27]
 
@@ -577,7 +577,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ## Strategic Evolution: [2026-03-17]
 
 ### Focus: Local Zero-Trust & Behavioral Skill Attestation
-**Context**: The Oasis Security report on OpenClaw's loopback vulnerability and the "Delayed Payload" tactics in ClawHavoc skills demonstrate that the "Local Intranet" is the new frontier for AI agent explo -- its.
+**Context**: The Oasis Security report on OpenClaw's loopback vulnerability and the "Delayed Payload" tactics in ClawHavoc skills demonstrate that the "Local Intranet" is the new frontier for AI agent exploits.
 **Strategic Pivot**:
 - **Local Zero-Trust Enforcement**: MCP Any will treat all loopback traffic as potentially hostile. We are mandating rate limiting, mandatory logging, and cryptographic origin validation for all local listeners, eliminating the "Trusted Loopback" loophole.
 - **Behavioral Attestation for Skills**: Moving beyond static analysis to "Behavioral Guardrails." Skills will be subjected to isolated "Burn-In" periods where their activity is profiled against a baseline before gaining access to sensitive resources.
@@ -905,7 +905,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: The transition of OpenClaw to an independent foundation and the maturation of Claude Code's "Sandbox Persistence Proofs" mark a definitive shift toward institutionalized governance and continuous security attestation. It is no longer enough to attest at boot; we must attest throughout the entire lifecycle of the mission.
 **Strategic Pivot**:
 - **Foundation-Neutral Governance**: MCP Any will evolve its coordination layers to act as a "Governance Hub." We will implement support for the OpenClaw Foundation's emerging neutral governance protocols, ensuring that inter-agent task delegation is transparent, auditable, and framework-agnostic.
-- **Resident Integrity Monitoring (RIM)**: We are prioritizing the RIM to provide continuous, hardware-bound "Persistence Proofs." This ensures the agent's environment remains immutable from boot to termination, neutralizing explo -- its that attempt to modify the sandbox after the initial attestation.
+- **Resident Integrity Monitoring (RIM)**: We are prioritizing the RIM to provide continuous, hardware-bound "Persistence Proofs." This ensures the agent's environment remains immutable from boot to termination, neutralizing exploits that attempt to modify the sandbox after the initial attestation.
 - **Unified Persistence Broker**: Positioning MCP Any as a universal broker for sandbox integrity. We will allow agents from disparate frameworks to "lease" persistence proofs, reducing the overhead of continuous attestation in multi-agent swarms.
 
 ## Strategic Evolution: [2026-04-17]
