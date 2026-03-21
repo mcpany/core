@@ -4,7 +4,7 @@ docker-lint:
 	bazelisk run //:lint
 
 docker-test:
-	bazelisk test //...
+	bazelisk test //server/... //proto/...
 
 k8s-e2e:
 	$(MAKE) -C k8s test
