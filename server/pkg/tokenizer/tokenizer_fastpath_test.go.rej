@@ -1,0 +1,22 @@
+--- server/pkg/tokenizer/tokenizer_fastpath_test.go
++++ server/pkg/tokenizer/tokenizer_fastpath_test.go
+@@ -345,18 +345,18 @@
+
+ func TestCountTokensReflectStruct_AllKinds(t *testing.T) {
+	st := NewSimpleTokenizer()
+	visited := make(map[uintptr]bool)
+
+	type MyStruct struct {
+		StringField string
+		BoolTrue    bool
+		BoolFalse   bool
+		IntField    int
+		InterfaceF  interface{}
+-		unexported  string
++		_           string
+	}
+
+	val := reflect.ValueOf(MyStruct{
+		StringField: "hello world",
+		BoolTrue:    true,
+		BoolFalse:   false,

@@ -5,9 +5,9 @@ package tokenizer
 
 import (
 	"math"
-	"reflect"
 	"strconv"
 	"testing"
+	"reflect"
 )
 
 func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
@@ -106,9 +106,7 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 			}
 
 			primCount := int(wt.Factor)
-			if primCount < 1 {
-				primCount = 1
-			}
+			if primCount < 1 { primCount = 1 }
 
 			var want int
 			switch v := tt.input.(type) {
@@ -116,33 +114,23 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 				want = primCount
 			case []int:
 				want = int(float64(len(v)) * wt.Factor)
-				if want < 1 && len(v) > 0 {
-					want = 1
-				}
+				if want < 1 && len(v) > 0 { want = 1 }
 			case []int64:
 				want = int(float64(len(v)) * wt.Factor)
-				if want < 1 && len(v) > 0 {
-					want = 1
-				}
+				if want < 1 && len(v) > 0 { want = 1 }
 			case []float64:
 				want = int(float64(len(v)) * wt.Factor)
-				if want < 1 && len(v) > 0 {
-					want = 1
-				}
+				if want < 1 && len(v) > 0 { want = 1 }
 			case []bool:
 				want = int(float64(len(v)) * wt.Factor)
-				if want < 1 && len(v) > 0 {
-					want = 1
-				}
+				if want < 1 && len(v) > 0 { want = 1 }
 			case []string:
 				var words int
 				for _, x := range v {
 					words += countWords(x)
 				}
 				want = int(float64(words) * wt.Factor)
-				if want < 1 && words > 0 {
-					want = 1
-				}
+				if want < 1 && words > 0 { want = 1 }
 			case map[string]string:
 				var words int
 				for k, v := range v {
@@ -150,9 +138,7 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 					words += countWords(v)
 				}
 				want = int(float64(words) * wt.Factor)
-				if want < 1 && words > 0 {
-					want = 1
-				}
+				if want < 1 && words > 0 { want = 1 }
 			}
 
 			if got != want {
@@ -164,7 +150,6 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 
 func TestCountSliceInterfaceSimple(t *testing.T) {
 	st := NewSimpleTokenizer()
-	visited := make(map[uintptr]bool)
 
 	tests := []struct {
 		name    string
@@ -184,7 +169,7 @@ func TestCountSliceInterfaceSimple(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := countSliceInterfaceSimple(st, tt.input, visited)
+			got, err := countSliceInterfaceSimple(st, tt.input, make(map[uintptr]bool))
 			if (err != nil) != tt.wantErr {
 				t.Errorf("countSliceInterfaceSimple() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -197,12 +182,11 @@ func TestCountSliceInterfaceSimple(t *testing.T) {
 
 func TestCountSliceInterfaceSimple_Cycle(t *testing.T) {
 	st := NewSimpleTokenizer()
-	visited := make(map[uintptr]bool)
 
 	s3 := make([]interface{}, 1)
 	s3[0] = s3
 
-	_, err := countSliceInterfaceSimple(st, s3, visited)
+	_, err := countSliceInterfaceSimple(st, s3, make(map[uintptr]bool))
 	if err == nil {
 		t.Errorf("Expected cycle error, got nil")
 	}
@@ -282,7 +266,6 @@ func TestSimpleTokenizeInt64_FullCoverage(t *testing.T) {
 
 func TestCountTokensReflectStruct_AllKinds(t *testing.T) {
 	st := NewSimpleTokenizer()
-	visited := make(map[uintptr]bool)
 
 	type MyStruct struct {
 		StringField string
@@ -290,7 +273,7 @@ func TestCountTokensReflectStruct_AllKinds(t *testing.T) {
 		BoolFalse   bool
 		IntField    int
 		InterfaceF  interface{}
-		unexported  string
+		_           string
 	}
 
 	val := reflect.ValueOf(MyStruct{
@@ -299,10 +282,9 @@ func TestCountTokensReflectStruct_AllKinds(t *testing.T) {
 		BoolFalse:   false,
 		IntField:    123,
 		InterfaceF:  "interface string",
-		unexported:  "hidden",
 	})
 
-	got, err := countTokensReflectStruct(st, val, visited)
+	got, err := countTokensReflectStruct(st, val, make(map[uintptr]bool))
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -315,7 +297,6 @@ func TestCountTokensReflectStruct_AllKinds(t *testing.T) {
 
 func TestCountTokensReflectSlice(t *testing.T) {
 	st := NewSimpleTokenizer()
-	visited := make(map[uintptr]bool)
 
 	type MyStruct struct {
 		Name string
@@ -336,7 +317,7 @@ func TestCountTokensReflectSlice(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			val := reflect.ValueOf(tt.input)
-			got, err := countTokensReflectSlice(st, val, visited)
+			got, err := countTokensReflectSlice(st, val, make(map[uintptr]bool))
 			if (err != nil) != tt.wantErr {
 				t.Errorf("countTokensReflectSlice() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -349,7 +330,6 @@ func TestCountTokensReflectSlice(t *testing.T) {
 
 func TestCountTokensReflectMap(t *testing.T) {
 	st := NewSimpleTokenizer()
-	visited := make(map[uintptr]bool)
 
 	tests := []struct {
 		name    string
@@ -366,7 +346,7 @@ func TestCountTokensReflectMap(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			val := reflect.ValueOf(tt.input)
-			got, err := countTokensReflectMap(st, val, visited)
+			got, err := countTokensReflectMap(st, val, make(map[uintptr]bool))
 			if (err != nil) != tt.wantErr {
 				t.Errorf("countTokensReflectMap() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -378,7 +358,6 @@ func TestCountTokensReflectMap(t *testing.T) {
 }
 
 func TestCountSliceInterfaceRaw(t *testing.T) {
-	visited := make(map[uintptr]bool)
 
 	tests := []struct {
 		name    string
@@ -393,7 +372,7 @@ func TestCountSliceInterfaceRaw(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := countSliceInterfaceRaw(&rawWordCounter{}, tt.input, visited)
+			got, err := countSliceInterfaceRaw(&rawWordCounter{}, tt.input, make(map[uintptr]bool))
 			if (err != nil) != tt.wantErr {
 				t.Errorf("countSliceInterfaceRaw() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -405,12 +384,11 @@ func TestCountSliceInterfaceRaw(t *testing.T) {
 }
 
 func TestCountSliceInterfaceRaw_Cycle(t *testing.T) {
-	visited := make(map[uintptr]bool)
 
 	s := make([]interface{}, 1)
 	s[0] = s
 
-	_, err := countSliceInterfaceRaw(&rawWordCounter{}, s, visited)
+	_, err := countSliceInterfaceRaw(&rawWordCounter{}, s, make(map[uintptr]bool))
 	if err == nil {
 		t.Errorf("Expected cycle error, got nil")
 	}
