@@ -59,7 +59,7 @@ test.describe('Feature Screenshot', () => {
         }
         await download.cancel();
     }
-    });
+  });
 
     test.skip('Seed data and verify Audit Logs Rich Rendering', async ({ page }) => {
         // Skipping because the backend may not be reliably running in the test environment to execute real tool calls.
