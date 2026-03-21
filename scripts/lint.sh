@@ -34,25 +34,22 @@ if [ -z "$GOLANGCI_LINT_BIN" ]; then
 fi
 
 # Use smaller memory profile for CI environment to avoid OOM
-if [ "$CI" = "true" ] || [ "$GITHUB_ACTIONS" = "true" ]; then
-    export GOGC=10
-    export GOMEMLIMIT=256MiB
-    # Split directories into separate runs to reduce peak memory usage
-    for dir in "cmd" "pkg" "tests" "examples"; do
-        if [ -d "server/$dir" ]; then
-            "$GOLANGCI_LINT_BIN" run --concurrency 1 --timeout 30m ./server/$dir/... || exit 1
-        fi
-    done
-else
-    export GOGC=10
-    export GOMEMLIMIT=256MiB
-    # Split directories into separate runs to reduce peak memory usage
-    for dir in "cmd" "pkg" "tests" "examples"; do
-        if [ -d "server/$dir" ]; then
-            "$GOLANGCI_LINT_BIN" run --concurrency 1 --timeout 30m --fix ./server/$dir/... || exit 1
-        fi
-    done
+export GOGC=10
+export GOMEMLIMIT=256MiB
+
+# Avoid parallel execution per package to avoid out of memory
+LINT_ARGS="--concurrency 1 --timeout 30m"
+if [ "$CI" != "true" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
+    LINT_ARGS="$LINT_ARGS --fix"
 fi
+
+for pkg in $(cd server && go list ./...); do
+    pkg_path=$(echo $pkg | sed 's|github.com/mcpany/core/server||')
+    if [ "$pkg_path" != "" ] && [ -d "server$pkg_path" ]; then
+        echo "Linting server$pkg_path"
+        "$GOLANGCI_LINT_BIN" run $LINT_ARGS ./server$pkg_path || exit 1
+    fi
+done
 
 echo "Running pre-commit..."
 if command -v pre-commit >/dev/null 2>&1; then
