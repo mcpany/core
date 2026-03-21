@@ -66,37 +66,19 @@ test.describe('Prompt Studio', () => {
     await expect(page).toHaveURL(/\/prompts\/?$/);
   });
 
-  test('should verify prompt execution with RichResultViewer', async ({ page, request }) => {
-    // Seed a specific prompt for execution test
-    const res = await request.post('/api/v1/prompts', {
-      data: {
-        name: "rich_test_prompt",
-        description: "A prompt for testing RichResultViewer",
-        service_id: "e2e-test-service",
-        disable: false,
-        input_schema: "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"arg1\": { \"type\": \"string\" }\n  }\n}",
-        messages: [
-            { role: "user", content: "Test content {{arg1}}" }
-        ]
-      }
-    });
-
-    if (!res.ok() && res.status() !== 409) {
-        console.warn('Failed to seed rich_test_prompt:', await res.text());
-    }
-
+  test('should verify prompt execution with RichResultViewer', async ({ page }) => {
     await page.goto('/prompts');
 
     // Select the prompt
-    // Wait for the prompt list to render
-    await expect(page.getByText('rich_test_prompt').first()).toBeVisible({ timeout: 10000 });
-    await page.getByText('rich_test_prompt').first().click();
+    // test_prompt is seeded globally in e2e/test-data.ts
+    await expect(page.getByText('test_prompt').first()).toBeVisible({ timeout: 10000 });
+    await page.getByText('test_prompt').first().click();
 
     // Fill the argument
     await page.getByLabel('arg1').fill('RichResultTest');
 
     // Intercept the execution request and mock a rich response
-    await page.route('**/api/v1/prompts/rich_test_prompt/execute', async route => {
+    await page.route('**/api/v1/prompts/test_prompt/execute', async route => {
       const json = {
         messages: [
           {

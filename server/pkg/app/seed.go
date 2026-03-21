@@ -27,6 +27,7 @@ type SeedRequest struct {
 	ProfilesRaw    []json.RawMessage `json:"profiles"`
 	UsersRaw       []json.RawMessage `json:"users"`
 	TemplatesRaw   []json.RawMessage `json:"service_templates"`
+	PromptsRaw     []json.RawMessage `json:"prompts"`
 }
 
 // handleDebugSeed creates a handler to seed the database with data.
@@ -189,6 +190,21 @@ func (a *Application) clearData(ctx context.Context, log *slog.Logger) error {
 		}
 	}
 
+	// Prompts
+	prompts, err := a.Storage.ListPrompts(ctx)
+	if err != nil {
+		log.Error("Failed to list prompts for clearing", "error", err)
+	} else {
+		for _, p := range prompts {
+			err := withRetry(ctx, log, func() error {
+				return a.Storage.DeletePrompt(ctx, p.GetName())
+			})
+			if err != nil {
+				log.Error("Failed to delete prompt", "name", p.GetName(), "error", err)
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -263,6 +279,18 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 		})
 		if err != nil {
 			return fmt.Errorf("failed to save service template %s: %w", t.GetId(), err)
+		}
+	}
+	for _, raw := range req.PromptsRaw {
+		p := configv1.PromptDefinition_builder{}.Build()
+		if err := protojson.Unmarshal(raw, p); err != nil {
+			return fmt.Errorf("invalid json")
+		}
+		err := withRetry(ctx, logging.GetLogger(), func() error {
+			return a.Storage.SavePrompt(ctx, p)
+		})
+		if err != nil {
+			return fmt.Errorf("failed to save prompt %s: %w", p.GetName(), err)
 		}
 	}
 	return nil
