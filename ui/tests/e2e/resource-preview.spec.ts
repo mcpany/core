@@ -45,11 +45,9 @@ test.describe('Resource Preview Modal', () => {
     await resourceItem.click();
 
     // Wait for the inline preview to render before opening the modal.
-    // RichResultViewer wraps the content, so we look for the JSON button/tab.
-    const inlinePreviewTab = page.getByRole('button', { name: 'JSON' }).first();
-    await expect(inlinePreviewTab).toBeVisible();
-    // In RichResultViewer tree view, strings are quoted and separated from keys
-    await expect(page.getByText('"content to test modal view"').first()).toBeVisible();
+    const inlinePreview = page.locator('pre').first();
+    await expect(inlinePreview).toBeVisible();
+    await expect(inlinePreview).toContainText('content to test modal view');
 
     // Wait for "Maximize" button and click it
     await page.click('button[title="Maximize"]');
@@ -59,9 +57,9 @@ test.describe('Resource Preview Modal', () => {
     await expect(modalTitle).toBeVisible();
 
     // Verify content in modal
-    const modalContentTab = page.locator("div[role='dialog']").getByRole('button', { name: 'JSON' }).first();
-    await expect(modalContentTab).toBeVisible();
-    await expect(page.locator("div[role='dialog']").getByText('"content to test modal view"').first()).toBeVisible();
+    const modalContent = page.locator("div[role='dialog']").locator('pre').first();
+    await expect(modalContent).toBeVisible();
+    await expect(modalContent).toContainText('content to test modal view');
   });
 
 });

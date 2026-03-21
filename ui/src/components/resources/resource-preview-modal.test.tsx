@@ -51,6 +51,7 @@ describe('ResourcePreviewModal', () => {
     mimeType: 'application/json',
     title: 'test.json',
     description: '',
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     size: 0 as any,
     disable: false,
     profiles: [],
@@ -87,7 +88,7 @@ describe('ResourcePreviewModal', () => {
       />
     );
     expect(screen.getByText('test.json')).toBeInTheDocument();
-    expect(screen.getByText('JSON')).toBeInTheDocument();
+    expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
     expect(apiClient.readResource).not.toHaveBeenCalled();
   });
 
@@ -106,7 +107,7 @@ describe('ResourcePreviewModal', () => {
     expect(screen.getByText('Loading content...')).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByText('JSON')).toBeInTheDocument();
+      expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
     });
 
     expect(apiClient.readResource).toHaveBeenCalledWith(mockResource.uri);

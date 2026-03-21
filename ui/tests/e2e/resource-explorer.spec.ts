@@ -54,9 +54,8 @@ test.describe('Resource Explorer', () => {
     await expect(page.getByText('file:///app/config.json').first()).toBeVisible(); // URI header
 
     // Check if content area is visible (looking for syntax highlighter or code)
-    // The mock returns JSON content, so it will show "JSON" tab and inner content
-    await expect(page.getByRole('button', { name: 'JSON' }).first()).toBeVisible();
-    await expect(page.getByText('"value"').first()).toBeVisible();
+    // The mock returns JSON content
+    await expect(page.locator('pre').first()).toBeVisible();
 
     // Verify toolbar buttons
     await expect(page.getByTitle('List View')).toBeVisible();

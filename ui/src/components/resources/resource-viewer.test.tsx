@@ -42,9 +42,7 @@ describe('ResourceViewer', () => {
         text: '{"foo": "bar"}'
     };
     render(<ResourceViewer content={content} loading={false} />);
-
-    // RichResultViewer wraps the content and presents a JSON view
-    expect(screen.getByText('JSON')).toBeInTheDocument();
+    expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
   });
 
   it('renders Markdown content', () => {
