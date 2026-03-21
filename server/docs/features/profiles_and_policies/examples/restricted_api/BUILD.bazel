@@ -1,0 +1,20 @@
+load("@rules_go//go:def.bzl", "go_test")
+
+go_test(
+    name = "restricted_api_test",
+    srcs = ["e2e_test.go"],
+    deps = [
+        "//server/pkg/auth",
+        "//server/pkg/bus",
+        "//server/pkg/config",
+        "//server/pkg/mcpserver",
+        "//server/pkg/pool",
+        "//server/pkg/prompt",
+        "//server/pkg/resource",
+        "//server/pkg/serviceregistry",
+        "//server/pkg/tool",
+        "//server/pkg/upstream/factory",
+        "@com_github_spf13_afero//:afero",
+        "@com_github_stretchr_testify//require",
+    ],
+)

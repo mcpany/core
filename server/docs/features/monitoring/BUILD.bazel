@@ -1,0 +1,13 @@
+load("@rules_go//go:def.bzl", "go_test")
+
+go_test(
+    name = "monitoring_test",
+    srcs = ["verification_test.go"],
+    deps = [
+        "//proto/config/v1:config",
+        "//server/pkg/config",
+        "@com_github_stretchr_testify//require",
+        "@io_k8s_sigs_yaml//:yaml",
+        "@org_golang_google_protobuf//encoding/protojson",
+    ],
+)
