@@ -33,7 +33,16 @@ if [ -z "$GOLANGCI_LINT_BIN" ]; then
     exit 1
 fi
 
-"$GOLANGCI_LINT_BIN" run --concurrency 1 --timeout 30m --fix ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
+# Use smaller memory profile for CI environment to avoid OOM
+if [ "$CI" = "true" ] || [ "$GITHUB_ACTIONS" = "true" ]; then
+    export GOGC=10
+    export GOMEMLIMIT=512MiB
+    "$GOLANGCI_LINT_BIN" run --concurrency 1 --timeout 30m ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
+else
+    export GOGC=10
+    export GOMEMLIMIT=512MiB
+    "$GOLANGCI_LINT_BIN" run --concurrency 1 --timeout 30m --fix ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
+fi
 
 echo "Running pre-commit..."
 if command -v pre-commit >/dev/null 2>&1; then
