@@ -113,7 +113,6 @@ func (a *Application) handleTraces() http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte(`{}`))
 			return
 		}
 
@@ -292,14 +291,14 @@ func generateMockAuditEntries() []audit.Entry {
 
 	entries := []audit.Entry{
 		{
-			Timestamp: now,
-			ToolName:  "orchestrator-task",
-			UserID:    "system",
-			ProfileID: "default",
-			TraceID:   traceID,
-			SpanID:    traceID + "-0",
-			ParentID:  "",
-			Arguments: json.RawMessage(rootArgs),
+			Timestamp:  now,
+			ToolName:   "orchestrator-task",
+			UserID:     "system",
+			ProfileID:  "default",
+			TraceID:    traceID,
+			SpanID:     traceID + "-0",
+			ParentID:   "",
+			Arguments:  json.RawMessage(rootArgs),
 			Result: map[string]any{
 				"summary":    "Revenue up 15%",
 				"confidence": 0.98,
@@ -308,14 +307,14 @@ func generateMockAuditEntries() []audit.Entry {
 			DurationMs: 1250,
 		},
 		{
-			Timestamp: now.Add(50 * time.Millisecond),
-			ToolName:  "search-tool",
-			UserID:    "system",
-			ProfileID: "default",
-			TraceID:   traceID,
-			SpanID:    traceID + "-1",
-			ParentID:  traceID + "-0",
-			Arguments: json.RawMessage(child1Args),
+			Timestamp:  now.Add(50 * time.Millisecond),
+			ToolName:   "search-tool",
+			UserID:     "system",
+			ProfileID:  "default",
+			TraceID:    traceID,
+			SpanID:     traceID + "-1",
+			ParentID:   traceID + "-0",
+			Arguments:  json.RawMessage(child1Args),
 			Result: map[string]any{
 				"results": []string{"report_q3.pdf", "data_q3.xlsx"},
 			},
@@ -323,14 +322,14 @@ func generateMockAuditEntries() []audit.Entry {
 			DurationMs: 400,
 		},
 		{
-			Timestamp: now.Add(500 * time.Millisecond),
-			ToolName:  "data-analyzer",
-			UserID:    "system",
-			ProfileID: "default",
-			TraceID:   traceID,
-			SpanID:    traceID + "-2",
-			ParentID:  traceID + "-0",
-			Arguments: json.RawMessage(child2Args),
+			Timestamp:  now.Add(500 * time.Millisecond),
+			ToolName:   "data-analyzer",
+			UserID:     "system",
+			ProfileID:  "default",
+			TraceID:    traceID,
+			SpanID:     traceID + "-2",
+			ParentID:   traceID + "-0",
+			Arguments:  json.RawMessage(child2Args),
 			Result: map[string]any{
 				"analysis": "Growth detected",
 				"metrics": map[string]any{

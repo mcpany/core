@@ -134,7 +134,7 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
              </div>
         ) : loading && traces.length === 0 ? (
              <div className="flex flex-col gap-2 p-4">
-                 {[1, 2, 3, 4, 5].map((i) => (
+                 {[1, 2, 3, 4, 5].map((i: number) => (
                      <div key={i} className="flex items-center space-x-4 border-b pb-4 last:border-0 last:pb-0">
                          <div className="space-y-2">
                              <Skeleton className="h-4 w-[100px]" />
