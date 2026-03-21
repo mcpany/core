@@ -2,10 +2,11 @@ module github.com/mcpany/core/server
 
 go 1.24.0
 
+toolchain go1.26.1
+
 replace github.com/mcpany/core => ../
 
 require (
-	google.golang.org/genproto/googleapis/api v0.0.0-20251202230838-ff82c1b0f217
 	al.essio.dev/pkg/shellescape v1.6.0
 	cloud.google.com/go/storage v1.58.0
 	github.com/DATA-DOG/go-sqlmock v1.5.2
