@@ -3855,7 +3855,7 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 				lastChar = char
 				lastWord = lastWord[:0] // Clear lastWord if we hit a non-space delimiter
 			} else {
-				lastChar = char       // Space is the last delimiter
+				lastChar = char // Space is the last delimiter
 				// do NOT clear lastWord
 			}
 		}
