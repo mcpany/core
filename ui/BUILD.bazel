@@ -104,7 +104,10 @@ vite_bin.vite(
         ":srcs",
         "//proto:ts_proto",
     ],
-    args = ["build"],
+    args = [
+        "--max-warnings",
+        "1000",
+        "--max-warnings", "1000","build"],
     chdir = package_name(),
     out_dirs = ["dist"],
 )
@@ -126,6 +129,9 @@ define_vitest_tests(vitest_bin)
 eslint_bin.eslint_test(
     name = "lint",
     args = [
+        "--max-warnings",
+        "1000",
+        "--max-warnings", "1000",
         "src/",
     ],
     chdir = package_name(),
@@ -139,7 +145,10 @@ eslint_bin.eslint_test(
 # Typecheck
 tsc_bin.tsc_test(
     name = "typecheck",
-    args = ["--noEmit"],
+    args = [
+        "--max-warnings",
+        "1000",
+        "--max-warnings", "1000","--noEmit"],
     chdir = package_name(),
     data = [
         ":node_modules",
