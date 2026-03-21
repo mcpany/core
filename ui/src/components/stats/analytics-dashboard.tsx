@@ -316,8 +316,8 @@ export function AnalyticsDashboard() {
                                                 dataKey="value"
                                                 isAnimationActive={false}
                                             >
-                                                {toolUsageData.map((entry: any, _index: number) => (
-                                                    <Cell key={`cell-${_index}`} fill={entry.color} />
+                                                {toolUsageData.map((entry: Record<string, unknown>, _index: number) => (
+                                                    <Cell key={`cell-${_index}`} fill={entry.color as string} />
                                                 ))}
                                             </Pie>
                                             <Tooltip
@@ -445,8 +445,8 @@ export function AnalyticsDashboard() {
                                                 isAnimationActive={false}
                                                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                                             >
-                                                {contextByService.map((entry: any, _index: number) => (
-                                                    <Cell key={`cell-${_index}`} fill={entry.color} />
+                                                {contextByService.map((entry: Record<string, unknown>, _index: number) => (
+                                                    <Cell key={`cell-${_index}`} fill={entry.color as string} />
                                                 ))}
                                             </Pie>
                                             <Tooltip
@@ -469,14 +469,14 @@ export function AnalyticsDashboard() {
                             </CardHeader>
                             <CardContent>
                                  <div className="space-y-4 max-h-[300px] overflow-auto pr-2">
-                                    {heaviestTools.map((tool: any, _index: number) => (
-                                        <div key={tool.name} className="flex items-center justify-between border-b pb-2 last:border-0">
+                                    {heaviestTools.map((tool: Record<string, unknown>, _index: number) => (
+                                        <div key={tool.name as string} className="flex items-center justify-between border-b pb-2 last:border-0">
                                             <div className="space-y-1">
-                                                <p className="text-sm font-medium leading-none">{tool.name}</p>
-                                                <p className="text-xs text-muted-foreground">{tool.service}</p>
+                                                <p className="text-sm font-medium leading-none">{tool.name as React.ReactNode}</p>
+                                                <p className="text-xs text-muted-foreground">{tool.service as React.ReactNode}</p>
                                             </div>
                                             <div className="font-mono text-sm font-bold text-muted-foreground">
-                                                {formatTokenCount(tool.tokens)}
+                                                {formatTokenCount(tool.tokens as number)}
                                             </div>
                                         </div>
                                     ))}
