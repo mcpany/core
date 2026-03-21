@@ -6,7 +6,7 @@
 
 
 import { useMemo, useState, forwardRef } from "react";
-import { User } from "@proto/config/v1/user";
+import { User as ProtoUser } from "@proto/config/v1/user";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,7 +34,13 @@ import {
     Eye
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Virtuoso } from "react-virtuoso";
+import { Virtuoso, Components } from "react-virtuoso";
+
+// Defining locally to avoid proto import errors during compilation
+export interface User extends ProtoUser {
+    authentication?: any;
+    [key: string]: any;
+}
 
 interface UserListProps {
     users: User[];
@@ -42,6 +48,32 @@ interface UserListProps {
     onEdit: (user: User) => void;
     onDelete: (id: string) => void;
 }
+
+const TableComponents: Components = {
+  List: forwardRef(({ style, children }, listRef) => {
+    return (
+      <TableBody ref={listRef as any} style={{ ...style }} className="block relative">
+        {children}
+      </TableBody>
+    );
+  }),
+  Item: ({ children, ...props }) => {
+    return (
+      <TableRow {...props} className="table table-fixed w-full border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+        {children}
+      </TableRow>
+    );
+  },
+  Scroller: forwardRef(({ style, ...props }, ref) => {
+      // In react-virtuoso, if we wrap in table, the scroller shouldn't be a div inside table.
+      // Better approach: wrap the whole Table inside Virtuoso or use window scroller.
+      // But we just need a scrollable div that CONTAINS the table.
+      // Actually, Virtuoso provides a Table structure.
+      return <div ref={ref as any} {...props} style={style} />
+  })
+};
+
+TableComponents.List!.displayName = 'TableList';
 
 /**
  * UserList component.
@@ -137,7 +169,7 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                             <Virtuoso
                                 style={{ height: '100%', width: '100%', position: 'absolute', inset: 0 }}
                                 data={filteredUsers}
-                                itemContent={(index, user) => (
+                                itemContent={(index: number, user: User) => (
                                     <div className="flex w-full border-b transition-colors hover:bg-muted/50">
                                         <div className="p-4 align-middle w-[250px] shrink-0">
                                             <div className="flex items-center gap-3">

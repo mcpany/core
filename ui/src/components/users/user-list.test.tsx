@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { UserList } from './user-list';
-import { User } from "@proto/config/v1/user";
+import { UserList, User } from './user-list';
 import { vi } from 'vitest';
 
 describe('UserList', () => {
