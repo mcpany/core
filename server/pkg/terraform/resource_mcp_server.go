@@ -23,19 +23,7 @@ type ResourceMCPServer struct {
 	Enabled bool   `json:"enabled"`
 }
 
-// Schema returns the Terraform schema definition (Mock). Returns the result.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - map[string]interface: The resulting map[string]interface.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Schema returns the Terraform schema definition.
 //
 // Summary: Executes Schema operation.
 //
@@ -72,21 +60,7 @@ func Schema() map[string]interface{} {
 	}
 }
 
-// Create mimics the Create operation of a Terraform resource. Returns an error if the operation fails.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - serverURL (string): The URL of the MCP server API.
-//   - resource (*ResourceMCPServer): The resource to create.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the HTTP request fails or the status is not created/ok.
-//
-// Side Effects:
-//   - Makes an HTTP POST request to the serverURL.
+// Create mimics the Create operation of a Terraform resource.
 //
 // Summary: Initializes Create operation.
 //
@@ -124,22 +98,7 @@ func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) 
 	return nil
 }
 
-// Read mimics the Read operation. Returns the result or an error if the operation fails.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - serverURL (string): The URL of the MCP server API.
-//   - name (string): The name of the resource.
-//
-// Returns:
-//   - *ResourceMCPServer: The resulting *ResourceMCPServer.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the HTTP request fails or the status is not ok.
-//
-// Side Effects:
-//   - Makes an HTTP GET request to the serverURL.
+// Read mimics the Read operation.
 //
 // Summary: Retrieves Read operation.
 //
