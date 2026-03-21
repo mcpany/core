@@ -1,0 +1,1 @@
+sed -i 's/it("opens customization menu", async () => {/it("opens customization menu", async () => { vi.useFakeTimers({ shouldAdvanceTime: true });/' ui/src/components/dashboard/dashboard-grid.test.tsx
