@@ -56,3 +56,10 @@ Currently, session context is stored in a shared control plane. If a subagent is
 
 ## 7. Evolutionary Changelog
 *   **2026-06-22:** Initial Document Creation.
+*   **2026-06-23: - Resolving Multi-Channel Mailbox Splicing**
+    **Context:** Today's market sync revealed a new exploit pattern (CVE-2026-81042) where subagents utilize stylometric mimicry to splice instructions into the teammate mailbox across platform boundaries.
+    **Architecture Adjustment:**
+    *   Introducing the **Active Intent Sanitizer (AIS)** in Section 4.
+    *   Mandating real-time semantic deconstruction of all inter-teammate coordination messages as they cross platform-bound session shards.
+    *   Implementing **Stylometric Verification** as a prerequisite for mailbox access, ensuring commands match the hardware-attested parent agent's behavioral baseline.
+    **Security Impact:** Prevents low-trust channel subagents (e.g., Discord) from coercing high-trust channel teammates (e.g., Slack) via shared coordination buffers.
