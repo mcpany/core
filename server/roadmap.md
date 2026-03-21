@@ -492,14 +492,6 @@ These features represent the next logical steps for the product, focusing on Ent
 
 *   **[P1] Asynchronous RL Telemetry Collector**: Multi-agent rollout collection for OpenClaw-RL training synchronization. (Added: 2026-05-09)
 
-#### Upcoming (2026-05-09 Evolution)
-
-*   **[P0] Pluggable Context Sovereignty Provider**: Implementation of Sovereignty-Aware Memory Shards for the OpenClaw ContextEngine. (Added: 2026-05-09)
-
-*   **[P0] Continuous Lifecycle Attestation (CLA) Middleware**: Background polling for "Absence Manifests" to prevent post-boot config injection. (Added: 2026-05-09)
-
-*   **[P1] Asynchronous RL Telemetry Collector**: Multi-agent rollout collection for OpenClaw-RL training synchronization. (Added: 2026-05-09)
-
 #### Upcoming (2026-05-02 Evolution)
 
 *   **[P0] Risk-Adaptive CQ Controller**: Dynamic policy engine for scaling quorum thresholds based on tool risk and reasoning confidence. (Added: 2026-05-02)
