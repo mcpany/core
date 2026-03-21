@@ -5,7 +5,7 @@
 
 import React from 'react';
 
-const NextLink = ({ children, href }: any) => {
+const NextLink = ({ children, href }: { children: React.ReactNode, href: string }) => {
   return <a href={href}>{children}</a>;
 };
 
