@@ -15,6 +15,12 @@ global_settings:
     - name: "auth"
       priority: 1
       disabled: true
+    - name: "audit"
+      priority: 2
+      disabled: false
+      config:
+        storage_type: STORAGE_TYPE_SQLITE
+        output_path: "/tmp/mcpany_audit.db"
 
 upstream_services:
   - id: "weather-service"
