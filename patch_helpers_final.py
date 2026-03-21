@@ -1,3 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 import re
 
 with open("server/tests/integration/e2e_helpers.go", "r") as f:
