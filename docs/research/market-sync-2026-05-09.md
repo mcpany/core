@@ -23,9 +23,9 @@ The latest Gemini CLI update hardens the integration between tools and user-defi
 ### Claude Code Security: CVE-2026-25725
 A critical vulnerability (CVE-2026-25725) was disclosed in Claude Code's bubblewrap sandboxing.
 - **The "Non-Existence" Exploit**: The sandbox failed to protect `.claude/settings.json` if the file did not exist at startup, allowing malicious repos to inject settings after the initial boot.
-- **Implication**: Reinforces the need for "Deterministic Absence Proofs" (DAP) and hardware-bound Inode pinning to ensure environment integrity.
+- **Implication**: Reinforces the need for "Deterministic Absence Proofs" (DAP) and hardware-bound Continuous Lifecycle Attestation (CLA) to ensure environment integrity.
 
 ## Strategic Observations
 1. **From Passive to Active Memory**: The "ContextEngine" model shifts context from a static buffer to an active, governed process.
 2. **The RL Feedback Gap**: There is a growing need for infrastructure that can act as an authoritative "Rollout Collector" for RL-driven agents.
-3. **Negative Attestation**: Security is no longer just about what *is* allowed, but cryptographically proving what *is not* present (DAP).
+3. **Negative Attestation**: Security is no longer just about what *is* allowed, but cryptographically proving what *is not* present (DAP) and ensuring it stays that way (CLA).
