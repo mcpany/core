@@ -1,8 +1,0 @@
-node_modules
-.next
-.git
-.DS_Store
-*.log
-coverage
-playwright-report
-test-results
