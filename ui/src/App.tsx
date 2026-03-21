@@ -21,7 +21,6 @@ const InspectorPage = lazy(() => import("./app/inspector/page"));
 const LoginPage = lazy(() => import("./app/login/page"));
 const LogsPage = lazy(() => import("./app/logs/page"));
 const MarketplacePage = lazy(() => import("./app/marketplace/page"));
-const DiscoveryPage = lazy(() => import("./app/discovery/page"));
 const ExternalMarketplacePage = lazy(() => import("./app/marketplace/external/[id]/page"));
 const MiddlewarePage = lazy(() => import("./app/middleware/page"));
 const NetworkPage = lazy(() => import("./app/network/page"));
@@ -84,7 +83,6 @@ export default function App() {
           <Route path="/context" element={<ContextPage />} />
           <Route path="/credentials" element={<CredentialsPage />} />
           <Route path="/diagnostics" element={<DiagnosticsPage />} />
-          <Route path="/discovery" element={<DiscoveryPage />} />
           <Route path="/inspector" element={<InspectorPage />} />
           <Route path="/logs" element={<LogsPage />} />
           <Route path="/marketplace" element={<MarketplacePage />} />

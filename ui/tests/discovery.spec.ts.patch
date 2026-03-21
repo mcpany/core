@@ -1,9 +1,0 @@
---- ui/tests/discovery.spec.ts
-+++ ui/tests/discovery.spec.ts
-@@ -21,5 +21,5 @@
-
-     await page.getByRole('button', { name: 'Trigger Scan' }).click();
--    await expect(page.getByText('Auto-discovery is now running in the background.')).toBeVisible({ timeout: 10000 });
-+    await expect(page.locator('text=Auto-discovery is now running in the background.')).toBeVisible({ timeout: 10000 });
-   });
- });

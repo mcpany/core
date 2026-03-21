@@ -15,16 +15,11 @@ const localProto = path.join(__dirname, "proto");
 // bazel-bin/proto which is a symlink to the actual bazel-out directory.
 const bazelBinProto = path.join(__dirname, "../bazel-bin/proto");
 const rootProto = path.join(__dirname, "../proto");
-const nodeModulesProto = path.join(__dirname, "node_modules/@proto/proto");
-
-let protoPath = rootProto;
-if (fs.existsSync(localProto)) {
-  protoPath = localProto;
-} else if (fs.existsSync(bazelBinProto)) {
-  protoPath = bazelBinProto;
-} else if (fs.existsSync(nodeModulesProto)) {
-  protoPath = nodeModulesProto;
-}
+const protoPath = fs.existsSync(localProto)
+  ? localProto
+  : fs.existsSync(bazelBinProto)
+    ? bazelBinProto
+    : rootProto;
 
 // Resolve the @bufbuild/protobuf/wire sub-path (needed by generated proto files)
 const bufbuildWirePath = path.join(
@@ -50,8 +45,6 @@ export default defineConfig({
       "@": path.join(__dirname, "src"),
       "@proto": protoPath,
       "@google": path.join(protoPath, "google"),
-      "../../../google/protobuf": path.join(protoPath, "google/protobuf"),
-      "../../google/protobuf": path.join(protoPath, "google/protobuf"),
       "@bufbuild/protobuf/wire": bufbuildWire,
       // grpc-web and browser-headers use CommonJS builds; point Vite at the
       // UMD browser bundle so Rollup can resolve them properly.
