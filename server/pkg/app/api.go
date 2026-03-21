@@ -256,12 +256,6 @@ func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request,
 			continue
 		}
 
-		b, err = opts.Marshal(svc)
-		if err != nil {
-			logging.GetLogger().Error("failed to marshal service", "error", err)
-			continue
-		}
-
 		var jsonMap map[string]any
 		if err := json.Unmarshal(b, &jsonMap); err == nil {
 			if a.ServiceRegistry != nil {
