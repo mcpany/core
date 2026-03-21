@@ -35,7 +35,6 @@ import {
 } from "@/components/ui/dialog";
 import { Download } from "lucide-react";
 import { SmartConnectionWizard } from "@/components/services/smart-connection-wizard";
-import { applyTemplateFields } from "@/lib/template-utils";
 
 
 /**
@@ -228,9 +227,12 @@ export default function ServicesPage() {
 
   const handleWizardComplete = async (configuredConfig: UpstreamServiceConfig) => {
       try {
+          // Use initServiceFromConfig to ensure all defaults are present before registering
+          const newService = initServiceFromConfig(configuredConfig) as UpstreamServiceConfig;
+
           // The wizard has already validated the service. Now we register it.
-          await apiClient.registerService(configuredConfig);
-          toast({ title: "Service Connected", description: `${configuredConfig.name} registered successfully.` });
+          await apiClient.registerService(newService);
+          toast({ title: "Service Connected", description: `${newService.name} registered successfully.` });
           setIsSheetOpen(false);
           setConfiguringTemplate(null);
           fetchServices();

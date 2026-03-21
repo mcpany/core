@@ -97,7 +97,7 @@ describe('SmartConnectionWizard', () => {
         expect(mockOnComplete).toHaveBeenCalledTimes(1);
         const calledConfig = mockOnComplete.mock.calls[0][0];
         expect(calledConfig.name).toBe('default-test-name');
-        expect(calledConfig.httpService.headers.Authorization).toBe('secret123');
+        expect((calledConfig.httpService as { headers: Record<string, string> }).headers.Authorization).toBe('secret123');
     });
 
     it('displays error message when validation fails', async () => {

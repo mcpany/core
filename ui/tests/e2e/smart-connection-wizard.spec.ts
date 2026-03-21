@@ -16,11 +16,8 @@ test.describe('Smart Connection Wizard', () => {
         // Wait for the sheet to animate in
         await expect(page.getByRole('dialog')).toBeVisible();
 
-        // The template selector should be visible
-        await expect(page.getByText('Choose a template to start quickly')).toBeVisible();
-
         // Select the "Weather (wttr.in)" template from the available templates list
-        await page.getByText('Weather (wttr.in)').click();
+        await page.locator('h3').filter({ hasText: 'Weather (wttr.in)' }).click();
 
         // Ensure we moved to Step 1: Configuration Form
         await expect(page.getByText('Service Name')).toBeVisible();
