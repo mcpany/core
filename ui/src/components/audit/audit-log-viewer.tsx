@@ -62,7 +62,7 @@ export function AuditLogViewer() {
     const fetchLogs = useCallback(async () => {
         setLoading(true);
         try {
-            const filters: any = {
+            const filters: Record<string, string | number> = {
                 limit: 50,
                 offset: 0
             };
@@ -96,7 +96,7 @@ export function AuditLogViewer() {
     const handleExport = async () => {
         setExporting(true);
         try {
-            const filters: any = {};
+            const filters: Record<string, string> = {};
             if (toolName) filters.tool_name = toolName;
             if (userId) filters.user_id = userId;
             if (startDate) filters.start_time = startDate.toISOString();
@@ -107,11 +107,11 @@ export function AuditLogViewer() {
                 title: "Export Successful",
                 description: "Audit logs have been exported.",
             });
-        } catch (e: any) {
+        } catch (e: unknown) {
             console.error("Failed to export audit logs", e);
             toast({
                 title: "Export Failed",
-                description: e.message || "Failed to export audit logs.",
+                description: e instanceof Error ? e.message : "Failed to export audit logs.",
                 variant: "destructive",
             });
         } finally {
@@ -123,7 +123,7 @@ export function AuditLogViewer() {
         if (!jsonStr) return null;
         try {
             return JSON.parse(jsonStr);
-        } catch (e) {
+        } catch (_e) {
             return jsonStr;
         }
     };
