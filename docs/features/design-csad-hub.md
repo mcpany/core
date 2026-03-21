@@ -1,7 +1,3 @@
-<!--
-Copyright 2026 Author(s) of MCP Any
-SPDX-License-Identifier: Apache-2.0
--->
 # Design Doc: Collective Swarm Anomaly Detection (CSAD)
 **Status:** Draft
 **Created:** 2026-05-29
@@ -49,8 +45,10 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 
 ## 7. Evolutionary Changelog
 * **2026-05-29:** Initial Document Creation.
-* **2026-05-30:** **Update: Integrating MTN for Mirroring Detection**
-    * **Context:** Today's market sync revealed the "Context Mirroring" exploit (CVE-2026-45012).
-    * **Architecture Adjustment:** CSAD Hub now integrates with the **MTN Provider**.
-    * **Detection Logic:** Monitoring for duplicate context windows appearing across disparate agents without a corresponding monotonic task nonce.
-    * **Security Impact:** Neutralizes replay-based context mirroring by detecting hivenet-driven probes that bypass the primary reasoning engine.
+
+### Update: [2026-05-30] - Integration with MTN Provider
+**Context**: Today's market sync revealed that "Context Mirroring" probes (CVE-2026-45012) can evade behavioral anomaly detection if the probe resembles a legitimate state handoff.
+**Architecture Adjustment**:
+* Integrating CSAD Hub with the **Monotonic Task Nonce (MTN) Provider**.
+* Every inter-agent task proposal monitored by CSAD must now carry a hardware-attested MTN.
+**Security Impact**: Allows CSAD to detect and block hivenet-driven context mirroring attempts by identifying task nonces that are out of sequence or cryptographically invalid for the current mission session.

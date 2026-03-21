@@ -1,7 +1,3 @@
-<!--
-Copyright 2026 Author(s) of MCP Any
-SPDX-License-Identifier: Apache-2.0
--->
 # Strategic Vision: MCP Any
 
 ## Mission Statement
@@ -205,7 +201,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Semantic Integrity & Kernel-Bound Intent Persistence
 **Context**: The release of OpenClaw's "Semantic Garbage Collection" (SGC) and the discovery of "Recursive Intent Poisoning" (RIP) mark a shift from simple context management to "Content-Aware Governance." Simultaneously, the industry's move toward kernel-level FD pinning for configuration security reinforces that path-based validation is no longer sufficient.
 **Strategic Pivot**:
-- **Semantic Integrity Bridge**: MCP Any will evolve the Contextual Quorum (CQ) Hub to include "Intent Drift Detection." We will implement SGC-aware monitoring that compares subagent outputs against the "Mission Root" to detect and block "Recursive Intent Poisoning" before it comes to compromise the swarm.
+- **Semantic Integrity Bridge**: MCP Any will evolve the Contextual Quorum (CQ) Hub to include "Intent Drift Detection." We will implement SGC-aware monitoring that compares subagent outputs against the "Mission Root" to detect and block "Recursive Intent Poisoning" before it compromises the swarm.
 - **Kernel-Bound FD Gateway**: We are evolving DAIP into "Kernel-Bound FD Persistence." MCP Any will now utilize FD-passing and hardware-bound Inode pinning to ensure that project-local configurations (like `.claude/settings.json`) are immutable from the moment of initial attestation.
 - **Bi-directional A2UI Sync**: Leveraging the new A2UI v1.2 standard, MCP Any will act as a "Stateful UI Bridge." We will provide the infrastructure for bi-directional state synchronization, allowing users to safely inject "Corrective Intents" directly into the agent's reasoning loop via the secure gateway.
 
