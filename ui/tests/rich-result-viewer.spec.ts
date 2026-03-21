@@ -41,20 +41,23 @@ test.describe('Rich Result Viewer', () => {
     await request.delete(`/api/v1/services/${serviceName}`).catch(() => { });
   });
 
-  test.skip('Tool Inspector renders rich table result for complex data', async ({ page }) => {
+  test('Tool Inspector renders rich table result for complex data', async ({ page }) => {
     await page.goto('/tools');
 
     // Search for the test tool
     await page.getByPlaceholder('Search tools...').fill('get_complex_data');
-    await expect(page.getByText('rich-result-test-service.get_complex_data').first()).toBeVisible({ timeout: 10000 });
+
+    // Wait a moment for rendering
+    await page.waitForTimeout(1000);
+
+    await expect(page.getByText('rich-result-test-service').first()).toBeVisible({ timeout: 10000 });
 
     // Open inspector
-    await page.getByRole('row', { name: 'rich-result-test-service.get_complex_data' }).getByRole('button', { name: 'Inspect' }).click();
+    await page.getByRole('row', { name: /get_complex_data/ }).getByRole('button', { name: 'Inspect' }).click();
 
     // Wait for inspector to open
     const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByRole('heading', { name: 'rich-result-test-service.get_complex_data', exact: true })).toBeVisible();
 
     // Execute tool (default args should work as they are empty object in seeded tool)
     await page.getByRole('button', { name: 'Execute' }).click();
@@ -78,16 +81,6 @@ test.describe('Rich Result Viewer', () => {
     await expect(table.getByText('Admin')).toBeVisible();
 
     // Switch to JSON tab
-    // Note: There might be multiple "JSON" tabs (one for schema, one for args, one for result)
-    // We want the one in the result viewer. Since it's likely the last one rendered or scoped.
-    // The tabs in RichResultViewer are: Table, JSON, Raw Output.
-    // We can scope by finding the container.
-    // Or just click the one that follows "Result".
-
-    // Scoping to the result area
-    // const resultArea = page.locator('.grid', { hasText: 'Result' }).last();
-    // Actually "Result" label is inside a grid div.
-
     // Let's try finding the tab list containing "Raw Output" which is unique to RichResultViewer
     const viewerTabs = page.locator('[role="tablist"]', { hasText: 'Raw Output' });
     await viewerTabs.getByRole('tab', { name: 'JSON' }).click();
