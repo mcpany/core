@@ -120,7 +120,7 @@ jobs:
           if [ "$GOOS" = "windows" ]; then
             BINARY_NAME=$BINARY_NAME.exe
           fi
-          
+
           # Find the built binary in bazel-out
           # rules_go output for //server/cmd/server:server is usually server/cmd/server/server_/server
           SRC_BIN=$(bazelisk cquery //server/cmd/server --output=files --platforms=@rules_go//go/toolchain:${GOOS}_${GOARCH})
@@ -201,7 +201,7 @@ jobs:
           GOOS=$(echo ${{ matrix.platform }} | cut -d'/' -f1)
           GOARCH=$(echo ${{ matrix.platform }} | cut -d'/' -f2)
           TAG=$(echo ${{ github.ref_name }} | sed 's/^v//')
-          
+
           bazelisk run //server/cmd/server:push \
             --config=remote \
             --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY \
@@ -264,7 +264,7 @@ jobs:
           GOOS=$(echo ${{ matrix.platform }} | cut -d'/' -f1)
           GOARCH=$(echo ${{ matrix.platform }} | cut -d'/' -f2)
           TAG=$(echo ${{ github.ref_name }} | sed 's/^v//')
-          
+
           bazelisk run //ui:push \
             --config=remote \
             --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY \
