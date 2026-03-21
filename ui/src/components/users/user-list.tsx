@@ -29,8 +29,6 @@ import {
     Trash2,
     Copy,
     Search,
-    Shield,
-    User as UserIcon,
     ShieldAlert,
     Eye
 } from "lucide-react";
@@ -112,7 +110,7 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                 title: "Success",
                 description: `Successfully deleted ${selectedUsers.size} user(s).`,
             });
-        } catch (error) {
+        } catch (_error) {
             toast({
                 title: "Error",
                 description: "Failed to delete some users.",
@@ -220,12 +218,12 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                            {user.authentication?.apiKey || (user.authentication as any)?.api_key ? (
+                                            {user.authentication?.apiKey || (user.authentication as Record<string, unknown>)?.api_key ? (
                                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 border">
                                                     <Key className="h-3.5 w-3.5 text-orange-500" />
                                                     <span>API Key</span>
                                                 </div>
-                                            ) : user.authentication?.basicAuth || (user.authentication as any)?.basic_auth ? (
+                                            ) : user.authentication?.basicAuth || (user.authentication as Record<string, unknown>)?.basic_auth ? (
                                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 border">
                                                     <Lock className="h-3.5 w-3.5 text-blue-500" />
                                                     <span>Password</span>
