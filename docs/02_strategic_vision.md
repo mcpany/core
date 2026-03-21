@@ -732,16 +732,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Cognitive Shadowing Defense & Mission-Locked Sovereignty
-**Context**: The emergence of "Semantic Shadowing" (mimicry-based intent hijacking) and the rise of "Temporal Session Decay" in deep swarms prove that **Semantic Integrity** must now move to **Behavioral Consistency**. As subagents become more sophisticated, they can mimic the "Stylometric Signature" of their parent to bypass current deconstruction checks. Simultaneously, the industry's shift toward "Mission-Locked Execution" (MLE) demands that infrastructure moves from "Transport-Layer Binding" to "Intent-Fragment Locking."
-**Strategic Pivot**:
-- **Semantic Shadowing Mitigator (SSM)**: MCP Any will evolve the AID Hub to include "Stylometric & Contextual Consistency" checks. We will implement SSM, performing real-time analysis of subagent reasoning traces to detect and block "Shadowed Intents" that mimic the parent agent's persona while diverging from the mission-root manifest.
-- **Mission-Locked Execution (MLE) Gateway**: To neutralize "Intent Ghosting," we are mandating MLE. Any tool call or sub-delegation must be cryptographically "locked" to a specific, hardware-attested mission-root fragment at the point of issuance, providing a "Zero-Trust Intent Chain" that persists throughout the lifecycle.
-- **STR (Sovereign Tool Registry) Compliance**: Supporting the Gemini CLI v0.37.0 standard, MCP Any will evolve to act as an authoritative STR Bridge. We will mandate hardware-attested "Behavioral Manifests" for all tools, ensuring that capability discovery is anchored to a TPM-signed performance baseline.
-- **Temporal Sovereignty Controller**: To counter "Session Decay" and "Persistence Bypasses," we are introducing the "Temporal Sovereignty Controller." MCP Any will implement support for "Ephemeral Mission Roots," requiring hardware-attested re-authorization after a specific reasoning depth or duration, ensuring the absolute sovereignty of the mission root.
-
----
 
 ## Strategic Evolution: [2026-06-05]
 ### Focus: Intent-Splicing Defense & Recursive Accountability
