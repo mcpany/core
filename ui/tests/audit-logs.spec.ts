@@ -62,7 +62,7 @@ test.describe('Feature Screenshot', () => {
     }
   });
 
-  test('View Audit Log Details', async ({ page, request }) => {
+  test('View Audit Log Details', async ({ page }) => {
     await page.goto('/audit');
 
     await page.waitForSelector('text=Filters', { timeout: 10000 });
