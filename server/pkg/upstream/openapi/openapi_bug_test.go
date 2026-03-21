@@ -42,12 +42,12 @@ paths:
 	}.Build()
 
 	expectedKey, _ := util.SanitizeServiceName("space-service")
-	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
-	mockToolManager.On("GetTool", mock.Anything).Return(nil, false)
+	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything()).Return().Once()
+	mockToolManager.On("GetTool", mock.Anything()).Return(nil, false)
 
     // We expect AddTool to be called. If the bug exists, it won't be called.
     var addedTool tool.Tool
-	mockToolManager.On("AddTool", mock.Anything).Run(func(args mock.Arguments) {
+	mockToolManager.On("AddTool", mock.Anything()).Run(func(args mock.Arguments) {
 		addedTool = args.Get(0).(tool.Tool)
 	}).Return(nil)
 

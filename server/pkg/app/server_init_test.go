@@ -284,20 +284,20 @@ func TestInitializeDatabase_Empty(t *testing.T) {
 	mockStore := new(MockStore)
 	app := &Application{}
 
-	mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
-	mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
-	mockStore.On("SaveService", mock.Anything, mock.Anything).Return(nil)
+	mockStore.On("ListServices", mock.Anything()).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
+	mockStore.On("GetGlobalSettings", mock.Anything()).Return((*configv1.GlobalSettings)(nil), nil)
+	mockStore.On("SaveGlobalSettings", mock.Anything(), mock.Anything()).Return(nil)
+	mockStore.On("SaveService", mock.Anything(), mock.Anything()).Return(nil)
 	// Template Init expectations
 	// Template Init expectations
-	mockStore.On("ListServiceTemplates", mock.Anything).Return(([]*configv1.ServiceTemplate)(nil), nil)
-	mockStore.On("SaveServiceTemplate", mock.Anything, mock.Anything).Return(nil)
+	mockStore.On("ListServiceTemplates", mock.Anything()).Return(([]*configv1.ServiceTemplate)(nil), nil)
+	mockStore.On("SaveServiceTemplate", mock.Anything(), mock.Anything()).Return(nil)
 	// Collection Init expectations
-	mockStore.On("ListServiceCollections", mock.Anything).Return(([]*configv1.Collection)(nil), nil)
-	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
+	mockStore.On("ListServiceCollections", mock.Anything()).Return(([]*configv1.Collection)(nil), nil)
+	mockStore.On("SaveServiceCollection", mock.Anything(), mock.Anything()).Return(nil)
 	// Admin User Init expectations
-	mockStore.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
-	mockStore.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
+	mockStore.On("ListUsers", mock.Anything()).Return(([]*configv1.User)(nil), nil)
+	mockStore.On("CreateUser", mock.Anything(), mock.Anything()).Return(nil)
 
 	err := app.initializeDatabase(context.Background(), mockStore)
 	assert.NoError(t, err)
@@ -309,7 +309,7 @@ func TestInitializeDatabase_AlreadyInitialized(t *testing.T) {
 	mockStore := new(MockStore)
 	app := &Application{}
 
-	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{{}}, nil)
+	mockStore.On("ListServices", mock.Anything()).Return([]*configv1.UpstreamServiceConfig{{}}, nil)
 
 	err := app.initializeDatabase(context.Background(), mockStore)
 	assert.NoError(t, err)
@@ -322,7 +322,7 @@ func TestInitializeDatabase_NotStorage(t *testing.T) {
 	simpleMock := new(MockSimpleStore)
 	app := &Application{}
 
-	simpleMock.On("Load", mock.Anything).Return(&configv1.McpAnyServerConfig{}, nil)
+	simpleMock.On("Load", mock.Anything()).Return(&configv1.McpAnyServerConfig{}, nil)
 
 	err := app.initializeDatabase(context.Background(), simpleMock)
 	assert.NoError(t, err)
@@ -353,7 +353,7 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 		mockSimpleStore := new(MockSimpleStore)
 		app := &Application{}
 
-		mockSimpleStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), errors.New("load error"))
+		mockSimpleStore.On("Load", mock.Anything()).Return((*configv1.McpAnyServerConfig)(nil), errors.New("load error"))
 
 		err := app.initializeDatabase(context.Background(), mockSimpleStore)
 		assert.Error(t, err)
@@ -364,7 +364,7 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 		mockStore := new(MockStore)
 		app := &Application{}
 
-		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), errors.New("list services error"))
+		mockStore.On("ListServices", mock.Anything()).Return(([]*configv1.UpstreamServiceConfig)(nil), errors.New("list services error"))
 
 		err := app.initializeDatabase(context.Background(), mockStore)
 		assert.Error(t, err)
@@ -375,9 +375,9 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 		mockStore := new(MockStore)
 		app := &Application{}
 
-		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
-		mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
-		mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(errors.New("save global error"))
+		mockStore.On("ListServices", mock.Anything()).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
+		mockStore.On("GetGlobalSettings", mock.Anything()).Return((*configv1.GlobalSettings)(nil), nil)
+		mockStore.On("SaveGlobalSettings", mock.Anything(), mock.Anything()).Return(errors.New("save global error"))
 
 		err := app.initializeDatabase(context.Background(), mockStore)
 		assert.Error(t, err)
@@ -388,10 +388,10 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 		mockStore := new(MockStore)
 		app := &Application{}
 
-		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
-		mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
-		mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
-		mockStore.On("SaveService", mock.Anything, mock.Anything).Return(errors.New("save service error"))
+		mockStore.On("ListServices", mock.Anything()).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
+		mockStore.On("GetGlobalSettings", mock.Anything()).Return((*configv1.GlobalSettings)(nil), nil)
+		mockStore.On("SaveGlobalSettings", mock.Anything(), mock.Anything()).Return(nil)
+		mockStore.On("SaveService", mock.Anything(), mock.Anything()).Return(errors.New("save service error"))
 
 		err := app.initializeDatabase(context.Background(), mockStore)
 		assert.Error(t, err)
@@ -404,11 +404,11 @@ func TestInitializeAdminUser_RandomPassword(t *testing.T) {
 	app := &Application{}
 
 	// Mocking empty users list
-	mockStore.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
+	mockStore.On("ListUsers", mock.Anything()).Return(([]*configv1.User)(nil), nil)
 
 	// Capture the user passed to CreateUser
 	var capturedUser *configv1.User
-	mockStore.On("CreateUser", mock.Anything, mock.MatchedBy(func(u *configv1.User) bool {
+	mockStore.On("CreateUser", mock.Anything(), mock.MatchedBy(func(u *configv1.User) bool {
 		capturedUser = u
 		return true
 	})).Return(nil)

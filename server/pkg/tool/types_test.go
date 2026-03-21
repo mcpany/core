@@ -169,7 +169,7 @@ func TestMCPTool_Execute_OutputTransformerError(t *testing.T) {
 	mockResult := &mcp.CallToolResult{
 		Content: []mcp.Content{&mcp.TextContent{Text: `{"key":"value"}`}},
 	}
-	mockClient.On("CallTool", mock.Anything, mock.Anything).Return(mockResult, nil)
+	mockClient.On("CallTool", mock.Anything(), mock.Anything()).Return(mockResult, nil)
 
 	toolProto := &v1.Tool{}
 	toolProto.SetName("test-tool")
@@ -277,7 +277,7 @@ func TestGRPCTool_Execute_Success(t *testing.T) {
 	poolManager := pool.NewManager()
 
 	mockConn := new(MockConn)
-	mockConn.On("Invoke", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
+	mockConn.On("Invoke", mock.Anything(), mock.Anything(), mock.Anything(), mock.Anything(), mock.Anything()).Return(nil)
 	mockConn.On("GetState").Return(connectivity.Ready)
 
 	grpcPool, _ := pool.New[*client.GrpcClientWrapper](func(_ context.Context) (*client.GrpcClientWrapper, error) {
@@ -297,7 +297,7 @@ func TestGRPCTool_Execute_Success(t *testing.T) {
 	grpcTool := NewGRPCTool(toolProto, poolManager, "grpc-service", mockMethodDesc, &configv1.GrpcCallDefinition{}, nil)
 	_, err := grpcTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)})
 	assert.NoError(t, err)
-	mockConn.AssertCalled(t, "Invoke", mock.Anything, "/test.service/Method", mock.AnythingOfType("*dynamicpb.Message"), mock.AnythingOfType("*dynamicpb.Message"), mock.Anything)
+	mockConn.AssertCalled(t, "Invoke", mock.Anything(), "/test.service/Method", mock.Anything()OfType("*dynamicpb.Message"), mock.Anything()OfType("*dynamicpb.Message"), mock.Anything())
 }
 
 // MockConn is a mock for client.Conn
@@ -442,7 +442,7 @@ func TestGRPCTool_Execute_InvokeError(t *testing.T) {
 	poolManager := pool.NewManager()
 	mockConn := new(MockConn)
 	mockConn.On("GetState").Return(connectivity.Ready)
-	mockConn.On("Invoke", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(fmt.Errorf("rpc error"))
+	mockConn.On("Invoke", mock.Anything(), mock.Anything(), mock.Anything(), mock.Anything(), mock.Anything()).Return(fmt.Errorf("rpc error"))
 
 	grpcPool, _ := pool.New[*client.GrpcClientWrapper](func(_ context.Context) (*client.GrpcClientWrapper, error) {
 		return client.NewGrpcClientWrapper(mockConn, &configv1.UpstreamServiceConfig{}, nil), nil
