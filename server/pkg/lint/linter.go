@@ -16,8 +16,6 @@ import (
 
 // Severity indicates the importance of a linting result.
 //
-// It is used to categorize findings based on their impact and urgency.
-//
 // Summary: Represents a Severity.
 type Severity int
 
@@ -66,8 +64,6 @@ func (s Severity) String() string {
 
 // Result represents a single linting finding.
 //
-// It encapsulates all details about a detected issue, including its severity, location, and description.
-//
 // Summary: Represents a Result.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
@@ -108,8 +104,6 @@ func (r Result) String() string {
 }
 
 // Linter performs static analysis on the configuration.
-//
-// It holds the configuration to be analyzed and provides methods to execute various checks.
 //
 // Summary: Represents a Linter.
 type Linter struct {
