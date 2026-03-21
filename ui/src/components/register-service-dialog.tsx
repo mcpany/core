@@ -22,7 +22,7 @@ import { UpstreamServiceConfig } from "@/lib/types";
 import { Credential } from "@proto/config/v1/auth";
 import { Plus, RotateCw, ChevronLeft, Loader2, Activity, CheckCircle2, XCircle, ArrowLeft, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/templates";
+import { ServiceTemplate } from "@/lib/templates";
 import { ServiceTemplateSelector } from "./services/service-template-selector";
 import { ServiceConfigDiff } from "./services/service-config-diff";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
@@ -120,8 +120,8 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       try {
           const data = await apiClient.listCredentials();
           setCredentials(data);
-      } catch (e) {
-          console.error("Failed to load credentials", e);
+      } catch (_e) {
+          console.error("Failed to load credentials", _e);
       }
   };
 
@@ -195,7 +195,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                       const envKey = field.key.split(".").pop();
                       if (envKey) {
                           if (!config.commandLineService.env) config.commandLineService.env = {};
-                          config.commandLineService.env[envKey] = value as any;
+                          config.commandLineService.env[envKey] = value as unknown as any; // eslint-disable-line @typescript-eslint/no-explicit-any
                       }
                   } else if (field.key === "httpService.address" && config.httpService) {
                       config.httpService.address = value;
@@ -210,7 +210,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                    config.openapiService ? "openapi" : "other";
 
       form.setValue("name", config.name || "");
-      form.setValue("type", type as any);
+      form.setValue("type", type as unknown as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       if (config.httpService?.address) form.setValue("address", config.httpService.address);
       if (config.grpcService?.address) form.setValue("address", config.grpcService.address);
@@ -271,7 +271,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                   if (jsonConfig.commandLineService?.env) {
                       config.commandLineService!.env = jsonConfig.commandLineService.env;
                   }
-              } catch (e) {
+              } catch (_e) {
                   // Ignore JSON parse errors here
               }
           }
@@ -608,7 +608,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                                         }
 
                                         // Save context to session storage so callback page knows what to do
-                                        const state = Math.random().toString(36).substring(7); // Temporary client-side state for session key?
+
                                         // Wait, backend generates state.
                                         // We need to call initiate first.
 
