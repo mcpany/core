@@ -333,6 +333,11 @@
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)
 - [ ] **[P1] Encrypted Monologue Explorer**: Secure UI fragment for user-authorized decryption and review of subagent reasoning. (Added: 2026-04-22)
 
+#### Upcoming (2026-05-04 Evolution)
+- [ ] **[P0] CSCS Reputation Map**: (2026-05-04) UI for visualizing federated tool trust and peer swarm contributions.
+- [ ] **[P1] Speculative Permissioning Monitor**: (2026-05-04) Dashboard for tracking PET token generation and pre-staging efficiency.
+- [ ] **[P1] LSM Migration Tracker**: (2026-05-04) Visualization of live sandbox migrations and differential sync progress.
+
 #### Upcoming (2026-05-03 Evolution)
 - [ ] **[P0] Inter-Swarm Wait-Graph Explorer**: Interactive visualization of attestation dependencies and deadlock resolution status. (Added: 2026-05-03)
 - [ ] **[P1] Intent Warming Dashboard**: Monitor for PIW pre-fetch hits, misses, and latency reduction scores. (Added: 2026-05-03)
