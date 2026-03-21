@@ -217,7 +217,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Strategic Pivot**:
 - **Routing Isolation Sovereignty**: MCP Any will evolve to mandate "Port-Free Transport" for all local inter-agent communication. We will prioritize the implementation of isolated, Docker-bound named pipes (UNIX domain sockets) to eliminate the risk of local port hijacking and MitM attacks.
 - **"Auth-at-the-Pipe" Enforcement**: We are adopting the "Auth-at-the-Pipe" model. MCP Any will act as the authoritative broker for transport-level security, requiring hardware-attested identity tokens before any agent-to-agent connection is established over the isolated bus.
-- **Kernel-Resident Trace Scrubbing**: To support "Routing Isolation," we will integrate kernel-level trace scrubbing. This ensures that even in isolated named pipes, binary state handoffs (BSH) are semantically sanitized in real-time before reaching the recipient agent's reasoning engine.
+- **Kernel-Resident Trace scrubbing**: To support "Routing Isolation," we will integrate kernel-level trace scrubbing. This ensures that even in isolated named pipes, binary state handoffs (BSH) are semantically sanitized in real-time before reaching the recipient agent's reasoning engine.
 
 ---
 
@@ -506,7 +506,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: Recent breakthroughs in Claude Code (MCP Tool Search) and the "Clinejection" supply chain attack have shifted the landscape. Agents now need to handle thousands of tools without context pollution, and they must do so within a verified security perimeter.
 **Strategic Pivot**:
 - **Lazy-Discovery Architecture**: MCP Any will pivot from "pushing" all tool schemas to "serving" them on-demand via a high-performance similarity search middleware. This allows for virtually unlimited tool scaling.
-- **Supply Chain Provenance**: Implementing "Attested Tooling" where every MCP server must provide a cryptographic signature of its origin and configuration, preventing rogue installations like those seen in the Cline incident.
+- **Supply Chain Provenance**: Implementing "Attested Tooling" where every MCP server must provide a cryptographic signature of its origin and configuration, preventing rogue installations like those seen in the CLI incident.
 - **Context-Aware Scoping**: Moving beyond simple capability tokens to "Intent-Aware" permissions, where a tool call is only allowed if it aligns with the high-level intent verified by the Policy Engine.
 
 ---

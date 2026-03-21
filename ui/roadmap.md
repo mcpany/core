@@ -352,7 +352,7 @@ SPDX-License-Identifier: Apache-2.0
 - [x] **Sensitive Data Detection**: Warning when configuring services that might expose sensitive environment variables (e.g. AWS_SECRET_KEY) in tools.
 - [x] **Preset Sharable URL**: Generate a link to the playground with pre-filled arguments (using presets or query params) to easily share configurations with team members.
 - [ ] **Preset Cloud Sync**: Sync saved tool presets to the backend (user profile) so they persist across devices and browser sessions.
-- [ ] **Robust Mocking Strategy**: Extend the mocking strategy used in Settings E2E tests to other critical E2E flows (Services, Tools) to reduce CI flakiness.
+- [ ] **Robust Mocking Strategy**: Extend the mocking strategy used in Settings E2E tests to other critical E2E flows (Services, Tools) so that the UI can be developed and tested without a running backend.
 - [ ] **Error Boundary Reporting**: Implement a global error boundary that catches component crashes (like the SecretsManager issue) and reports them to the diagnostic log or backend.
 - [x] **Tool Usage Analytics**: Display usage statistics (calls, failures) directly in the tool list or details view.
 - [x] **Recent Tools in Search**: Show recently used or searched tools in the search dropdown.

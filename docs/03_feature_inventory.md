@@ -152,7 +152,7 @@ SPDX-License-Identifier: Apache-2.0
 
 ### Proposed Additions
 - **Mission-Root Pinning (MRP) Middleware**: (P0) A transport-level security component that protects the "Mission Root" from context-window eviction during high-frequency "noise" injections (MRE defense).
-- **State-Trust Labeling (STL) Provider**: (P0) Security extension for the Blackboard that tags all KV data with the trust level of its origin framework, neutralizing PASI (Protocol-Agnostic State Injection).
+- **State-Trust Labeling (STL) Provider**: (P0) Security extension for the Blackboard to tag all KV data with the trust level of its origin framework, neutralizing PASI (Protocol-Agnostic State Injection).
 - **Wait-Graph Deadlock Resolver**: (P1) Advanced orchestration service for the `TeammateTool` Adapter that proactively breaks circular task dependencies in parallel swarms.
 - **Intent-Weighted Context Summarizer**: (P1) Upgrade for the ContextEngine Adapter supporting RCE v2.0 logic for mission-anchored context compression.
 
@@ -1008,13 +1008,6 @@ SPDX-License-Identifier: Apache-2.0
 - **A2A Interoperability Layer**: (P0) Native messaging hub implementation for the Agent2Agent (A2A) protocol, facilitating secure task delegation and coordination between disparate frameworks.
 - **Deterministic Environment Attestation Gateway**: (P0) Advanced pre-execution security service that generates signed environment manifests, including non-existence proofs for restricted configuration hooks.
 - **Structured Context Propagation Middleware**: (P1) Implementation of emerging context propagation standards to ensure rich, structured contextual data (trace IDs, session IDs) flows securely across the agentic lifecycle.
-
-### Priority Shifts
-- **Tool Metadata Sanitizer**: Promoted to **P0**. Urgent requirement to address CVE-2026-45201.
-- **DCA Negotiation Guard**: (Re-affirmed P0) Expanded to support the new Speculative Auction Broker (SAB) protocol.
-
-### Deprecations / Monitoring
-- **Implicitly Trusted Tool Schemas**: Monitoring for total deprecation. All structural metadata must eventually pass through the Sanitizer.
 
 ## Evolution: 2026-04-13 Updates
 
