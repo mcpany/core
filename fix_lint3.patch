@@ -1,0 +1,13 @@
+diff --git a/server/pkg/tool/types.go b/server/pkg/tool/types.go
+index 7300c14..9807530 100644
+--- a/server/pkg/tool/types.go
++++ b/server/pkg/tool/types.go
+@@ -4336,7 +4336,7 @@ func checkAwkInjection(val, base string) error {
+		}
+
+		// Awk uses double quotes for string literals. Awk scripts are often passed via single quotes
+-		// from bash (e.g. bash -c "awk '{print}'"). `val` is the payload string.
++		// from bash (e.g. bash -c "awk '{print}'"). `val` is the payload string.
+		// We track if we are in an awk string (double quotes). Single quotes are not awk string quotes.
+		if char == '"' {
+			inDouble = !inDouble
