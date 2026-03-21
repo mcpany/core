@@ -13,11 +13,12 @@ import (
 	"time"
 )
 
+var httpClient = &http.Client{Timeout: 10 * time.Second}
+
 // ResourceMCPServer represents the configuration schema for an MCP Server resource
 // This would map to hashicorp/terraform-plugin-sdk in a real provider.
 //
 // Summary: Represents a ResourceMCPServer.
-var httpClient = &http.Client{Timeout: 10 * time.Second}
 
 type ResourceMCPServer struct {
 	Name    string `json:"name"`
