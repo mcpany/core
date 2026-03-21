@@ -9,6 +9,7 @@ This document defines the architecture for the RGI Provider, a service that perf
 
 ## 2. Goals & Non-Goals
 * **Goals:**
+    *
   * Detect circular or conflicting reasoning structures (RGC) in real-time.
   * Provide hardware-attested (TPM) graph validation signatures.
   * Maintain sub-10ms validation latency for reasoning refinement loops.
@@ -20,7 +21,7 @@ This document defines the architecture for the RGI Provider, a service that perf
 * **User Persona:** High-Trust Agent Swarm Orchestrator
 * **Primary Goal:** Merge refinements from 5 specialist subagents without triggering a cognitive deadlock.
 * **The Happy Path (Tasks):**
-  1. Orchestrator receives a "Reasoning Refinement Fragment" from a specialist.
+    1. Orchestrator receives a "Reasoning Refinement Fragment" from a specialist.
   2. Orchestrator submits the current Mission Reason-Graph and the proposed fragment to the RGI Provider.
   3. RGI Provider performs structural collision analysis.
   4. RGI Provider issues a TPM-signed "Integrity Receipt."
