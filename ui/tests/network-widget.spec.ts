@@ -4,7 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedCollection, cleanupCollection } from './e2e/test-data';
+import { seedCollection } from './e2e/test-data';
 
 test('dashboard network topology widget', async ({ page, request }) => {
   // Ensure we have a service seeded so we bypass the onboarding screen
