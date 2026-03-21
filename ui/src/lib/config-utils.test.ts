@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { sanitizeServiceConfig, SecretHandlingMode } from './config-utils';
+import { sanitizeServiceConfig } from './config-utils';
 import { UpstreamServiceConfig } from './client';
 
 describe('sanitizeServiceConfig', () => {

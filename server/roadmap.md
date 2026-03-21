@@ -868,3 +868,10 @@ _None at this time._
 - **[P0] Teammate Integrity Token (TIT) Broker**: Security service for hardware-attested, session-bound teammate authentication. (Added: 2026-06-18)
 - **[P1] Predictive State Purging (PSP) Adapter**: Efficiency middleware for speculative shard pruning to prevent attention-window flooding. (Added: 2026-06-18)
 - **[P0] Mission-Root Attention Locker**: Advanced extension for HAAL mandating zero-tier attention locking for mission intents. (Added: 2026-06-18)
+
+### Upcoming: [2026-06-18]
+
+- **[P0] Attention-Boundary Governance (ABG) Hub**: Authoritative attention gatekeeper performing real-time structural analysis of the LLM context window. (Added: 2026-06-18)
+- **[P0] Teammate Integrity Token (TIT) Broker**: Security service for hardware-attested, session-bound teammate authentication. (Added: 2026-06-18)
+- **[P1] Predictive State Purging (PSP) Adapter**: Efficiency middleware for speculative shard pruning to prevent attention-window flooding. (Added: 2026-06-18)
+- **[P0] Mission-Root Attention Locker**: Advanced extension for HAAL mandating zero-tier attention locking for mission intents. (Added: 2026-06-18)
