@@ -165,6 +165,7 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 			return
 		}
 
+		// IDOR Fix: Enforce authorization on all HTTP methods, not just GET.
 		isAdmin := auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin")
 		if currentUserID != id && !isAdmin {
 			http.Error(w, "Forbidden", http.StatusForbidden)
