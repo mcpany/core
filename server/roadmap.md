@@ -102,11 +102,6 @@
 *   **[P0] UACO-Native Coordination Middleware**: Full implementation of UACO protocol for task negotiation, bidding, and stateful handoffs. (Added: 2026-03-19)
 *   **[P1] Unified RL Feedback Telemetry Bridge**: Middleware for collecting and normalizing conversation-feedback for RL-driven agents (e.g., OpenClaw-RL). (Added: 2026-03-19)
 *   **[P1] Enterprise Policy Sync Engine**: Service for synchronizing security policies and allowed-origins from a central management server. (Added: 2026-03-19)
-*   **[P0] Active Intent Alignment (AIA) Broker**: Authoritative alignment service issuing hardware-attested heartbeats. (Added: 2026-03-19)
-*   **[P0] UACO-Native Negotiation Hub**: Native implementation of UACO task bidding and stateful handoffs. (Added: 2026-03-19)
-*   **[P0] Multi-Modal Behavioral Attestation (MMBA)**: Advanced identity service anchoring profiles to multi-modal history. (Added: 2026-03-19)
-*   **[P1] Semantic State-Pinning (SSP)**: Attention governance middleware for mission-root fragment protection. (Added: 2026-03-19)
-*   **[P0] Temporal Shard Jitter (TSJ) Injector**: Security extension for the ESB to neutralize timing side-channels. (Added: 2026-03-19)
 
 #### Upcoming (2026-03-20 Evolution)
 

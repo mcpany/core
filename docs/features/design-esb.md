@@ -33,7 +33,9 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
 ## 4. Design & Architecture
 
 * **System Flow:**
+
     ```mermaid
+
     graph TD
         MR[Mission Root] -->|Init Mission| ESB[Entangled State Broker]
         ESB -->|Generate Keys| TPM[Hardware TPM/Enclave]
@@ -43,6 +45,7 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
         ESB -->|Verify Lineage| TPM
         TPM -->|Valid| Commit[Commit Mutation]
         TPM -->|Invalid| Alert[Trigger Shard Corruption Signal]
+
     ```
 
 * **APIs / Interfaces:**
@@ -70,11 +73,11 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
     * **Architecture Adjustment:** Introducing **Temporal Shard Jitter (TSJ) Injection** in Section 4. The ESB will now inject hardware-attested timing jitter into state synchronization for non-primary mission-root requests.
     * **Security Impact:** Mitigates the risk of subagents mapping mission-root constraints via high-frequency latency monitoring.
 
-### Update: 2026-03-19 - Mandatory TSJ Injection for Cross-Mission Sync
+### Update: 2026-06-18 - Temporal Shard Jitter (TSJ) Injection
 
-**Context:** Today's market sync revealed that hardware-bound entangled shards can leak state fragments via cache-timing side-channels.
+**Context:** Today's market sync revealed the RPE (Reasoning-Path Echo) side-channel (CVE-2026-70102) and the need for temporal isolation in entangled shards.
 **Architecture Adjustment:**
 
-* Transitioning TSJ Injection from optional to mandatory for all cross-mission synchronization requests.
-* Introducing hardware-attested "Jitter Proofs" to ensure the jitter is not being suppressed by compromised host environments.
-**Security Impact:** Neutralizes the "Enclave-Timing Mapping" exploit pattern in deep swarms.
+*   Implementing **Temporal Shard Jitter (TSJ) Injection**. MCP Any will inject hardware-attested timing jitter into the synchronization logic for non-primary mission-root requests.
+*   Mandating RNI-compliant transport jitter for all cross-mission state handoffs.
+**Security Impact:** Protects the mission root from timing-based side-channel exfiltration and attention mapping.

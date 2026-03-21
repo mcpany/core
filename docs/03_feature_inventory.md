@@ -771,6 +771,8 @@
 
 ---
 
+---
+
 ## Evolution: [2026-03-09] Updates
 
 ### Proposed Additions
@@ -940,17 +942,6 @@
 - **Enterprise Policy Sync Engine**: (P1) Core service for synchronizing security policies and allowed-origin lists from a centralized enterprise management server.
 
 ---
-
-- **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment service that issues hardware-attested heartbeats.
-- **Multi-Modal Behavioral Attestation (MMBA) Provider**: (P0) Advanced identity service anchoring stylometric profiles to multi-modal trace history (SVG/Audio).
-- **UACO-Native Negotiation Hub**: (P0) Full implementation of UACO task bidding and stateful handoffs for cross-framework swarms.
-- **Semantic State-Pinning (SSP) Middleware**: (P1) Attention governance service that pins mission-critical fragments to high-priority attention tiers.
-- **Temporal Shard Jitter (TSJ) Injector**: (P0) Security extension for the ESB that injects hardware-attested timing jitter.
-
-### Priority Shifts
-
-- **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection**.
-- **A2A Bridge**: (Promoted to P0) Evolving into the **UACO-Native Negotiation Hub**.
 
 ## Evolution: [2026-03-20] Updates
 
