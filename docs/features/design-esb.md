@@ -5,14 +5,24 @@
 
 ## 1. Context and Scope
 
-As agent swarms move toward high-frequency state sharing via sharded meshes, the risk of "Context Poisoning" and unauthorized state mutation by specialist subagents has reached a critical level. Current "Passive Sanitization" models are insufficient against sub-millisecond MTTC (Mean Time To Compromise). MCP Any needs a proactive mechanism to ensure that state fragments remain cryptographically bound to the mission-root intent, preventing any ingestion of unauthorized state.
+As agent swarms move toward high-frequency state sharing via sharded meshes, the
+risk of "Context Poisoning" and unauthorized state mutation by specialist
+subagents has reached a critical level. Current "Passive Sanitization" models
+are insufficient against sub-millisecond MTTC (Mean Time To Compromise). MCP Any
+needs a proactive mechanism to ensure that state fragments remain
+cryptographically bound to the mission-root intent, preventing any ingestion of
+unauthorized state.
 
 ## 2. Goals & Non-Goals
 
 * **Goals:**
-    * Provide hardware-attested "Entanglement Shards" for inter-teammate coordination.
+    * Provide hardware-attested "Entanglement Shards" for inter-teammate
+      coordination.
+
     * Cryptographically bind state fragments to the mission-root intent.
-    * Trigger immediate hardware-level corruption signals upon unauthorized mutation.
+    * Trigger immediate hardware-level corruption signals upon unauthorized
+      mutation.
+
     * Support sub-100ms state synchronization within sharded meshes.
 * **Non-Goals:**
     * Encrypting the entire state for all agents (performance bottleneck).
@@ -21,14 +31,23 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
 ## 3. Critical User Journey (CUJ)
 
 * **User Persona:** Local LLM Swarm Orchestrator (e.g., Claude Code Team Lead)
-* **Primary Goal:** Share high-frequency state fragments between 5 specialized teammates without risking mission-root contamination.
+* **Primary Goal:** Share high-frequency state fragments between 5 specialized
+  teammates without risking mission-root contamination.
+
 * **The Happy Path (Tasks):**
     1. The Mission-Root agent initializes a new mission scope with the ESB.
-    2. The ESB generates hardware-attested "Entanglement Keys" bound to the mission-root TPM.
-    3. Teammates request state shards from the ESB, receiving cryptographically entangled fragments.
-    4. A subagent attempts to mutate a shard outside its authorized intent branch.
-    5. The ESB detects the mutation via hardware-bound integrity checks and triggers a "Shard Corruption" signal.
-    6. The parent reasoning engine automatically rolls back the mission branch before re-ingesting the poisoned state.
+2. The ESB generates hardware-attested "Entanglement Keys" bound to the mission-
+root TPM.
+
+3. Teammates request state shards from the ESB, receiving cryptographically
+entangled fragments.
+
+4. A subagent attempts to mutate a shard outside its authorized intent branch.
+5. The ESB detects the mutation via hardware-bound integrity checks and triggers
+a "Shard Corruption" signal.
+
+6. The parent reasoning engine automatically rolls back the mission branch
+before re-ingesting the poisoned state.
 
 ## 4. Design & Architecture
 
@@ -50,34 +69,58 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
 
 * **APIs / Interfaces:**
     * `POST /v1/entanglement/init`: Initialize mission-bound entanglement keys.
-    * `POST /v1/entanglement/shard/mount`: Request a cryptographically entangled state shard.
-    * `POST /v1/entanglement/shard/commit`: Commit a mutation to an entangled shard.
+    * `POST /v1/entanglement/shard/mount`: Request a cryptographically entangled
+      state shard.
+
+    * `POST /v1/entanglement/shard/commit`: Commit a mutation to an entangled
+      shard.
+
 * **Data Storage/State:**
-    * Shards are stored in a memory-mapped, zero-copy buffer with hardware-bound integrity tags (MACs).
+    * Shards are stored in a memory-mapped, zero-copy buffer with hardware-bound
+      integrity tags (MACs).
 
 ## 5. Alternatives Considered
 
-* **Full State Encryption:** Rejected due to the prohibitive latency of per-call decryption in high-density meshes.
-* **Passive Semantic Scanning:** Rejected as it cannot detect "Low-and-Slow" semantic drift before ingestion.
+* **Full State Encryption:** Rejected due to the prohibitive latency of per-call
+  decryption in high-density meshes.
+
+* **Passive Semantic Scanning:** Rejected as it cannot detect "Low-and-Slow"
+  semantic drift before ingestion.
 
 ## 6. Cross-Cutting Concerns
 
-* **Security (Zero Trust):** All entanglement keys are hardware-bound and session-specific. "Shard Corruption" signals are non-maskable.
-* **Observability:** Real-time monitoring of "Entanglement Drift" and "Corruption Events" via the Mesh-Resident Lineage Tracker.
+* **Security (Zero Trust):** All entanglement keys are hardware-bound and
+  session-specific. "Shard Corruption" signals are non-maskable.
+
+* **Observability:** Real-time monitoring of "Entanglement Drift" and
+  "Corruption Events" via the Mesh-Resident Lineage Tracker.
 
 ## 7. Evolutionary Changelog
 
 * **2026-06-16:** Initial Document Creation.
 * **2026-06-17:** **Resolving Enclave-Timing Leakage (CVE-2026-62001).**
-    * **Context:** Today's market sync revealed that hardware-bound entangled shards can leak state fragments via cache-timing side-channels.
-    * **Architecture Adjustment:** Introducing **Temporal Shard Jitter (TSJ) Injection** in Section 4. The ESB will now inject hardware-attested timing jitter into state synchronization for non-primary mission-root requests.
-    * **Security Impact:** Mitigates the risk of subagents mapping mission-root constraints via high-frequency latency monitoring.
+    * **Context:** Today's market sync revealed that hardware-bound entangled
+      shards can leak state fragments via cache-timing side-channels.
+
+    * **Architecture Adjustment:** Introducing **Temporal Shard Jitter (TSJ)
+      Injection** in Section 4. The ESB will now inject hardware-attested timing
+      jitter into state synchronization for non-primary mission-root requests.
+
+    * **Security Impact:** Mitigates the risk of subagents mapping mission-root
+      constraints via high-frequency latency monitoring.
 
 ### Update: 2026-06-18 - Temporal Shard Jitter (TSJ) Injection
 
-**Context:** Today's market sync revealed the RPE (Reasoning-Path Echo) side-channel (CVE-2026-70102) and the need for temporal isolation in entangled shards.
+**Context:** Today's market sync revealed the RPE (Reasoning-Path Echo) side-
+channel (CVE-2026-70102) and the need for temporal isolation in entangled
+shards.
 **Architecture Adjustment:**
 
-*   Implementing **Temporal Shard Jitter (TSJ) Injection**. MCP Any will inject hardware-attested timing jitter into the synchronization logic for non-primary mission-root requests.
-*   Mandating RNI-compliant transport jitter for all cross-mission state handoffs.
-**Security Impact:** Protects the mission root from timing-based side-channel exfiltration and attention mapping.
+*   Implementing **Temporal Shard Jitter (TSJ) Injection**. MCP Any will inject
+  hardware-attested timing jitter into the synchronization logic for non-primary
+  mission-root requests.
+
+*   Mandating RNI-compliant transport jitter for all cross-mission state
+  handoffs.
+**Security Impact:** Protects the mission root from timing-based side-channel
+exfiltration and attention mapping.
