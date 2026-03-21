@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestWebrtcTool_PeerConnectionWrapper_IsHealthy(t *testing.T) {
+func TestWebrtcTool_PeerConnectionWrapper_IsHealthy_And_Close(t *testing.T) {
 	wrapper := &peerConnectionWrapper{PeerConnection: nil}
 	assert.False(t, wrapper.IsHealthy(context.Background()))
 
@@ -22,11 +22,11 @@ func TestWebrtcTool_PeerConnectionWrapper_IsHealthy(t *testing.T) {
 	// Initially, connection is in 'New' state, which is considered healthy
 	assert.True(t, wrapper.IsHealthy(context.Background()))
 
-	// Close the connection
-	err = pc.Close()
+	// Close the connection via the wrapper
+	err = wrapper.Close()
 	require.NoError(t, err)
 
+	// Since state change might be async, wait briefly for the state to transition
 	time.Sleep(100 * time.Millisecond)
-
 	assert.False(t, wrapper.IsHealthy(context.Background()))
 }

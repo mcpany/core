@@ -13,11 +13,11 @@ import (
 func TestWebrtcTool_Execute_NoPoolFallback(t *testing.T) {
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 
-	toolDef := &v1.Tool{}
-	toolDef.SetName("test-webrtc-no-pool")
-
-	// Set an invalid URL so it fails cleanly with HTTP request error
-	toolDef.SetUnderlyingMethodFqn("WEBRTC http://127.0.0.1:0/invalid")
+	// Use builder pattern matching existing tests in webrtc_test.go
+	toolDef := v1.Tool_builder{
+		Name: ptr("test-webrtc-no-pool"),
+		UnderlyingMethodFqn: ptr("WEBRTC http://127.0.0.1:0/invalid"),
+	}.Build()
 
 	callDef := &configv1.WebrtcCallDefinition{}
 
