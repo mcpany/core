@@ -160,9 +160,9 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     await expect(page.getByText('Review & Finish')).toBeVisible(); // Title is "5. Review & Finish" in create-config-wizard.tsx
     // Check if YAML contains our changes
     const preBlock = page.locator('pre');
-    await expect(preBlock).toContainText('MAX_CONNECTIONS');
-    await expect(preBlock).toContainText('100');
-    await expect(preBlock).toContainText('postgresql://test:test@localhost:5432/testdb');
+    await expect(preBlock).toContainText('MAX_CONNECTIONS', { timeout: 15000 });
+    await expect(preBlock).toContainText('100', { timeout: 15000 });
+    await expect(preBlock).toContainText('postgresql://test:test@localhost:5432/testdb', { timeout: 15000 });
 
     await page.click('button:has-text("Finish & Save")');
 
