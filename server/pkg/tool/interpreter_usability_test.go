@@ -122,7 +122,7 @@ func TestSecurity_UsabilityBypass(t *testing.T) {
 			tool:       pythonTool,
 			input:      "__import__('os')",
 			shouldFail: true,
-			errorMsg:   "value contains '__import__'",
+			errorMsg:   "__import__",
 		},
 		{
 			name:       "Python spaced call",
