@@ -20,13 +20,20 @@ import (
 	"testing"
 	"time"
 
-
+	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
 
 func TestDockerComposeE2E(t *testing.T) {
-	t.Skip("Skipped due to docker-in-docker issues")
+	if os.Getenv("E2E_DOCKER") != "true" {
+		// Auto-detect if we can run it, or just set it to true if we are confident.
+		// For this task, we want to resurrect it.
+		// We'll proceed if docker is available.
+		if !integration.IsDockerSocketAccessible() {
+			t.Skip("Skipping E2E Docker test. Docker not accessible and E2E_DOCKER!=true")
+		}
+	}
 
 	rootDir, err := os.Getwd()
 	require.NoError(t, err)
@@ -129,7 +136,7 @@ func TestDockerComposeE2E(t *testing.T) {
 	// The previous test code had: if _, err := os.Stat(fmt.Sprintf("%s/docker-compose.yml", rootDir)); err == nil { ... }
 	// Let's keep strict parity but make it dynamic.
 	rootCompose := filepath.Join(rootDir, "docker-compose.yml")
-	if false {
+	if _, err := os.Stat(rootCompose); err == nil {
 		t.Log("Starting root docker-compose with dynamic ports...")
 		// Create dynamic override
 		dynamicCompose := createDynamicCompose(t, rootDir, rootCompose)
@@ -138,12 +145,15 @@ func TestDockerComposeE2E(t *testing.T) {
 
 		// We must pass --project-directory because the dynamic file is in build/
 		// We explicitly start only mcpany-server (and dependencies) and prometheus to avoid requiring the UI image
+		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", rootDir, "up", "-d", "--wait", "mcpany-server", "prometheus")
 
 		// Discover ports
 		serverPort := getServicePort(dynamicCompose, rootDir, "mcpany-server", "50050")
 
 		t.Logf("Root mcpany-server running on port %s", serverPort)
+		verifyEndpoint(t, fmt.Sprintf("http://127.0.0.1:%s/healthz", serverPort), 200, 30*time.Second)
 
+		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", rootDir, "down")
 	} else {
 		t.Log("Skipping root docker-compose test (docker-compose.yml not found)")
 	}
@@ -156,22 +166,27 @@ func TestDockerComposeE2E(t *testing.T) {
 	currentComposeFile = dynamicCompose
 	defer os.Remove(dynamicCompose)
 
+	runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", exampleDir, "up", "-d", "--wait")
 
 	// 6. Verify Example Health
 	serverPort := getServicePort(dynamicCompose, exampleDir, "mcpany-server", "50050")
 	t.Logf("Example mcpany-server running on port %s", serverPort)
+	verifyEndpoint(t, fmt.Sprintf("http://127.0.0.1:%s/healthz", serverPort), 200, 30*time.Second)
 
 	// 7. Functional Test: Simulate Gemini CLI & Verify Metrics
 	t.Log("Simulating Gemini CLI interaction with echo tool...")
+	simulateGeminiCLI(t, fmt.Sprintf("http://127.0.0.1:%s", serverPort))
 
 	t.Log("Verifying tool execution metrics...")
 	// Note: Metrics are on the same port 50050 for standard serve (or 50051? checks config).
 	// Original test checked 51234/metrics.
 	// If we use dynamic port, it maps to 50050 (internal).
+	verifyToolMetricDirect(t, fmt.Sprintf("http://127.0.0.1:%s/metrics", serverPort), "docker-http-echo.echo")
 
 	// 8. Functional Test: Weather Service (Real external call)
 	t.Log("Starting Weather Service functional test...")
 	// Pass rootDir and use dynamic ports internally too
+	testFunctionalWeather(t, rootDir)
 
 	t.Log("E2E Test Passed!")
 }
