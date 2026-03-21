@@ -1036,17 +1036,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-18]
-### Focus: Autonomously Reactive Security & Recursive Lineage
-**Context**: Today's market shifts necessitate a pivot towards **Autonomously Reactive Security**. The emergence of the OpenClaw ACR Protocol and the disclosure of CVE-2026-71001 (Recursive Shadow Handoffs) demonstrate that context isolation is no longer sufficient. MCP Any must evolve from a passive adapter to an active enforcement bus that performs hardware-locked reasoning-path watermarking and recursive lineage tracking.
-**Strategic Pivot**:
-- **ACR Hub Controller**: MCP Any will evolve to act as the authoritative hub for the OpenClaw ACR Protocol. We will implement autonomous capability revocation, allowing the bus to immediately lock down subagents that exhibit anomalous intent-drift or unauthorized recursive spawning.
-- **Recursive Depth-Limit Enforcer (RDLE)**: To neutralize "Shadow Handoffs," we are introducing the RDLE. This service will recursively track the depth and lineage of all subagent handoffs, enforcing hard, hardware-attested limits on sub-mission branching to prevent un-audited resource escalation.
-- **Reasoning-Path Watermarking**: Supporting the HAIL standard, we will implement cryptographically signed "Reasoning Watermarks." Every fragment of reasoning produced by a subagent will carry a hardware-bound signature that links it back to the mission-root intent, ensuring non-repudiation across deep meshes.
-- **Dynamic Policy Pruning**: We are introducing "Active Pruning" for shared teammate state. MCP Any will automatically purge context fragments that diverge from the verified mission manifest, ensuring that "Intent Poisoning" cannot persist in the sharded mailbox.
-
----
-
 ## Strategic Evolution: [2026-06-17]
 ### Focus: Active Intent Alignment & Multi-Modal Identity Sovereignty
 **Context**: The emergence of "Intent Drift" in cryptographically valid reasoning chains and the disclosure of "Enclave-Timing Leakage" (CVE-2026-62001) prove that static attestation and binary handoffs are no longer sufficient. We must protect the **semantic alignment** of the reasoning path and ensure **temporal isolation** for entangled shards. Simultaneously, "Stylometric Collision" in horizontal meshes demands higher-dimensional behavioral anchoring.
@@ -1055,3 +1044,11 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Multi-Modal Behavioral Attestation (MMBA)**: Supporting the sovereignty of the teammate mesh, we are introducing MMBA. This anchors the agent's stylometric profile to its multi-modal trace history (SVG/Audio), providing a higher-dimensional identity signature that is resilient to reasoning-path shadowing.
 - **Reasoning-Aware Garbage Collection (R-GC)**: To neutralize "Speculative Overload," MCP Any will implement R-GC for the Speculative Branching Guard. This service automatically purges speculative context fragments that exhibit high reasoning entropy but low mission utility, preventing cognitive stall in deep swarms.
 - **Temporal Shard Jitter (TSJ) Injection**: To counter CVE-2026-62001, we are upgrading the ESB to include TSJ Injection. This layer will inject hardware-attested timing jitter into entangled state synchronization for non-primary mission-root requests, ensuring absolute temporal isolation in sharded meshes.
+
+## Strategic Evolution: [2026-06-18]
+### Focus: Autonomous Context Governance & ACR Compliance
+**Context**: Today's market shift toward the OpenClaw ACR (Agent Capability Registry) Protocol and the discovery of Recursive Shadow Handoff exploits (CVE-2026-71001) necessitate a move toward hardware-locked context lineage. MCP Any will now transition from being a passive context bus to an active context governor.
+**Strategic Pivot**:
+- **ACR Hub Controller**: MCP Any will evolve to host the industry's first ACR-compliant hub. This service enforces capability-based access control (CBAC) at the tool-discovery layer, enabling autonomous capability revocation and recursive lock-down to prevent subagent capability escalation.
+- **Recursive Depth-Limit Enforcer (RDLE)**: To mitigate shadow handoff loops, we are introducing the RDLE. This middleware will inject hardware-attested depth-markers into all tool calls and task delegations, enabling Zero Trust termination of unauthorized agent swarms exceeding configured handoff limits.
+- **Hardware-Bound Identity Governance**: We are mandating the integration of local TEEs (Trusted Execution Environments) to ensure that tool execution is cryptographically bound to the originating agent's session and mission-root lineage, neutralizing identity spoofing in deep delegations.

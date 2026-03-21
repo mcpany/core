@@ -41,7 +41,7 @@ const (
 // String returns the string representation of the severity.
 //
 // Parameters:
-//   - s (Severity): The severity level to convert.
+//   - s: Severity. The severity level to convert.
 //
 // Returns:
 //   - string: The string representation (e.g., "ERROR").
@@ -85,7 +85,7 @@ type Result struct {
 // String returns the human-readable representation of the result.
 //
 // Parameters:
-//   - r (Result): The result instance to format.
+//   - r: Result. The result instance to format.
 //
 // Returns:
 //   - string: A formatted string containing result details.
@@ -119,7 +119,7 @@ type Linter struct {
 // NewLinter creates a new Linter instance.
 //
 // Parameters:
-//   - cfg (*configv1.McpAnyServerConfig): The configuration to analyze.
+//   - cfg: *configv1.McpAnyServerConfig. The configuration to analyze.
 //
 // Returns:
 //   - *Linter: A new Linter instance.
@@ -138,7 +138,7 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 // Run executes all configured linting checks.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the operation.
+//   - ctx: context.Context. The context for the operation.
 //
 // Returns:
 //   - []Result: A slice of linting findings.

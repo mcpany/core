@@ -3,7 +3,7 @@
 **Created:** 2026-03-14
 
 ## 1. Context and Scope
-The OpenClaw security crisis (CVE-2026-25253) has demonstrated that the "Local Trust" model--where localhost connections are implicitly trusted--is a critical vulnerability. Malicious websites can use JavaScript to initiate cross-site requests (CSWSH/CSRF) to local agent gateways, stealing authentication tokens and achieving RCE. MCP Any must implement a mandatory Same-Origin Policy (SOP) enforcement layer for all its local listeners.
+The OpenClaw security crisis (CVE-2026-25253) has demonstrated that the "Local Trust" model—where localhost connections are implicitly trusted—is a critical vulnerability. Malicious websites can use JavaScript to initiate cross-site requests (CSWSH/CSRF) to local agent gateways, stealing authentication tokens and achieving RCE. MCP Any must implement a mandatory Same-Origin Policy (SOP) enforcement layer for all its local listeners.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
