@@ -99,7 +99,7 @@ export const BuiltInTools: Record<string, Tool> = {
                   condition: current.weatherDesc[0].value,
                   humidity: current.humidity + "%"
               };
-          } catch (error) {
+          } catch (_error) {
               return {
                   location,
                   error: "Could not fetch real weather data. Please try again later."

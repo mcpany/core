@@ -26,7 +26,7 @@ export function unwrapMcpResult(result: any): any {
                  if (Array.isArray(inner) || (typeof inner === 'object' && inner !== null)) {
                      content = inner;
                  }
-             } catch (e) {
+             } catch (_e) {
                  // stdout is not JSON
              }
          }
@@ -52,7 +52,7 @@ export function unwrapMcpResult(result: any): any {
                     if (typeof parsed === 'object' && parsed !== null) {
                         return parsed;
                     }
-                } catch (e) {
+                } catch (_e) {
                     // Not JSON inside text
                 }
             }
@@ -89,9 +89,9 @@ export function deepParseJson(obj: any): any {
                      if (typeof innerParsed === 'object' && innerParsed !== null) {
                           return deepParseJson(parsed);
                      }
-                 } catch (e) {}
+                 } catch (_e) {}
             }
-        } catch (e) {
+        } catch (_e) {
             // Not a JSON string
         }
         return obj;

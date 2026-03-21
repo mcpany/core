@@ -89,7 +89,7 @@ describe('StackEditor', () => {
       services: []
     });
 
-    const { container } = render(<StackEditor stackId="test-stack" />);
+    render(<StackEditor stackId="test-stack" />);
 
     // Find textarea by selector if role is elusive
     await waitFor(() => expect(screen.getByTestId('config-editor-mock')).toBeInTheDocument());
