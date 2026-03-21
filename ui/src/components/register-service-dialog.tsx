@@ -301,12 +301,12 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
 
           const config = constructConfig(values);
           const response = await apiClient.validateService(config);
-          setValidationResult({ valid: response.valid, message: response instanceof Error ? response.message : 'Unknown error' });
+          setValidationResult({ valid: response.valid, message: response.message });
 
           if (response.valid) {
-              toast({ title: "Validation Successful", description: response instanceof Error ? response.message : 'Unknown error' });
+              toast({ title: "Validation Successful", description: response.message });
           } else {
-              toast({ variant: "destructive", title: "Validation Failed", description: response instanceof Error ? response.message : 'Unknown error' });
+              toast({ variant: "destructive", title: "Validation Failed", description: response.message });
           }
       } catch (error: any) {
           toast({ variant: "destructive", title: "Validation Error", description: error.message });
