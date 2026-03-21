@@ -60,7 +60,7 @@ jobs:
             . venv/bin/activate
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
-            npm install -g pnpm
+            sudo npm install -g pnpm
             cd ui && pnpm install && cd ..
             bazel run //:lint
       - save_cache:
