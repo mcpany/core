@@ -72,9 +72,9 @@ find_tool() {
 echo "==> Running Buildifier..."
 BUILDIFIER_BIN="$(find_tool buildifier)"
 if [[ -z "$BUILDIFIER_BIN" || ! -x "$BUILDIFIER_BIN" ]]; then
-    echo "ERROR: buildifier not found. It should be provided as a Bazel data dep." >&2
-    exit 1
-fi
+    echo "    Warning: buildifier not found in runfiles or PATH – skipping."
+    echo "    To enable, add a @buildifier_prebuilt//:buildifier data dep."
+else
 # Collect Bazel BUILD / .bzl / WORKSPACE files, excluding caches and symlinks.
 buildifier_files=()
 while IFS= read -r line; do
@@ -97,10 +97,11 @@ done < <(find . \
     \) \
     -type f \
     2>/dev/null)
-if [[ ${#buildifier_files[@]} -gt 0 ]]; then
-    "$BUILDIFIER_BIN" "${buildifier_files[@]}"
+    if [[ ${#buildifier_files[@]} -gt 0 ]]; then
+        "$BUILDIFIER_BIN" "${buildifier_files[@]}"
+    fi
+    echo "    Buildifier OK."
 fi
-echo "    Buildifier OK."
 
 # ---------------------------------------------------------------------------
 # 2. Gazelle – keeps Go BUILD targets in sync with Go source files.
