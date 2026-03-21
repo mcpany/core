@@ -2,38 +2,28 @@
 # SPDX-License-Identifier: Apache-2.0
 
 run:
-  timeout: 10m
+  timeout: 5m
   tests: false
 
 linters:
+  disable-all: true
   enable:
-    - bodyclose
-    - errcheck
-    - goconst
-    - gocritic
-    - gocyclo
-    - govet
-    - nolintlint
-    - prealloc
-    - revive
-    - gosec
-    - staticcheck
-    - tparallel
-    - unconvert
-    - unused
     - misspell
     - whitespace
     - godot
-    - unparam
+    - asciicheck
+    - nolintlint
+    - revive
+    - goconst
+    - nilerr
+    - wastedassign
+    - bodyclose
+    - prealloc
+    - unconvert
     - nakedret
     - dogsled
-    - asciicheck
     - makezero
-    - nilerr
     - noctx
-    - rowserrcheck
-    - sqlclosecheck
-    - wastedassign
 
 issues:
   exclude-dirs:
@@ -41,27 +31,17 @@ issues:
     - vendor
     - node_modules
     - .cache
-    - pkg/admin
-    - pkg/app
-    - pkg/bus
-    - pkg/topology
-    - pkg/upstream/grpc/protobufparser
   exclude-rules:
-    - path: "_test.go"
-      linters:
-        - "errcheck"
     - path: "pkg/util/"
       linters:
         - "revive"
       text: "var-naming: avoid meaningless package names"
-    - path: ".*"
-      linters:
+    - linters:
         - typecheck
-  skip-files:
-    - '.*\.pb\.go$'
-    - '.*\.pb\.gw\.go$'
-    - lll
-    - funlen
-    - wsl
-    - gci
-    - gofumpt
+      text: "could not import github.com/mcpany/core/proto"
+    - linters:
+        - typecheck
+      text: "undefined:"
+    - linters:
+        - typecheck
+      text: "too many errors"

@@ -1727,15 +1727,7 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 	if _, ok := configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName]; !ok {
 		t.Fatalf("Invalid HTTP method provided: %s", httpMethod)
 	}
-	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
-
 	callID := "call-" + toolDef.GetName()
-	callDef := configv1.HttpCallDefinition_builder{
-		Id:           &callID,
-		EndpointPath: &endpointPath,
-		Method:       &method,
-		Parameters:   params,
-	}.Build()
 	toolDef.SetCallId(callID)
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
@@ -1743,7 +1735,17 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 		HttpService: configv1.HttpUpstreamService_builder{
 			Address: &baseURL,
 			Tools:   []*configv1.ToolDefinition{toolDef},
-			Calls:   map[string]*configv1.HttpCallDefinition{callID: callDef},
+			Calls: map[string]*configv1.HttpCallDefinition{
+				callID: func() *configv1.HttpCallDefinition {
+					m := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
+					return configv1.HttpCallDefinition_builder{
+						Id:           &callID,
+						EndpointPath: &endpointPath,
+						Method:       &m,
+						Parameters:   params,
+					}.Build()
+				}(),
+			},
 		}.Build(),
 	}
 	if authConfig != nil {
@@ -2064,15 +2066,8 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 	if _, ok := configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName]; !ok {
 		t.Fatalf("Invalid HTTP method provided: %s", httpMethod)
 	}
-	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
-
 	toolDef := configv1.ToolDefinition_builder{Name: &operationID}.Build()
 	callID := "call-" + toolDef.GetName()
-	callDef := configv1.HttpCallDefinition_builder{
-		Id:           &callID,
-		EndpointPath: &endpointPath,
-		Method:       &method,
-	}.Build()
 	toolDef.SetCallId(callID)
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
@@ -2080,7 +2075,16 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 		HttpService: configv1.HttpUpstreamService_builder{
 			Address: &baseURL,
 			Tools:   []*configv1.ToolDefinition{toolDef},
-			Calls:   map[string]*configv1.HttpCallDefinition{callID: callDef},
+			Calls: map[string]*configv1.HttpCallDefinition{
+				callID: func() *configv1.HttpCallDefinition {
+					m := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
+					return configv1.HttpCallDefinition_builder{
+						Id:           &callID,
+						EndpointPath: &endpointPath,
+						Method:       &m,
+					}.Build()
+				}(),
+			},
 		}.Build(),
 	}
 	if authConfig != nil {
