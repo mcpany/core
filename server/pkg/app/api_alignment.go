@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // SubagentStatus defines the structure for AIA heartbeat responses.
