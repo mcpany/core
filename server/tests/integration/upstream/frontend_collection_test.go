@@ -128,7 +128,7 @@ func TestFrontendReactCollection(t *testing.T) {
 func findWorkspaceRoot(t *testing.T) string {
 	t.Helper()
 	if _, file, _, ok := runtime.Caller(0); ok {
-		candidate := filepath.Clean(filepath.Join(filepath.Dir(file), "../../../.."))
+		candidate := filepath.Clean(filepath.Join(filepath.Dir(file), "../../../../.."))
 		if _, err := os.Stat(filepath.Join(candidate, "marketplace")); err == nil {
 			return candidate
 		}

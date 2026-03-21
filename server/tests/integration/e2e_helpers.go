@@ -270,7 +270,10 @@ func isServerProjectRoot(dir string) bool {
 
 func symlinkIfPresent(src, dst string) error {
 	if _, err := os.Stat(src); err != nil {
-		return nil
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return err
 	}
 	return os.Symlink(src, dst)
 }
@@ -876,7 +879,7 @@ func (s *MCPANYTestServerInfo) SeedDatabase(ctx context.Context, seedData []byte
 		body, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("seed failed: status=%d, body=%s", resp.StatusCode, string(body))
 	}
-	return nil
+	return err
 }
 
 // WebsocketEchoServerInfo contains information about a running Websocket echo server.
@@ -1530,7 +1533,7 @@ func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 		body, _ := io.ReadAll(respNotify.Body)
 		return fmt.Errorf("initialized notification failed: status=%d, body=%s", respNotify.StatusCode, string(body))
 	}
-	return nil
+	return err
 }
 
 // parseMCPResponse parses the response body, handling both JSON and SSE formats.
