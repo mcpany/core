@@ -4,12 +4,9 @@
  */
 
 import { request, APIRequestContext } from '@playwright/test';
-
-// Use basic any types to avoid failing on missing generated protobuf files during test execution
-// in isolated sandboxes where `make gen` hasn't been or can't be run.
-type ServiceTemplate = any;
-type UpstreamServiceConfig = any;
-type User = any;
+import { ServiceTemplate } from '../../../proto/config/v1/service_template';
+import { UpstreamServiceConfig } from '../../../proto/config/v1/upstream_service';
+import { User } from '../../../proto/config/v1/user';
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
