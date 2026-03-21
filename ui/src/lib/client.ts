@@ -126,7 +126,7 @@ const rpc = new GrpcWebImpl(getBaseUrl(), {
 });
 const registrationClient = new RegistrationServiceClientImpl(rpc);
 
-const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
+export const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
     // Inject Authorization header from localStorage if available
     if (typeof window !== 'undefined') {
@@ -2063,6 +2063,23 @@ export const apiClient = {
         const res = await fetchWithAuth(url);
         if (!res.ok) throw new Error('Failed to fetch traces');
         return res.json();
+    },
+
+    /**
+     * Clears all execution traces.
+     *
+     * Summary: Clears traces history.
+     *
+     * @returns A promise that resolves when the traces are cleared.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a DELETE request to /api/v1/traces.
+     */
+    clearTraces: async () => {
+        const res = await fetchWithAuth('/api/v1/traces', {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to clear traces');
     },
 
     /**

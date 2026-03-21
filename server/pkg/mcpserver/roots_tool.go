@@ -19,6 +19,8 @@ import (
 //
 // It provides a built-in tool ("mcp:list_roots") that allows the server to query the client
 // for available filesystem roots.
+//
+// Summary: Represents a RootsTool.
 type RootsTool struct {
 	tool    *v1.Tool
 	mcpTool *mcp.Tool
@@ -28,6 +30,20 @@ type RootsTool struct {
 //
 // Returns:
 //   - *RootsTool: A new instance of RootsTool.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewRootsTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -59,6 +75,20 @@ func NewRootsTool() *RootsTool {
 //
 // Side Effects:
 //   - None.
+//
+// Summary: Executes Tool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -67,6 +97,20 @@ func (t *RootsTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes MCPTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -89,6 +133,29 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - Sends a "roots/list" request to the client.
+//
+// Summary: Executes Execute operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+
+func (t *RootsTool) IsStreaming() bool {
+	return false
+}
+
+func (t *RootsTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {
@@ -107,6 +174,20 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 //
 // Returns:
 //   - *configv1.CacheConfig: Always nil (caching disabled).
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Retrieves GetCacheConfig operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

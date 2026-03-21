@@ -34,6 +34,8 @@ import (
 // OpenAPIUpstream implements the upstream.Upstream interface for services that
 // are defined by an OpenAPI specification. It parses the spec, discovers the
 // available operations, and registers them as tools.
+//
+// Summary: Represents a OpenAPIUpstream.
 type OpenAPIUpstream struct { //nolint:revive
 	openapiCache *ttlcache.Cache[string, *openapi3.T]
 	httpClients  map[string]*http.Client
@@ -55,6 +57,20 @@ type OpenAPIUpstream struct { //nolint:revive
 //
 // Side Effects:
 //   - None.
+//
+// Summary: Executes Shutdown operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -71,6 +87,20 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 //
 // Returns:
 //   - upstream.Upstream: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewOpenAPIUpstream operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -107,6 +137,20 @@ func NewOpenAPIUpstream() upstream.Upstream {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes Register operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (u *OpenAPIUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -169,9 +213,8 @@ func (u *OpenAPIUpstream) Register(
 		}
 
 		if specURL != "" {
-			client := &http.Client{
-				Timeout: 30 * time.Second,
-			}
+			client := util.NewSafeHTTPClient()
+			client.Timeout = 30 * time.Second
 			req, err := http.NewRequestWithContext(ctx, "GET", specURL, nil)
 			if err != nil {
 				logging.GetLogger().Warn("Failed to create request for OpenAPI spec", "url", specURL, "error", err)
@@ -299,6 +342,20 @@ type httpClientImpl struct {
 //
 // Errors:
 //   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Do operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

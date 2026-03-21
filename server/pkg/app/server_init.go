@@ -12,6 +12,7 @@ import (
 	"os"
 
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
@@ -20,18 +21,31 @@ import (
 	"github.com/mcpany/core/server/pkg/util/passhash"
 )
 
-func (a *Application) initializeDatabase(ctx context.Context, store config.Store) error {
+func (a *Application) initializeDatabase(ctx context.Context, store config.Store, cfg *configv1.McpAnyServerConfig) error {
 	log := logging.GetLogger()
-	// Check if already initialized
+
+	// If the runtime config already contains explicit content, don't seed DB defaults over it.
+	if cfg != nil {
+		hasServices := len(cfg.GetUpstreamServices()) > 0
+		hasUsers := len(cfg.GetUsers()) > 0
+		hasCollections := len(cfg.GetCollections()) > 0
+		hasGlobalSettings := hasConfiguredFields(cfg.GetGlobalSettings())
+		if hasServices || hasUsers || hasCollections || hasGlobalSettings {
+			log.Debug("Configuration already present (detected in merged config), skipping database initialization.")
+			return nil
+		}
+	}
+
+	// Double-check if already initialized in DB specifically
 	s, ok := store.(storage.Storage)
 	if !ok {
 		// Just Load using Store interface
-		cfg, err := store.Load(ctx)
+		dbCfg, err := store.Load(ctx)
 		if err != nil {
 			return err
 		}
-		if cfg != nil && (len(cfg.GetUpstreamServices()) > 0 || cfg.GetGlobalSettings() != nil) {
-			return nil // Already initialized
+		if dbCfg != nil && (len(dbCfg.GetUpstreamServices()) > 0 || dbCfg.GetGlobalSettings() != nil) {
+			return nil // Already initialized in DB
 		}
 	} else {
 		// Use Storage interface
@@ -49,13 +63,13 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 		}
 	}
 
-	log.Info("Database appears empty, initializing with default configuration...")
+	log.Info("Database appears empty and no configuration provided, initializing with default configuration...")
 
 	// Default Configuration
 	defaultGS := configv1.GlobalSettings_builder{
 		ProfileDefinitions: []*configv1.ProfileDefinition{
 			configv1.ProfileDefinition_builder{
-				Name: proto.String("Default Dev"),
+				Name: proto.String("default"),
 				Selector: configv1.ProfileSelector_builder{
 					Tags: []string{"dev"},
 				}.Build(),
@@ -139,6 +153,20 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 
 	log.Info("Database initialized successfully.")
 	return nil
+}
+
+func hasConfiguredFields(message proto.Message) bool {
+	if message == nil {
+		return false
+	}
+
+	hasFields := false
+	message.ProtoReflect().Range(func(protoreflect.FieldDescriptor, protoreflect.Value) bool {
+		hasFields = true
+		return false
+	})
+
+	return hasFields
 }
 
 func (a *Application) seedCollections(ctx context.Context, store config.Store) error {

@@ -247,7 +247,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         // Click Add Service (Button)
         await page.getByRole('button', { name: 'Add Service' }).click();
         await page.waitForTimeout(1000);
-        await expect(page.getByText('New Service')).toBeVisible();
+        await expect(page.getByText('Select Service Template')).toBeVisible();
 
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_add_dialog.png') });
 

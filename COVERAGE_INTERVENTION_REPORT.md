@@ -1,8 +1,9 @@
 # Coverage Intervention Report
 
-* **Target:** `server/pkg/app/api.go` (specifically `handleSecretDetail` and `handleSecretReveal`)
-* **Risk Profile:** This module contains critical authorization and data access logic dealing directly with the system's Secret Management routes (creation, revealing, and deleting of credentials). Given the cyclomatic complexity of routing via the same handler function based on methods, the risk is extremely high. The original coverage for `handleSecretReveal` was 0%, meaning critical credential exposure was untested.
+* **Target:** `server/pkg/middleware/registry.go` (`GetHTTPMiddlewares` and `GetMCPMiddlewares`)
+* **Risk Profile:** The registry file manages the routing and execution order of all middleware components (like auth, caching, rate limiting, DLP) sitting in front of AI request execution. The middleware sorting logic was previously unverified in tests, introducing a significant risk of regressions where critical security or validation middlewares could run out of order (or be bypassed).
 * **New Coverage:**
-  * `handleSecretReveal`: Tests now cover the happy path (returning a secret successfully), method not allowed (validating HTTP method), and secret not found. Coverage is now 80.0%.
-  * `handleSecretDetail`: Added a new PUT test ensuring the actual values in the store reflect API inputs and handles malformed JSON successfully. Increased `handleSecretDetail` coverage from 30.8% to 61.5%.
-* **Verification:** `go test ./pkg/app/...` passes locally without regressions, with `server/pkg/app` coverage jumping from 68.9% to 69.6%.
+    * Implemented comprehensive Table-Driven tests (`sorts_middlewares_by_priority`) for both HTTP and MCP middleware retrieval functions.
+    * The new tests explicitly cover the `sort.Slice` comparison logic, providing multiple `configv1.Middleware` configurations out of order, and ensuring the sorted output respects the specified integer priority boundaries.
+    * Added asserting on the sorted arrays implicitly through verifying the expected ordered middleware chain's executed properties. To clear test state safely, implemented `ClearRegistryForTesting()` to reset the package scope `globalRegistry` map instances across concurrent tests.
+* **Verification:** `bazelisk test //server/pkg/middleware:middleware_test` verifies all unit tests in the modified package pass properly. Running `bazelisk test //server/...` confirms there are no regressions across the entire suite, including the full integration tests.

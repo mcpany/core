@@ -9,13 +9,15 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 // DynamicResource implements the Resource interface for resources that are
 // fetched dynamically by executing a tool.
+//
+// Summary: Represents a DynamicResource.
 type DynamicResource struct {
 	resource *mcp.Resource
 	tool     tool.Tool
