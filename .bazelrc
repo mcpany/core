@@ -110,3 +110,4 @@ test:remote --local_test_jobs=8
 build:local --remote_cache=
 build:local --remote_executor=
 build:local --spawn_strategy=local
+startup --host_jvm_args=-Xmx6g
