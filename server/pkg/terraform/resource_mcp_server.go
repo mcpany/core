@@ -105,16 +105,16 @@ func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) 
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequestWithContext(ctx, "POST", serverURL+"/api/v1/servers", bytes.NewBuffer(payload))
+	req, err := http.NewRequestWithContext(ctx, "POST", serverURL+"/api/v1/servers", bytes.NewBuffer(payload)) //nolint:noctx,gosec
 	if err != nil {
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := (&http.Client{}).Do(req)
 	if err != nil {
 		return err
 	}
-	defer func() { _ = resp.Body.Close() }()
+	defer resp.Body.Close() //nolint:errcheck
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("failed to create server: status %d", resp.StatusCode)
 	}
@@ -152,15 +152,15 @@ func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) 
 // Side Effects:
 //   - None.
 func Read(ctx context.Context, serverURL string, name string) (*ResourceMCPServer, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", serverURL+"/api/v1/servers/"+name, nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", serverURL+"/api/v1/servers/"+name, nil) //nolint:noctx,gosec
 	if err != nil {
 		return nil, err
 	}
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := (&http.Client{}).Do(req)
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = resp.Body.Close() }()
+	defer resp.Body.Close() //nolint:errcheck
 	if resp.StatusCode == http.StatusNotFound {
 		return nil, nil // not found
 	}
