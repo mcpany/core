@@ -27,7 +27,7 @@ func TestHandleUsers_TableDriven(t *testing.T) {
 	app.Storage = store
 	handler := app.handleUsers(store)
 
-	existingUser := configv1.User_builder{Id: proto.String("existing-user")}.Build()
+	existingUser := &configv1.User{Id: proto.String("existing-user")}
 	require.NoError(t, store.CreateUser(context.Background(), existingUser))
 
 	tests := []struct {
@@ -114,7 +114,7 @@ func TestHandleUserDetail_TableDriven(t *testing.T) {
 	app.Storage = store
 	handler := app.handleUserDetail(store)
 
-	existingUser := configv1.User_builder{Id: proto.String("user-test-detail")}.Build()
+	existingUser := &configv1.User{Id: proto.String("user-test-detail")}
 	require.NoError(t, store.CreateUser(context.Background(), existingUser))
 
 	tests := []struct {
