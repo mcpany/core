@@ -158,7 +158,6 @@ oci.pull(
         "linux/arm64",
     ],
 )
-
 # Distroless Node.js 24 image used as the base for the UI container (vite preview).
 oci.pull(
     name = "distroless_nodejs24",

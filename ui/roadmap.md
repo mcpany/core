@@ -283,11 +283,6 @@
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
 
-#### Upcoming (2026-05-06 Evolution)
-- [ ] **[P0] Temporal Memory Purge Dashboard**: Visualize the lifecycle of ephemeral RAMS shards and purge events. (Added: 2026-05-06)
-- [ ] **[P0] RBW Handshake Monitor**: Real-time visualization of Reasoning-Bound WebSocket handshakes and "Reasoning Proof" validation. (Added: 2026-05-06)
-- [ ] **[P1] DCP Schema View**: UI for reviewing pruned tool schemas and the associated task lifecycle proofs. (Added: 2026-05-06)
-
 #### Upcoming (2026-05-05 Evolution)
 - [ ] **[P0] RAMS Shard Inspector**: Visual debugger for reasoning-aware memory segments and intent-sealed shards. (Added: 2026-05-05)
 - [ ] **[P0] HEPA Security Widget**: Real-time status for hardware-enclave path attestation and TPM-locked configs. (Added: 2026-05-05)

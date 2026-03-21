@@ -15,8 +15,8 @@ go_library(
     deps = [
         "//proto/config/v1:config",
         "//server/pkg/logging",
-        "@org_golang_google_protobuf//encoding/protojson:go_default_library",
-        "@org_modernc_sqlite//:go_default_library",
+        "@org_golang_google_protobuf//encoding/protojson",
+        "@org_modernc_sqlite//:sqlite",
     ],
 )
 
@@ -31,8 +31,8 @@ go_test(
     deps = [
         "//proto/config/v1:config",
         "//server/pkg/logging",
-        "@com_github_stretchr_testify//assert:go_default_library",
-        "@com_github_stretchr_testify//require:go_default_library",
-        "@org_golang_google_protobuf//proto:go_default_library",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_protobuf//proto",
     ],
 )

@@ -15,7 +15,7 @@ proto_library(
     name = "v1_proto",
     srcs = ["weather.proto"],
     visibility = ["//visibility:public"],
-    deps = ["@protobuf//:go_default_library"],
+    deps = ["@protobuf//:go_features_proto"],
 )
 
 go_proto_library(
@@ -42,7 +42,7 @@ go_test(
     srcs = ["weather_test.go"],
     embed = [":weather"],
     deps = [
-        "@com_github_stretchr_testify//assert:go_default_library",
-        "@org_golang_google_protobuf//proto:go_default_library",
+        "@com_github_stretchr_testify//assert",
+        "@org_golang_google_protobuf//proto",
     ],
 )

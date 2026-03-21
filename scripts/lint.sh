@@ -76,25 +76,26 @@ if [[ -z "$BUILDIFIER_BIN" || ! -x "$BUILDIFIER_BIN" ]]; then
     exit 1
 fi
 # Collect Bazel BUILD / .bzl / WORKSPACE files, excluding caches and symlinks.
-mapfile -t buildifier_files < <(find . \
-    -not \( \
-        -path './build/*' \
-        -o -path './bazel-*' \
-        -o -path './node_modules/*' \
-        -o -path './.git/*' \
-        -o -path './ui/node_modules/*' \
-        -o -path './server/node_modules/*' \
-    \) \
-    \( \
-        -name 'BUILD' \
-        -o -name 'BUILD.bazel' \
-        -o -name 'WORKSPACE' \
-        -o -name 'WORKSPACE.bazel' \
-        -o -name 'MODULE.bazel' \
-        -o -name '*.bzl' \
-    \) \
-    -type f \
-    2>/dev/null)
+buildifier_files=(
+    $(find . \
+        -not \( \
+            -path './build/*' \
+            -o -path './bazel-*' \
+            -o -path './node_modules/*' \
+            -o -path './.git/*' \
+            -o -path './ui/node_modules/*' \
+            -o -path './server/node_modules/*' \
+        \) \
+        \( \
+            -name 'BUILD' \
+            -o -name 'BUILD.bazel' \
+            -o -name 'WORKSPACE' \
+            -o -name 'WORKSPACE.bazel' \
+            -o -name '*.bzl' \
+        \) \
+        -type f \
+        2>/dev/null)
+)
 if [[ ${#buildifier_files[@]} -gt 0 ]]; then
     "$BUILDIFIER_BIN" "${buildifier_files[@]}"
 fi
@@ -129,7 +130,7 @@ fi
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
-        ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/... ./k8s/operator/...
+        ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."

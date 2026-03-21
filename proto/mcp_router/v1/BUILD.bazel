@@ -10,8 +10,8 @@ proto_library(
     srcs = ["mcp_router.proto"],
     visibility = ["//visibility:public"],
     deps = [
-        "@protobuf//:go_default_library",
-        "@protobuf//:go_default_library",
+        "@protobuf//:go_features_proto",
+        "@protobuf//:struct_proto",
     ],
 )
 
