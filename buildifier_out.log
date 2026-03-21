@@ -1,0 +1,27 @@
+INFO: Invocation ID: 61cb8475-fb40-4c13-adb5-a9acc005c75b
+INFO: Options provided by the client:
+  Inherited 'common' options: --isatty=0 --terminal_columns=80
+INFO: Reading rc options for 'run' from /app/.bazelrc:
+  Inherited 'build' options: --disk_cache=~/.cache/bazel-disk-cache --action_env=CGO_ENABLED=1 --spawn_strategy=sandboxed,local --incompatible_strict_action_env --announce_rc --action_env=GEMINI_API_KEY --action_env=MCP_BUNDLE_DIR --action_env=CI
+INFO: Checking for file changes...
+Computing main repo mapping:
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:lint (0 packages loaded, 0 targets configured)
+Analyzing: target //:lint (0 packages loaded, 0 targets configured)
+
+INFO: Analyzed target //:lint (0 packages loaded, 0 targets configured).
+INFO: Found 1 target...
+Target //:lint up-to-date:
+  bazel-bin/lint
+INFO: Elapsed time: 5.860s, Critical Path: 0.14s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+INFO: Running command line: bazel-bin/lint
+==> Running Buildifier...
+    Buildifier OK.
+==> Running Gazelle...
+    Warning: gazelle binary not found in runfiles – skipping.
+    To update BUILD files manually, run: bazel run //:gazelle
+==> Running golangci-lint...
+/home/jules/.cache/bazel/_bazel_jules/8c069df52082beee3c95ca17836fb8e2/execroot/_main/bazel-out/k8-fastbuild/bin/lint: line 138: 134602 Killed                  "$GOLANGCI_LINT_BIN" run --timeout 20m --fix ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
