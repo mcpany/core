@@ -375,11 +375,12 @@ func init() {
 					ToolAutoDiscovery: proto.Bool(true),
 				}.Build(),
 				UpstreamAuth: configv1.Authentication_builder{
-					ApiKey: configv1.ApiKeyAuth_builder{
+					ApiKey: configv1.APIKeyAuth_builder{
 						Value: configv1.SecretValue_builder{
-							Value: proto.String("mcp-any-swarm-attestation-token"),
+							PlainText: proto.String("mcp-any-swarm-attestation-token"),
 						}.Build(),
-						HeaderName: proto.String("X-Hardware-Attested-Token"),
+						ParamName: proto.String("X-Hardware-Attested-Token"),
+						In:        configv1.APIKeyAuth_HEADER.Enum(),
 					}.Build(),
 				}.Build(),
 			}.Build(),
