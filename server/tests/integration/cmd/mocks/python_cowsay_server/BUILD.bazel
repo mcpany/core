@@ -49,4 +49,3 @@ oci_load(
     repo_tags = ["mcpany/e2e-cowsay-server:latest"],
     visibility = ["//visibility:public"],
 )
-
