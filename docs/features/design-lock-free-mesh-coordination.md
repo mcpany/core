@@ -1,115 +1,97 @@
+<!-- markdownlint-disable MD013 -->
 # Design Doc: Lock-Free Mesh Coordination (LFMC)
 
-**Status:** Draft **Created:** 2026-06-18
+**Status:** Draft
+**Created:** [2026-06-18]
 
 ## 1. Context and Scope
 
-With the rise of horizontal "Agent Teams" (Claude Code), the traditional
-"Mailbox Lock" pattern—where only one agent can access the shared task list at a
-time—has become a major performance bottleneck. In complex refactors, parallel
-teammates are spending up to 40% of their time waiting for a lock to clear. MCP
-Any must provide a high-performance, lock-free coordination layer for the
-"Universal Agent Mesh" that allows teammates to claim, delegate, and synchronize
-tasks asynchronously.
+Traditional multi-agent coordination often relies on centralized state locks (e.g., in the Shared KV Blackboard), leading to significant latency and "Coordination Stall" in high-density swarms. As teams move toward horizontal, peer-to-peer teammate messaging (as seen in Claude Code and OpenClaw), the need for a non-blocking, lock-free coordination layer is paramount. MCP Any must implement **Lock-Free Mesh Coordination (LFMC)** using CRDT-based task list synchronization to ensure sub-millisecond coordination between teammates without global locks.
 
 ## 2. Goals & Non-Goals
 
 * **Goals:**
-  * Implement a CRDT-based shared task list for lock-free coordination.
-  * Support high-frequency task claiming and state synchronization.
-  * Ensure mission-root consistency across parallel teammates.
-* **Non-Goals:**
-  * Replacing the primary Blackboard for structured, long-term state.
-  * Providing global ordering for all events (we focus on *eventual
 
-consistency*).
+  * Implement CRDT-based (Conflict-Free Replicated Data Type) task list synchronization for teammates.
+
+  * Eliminate global state locks for task claiming and status updates.
+
+  * Support hardware-attested identity rotation (HAIR) within the mesh transport.
+
+  * Neutralize "Mailbox Lock" bottlenecks during high-frequency teammate messaging.
+
+* **Non-Goals:**
+
+  * Replacing the Blackboard for persistent, cross-mission state (LFMC is for *active* coordination).
+
+  * Providing absolute consensus for all operations (LFMC provides *eventual consistency* for task lists).
 
 ## 3. Critical User Journey (CUJ)
 
-* **User Persona:** Agent Team Lead (Claude Code)
-* **Primary Goal:** Delegate three independent sub-tasks to teammates
+* **User Persona:** Local LLM Swarm Orchestrator
 
-simultaneously without blocking on a shared mailbox lock.
+* **Primary Goal:** Coordinate 5+ specialist agents working in parallel on a single mission root without encountering "Resource Contention" or "State Stall."
 
 * **The Happy Path (Tasks):**
 
-  1. The Team Lead creates a task list in the LFMC Hub.
-  2. The LFMC Hub initializes a CRDT (LWW-Element-Set) for the mission.
-  3. Teammate A claims "API Layer," Teammate B claims "Migrations," and
+    1. The Lead Agent initializes a task list within the LFMC Hub.
 
-Teammate C claims "Tests" in parallel.
+    2. Specialist teammates claim tasks asynchronously via local CRDT updates.
 
-  1. The LFMC Hub reconciles the claims asynchronously; no global lock is
+    3. The LFMC Hub synchronizes the task list across all teammates using the **T2T Encryption Bridge**.
 
-held.
+    4. Hardware-attested identity tokens (HAIR) are rotated periodically to ensure session-bound coordination integrity.
 
-  1. Teammates work independently and update their task status in the mesh.
-  2. The Team Lead synthesizes the results, observing a consistent view of the
-
-completed tasks.
+    5. Teammates complete tasks and update the global state without ever waiting for a centralized lock.
 
 ## 4. Design & Architecture
 
 * **System Flow:**
 
 ```mermaid
-    graph LR
-        A[Teammate A] --> B[LFMC Shard]
-        C[Teammate B] --> B
-        D[Teammate C] --> B
-        B --> E{CRDT Reconciler}
-        E --> F[Consistent Task List]
+graph TD
+    A[Task List] --> B[CRDT Engine]
+    B --> C[T2T Encryption Bridge]
+    C --> D[Teammate A]
+    C --> E[Teammate B]
+    D -- Update --> B
+    E -- Update --> B
+    B --> F[Consistent Task List]
 ```
 
 * **APIs / Interfaces:**
-  * `POST /v1/mesh/task/claim`: Asynchronously claim a task from the shared
 
-list.
+  * `POST /v1/mesh/task/claim`: Asynchronously claim a task using a CRDT operation.
 
-* `GET /v1/mesh/state`: Retrieve the current eventually-consistent state of
-
-the mesh.
+  * `GET /v1/mesh/state`: Retrieve the current eventually-consistent task mesh.
 
 * **Data Storage/State:**
-  * Task states are stored in memory-mapped CRDT buffers for sub-millisecond
 
-access.
+  * Active task lists are stored in memory-mapped "Sovereign Shards" within the LFMC Hub.
 
 ## 5. Alternatives Considered
 
-* **Redis-based Locking:** Rejected because it introduces a central point of
+* **Centralized Redis Locking:** Rejected due to excessive latency in local loopback environments and the risk of "Lock-Owner Death" stalling the entire swarm.
 
-failure and network-level latency that blocks high-speed teammate
-coordination.
-
-* **Message Queues:** Rejected because they don't provide a shared, convergent
-
-state for teammates to "observe" their peers' progress.
+* **Wait-Graph Deadlock Resolution:** Rejected because it addresses the *symptom* (deadlock) rather than the *cause* (blocking locks).
 
 ## 6. Cross-Cutting Concerns
 
-* **Security (Zero Trust):** All mesh interactions must be signed with a
+* **Security (Zero Trust):** All CRDT operations must be signed with a hardware-attested session token; unauthorized updates are discarded.
 
-hardware-attested teammate identity (SMI).
-
-* **Observability:** The "Lock-Free Mesh Arbiter" in the UI will visualize
-
-real-time task claiming and CRDT convergence.
+* **Observability:** The "Mesh Coordination Waterfall" in the UI will visualize real-time task claim latency and CRDT synchronization events.
 
 ## 7. Evolutionary Changelog
 
-* **2026-06-18:** Initial Document Creation.
+* **[2026-06-18]:** Initial Document Creation.
 
-### Update: [2026-06-19] - Sovereign Sharding for Semantic Integrity
+### Update: [2026-06-19] - Integration with Sovereign Sharding
 
-**Context:** Claude Code v2.2.0-rc1 previews revealed "Semantic Smearing," where
-parallel teammates over-write intent fragments in adjacent shards.
-**Architecture Adjustment:** * Introducing **Sovereign Sharding** in Section 4.
+**Context:** Today's research identified "Semantic Smearing" risks in sharded teammate meshes.
+**Architecture Adjustment:**
 
-* Shards are now cryptographically bound to the Mission-Root intent via HAIL.
-* Implementing a "One-Way Intent Flow" policy to prevent back-propagation of
+* Integrating **Sovereign Shard Controller** requirements into Section 4 to ensure intent-bound isolation for CRDT buffers.
 
-subagent drift into parent shards.
+* Mandating **HAIR-rotation** for all cross-shard claim requests.
 
-**Security Impact:** Prevents malicious or hallucinating subagents from
-corrupting the primary mission reasoning path.
+**Security Impact:** Prevents malicious teammates from using lock-free coordination to smear mission-root state across unauthorized shards.
