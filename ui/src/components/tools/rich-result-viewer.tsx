@@ -13,6 +13,8 @@ import { FileJson, Table as TableIcon, Terminal, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { SmartTable } from "./smart-table";
+
 
 interface RichResultViewerProps {
     result: any;
