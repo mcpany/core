@@ -50,22 +50,6 @@ type Store interface {
 	// entry is the entry.
 	//
 	// Returns an error if the operation fails.
-	// Write ...
-	//
-	// Summary: Updates Write operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - entry: Entry. The entry parameter.
-	//
-	// Returns:
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	Write(ctx context.Context, entry Entry) error
 	// Read reads audit entries from the store based on the filter.
 	//
@@ -73,41 +57,9 @@ type Store interface {
 	// filter is the filter to apply.
 	//
 	// Returns the entries and an error if the operation fails.
-	// Read ...
-	//
-	// Summary: Retrieves Read operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - filter: Filter. The filter parameter.
-	//
-	// Returns:
-	//   - []Entry: A list of results.
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	Read(ctx context.Context, filter Filter) ([]Entry, error)
 	// Close closes the store.
 	//
 	// Returns an error if the operation fails.
-	// Close ...
-	//
-	// Summary: Executes Close operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	Close() error
 }

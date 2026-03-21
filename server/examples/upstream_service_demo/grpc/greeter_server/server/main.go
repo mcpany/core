@@ -27,23 +27,6 @@ type server struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
-// SayHello ...
-//
-// Summary: Executes SayHello operation.
-//
-// Parameters:
-//   - s: *server. The s parameter.
-//
-// Returns:
-//   - context.Context: The context.Context result.
-//   - *pb.HelloRequest): A pointer to the pb.HelloRequest) result.
-//   - error): The error) result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	log.Printf("Received: %v", in.GetName())
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil

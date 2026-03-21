@@ -22,40 +22,10 @@ type Conn interface {
 	// Close closes the connection to the server.
 	//
 	// Returns an error if the operation fails.
-	// Close ...
-	//
-	// Summary: Executes Close operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	Close() error
 	// GetState returns the connectivity.State of the ClientConn.
 	//
 	// Returns the result.
-	// GetState ...
-	//
-	// Summary: Retrieves GetState operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - connectivity.State: The connectivity.State result.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	GetState() connectivity.State
 }
 

@@ -26,25 +26,6 @@ type GrpcClient interface {
 	//   - args: The request message to be sent.
 	//   - reply: The response message to be populated.
 	//   - opts: gRPC call options.
-	// Invoke ...
-	//
-	// Summary: Executes Invoke operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - method: string. A string value.
-	//   - args: any. The args parameter.
-	//   - reply: any. The reply parameter.
-	//   - opts: ...grpc.CallOption. The opts parameter.
-	//
-	// Returns:
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	Invoke(ctx context.Context, method string, args any, reply any, opts ...grpc.CallOption) error
 
 	// NewStream creates a new gRPC stream.
@@ -54,25 +35,6 @@ type GrpcClient interface {
 	//   - desc: The stream description.
 	//   - method: The full gRPC method string.
 	//   - opts: gRPC call options.
-	// NewStream ...
-	//
-	// Summary: Initializes NewStream operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - desc: *grpc.StreamDesc. The desc parameter.
-	//   - method: string. A string value.
-	//   - opts: ...grpc.CallOption. The opts parameter.
-	//
-	// Returns:
-	//   - grpc.ClientStream: The grpc.ClientStream result.
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error)
 }
 
@@ -86,22 +48,6 @@ type HTTPClient interface {
 	//
 	// Parameters:
 	//   - req: The HTTP request to send.
-	// Do ...
-	//
-	// Summary: Executes Do operation.
-	//
-	// Parameters:
-	//   - req: *http.Request. The request parameters.
-	//
-	// Returns:
-	//   - *http.Response: A pointer to the http.Response result.
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	Do(req *http.Request) (*http.Response, error)
 }
 
@@ -117,22 +63,5 @@ type MCPClient interface {
 	//   - ctx: The context for the call.
 	//   - params: The parameters for the tool call, including the tool name and
 	//     arguments.
-	// CallTool ...
-	//
-	// Summary: Executes CallTool operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - params: *mcp.CallToolParams. The params parameter.
-	//
-	// Returns:
-	//   - *mcp.CallToolResult: A pointer to the mcp.CallToolResult result.
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error)
 }

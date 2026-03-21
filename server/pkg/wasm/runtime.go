@@ -22,44 +22,12 @@ type Runtime interface {
 	// Returns:
 	//   - Plugin: The instantiated plugin.
 	//   - error: An error if the operation fails.
-	// LoadPlugin ...
-	//
-	// Summary: Executes LoadPlugin operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - bytecode: []byte. A list of items.
-	//
-	// Returns:
-	//   - Plugin: The Plugin result.
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	LoadPlugin(ctx context.Context, bytecode []byte) (Plugin, error)
 
 	// Close closes the runtime and releases resources.
 	//
 	// Returns:
 	//   - error: An error if the operation fails.
-	// Close ...
-	//
-	// Summary: Executes Close operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	Close() error
 }
 
@@ -77,45 +45,12 @@ type Plugin interface {
 	// Returns:
 	//   - []byte: The result of the execution.
 	//   - error: An error if the operation fails.
-	// Execute ...
-	//
-	// Summary: Executes Execute operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - function: string. A string value.
-	//   - args: ...[]byte. The args parameter.
-	//
-	// Returns:
-	//   - []byte: A list of results.
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	Execute(ctx context.Context, function string, args ...[]byte) ([]byte, error)
 
 	// Close closes the plugin instance.
 	//
 	// Returns:
 	//   - error: An error if the operation fails.
-	// Close ...
-	//
-	// Summary: Executes Close operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	Close() error
 }
 

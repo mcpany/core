@@ -34,21 +34,6 @@ type Upstream interface {
 	//
 	// Side Effects:
 	//   - Closes network connections and releases resources.
-	// Shutdown ...
-	//
-	// Summary: Executes Shutdown operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//
-	// Returns:
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	Shutdown(ctx context.Context) error
 
 	// Register inspects the upstream service defined by the serviceConfig,
@@ -74,21 +59,6 @@ type Upstream interface {
 	// Side Effects:
 	//   - Establishes connection to the upstream service.
 	//   - Populates managers with capabilities.
-	// Register ...
-	//
-	// Summary: Executes Register operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	Register(
 		ctx context.Context,
 		serviceConfig *configv1.UpstreamServiceConfig,
@@ -117,20 +87,5 @@ type HealthChecker interface {
 	//
 	// Side Effects:
 	//   - May send a heartbeat or ping request to the upstream service.
-	// CheckHealth ...
-	//
-	// Summary: Executes CheckHealth operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//
-	// Returns:
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	CheckHealth(ctx context.Context) error
 }

@@ -50,23 +50,6 @@ var weatherData = map[string]string{
 //
 //	*weatherV1.GetWeatherResponse: The response containing the weather description.
 //	error: An error if the location is not found.
-// GetWeather ...
-//
-// Summary: Retrieves GetWeather operation.
-//
-// Parameters:
-//   - s: *server. The s parameter.
-//
-// Returns:
-//   - context.Context: The context.Context result.
-//   - *weatherV1.GetWeatherRequest): A pointer to the weatherV1.GetWeatherRequest) result.
-//   - error): The error) result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (s *server) GetWeather(_ context.Context, req *weatherV1.GetWeatherRequest) (*weatherV1.GetWeatherResponse, error) {
 	log.Printf("INFO grpc_authed_weather_server: GetWeather called location=%s", req.GetLocation())
 	weather, ok := weatherData[req.GetLocation()]

@@ -27,29 +27,20 @@ import (
 )
 
 // RegistrationMethod defines the method used to register an upstream service.
-// RegistrationMethod ...
-//
-// Summary: Represents a RegistrationMethod.
 type RegistrationMethod string
 
 const (
 	// FileRegistration uses a configuration file for registration.
-	// Summary: Defines FileRegistration.
 	FileRegistration RegistrationMethod = "file"
 	// GRPCRegistration uses the RegistrationService via gRPC.
-	// Summary: Defines GRPCRegistration.
 	GRPCRegistration RegistrationMethod = "grpc"
 	// JSONRPCRegistration uses the RegistrationService via JSON-RPC.
-	// Summary: Defines JSONRPCRegistration.
 	JSONRPCRegistration RegistrationMethod = "jsonrpc"
 )
 
 var portRegex = regexp.MustCompile(`(?:metricsPort=|Metrics server listening on port |Listening on port port=)(\d+)`)
 
 // E2ETestCase defines the structure for an end-to-end test case.
-// E2ETestCase ...
-//
-// Summary: Represents a E2ETestCase.
 type E2ETestCase struct {
 	Name                         string
 	UpstreamServiceType          string
@@ -70,23 +61,6 @@ type E2ETestCase struct {
 // t is the t.
 // mcpanyEndpoint is the mcpanyEndpoint.
 // expectedTool is the expectedTool.
-// ValidateRegisteredTool ...
-//
-// Summary: Executes ValidateRegisteredTool operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//   - mcpanyEndpoint: string. A string value.
-//   - expectedTool: *mcp.Tool. The expectedTool parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func ValidateRegisteredTool(t *testing.T, mcpanyEndpoint string, expectedTool *mcp.Tool) {
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
@@ -121,22 +95,6 @@ func ValidateRegisteredTool(t *testing.T, mcpanyEndpoint string, expectedTool *m
 //
 // t is the t.
 // testCase is the testCase.
-// RunE2ETest ...
-//
-// Summary: Executes RunE2ETest operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//   - testCase: *E2ETestCase. The testCase parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 	for _, method := range testCase.RegistrationMethods {
 		method := method
@@ -234,21 +192,6 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 // t is the t.
 //
 // Returns the result.
-// BuildGRPCWeatherServer ...
-//
-// Summary: Executes BuildGRPCWeatherServer operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//
-// Returns:
-//   - *integration.ManagedProcess: A pointer to the integration.ManagedProcess result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func BuildGRPCWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := 0
 	proc := integration.NewManagedProcess(t, "grpc_weather_server", integration.MockBinary(t, "grpc_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
@@ -261,23 +204,6 @@ func BuildGRPCWeatherServer(t *testing.T) *integration.ManagedProcess {
 // t is the t.
 // registrationClient is the registrationClient.
 // upstreamEndpoint is the upstreamEndpoint.
-// RegisterGRPCWeatherService ...
-//
-// Summary: Executes RegisterGRPCWeatherService operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//   - registrationClient: apiv1.RegistrationServiceClient. The registrationClient parameter.
-//   - upstreamEndpoint: string. A string value.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func RegisterGRPCWeatherService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_grpc_weather"
 	integration.RegisterGRPCService(t, registrationClient, serviceID, upstreamEndpoint, nil)
@@ -288,21 +214,6 @@ func RegisterGRPCWeatherService(t *testing.T, registrationClient apiv1.Registrat
 // t is the t.
 //
 // Returns the result.
-// BuildGRPCAuthedWeatherServer ...
-//
-// Summary: Executes BuildGRPCAuthedWeatherServer operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//
-// Returns:
-//   - *integration.ManagedProcess: A pointer to the integration.ManagedProcess result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func BuildGRPCAuthedWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := 0
 	proc := integration.NewManagedProcess(t, "grpc_authed_weather_server", integration.MockBinary(t, "grpc_authed_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
@@ -312,22 +223,6 @@ func BuildGRPCAuthedWeatherServer(t *testing.T) *integration.ManagedProcess {
 
 // WaitForPort waits for a process to output its assigned port.
 // WaitForPort waits for a process to output its assigned port.
-// WaitForPort ...
-//
-// Summary: Executes WaitForPort operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//   - proc: *integration.ManagedProcess. An integer value.
-//
-// Returns:
-//   - int: The int result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func WaitForPort(t *testing.T, proc *integration.ManagedProcess) int {
 	t.Helper()
 	var port int
@@ -386,23 +281,6 @@ func WaitForPort(t *testing.T, proc *integration.ManagedProcess) int {
 // t is the t.
 // registrationClient is the registrationClient.
 // upstreamEndpoint is the upstreamEndpoint.
-// RegisterGRPCAuthedWeatherService ...
-//
-// Summary: Executes RegisterGRPCAuthedWeatherService operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//   - registrationClient: apiv1.RegistrationServiceClient. The registrationClient parameter.
-//   - upstreamEndpoint: string. A string value.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func RegisterGRPCAuthedWeatherService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_grpc_authed_weather"
 	secret := configv1.SecretValue_builder{
@@ -421,21 +299,6 @@ func RegisterGRPCAuthedWeatherService(t *testing.T, registrationClient apiv1.Reg
 // t is the t.
 //
 // Returns the result.
-// BuildWebsocketWeatherServer ...
-//
-// Summary: Executes BuildWebsocketWeatherServer operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//
-// Returns:
-//   - *integration.ManagedProcess: A pointer to the integration.ManagedProcess result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func BuildWebsocketWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
@@ -460,23 +323,6 @@ func BuildWebsocketWeatherServer(t *testing.T) *integration.ManagedProcess {
 // t is the t.
 // registrationClient is the registrationClient.
 // upstreamEndpoint is the upstreamEndpoint.
-// RegisterWebsocketWeatherService ...
-//
-// Summary: Executes RegisterWebsocketWeatherService operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//   - registrationClient: apiv1.RegistrationServiceClient. The registrationClient parameter.
-//   - upstreamEndpoint: string. A string value.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func RegisterWebsocketWeatherService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_websocket_weather"
 	integration.RegisterWebsocketService(t, registrationClient, serviceID, upstreamEndpoint, "weather", nil)
@@ -487,21 +333,6 @@ func RegisterWebsocketWeatherService(t *testing.T, registrationClient apiv1.Regi
 // t is the t.
 //
 // Returns the result.
-// BuildWebrtcWeatherServer ...
-//
-// Summary: Executes BuildWebrtcWeatherServer operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//
-// Returns:
-//   - *integration.ManagedProcess: A pointer to the integration.ManagedProcess result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func BuildWebrtcWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	proc := integration.NewManagedProcess(t, "webrtc_weather_server", integration.MockBinary(t, "webrtc_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
@@ -514,23 +345,6 @@ func BuildWebrtcWeatherServer(t *testing.T) *integration.ManagedProcess {
 // t is the t.
 // registrationClient is the registrationClient.
 // upstreamEndpoint is the upstreamEndpoint.
-// RegisterWebrtcWeatherService ...
-//
-// Summary: Executes RegisterWebrtcWeatherService operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//   - registrationClient: apiv1.RegistrationServiceClient. The registrationClient parameter.
-//   - upstreamEndpoint: string. A string value.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func RegisterWebrtcWeatherService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_webrtc_weather"
 	integration.RegisterWebrtcService(t, registrationClient, serviceID, upstreamEndpoint, "weather", nil)
@@ -541,21 +355,6 @@ func RegisterWebrtcWeatherService(t *testing.T, registrationClient apiv1.Registr
 // _ is an unused parameter.
 //
 // Returns the result.
-// BuildStdioServer ...
-//
-// Summary: Executes BuildStdioServer operation.
-//
-// Parameters:
-//   - _: *testing.T. The _ parameter.
-//
-// Returns:
-//   - *integration.ManagedProcess: A pointer to the integration.ManagedProcess result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func BuildStdioServer(_ *testing.T) *integration.ManagedProcess {
 	return nil
 }
@@ -565,23 +364,6 @@ func BuildStdioServer(_ *testing.T) *integration.ManagedProcess {
 // t is the t.
 // registrationClient is the registrationClient.
 // _ is an unused parameter.
-// RegisterStdioService ...
-//
-// Summary: Executes RegisterStdioService operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//   - registrationClient: apiv1.RegistrationServiceClient. The registrationClient parameter.
-//   - _: string. A string value.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func RegisterStdioService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, _ string) {
 	const serviceID = "e2e_everything_server_stdio"
 	serviceStdioEndpoint := "npx @modelcontextprotocol/server-everything stdio"
@@ -593,21 +375,6 @@ func RegisterStdioService(t *testing.T, registrationClient apiv1.RegistrationSer
 // _ is an unused parameter.
 //
 // Returns the result.
-// BuildStdioDockerServer ...
-//
-// Summary: Executes BuildStdioDockerServer operation.
-//
-// Parameters:
-//   - _: *testing.T. The _ parameter.
-//
-// Returns:
-//   - *integration.ManagedProcess: A pointer to the integration.ManagedProcess result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func BuildStdioDockerServer(_ *testing.T) *integration.ManagedProcess {
 	return nil
 }
@@ -617,27 +384,10 @@ func BuildStdioDockerServer(_ *testing.T) *integration.ManagedProcess {
 // t is the t.
 // registrationClient is the registrationClient.
 // _ is an unused parameter.
-// RegisterStdioDockerService ...
-//
-// Summary: Executes RegisterStdioDockerService operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//   - registrationClient: apiv1.RegistrationServiceClient. The registrationClient parameter.
-//   - _: string. A string value.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func RegisterStdioDockerService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, _ string) {
 	const serviceID = "e2e-cowsay-server"
-	command := "python3"
-	args := []string{"-u", "main.py", "--mcp-stdio"}
+	command := "/app/cowsay_server_bin"
+	args := []string{"--mcp-stdio"}
 	// setupCommands := []string{"pip install -q cowsay"}
 	integration.RegisterStdioServiceWithSetup(
 		t,
@@ -658,21 +408,6 @@ func RegisterStdioDockerService(t *testing.T, registrationClient apiv1.Registrat
 // t is the t.
 //
 // Returns the result.
-// BuildOpenAPIWeatherServer ...
-//
-// Summary: Executes BuildOpenAPIWeatherServer operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//
-// Returns:
-//   - *integration.ManagedProcess: A pointer to the integration.ManagedProcess result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func BuildOpenAPIWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	proc := integration.NewManagedProcess(t, "openapi_weather_server", integration.MockBinary(t, "openapi_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
@@ -685,23 +420,6 @@ func BuildOpenAPIWeatherServer(t *testing.T) *integration.ManagedProcess {
 // t is the t.
 // registrationClient is the registrationClient.
 // upstreamEndpoint is the upstreamEndpoint.
-// RegisterOpenAPIWeatherService ...
-//
-// Summary: Executes RegisterOpenAPIWeatherService operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//   - registrationClient: apiv1.RegistrationServiceClient. The registrationClient parameter.
-//   - upstreamEndpoint: string. A string value.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func RegisterOpenAPIWeatherService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_openapi_weather"
 	openapiSpecEndpoint := fmt.Sprintf("%s/openapi.json", upstreamEndpoint)
@@ -727,21 +445,6 @@ func RegisterOpenAPIWeatherService(t *testing.T, registrationClient apiv1.Regist
 // t is the t.
 //
 // Returns the result.
-// BuildOpenAPIAuthedServer ...
-//
-// Summary: Executes BuildOpenAPIAuthedServer operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//
-// Returns:
-//   - *integration.ManagedProcess: A pointer to the integration.ManagedProcess result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func BuildOpenAPIAuthedServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	proc := integration.NewManagedProcess(t, "http_authed_echo_server_openapi", integration.MockBinary(t, "http_authed_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
@@ -754,23 +457,6 @@ func BuildOpenAPIAuthedServer(t *testing.T) *integration.ManagedProcess {
 // t is the t.
 // registrationClient is the registrationClient.
 // upstreamEndpoint is the upstreamEndpoint.
-// RegisterOpenAPIAuthedService ...
-//
-// Summary: Executes RegisterOpenAPIAuthedService operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//   - registrationClient: apiv1.RegistrationServiceClient. The registrationClient parameter.
-//   - upstreamEndpoint: string. A string value.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func RegisterOpenAPIAuthedService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_openapi_authed_echo"
 	openapiSpec := fmt.Sprintf(`
@@ -820,21 +506,6 @@ paths:
 // t is the t.
 //
 // Returns the result.
-// BuildStreamableHTTPServer ...
-//
-// Summary: Executes BuildStreamableHTTPServer operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//
-// Returns:
-//   - *integration.ManagedProcess: A pointer to the integration.ManagedProcess result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func BuildStreamableHTTPServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	args := []string{"@modelcontextprotocol/server-everything", "streamableHttp"}
@@ -850,23 +521,6 @@ func BuildStreamableHTTPServer(t *testing.T) *integration.ManagedProcess {
 // t is the t.
 // registrationClient is the registrationClient.
 // upstreamEndpoint is the upstreamEndpoint.
-// RegisterStreamableHTTPService ...
-//
-// Summary: Executes RegisterStreamableHTTPService operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//   - registrationClient: apiv1.RegistrationServiceClient. The registrationClient parameter.
-//   - upstreamEndpoint: string. A string value.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func RegisterStreamableHTTPService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_everything_server_streamable"
 	integration.RegisterStreamableMCPService(t, registrationClient, serviceID, upstreamEndpoint, true, nil)
@@ -876,22 +530,6 @@ func RegisterStreamableHTTPService(t *testing.T, registrationClient apiv1.Regist
 //
 // t is the t.
 // mcpanyEndpoint is the mcpanyEndpoint.
-// VerifyMCPClient ...
-//
-// Summary: Executes VerifyMCPClient operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//   - mcpanyEndpoint: string. A string value.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func VerifyMCPClient(t *testing.T, mcpanyEndpoint string) {
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()

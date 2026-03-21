@@ -194,21 +194,6 @@ type ConfigParameter interface {
 	//
 	// Returns:
 	//   - *configv1.ParameterSchema: The parameter schema.
-	// GetSchema ...
-	//
-	// Summary: Retrieves GetSchema operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - *configv1.ParameterSchema: A pointer to the configv1.ParameterSchema result.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	GetSchema() *configv1.ParameterSchema
 }
 
@@ -220,81 +205,21 @@ type McpFieldParameter interface {
 	//
 	// Returns:
 	//   - string: The name of the parameter.
-	// GetName ...
-	//
-	// Summary: Retrieves GetName operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - string: The resulting string.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	GetName() string
 	// GetDescription returns the description of the parameter.
 	//
 	// Returns:
 	//   - string: The description of the parameter.
-	// GetDescription ...
-	//
-	// Summary: Retrieves GetDescription operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - string: The resulting string.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	GetDescription() string
 	// GetType returns the type of the parameter.
 	//
 	// Returns:
 	//   - string: The type of the parameter.
-	// GetType ...
-	//
-	// Summary: Retrieves GetType operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - string: The resulting string.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	GetType() string
 	// GetIsRepeated returns true if the parameter is a repeated field (array).
 	//
 	// Returns:
 	//   - bool: True if the parameter is repeated.
-	// GetIsRepeated ...
-	//
-	// Summary: Retrieves GetIsRepeated operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - bool: A boolean indicating success or status.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	GetIsRepeated() bool
 }
 

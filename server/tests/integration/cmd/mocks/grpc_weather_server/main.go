@@ -37,23 +37,6 @@ var weatherData = map[string]string{
 //
 // Returns the response.
 // Returns an error if the operation fails.
-// GetWeather ...
-//
-// Summary: Retrieves GetWeather operation.
-//
-// Parameters:
-//   - s: *weatherServer. The s parameter.
-//
-// Returns:
-//   - context.Context: The context.Context result.
-//   - *weatherPb.GetWeatherRequest): A pointer to the weatherPb.GetWeatherRequest) result.
-//   - error): The error) result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (s *weatherServer) GetWeather(_ context.Context, in *weatherPb.GetWeatherRequest) (*weatherPb.GetWeatherResponse, error) {
 	slog.Info("grpc_weather_server: GetWeather called", "location", in.GetLocation())
 	weather, ok := weatherData[in.GetLocation()]

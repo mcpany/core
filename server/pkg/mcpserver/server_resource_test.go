@@ -51,6 +51,15 @@ func (m *mockResourceTool) Tool() *v1.Tool {
 	}.Build()
 }
 
+
+func (m *mockResourceTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockResourceTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
 func (m *mockResourceTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return m.result, nil
 }

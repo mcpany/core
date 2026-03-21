@@ -28,63 +28,18 @@ type Prompt interface {
 	//
 	// Returns:
 	//   - *mcp.Prompt: The MCP prompt definition.
-	// Prompt ...
-	//
-	// Summary: Executes Prompt operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - *mcp.Prompt: A pointer to the mcp.Prompt result.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	Prompt() *mcp.Prompt
 
 	// Service returns the ID of the service that provides this prompt.
 	//
 	// Returns:
 	//   - string: The service ID.
-	// Service ...
-	//
-	// Summary: Executes Service operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - string: The resulting string.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	Service() string
 
 	// Definition returns the raw configuration definition of the prompt.
 	//
 	// Returns:
 	//   - *configv1.PromptDefinition: The prompt definition.
-	// Definition ...
-	//
-	// Summary: Executes Definition operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - *configv1.PromptDefinition: A pointer to the configv1.PromptDefinition result.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	Definition() *configv1.PromptDefinition
 
 	// Get executes the prompt with the provided arguments.
@@ -96,23 +51,6 @@ type Prompt interface {
 	// Returns:
 	//   - *mcp.GetPromptResult: The result of the prompt execution.
 	//   - error: An error if the operation fails.
-	// Get ...
-	//
-	// Summary: Retrieves Get operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - args: json.RawMessage. The args parameter.
-	//
-	// Returns:
-	//   - *mcp.GetPromptResult: A pointer to the mcp.GetPromptResult result.
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error)
 }
 
@@ -126,21 +64,6 @@ type MCPServerProvider interface {
 	//
 	// Returns:
 	//   - *mcp.Server: The MCP server instance.
-	// Server ...
-	//
-	// Summary: Executes Server operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - *mcp.Server: A pointer to the mcp.Server result.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	Server() *mcp.Server
 }
 

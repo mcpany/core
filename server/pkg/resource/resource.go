@@ -27,42 +27,12 @@ type Resource interface {
 	//
 	// Returns:
 	//   - *mcp.Resource: The MCP resource definition.
-	// Resource ...
-	//
-	// Summary: Executes Resource operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - *mcp.Resource: A pointer to the mcp.Resource result.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	Resource() *mcp.Resource
 
 	// Service returns the ID of the service that provides this resource.
 	//
 	// Returns:
 	//   - string: The service ID.
-	// Service ...
-	//
-	// Summary: Executes Service operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - string: The resulting string.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	Service() string
 
 	// Read retrieves the content of the resource.
@@ -73,22 +43,6 @@ type Resource interface {
 	// Returns:
 	//   - *mcp.ReadResourceResult: The content of the resource.
 	//   - error: An error if reading fails.
-	// Read ...
-	//
-	// Summary: Retrieves Read operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//
-	// Returns:
-	//   - *mcp.ReadResourceResult: A pointer to the mcp.ReadResourceResult result.
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 
 	// Subscribe establishes a subscription to the resource, allowing for receiving updates.
@@ -98,21 +52,6 @@ type Resource interface {
 	//
 	// Returns:
 	//   - error: An error if subscription fails.
-	// Subscribe ...
-	//
-	// Summary: Initializes Subscribe operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//
-	// Returns:
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	Subscribe(ctx context.Context) error
 }
 
@@ -131,22 +70,6 @@ type ManagerInterface interface {
 	// Returns:
 	//   - Resource: The resource instance.
 	//   - bool: True if found, false otherwise.
-	// GetResource ...
-	//
-	// Summary: Retrieves GetResource operation.
-	//
-	// Parameters:
-	//   - uri: string. A string value.
-	//
-	// Returns:
-	//   - Resource: The Resource result.
-	//   - bool: A boolean indicating success or status.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	GetResource(uri string) (Resource, bool)
 
 	// AddResource adds a new resource to the manager.
@@ -156,21 +79,6 @@ type ManagerInterface interface {
 	//
 	// Returns:
 	//   None.
-	// AddResource ...
-	//
-	// Summary: Initializes AddResource operation.
-	//
-	// Parameters:
-	//   - resource: Resource. The response result.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	AddResource(resource Resource)
 
 	// RemoveResource removes a resource from the manager by its URI.
@@ -180,42 +88,12 @@ type ManagerInterface interface {
 	//
 	// Returns:
 	//   None.
-	// RemoveResource ...
-	//
-	// Summary: Deletes RemoveResource operation.
-	//
-	// Parameters:
-	//   - uri: string. A string value.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	RemoveResource(uri string)
 
 	// ListResources returns a slice of all resources currently in the manager.
 	//
 	// Returns:
 	//   - []Resource: A slice of resources.
-	// ListResources ...
-	//
-	// Summary: Retrieves ListResources operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - []Resource: A list of results.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	ListResources() []Resource
 
 	// OnListChanged registers a callback function to be called when the list of resources changes.
@@ -225,21 +103,6 @@ type ManagerInterface interface {
 	//
 	// Returns:
 	//   None.
-	// OnListChanged ...
-	//
-	// Summary: Executes OnListChanged operation.
-	//
-	// Parameters:
-	//   - f: func(). The f parameter.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	OnListChanged(f func())
 
 	// ClearResourcesForService removes all resources associated with a given service ID.
@@ -249,21 +112,6 @@ type ManagerInterface interface {
 	//
 	// Returns:
 	//   None.
-	// ClearResourcesForService ...
-	//
-	// Summary: Executes ClearResourcesForService operation.
-	//
-	// Parameters:
-	//   - serviceID: string. The identifier for the service.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	ClearResourcesForService(serviceID string)
 }
 

@@ -28,9 +28,8 @@ import (
 
 // ParsedMcpAnnotations holds the structured data extracted from MCP
 // (Model Context Protocol) annotations within a set of protobuf files.
-// ParsedMcpAnnotations ...
 //
-// Summary: Represents a ParsedMcpAnnotations.
+// Summary: Represents ParsedMcpAnnotations.
 type ParsedMcpAnnotations struct {
 	Tools     []McpTool
 	Prompts   []McpPrompt
@@ -39,9 +38,8 @@ type ParsedMcpAnnotations struct {
 
 // McpTool represents the information extracted from a gRPC method that has been
 // annotated as an MCP tool.
-// McpTool ...
 //
-// Summary: Represents a McpTool.
+// Summary: Represents McpTool.
 type McpTool struct {
 	Name            string
 	Description     string
@@ -60,9 +58,8 @@ type McpTool struct {
 
 // McpField represents a field within a protobuf message, including its name,
 // description, type, and whether it is repeated.
-// McpField ...
 //
-// Summary: Represents a McpField.
+// Summary: Represents McpField.
 type McpField struct {
 	Name        string
 	Description string
@@ -412,9 +409,8 @@ func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, erro
 
 // McpPrompt represents the information extracted from a gRPC method that has
 // been annotated as an MCP prompt.
-// McpPrompt ...
 //
-// Summary: Represents a McpPrompt.
+// Summary: Represents McpPrompt.
 type McpPrompt struct {
 	Name           string
 	Description    string
@@ -428,9 +424,8 @@ type McpPrompt struct {
 
 // McpResource represents a protobuf message that has been annotated as an MCP
 // resource.
-// McpResource ...
 //
-// Summary: Represents a McpResource.
+// Summary: Represents McpResource.
 type McpResource struct {
 	Name        string
 	Description string

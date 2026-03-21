@@ -33,23 +33,6 @@ type Bus[T any] interface {
 	//
 	// Returns:
 	//   - error: An error if the publish operation fails (e.g. underlying transport error).
-	// Publish ...
-	//
-	// Summary: Updates Publish operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - topic: string. A string value.
-	//   - msg: T. The msg parameter.
-	//
-	// Returns:
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	Publish(ctx context.Context, topic string, msg T) error
 
 	// Subscribe registers a handler function for a given topic. It starts a
@@ -64,23 +47,6 @@ type Bus[T any] interface {
 	//
 	// Returns:
 	//   - func(): A cleanup function that removes the subscription when called.
-	// Subscribe ...
-	//
-	// Summary: Initializes Subscribe operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - topic: string. A string value.
-	//   - handler: func(T). The handler parameter.
-	//
-	// Returns:
-	//   - func(): The func() result.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 
 	// SubscribeOnce registers a handler function that will be invoked only once
@@ -94,23 +60,6 @@ type Bus[T any] interface {
 	//
 	// Returns:
 	//   - func(): A cleanup function that removes the subscription if called before the first message.
-	// SubscribeOnce ...
-	//
-	// Summary: Initializes SubscribeOnce operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - topic: string. A string value.
-	//   - handler: func(T). The handler parameter.
-	//
-	// Returns:
-	//   - func(): The func() result.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 }
 

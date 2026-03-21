@@ -53,23 +53,6 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
-	// ListTools ...
-	//
-	// Summary: Retrieves ListTools operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - params: *mcp.ListToolsParams. The params parameter.
-	//
-	// Returns:
-	//   - *mcp.ListToolsResult: A pointer to the mcp.ListToolsResult result.
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	ListTools(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error)
 	// ListPrompts lists the prompts available in the session.
 	//
@@ -78,23 +61,6 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
-	// ListPrompts ...
-	//
-	// Summary: Retrieves ListPrompts operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - params: *mcp.ListPromptsParams. The params parameter.
-	//
-	// Returns:
-	//   - *mcp.ListPromptsResult: A pointer to the mcp.ListPromptsResult result.
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	ListPrompts(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error)
 	// ListResources lists the resources available in the session.
 	//
@@ -103,23 +69,6 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
-	// ListResources ...
-	//
-	// Summary: Retrieves ListResources operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - params: *mcp.ListResourcesParams. The params parameter.
-	//
-	// Returns:
-	//   - *mcp.ListResourcesResult: A pointer to the mcp.ListResourcesResult result.
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	ListResources(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error)
 	// GetPrompt retrieves a prompt from the session.
 	//
@@ -128,23 +77,6 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
-	// GetPrompt ...
-	//
-	// Summary: Retrieves GetPrompt operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - params: *mcp.GetPromptParams. The params parameter.
-	//
-	// Returns:
-	//   - *mcp.GetPromptResult: A pointer to the mcp.GetPromptResult result.
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	GetPrompt(ctx context.Context, params *mcp.GetPromptParams) (*mcp.GetPromptResult, error)
 	// ReadResource reads a resource from the session.
 	//
@@ -153,23 +85,6 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
-	// ReadResource ...
-	//
-	// Summary: Retrieves ReadResource operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - params: *mcp.ReadResourceParams. The params parameter.
-	//
-	// Returns:
-	//   - *mcp.ReadResourceResult: A pointer to the mcp.ReadResourceResult result.
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	ReadResource(ctx context.Context, params *mcp.ReadResourceParams) (*mcp.ReadResourceResult, error)
 	// CallTool calls a tool in the session.
 	//
@@ -178,42 +93,10 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
-	// CallTool ...
-	//
-	// Summary: Executes CallTool operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - params: *mcp.CallToolParams. The params parameter.
-	//
-	// Returns:
-	//   - *mcp.CallToolResult: A pointer to the mcp.CallToolResult result.
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error)
 	// Close closes the session.
 	//
 	// Returns an error if the operation fails.
-	// Close ...
-	//
-	// Summary: Executes Close operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	Close() error
 }
 

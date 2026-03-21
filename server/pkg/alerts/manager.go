@@ -22,216 +22,34 @@ import (
 // Summary: Represents a ManagerInterface.
 type ManagerInterface interface {
 	// ListAlerts returns a list of all alerts.
-	// ListAlerts ...
-	//
-	// Summary: Retrieves ListAlerts operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - []*Alert: A list of results.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	ListAlerts() []*Alert
 	// GetAlert retrieves an alert by its ID.
-	// GetAlert ...
-	//
-	// Summary: Retrieves GetAlert operation.
-	//
-	// Parameters:
-	//   - id: string. The identifier for the id.
-	//
-	// Returns:
-	//   - *Alert: A pointer to the Alert result.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	GetAlert(id string) *Alert
 	// CreateAlert creates a new alert.
-	// CreateAlert ...
-	//
-	// Summary: Initializes CreateAlert operation.
-	//
-	// Parameters:
-	//   - alert: *Alert. The alert parameter.
-	//
-	// Returns:
-	//   - *Alert: A pointer to the Alert result.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	CreateAlert(alert *Alert) *Alert
 	// UpdateAlert updates an existing alert.
-	// UpdateAlert ...
-	//
-	// Summary: Updates UpdateAlert operation.
-	//
-	// Parameters:
-	//   - id: string. The identifier for the id.
-	//   - alert: *Alert. The alert parameter.
-	//
-	// Returns:
-	//   - *Alert: A pointer to the Alert result.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	UpdateAlert(id string, alert *Alert) *Alert
 	// GetAlertStats returns aggregated statistics for alerts.
-	// GetAlertStats ...
-	//
-	// Summary: Retrieves GetAlertStats operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - *AlertStats: A pointer to the AlertStats result.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	GetAlertStats() *AlertStats
 
 	// Webhooks
 
 	// GetWebhookURL returns the configured global webhook URL.
-	// GetWebhookURL ...
-	//
-	// Summary: Retrieves GetWebhookURL operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - string: The resulting string.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	GetWebhookURL() string
 	// SetWebhookURL sets the configured global webhook URL.
-	// SetWebhookURL ...
-	//
-	// Summary: Updates SetWebhookURL operation.
-	//
-	// Parameters:
-	//   - url: string. A string value.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	SetWebhookURL(url string)
 
 	// Rules
 
 	// ListRules returns a list of all alert rules.
-	// ListRules ...
-	//
-	// Summary: Retrieves ListRules operation.
-	//
-	// Parameters:
-	//   - None.
-	//
-	// Returns:
-	//   - []*AlertRule: A list of results.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	ListRules() []*AlertRule
 	// GetRule retrieves an alert rule by its ID.
-	// GetRule ...
-	//
-	// Summary: Retrieves GetRule operation.
-	//
-	// Parameters:
-	//   - id: string. The identifier for the id.
-	//
-	// Returns:
-	//   - *AlertRule: A pointer to the AlertRule result.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	GetRule(id string) *AlertRule
 	// CreateRule creates a new alert rule.
-	// CreateRule ...
-	//
-	// Summary: Initializes CreateRule operation.
-	//
-	// Parameters:
-	//   - rule: *AlertRule. The rule parameter.
-	//
-	// Returns:
-	//   - *AlertRule: A pointer to the AlertRule result.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	CreateRule(rule *AlertRule) *AlertRule
 	// UpdateRule updates an existing alert rule.
-	// UpdateRule ...
-	//
-	// Summary: Updates UpdateRule operation.
-	//
-	// Parameters:
-	//   - id: string. The identifier for the id.
-	//   - rule: *AlertRule. The rule parameter.
-	//
-	// Returns:
-	//   - *AlertRule: A pointer to the AlertRule result.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	UpdateRule(id string, rule *AlertRule) *AlertRule
 	// DeleteRule deletes an alert rule by its ID.
-	// DeleteRule ...
-	//
-	// Summary: Deletes DeleteRule operation.
-	//
-	// Parameters:
-	//   - id: string. The identifier for the id.
-	//
-	// Returns:
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	DeleteRule(id string) error
 }
 

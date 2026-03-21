@@ -21,23 +21,6 @@ type EmbeddingProvider interface {
 	// Returns:
 	//   - []float32: The resulting embedding vector.
 	//   - error: An error if generation fails.
-	// Embed ...
-	//
-	// Summary: Executes Embed operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - text: string. A string value.
-	//
-	// Returns:
-	//   - []float32: A list of results.
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	Embed(ctx context.Context, text string) ([]float32, error)
 }
 
@@ -56,25 +39,6 @@ type VectorStore interface {
 	//
 	// Returns:
 	//   - error: An error if the operation fails.
-	// Add ...
-	//
-	// Summary: Initializes Add operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - key: string. A string value.
-	//   - vector: []float32. A list of items.
-	//   - result: any. The response result.
-	//   - ttl: time.Duration. The ttl parameter.
-	//
-	// Returns:
-	//   - error: An error if the operation fails.
-	//
-	// Errors:
-	//   - Returns error if the operation fails or is invalid.
-	//
-	// Side Effects:
-	//   - None.
 	Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error
 
 	// Search searches for the most similar entry in the vector store.
@@ -88,25 +52,6 @@ type VectorStore interface {
 	//   - any: The best matching result data.
 	//   - float32: The similarity score (0.0 to 1.0).
 	//   - bool: True if a match was found, false otherwise.
-	// Search ...
-	//
-	// Summary: Executes Search operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - key: string. A string value.
-	//   - query: []float32. A list of items.
-	//
-	// Returns:
-	//   - any: The any result.
-	//   - float32: The float32 result.
-	//   - bool: A boolean indicating success or status.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	Search(ctx context.Context, key string, query []float32) (any, float32, bool)
 
 	// Prune removes expired entries.
@@ -114,22 +59,6 @@ type VectorStore interface {
 	// Parameters:
 	//   - ctx: context.Context. The context for the request.
 	//   - key: string. Optional key to restrict pruning scope.
-	// Prune ...
-	//
-	// Summary: Executes Prune operation.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The request context.
-	//   - key: string. A string value.
-	//
-	// Returns:
-	//   - None.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - None.
 	Prune(ctx context.Context, key string)
 }
 

@@ -24,21 +24,6 @@ import (
 // TestE2ECaching tests the end-to-end caching functionality.
 //
 // t is the t.
-// TestE2ECaching ...
-//
-// Summary: Executes TestE2ECaching operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func TestE2ECaching(t *testing.T) {
 	t.Parallel()
 	RunE2ETest(t, &E2ETestCase{
@@ -59,21 +44,6 @@ func TestE2ECaching(t *testing.T) {
 // t is the t.
 //
 // Returns the result.
-// BuildCachingServer ...
-//
-// Summary: Executes BuildCachingServer operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//
-// Returns:
-//   - *integration.ManagedProcess: A pointer to the integration.ManagedProcess result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	proc := integration.NewManagedProcess(t, "http_caching_server", integration.MockBinary(t, "http_caching_server"), []string{"--port", fmt.Sprintf("%d", port)}, nil)
@@ -86,23 +56,6 @@ func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 // t is the t.
 // registrationClient is the registrationClient.
 // upstreamEndpoint is the upstreamEndpoint.
-// RegisterCachingService ...
-//
-// Summary: Executes RegisterCachingService operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//   - registrationClient: apiv1.RegistrationServiceClient. The registrationClient parameter.
-//   - upstreamEndpoint: string. A string value.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func RegisterCachingService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	serviceID := "e2e_caching_server"
 	operationID := "get_data"
@@ -150,22 +103,6 @@ func protoString(value string) *string {
 // next is the next.
 //
 // Returns the result.
-// NoOpMiddleware ...
-//
-// Summary: Executes NoOpMiddleware operation.
-//
-// Parameters:
-//   - _: *testing.T. The _ parameter.
-//   - next: http.Handler. The next parameter.
-//
-// Returns:
-//   - http.Handler: The http.Handler result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NoOpMiddleware(_ *testing.T, next http.Handler) http.Handler {
 	return next
 }
@@ -202,23 +139,6 @@ func callTool(t *testing.T, session *mcp.ClientSession, toolName string) {
 // t is the t.
 // mcpanyEndpoint is the mcpanyEndpoint.
 // upstreamEndpoint is the upstreamEndpoint.
-// ValidateCaching ...
-//
-// Summary: Executes ValidateCaching operation.
-//
-// Parameters:
-//   - t: *testing.T. The t parameter.
-//   - mcpanyEndpoint: mcpanyEndpoint. An integer value.
-//   - upstreamEndpoint: string. A string value.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func ValidateCaching(t *testing.T, mcpanyEndpoint, upstreamEndpoint string) {
 	session := connectMCP(t, mcpanyEndpoint)
 
