@@ -35,6 +35,6 @@ test.describe('RichResultViewer Complex JSON Table', () => {
         await expect(page.locator('td:has-text("Alice Liddell")')).toBeVisible();
         await expect(page.locator('td:has-text("admin")')).toBeVisible();
         await expect(page.locator('td:has-text("dark")')).toBeVisible();
-        await expect(page.locator('td:has-text("email: alice@example.com")')).toBeVisible();
+        await expect(page.locator('td:has-text("type: email, value: alice@example.com")')).toBeVisible();
     });
 });
