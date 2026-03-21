@@ -1,12 +1,9 @@
-# Copyright 2026 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
-
-.PHONY: lint prepare test
-
 prepare:
+	npm install -g pre-commit
+	cd ui && npm ci
 
 lint:
-	cd ui && npm install && npm run lint
+	cd ui && npm run lint
 	npx @bazel/bazelisk run //:lint
 
 test:
