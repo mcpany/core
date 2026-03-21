@@ -40,7 +40,7 @@ if [ "$CI" = "true" ] || [ "$GITHUB_ACTIONS" = "true" ]; then
     # Split directories into separate runs to reduce peak memory usage
     for dir in "cmd" "pkg" "tests" "examples"; do
         if [ -d "server/$dir" ]; then
-            "$GOLANGCI_LINT_BIN" run --concurrency 1 --timeout 30m ./server/$dir/...
+            "$GOLANGCI_LINT_BIN" run --concurrency 1 --timeout 30m ./server/$dir/... || exit 1
         fi
     done
 else
@@ -49,7 +49,7 @@ else
     # Split directories into separate runs to reduce peak memory usage
     for dir in "cmd" "pkg" "tests" "examples"; do
         if [ -d "server/$dir" ]; then
-            "$GOLANGCI_LINT_BIN" run --concurrency 1 --timeout 30m --fix ./server/$dir/...
+            "$GOLANGCI_LINT_BIN" run --concurrency 1 --timeout 30m --fix ./server/$dir/... || exit 1
         fi
     done
 fi
