@@ -620,3 +620,9 @@
 - [ ] **[P0] Mailbox Integrity Auditor**: (2026-06-21) Forensic dashboard for reviewing hardware-attested coordinate messages and MIS-blocked injection attempts.
 - [ ] **[P0] Hardware-Bound Budget Widget**: (2026-06-21) Real-time monitor for ARE v1.7 budget consumption and hardware attestation status.
 - [ ] **[P1] Logic-Grafting Alert Center**: (2026-06-21) Real-time visualization of semantic entropy spikes and blocked logic-grafting events in shared shards.
+
+### Upcoming: [2026-06-22]
+- [ ] **[P0] Termination Quorum Monitor**: (2026-06-22) Security UI for orchestrating DIQ termination signals and visualizing subagent liveness.
+- [ ] **[P0] Context Deduplication Dashboard**: (2026-06-22) Real-time visualization of TACC efficiency and token savings in horizontal swarms.
+- [ ] **[P0] Mission-Root Reclamation Control**: (2026-06-22) Hardware-bound interrupt interface for forceful user reclamation (LMRR).
+- [ ] **[P0] Token Revocation Alert Hub**: (2026-06-22) Monitor for RBTR-driven session revocations and fragment-level reasoning drift.

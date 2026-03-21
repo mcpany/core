@@ -1425,3 +1425,15 @@
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MIS** integration to counter horizontal mesh exploits.
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with mandatory support for **ARE v1.7** hardware-attested budget persistence.
 - **Intent-Resumption Gateway (IRG)**: (Re-affirmed P0) Designated as the primary infrastructure for implementing **MRCP-compliant** mission resumption.
+
+## Evolution: [2026-06-22] Updates
+
+### Proposed Additions
+- **Distributed Intent Quorum (DIQ) Broker**: (P0) Authoritative termination arbiter mandating multi-agent, hardware-attested signatures for all session termination signals to neutralize SSG.
+- **Teammate-Aware Context Compactor (TACC)**: (P0) Efficiency middleware providing real-time, semantic deduplication across shared teammate shards to solve "Token Storm" bottlenecks.
+- **Reasoning-Bound Token Revocation (RBTR) Gateway**: (P0) Advanced security service for the TLSB middleware that cryptographically binds session tokens to specific reasoning fragments.
+- **Local Mission-Root Reclamation (LMRR) Interface**: (P0) Hardware-bound interrupt mechanism allowing users to forcefully reclaim control from autonomous swarms.
+
+### Priority Shifts
+- **Transport-Layer Session Binder (TLSB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RBTR** integration for fragment-level token revocation.
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support **TACC-compliant** semantic deduplication for horizontal meshes.

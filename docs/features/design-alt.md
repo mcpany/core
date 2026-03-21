@@ -57,3 +57,4 @@ ALT addresses this by cryptographically locking high-risk tool capabilities to s
 ## 7. Evolutionary Changelog
 * **2026-06-20:** Initial Document Creation.
 * **2026-06-21:** Integrated with **Mission-Root Continuity Provider (MRCP)**. ALT anchors now carry monotonic sequence IDs that must align with the restored continuity state, preventing attention-mapping replay attacks during mission resumption.
+* **2026-06-22:** Enhanced with **Local Mission-Root Reclamation (LMRR)**. ALT now supports a "Direct Interrupt" anchor, allowing a human user to provide a hardware-bound signal that overrides all agent reasoning and forces an immediate termination quorum.

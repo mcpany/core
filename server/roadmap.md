@@ -680,6 +680,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Atomic Shard Lock-Manager**: Kernel-level lock manager for granular context streaming. (Added: 2026-06-03)
 *   **[P1] Zero-Latency Shard Prefetcher**: Speculative context loading based on real-time intent analysis. (Added: 2026-06-03)
 
+#### Upcoming (2026-06-22 Evolution)
+*   **[P0] Distributed Intent Quorum (DIQ) Broker**: Authoritative multi-agent termination arbiter to neutralize Semantic Session Ghosting (SSG). (Added: 2026-06-22)
+*   **[P0] Teammate-Aware Context Compactor (TACC)**: Semantic deduplication for shared teammate shards to solve "Token Storm" bottlenecks. (Added: 2026-06-22)
+*   **[P0] Local Mission-Root Reclamation (LMRR)**: Hardware-bound interrupt mechanism for forceful user control. (Added: 2026-06-22)
+*   **[P0] RBTR Token Revocation Gateway**: Support for Reasoning-Bound Token Revocation at the fragment level. (Added: 2026-06-22)
+
 ### Upcoming: [2026-06-08]
 - **Atomic Reasoning Integrity (ARI) Validator**: (P0) Advanced security middleware for fragment-level semantic validation of shared teammate state. (Added: 2026-06-08)
 - **HAMM-Locked MLE Gateway**: (P0) Upgrade for the MLE Gateway to support "Hardware-Attested Mission Manifests" (Added: 2026-06-08).
