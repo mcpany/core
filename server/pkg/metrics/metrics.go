@@ -45,6 +45,9 @@ var initOnce sync.Once
 // It sets up a global metrics collector that can be used throughout the application.
 // The metrics are exposed on the /metrics endpoint.
 //
+// Parameters:
+//   - None.
+//
 // Returns:
 //   - error: An error if the initialization fails.
 func Initialize() error {
@@ -72,6 +75,9 @@ func Initialize() error {
 // Handler returns an http.Handler for the /metrics endpoint.
 //
 // Summary: Retrieves the metrics HTTP handler.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
 //   - http.Handler: An http.Handler that serves the Prometheus metrics.
