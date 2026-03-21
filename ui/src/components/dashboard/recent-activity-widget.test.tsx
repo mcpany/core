@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "../../tests/test-utils";
 import { RecentActivityWidget } from "./recent-activity-widget";
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 
@@ -43,7 +43,7 @@ describe("RecentActivityWidget", () => {
     mockFetch.mockReturnValue(new Promise(() => {}));
 
     render(<RecentActivityWidget />);
-    expect(screen.getByText(/Loading activity/i)).toBeInTheDocument();
+    expect(screen.getByText(/Loading timeline/i)).toBeInTheDocument();
   });
 
   it("renders traces when fetch succeeds", async () => {

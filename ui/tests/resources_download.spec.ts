@@ -24,22 +24,22 @@ test.describe('Resource Download Feature', () => {
 
         // Mock resource content read (for the preview panel AND download)
         await page.route('**/api/v1/resources/read*', async (route) => {
-             const urlObj = new URL(route.request().url());
-             const uri = urlObj.searchParams.get('uri');
+            const urlObj = new URL(route.request().url());
+            const uri = urlObj.searchParams.get('uri');
 
-             if (uri === 'file://test-file.txt') {
-                 await route.fulfill({
-                     json: {
-                         contents: [{
-                             uri: 'file://test-file.txt',
-                             mimeType: 'text/plain',
-                             blob: Buffer.from('Hello World Content').toString('base64') // Use blob to test decoding
-                         }]
-                     }
-                 });
-             } else {
-                 await route.fulfill({ status: 404 });
-             }
+            if (uri === 'file://test-file.txt') {
+                await route.fulfill({
+                    json: {
+                        contents: [{
+                            uri: 'file://test-file.txt',
+                            mimeType: 'text/plain',
+                            blob: Buffer.from('Hello World Content').toString('base64') // Use blob to test decoding
+                        }]
+                    }
+                });
+            } else {
+                await route.fulfill({ status: 404 });
+            }
         });
     });
 
@@ -96,7 +96,7 @@ test.describe('Resource Download Feature', () => {
                 item.dispatchEvent(event);
 
                 setTimeout(() => {
-                   resolve(capturedData);
+                    resolve(capturedData);
                 }, 100);
             });
         });
@@ -112,6 +112,6 @@ test.describe('Resource Download Feature', () => {
         expect(parts[0]).toBe('text/plain');
         expect(parts[1]).toBe('test-file.txt');
         const url = parts.slice(2).join(':');
-        expect(url).toContain('/api/resources/download?uri=file%3A%2F%2Ftest-file.txt&name=test-file.txt');
+        expect(url).toContain('/api/v1/resources/download?uri=file%3A%2F%2Ftest-file.txt&name=test-file.txt');
     });
 });

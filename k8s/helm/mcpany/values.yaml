@@ -134,6 +134,23 @@ ui:
   # To use an existing secret instead of creating one from apiKey:
   # existingSecret: "my-existing-secret"
   secretKey: "api-key"
+  # Horizontal Pod Autoscaler for the stateless UI tier.
+  # The UI (vite preview) is fully stateless, so it can be scaled freely.
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  # Resource requests/limits for the UI pods.
+  # Setting requests is required for HPA CPU-based scaling to work.
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
 
 worker:
   replicaCount: 1

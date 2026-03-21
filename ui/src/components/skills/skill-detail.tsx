@@ -1,11 +1,11 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-'use client';
+
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
+import { useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -46,7 +46,7 @@ export default function SkillDetail() {
   return (
     <div className="container mx-auto py-8 max-w-4xl">
       <div className="mb-6">
-        <Link href="/skills">
+        <Link to="/skills">
           <Button variant="ghost" className="pl-0">
             <ChevronLeft className="mr-2 h-4 w-4" /> Back to Skills
           </Button>
@@ -58,7 +58,7 @@ export default function SkillDetail() {
           <h1 className="text-4xl font-bold mb-2">{skill.name}</h1>
           <p className="text-xl text-muted-foreground">{skill.description}</p>
         </div>
-        <Link href={`/skills/${skill.name}/edit`}>
+        <Link to={`/skills/${skill.name}/edit`}>
           <Button variant="outline">
             <Edit className="mr-2 h-4 w-4" /> Edit Skill
           </Button>

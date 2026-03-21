@@ -1,21 +1,10 @@
 # Coverage Intervention Report
 
-**Target:** `server/pkg/tokenizer/tokenizer.go`
-**Function:** `countTokensInValueSimpleFast`
-
-**Risk Profile:**
-This utility function handles rate-limiting and billing token calculations across various map, slice, and primitive inputs. It has a high cyclomatic complexity (35) due to its switch statements and optimizations, yet it was missing tests for many of its critical paths, posing a high risk for billing or API limits bugs in edge cases. This function was selected based on its core utility nature combined with its 59.8% test coverage before intervention.
-
-**New Coverage:**
-The following logic paths are now guarded by the new table-driven tests:
-- `map[string]int`, `map[string]int64`, `map[string]float64`, `map[string]bool`
-- `[]byte` (empty and non-empty)
-- Primitives (`int`, `int64`, `bool`)
-- `float64` (integer and fractional variants)
-- Slices (`[]string`, `[]int`, `[]int64`, `[]bool`, `[]float64`)
-- `map[string]string`
-- Edge cases (`nil`, unhandled types)
-The function's test coverage increased from **59.8% to 97.7%**.
-
-**Verification:**
-Confirmed that `go test ./pkg/tokenizer/...` passes cleanly. The implementation adheres to the existing `SimpleTokenizer` mocking and testing patterns, utilizing a Go table-driven test style matching `server/pkg/tokenizer/tokenizer_test.go`. The test logic preserves "Do No Harm" by introducing tests seamlessly alongside existing ones.
+* **Target:** `server/pkg/tokenizer/tokenizer.go`
+* **Risk Profile:** This package is core utility code that dynamically traverses arbitrary structures using Go reflection to estimate token size. The dynamic types and varied reflection edge cases combined with loops for parsing primitives meant that it had several complex, error-handling and default branch cases that were not fully evaluated under standard operation. Bugs in the tokenizer could result in improper rate-limiting, misconfigured downstream LLM calls, or internal denial-of-service via infinite cycle evaluation.
+* **New Coverage:**
+  * Added edge-case test validations on the integer unrolled parser bounds (`simpleTokenizeInt64`).
+  * Explicitly enforced type-level error handling across slice, array, and map structures.
+  * Explicitly hit reflection-cycles in error injection within maps.
+  * Verified nil-slice and nil-map values under reflection parsing interfaces (`countTokensReflectSlice` and `countTokensReflectMap`).
+* **Verification:** `make test` equivalents (via `go test ./...`) for `server/pkg/tokenizer` and the whole repo ran clean with no regressions in existing tests. The file `server/pkg/tokenizer/tokenizer_coverage_test.go` correctly isolates all testing logic to leave production artifacts clean and ensures hermetic execution.

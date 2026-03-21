@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UpstreamServiceConfig, apiClient } from "@/lib/client";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
+import { useNavigate as useRouter } from 'react-router-dom';
 import { Textarea } from "@/components/ui/textarea";
 import { EnvVarEditor } from "@/components/services/env-var-editor";
 import { UniversalSchemaForm as SchemaForm } from "@/components/shared/universal-schema-form";
@@ -195,7 +195,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
             onOpenChange(false);
 
             // Redirect to the new service page
-            router.push(`/upstream-services/${name}`);
+            router(`/upstream-services/${name}`);
         } catch (e) {
             toast({ title: "Failed to instantiate", variant: "destructive", description: String(e) });
         } finally {

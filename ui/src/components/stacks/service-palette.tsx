@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import React, { useEffect, useState } from "react";
 import {
@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { apiClient, ServiceTemplate } from "@/lib/client";
+import yaml from "js-yaml";
 
 // Map icons by name or category if dynamic
 const iconMap: Record<string, React.ElementType> = {
@@ -73,16 +74,7 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
                 // It has `serviceConfig: UpstreamServiceConfig`.
                 // We need to serialize `serviceConfig` to YAML.
                 // Ideally `apiClient` or backend handles this, or we do it here.
-                // Let's assume we need to construct a simple YAML snippet from the config.
-                // Or maybe the backend templates SHOULD include a snippet?
-                // The backend `ServiceTemplate` proto has `description`, `icon`, etc.
-                // Let's manually construct a basic YAML for now or use a helper.
-
-                // TODO: proper YAML marshaling. For now, we might rely on the `description` or `name` to pick a snippet
-                // if we want to match the old behavior, OR we simply serialize the config.
-                // But the Stack Editor expects a YAML snippet to insert into the stack config.
-                // Stack config is YAML.
-
+                // Construct a proper YAML snippet from the template configuration using js-yaml.
                 setTemplates(data);
             } catch (err) {
                 console.error("Failed to fetch templates", err);
@@ -95,31 +87,44 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
     }, []);
 
     const generateYamlSnippet = (t: ServiceTemplate): string => {
-        // Construct a YAML snippet based on the template config
-        // This is a simplified generation.
-        let snippet = `  - name: ${t.serviceConfig.name || t.name.toLowerCase().replace(/\s+/g, '-')}\n`;
+        const serviceDef: any = {
+            name: t.serviceConfig.name || t.name.toLowerCase().replace(/\s+/g, '-')
+        };
 
         if (t.serviceConfig.commandLineService) {
-            snippet += `    command: ${t.serviceConfig.commandLineService.command}\n`;
+            serviceDef.command = t.serviceConfig.commandLineService.command;
+
             if (t.serviceConfig.commandLineService.workingDirectory) {
-                snippet += `    working_dir: ${t.serviceConfig.commandLineService.workingDirectory}\n`;
+                serviceDef.working_dir = t.serviceConfig.commandLineService.workingDirectory;
             }
+
             if (t.serviceConfig.commandLineService.env && Object.keys(t.serviceConfig.commandLineService.env).length > 0) {
-                snippet += `    environment:\n`;
+                serviceDef.environment = {};
                 for (const [k, v] of Object.entries(t.serviceConfig.commandLineService.env)) {
-                     // Handle EnvVarValue or string? Client type says string map usually for simple config,
-                     // but UpstreamServiceConfig uses EnvVarValue?
-                     // client.ts: environment: { [key: string]: string }; in commandLineService mapping.
-                     // wait, client.ts mapping:
-                     // environment: config.commandLineService.env (which is map<string, string>)
-                     snippet += `      ${k}: ${v}\n`;
+                     // The backend might return an object like { plainText: "..." } or a string.
+                     if (typeof v === 'string') {
+                         serviceDef.environment[k] = v;
+                     } else if (v && typeof v === 'object' && ('plainText' in v || 'plain_text' in v)) {
+                         serviceDef.environment[k] = (v as any).plainText || (v as any).plain_text;
+                     } else {
+                         serviceDef.environment[k] = v;
+                     }
                 }
             }
         } else if (t.serviceConfig.httpService) {
-             snippet += `    url: ${t.serviceConfig.httpService.address}\n`;
+             serviceDef.url = t.serviceConfig.httpService.address;
         }
 
-        return snippet;
+        // We use an array so it outputs the correct list format: `- name: ...`
+        const yamlStr = yaml.dump([serviceDef], {
+            indent: 2,
+            lineWidth: -1,
+            noRefs: true
+        });
+
+        // yaml.dump with array puts it at root level. Usually the stack expects it indented under `upstream_services:`.
+        // The previous code returned `  - name: ...`. Let's prepend spaces to match indentation requirement.
+        return yamlStr.split('\n').filter(line => line.length > 0).map(line => `  ${line}`).join('\n') + '\n';
     };
 
     const getIcon = (t: ServiceTemplate) => {

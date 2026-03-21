@@ -3,16 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useEffect, useState, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { apiClient } from "@/lib/client";
 import { useToast } from "@/hooks/use-toast";
 
 function OAuthCallbackContent() {
-    const searchParams = useSearchParams();
-    const router = useRouter();
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
     const { toast } = useToast();
     const [status, setStatus] = useState<"processing" | "success" | "error">("processing");
     const [errorMsg, setErrorMsg] = useState("");
@@ -78,7 +78,7 @@ function OAuthCallbackContent() {
                     setTimeout(() => window.close(), 1500);
                 } else {
                     // Redirect back to the originating page
-                    setTimeout(() => router.push(context.returnPath || "/upstream-services"), 1500);
+                    setTimeout(() => navigate(context.returnPath || "/upstream-services"), 1500);
                 }
 
             } catch (e: any) {
@@ -90,7 +90,7 @@ function OAuthCallbackContent() {
 
         handleCallback();
 
-    }, [searchParams, router, toast]);
+    }, [searchParams, navigate, toast]);
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-background">
@@ -119,7 +119,7 @@ function OAuthCallbackContent() {
                             {errorMsg || "Unknown error occurred"}
                         </p>
                         <button
-                            onClick={() => router.push("/upstream-services")}
+                            onClick={() => navigate("/upstream-services")}
                             className="px-4 py-2 text-sm font-medium text-white bg-primary rounded hover:bg-primary/90"
                         >
                             Back to Upstream Services

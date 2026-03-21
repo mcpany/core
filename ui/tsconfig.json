@@ -11,14 +11,8 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
+    "jsx": "react-jsx",
     "types": ["node", "jest", "@testing-library/jest-dom", "vitest/globals"],
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
@@ -33,6 +27,6 @@
     },
     "rootDirs": [".", ".."]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../proto/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["**/*.ts", "**/*.tsx", "../proto/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }

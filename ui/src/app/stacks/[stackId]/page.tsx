@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useNavigate, useParams } from "react-router-dom";
 import { StackEditor } from "@/components/stacks/stack-editor";
 import { apiClient } from "@/lib/client";
 import { useToast } from "@/hooks/use-toast";
@@ -30,7 +30,7 @@ export default function StackDetailPage() {
   const params = useParams();
   const stackId = Array.isArray(params?.stackId) ? params.stackId[0] : params?.stackId;
 
-  const router = useRouter();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState(true);
@@ -86,7 +86,7 @@ export default function StackDetailPage() {
 
       if (stackId === "new") {
           console.log("Redirecting to", `/stacks/${targetId}`);
-          router.push(`/stacks/${targetId}`);
+          navigate(`/stacks/${targetId}`);
       }
     } catch (e: any) {
         console.error("Save error:", e);
@@ -107,7 +107,7 @@ export default function StackDetailPage() {
             <StackEditor
                 initialValue={content}
                 onSave={handleSave}
-                onCancel={() => router.push("/stacks")}
+                onCancel={() => navigate("/stacks")}
             />
         </div>
     </div>

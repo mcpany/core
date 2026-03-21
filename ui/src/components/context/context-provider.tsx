@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { apiClient, ToolDefinition, UpstreamServiceConfig } from "@/lib/client";

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useMemo, memo } from 'react';
 import { cn } from "@/lib/utils";

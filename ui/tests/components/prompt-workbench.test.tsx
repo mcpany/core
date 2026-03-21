@@ -4,16 +4,17 @@
  */
 
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '../../src/tests/test-utils';
 import { PromptWorkbench } from '../../src/components/prompts/prompt-workbench';
-import { apiClient, PromptDefinition } from '../../src/lib/client';
+import { apiClient, PromptDefinition } from '@/lib/client';
 import { vi } from 'vitest';
 
 // Mock apiClient
-vi.mock('../../src/lib/client', () => ({
+vi.mock('@/lib/client', () => ({
   apiClient: {
     listPrompts: vi.fn(),
     executePrompt: vi.fn(),
+    listServices: vi.fn(),
   },
 }));
 
@@ -26,27 +27,28 @@ vi.mock('next/navigation', () => ({
 
 describe('PromptWorkbench', () => {
   const mockPrompts: PromptDefinition[] = [
-  {
-    name: 'test-prompt',
-    title: 'Test Prompt',
-    description: 'A test prompt',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        arg1: { type: 'string', description: 'Argument 1' }
-      }
-    },
-    messages: [
+    {
+      name: 'test-prompt',
+      title: 'Test Prompt',
+      description: 'A test prompt',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          arg1: { type: 'string', description: 'Argument 1' }
+        }
+      },
+      messages: [
         { role: 0, text: { text: "Hello", annotations: undefined } }
-    ],
-    disable: false,
-    profiles: []
-  },
-];
+      ],
+      disable: false,
+      profiles: []
+    },
+  ];
 
   beforeEach(() => {
     vi.clearAllMocks();
     (apiClient.listPrompts as any).mockResolvedValue({ prompts: mockPrompts });
+    (apiClient.listServices as any).mockResolvedValue([]);
   });
 
   it('renders list of prompts', async () => {
@@ -74,15 +76,15 @@ describe('PromptWorkbench', () => {
 
     fireEvent.click(screen.getByText('test-prompt'));
 
-    const input = screen.getByLabelText(/arg1/i);
+    const input = await screen.findByLabelText(/arg1/i);
     fireEvent.change(input, { target: { value: 'value1' } });
 
     const generateBtn = screen.getByText('Generate Preview');
     fireEvent.click(generateBtn);
 
     await waitFor(() => {
-       expect(apiClient.executePrompt).toHaveBeenCalledWith('test-prompt', { arg1: 'value1' });
-       expect(screen.getByText('test output')).toBeInTheDocument();
+      expect(apiClient.executePrompt).toHaveBeenCalledWith('test-prompt', { arg1: 'value1' });
+      expect(screen.getByText('test output')).toBeInTheDocument();
     });
   });
 });

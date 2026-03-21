@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +16,7 @@ import { Trace, Span } from "@/types/trace";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import React from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate as useRouter } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JsonView } from "@/components/ui/json-view";
 import { RichResultViewer } from "@/components/tools/rich-result-viewer";
@@ -198,7 +198,7 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
     const handleReplay = (toolName: string, args: Record<string, unknown> | undefined) => {
          const argsStr = JSON.stringify(args || {});
          const encodedArgs = encodeURIComponent(argsStr);
-         router.push(`/playground?tool=${toolName}&args=${encodedArgs}`);
+         router(`/playground?tool=${toolName}&args=${encodedArgs}`);
     };
 
     const handleExportJSON = () => {

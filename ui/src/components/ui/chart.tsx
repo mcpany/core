@@ -2,9 +2,6 @@
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
-
-"use client"
-
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 
@@ -114,18 +111,28 @@ ${colorConfig
     const color =
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color
-    // Sentinel Security: Whitelist allowed characters to prevent CSS injection.
-    // Allowed: alphanumeric, -, _, #, %, ., (,), , (comma)
-    const allowedCharsRegex = /[^a-zA-Z0-9\-_#%.(),\s]/g
-    const value = color ? color.replace(allowedCharsRegex, "") : null
-    const safeKey = key.replace(allowedCharsRegex, "")
-    // Block url() to prevent external requests or javascript:
-    // Also block expression() for old IE XSS vectors.
-    if (value && (/url\s*\(/i.test(value) || /expression\s*\(/i.test(value))) {
-      return null
+
+    // Sentinel Security: Strict CSS color validation to prevent CSS injection.
+    // Only allow valid hex, rgb/rgba, hsl/hsla, and CSS variables.
+    // If it doesn't match the allowlist, fail closed (return null).
+    const isSafeColor = color && (
+      /^#([A-Fa-f0-9]{3}){1,2}$/i.test(color) ||
+      /^rgb(a)?\(\s*\d+\s*(%|,\s*\d+\s*(%|,\s*\d+\s*(%|,\s*(0(\.\d+)?|1(\.0+)?))?)?)\s*\)$/i.test(color) ||
+      /^hsl(a)?\(\s*\d+\s*(%|,\s*\d+%\s*(,\s*\d+%\s*(,\s*(0(\.\d+)?|1(\.0+)?))?)?)\s*\)$/i.test(color) ||
+      /^var\(--[a-zA-Z0-9\-_]+\)$/.test(color) ||
+      /^hsl\(var\(--[a-zA-Z0-9\-_]+\)\)$/.test(color)
+    );
+
+    if (!isSafeColor) {
+      return null;
     }
-    return value ? `  --color-${safeKey}: ${value};` : null
+
+    const allowedKeyCharsRegex = /[^a-zA-Z0-9\-_]/g
+    const safeKey = key.replace(allowedKeyCharsRegex, "")
+
+    return color ? `  --color-${safeKey}: ${color};` : null
   })
+  .filter(Boolean)
   .join("\n")}
 }
 `

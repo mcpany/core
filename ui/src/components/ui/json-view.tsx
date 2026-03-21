@@ -3,25 +3,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
 
-import { useState, useMemo, useEffect } from "react";
+
+import { useState, useMemo, useEffect, lazy, Suspense } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Code, Table as TableIcon, Copy, Check, ChevronDown, ChevronUp, ListTree, Image as ImageIcon } from "lucide-react";
-import dynamic from "next/dynamic";
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { JsonTree } from "./json-tree";
+import { SmartTable } from "@/components/tools/smart-table";
 
 // ⚡ BOLT: Lazy load SyntaxHighlighter to reduce initial bundle size.
 // Randomized Selection from Top 5 High-Impact Targets (Assets/Bundle)
 // Optimized version uses Light build with only JSON registered.
-const SyntaxHighlighter = dynamic(() => import('./optimized-syntax-highlighter'), {
-    ssr: false,
-    loading: () => <div className="p-4 text-xs font-mono text-muted-foreground">Loading source...</div>,
-});
+const SyntaxHighlighter = lazy(() => import('./optimized-syntax-highlighter'));
 
 interface JsonViewProps {
     data: unknown;
@@ -35,6 +32,10 @@ interface JsonViewProps {
      * Set to 0 or negative to disable collapsing.
      */
     maxHeight?: number;
+    /**
+     * How many levels deep to auto-expand in the tree view. Default: 1.
+     */
+    defaultExpandedLevel?: number;
 }
 
 // Helper to safely parse JSON if string
@@ -74,7 +75,7 @@ const getTableData = (data: unknown, smartTable: boolean) => {
  * @param props.maxHeight - Max height before collapsing (only applies to Raw/Table views, Tree handles its own).
  * @returns The rendered component.
  */
-export function JsonView({ data, className, smartTable = false, maxHeight = 400 }: JsonViewProps) {
+export function JsonView({ data, className, smartTable = false, maxHeight = 400, defaultExpandedLevel = 1 }: JsonViewProps) {
     // Calculate initial state lazily
     const [viewMode, setViewMode] = useState<"smart" | "tree" | "raw" | "image">(() => {
         const parsed = tryParse(data);
@@ -158,22 +159,24 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400 
                     maxHeight: showCollapse && !isExpanded ? `${maxHeight}px` : undefined
                 }}
             >
-                <SyntaxHighlighter
-                    language="json"
-                    style={vs2015}
-                    customStyle={{
-                        margin: 0,
-                        padding: '1rem',
-                        borderRadius: '0.375rem',
-                        fontSize: '12px',
-                        lineHeight: '1.5',
-                        backgroundColor: 'transparent' // We set bg on parent
-                    }}
-                    wrapLines={true}
-                    wrapLongLines={true}
-                >
-                    {typeof data === 'string' ? data : JSON.stringify(data, null, 2)}
-                </SyntaxHighlighter>
+                <Suspense fallback={<pre className="p-4 text-xs text-muted-foreground">Loading…</pre>}>
+                    <SyntaxHighlighter
+                        language="json"
+                        style={vs2015}
+                        customStyle={{
+                            margin: 0,
+                            padding: '1rem',
+                            borderRadius: '0.375rem',
+                            fontSize: '12px',
+                            lineHeight: '1.5',
+                            backgroundColor: 'transparent' // We set bg on parent
+                        }}
+                        wrapLines={true}
+                        wrapLongLines={true}
+                    >
+                        {typeof data === 'string' ? data : JSON.stringify(data, null, 2)}
+                    </SyntaxHighlighter>
+                </Suspense>
 
                 {showCollapse && !isExpanded && (
                     <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#1e1e1e] to-transparent pointer-events-none" />
@@ -219,7 +222,7 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400 
                     className="p-4 overflow-auto transition-all"
                     style={{ maxHeight: showCollapse && !isExpanded ? `${maxHeight}px` : undefined }}
                 >
-                    <JsonTree data={parsedData} defaultExpandedLevel={1} />
+                    <JsonTree data={parsedData} defaultExpandedLevel={defaultExpandedLevel} />
 
                     {showCollapse && !isExpanded && (
                         <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#1e1e1e] to-transparent pointer-events-none" />
@@ -246,60 +249,24 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400 
     const renderSmart = () => {
         if (!tableData) return renderRaw();
 
-        // Determine columns from all keys in the first 10 rows
-        const allKeys = new Set<string>();
-        tableData.slice(0, 10).forEach((row: Record<string, unknown>) => {
-            Object.keys(row).forEach(k => allKeys.add(k));
-        });
-        const columns = Array.from(allKeys);
-
         return (
             <div className={cn("rounded-md border overflow-hidden bg-card", className)}>
                 <div
-                    className={cn("overflow-auto", showCollapse && !isExpanded ? "relative" : "")}
+                    className={cn(showCollapse && !isExpanded ? "relative" : "")}
                     style={{ maxHeight: showCollapse && !isExpanded ? `${maxHeight}px` : undefined }}
                 >
-                    <Table>
-                        <TableHeader className="bg-muted/50 sticky top-0 z-10">
-                            <TableRow>
-                                {columns.map(col => (
-                                    <TableHead key={col} className="whitespace-nowrap font-medium text-xs px-2 py-1 h-8 bg-muted/50">
-                                        {col}
-                                    </TableHead>
-                                ))}
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {tableData.map((row: Record<string, unknown>, idx: number) => (
-                                <TableRow key={idx} className="hover:bg-muted/50">
-                                    {columns.map(col => {
-                                        const val = row[col];
-                                        let displayVal = val;
-                                        if (typeof val === 'object' && val !== null) {
-                                            displayVal = JSON.stringify(val);
-                                        } else if (typeof val === 'boolean') {
-                                            displayVal = val ? "true" : "false";
-                                        }
-
-                                        return (
-                                            <TableCell key={col} className="px-2 py-1 text-xs max-w-[200px] truncate" title={String(displayVal)}>
-                                                {String(displayVal ?? "")}
-                                            </TableCell>
-                                        );
-                                    })}
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                    <div className="h-full min-h-[300px]" style={{ maxHeight: showCollapse && !isExpanded ? `${maxHeight}px` : '400px' }}>
+                        <SmartTable data={tableData} />
+                    </div>
 
                     {showCollapse && !isExpanded && (
                         <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background to-transparent pointer-events-none" />
                     )}
                 </div>
 
-                <div className="bg-muted/30 px-2 py-1 text-[10px] text-muted-foreground border-t flex justify-between items-center">
-                    <span>Showing {tableData.length} rows</span>
-                    {showCollapse && (
+                {showCollapse && (
+                    <div className="bg-muted/30 px-2 py-1 text-[10px] text-muted-foreground border-t flex justify-between items-center">
+                        <span />
                         <Button
                             variant="ghost"
                             size="sm"
@@ -308,8 +275,8 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400 
                         >
                             {isExpanded ? "Collapse" : "Expand"}
                         </Button>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
         );
     };

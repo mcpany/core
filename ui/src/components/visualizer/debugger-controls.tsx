@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { Button } from "@/components/ui/button";
 import { Play, Pause, SkipForward, Square } from "lucide-react";

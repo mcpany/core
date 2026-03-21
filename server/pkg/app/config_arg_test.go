@@ -63,16 +63,22 @@ upstream_services:
 		t.Fatal("Startup timed out")
 	}
 
-	// Check if service was loaded
+	// Check if service was loaded. Service registration from config is async (via bus worker),
+	// so we poll briefly to allow the worker time to process the registration request.
 	require.NotNil(t, app.ServiceRegistry, "ServiceRegistry should be initialized")
-	services, err := app.ServiceRegistry.GetAllServices()
-	require.NoError(t, err)
-
 	found := false
-	for _, svc := range services {
-		if svc.GetName() == "test-config-arg" {
-			found = true
-			break
+	deadline := time.Now().Add(5 * time.Second)
+	for !found && time.Now().Before(deadline) {
+		services, err := app.ServiceRegistry.GetAllServices()
+		require.NoError(t, err)
+		for _, svc := range services {
+			if svc.GetName() == "test-config-arg" {
+				found = true
+				break
+			}
+		}
+		if !found {
+			time.Sleep(50 * time.Millisecond)
 		}
 	}
 

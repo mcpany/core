@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import React, { useState, useMemo } from "react";
 import { Trace, SpanStatus, Span } from "@/types/trace";

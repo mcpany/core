@@ -45,5 +45,11 @@ The persistent threat of Remote Code Execution (RCE) via project-local configura
 * **Observability**: All pre-flight manifests and validation failures are logged to the Audit Log.
 
 ## 7. Evolutionary Changelog
+* **2026-04-23:** Update: Enforcing Strict Non-Existence Proofs (CVE-2026-25725).
+    * **Context:** Discovery of persistent configuration injection in Claude Code (CVE-2026-25725) confirms that missing files are a primary attack vector.
+    * **Architecture Adjustment:**
+        * Elevating "Non-Existence Proofs" to a mandatory, hardware-signed requirement for all sensitive configuration paths (`.claude/settings.json`, `.env`, etc.).
+        * The Validator will now explicitly block any `file_create` event for paths identified as "Absent" in the Pre-Flight Manifest, even if the agent sandbox allows it.
+    * **Security Impact:** Neutralizes the "Absence-as-Exploit" pattern by ensuring the sandbox state remains identical to the pre-attested manifest.
 * **2026-04-10:** Integrated with the **Deterministic Attestation Gateway** to support "Full-State Manifest" requirements for Claude Code deterministic boot compliance.
 * **2026-04-09:** Initial Document Creation.

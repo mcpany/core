@@ -16,7 +16,26 @@ import (
 // PageFetcher fetches the visible text content of a URL.
 // It is an interface so tests can inject a lightweight implementation without
 // requiring a real browser installation.
+//
+// Summary: Represents a PageFetcher.
 type PageFetcher interface {
+	// FetchText retrieves the text content of a URL.
+	//
+	// Summary: Retrieves the text content of a URL.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - url: string. The URL to visit.
+	//
+	// Returns:
+	//   - string: The text content of the page.
+	//   - error: An error if the fetch fails.
+	//
+	// Errors:
+	//   - Returns error if any.
+	//
+	// Side Effects:
+	//   - None.
 	FetchText(ctx context.Context, url string) (string, error)
 }
 
@@ -93,6 +112,23 @@ func (b *Provider) ToolDefinition() map[string]interface{} {
 // playwrightFetcher is the production PageFetcher that uses playwright-go.
 type playwrightFetcher struct{}
 
+// FetchText fetches the text content of a URL using playwright.
+//
+// Summary: Fetches the text content of a URL using playwright.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - url: string. The URL to visit.
+//
+// Returns:
+//   - string: The text content of the page.
+//   - error: An error if the fetch fails.
+//
+// Errors:
+//   - Returns error if any.
+//
+// Side Effects:
+//   - None.
 func (f *playwrightFetcher) FetchText(_ context.Context, url string) (string, error) {
 	pw, err := playwright.Run()
 	if err != nil {

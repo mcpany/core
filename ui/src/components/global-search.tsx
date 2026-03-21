@@ -2,11 +2,8 @@
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
-
-"use client"
-
 import * as React from "react"
-import { useRouter } from "next/navigation"
+import { useNavigate as useRouter } from 'react-router-dom'
 import { useTheme } from "next-themes"
 import {
   Settings,
@@ -131,7 +128,7 @@ export function GlobalSearch() {
         localStorage.setItem("recent_tools", JSON.stringify(updated))
         setRecentTools(updated)
 
-        router.push(`/tools?name=${tool.name}`)
+        router(`/tools?name=${tool.name}`)
     })
   }, [runCommand, router, recentTools])
 
@@ -208,35 +205,35 @@ export function GlobalSearch() {
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup heading="Suggestions">
-            <CommandItem onSelect={() => runCommand(() => router.push("/"))}>
+            <CommandItem onSelect={() => runCommand(() => router("/"))}>
               <LayoutDashboard className="mr-2 h-4 w-4" />
               <span>Dashboard</span>
             </CommandItem>
-            <CommandItem onSelect={() => runCommand(() => router.push("/upstream-services"))}>
+            <CommandItem onSelect={() => runCommand(() => router("/upstream-services"))}>
               <Server className="mr-2 h-4 w-4" />
               <span>Services</span>
             </CommandItem>
-            <CommandItem onSelect={() => runCommand(() => router.push("/tools"))}>
+            <CommandItem onSelect={() => runCommand(() => router("/tools"))}>
               <Wrench className="mr-2 h-4 w-4" />
               <span>Tools</span>
             </CommandItem>
-             <CommandItem onSelect={() => runCommand(() => router.push("/resources"))}>
+             <CommandItem onSelect={() => runCommand(() => router("/resources"))}>
               <FileBox className="mr-2 h-4 w-4" />
               <span>Resources</span>
             </CommandItem>
-             <CommandItem onSelect={() => runCommand(() => router.push("/prompts"))}>
+             <CommandItem onSelect={() => runCommand(() => router("/prompts"))}>
               <MessageSquare className="mr-2 h-4 w-4" />
               <span>Prompts</span>
             </CommandItem>
-            <CommandItem onSelect={() => runCommand(() => router.push("/logs"))}>
+            <CommandItem onSelect={() => runCommand(() => router("/logs"))}>
               <FileText className="mr-2 h-4 w-4" />
               <span>Logs</span>
             </CommandItem>
-            <CommandItem onSelect={() => runCommand(() => router.push("/playground"))}>
+            <CommandItem onSelect={() => runCommand(() => router("/playground"))}>
               <Terminal className="mr-2 h-4 w-4" />
               <span>Playground</span>
             </CommandItem>
-             <CommandItem onSelect={() => runCommand(() => router.push("/settings"))}>
+             <CommandItem onSelect={() => runCommand(() => router("/settings"))}>
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
             </CommandItem>
@@ -281,7 +278,7 @@ export function GlobalSearch() {
           {services.length > 0 && (
              <CommandGroup heading="Services">
                {services.map((service) => (
-                 <CommandItem key={service.id || service.name} value={`service ${service.name}`} onSelect={() => runCommand(() => router.push(`/upstream-services?id=${service.id}`))}>
+                 <CommandItem key={service.id || service.name} value={`service ${service.name}`} onSelect={() => runCommand(() => router(`/upstream-services?id=${service.id}`))}>
                    <Database className="mr-2 h-4 w-4" />
                    <span>{service.name}</span>
                    {service.version && <span className="ml-2 text-xs text-muted-foreground">v{service.version}</span>}
@@ -302,7 +299,7 @@ export function GlobalSearch() {
           {tools.length > 0 && (
              <CommandGroup heading="Tools">
                {tools.map((tool) => (
-                 <CommandItem key={tool.name} value={`tool ${tool.name}`} onSelect={() => runCommand(() => router.push(`/tools?name=${tool.name}`))}>
+                 <CommandItem key={tool.name} value={`tool ${tool.name}`} onSelect={() => runCommand(() => router(`/tools?name=${tool.name}`))}>
                    <Calculator className="mr-2 h-4 w-4" />
                    <span>{tool.name}</span>
                    <span className="ml-2 text-xs text-muted-foreground truncate max-w-[200px]">{tool.description}</span>
@@ -314,7 +311,7 @@ export function GlobalSearch() {
            {resources.length > 0 && (
              <CommandGroup heading="Resources">
                {resources.map((resource) => (
-                 <CommandItem key={resource.uri} value={`resource ${resource.name}`} onSelect={() => runCommand(() => router.push(`/resources?uri=${encodeURIComponent(resource.uri)}`))}>
+                 <CommandItem key={resource.uri} value={`resource ${resource.name}`} onSelect={() => runCommand(() => router(`/resources?uri=${encodeURIComponent(resource.uri)}`))}>
                    <FileBox className="mr-2 h-4 w-4" />
                    <span>{resource.name}</span>
                  </CommandItem>
@@ -332,7 +329,7 @@ export function GlobalSearch() {
            {prompts.length > 0 && (
              <CommandGroup heading="Prompts">
                {prompts.map((prompt) => (
-                 <CommandItem key={prompt.name} value={`prompt ${prompt.name}`} onSelect={() => runCommand(() => router.push(`/prompts?name=${prompt.name}`))}>
+                 <CommandItem key={prompt.name} value={`prompt ${prompt.name}`} onSelect={() => runCommand(() => router(`/prompts?name=${prompt.name}`))}>
                    <MessageSquare className="mr-2 h-4 w-4" />
                    <span>{prompt.name}</span>
                  </CommandItem>

@@ -2,15 +2,13 @@
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
-
-"use client"
-
 import React, { useEffect, useState, memo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Activity, Globe, ShieldAlert, Clock, Terminal } from "lucide-react"
 
 import { apiClient, SystemStatus } from "@/lib/client"
+import { usePolling } from "@/hooks/use-polling"
 
 const formatUptime = (seconds: number) => {
   const hrs = Math.floor(seconds / 3600)
@@ -27,7 +25,7 @@ export const SystemHealthCard = memo(function SystemHealthCard() {
   const [status, setStatus] = useState<SystemStatus | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const fetchStatus = async () => {
+  const fetchStatus = React.useCallback(async () => {
     try {
       const data = await apiClient.getSystemStatus()
       setStatus(data)
@@ -36,30 +34,15 @@ export const SystemHealthCard = memo(function SystemHealthCard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     fetchStatus()
-    const interval = setInterval(() => {
-        // ⚡ Bolt Optimization: Pause polling when tab is not visible
-        if (!document.hidden) {
-            fetchStatus()
-        }
-    }, 5000)
+  }, [fetchStatus])
 
-    // ⚡ Bolt Optimization: Refresh immediately when tab becomes visible
-    const onVisibilityChange = () => {
-        if (!document.hidden) {
-            fetchStatus()
-        }
-    }
-    document.addEventListener("visibilitychange", onVisibilityChange)
-
-    return () => {
-        clearInterval(interval)
-        document.removeEventListener("visibilitychange", onVisibilityChange)
-    }
-  }, [])
+  // ⚡ BOLT: [Render Optimization] Use usePolling hook instead of raw setInterval
+  // Randomized Selection from Top 5 High-Impact Targets
+  usePolling(fetchStatus, 5000)
 
   if (loading && !status) {
     return (

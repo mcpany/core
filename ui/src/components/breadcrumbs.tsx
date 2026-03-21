@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
 
-import Link from "next/link";
+
+import { Link } from 'react-router-dom';
 import { Fragment } from "react";
 import { ChevronRight, ChevronDown, Home, History } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -81,7 +81,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
         <nav aria-label="Breadcrumb" className={cn("w-full max-w-6xl mb-4", className)}>
             <ol className="flex items-center gap-1 text-sm text-muted-foreground">
                 <li>
-                    <Link href="/" className="flex items-center gap-1.5 font-semibold text-foreground/80 hover:text-foreground transition-colors">
+                    <Link to="/" className="flex items-center gap-1.5 font-semibold text-foreground/80 hover:text-foreground transition-colors">
                         <Home className="size-4" />
                         <span className="sr-only">Home</span>
                     </Link>
@@ -99,7 +99,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                                 <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Recent History</div>
                                 {history.map((h) => (
                                     <DropdownMenuItem key={h.href} asChild>
-                                        <Link href={h.href} className="cursor-pointer truncate">
+                                        <Link to={h.href} className="cursor-pointer truncate">
                                             {h.label}
                                         </Link>
                                     </DropdownMenuItem>
@@ -114,7 +114,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                              <ChevronRight className="size-4 text-muted-foreground/50" />
                              <div className="flex items-center gap-0.5">
                                 <Link
-                                    href={item.href}
+                                    to={item.href}
                                     aria-current={index === items.length - 1 ? "page" : undefined}
                                     className={cn(
                                         "font-medium transition-colors hover:text-foreground",
@@ -134,7 +134,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                                         <DropdownMenuContent align="start" className="max-h-[300px] overflow-y-auto">
                                             {item.siblings.map((sibling) => (
                                                 <DropdownMenuItem key={sibling.href} asChild>
-                                                    <Link href={sibling.href} className={cn("cursor-pointer", sibling.href === item.href && "font-semibold bg-accent")}>
+                                                    <Link to={sibling.href} className={cn("cursor-pointer", sibling.href === item.href && "font-semibold bg-accent")}>
                                                         {sibling.label}
                                                     </Link>
                                                 </DropdownMenuItem>

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useState } from "react";
 import { Loader2, ExternalLink, ShieldAlert } from "lucide-react";

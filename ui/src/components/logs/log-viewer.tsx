@@ -2,11 +2,8 @@
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
-
-"use client"
-
 import * as React from "react"
-import dynamic from "next/dynamic";
+import { lazy, Suspense } from "react"
 import {
   ChevronRight,
   ChevronDown
@@ -14,17 +11,10 @@ import {
 import { cn } from "@/lib/utils"
 
 // Lazy load Virtuoso to avoid SSR issues
-const Virtuoso = dynamic(() => import("react-virtuoso").then((m) => m.Virtuoso), { ssr: false });
+const Virtuoso = lazy(() => import('react-virtuoso').then((m) => ({ default: m.Virtuoso })));
 
 // Lazy load the syntax highlighter
-const JsonViewer = dynamic(() => import("./json-viewer"), {
-  loading: () => (
-    <div className="p-4 text-xs text-muted-foreground bg-[#1e1e1e] rounded-lg border border-white/10">
-      Loading highlighter...
-    </div>
-  ),
-  ssr: false,
-});
+const JsonViewer = lazy(() => import('./json-viewer'));
 
 /**
  * LogLevel defines the severity of a log entry.
@@ -200,7 +190,7 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
             {isExpanded && isPotentialJson && (
               <div className="mt-2 w-full max-w-full overflow-hidden text-xs">
                 {jsonContent ? (
-                  <JsonViewer data={jsonContent} />
+                  <Suspense fallback={null}><JsonViewer data={jsonContent} /></Suspense>
                 ) : (
                   <div className="p-2 bg-muted/20 rounded border border-white/10 text-muted-foreground italic">
                     Invalid JSON
@@ -225,14 +215,16 @@ LogRow.displayName = 'LogRow'
  */
 export function LogViewer({ logs, highlightRegex, isPaused }: LogViewerProps) {
   return (
-    <Virtuoso
-      style={{ height: '100%' }}
-      data={logs}
-      followOutput={isPaused ? false : 'auto'}
-      className="p-4 scroll-smooth"
-      itemContent={(index, log) => (
-        <LogRow key={(log as LogEntry).id} log={log as LogEntry} highlightRegex={highlightRegex} />
-      )}
-    />
+    <Suspense fallback={<div className="p-4 text-muted-foreground text-xs">Loading...</div>}>
+      <Virtuoso
+        style={{ height: '100%' }}
+        data={logs}
+        followOutput={isPaused ? false : 'auto'}
+        className="p-4 scroll-smooth"
+        itemContent={(_index: number, log: unknown) => (
+          <LogRow key={(log as LogEntry).id} log={log as LogEntry} highlightRegex={highlightRegex} />
+        )}
+      />
+    </Suspense>
   );
 }

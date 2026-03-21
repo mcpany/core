@@ -3,39 +3,36 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
-
 import { ResourceDetail } from "@/components/resource-detail";
 import { Breadcrumbs, BreadcrumbItem } from "@/components/breadcrumbs";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { apiClient } from "@/lib/client";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { useServiceSiblings } from "@/hooks/use-siblings";
 
 /**
  * ResourceDetailPage component.
- * @param props - The component props.
- * @param props.params - The params property.
  * @returns The rendered component.
  */
-export default function ResourceDetailPage({ params: paramsPromise }: { params: Promise<{ id: string, name: string }> }) {
-    const params = use(paramsPromise);
+export default function ResourceDetailPage() {
+    const { id = "", name = "" } = useParams<{ id: string; name: string }>();
     const [service, setService] = useState<UpstreamServiceConfig | null>(null);
-    const serviceSiblings = useServiceSiblings(params.id);
+    const serviceSiblings = useServiceSiblings(id);
 
     useEffect(() => {
-        apiClient.getService(params.id).then(res => setService(res.service || null));
-    }, [params.id]);
+        if (id) apiClient.getService(id).then(res => setService(res.service || null));
+    }, [id]);
 
     const breadcrumbItems: BreadcrumbItem[] = service ? [
-        { label: service.name, href: `/service/${params.id}`, siblings: serviceSiblings },
-        { label: decodeURIComponent(params.name), href: `/service/${params.id}/resource/${params.name}` }
+        { label: service.name, href: `/service/${id}`, siblings: serviceSiblings },
+        { label: decodeURIComponent(name), href: `/service/${id}/resource/${name}` }
     ] : [];
 
     return (
         <main className="flex min-h-screen flex-col items-center bg-background p-4 sm:p-8">
             <Breadcrumbs items={breadcrumbItems} className="max-w-4xl"/>
-            <ResourceDetail serviceId={params.id} resourceName={params.name} />
+            <ResourceDetail serviceId={id} resourceName={name} />
         </main>
     );
 }

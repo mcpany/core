@@ -3,9 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
-
-import dynamic from "next/dynamic";
+import { lazy, Suspense } from "react";
 
 const ChartSkeleton = () => (
   <div className="col-span-3 rounded-lg border bg-card text-card-foreground shadow-sm h-full backdrop-blur-sm bg-background/50">
@@ -22,62 +20,43 @@ const ChartSkeleton = () => (
 // ⚡ Bolt Optimization: Lazy load heavy chart components to reduce initial bundle size
 // and improve Time to Interactive. 'recharts' is a large dependency.
 
-/**
- * LazyRequestVolumeChart is a dynamically loaded RequestVolumeChart component.
- * It uses a skeleton loader while the component is being fetched to improve performance.
- */
-export const LazyRequestVolumeChart = dynamic(
-  () => import("@/components/dashboard/request-volume-chart").then((mod) => mod.RequestVolumeChart),
-  {
-    ssr: false,
-    loading: () => <ChartSkeleton />,
-  }
+const _LazyRequestVolumeChart = lazy(() =>
+  import("@/components/dashboard/request-volume-chart").then((mod) => ({ default: mod.RequestVolumeChart }))
+);
+const _LazyRecentActivityWidget = lazy(() =>
+  import("@/components/dashboard/recent-activity-widget").then((mod) => ({ default: mod.RecentActivityWidget }))
+);
+const _LazyTopToolsWidget = lazy(() =>
+  import("@/components/dashboard/top-tools-widget").then((mod) => ({ default: mod.TopToolsWidget }))
+);
+const _LazyHealthHistoryChart = lazy(() =>
+  import("@/components/stats/health-history-chart").then((mod) => ({ default: mod.HealthHistoryChart }))
+);
+const _LazyAuditLogWidget = lazy(() =>
+  import("@/components/audit/audit-log-viewer").then((mod) => ({ default: mod.AuditLogViewer }))
 );
 
-/**
- * LazyRecentActivityWidget is a dynamically loaded RecentActivityWidget component.
- * It uses a skeleton loader while the component is being fetched.
- */
-export const LazyRecentActivityWidget = dynamic(
-  () => import("@/components/dashboard/recent-activity-widget").then((mod) => mod.RecentActivityWidget),
-  {
-    ssr: false,
-    loading: () => <ChartSkeleton />,
-  }
+/** LazyRequestVolumeChart with Suspense skeleton. */
+export const LazyRequestVolumeChart = (props: object) => (
+  <Suspense fallback={<ChartSkeleton />}><_LazyRequestVolumeChart {...(props as any)} /></Suspense>
 );
 
-/**
- * LazyTopToolsWidget is a dynamically loaded TopToolsWidget component.
- * It uses a skeleton loader while the component is being fetched.
- */
-export const LazyTopToolsWidget = dynamic(
-  () => import("@/components/dashboard/top-tools-widget").then((mod) => mod.TopToolsWidget),
-  {
-    ssr: false,
-    loading: () => <ChartSkeleton />,
-  }
+/** LazyRecentActivityWidget with Suspense skeleton. */
+export const LazyRecentActivityWidget = (props: object) => (
+  <Suspense fallback={<ChartSkeleton />}><_LazyRecentActivityWidget {...(props as any)} /></Suspense>
 );
 
-/**
- * LazyHealthHistoryChart is a dynamically loaded HealthHistoryChart component.
- * It uses a skeleton loader while the component is being fetched.
- */
-export const LazyHealthHistoryChart = dynamic(
-  () => import("@/components/stats/health-history-chart").then((mod) => mod.HealthHistoryChart),
-  {
-    ssr: false,
-    loading: () => <ChartSkeleton />,
-  }
+/** LazyTopToolsWidget with Suspense skeleton. */
+export const LazyTopToolsWidget = (props: object) => (
+  <Suspense fallback={<ChartSkeleton />}><_LazyTopToolsWidget {...(props as any)} /></Suspense>
 );
 
-/**
- * LazyAuditLogWidget is a dynamically loaded AuditLogViewer component.
- * It uses a skeleton loader while the component is being fetched.
- */
-export const LazyAuditLogWidget = dynamic(
-  () => import("@/components/audit/audit-log-viewer").then((mod) => mod.AuditLogViewer),
-  {
-    ssr: false,
-    loading: () => <ChartSkeleton />,
-  }
+/** LazyHealthHistoryChart with Suspense skeleton. */
+export const LazyHealthHistoryChart = (props: object) => (
+  <Suspense fallback={<ChartSkeleton />}><_LazyHealthHistoryChart {...(props as any)} /></Suspense>
+);
+
+/** LazyAuditLogWidget with Suspense skeleton. */
+export const LazyAuditLogWidget = (props: object) => (
+  <Suspense fallback={<ChartSkeleton />}><_LazyAuditLogWidget {...(props as any)} /></Suspense>
 );

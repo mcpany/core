@@ -22,15 +22,15 @@ vi.mock('@/hooks/use-toast', () => ({
 
 // Mock syntax highlighter
 vi.mock('react-syntax-highlighter/dist/esm/light', () => {
-/**
- * MockHighlighter component.
- * @param props - The component props.
- * @param props.children - The child components.
- * @returns The rendered component.
- */
-    const MockHighlighter = ({ children }: { children: React.ReactNode }) => <pre data-testid="code-block">{children}</pre>;
-    MockHighlighter.registerLanguage = vi.fn();
-    return { default: MockHighlighter };
+  /**
+   * MockHighlighter component.
+   * @param props - The component props.
+   * @param props.children - The child components.
+   * @returns The rendered component.
+   */
+  const MockHighlighter = ({ children }: { children: React.ReactNode }) => <pre data-testid="code-block">{children}</pre>;
+  MockHighlighter.registerLanguage = vi.fn();
+  return { default: MockHighlighter };
 });
 
 // Mock URL.createObjectURL
@@ -39,9 +39,9 @@ global.URL.revokeObjectURL = vi.fn();
 
 // Mock ResizeObserver for Radix Dialog
 global.ResizeObserver = class ResizeObserver {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
+  observe() { }
+  unobserve() { }
+  disconnect() { }
 };
 
 describe('ResourcePreviewModal', () => {
@@ -49,6 +49,11 @@ describe('ResourcePreviewModal', () => {
     uri: 'file:///test.json',
     name: 'test.json',
     mimeType: 'application/json',
+    title: 'test.json',
+    description: '',
+    size: 0 as any,
+    disable: false,
+    profiles: [],
   };
 
   const mockContent: ResourceContent = {
@@ -101,7 +106,7 @@ describe('ResourcePreviewModal', () => {
     expect(screen.getByText('Loading content...')).toBeInTheDocument();
 
     await waitFor(() => {
-        expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
+      expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
     });
 
     expect(apiClient.readResource).toHaveBeenCalledWith(mockResource.uri);
@@ -121,12 +126,12 @@ describe('ResourcePreviewModal', () => {
     );
 
     await waitFor(() => {
-        expect(apiClient.readResource).toHaveBeenCalledWith(mockResource.uri);
+      expect(apiClient.readResource).toHaveBeenCalledWith(mockResource.uri);
     });
   });
 
   it('handles fetch error', async () => {
-     // @ts-expect-error Mocking
+    // @ts-expect-error Mocking
     apiClient.readResource.mockRejectedValueOnce(new Error('Fetch failed'));
     const mockToast = vi.fn();
     // @ts-expect-error Mocking
@@ -141,10 +146,10 @@ describe('ResourcePreviewModal', () => {
     );
 
     await waitFor(() => {
-        expect(mockToast).toHaveBeenCalledWith(expect.objectContaining({
-            title: 'Error',
-            variant: 'destructive'
-        }));
+      expect(mockToast).toHaveBeenCalledWith(expect.objectContaining({
+        title: 'Error',
+        variant: 'destructive'
+      }));
     });
   });
 
@@ -166,9 +171,9 @@ describe('ResourcePreviewModal', () => {
 
   it('handles download for binary content', async () => {
     const binaryContent: ResourceContent = {
-        uri: 'file:///image.png',
-        mimeType: 'image/png',
-        blob: 'AQID' // 0x01, 0x02, 0x03
+      uri: 'file:///image.png',
+      mimeType: 'image/png',
+      blob: 'AQID' // 0x01, 0x02, 0x03
     };
 
     const mockResourceImg = { ...mockResource, name: 'image.png', mimeType: 'image/png', uri: 'file:///image.png' };
@@ -179,19 +184,19 @@ describe('ResourcePreviewModal', () => {
 
     const originalCreateElement = document.createElement.bind(document);
     vi.spyOn(document, 'createElement').mockImplementation((tagName: string, options?: ElementCreationOptions) => {
-        if (tagName === 'a') {
-            return linkMock;
-        }
-        return originalCreateElement(tagName, options);
+      if (tagName === 'a') {
+        return linkMock;
+      }
+      return originalCreateElement(tagName, options);
     });
 
     render(
-        <ResourcePreviewModal
-            isOpen={true}
-            onClose={vi.fn()}
-            resource={mockResourceImg}
-            initialContent={binaryContent}
-        />
+      <ResourcePreviewModal
+        isOpen={true}
+        onClose={vi.fn()}
+        resource={mockResourceImg}
+        initialContent={binaryContent}
+      />
     );
 
     const downloadBtn = screen.getByRole('button', { name: /download/i });

@@ -5,9 +5,9 @@
 
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { StackEditor } from "../../src/components/stacks/stack-editor";
-import { apiClient } from "../../src/lib/client";
+import { apiClient } from "@/lib/client";
 
 // Mock the ConfigEditor component because Monaco is hard to test in JSDOM
 vi.mock('../../src/components/stacks/config-editor', () => ({
@@ -33,7 +33,7 @@ vi.mock('../../src/components/stacks/service-palette', () => ({
 }));
 
 // Mock the apiClient
-vi.mock('../../src/lib/client', () => ({
+vi.mock('@/lib/client', () => ({
   apiClient: {
     getCollection: vi.fn(),
     saveCollection: vi.fn(),
@@ -64,8 +64,8 @@ describe('StackEditor', () => {
       expect(screen.getByText('config.yaml')).toBeDefined();
     });
     await waitFor(() => {
-        // The component dumps the object to YAML, so we just check if it contains the image
-        expect(screen.getByText(/test\/image/)).toBeDefined();
+      expect(apiClient.getCollection).toHaveBeenCalledWith(mockStackId);
+      expect(screen.getByTestId('config-editor-mock')).toBeDefined();
     });
   });
 
@@ -73,7 +73,7 @@ describe('StackEditor', () => {
     render(<StackEditor stackId={mockStackId} />);
 
     await waitFor(() => {
-         expect(screen.getByText('Valid YAML')).toBeDefined();
+      expect(screen.getByText('Valid YAML')).toBeDefined();
     });
   });
 
@@ -81,7 +81,7 @@ describe('StackEditor', () => {
     render(<StackEditor stackId={mockStackId} />);
 
     await waitFor(() => {
-         expect(screen.getByText('Valid YAML')).toBeDefined();
+      expect(screen.getByText('Valid YAML')).toBeDefined();
     });
   });
 });

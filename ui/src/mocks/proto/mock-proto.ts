@@ -6,12 +6,12 @@
 /**
  * Mock class for GrpcWebImpl used in tests.
  */
-export class GrpcWebImpl {}
+export class GrpcWebImpl { }
 
 /**
  * Mock class for RegistrationServiceClientImpl used in tests.
  */
-export class RegistrationServiceClientImpl {}
+export class RegistrationServiceClientImpl { }
 
 /**
  * Mock constant for HttpUpstreamService used in tests.
@@ -22,6 +22,44 @@ export const HttpUpstreamService = {};
  * Mock constant for ServiceProvenance used in tests.
  */
 export const ServiceProvenance = {};
+
+/**
+ * Mock enum for CallPolicy_Action used in tests.
+ */
+export enum CallPolicy_Action {
+  ALLOW = 0,
+  DENY = 1,
+  SAVE_CACHE = 2,
+  DELETE_CACHE = 3,
+}
+
+/**
+ * Mock enum for ExportPolicy_Action used in tests.
+ */
+export enum ExportPolicy_Action {
+  EXPORT = 0,
+  UNEXPORT = 1,
+}
+
+/**
+ * Mock type placeholders for policy-related proto messages.
+ */
+export const CallPolicy = {};
+
+/**
+ * Mock type placeholder for CallPolicyRule.
+ */
+export const CallPolicyRule = {};
+
+/**
+ * Mock type placeholder for ExportPolicy.
+ */
+export const ExportPolicy = {};
+
+/**
+ * Mock type placeholder for ExportRule.
+ */
+export const ExportRule = {};
 
 /**
  * Mock constant for ProfileDefinition used in tests.

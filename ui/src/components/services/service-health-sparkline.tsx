@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { memo, useMemo } from "react";
 import { useServiceHealth } from "@/contexts/service-health-context";
