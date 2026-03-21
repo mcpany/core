@@ -555,8 +555,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
----
-
 ## Strategic Evolution: [2026-03-09]
 
 ### Focus: Project-Local Configuration Security & Intent-Bound Isolation
@@ -932,8 +930,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Active Subagent Lifecycle Governance**: MCP Any will move from a passive router to an "Active Reaper." We will implement mandatory session-bound heartbeat monitors for all subagents. If an intent branch is pruned, the gateway will forcefully terminate associated subagent sessions and purge their "Ghost" state from the Blackboard.
 - **Structural Metadata Sanitization**: We are introducing a "Metadata Validator" that treats tool schemas (descriptions, examples) as untrusted content. All structural metadata will be scanned for imperative instructions and "Context Poisoning" patterns before being exposed to the LLM.
 - **DCA-Native Negotiation Broker**: To support Gemini's "Distributed Capability Auction," MCP Any will act as the high-speed "Auction House." We will provide a low-latency bus for agent bidding, ensuring that swarm coordination doesn't become a bottleneck while maintaining Zero-Trust validation of every bid.
-
----
 
 ---
 
