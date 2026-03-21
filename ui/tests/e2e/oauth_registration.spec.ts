@@ -51,7 +51,7 @@ test.describe('Service Registration with OAuth', () => {
     await authTab.click();
 
     // Wait for the credential to be loaded into the select
-    const selectTrigger = page.getByRole('combobox', { name: /Select credential.../i });
+    const selectTrigger = page.getByRole('combobox');
     await selectTrigger.click();
 
     const credOption = page.getByRole('option', { name: /Test OAuth Credential/i });
