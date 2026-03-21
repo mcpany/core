@@ -49,3 +49,10 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+
+### Update: 2026-06-25 - Mitigating Snapshot Collision
+**Context:** Today's market sync revealed a "Snapshot Collision" vulnerability where virtualized agent clones sharing the same hardware ID cause identity bleed between sessions.
+**Architecture Adjustment:**
+* Upgrading Section 4 to mandate **Unique Session Attestation (USA)**.
+* Every AMR snapshot must now be cryptographically bound to a unique, hardware-attested session ID, not just the hardware ID.
+**Security Impact:** Prevents unauthorized state inheritance by virtualized agent clones in multi-tenant or horizontal swarm environments.

@@ -800,3 +800,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Density Guard (ADG)**: (P0) Cognitive security layer utilizing hardware-bound headers to "pin" mission-critical fragments at the LLM attention layer.
 - **Headless Handoff Continuity (HHC)**: (P0) Orchestration bridge facilitating signed intent transfers for process-based subagent spawning.
 - **Multi-Modal Attention Sanitizer**: (P1) Advanced security extension for the MIB to neutralize attention-eviction probes in non-textual traces.
+
+### Upcoming: [2026-06-25]
+- **Cognitive Enclave Sovereignty (CES) Provider**: (P0) Authoritative host for "Sovereign Memory" utilizing Trusted Execution Environments (TEEs) for local reasoning fragment processing. (Added: 2026-06-25)
+- **Hardware-Locked Attention (HLA) Middleware**: (P0) Security middleware that cryptographically "pins" mission-critical intent fragments using hardware-bound attention-locking headers. (Added: 2026-06-25)
+- **Unique Session Attestation (USA) Provider**: (P0) Advanced extension for the AMR Gateway that cryptographically binds snapshots to hardware-attested session IDs. (Added: 2026-06-25)
+- **Reasoning Entropy Quarantine (REQ) Manager**: (P1) Stability middleware that monitors subagent reasoning entropy and automatically quarantines agents with non-mission-aligned variance. (Added: 2026-06-25)

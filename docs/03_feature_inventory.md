@@ -1461,3 +1461,15 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Cognitive Enclave Sovereignty (CES) Provider**: (P0) Authoritative host for "Sovereign Memory" utilizing Trusted Execution Environments (TEEs) for local reasoning fragment processing.
+- **Hardware-Locked Attention (HLA) Middleware**: (P0) Security middleware that cryptographically "pins" mission-critical intent fragments using hardware-bound attention-locking headers.
+- **Unique Session Attestation (USA) Provider**: (P0) Advanced extension for the AMR Gateway that cryptographically binds snapshots to hardware-attested session IDs.
+- **Reasoning Entropy Quarantine (REQ) Manager**: (P1) Stability middleware that monitors subagent reasoning entropy and automatically quarantines agents with non-mission-aligned variance.
+
+### Priority Shifts
+- **Atomic Mission-Resumption (AMR) Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory **USA-compliant** session attestation.
+- **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support the new **HLA-native** attention governance.

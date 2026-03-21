@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+### Upcoming: [2026-06-25]
+- [ ] **[P0] Cognitive Enclave Monitor**: (2026-06-25) Visual indicator for TEE attestation status and Sovereign Memory fragment processing.
+- [ ] **[P0] Attention Governance Dashboard**: (2026-06-25) Real-time visualization of HLA-locked intent fragments and CoT-Poisoning alerts.
+- [ ] **[P0] Session Attestation Widget**: (2026-06-25) Security status for USA-compliant session uniqueness and snapshot integrity.
+- [ ] **[P1] Reasoning Entropy Explorer**: (2026-06-25) Forensic UI for monitoring subagent reasoning entropy and REQ-quarantine events.
