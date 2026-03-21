@@ -25,7 +25,7 @@ import {
 } from "recharts";
 import {
     ArrowDownRight,
-    ArrowUpRight,
+
     Activity,
     Clock,
     AlertTriangle,
@@ -63,11 +63,11 @@ export function AnalyticsDashboard() {
     const [timeRange, setTimeRange] = useState("1h");
     const [activeTab, setActiveTab] = useState("overview");
 
-    const [trafficData, setTrafficData] = useState<any[]>([]);
-    const [toolUsageData, setToolUsageData] = useState<any[]>([]);
+    const [trafficData, setTrafficData] = useState<Record<string, unknown>[]>([]);
+    const [toolUsageData, setToolUsageData] = useState<Record<string, unknown>[]>([]);
     const [contextTotal, setContextTotal] = useState<number>(0);
-    const [contextByService, setContextByService] = useState<any[]>([]);
-    const [heaviestTools, setHeaviestTools] = useState<any[]>([]);
+    const [contextByService, setContextByService] = useState<Record<string, unknown>[]>([]);
+    const [heaviestTools, setHeaviestTools] = useState<Record<string, unknown>[]>([]);
     const [tools, setTools] = useState<ToolDefinition[]>([]);
     const [toolUsageMap, setToolUsageMap] = useState<Record<string, ToolAnalytics>>({});
     const [isMounted, setIsMounted] = useState(false);
@@ -85,10 +85,10 @@ export function AnalyticsDashboard() {
                 setTrafficData(traffic || []);
 
                 // Format tool usage data
-                const formattedTools = (topTools || []).map((t: any, index: number) => ({
+                const formattedTools = (topTools || []).map((t: Record<string, unknown>, _index: number) => ({
                     name: t.name,
                     value: t.count,
-                    color: COLORS[index % COLORS.length]
+                    color: COLORS[_index % COLORS.length]
                 }));
                 setToolUsageData(formattedTools);
 
@@ -120,10 +120,10 @@ export function AnalyticsDashboard() {
                 setContextTotal(totalTokens);
 
                 // Format for Pie Chart
-                const serviceUsage = Object.entries(serviceMap).map(([name, value], index) => ({
+                const serviceUsage = Object.entries(serviceMap).map(([name, value], _index) => ({
                     name,
                     value,
-                    color: COLORS[index % COLORS.length]
+                    color: COLORS[_index % COLORS.length]
                 })).sort((a, b) => b.value - a.value);
                 setContextByService(serviceUsage);
 
@@ -140,20 +140,20 @@ export function AnalyticsDashboard() {
         return () => clearInterval(interval);
     }, [timeRange]);
 
-    const { totalRequests, avgLatency, errorCount, errorRate, avgRps } = useMemo(() => {
+    const { totalRequests, avgLatency, _errorCount, errorRate, avgRps } = useMemo(() => {
         // ⚡ BOLT: Memoized traffic stats calculation to prevent re-render waste.
         // Randomized Selection from Top 5 High-Impact Targets
         const totalRequests = trafficData.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
         const avgLatency = trafficData.length
             ? Math.floor(trafficData.reduce((acc, cur) => acc + (cur.latency || 0), 0) / trafficData.length)
             : 0;
-        const errorCount = trafficData.reduce((acc, cur) => acc + (cur.errors || 0), 0);
-        const errorRate = totalRequests ? ((errorCount / totalRequests) * 100).toFixed(2) : "0.00";
+        const _errorCount = trafficData.reduce((acc, cur) => acc + (cur.errors || 0), 0);
+        const errorRate = totalRequests ? ((_errorCount / totalRequests) * 100).toFixed(2) : "0.00";
         // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
         const durationMinutes = trafficData.length;
         const avgRps = (durationMinutes && totalRequests) ? (totalRequests / (durationMinutes * 60)).toFixed(2) : "0.00";
 
-        return { totalRequests, avgLatency, errorCount, errorRate, avgRps };
+        return { totalRequests, avgLatency, _errorCount, errorRate, avgRps };
     }, [trafficData]);
 
     const handleToggleTool = async (name: string, disable: boolean) => {
@@ -316,8 +316,8 @@ export function AnalyticsDashboard() {
                                                 dataKey="value"
                                                 isAnimationActive={false}
                                             >
-                                                {toolUsageData.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                                {toolUsageData.map((entry, _index) => (
+                                                    <Cell key={`cell-${_index}`} fill={entry.color} />
                                                 ))}
                                             </Pie>
                                             <Tooltip
@@ -445,8 +445,8 @@ export function AnalyticsDashboard() {
                                                 isAnimationActive={false}
                                                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                                             >
-                                                {contextByService.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                                {contextByService.map((entry, _index) => (
+                                                    <Cell key={`cell-${_index}`} fill={entry.color} />
                                                 ))}
                                             </Pie>
                                             <Tooltip
@@ -469,7 +469,7 @@ export function AnalyticsDashboard() {
                             </CardHeader>
                             <CardContent>
                                  <div className="space-y-4 max-h-[300px] overflow-auto pr-2">
-                                    {heaviestTools.map((tool, index) => (
+                                    {heaviestTools.map((tool, _index) => (
                                         <div key={tool.name} className="flex items-center justify-between border-b pb-2 last:border-0">
                                             <div className="space-y-1">
                                                 <p className="text-sm font-medium leading-none">{tool.name}</p>

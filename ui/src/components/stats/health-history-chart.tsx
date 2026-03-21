@@ -5,14 +5,14 @@
 
 
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, } from "react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiClient } from "@/lib/client";
 
 interface HealthPoint {
     time: string;
-    status: "ok" | "degraded" | "error" | "offline";
+    _status: "ok" | "degraded" | "error" | "offline";
     uptime: number; // 0 to 100
 }
 
@@ -23,15 +23,15 @@ interface HealthPoint {
  */
 export function HealthHistoryChart() {
     const [data, setData] = useState<HealthPoint[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [_loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 // In a real app, this would be a dedicated history endpoint.
                 // For this implementation, we simulate 24 hours of data based on
-                // the current status and some randomized historical noise.
-                const [status, traffic] = await Promise.all([
+                // the current _status and some randomized historical noise.
+                const [_status, traffic] = await Promise.all([
                     apiClient.getDoctorStatus(),
                     apiClient.getDashboardTraffic()
                 ]);
@@ -51,7 +51,7 @@ export function HealthHistoryChart() {
 
                 if (traffic && traffic.length > 0) {
                      for (const t of traffic) {
-                        let pointStatus: HealthPoint["status"] = "ok";
+                        let pointStatus: HealthPoint["_status"] = "ok";
                         let uptime = 100;
 
                         // Simple heuristic: if errors > 0, degraded. If errors > 50% of requests, error.
@@ -71,12 +71,12 @@ export function HealthHistoryChart() {
 
                         points.push({
                             time: t.time,
-                            status: pointStatus,
+                            _status: pointStatus,
                             uptime: uptime
                         });
                      }
                 } else {
-                     // Fallback to showing just current status if no history
+                     // Fallback to showing just current _status if no history
                      // Or just empty
                 }
                 setData(points);
@@ -99,8 +99,8 @@ export function HealthHistoryChart() {
         unknown: "#9ca3af",
     };
 
-    const getBarColor = (status: HealthPoint["status"]): string => {
-        return STATUS_COLORS[status] || "#9ca3af";
+    const getBarColor = (_status: HealthPoint["_status"]): string => {
+        return STATUS_COLORS[_status] || "#9ca3af";
     };
 
     return (
@@ -108,7 +108,7 @@ export function HealthHistoryChart() {
             <CardHeader>
                 <CardTitle>System Uptime</CardTitle>
                 <CardDescription>
-                    Availability and health status over the last 24 hours.
+                    Availability and health _status over the last 24 hours.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -143,7 +143,7 @@ export function HealthHistoryChart() {
                                                         <span className="text-[0.70rem] uppercase text-muted-foreground">
                                                             Uptime
                                                         </span>
-                                                        <span className="font-bold" style={{ color: getBarColor(d.status) }}>
+                                                        <span className="font-bold" style={{ color: getBarColor(d._status) }}>
                                                             {d.uptime}%
                                                         </span>
                                                     </div>
@@ -156,7 +156,7 @@ export function HealthHistoryChart() {
                             />
                             <Bar dataKey="uptime" radius={[2, 2, 0, 0]}>
                                 {data.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={getBarColor(entry.status)} />
+                                    <Cell key={`cell-${index}`} fill={getBarColor(entry._status)} />
                                 ))}
                             </Bar>
                         </BarChart>
