@@ -620,3 +620,9 @@
 - [ ] **[P0] Mailbox Integrity Auditor**: (2026-06-21) Forensic dashboard for reviewing hardware-attested coordinate messages and MIS-blocked injection attempts.
 - [ ] **[P0] Hardware-Bound Budget Widget**: (2026-06-21) Real-time monitor for ARE v1.7 budget consumption and hardware attestation status.
 - [ ] **[P1] Logic-Grafting Alert Center**: (2026-06-21) Real-time visualization of semantic entropy spikes and blocked logic-grafting events in shared shards.
+
+### Upcoming: [2026-06-22]
+- [ ] **[P0] Attention Lock Heatmap**: (2026-06-22) Visual real-time monitor for HAA-locked intent fragments and attention-utilization scores.
+- [ ] **[P0] Identity Rotation Status**: (2026-06-22) Security widget for monitoring HAIR session keys and rotating hardware-attested teammate identities.
+- [ ] **[P0] TSJ Synchronization Viewer**: (2026-06-22) Monitor for temporal shard jitter injected by the ESB to detect cache-timing probes.
+- [ ] **[P1] Budget Continuity Tracker**: (2026-06-22) UI for reviewing cross-mission reasoning and token budget reconciliation status (UACO v2.5).

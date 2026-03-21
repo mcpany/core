@@ -782,3 +782,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Mailbox Injection Shield (MIS)**: (P0) Advanced extension for Mailbox Integrity Middleware providing hardware-attested validation of task-claiming metadata.
 - **Hardware-Attested Budget Enforcement**: (P0) Integration of Gemini CLI ARE v1.7 headers for immutable, hardware-bound reasoning budgets.
 - **Resident Logic-Grafting Interceptor**: (P1) Real-time semantic entropy monitor for horizontal teammate shards to detect unauthorized branch grafting.
+
+### Upcoming: [2026-06-22]
+- **Hardware-Attested Attention (HAA) Bridge**: (P0) Implementation of TPM-bound attention-locking headers to prevent mission-root anchor eviction (Gemini CLI v0.42.0 compliance).
+- **Hardware-Attested Identity Rotation (HAIR) Provider**: (P0) Security middleware for rotating hardware-attested identities during horizontal task claims (CVE-2026-61011 defense).
+- **Temporal Shard Jitter (TSJ) Injector**: (P0) Enclave-timing mitigation for the Entangled State Broker to neutralize cache-timing side-channels.
+- **Cross-Mission Budget Continuity (CMBC)**: (P1) Reconciliation engine for persisting reasoning-effort and token budgets across multi-phase handoffs (UACO v2.5 draft).

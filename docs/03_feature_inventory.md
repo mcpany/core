@@ -1425,3 +1425,15 @@
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MIS** integration to counter horizontal mesh exploits.
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with mandatory support for **ARE v1.7** hardware-attested budget persistence.
 - **Intent-Resumption Gateway (IRG)**: (Re-affirmed P0) Designated as the primary infrastructure for implementing **MRCP-compliant** mission resumption.
+
+## Evolution: [2026-06-22] Updates
+
+### Proposed Additions
+- **Hardware-Attested Attention (HAA) Bridge**: (P0) Authoritative security service mandating hardware-bound (TPM) headers to cryptographically "lock" mission-critical intent fragments at the LLM attention layer.
+- **Hardware-Attested Identity Rotation (HAIR) Provider**: (P0) Security middleware for horizontal meshes that manages periodic, hardware-bound identity rotation for teammate task claims to neutralize "Mailbox Shadowing."
+- **Temporal Shard Jitter (TSJ) Injector**: (P0) Performance-security extension for the ESB that injects hardware-attested timing jitter to neutralize enclave-timing side-channels.
+- **Cross-Mission Budget Continuity (CMBC) Provider**: (P1) Resource management extension for the RBF allowing reasoning budgets to persist and be reconciled across multiple mission phases.
+
+### Priority Shifts
+- **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ-injected** synchronization to support OpenClaw v3.1.3 compliance.
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Designated as the primary enforcement point for the new **CMBC** budget reconciliation standard.

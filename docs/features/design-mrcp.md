@@ -61,3 +61,10 @@ The **Mission-Root Continuity Provider (MRCP)** is an infrastructure layer for M
 
 ## 7. Evolutionary Changelog
 *   **2026-06-21:** Initial Document Creation.
+
+### Update: 2026-06-22 - Hardware-Locked Monotonic Re-Attestation
+**Context:** Today's market sync revealed the emergence of "Resumption-Replay" attacks in long-running missions.
+**Architecture Adjustment:**
+*   Introducing a mandatory hardware-bound (TPM) monotonic counter for all `checkpoint` and `resume` handshakes.
+*   The resumption token is now cryptographically linked to the specific counter value, ensuring that a stolen token cannot be reused for a previous state rollback.
+**Security Impact:** Neutralizes "State Ghosting" where subagents attempt to force a parent agent back into a less-restricted security posture by replaying old resumption signals.
