@@ -25,7 +25,6 @@ import {
 } from "recharts";
 import {
     ArrowDownRight,
-    ArrowUpRight,
     Activity,
     Clock,
     AlertTriangle,
@@ -63,11 +62,11 @@ export function AnalyticsDashboard() {
     const [timeRange, setTimeRange] = useState("1h");
     const [activeTab, setActiveTab] = useState("overview");
 
-    const [trafficData, setTrafficData] = useState<any[]>([]);
-    const [toolUsageData, setToolUsageData] = useState<any[]>([]);
+    const [trafficData, setTrafficData] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const [toolUsageData, setToolUsageData] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [contextTotal, setContextTotal] = useState<number>(0);
-    const [contextByService, setContextByService] = useState<any[]>([]);
-    const [heaviestTools, setHeaviestTools] = useState<any[]>([]);
+    const [contextByService, setContextByService] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const [heaviestTools, setHeaviestTools] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [tools, setTools] = useState<ToolDefinition[]>([]);
     const [toolUsageMap, setToolUsageMap] = useState<Record<string, ToolAnalytics>>({});
     const [isMounted, setIsMounted] = useState(false);
@@ -85,7 +84,7 @@ export function AnalyticsDashboard() {
                 setTrafficData(traffic || []);
 
                 // Format tool usage data
-                const formattedTools = (topTools || []).map((t: any, index: number) => ({
+                const formattedTools = (topTools || []).map((t: any, index: number) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
                     name: t.name,
                     value: t.count,
                     color: COLORS[index % COLORS.length]
@@ -484,7 +483,7 @@ export function AnalyticsDashboard() {
                             </CardHeader>
                             <CardContent>
                                  <div className="space-y-4 max-h-[300px] overflow-auto pr-2">
-                                    {heaviestTools.map((tool, index) => (
+                                    {heaviestTools.map((tool) => (
                                         <div key={tool.name} className="flex items-center justify-between border-b pb-2 last:border-0">
                                             <div className="space-y-1">
                                                 <p className="text-sm font-medium leading-none">{tool.name}</p>
