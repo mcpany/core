@@ -120,7 +120,7 @@ export const marketplaceService = {
   fetchExternalServers: async (marketplaceId: string): Promise<ExternalServer[]> => {
     try {
         const catalog = await apiClient.listCatalog();
-        return catalog.map(service => ({
+        return catalog.map((service: any) => ({
             id: service.id || service.sanitizedName || '',
             name: service.name || 'Unknown',
             description: service.description || '',
