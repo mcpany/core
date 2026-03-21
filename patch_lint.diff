@@ -1,0 +1,11 @@
+--- /app/server/tests/integration/e2e_helpers.go
++++ /app/server/tests/integration/e2e_helpers.go
+@@ -270,7 +270,7 @@
+
+ func symlinkIfPresent(src, dst string) error {
+	if _, err := os.Stat(src); err != nil {
+-		return nil
++		return nil //nolint:nilerr
+	}
+	return os.Symlink(src, dst)
+ }
