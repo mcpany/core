@@ -5,17 +5,16 @@ def super_fix(filepath):
     with open(filepath, 'r', encoding='utf-8') as f:
         lines = f.readlines()
 
-    # Strip existing license and top-level comments
+    # Identify and strip any existing license or empty lines at start
     start_idx = 0
     while start_idx < len(lines):
         line = lines[start_idx].strip()
-        if line.startswith("# Copyright") or line.startswith("# SPDX-License") or line == "":
+        if line.startswith("# Copyright") or line.startswith("# SPDX-License") or line.startswith("<!--") or line.startswith("-->") or line == "Copyright 2026 Author(s) of MCP Any" or line == "SPDX-License-Identifier: Apache-2.0" or line == "":
             start_idx += 1
         else:
             break
 
     content_lines = lines[start_idx:]
-
     processed = []
 
     def is_list_line(s):
@@ -29,6 +28,7 @@ def super_fix(filepath):
         line = line.rstrip()
         line = line.replace('—', '-').replace('–', '-').replace('\u201c', '"').replace('\u201d', '"').replace('\u2018', "'").replace('\u2019', "'")
 
+        # Heading Blank Lines
         if is_heading_line(line):
             if processed and processed[-1].strip() != '':
                 processed.append('')
@@ -37,13 +37,25 @@ def super_fix(filepath):
                 processed.append('')
             continue
 
+        # List formatting (MD030, MD032)
         if is_list_line(line):
-            if processed and processed[-1].strip() != '' and not is_list_line(processed[-1]):
+            # Normalize space after marker: handle "-   " -> "- "
+            match = re.match(r'^(\s*[-*]|\s*\d+\.)\s+(.*)', line)
+            if match:
+                marker = match.group(1)
+                rest = match.group(2)
+                line = f"{marker} {rest}"
+
+            # If start of list: needs blank before
+            prev_is_list = processed and (processed[-1].strip().startswith('- ') or processed[-1].strip().startswith('* ') or re.match(r'^\d+\. ', processed[-1].strip()))
+            if processed and processed[-1].strip() != '' and not prev_is_list:
                 processed.append('')
             processed.append(line)
+            # If end of list: needs blank after
             if i < len(content_lines) - 1:
                 next_line = content_lines[i+1].strip()
-                if next_line != '' and not is_list_line(next_line):
+                next_is_list = next_line.startswith('- ') or next_line.startswith('* ') or re.match(r'^\d+\. ', next_line)
+                if next_line != '' and not next_is_list:
                     processed.append('')
             continue
 
@@ -55,7 +67,7 @@ def super_fix(filepath):
             continue
         final.append(line + '\n')
 
-    # Apache License 2.0 block (non-heading)
+    # Apache License 2.0 block (standard comment)
     license_block = [
         "<!--\n",
         "Copyright 2026 Author(s) of MCP Any\n",

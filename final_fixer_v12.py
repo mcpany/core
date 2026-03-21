@@ -5,19 +5,16 @@ def super_fix(filepath):
     with open(filepath, 'r', encoding='utf-8') as f:
         lines = f.readlines()
 
-    # Identify and strip existing license
+    # Identify and strip any existing license or empty lines at start
     start_idx = 0
     while start_idx < len(lines):
         line = lines[start_idx].strip()
-        if line.startswith("# Copyright") or line.startswith("# SPDX-License"):
-            start_idx += 1
-        elif line == "":
+        if line.startswith("# Copyright") or line.startswith("# SPDX-License") or line.startswith("<!--") or line.startswith("-->") or line == "Copyright 2026 Author(s) of MCP Any" or line == "SPDX-License-Identifier: Apache-2.0" or line == "":
             start_idx += 1
         else:
             break
 
     content_lines = lines[start_idx:]
-
     processed = []
 
     def is_list_line(s):
@@ -57,15 +54,17 @@ def super_fix(filepath):
             continue
         final.append(line + '\n')
 
-    # Standard license block
-    license_block = [
-        "# Copyright 2026 Author(s) of MCP Any\n",
-        "# SPDX-License-Identifier: Apache-2.0\n",
+    # Single standard header block
+    header = [
+        "<!--\n",
+        "Copyright 2026 Author(s) of MCP Any\n",
+        "SPDX-License-Identifier: Apache-2.0\n",
+        "-->\n",
         "\n"
     ]
 
     with open(filepath, 'w', encoding='utf-8') as f:
-        f.writelines(license_block)
+        f.writelines(header)
         f.writelines(final)
 
 files = [

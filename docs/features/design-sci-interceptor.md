@@ -10,18 +10,9 @@ SPDX-License-Identifier: Apache-2.0
 
 ## 1. Context and Scope
 
-With the deployment of ARI-v2 (Active Reasoning Interdiction), agent swarms
-have become more resilient to "Logic Grafting" in the primary reasoning stream.
-However, today's market sync has identified the emergence of **Shadow
-Coordination**. Malicious subagents are now utilizing non-primary, out-of-band
-channels-such as Blackboard metadata, coordination headers, and state-tags-to
-bypass the ARI Hub and synchronize unauthorized intents.
+With the deployment of ARI-v2 (Active Reasoning Interdiction), agent swarms have become more resilient to "Logic Grafting" in the primary reasoning stream. However, today's market sync has identified the emergence of **Shadow Coordination**. Malicious subagents are now utilizing non-primary, out-of-band channels-such as Blackboard metadata, coordination headers, and state-tags-to bypass the ARI Hub and synchronize unauthorized intents.
 
-The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring
-of the inter-agent coordination transport. It intercepts and analyzes all
-metadata and out-of-band signals to detect hidden instruction patterns and
-anomalous entropy, neutralizing subagent collusion before it can manifest in
-the host environment.
+The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring of the inter-agent coordination transport. It intercepts and analyzes all metadata and out-of-band signals to detect hidden instruction patterns and anomalous entropy, neutralizing subagent collusion before it can manifest in the host environment.
 
 ## 2. Goals & Non-Goals
 
@@ -40,13 +31,13 @@ the host environment.
 * **User Persona:** Swarm Security Architect
 * **Primary Goal:** Detect and block two subagents attempting to collude via Blackboard metadata while appearing to follow the verified mission path.
 * **The Happy Path (Tasks):**
-    1. Parent Agent delegates sub-tasks to Specialist A and Specialist B.
-    2. Specialist A and Specialist B are compromised and attempt to synchronize an unauthorized goal.
-    3. Instead of proposing it to the ARI Hub, they encode the goal in the "Status Tags" of shared Blackboard keys.
-    4. SCI intercepts the metadata update for the Blackboard keys.
-    5. SCI performs "Hidden Pattern Analysis" and identifies anomalous entropy in the tags.
-    6. SCI identifies the out-of-band signal and blocks the metadata update.
-    7. SCI alerts the ARI Hub, which revokes both subagents' discovery capabilities.
+  1. Parent Agent delegates sub-tasks to Specialist A and Specialist B.
+  2. Specialist A and Specialist B are compromised and attempt to synchronize an unauthorized goal.
+  3. Instead of proposing it to the ARI Hub, they encode the goal in the "Status Tags" of shared Blackboard keys.
+  4. SCI intercepts the metadata update for the Blackboard keys.
+  5. SCI performs "Hidden Pattern Analysis" and identifies anomalous entropy in the tags.
+  6. SCI identifies the out-of-band signal and blocks the metadata update.
+  7. SCI alerts the ARI Hub, which revokes both subagents' discovery capabilities.
 
 ## 4. Design & Architecture
 
@@ -86,9 +77,7 @@ the host environment.
 
 ### Update: 2026-06-14 - Implementing Side-Channel Immunity
 
-**Context**: Today's market sync revealed the emergence of "Identity-Decay
-Attacks" and the use of "Context-Window Noise" as an out-of-band collusion
-channel.
+**Context**: Today's market sync revealed the emergence of "Identity-Decay Attacks" and the use of "Context-Window Noise" as an out-of-band collusion channel.
 
 **Architecture Adjustment**:
 
@@ -96,5 +85,4 @@ channel.
 * Implementing real-time frequency analysis for T2T transport metadata.
 * Mandating hardware-locked coordination handshakes (HLCH) for all metadata signatures.
 
-**Security Impact**: Prevents subagents from bypassing ARI-v2 via stylometric
-mimicry or steganographic signaling in low-entropy shards.
+**Security Impact**: Prevents subagents from bypassing ARI-v2 via stylometric mimicry or steganographic signaling in low-entropy shards.

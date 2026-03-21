@@ -5,23 +5,16 @@ def super_fix(filepath):
     with open(filepath, 'r', encoding='utf-8') as f:
         lines = f.readlines()
 
-    # 1. Identify existing license
-    license_header = [
-        "# Copyright 2026 Author(s) of MCP Any\n",
-        "# SPDX-License-Identifier: Apache-2.0\n"
-    ]
-
+    # Identify and strip any existing license or empty lines at start
     start_idx = 0
-    # Check if file starts with a license
-    if len(lines) >= 2 and lines[0].startswith("# Copyright") and lines[1].startswith("# SPDX-License"):
-        start_idx = 2
-        # Check if there is a blank line after license
-        if len(lines) > 2 and lines[2].strip() == '':
-            start_idx = 3
+    while start_idx < len(lines):
+        line = lines[start_idx].strip()
+        if line.startswith("# Copyright") or line.startswith("# SPDX-License") or line.startswith("<!--") or line.startswith("-->") or line == "Copyright 2026 Author(s) of MCP Any" or line == "SPDX-License-Identifier: Apache-2.0" or line == "":
+            start_idx += 1
+        else:
+            break
 
     content_lines = lines[start_idx:]
-
-    # 2. Process content
     processed = []
 
     def is_list_line(s):
@@ -33,7 +26,6 @@ def super_fix(filepath):
 
     for i, line in enumerate(content_lines):
         line = line.rstrip()
-        # Non-ASCII replacement
         line = line.replace('—', '-').replace('–', '-').replace('\u201c', '"').replace('\u201d', '"').replace('\u2018', "'").replace('\u2019', "'")
 
         # Heading Blank Lines
@@ -41,37 +33,56 @@ def super_fix(filepath):
             if processed and processed[-1].strip() != '':
                 processed.append('')
             processed.append(line)
-            # Add blank after heading if next line is not blank
             if i < len(content_lines) - 1 and content_lines[i+1].strip() != '':
                 processed.append('')
             continue
 
-        # List Blank Lines (MD032)
+        # List formatting (MD004, MD007, MD030, MD032)
         if is_list_line(line):
+            # Normalize list style (MD004) to asterisk
+            line = re.sub(r'^(\s*)-', r'\1*', line)
+
+            # Normalize indentation (MD007) - assume 2 spaces per level
+            match = re.match(r'^(\s*)(\*|\d+\.)\s+(.*)', line)
+            if match:
+                indent = match.group(1)
+                marker = match.group(2)
+                rest = match.group(3)
+                new_indent = "  " * (len(indent) // 4) if len(indent) >= 4 else indent
+                line = f"{new_indent}{marker} {rest}"
+
             # If start of list: needs blank before
-            if processed and processed[-1].strip() != '' and not is_list_line(processed[-1]):
+            prev_is_list = processed and (processed[-1].strip().startswith('* ') or re.match(r'^\d+\. ', processed[-1].strip()))
+            if processed and processed[-1].strip() != '' and not prev_is_list:
                 processed.append('')
             processed.append(line)
             # If end of list: needs blank after
             if i < len(content_lines) - 1:
                 next_line = content_lines[i+1].strip()
-                if next_line != '' and not is_list_line(next_line):
+                next_is_list = next_line.startswith('- ') or next_line.startswith('* ') or re.match(r'^\d+\. ', next_line)
+                if next_line != '' and not next_is_list:
                     processed.append('')
             continue
 
         processed.append(line)
 
-    # 3. Dedup blank lines and strip trailing whitespace again
     final = []
     for line in processed:
         if line.strip() == '' and final and final[-1].strip() == '':
             continue
         final.append(line + '\n')
 
-    # 4. Write back with EXACTLY one license
+    # Apache License 2.0 block (standard comment)
+    license_block = [
+        "<!--\n",
+        "Copyright 2026 Author(s) of MCP Any\n",
+        "SPDX-License-Identifier: Apache-2.0\n",
+        "-->\n",
+        "\n"
+    ]
+
     with open(filepath, 'w', encoding='utf-8') as f:
-        f.writelines(license_header)
-        f.write('\n')
+        f.writelines(license_block)
         f.writelines(final)
 
 files = [
