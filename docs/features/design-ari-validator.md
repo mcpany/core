@@ -68,6 +68,13 @@ The Atomic Reasoning Integrity (ARI) Validator is needed to perform fragment-lev
 * Mandatory requirement for ARI tokens to be merged into "Lineage-Aware Proofs" via the RIV Provider before shard commitment.
 **Security Impact:** Prevents "Logic Drift" in deep delegations by ensuring every fragment is cryptographically bound to the entire parentage of the reasoning chain.
 
+### Update: 2026-06-25 - Mailbox-Splicing & Fragment-Level Hash-Chaining
+**Context:** Today's market sync revealed a new "Mailbox-Splicing" exploit pattern in horizontal Agent Teams.
+**Architecture Adjustment:**
+* Introducing mandatory semantic hash-chaining for all inter-teammate coordination fragments in Section 4.
+* Upgrading the Consistency Engine to perform fragment-level "Cross-Reference Validation" against the hardware-attested mission-root manifest.
+**Security Impact:** Neutralizes horizontal mailbox injection by ensuring every fragment in a shared shard is cryptographically and semantically linked to the authorized mission-root mainline.
+
 ### Update: 2026-06-16 - Entangled State Sovereignty Integration
 **Context:** Today's research confirms that fragment-level semantic validation is insufficient if the underlying state transport can be tampered with between verification and ingestion.
 **Architecture Adjustment:**

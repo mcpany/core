@@ -1450,6 +1450,16 @@
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RMRA** integration for all headless missions.
 - **Channel-Bound Session Isolation (CBSI) Provider**: (Re-affirmed P0) Designated as the primary enforcement point for **AIS-compliant** cross-channel sanitization.
 
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Spectral Reasoning Mitigator (SRM)**: (P0) Security middleware that injects hardware-attested timing jitter into coordination responses to neutralize timing-based side-channel attacks.
+- **Attention-Density Guard (ADG) v2**: (P0) Upgrade for the ADG utilizing hardware-attested "Attention Masks" to prioritize mission-critical fragments and filter high-entropy noise.
+
+### Priority Shifts
+- **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Mailbox-Splicing** detection and fragment-level hash-chaining.
+- **Lock-Free Sharded Mailbox Hub**: (Re-affirmed P0) Designated as the primary coordination service for horizontal Agent Teams to resolve "Teammate Mailbox Splicing" vulnerabilities.
+
 ## Evolution: [2026-06-24] Updates
 
 ### Proposed Additions

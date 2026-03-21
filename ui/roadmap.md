@@ -633,6 +633,12 @@
 - [ ] **[P0] Cross-Channel Sanitization Log**: Security dashboard for reviewing AIS-redacted coordination messages. (Added: 2026-06-23)
 - [ ] **[P0] Behavioral Anchoring Monitor**: Real-time visualization of stylometric consistency scores vs. mission-root manifest. (Added: 2026-06-23)
 
+### Upcoming: [2026-06-25]
+- [ ] **[P0] Attention Masking Console**: (2026-06-25) UI for configuring and monitoring ADG v2 hardware-attested attention masks and entropy levels.
+- [ ] **[P0] Side-Channel Jitter Monitor**: (2026-06-25) Real-time visualization of timing jitter injected by the SRM and blocked spectral probes.
+- [ ] **[P0] ARI Fragment Inspector**: (2026-06-25) Forensic UI for reviewing semantic hash-chains and blocked mailbox-splicing events.
+- [ ] **[P0] ARI-Locked Sharded Mailbox Monitor**: (2026-06-25) Dashboard for visualizing state fragments and their ARI-attestation status in horizontal teams.
+
 ### Upcoming: [2026-06-24]
 - [ ] **[P0] Mission Resumption Manager**: (2026-06-24) UI for monitoring and manually triggering AMR-mediated mission recovery checkpoints.
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.

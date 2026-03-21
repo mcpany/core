@@ -143,6 +143,11 @@
 *   **[P0] Active Intent Sanitizer (AIS)**: Real-time semantic deconstruction of coordination messages crossing multi-channel boundaries. (Added: 2026-06-23)
 *   **[P0] SMM v2 (Stylometric Anchoring)**: Higher-dimensional behavioral anchoring of reasoning traces against the mission-root manifest. (Added: 2026-06-23)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Attention-Density Guard (ADG) v2**: Integration of hardware-attested Attention Masks to prioritize mission-critical fragments and filter high-entropy noise. (Added: 2026-06-25)
+*   **[P0] Spectral Reasoning Mitigator (SRM)**: Hardware-attested timing jitter injection to neutralize "Spectral Reasoning" side-channel attacks. (Added: 2026-06-25)
+*   **[P0] ARI-Locked Sharded Mailbox Hub**: Coordination hub mandating Atomic Reasoning Integrity (ARI) validation for all horizontal Agent Team state fragments. (Added: 2026-06-25)
+
 #### Upcoming (2026-06-24 Evolution)
 *   **[P0] Atomic Mission-Resumption (AMR) Gateway**: Hardware-locked resumption of agent states across cold-boots via BSH snapshots. (Added: 2026-06-24)
 *   **[P0] Stylometric Mesh Sovereignty (SMS) Provider**: Behavioral security layer detecting mimicry-based hijacking via real-time stylometry. (Added: 2026-06-24)
