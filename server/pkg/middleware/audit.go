@@ -333,6 +333,15 @@ func (m *AuditMiddleware) GetHistory() []any {
 //
 // Summary: Clears the in-memory trace history buffer.
 //
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
 // Side Effects:
 //   - History is reset for all subscribers.
 func (m *AuditMiddleware) ClearHistory() {
