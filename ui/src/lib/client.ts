@@ -1982,7 +1982,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a GET request to /api/v1/user/preferences.
      */
-    getUserPreferences: async (): Promise<any> => {
+    getUserPreferences: async (): Promise<Record<string, unknown>> => {
         const res = await fetchWithAuth('/api/v1/user/preferences');
         if (!res.ok) throw new Error('Failed to fetch user preferences');
         return res.json();
@@ -1999,7 +1999,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a POST request to /api/v1/user/preferences.
      */
-    saveUserPreferences: async (preferences: any): Promise<any> => {
+    saveUserPreferences: async (preferences: Record<string, unknown>): Promise<Record<string, unknown>> => {
         const res = await fetchWithAuth('/api/v1/user/preferences', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
