@@ -1653,8 +1653,8 @@ func (a *Application) runServerMode(
 
 	// Set up SSO Middleware if configured
 	var ssoMiddleware func(http.Handler) http.Handler
-	if a.GlobalSettings != nil && a.GlobalSettings.GetSso() != nil {
-		ssoCfg := a.GlobalSettings.GetSso()
+	if globalSettings != nil && globalSettings.GetSso() != nil {
+		ssoCfg := globalSettings.GetSso()
 		if ssoCfg.GetEnabled() {
 			ssoMiddleware = middleware.SSOMiddleware(middleware.SSOConfig{
 				Enabled: true,
