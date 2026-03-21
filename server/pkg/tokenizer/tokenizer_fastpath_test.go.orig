@@ -5,9 +5,9 @@ package tokenizer
 
 import (
 	"math"
-	"reflect"
 	"strconv"
 	"testing"
+	"reflect"
 )
 
 func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
