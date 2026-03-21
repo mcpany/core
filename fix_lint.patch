@@ -1,0 +1,31 @@
+--- server/pkg/app/api_traces.go
++++ server/pkg/app/api_traces.go
+@@ -299,13 +299,16 @@
+			var writeSpans func(span Span, parentID string)
+			writeSpans = func(span Span, parentID string) {
+				argsBytes, _ := json.Marshal(span.Input)
++				durationMs := span.EndTime - span.StartTime
++				durationStr := (time.Duration(durationMs) * time.Millisecond).String()
++
+				entry := audit.Entry{
+					Timestamp:  time.UnixMilli(span.StartTime),
+					ToolName:   span.Name,
+-					DurationMs: span.EndTime - span.StartTime,
+-					Duration:   time.Duration(span.EndTime - span.StartTime).String(),
++					DurationMs: durationMs,
++					Duration:   durationStr,
+					TraceID:    trace.ID,
+					SpanID:     span.ID,
+					ParentID:   parentID,
+					Arguments:  argsBytes,
+					Result:     span.Output,
+@@ -313,7 +316,9 @@
+					UserID:     "user",
+				}
+-				_ = a.standardMiddlewares.Audit.Write(r.Context(), entry)
++				if err := a.standardMiddlewares.Audit.Write(r.Context(), entry); err != nil {
++					logging.GetLogger().Error("failed to write seeded trace to audit", "error", err)
++				}
+				for _, child := range span.Children {
+					writeSpans(child, span.ID)
+				}
