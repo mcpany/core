@@ -53,12 +53,12 @@ describe('JsonTree', () => {
     // Start collapsed (defaultExpandedLevel=0)
     render(<JsonTree data={data} defaultExpandedLevel={0} />);
 
-    // Should show root object structure collapsed
-    // The preview text containing "nested" should be visible
-    expect(screen.getByText(/nested/)).toBeInTheDocument();
+    // Should show root object structure collapsed.
+    // In Unifi aesthetic, we show "n keys" instead of string preview.
+    expect(screen.getByText('1 keys')).toBeInTheDocument();
 
-    // Value "value" should NOT be visible yet (it's inside nested object)
-    expect(screen.queryByText(/"value"/)).not.toBeInTheDocument();
+    // Key "nested" should NOT be visible yet
+    expect(screen.queryByText(/"nested":/)).not.toBeInTheDocument();
 
     // Click to expand root
     // Find the clickable header by finding the opening brace
