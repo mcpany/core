@@ -771,3 +771,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Context-File Integrity Attestation (CFIA)**: (P0) Implement hardware-attested, hash-based signatures for all project-local context files to prevent deceptive context injections.
 - **Attention-Locked Tooling (ALT)**: (P0) Middleware to interdict high-risk tool calls when they are primarily driven by un-attested injected context.
 - **Semantic Lineage Tracking**: (P1) Cryptographically signed "Chain of Reason" verifying tool call lineage back to mission-root intent.
+
+### Upcoming: [2026-06-20]
+- **Context-File Integrity Attestation (CFIA)**: (P0) Core security service requiring hardware-attested hash signatures for all project-local natural language context files (e.g., `GEMINI.md`).
+- **Attention-Locked Tooling (ALT)**: (P0) Security middleware that cryptographically locks high-risk tool calls to user-verified reasoning anchors.
+- **Semantic Lineage Provider**: (P1) Advanced extension for the SRM Provider that implements cryptographically signed "Chains of Reason".

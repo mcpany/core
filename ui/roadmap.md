@@ -609,3 +609,8 @@
 - [ ] **[P1] Visual Attention Dashboard**: (2026-06-19) Heatmap visualization of context fragments (User, System, Injected) driving agent tool-call reasoning.
 - [ ] **[P0] CFIA Signature Reviewer**: (2026-06-19) UI for reviewing and hardware-signing project-local context files.
 - [ ] **[P0] Attention-Locked Tool Trigger Visualization**: (2026-06-19) Real-time alerts and visualization when a high-risk tool call is interdicted by the ALT middleware.
+
+### Upcoming: [2026-06-20]
+- [ ] **[P0] CFIA Attestation Workspace**: (2026-06-20) Security dashboard for reviewed and TPM-signing project-local context files.
+- [ ] **[P1] Visual Attention Heatmap**: (2026-06-20) Advanced visualization of reasoning drivers for high-risk tool calls, supporting the ALT workflow.
+- [ ] **[P1] Reasoning Lineage Inspector**: (2026-06-20) Visual debugger for cryptographically signed "Chains of Reason".
