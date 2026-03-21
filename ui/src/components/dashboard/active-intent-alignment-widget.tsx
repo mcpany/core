@@ -27,7 +27,7 @@ export function ActiveIntentAlignmentWidget() {
         const fetchStatus = async () => {
             try {
                 const data = await apiClient.getActiveIntentAlignment();
-                setAgents(data);
+                setAgents(data || []);
             } catch (err) {
                 console.error("Failed to fetch intent alignment status:", err);
             }
