@@ -270,6 +270,10 @@ export const seedWebhooks = async (requestContext?: APIRequestContext) => {
     // No-op
 };
 
+/**
+ * Seeds the backend with mock trace data.
+ * @param requestContext Optional request context to use.
+ */
 export const seedTraces = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
