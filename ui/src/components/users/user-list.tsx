@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -56,6 +57,8 @@ interface UserListProps {
 export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const { toast } = useToast();
+    const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+    const [isDeletingBulk, setIsDeletingBulk] = useState(false);
 
     const filteredUsers = useMemo(() => {
         if (!searchQuery) return users;
@@ -75,6 +78,49 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
         toast({
             description: "Copied to clipboard",
         });
+    };
+
+    const handleSelectAll = (checked: boolean) => {
+        if (checked) {
+            setSelectedUsers(new Set(filteredUsers.map(u => u.id)));
+        } else {
+            setSelectedUsers(new Set());
+        }
+    };
+
+    const handleSelectUser = (id: string, checked: boolean) => {
+        const next = new Set(selectedUsers);
+        if (checked) {
+            next.add(id);
+        } else {
+            next.delete(id);
+        }
+        setSelectedUsers(next);
+    };
+
+    const handleBulkDelete = async () => {
+        if (selectedUsers.size === 0) return;
+        setIsDeletingBulk(true);
+        try {
+            // Need API changes or multiple calls. The prompt mentions a floating bar for bulk delete.
+            // We'll call onDelete for each as a quick workaround if bulk endpoint doesn't exist.
+            for (const id of Array.from(selectedUsers)) {
+                await onDelete(id);
+            }
+            setSelectedUsers(new Set());
+            toast({
+                title: "Success",
+                description: `Successfully deleted ${selectedUsers.size} user(s).`,
+            });
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "Failed to delete some users.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsDeletingBulk(false);
+        }
     };
 
     if (isLoading) {
@@ -107,10 +153,17 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                 </div>
             </div>
 
-            <div className="rounded-md border bg-background">
+            <div className="rounded-md border bg-background relative overflow-hidden">
                 <Table>
                     <TableHeader>
                         <TableRow>
+                            <TableHead className="w-[50px] pr-0">
+                                <Checkbox
+                                    checked={selectedUsers.size > 0 && selectedUsers.size === filteredUsers.length}
+                                    onCheckedChange={handleSelectAll}
+                                    aria-label="Select all users"
+                                />
+                            </TableHead>
                             <TableHead className="w-[250px]">User</TableHead>
                             <TableHead>Roles</TableHead>
                             <TableHead>Authentication</TableHead>
@@ -120,13 +173,20 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                     <TableBody>
                         {filteredUsers.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
+                                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
                                     No users found.
                                 </TableCell>
                             </TableRow>
                         ) : (
                             filteredUsers.map((user) => (
-                                <TableRow key={user.id} data-testid={`user-row-${user.id}`}>
+                                <TableRow key={user.id} data-testid={`user-row-${user.id}`} data-state={selectedUsers.has(user.id) ? "selected" : undefined}>
+                                    <TableCell className="pr-0">
+                                        <Checkbox
+                                            checked={selectedUsers.has(user.id)}
+                                            onCheckedChange={(checked) => handleSelectUser(user.id, !!checked)}
+                                            aria-label={`Select user ${user.id}`}
+                                        />
+                                    </TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             <Avatar className="h-9 w-9 border">
@@ -213,6 +273,33 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
             <div className="text-xs text-muted-foreground text-center">
                 Showing {filteredUsers.length} of {users.length} users
             </div>
+
+            {selectedUsers.size > 0 && (
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+                    <div className="flex items-center gap-4 px-6 py-4 rounded-full border bg-background/80 backdrop-blur-md shadow-lg animate-in slide-in-from-bottom-5">
+                        <div className="flex items-center gap-2 border-r pr-4">
+                            <Badge variant="secondary" className="h-6 w-6 rounded-full p-0 flex items-center justify-center">
+                                {selectedUsers.size}
+                            </Badge>
+                            <span className="text-sm font-medium">users selected</span>
+                        </div>
+                        <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={handleBulkDelete}
+                            disabled={isDeletingBulk}
+                            className="h-8 shadow-none"
+                        >
+                            {isDeletingBulk ? (
+                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent mr-2" />
+                            ) : (
+                                <Trash2 className="h-4 w-4 mr-2" />
+                            )}
+                            Delete Selected
+                        </Button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
