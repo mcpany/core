@@ -4,12 +4,13 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedUser, cleanupUser } from './e2e/test-data';
+import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
 
 test.describe('User Guide Walkthrough', () => {
   test.describe.configure({ mode: 'serial' });
 
   test.beforeEach(async ({ request, page }) => {
+    await seedServices(request);
     await seedUser(request, "e2e-guide-user");
 
     // Login first
@@ -21,6 +22,7 @@ test.describe('User Guide Walkthrough', () => {
   });
 
   test.afterEach(async ({ request }) => {
+    await cleanupServices(request);
     await cleanupUser(request, "e2e-guide-user");
   });
 
