@@ -15,6 +15,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/audit"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -266,4 +267,42 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 		}
 	}
 	return nil
+}
+
+func (a *Application) handleDebugSeedAuditLog() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		if a.standardMiddlewares == nil || a.standardMiddlewares.Audit == nil {
+			http.Error(w, "Audit logging is not enabled", http.StatusPreconditionFailed)
+			return
+		}
+
+		// Create a sample audit log entry that features raw JSON dumps
+		entry := audit.Entry{
+			Timestamp: time.Now(),
+			ToolName:  "test_tool_formatting",
+			UserID:    "test_user",
+			ProfileID: "default",
+			TraceID:   "trace-12345",
+			SpanID:    "span-12345",
+			Arguments: []byte(`{"message":"Hello World","count":42,"nested":{"key":"value"}}`),
+			Result:    map[string]interface{}{"status": "success", "data": []interface{}{map[string]interface{}{"id": 1, "name": "Test A"}, map[string]interface{}{"id": 2, "name": "Test B"}}},
+			Duration:  "150ms",
+			DurationMs: 150,
+		}
+
+		ctx := r.Context()
+		if err := a.standardMiddlewares.Audit.Write(ctx, entry); err != nil {
+			logging.GetLogger().Error("Failed to seed audit log", "error", err)
+			http.Error(w, "Failed to seed audit log: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		_, _ = w.Write([]byte(`{"status": "seeded"}`))
+	}
 }

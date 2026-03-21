@@ -374,6 +374,19 @@ export const apiClient = {
     },
 
     /**
+     * Seeds an audit log for testing purposes.
+     * @returns A promise that resolves when the audit log is seeded.
+     */
+    seedAuditLog: async () => {
+        const res = await fetchWithAuth('/api/v1/debug/audit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        });
+        if (!res.ok) throw new Error('Failed to seed audit log');
+        return res.json();
+    },
+
+    /**
      * Lists services from the dynamic catalog.
      *
      * Summary: Fetches available services from the catalog.
