@@ -746,6 +746,23 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 	}
 }
 
+// handleTools handles GET and PUT requests for tools.
+//
+// Summary: Handles requests to manage tool status.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler for tool requests.
+//
+// Errors:
+//   - Writes HTTP 405 if the method is not GET or PUT.
+//   - Writes HTTP 400 for bad JSON requests.
+//   - Writes HTTP 404 if a specified tool or its service cannot be found.
+//   - Writes HTTP 500 on internal failures handling tool updates.
+//
+// Side Effects:
+//   - Reads from ToolManager.
+//   - May modify and save upstream service configurations directly.
+//   - Optionally reloads the server configuration if tool status changes.
 func (a *Application) handleTools() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -915,6 +932,21 @@ func updateToolDisableStatus(svc *configv1.UpstreamServiceConfig, toolName strin
 	return nil
 }
 
+// handleExecute handles tool execution requests.
+//
+// Summary: Executes a tool via POST request.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler for tool executions.
+//
+// Errors:
+//   - Writes HTTP 405 if the method is not POST.
+//   - Writes HTTP 400 if the JSON request cannot be parsed or lacks arguments.
+//   - Writes HTTP 500 if the tool execution fails internally.
+//
+// Side Effects:
+//   - Executes the underlying tool which may modify external state.
+//   - Logs warnings or errors if execution yields failures.
 func (a *Application) handleExecute() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
@@ -954,6 +986,18 @@ func (a *Application) handleExecute() http.HandlerFunc {
 	}
 }
 
+// handlePrompts handles requests to list available prompts.
+//
+// Summary: Lists available prompts.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler for prompts.
+//
+// Errors:
+//   - Writes HTTP 405 if the method is not GET.
+//
+// Side Effects:
+//   - None.
 func (a *Application) handlePrompts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -987,6 +1031,18 @@ func (a *Application) handlePrompts() http.HandlerFunc {
 	}
 }
 
+// handleResources handles listing available resources.
+//
+// Summary: Lists available resources.
+//
+// Returns:
+//   - http.HandlerFunc: The handler.
+//
+// Errors:
+//   - Writes HTTP 405 if the method is not GET.
+//
+// Side Effects:
+//   - Reads from the ResourceManager.
 func (a *Application) handleResources() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {

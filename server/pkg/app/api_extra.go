@@ -12,6 +12,20 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
+// handleResourceRead handles reading a specific resource.
+//
+// Summary: Reads a specific resource.
+//
+// Returns:
+//   - http.HandlerFunc: The handler.
+//
+// Errors:
+//   - Writes HTTP 405 if the method is not GET.
+//   - Writes HTTP 400 if the URI parameter is missing.
+//   - Writes HTTP 500 if the resource read fails internally.
+//
+// Side Effects:
+//   - Reads from the ResourceManager.
 func (a *Application) handleResourceRead() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
@@ -42,6 +56,21 @@ func (a *Application) handleResourceRead() http.HandlerFunc {
 	}
 }
 
+// handlePromptExecute handles requests to execute a specific prompt.
+//
+// Summary: Executes a specific prompt.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler for prompt execution.
+//
+// Errors:
+//   - Writes HTTP 405 if the method is not POST.
+//   - Writes HTTP 404 if the prompt is not found or path is invalid.
+//   - Writes HTTP 400 for bad JSON requests.
+//   - Writes HTTP 500 if the execution fails.
+//
+// Side Effects:
+//   - Executes the underlying prompt logic, which might log errors or interact with upstream services.
 func (a *Application) handlePromptExecute() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Path: /prompts/{name}/execute
