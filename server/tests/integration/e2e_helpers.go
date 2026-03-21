@@ -270,7 +270,7 @@ func isServerProjectRoot(dir string) bool {
 
 func symlinkIfPresent(src, dst string) error {
 	if _, err := os.Stat(src); err != nil {
-		return nil //nolint:nilerr
+		return err
 	}
 	return os.Symlink(src, dst)
 }
