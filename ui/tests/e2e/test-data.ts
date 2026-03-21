@@ -4,9 +4,11 @@
  */
 
 import { request, APIRequestContext } from '@playwright/test';
-import { ServiceTemplate } from '../../../proto/config/v1/service_template';
-import { UpstreamServiceConfig } from '../../../proto/config/v1/upstream_service';
-import { User } from '../../../proto/config/v1/user';
+
+// In e2e tests we avoid pulling proto types since they aren't compiled
+// in the same way for Playwright when running outside of Bazel or
+// without explicit path aliases in tsconfig.
+// We use loosely typed objects.
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
@@ -103,7 +105,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-    ].map((service) => UpstreamServiceConfig.toJSON(UpstreamServiceConfig.fromJSON(service)));
+    ];
 
     const templates = [
         {
@@ -160,7 +162,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-    ].map((template) => ServiceTemplate.toJSON(ServiceTemplate.fromJSON(template)));
+    ];
 
     const users = [
         {
@@ -175,7 +177,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             roles: ["admin"],
             profile_ids: ["dev", "prod"]
         }
-    ].map((user) => User.toJSON(User.fromJSON(user)));
+    ];
 
     const seedRequest = {
         upstream_services: services,
