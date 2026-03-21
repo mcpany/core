@@ -98,15 +98,8 @@ test.describe('Tool Exploration', () => {
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Change grouping to "service"
-        // Radix Select trigger might not expose the aria-label as expected based on placeholder alone in some versions.
-        // We can find it by its text content or fallback to the first combobox in the row.
-        const groupByTrigger = page.getByRole('combobox').filter({ hasText: 'Group By' });
-        if (await groupByTrigger.count() > 0) {
-             await groupByTrigger.first().click();
-        } else {
-             // Fallback to clicking the first combobox which should be Group By based on layout
-             await page.getByRole('combobox').first().click();
-        }
+        // Target the Radix UI Select trigger by clicking its placeholder text directly.
+        await page.getByText('Group By', { exact: true }).click();
         await page.getByRole('option', { name: 'Group by Service' }).click();
 
         // Verify that the Payment Gateway service grouping header is visible
