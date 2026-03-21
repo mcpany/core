@@ -1,8 +1,0 @@
-go 1.24.6
-
-
-use (
-	.
-	// ./examples/upstream_service_demo/grpc/client
-	// ./examples/upstream_service_demo/grpc/greeter_server
-)
