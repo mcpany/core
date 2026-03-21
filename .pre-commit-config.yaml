@@ -1,0 +1,65 @@
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+exclude: ^.*zz_generated.deepcopy.go$
+
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+    -   id: check-added-large-files
+    -   id: check-case-conflict
+    -   id: check-json
+    -   id: check-yaml
+        exclude: ^k8s/helm/
+    -   id: detect-private-key
+        exclude: ^server/tests/tls/
+    -   id: end-of-file-fixer
+        exclude: ^server/pkg/upstream/mcp/s1/manifest.json
+    -   id: trailing-whitespace
+-   repo: local
+    hooks:
+    -   id: shellcheck
+        name: shellcheck
+        entry: shellcheck
+        language: system
+        types: [shell]
+        exclude: |
+            (?x)^(
+                vendor/|
+                get_helm.sh
+            )$
+    -   id: helm-lint
+        name: helm-lint
+        entry: helm lint k8s/helm/mcpany
+        language: system
+        files: ^k8s/helm/
+        pass_filenames: false
+    -   id: check-go-doc
+        name: check-go-doc
+        entry: go run server/tools/check_doc.go server/
+        language: system
+        files: \.go$
+        pass_filenames: false
+    -   id: check-ts-doc
+        name: check-ts-doc
+        entry: python3 server/tools/check_ts_doc.py
+        language: system
+        files: \.tsx?$
+        pass_filenames: false
+-   repo: https://github.com/google/addlicense
+    rev: v1.2.0
+    hooks:
+    -   id: addlicense
+        args:
+            - -c
+            - "Author(s) of MCP Any"
+            - -l
+            - apache
+            - -ignore
+            - "build/**"
+            - -ignore
+            - "vendor/**"
+            - -ignore
+            - "**/*.pb.go"
+            - -s=only
