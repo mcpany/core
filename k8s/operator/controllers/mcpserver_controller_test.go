@@ -62,14 +62,14 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 	}
 
 	// Check the result of reconciliation
-	// nolint:staticcheck
+	//nolint:staticcheck
 	if !res.Requeue {
 		// Just a simple check, ignoring deprecation for test simplicity
 		t.Error("reconcile did not requeue request as expected (Deployment creation)")
 	}
 
 	// Reconcile again to create Service (second pass)
-	res, err = r.Reconcile(context.Background(), req)
+	_, err = r.Reconcile(context.Background(), req)
 	if err != nil {
 		t.Fatalf("reconcile 2: (%v)", err)
 	}
@@ -157,5 +157,4 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 	if foundService.Spec.Selector["app"] != "mcp-server" {
 		t.Errorf("expected selector app=mcp-server, got %s", foundService.Spec.Selector["app"])
 	}
-
 }
