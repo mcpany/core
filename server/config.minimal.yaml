@@ -12,7 +12,9 @@ global_settings:
   debugger:
     enabled: true
   audit:
+    enabled: true
     storage_type: STORAGE_TYPE_SQLITE
+    output_path: "/tmp/mcpany_audit.db"
     retention_days: 7
   middlewares:
     - name: "auth"
