@@ -39,12 +39,6 @@ type ResourceMCPServer struct {
 //
 // Summary: Executes Schema operation.
 //
-// Parameters:
-//
-// Returns:
-//
-// Errors:
-//
 // Side Effects:
 //   - None.
 func Schema() map[string]interface{} {
@@ -87,12 +81,6 @@ func Schema() map[string]interface{} {
 //
 // Summary: Initializes Create operation.
 //
-// Parameters:
-//
-// Returns:
-//
-// Errors:
-//
 // Side Effects:
 //   - None.
 func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) error {
@@ -134,12 +122,6 @@ func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) 
 //   - None
 //
 // Summary: Retrieves Read operation.
-//
-// Parameters:
-//
-// Returns:
-//
-// Errors:
 //
 // Side Effects:
 //   - None.
