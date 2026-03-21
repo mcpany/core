@@ -45,8 +45,12 @@ if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     # Filter modules to only those that exist and contain Go files
     MODULES=()
     for d in server proto k8s/operator server/examples/upstream_service_demo/grpc/greeter_server; do
-        if [ -d "$d" ] && find "$d" -maxdepth 2 -name "*.go" | grep -q .; then
-            MODULES+=("./$d/...")
+        if [ -d "$d" ]; then
+            # Use find to check for Go files, being careful about module boundaries if needed
+            # For simplicity, we just check if any .go files exist in the dir tree
+            if find "$d" -name "*.go" | grep -q .; then
+                MODULES+=("./$d/...")
+            fi
         fi
     done
 
