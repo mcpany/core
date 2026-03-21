@@ -45,7 +45,7 @@ export function unwrapMcpResult(result: any): any {
         ) {
           content = inner;
         }
-      } catch (e) {
+      } catch {
         // stdout is not JSON
       }
     }
@@ -84,7 +84,7 @@ export function unwrapMcpResult(result: any): any {
           if (typeof parsed === "object" && parsed !== null) {
             return parsed;
           }
-        } catch (e) {
+        } catch {
           // Not JSON inside text
         }
       }
@@ -113,7 +113,7 @@ export function deepParseJson(obj: any): any {
       if (typeof parsed === "object" && parsed !== null) {
         return deepParseJson(parsed);
       }
-    } catch (e) {
+    } catch {
       // Not a JSON string
     }
     return obj;
