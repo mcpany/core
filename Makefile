@@ -4,20 +4,26 @@
 .PHONY: docker-lint docker-test k8s-e2e lint test prepare build
 
 prepare:
-	go install github.com/bazelbuild/bazelisk@latest
+	@mkdir -p build/env/bin
+	@GOBIN=$(CURDIR)/build/env/bin go install github.com/bazelbuild/bazelisk@latest
+	@ln -sf bazelisk $(CURDIR)/build/env/bin/bazel
+	@curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(CURDIR)/build/env/bin v1.64.5
 
 build:
-	bazelisk build //...
+	@bazelisk build //...
 
 lint:
-	bazelisk run //:lint
+	@if command -v pre-commit > /dev/null; then \
+		pre-commit run --all-files; \
+	fi
+	@bazelisk run //:lint
 
 test:
-	bazelisk test //...
+	@bazelisk test //...
 
 docker-lint: lint
 
 docker-test: test
 
 k8s-e2e:
-	$(MAKE) -C k8s test
+	@$(MAKE) -C k8s test
