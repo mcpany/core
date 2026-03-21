@@ -1086,7 +1086,7 @@
 
 ### Priority Shifts
 - **A2A Messaging Hub**: (Re-affirmed P0) Evolving to support the finalized Linux Foundation open governance model for inter-agent task brokering.
-- **Settings Injection Guard**: (Re-affirmed P0) Promoted as the primary defense against "Shadow Agent" configuration overrides identified in recent enterprise aud -- its.
+- **Settings Injection Guard**: (Re-affirmed P0) Promoted as the primary defense against "Shadow Agent" configuration overrides identified in recent enterprise audits.
 
 ---
 
