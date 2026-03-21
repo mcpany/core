@@ -776,3 +776,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Context-File Integrity Attestation (CFIA)**: (P0) Core security service requiring hardware-attested hash signatures for all project-local natural language context files (e.g., `GEMINI.md`).
 - **Attention-Locked Tooling (ALT)**: (P0) Security middleware that cryptographically locks high-risk tool calls to user-verified reasoning anchors.
 - **Semantic Lineage Provider**: (P1) Advanced extension for the SRM Provider that implements cryptographically signed "Chains of Reason".
+
+### Upcoming: [2026-06-21]
+- **Mission-Root Continuity Provider (MRCP)**: (P0) Resumption hub facilitating hardware-locked reasoning-path persistence across teammate rotations.
+- **Mailbox Injection Shield (MIS)**: (P0) Advanced extension for Mailbox Integrity Middleware providing hardware-attested validation of task-claiming metadata.
+- **Hardware-Attested Budget Enforcement**: (P0) Integration of Gemini CLI ARE v1.7 headers for immutable, hardware-bound reasoning budgets.
+- **Resident Logic-Grafting Interceptor**: (P1) Real-time semantic entropy monitor for horizontal teammate shards to detect unauthorized branch grafting.

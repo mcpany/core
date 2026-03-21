@@ -1412,3 +1412,16 @@
 ### Priority Shifts
 - **Visual Attention Dashboard**: (P1) Now elevated to a critical requirement for supporting the **ALT** user-verification flow.
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support the new **Teammate Mailbox** security requirements.
+
+## Evolution: [2026-06-21] Updates
+
+### Proposed Additions
+- **Mission-Root Continuity Provider (MRCP)**: (P0) Authoritative resumption hub for long-running swarms, facilitating hardware-locked reasoning-path persistence across teammate rotations and framework handoffs.
+- **Mailbox Injection Shield (MIS)**: (P0) Advanced security extension for the Mailbox Integrity Middleware that performs real-time hardware-attested validation of task-claiming metadata to neutralize "Mailbox Splicing."
+- **Hardware-Attested Budget Persistence**: (P0) Compliance extension for the Reasoning-Budget Firewall (RBF) that cryptographically binds reasoning and token budgets to hardware sessions.
+- **Mesh-Resident Logic-Grafting Interceptor**: (P1) Stability middleware for the ARI Hub that monitors semantic entropy in shared shards to prevent unauthorized logic grafting.
+
+### Priority Shifts
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MIS** integration to counter horizontal mesh exploits.
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with mandatory support for **ARE v1.7** hardware-attested budget persistence.
+- **Intent-Resumption Gateway (IRG)**: (Re-affirmed P0) Designated as the primary infrastructure for implementing **MRCP-compliant** mission resumption.
