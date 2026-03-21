@@ -1,9 +1,10 @@
 # Coverage Intervention Report
 
-* **Target:** `server/pkg/middleware/registry.go` (`GetHTTPMiddlewares` and `GetMCPMiddlewares`)
-* **Risk Profile:** The registry file manages the routing and execution order of all middleware components (like auth, caching, rate limiting, DLP) sitting in front of AI request execution. The middleware sorting logic was previously unverified in tests, introducing a significant risk of regressions where critical security or validation middlewares could run out of order (or be bypassed).
+* **Target:** `server/pkg/tokenizer/tokenizer.go`
+* **Risk Profile:** This package is core utility code that dynamically traverses arbitrary structures using Go reflection to estimate token size. The dynamic types and varied reflection edge cases combined with loops for parsing primitives meant that it had several complex, error-handling and default branch cases that were not fully evaluated under standard operation. Bugs in the tokenizer could result in improper rate-limiting, misconfigured downstream LLM calls, or internal denial-of-service via infinite cycle evaluation.
 * **New Coverage:**
-    * Implemented comprehensive Table-Driven tests (`sorts_middlewares_by_priority`) for both HTTP and MCP middleware retrieval functions.
-    * The new tests explicitly cover the `sort.Slice` comparison logic, providing multiple `configv1.Middleware` configurations out of order, and ensuring the sorted output respects the specified integer priority boundaries.
-    * Added asserting on the sorted arrays implicitly through verifying the expected ordered middleware chain's executed properties. To clear test state safely, implemented `ClearRegistryForTesting()` to reset the package scope `globalRegistry` map instances across concurrent tests.
-* **Verification:** `bazelisk test //server/pkg/middleware:middleware_test` verifies all unit tests in the modified package pass properly. Running `bazelisk test //server/...` confirms there are no regressions across the entire suite, including the full integration tests.
+  * Added edge-case test validations on the integer unrolled parser bounds (`simpleTokenizeInt64`).
+  * Explicitly enforced type-level error handling across slice, array, and map structures.
+  * Explicitly hit reflection-cycles in error injection within maps.
+  * Verified nil-slice and nil-map values under reflection parsing interfaces (`countTokensReflectSlice` and `countTokensReflectMap`).
+* **Verification:** `make test` equivalents (via `go test ./...`) for `server/pkg/tokenizer` and the whole repo ran clean with no regressions in existing tests. The file `server/pkg/tokenizer/tokenizer_coverage_test.go` correctly isolates all testing logic to leave production artifacts clean and ensures hermetic execution.
