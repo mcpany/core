@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
 import { useMemo, useState, memo, useCallback, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
@@ -93,175 +91,237 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
     });
   }, []);
 
+  const handleBulkActionComplete = useCallback(() => {
+    setSelected(new Set());
+    setIsBulkEditDialogOpen(false);
+    setBulkTags("");
+  }, []);
+
   const isAllSelected = filteredServices.length > 0 && selected.size === filteredServices.length;
 
   if (isLoading) {
       return (
           <div className="space-y-4">
-               {[...Array(3)].map((_, i) => (
-                  <div key={i} className="w-full h-12 bg-muted animate-pulse rounded-md" />
-               ))}
+              <div className="flex justify-between">
+                  <div className="h-10 w-64 bg-muted animate-pulse rounded"></div>
+              </div>
+              <div className="border rounded-md">
+                 <div className="h-12 border-b bg-muted/50 animate-pulse"></div>
+                 <div className="h-16 border-b animate-pulse"></div>
+                 <div className="h-16 border-b animate-pulse"></div>
+                 <div className="h-16 animate-pulse"></div>
+              </div>
           </div>
       );
   }
 
-  if (services.length === 0) {
-      return <div className="text-center py-10 text-muted-foreground">No services registered.</div>;
+  if (!services || services.length === 0) {
+      return (
+          <div className="text-center p-8 border border-dashed rounded-lg bg-muted/10">
+              <p className="text-muted-foreground">No upstream services registered yet.</p>
+              <p className="text-sm text-muted-foreground mt-2">
+                 Register a service to connect MCP Any to your backend.
+              </p>
+          </div>
+      );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2 w-full md:w-1/3">
-            <Filter className="h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Filter by tag..."
-              value={tagFilter}
-              onChange={(e) => setTagFilter(e.target.value)}
-              className="h-8"
-            />
-          </div>
-
-      </div>
-
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[50px]">
-                  <Checkbox
-                    checked={isAllSelected}
-                    onCheckedChange={(checked) => handleSelectAll(!!checked)}
-                    aria-label="Select all"
-                  />
-              </TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Trust</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Activity</TableHead>
-              <TableHead>Tags</TableHead>
-              <TableHead>Address / Command</TableHead>
-              <TableHead>Version</TableHead>
-              <TableHead className="text-center">Secure</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredServices.map((service) => (
-               <ServiceRow
-                  key={service.name}
-                  service={service}
-                  isSelected={selected.has(service.name)}
-                  onSelect={handleSelectOne}
-                  onToggle={onToggle}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                  onDuplicate={onDuplicate}
-                  onExport={onExport}
-                  onLogin={onLogin}
-                  onRestart={onRestart}
-               />
-            ))}
-            {filteredServices.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={10} className="h-24 text-center">
-                  No services match the tag filter.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      {selected.size > 0 && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-md border shadow-lg rounded-full px-6 py-3 flex items-center gap-4 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300 ease-out">
-              <span className="text-sm font-medium text-foreground mr-2 px-2 py-1 bg-muted rounded-full">{selected.size} selected</span>
-              <div className="h-6 w-px bg-border mx-1"></div>
-              {onBulkToggle && (
-                  <>
-                      <Button size="sm" variant="ghost" className="hover:bg-green-500/10 hover:text-green-600" onClick={() => {
-                          onBulkToggle(Array.from(selected), true);
-                          setSelected(new Set());
-                      }}>
-                          <PlayCircle className="mr-2 h-4 w-4 text-green-600" /> Enable
-                      </Button>
-                      <Button size="sm" variant="ghost" className="hover:bg-amber-500/10 hover:text-amber-600" onClick={() => {
-                          onBulkToggle(Array.from(selected), false);
-                          setSelected(new Set());
-                      }}>
-                          <PauseCircle className="mr-2 h-4 w-4 text-amber-600" /> Disable
-                      </Button>
-                  </>
-              )}
-              <Button size="sm" variant="ghost" onClick={() => setIsBulkEditDialogOpen(true)}>
-                  <Settings className="mr-2 h-4 w-4" /> Edit Tags
-              </Button>
-              {onBulkDelete && (
-                  <>
-                      <div className="h-6 w-px bg-border mx-1"></div>
-                      <Button size="sm" variant="ghost" className="text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => {
-                          onBulkDelete(Array.from(selected));
-                          setSelected(new Set());
-                      }}>
-                          <Trash2 className="mr-2 h-4 w-4" /> Delete
-                      </Button>
-                  </>
-              )}
-              <Button size="icon" variant="ghost" className="ml-2 rounded-full h-8 w-8 text-muted-foreground" onClick={() => setSelected(new Set())}>
-                  <XCircle className="h-4 w-4" />
-              </Button>
-          </div>
-      )}
-
-      <Dialog open={isBulkEditDialogOpen} onOpenChange={setIsBulkEditDialogOpen}>
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle>Bulk Edit Services</DialogTitle>
-                <DialogDescription>
-                    Update {selected.size} selected services. Currently only supports updating tags.
-                </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                    <Label htmlFor="bulk-tags">Add Tags (comma separated)</Label>
-                    <Input
-                        id="bulk-tags"
-                        placeholder="production, web, internal"
-                        value={bulkTags}
-                        onChange={(e) => setBulkTags(e.target.value)}
-                    />
+    <div className="space-y-4 relative pb-16">
+        {/* Bulk Edit Dialog */}
+        <Dialog open={isBulkEditDialogOpen} onOpenChange={setIsBulkEditDialogOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Edit Multiple Services</DialogTitle>
+                    <DialogDescription>
+                        Update settings for {selected.size} selected services.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                        <Label htmlFor="bulkTags">Add/Replace Tags (comma separated)</Label>
+                        <Input
+                            id="bulkTags"
+                            placeholder="production, experimental"
+                            value={bulkTags}
+                            onChange={(e) => setBulkTags(e.target.value)}
+                        />
+                        <p className="text-xs text-muted-foreground">This will replace existing tags for all selected services.</p>
+                    </div>
                 </div>
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => setIsBulkEditDialogOpen(false)}>Cancel</Button>
+                    <Button onClick={() => {
+                        if (onBulkEdit) {
+                            const newTags = bulkTags.split(',').map(t => t.trim()).filter(Boolean);
+                            onBulkEdit(Array.from(selected), { tags: newTags });
+                        }
+                        handleBulkActionComplete();
+                    }}>Apply Changes</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+
+        {/* Floating Bulk Actions Bar */}
+        {selected.size > 0 && (
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 px-6 py-3 bg-background/80 backdrop-blur-lg border shadow-lg rounded-full animate-in slide-in-from-bottom-4 fade-in duration-200">
+                <span className="text-sm font-medium whitespace-nowrap">
+                    {selected.size} selected
+                </span>
+                <div className="w-px h-6 bg-border mx-2"></div>
+
+                {onBulkToggle && (
+                    <>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                            onClick={() => {
+                                onBulkToggle(Array.from(selected), true);
+                                handleBulkActionComplete();
+                            }}
+                        >
+                            <PlayCircle className="w-4 h-4 mr-2" />
+                            Enable
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                            onClick={() => {
+                                onBulkToggle(Array.from(selected), false);
+                                handleBulkActionComplete();
+                            }}
+                        >
+                            <PauseCircle className="w-4 h-4 mr-2" />
+                            Disable
+                        </Button>
+                    </>
+                )}
+
+                {onBulkEdit && (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsBulkEditDialogOpen(true)}
+                    >
+                        <Settings className="w-4 h-4 mr-2" />
+                        Edit Tags
+                    </Button>
+                )}
+
+                {onBulkDelete && (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => {
+                            if (window.confirm(`Are you sure you want to delete ${selected.size} services? This action cannot be undone.`)) {
+                                onBulkDelete(Array.from(selected));
+                                handleBulkActionComplete();
+                            }
+                        }}
+                    >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete
+                    </Button>
+                )}
+
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="ml-2 rounded-full h-8 w-8 hover:bg-muted"
+                    onClick={() => setSelected(new Set())}
+                    title="Clear selection"
+                >
+                    <XCircle className="w-4 h-4" />
+                </Button>
             </div>
-            <DialogFooter>
-                <Button variant="outline" onClick={() => setIsBulkEditDialogOpen(false)}>Cancel</Button>
-                <Button onClick={() => {
-                    if (onBulkEdit) {
-                        onBulkEdit(Array.from(selected), { tags: bulkTags.split(",").map(t => t.trim()).filter(Boolean) });
-                    }
-                    setIsBulkEditDialogOpen(false);
-                    setSelected(new Set());
-                    setBulkTags("");
-                }}>Apply Changes</Button>
-            </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        )}
+
+        <div className="flex gap-2">
+           <div className="relative max-w-sm flex-1">
+                <Filter className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                    placeholder="Filter by tag..."
+                    value={tagFilter}
+                    onChange={(e) => setTagFilter(e.target.value)}
+                    className="pl-8"
+                />
+            </div>
+            {tagFilter && (
+                <Button variant="ghost" onClick={() => setTagFilter("")}>Clear Filter</Button>
+            )}
+        </div>
+
+      <div className="rounded-md border bg-card">
+          <Table>
+              <TableHeader>
+                  <TableRow>
+                      <TableHead className="w-[40px]">
+                          <Checkbox
+                              checked={isAllSelected}
+                              onCheckedChange={handleSelectAll}
+                              aria-label="Select all"
+                          />
+                      </TableHead>
+                      <TableHead className="w-[100px]">Status</TableHead>
+                      <TableHead className="w-[200px]">Name</TableHead>
+                      <TableHead className="w-[120px]">Security</TableHead>
+                      <TableHead className="w-[100px]">Type</TableHead>
+                      <TableHead className="w-[120px]">Health (5m)</TableHead>
+                      <TableHead className="w-[150px]">Tags</TableHead>
+                      <TableHead>Endpoint</TableHead>
+                      <TableHead className="w-[100px]">Version</TableHead>
+                      <TableHead className="w-[80px] text-center">TLS</TableHead>
+                      <TableHead className="text-right w-[80px]">Actions</TableHead>
+                  </TableRow>
+              </TableHeader>
+              <TableBody>
+                  {filteredServices.length === 0 ? (
+                      <TableRow>
+                          <TableCell colSpan={11} className="text-center py-6 text-muted-foreground">
+                              {tagFilter ? "No services match the filter." : "No services found."}
+                          </TableCell>
+                      </TableRow>
+                  ) : (
+                      filteredServices.map((service) => (
+                          <ServiceRow
+                              key={service.name}
+                              service={service}
+                              isSelected={selected.has(service.name)}
+                              onSelect={handleSelectOne}
+                              onToggle={onToggle}
+                              onEdit={onEdit}
+                              onDelete={onDelete}
+                              onDuplicate={onDuplicate}
+                              onExport={onExport}
+                              onLogin={onLogin}
+                              onRestart={onRestart}
+                          />
+                      ))
+                  )}
+              </TableBody>
+          </Table>
+      </div>
     </div>
   );
 }
 
 /**
- * ServiceRow component.
- * @param props - The component props.
- * @param props.service - The service property.
- * @param props.isSelected - The isSelected property.
- * @param props.onSelect - The onSelect property.
- * @param props.onToggle - The onToggle property.
- * @param props.onEdit - The onEdit property.
- * @param props.onDelete - The onDelete property.
- * @param props.onDuplicate - The onDuplicate property.
- * @param props.onExport - The onExport property.
- * @param props.onLogin - The onLogin property.
+ * ServiceRow
+ *
+ * @param props
+ * @param props.service
+ * @param props.isSelected
+ * @param props.onSelect
+ * @param props.onToggle
+ * @param props.onEdit
+ * @param props.onDelete
+ * @param props.onDuplicate
+ * @param props.onExport
+ * @param props.onLogin
+ * @param props.onRestart
  * @returns The rendered component.
  */
 const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onToggle, onEdit, onDelete, onDuplicate, onExport, onLogin, onRestart }: {
