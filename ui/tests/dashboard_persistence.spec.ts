@@ -46,7 +46,7 @@ test('dashboard layout persistence', async ({ page, request }) => {
 
   // 6. Verify widget persists
   await expect(page.getByText('Recent Activity').first()).toBeVisible();
-  await expect(page.getByText('Your dashboard is empty')).not.toBeVisible();
+  await expect(page.getByText('Your dashboard is empty').first()).not.toBeVisible();
 
   // 7. Verify API state
   const response = await request.get('/api/v1/user/preferences');

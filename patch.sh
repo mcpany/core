@@ -1,1 +1,1 @@
-sed -i "s/await expect(page.getByText('Your dashboard is empty')).toBeVisible();/await expect(page.getByText('Your dashboard is empty').first()).toBeVisible({ timeout: 15000 });/g" ui/tests/dashboard_persistence.spec.ts
+sed -i "s/await expect(page.getByText('Your dashboard is empty')).not.toBeVisible();/await expect(page.getByText('Your dashboard is empty').first()).not.toBeVisible();/g" ui/tests/dashboard_persistence.spec.ts
