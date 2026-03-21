@@ -17,28 +17,6 @@ test.describe('Prompt Studio', () => {
           command: 'echo',
           working_directory: '/tmp'
         },
-        prompts: [
-          {
-            name: 'existing_prompt_1',
-            description: 'The first seeded prompt',
-            messages: [
-              {
-                role: 'USER',
-                content: { type: 'text', text: 'Hello from prompt 1' }
-              }
-            ]
-          },
-          {
-            name: 'existing_prompt_2',
-            description: 'The second seeded prompt',
-            messages: [
-              {
-                role: 'USER',
-                content: { type: 'text', text: 'Hello from prompt 2' }
-              }
-            ]
-          }
-        ],
         disable: false
       }
     });
@@ -59,7 +37,7 @@ test.describe('Prompt Studio', () => {
     // 1. Click "Create New Prompt" (or the + button in empty state)
     // We wait for the page to load and check if we are in empty state or list state
     // We look for any button that resembles "Create"
-    const createBtn = page.getByRole('button', { name: /Create.*Prompt|New Prompt/ }).first();
+    const createBtn = page.getByRole('button', { name: /Create.*Prompt/ }).first();
     await createBtn.click();
 
     // 2. Fill the form
