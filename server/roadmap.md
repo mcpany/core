@@ -434,6 +434,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
 *   **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-generated UI fragments (Added: 2026-04-23).
 
+#### Upcoming (2026-05-06 Evolution)
+*   **[P0] RAMS Temporal Memory Isolation**: Implement memory-mapped shard zeroing and rotation to mitigate SME. (Added: 2026-05-06)
+*   **[P0] RBW Handshake Protocol**: Mandatory "Reasoning Proof" validation for all persistent WebSocket upgrades. (Added: 2026-05-06)
+*   **[P1] JIT Capability Pruning (DCP)**: Middleware to dynamically modify tool schemas based on hardware-attested task state. (Added: 2026-05-06)
+
 #### Upcoming (2026-05-02 Evolution)
 *   **[P0] Risk-Adaptive CQ Controller**: Dynamic policy engine for scaling quorum thresholds based on tool risk and reasoning confidence. (Added: 2026-05-02)
 *   **[P1] Reasoning-Responsive Rate Limiter (RRRL)**: Middleware to throttle tool execution based on real-time reasoning confidence scores. (Added: 2026-05-02)

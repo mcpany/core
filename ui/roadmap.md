@@ -298,6 +298,11 @@
 - [ ] **[P0] DAIP Path Inspector**: Visual debugger for recursive symlinks and hardware-bound depth validation. (Added: 2026-05-03)
 - [ ] **[P0] Deadlock Resolution Console**: Real-time visualization of circular attestation dependencies and resolution status. (Added: 2026-05-03)
 
+#### Upcoming (2026-05-06 Evolution)
+- [ ] **[P0] RAMS Temporal Purge Dashboard**: Visualize the lifecycle of ephemeral shards and SME-mitigation status. (Added: 2026-05-06)
+- [ ] **[P0] RBW Handshake Monitor**: Real-time visualization of "Reasoning Proof" validation for WebSocket upgrades. (Added: 2026-05-06)
+- [ ] **[P1] DCP Schema View**: Interactive explorer for dynamically pruned tool schemas. (Added: 2026-05-06)
+
 #### Upcoming (2026-05-02 Evolution)
 - [ ] **[P0] Risk-Adaptive Quorum Visualizer**: Real-time monitor for AQT thresholds, tool risk scores, and reasoning confidence. (Added: 2026-05-02)
 - [ ] **[P1] Inter-Swarm Wait-Graph Explorer**: Interactive visualization of attestation dependencies to identify and resolve deadlocks. (Added: 2026-05-02)
