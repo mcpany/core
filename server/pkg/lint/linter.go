@@ -43,16 +43,10 @@ const (
 // Summary: Executes String operation.
 //
 // Parameters:
-//   - s (Severity): The severity level to convert.
+//   - s: Severity. The severity level to convert.
 //
 // Returns:
-//   - (string): The string representation (e.g., "ERROR").
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - string: The string representation (e.g., "ERROR").
 func (s Severity) String() string {
 	switch s {
 	case Error:
@@ -87,16 +81,10 @@ type Result struct {
 // Summary: Executes String operation.
 //
 // Parameters:
-//   - r (Result): The result instance to format.
+//   - r: Result. The result instance to format.
 //
 // Returns:
-//   - (string): A formatted string containing result details.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - string: A formatted string containing result details.
 func (r Result) String() string {
 	pathStr := ""
 	if r.Path != "" {
@@ -121,16 +109,10 @@ type Linter struct {
 // Summary: Initializes NewLinter operation.
 //
 // Parameters:
-//   - cfg (*configv1.McpAnyServerConfig): The configuration to analyze.
+//   - cfg: *configv1.McpAnyServerConfig. The configuration to analyze.
 //
 // Returns:
-//   - (*Linter): A new Linter instance.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - *Linter: A new Linter instance.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
@@ -140,17 +122,11 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 // Summary: Executes Run operation.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the operation.
+//   - ctx: context.Context. The context for the operation.
 //
 // Returns:
-//   - ([]Result): A slice of linting findings.
-//   - (error): Encounters a fatal issue.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - []Result: A slice of linting findings.
+//   - error: Encounters a fatal issue.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	results := make([]Result, 0, 10)
 
@@ -175,17 +151,8 @@ func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 //
 // Summary: Executes checkPlainTextSecrets operation.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - ([]Result): A slice of findings.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - []Result: A slice of findings.
 func (l *Linter) checkPlainTextSecrets() []Result {
 	var results []Result
 
@@ -261,17 +228,8 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 //
 // Summary: Executes checkShellInjection operation.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - ([]Result): A slice of findings.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - []Result: A slice of findings.
 func (l *Linter) checkShellInjection() []Result {
 	var results []Result
 	shellRiskPatterns := []string{"sh -c", "bash -c", "cmd /c", "powershell -c"}
@@ -311,17 +269,8 @@ func (l *Linter) checkShellInjection() []Result {
 //
 // Summary: Executes checkInsecureHTTP operation.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - ([]Result): A slice of findings.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - []Result: A slice of findings.
 func (l *Linter) checkInsecureHTTP() []Result {
 	var results []Result
 	for _, s := range l.cfg.GetUpstreamServices() {
@@ -364,17 +313,8 @@ func (l *Linter) checkInsecureHTTP() []Result {
 //
 // Summary: Executes checkCacheSettings operation.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - ([]Result): A slice of findings.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - []Result: A slice of findings.
 func (l *Linter) checkCacheSettings() []Result {
 	var results []Result
 	for _, s := range l.cfg.GetUpstreamServices() {
