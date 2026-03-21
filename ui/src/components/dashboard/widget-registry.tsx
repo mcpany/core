@@ -133,6 +133,14 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
         component: LazyAuditLogWidget,
         icon: ClipboardCheck
     },
+    {
+        type: "swarm-topology",
+        title: "Swarm Topology",
+        description: "Multi-Agent Swarm Topology & Sovereignty Monitor.",
+        defaultSize: "two-thirds",
+        component: React.lazy(() => import('./swarm-topology-widget').then(m => ({ default: m.SwarmTopologyWidget }))),
+        icon: Share2
+    },
 ];
 
 /**
