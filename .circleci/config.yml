@@ -28,7 +28,9 @@ commands:
 
 jobs:
   lint:
-    executor: default-executor
+    docker:
+      - image: cimg/go:1.24
+    resource_class: large
     steps:
       - checkout
       - run:
