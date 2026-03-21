@@ -1,0 +1,40 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+
+go_library(
+    name = "html_to_md_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mcpany/core/server/docs/features/webhooks/examples/html_to_md",
+    visibility = ["//visibility:private"],
+    deps = [
+        "@com_github_google_uuid//:uuid",
+        "@com_github_johanneskaufmann_html_to_markdown//:html-to-markdown",
+    ],
+)
+
+go_binary(
+    name = "html_to_md",
+    embed = [":html_to_md_lib"],
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "html_to_md_test",
+    srcs = [
+        "e2e_test.go",
+        "main_test.go",
+    ],
+    embed = [":html_to_md_lib"],
+    deps = [
+        "//proto/config/v1:config",
+        "//server/pkg/bus",
+        "//server/pkg/pool",
+        "//server/pkg/prompt",
+        "//server/pkg/resource",
+        "//server/pkg/tool",
+        "//server/pkg/upstream/http",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//types/known/durationpb",
+        "@org_golang_google_protobuf//types/known/structpb",
+    ],
+)
