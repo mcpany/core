@@ -61,7 +61,7 @@ jobs:
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
             sudo npm install -g pnpm
-            cd ui && pnpm install && cd ..
+            cd ui && pnpm install --no-frozen-lockfile && cd ..
             bazel run //:lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
