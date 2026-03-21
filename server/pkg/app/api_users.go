@@ -74,15 +74,15 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 				return
 			}
 
-			var user configv1.User
+			user := &configv1.User{}
 			if userRaw, ok := tempMap["user"]; ok {
-				if err := protojson.Unmarshal(userRaw, &user); err != nil {
+				if err := protojson.Unmarshal(userRaw, user); err != nil {
 					http.Error(w, "invalid user proto: "+err.Error(), http.StatusBadRequest)
 					return
 				}
 			} else {
 				// Maybe body IS the user?
-				if err := protojson.Unmarshal(body, &user); err != nil {
+				if err := protojson.Unmarshal(body, user); err != nil {
 					logging.GetLogger().Error("failed to unmarshal user", "error", err, "body", string(body))
 					http.Error(w, "missing user field or invalid body: "+err.Error(), http.StatusBadRequest)
 					return
@@ -94,7 +94,7 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 				return
 			}
 
-			if err := hashUserPassword(r.Context(), &user, store, nil); err != nil {
+			if err := hashUserPassword(r.Context(), user, store, nil); err != nil {
 				logging.GetLogger().Error("failed to hash password", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
@@ -113,14 +113,14 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 				return
 			}
 
-			if err := store.CreateUser(r.Context(), &user); err != nil {
+			if err := store.CreateUser(r.Context(), user); err != nil {
 				logging.GetLogger().Error("failed to create user", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 
 			// Reload auth manager
-			a.AuthManager.SetUsers([]*configv1.User{&user}) // Wait, this replaces ALL users?
+			a.AuthManager.SetUsers([]*configv1.User{user}) // Wait, this replaces ALL users?
 			// We need to reload usage from config. But ListUsers comes from Storage.
 			// AuthManager might be using config-based users OR storage-based users.
 			// api.go ReloadConfig: a.AuthManager.SetUsers(cfg.GetUsers())
@@ -131,7 +131,7 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 			}
 
 			w.WriteHeader(http.StatusCreated)
-			writeJSON(w, http.StatusCreated, util.SanitizeUser(&user))
+			writeJSON(w, http.StatusCreated, util.SanitizeUser(user))
 
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -199,15 +199,15 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 				return
 			}
 
-			var user configv1.User
+			user := &configv1.User{}
 			if userRaw, ok := tempMap["user"]; ok {
-				if err := protojson.Unmarshal(userRaw, &user); err != nil {
+				if err := protojson.Unmarshal(userRaw, user); err != nil {
 					http.Error(w, "invalid user proto: "+err.Error(), http.StatusBadRequest)
 					return
 				}
 			} else {
 				// Maybe body IS the user?
-				if err := protojson.Unmarshal(body, &user); err != nil {
+				if err := protojson.Unmarshal(body, user); err != nil {
 					logging.GetLogger().Error("failed to unmarshal user", "error", err, "body", string(body))
 					http.Error(w, "missing user field or invalid body: "+err.Error(), http.StatusBadRequest)
 					return
@@ -239,13 +239,13 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 				user.SetRoles(existingUser.GetRoles())
 			}
 
-			if err := hashUserPassword(r.Context(), &user, store, existingUser); err != nil {
+			if err := hashUserPassword(r.Context(), user, store, existingUser); err != nil {
 				logging.GetLogger().Error("failed to hash password", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 
-			if err := store.UpdateUser(r.Context(), &user); err != nil {
+			if err := store.UpdateUser(r.Context(), user); err != nil {
 				logging.GetLogger().Error("failed to update user", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
@@ -255,7 +255,7 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 				logging.GetLogger().Error("failed to reload config after user update", "error", err)
 			}
 
-			writeJSON(w, http.StatusOK, util.SanitizeUser(&user))
+			writeJSON(w, http.StatusOK, util.SanitizeUser(user))
 
 		case http.MethodDelete:
 			if err := store.DeleteUser(r.Context(), id); err != nil {

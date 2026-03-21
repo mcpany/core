@@ -55,10 +55,6 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 					if before, _, found := strings.Cut(r.Params.Name, "."); found {
 						serviceID = before
 					}
-				} else if r, ok := req.(mcp.CallToolRequest); ok && r.Params.Name != "" {
-					if before, _, found := strings.Cut(r.Params.Name, "."); found {
-						serviceID = before
-					}
 				}
 			}
 
@@ -70,10 +66,6 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 					if before, _, found := strings.Cut(r.Params.Name, "."); found {
 						serviceID = before
 					}
-				} else if r, ok := req.(mcp.GetPromptRequest); ok && r.Params.Name != "" {
-					if before, _, found := strings.Cut(r.Params.Name, "."); found {
-						serviceID = before
-					}
 				}
 			}
 
@@ -81,10 +73,6 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 			if method == consts.MethodResourcesRead {
 				if r, ok := req.(*mcp.ReadResourceRequest); ok && r != nil && r.Params != nil {
 					// Resource URI format is typically serviceID://...
-					if before, _, found := strings.Cut(r.Params.URI, "://"); found {
-						serviceID = before
-					}
-				} else if r, ok := req.(mcp.ReadResourceRequest); ok && r.Params.URI != "" {
 					if before, _, found := strings.Cut(r.Params.URI, "://"); found {
 						serviceID = before
 					}
