@@ -144,8 +144,8 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, req)
 
-		// Wait, if it gets "id mismatch", it's 400 Bad Request.
-		// If it's properly patched, we should not see "hacked" in admin user.
+		// Expected response is 400 Bad Request due to "id mismatch".
+		// Even if bypassed (by omitting ID), the patched code enforces user.SetId(existingUser.GetId()).
 		adminUser, err := store.GetUser(context.Background(), "admin-user")
 		require.NoError(t, err)
 		val, exists := adminUser.GetPreferences()["hacked"]
