@@ -18,7 +18,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 interface RichResultViewerProps {
-    result: any;
+    result: unknown;
 }
 
 interface TextContent {
@@ -106,23 +106,24 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
     const mcpContent = useMemo<McpContent[] | null>(() => {
         if (Array.isArray(content)) {
-            const isValidArray = content.every((item: any) =>
+            const isValidArray = content.every((item: Record<string, unknown>) =>
                 (item.type === 'text' && typeof item.text === 'string') ||
                 (item.type === 'image' && typeof item.data === 'string' && typeof item.mimeType === 'string')
             );
             if (isValidArray) {
-                return content as McpContent[];
+                return content as unknown as McpContent[];
             }
         }
 
-        if (content && typeof content === 'object' && Array.isArray(content.content)) {
+        if (content && typeof content === 'object' && 'content' in content && Array.isArray((content as Record<string, unknown>).content)) {
+            const contentArray = (content as Record<string, unknown>).content as Record<string, unknown>[];
             // Check if it looks like MCP content
-            const isValid = content.content.every((item: any) =>
+            const isValid = contentArray.every((item: Record<string, unknown>) =>
                 (item.type === 'text' && typeof item.text === 'string') ||
                 (item.type === 'image' && typeof item.data === 'string' && typeof item.mimeType === 'string')
             );
             if (isValid) {
-                return content.content;
+                return contentArray as unknown as McpContent[];
             }
         }
         return null;
@@ -138,7 +139,8 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         // aggregate all keys from all objects to handle sparse data
         const keys = new Set<string>();
         // Limit rows scanned for columns to avoid perf issues on huge datasets
-        content.slice(0, 50).forEach((item: any) => {
+        const items = content as Record<string, unknown>[];
+        items.slice(0, 50).forEach((item: Record<string, unknown>) => {
             if (typeof item === 'object' && item !== null) {
                 Object.keys(item).forEach(k => keys.add(k));
             }
@@ -146,7 +148,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return Array.from(keys);
     }, [content, isTableEligible]);
 
-    const renderCell = (value: any) => {
+    const renderCell = (value: unknown) => {
         if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
         if (typeof value === 'object') {
              return (
@@ -216,7 +218,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {content.map((row: any, i: number) => (
+                                {(content as Record<string, unknown>[]).map((row: Record<string, unknown>, i: number) => (
                                     <TableRow key={i}>
                                         {columns.map(col => (
                                             <TableCell key={col} className="py-2">
