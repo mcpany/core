@@ -818,23 +818,23 @@ func (a *Application) handleTools(store storage.Storage) http.HandlerFunc {
 func (a *Application) setToolDisableFlag(service *configv1.UpstreamServiceConfig, toolName string, disable bool) error {
 	var toolList []*configv1.ToolDefinition
 	if mcp := service.GetMcpService(); mcp != nil {
-		toolList = mcp.Tools
+		toolList = mcp.GetTools()
 	} else if httpSvc := service.GetHttpService(); httpSvc != nil {
-		toolList = httpSvc.Tools
+		toolList = httpSvc.GetTools()
 	} else if grpcSvc := service.GetGrpcService(); grpcSvc != nil {
-		toolList = grpcSvc.Tools
+		toolList = grpcSvc.GetTools()
 	} else if openapiSvc := service.GetOpenapiService(); openapiSvc != nil {
-		toolList = openapiSvc.Tools
+		toolList = openapiSvc.GetTools()
 	} else if cmdSvc := service.GetCommandLineService(); cmdSvc != nil {
-		toolList = cmdSvc.Tools
+		toolList = cmdSvc.GetTools()
 	} else if fsSvc := service.GetFilesystemService(); fsSvc != nil {
-		toolList = fsSvc.Tools
+		toolList = fsSvc.GetTools()
 	} else if vectorSvc := service.GetVectorService(); vectorSvc != nil {
-		toolList = vectorSvc.Tools
+		toolList = vectorSvc.GetTools()
 	} else if websocketSvc := service.GetWebsocketService(); websocketSvc != nil {
-		toolList = websocketSvc.Tools
+		toolList = websocketSvc.GetTools()
 	} else if webrtcSvc := service.GetWebrtcService(); webrtcSvc != nil {
-		toolList = webrtcSvc.Tools
+		toolList = webrtcSvc.GetTools()
 	} else if service.GetGraphqlService() != nil {
 		// GraphQL service doesn't have an explicit Tool array
 	} else if service.GetSqlService() != nil {
@@ -846,7 +846,20 @@ func (a *Application) setToolDisableFlag(service *configv1.UpstreamServiceConfig
 	found := false
 	for _, t := range toolList {
 		if t.GetName() == toolName {
-			t.Disable = disable
+			// Since we got a pointer to the tool definition, update the field
+			// Use the setter if possible, otherwise pointer mutation works.
+			// Protobuf fields mapping: bool disable -> Disable (or similar).
+			// If field is missing or named differently, we fall back to generic approach.
+			// Protobuf go generator generates 'Disable bool `protobuf:"..."`'
+			// For optional fields it could be a pointer, but in proto3 basic types are value types.
+			if disable {
+				// We need to figure out exactly how the disable field is exposed.
+				// Wait! Earlier error: `t.Disable undefined (type *"github.com/mcpany/core/proto/config/v1".ToolDefinition has no field or method Disable)`
+				// Let's use proto reflection to set the field.
+				t.ProtoReflect().Set(t.ProtoReflect().Descriptor().Fields().ByName("disable"), proto.Bool(disable).ProtoReflect().Interface())
+			} else {
+				t.ProtoReflect().Set(t.ProtoReflect().Descriptor().Fields().ByName("disable"), proto.Bool(false).ProtoReflect().Interface())
+			}
 			found = true
 			break
 		}
@@ -854,32 +867,27 @@ func (a *Application) setToolDisableFlag(service *configv1.UpstreamServiceConfig
 
 	// Auto-discovered tools might not be in the list yet, so we append an override
 	if !found {
-		newTool := &configv1.ToolDefinition{
-			Name:    toolName,
-			Disable: disable,
-		}
-		if mcp := service.GetMcpService(); mcp != nil {
-			mcp.Tools = append(mcp.Tools, newTool)
-		} else if httpSvc := service.GetHttpService(); httpSvc != nil {
-			httpSvc.Tools = append(httpSvc.Tools, newTool)
-		} else if grpcSvc := service.GetGrpcService(); grpcSvc != nil {
-			grpcSvc.Tools = append(grpcSvc.Tools, newTool)
-		} else if openapiSvc := service.GetOpenapiService(); openapiSvc != nil {
-			openapiSvc.Tools = append(openapiSvc.Tools, newTool)
-		} else if cmdSvc := service.GetCommandLineService(); cmdSvc != nil {
-			cmdSvc.Tools = append(cmdSvc.Tools, newTool)
-		} else if fsSvc := service.GetFilesystemService(); fsSvc != nil {
-			fsSvc.Tools = append(fsSvc.Tools, newTool)
-		} else if vectorSvc := service.GetVectorService(); vectorSvc != nil {
-			vectorSvc.Tools = append(vectorSvc.Tools, newTool)
-		} else if websocketSvc := service.GetWebsocketService(); websocketSvc != nil {
-			websocketSvc.Tools = append(websocketSvc.Tools, newTool)
-		} else if webrtcSvc := service.GetWebrtcService(); webrtcSvc != nil {
-			webrtcSvc.Tools = append(webrtcSvc.Tools, newTool)
-		} else if service.GetGraphqlService() != nil {
-			// Do nothing for Graphql
-		} else if service.GetSqlService() != nil {
-			// Do nothing for SQL
+		newTool := &configv1.ToolDefinition{}
+		newTool.ProtoReflect().Set(newTool.ProtoReflect().Descriptor().Fields().ByName("name"), proto.String(toolName).ProtoReflect().Interface())
+		newTool.ProtoReflect().Set(newTool.ProtoReflect().Descriptor().Fields().ByName("disable"), proto.Bool(disable).ProtoReflect().Interface())
+
+		// To avoid direct field assignment issues like `mcp.Tools = ...`, we use reflection to append:
+		// However, mcp.Tools is a slice of pointers, we can't easily reflect-append. Wait, actually `mcp.Tools` might not be named `Tools` either?
+		// No, `GetTools()` exists. If `Tools` doesn't exist, we need to find what the field is.
+
+		// Let's try reflection for the service struct to append the tool
+		svcMsg := service.ProtoReflect()
+		serviceTypeField := svcMsg.Descriptor().Oneofs().ByName("service_config")
+		if serviceTypeField != nil {
+			field := svcMsg.WhichOneof(serviceTypeField)
+			if field != nil {
+				svcTypeMsg := svcMsg.Get(field).Message()
+				toolsField := svcTypeMsg.Descriptor().Fields().ByName("tools")
+				if toolsField != nil {
+					list := svcTypeMsg.Mutable(toolsField).List()
+					list.Append(proto.ValueOf(newTool.ProtoReflect()))
+				}
+			}
 		}
 	}
 
