@@ -11,7 +11,7 @@ test.beforeEach(async ({ request }) => {
   await seedGlobalState(request);
 });
 
-test('dashboard layout persistence', async ({ page, request }) => {
+test('dashboard layout persistence', async ({ page }) => {
   // 1. Login to get authenticated context
   await page.goto('/login');
   await page.fill('input[name="username"]', 'e2e-admin-core');
