@@ -19,7 +19,7 @@ test.describe('Tool Activity Feed', () => {
           MCPANY_API_KEY: process.env.MCPANY_API_KEY || 'test-token'
         }
       });
-    } catch (e) {
+    } catch (e: any) {
       console.warn('Seed script failed, continuing anyway as backend might already have data', e.message);
     }
 

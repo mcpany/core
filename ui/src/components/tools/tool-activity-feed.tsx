@@ -17,20 +17,12 @@ interface ToolActivityFeedProps {
 }
 
 export function ToolActivityFeed({ serviceIdFilter }: ToolActivityFeedProps) {
-    const { traces, isConnected, error } = useTraces();
+    const { traces, isConnected } = useTraces();
 
     // Filter for tool traces
     const toolTraces = traces.filter(t => t.rootSpan?.type === 'tool' || t.rootSpan?.name === 'calculate_sum');
 
-    if (error) {
-        return (
-            <div className="flex flex-col items-center justify-center p-12 text-muted-foreground border rounded-lg border-dashed">
-                <AlertCircle className="h-8 w-8 mb-4 text-red-500" />
-                <p>Error connecting to trace stream</p>
-                <p className="text-xs mt-2">{error.message}</p>
-            </div>
-        );
-    }
+
 
     if (toolTraces.length === 0) {
         return (
