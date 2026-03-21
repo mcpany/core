@@ -118,7 +118,7 @@ export function AuditLogViewer() {
         }
     };
 
-    const tryParseJson = (jsonStr: string | null | undefined, fallback: any = {}) => {
+    const tryParseJson = (jsonStr: string | null | undefined, fallback: unknown = {}) => {
         if (!jsonStr) return fallback;
         try {
             return JSON.parse(jsonStr);
