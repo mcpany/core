@@ -15,7 +15,7 @@ import { DataTable } from "@/components/ui/data-table";
  */
 interface SmartResultRendererProps {
     /** The result object to render. Can be a JSON string, an object, or an array. */
-    result: any;
+    result: unknown;
 }
 
 interface McpContent {
@@ -23,7 +23,7 @@ interface McpContent {
     text?: string;
     data?: string;
     mimeType?: string;
-    resource?: any;
+    resource?: Record<string, unknown>;
 }
 
 /**
@@ -39,27 +39,27 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
         let content = result;
 
         // Unwrap CallToolResult structure
-        if (result && typeof result === 'object' && Array.isArray(result.content)) {
-            content = result.content;
+        if (result && typeof result === 'object' && Array.isArray((result as Record<string, unknown>).content)) {
+            content = (result as Record<string, unknown>).content;
         }
 
         // Handle Command Output wrapper
         if (content && typeof content === 'object' && !Array.isArray(content)) {
-             if (content.stdout && typeof content.stdout === 'string') {
+             if ((content as Record<string, unknown>).stdout && typeof (content as Record<string, unknown>).stdout === 'string') {
                  try {
-                     const inner = JSON.parse(content.stdout);
+                     const inner = JSON.parse((content as Record<string, unknown>).stdout as string);
                      if (Array.isArray(inner) || (typeof inner === 'object' && inner !== null)) {
                          content = inner;
                      }
-                 } catch (e) {
+                 } catch (_) {
                      // stdout is not JSON
                  }
              }
         }
 
         // Handle deeply nested "content" (e.g. from stdout containing MCP content object)
-        if (content && typeof content === 'object' && !Array.isArray(content) && Array.isArray(content.content)) {
-            content = content.content;
+        if (content && typeof content === 'object' && !Array.isArray(content) && Array.isArray((content as Record<string, unknown>).content)) {
+            content = (content as Record<string, unknown>).content;
         }
 
         return content;
@@ -70,9 +70,9 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     // 2. Identify MCP Content
     const mcpContent = useMemo<McpContent[] | null>(() => {
         if (Array.isArray(unwrappedContent) && unwrappedContent.length > 0) {
-            const isMcp = unwrappedContent.every((item: any) =>
+            const isMcp = unwrappedContent.every((item: unknown) =>
                 typeof item === 'object' && item !== null &&
-                (item.type === 'text' || item.type === 'image' || item.type === 'resource')
+                ((item as Record<string, unknown>).type === 'text' || (item as Record<string, unknown>).type === 'image' || (item as Record<string, unknown>).type === 'resource')
             );
             if (isMcp) return unwrappedContent as McpContent[];
         }
@@ -83,7 +83,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     const tableData = useMemo(() => {
         // If fullyUnwrapped is a table, and there's no MCP content with non-text elements, use it directly!
         if (Array.isArray(fullyUnwrapped) && fullyUnwrapped.length > 0) {
-             const isTable = fullyUnwrapped.every((item: any) => typeof item === 'object' && item !== null);
+             const isTable = fullyUnwrapped.every((item: unknown) => typeof item === 'object' && item !== null);
              // Make sure we don't accidentally treat MCP image objects as a table row if we want rich view
              const isRichMcp = mcpContent && mcpContent.some(c => c.type !== 'text');
              if (isTable && !isRichMcp) return fullyUnwrapped;
@@ -101,15 +101,15 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                     if (Array.isArray(parsed) && parsed.every(item => typeof item === 'object')) {
                         return parsed;
                     }
-                } catch (e) {}
+                } catch (_) {}
              }
              return null;
         }
 
         // If NOT MCP content, check if unwrapped content itself is tabular data (CLI use case)
         if (Array.isArray(unwrappedContent) && unwrappedContent.length > 0) {
-             const isTable = unwrappedContent.every((item: any) => typeof item === 'object' && item !== null);
-             if (isTable) return unwrappedContent;
+             const isTable = unwrappedContent.every((item: unknown) => typeof item === 'object' && item !== null);
+             if (isTable) return unwrappedContent as Record<string, unknown>[];
         }
 
         return null;
@@ -158,7 +158,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                         {item.type === 'resource' && (
                             <div className="flex items-center gap-2 p-3 bg-muted/30 rounded-md border border-white/5">
                                 <FileText className="h-4 w-4 text-primary" />
-                                <span className="text-sm font-medium">Resource: {item.resource?.uri || 'Unknown'}</span>
+                                <span className="text-sm font-medium">Resource: {String(item.resource?.uri || 'Unknown')}</span>
                             </div>
                         )}
                     </div>
@@ -172,13 +172,13 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
 
         // Determine columns from all keys in the first 10 rows
         const allKeys = new Set<string>();
-        tableData.slice(0, 10).forEach((row: any) => {
+        tableData.slice(0, 10).forEach((row: Record<string, unknown>) => {
             Object.keys(row).forEach(k => allKeys.add(k));
         });
         const columns = Array.from(allKeys).map(col => ({
             accessorKey: col,
             header: col,
-            cell: (row: any) => {
+            cell: (row: Record<string, unknown>) => {
                 const val = row[col];
                 let displayVal = val;
                 if (typeof val === 'object' && val !== null) {
@@ -192,7 +192,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
 
         return (
              <div className="w-full pt-2">
-                 <DataTable data={tableData} columns={columns} />
+                 <DataTable data={tableData as Record<string, unknown>[]} columns={columns} />
              </div>
         );
     };

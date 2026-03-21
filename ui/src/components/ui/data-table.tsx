@@ -37,7 +37,7 @@ export function DataTable<TData>({ data, columns, searchKey }: DataTableProps<TD
         if (value == null) return false;
         return String(value).toLowerCase().includes(filterText.toLowerCase());
       }
-      return Object.values(item as any).some(val =>
+      return Object.values(item as Record<string, unknown>).some(val =>
           String(val).toLowerCase().includes(filterText.toLowerCase())
       );
     });
@@ -125,7 +125,7 @@ export function DataTable<TData>({ data, columns, searchKey }: DataTableProps<TD
                     // Generate a readable title string
                     let titleStr = "";
                     if (typeof rawVal === 'object' && rawVal !== null) {
-                        try { titleStr = JSON.stringify(rawVal); } catch (e) { titleStr = String(rawVal); }
+                        try { titleStr = JSON.stringify(rawVal); } catch (_) { titleStr = String(rawVal); }
                     } else {
                         titleStr = String(rawVal);
                     }
