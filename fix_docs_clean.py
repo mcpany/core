@@ -11,9 +11,9 @@ def process_file(filepath):
     if 'TODO: Document' not in content:
         return
 
-    content = content.replace('TODO: Document parameters.', 'Parameters are documented in the interface.')
-    content = content.replace('TODO: Document returns.', 'Returns the corresponding response from the method.')
-    content = content.replace('TODO: Document errors.', 'Returns an error if the request fails.')
+    content = content.replace('TODO: Document parameters.', 'None.')
+    content = content.replace('TODO: Document returns.', 'None.')
+    content = content.replace('TODO: Document errors.', 'None.')
 
     with open(filepath, 'w') as f:
         f.write(content)
