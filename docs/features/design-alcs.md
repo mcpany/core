@@ -1,6 +1,6 @@
 # Design Doc: Attention-Locked Context Sharding (ALCS)
 
-**Status:** Draft **Created:** [2026-06-15]
+**Status:** Draft | **Created:** 2026-06-15
 
 ## 1. Context and Scope
 
@@ -14,23 +14,13 @@ attention layers using hardware-bound attestation.
 - **Goals:**
   - Cryptographically priority-tiering of context shards.
   - Real-time monitoring of attention occupancy.
-  - Integration with HAAL (Hardware-Attested Attention Locking).
 - **Non-Goals:**
-  - Increasing the raw context window size of the LLM.
-  - Managing long-term agent memory.
+  - Increasing raw context window size.
+  - Managing long-term memory.
 
 ## 3. Critical User Journey (CUJ)
 
-- **User Persona:** Swarm Orchestrator
-- **Primary Goal:** Ensure that "Zero-Trust" security directives remain in the
-  LLM's focus during recursive tool execution.
-- **The Happy Path (Tasks):**
-  1. Orchestrator marks a security shard as "Mission Root".
-  2. ALCS generates a hardware-attested header for the shard.
-  3. The shard is injected into the LLM context with "Tier 0" attention
-     priority.
-  4. ALCS monitors attention weights to ensure Tier 0 fragments remain above the
-     eviction threshold.
+- Ensure security shards remain in focus during recursive execution.
 
 ## 4. Evolutionary Changelog
 
