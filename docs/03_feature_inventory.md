@@ -20,6 +20,19 @@
 - **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include CLA requirements for continuous sandbox verification.
 - **WASM-BSH Sanitizer**: (Promoted to P0) Critical requirement for sanitizing context shards before they enter the OpenClaw training loop.
 
+## Evolution: [2026-05-09] Updates
+
+### Proposed Additions
+
+- **OpenClaw ContextEngine Adapter**: (P0) Implementation of lifecycle hooks for specialized context management and sovereignty-aware memory shards.
+- **Deterministic Absence Proof (DAP) Provider**: (P0) Core security service implementing CLA by providing signed "Non-Existence Manifests" for forbidden config files.
+- **Asynchronous RL Rollout Collector**: (P1) Telemetry bridge for OpenClaw-RL v1.0, enabling high-frequency feedback collection for policy optimization.
+
+### Priority Shifts
+
+- **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include CLA requirements for continuous sandbox verification.
+- **WASM-BSH Sanitizer**: (Promoted to P0) Critical requirement for sanitizing context shards before they enter the OpenClaw training loop.
+
 ## Evolution: [2026-05-08] Updates
 
 ### Proposed Additions

@@ -57,4 +57,11 @@ The release of OpenClaw v2026.3.7-beta.1's "ContextEngine" has introduced a stan
         * Memory shards are now cryptographically bound to the mission-root and sanitized for privacy before entering the OpenClaw training loop.
     * **Security Impact:** Prevents "Intent Drift" where a subagent could inadvertently exfiltrate or pollute the parent's reasoning state.
 
+* **2026-05-09:** Update: Implementing Sovereignty-Aware Memory Shards.
+    * **Context:** Today's market sync revealed OpenClaw v2026.3.7's pluggable ContextEngine requires a deeper sovereignty layer to prevent "Context Splicing" during asynchronous handoffs.
+    * **Architecture Adjustment:**
+        * Introducing "Sovereignty-Aware Memory Shards" in Section 4.
+        * Memory shards are now cryptographically bound to the mission-root and sanitized for privacy before entering the OpenClaw training loop.
+    * **Security Impact:** Prevents "Intent Drift" where a subagent could inadvertently exfiltrate or pollute the parent's reasoning state.
+
 * **2026-04-25:** Initial Document Creation.
