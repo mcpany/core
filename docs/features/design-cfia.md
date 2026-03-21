@@ -58,3 +58,4 @@ MCP Any needs to bridge the "Attestation Gap" for these non-structural context s
 
 ## 7. Evolutionary Changelog
 * **2026-06-20:** Initial Document Creation.
+* **2026-06-21:** Added support for **Resumption-Aware Attestation**. CFIA signatures are now persistent across MRCP-mediated mission resumptions, eliminating redundant user approvals for previously verified context files.

@@ -777,6 +777,18 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Locked Tooling (ALT)**: (P0) Security middleware that cryptographically locks high-risk tool calls to user-verified reasoning anchors.
 - **Semantic Lineage Provider**: (P1) Advanced extension for the SRM Provider that implements cryptographically signed "Chains of Reason".
 
+### Upcoming: [2026-06-21]
+- **Mission-Root Continuity Provider (MRCP)**: (P0) Resumption hub facilitating hardware-locked reasoning-path persistence across teammate rotations.
+- **Mailbox Injection Shield (MIS)**: (P0) Advanced extension for Mailbox Integrity Middleware providing hardware-attested validation of task-claiming metadata.
+- **Hardware-Attested Budget Enforcement**: (P0) Integration of Gemini CLI ARE v1.7 headers for immutable, hardware-bound reasoning budgets.
+- **Resident Logic-Grafting Interceptor**: (P1) Real-time semantic entropy monitor for horizontal teammate shards to detect unauthorized branch grafting.
+
+### Upcoming: [2026-06-22]
+- **Channel-Bound Session Isolation (CBSI)**: (P0) Security middleware mandating platform-bound cryptographic sovereignty between multi-channel sessions (WhatsApp, Slack, Discord).
+- **Attention-Density Guard (ADG)**: (P0) Cognitive security layer utilizing hardware-bound headers to "pin" mission-critical fragments at the LLM attention layer.
+- **Headless Handoff Continuity (HHC)**: (P0) Orchestration bridge facilitating signed intent transfers for process-based subagent spawning.
+- **Multi-Modal Attention Sanitizer**: (P1) Advanced security extension for the MIB to neutralize attention-eviction probes in non-textual traces.
+
 #### Upcoming (2026-03-21 Evolution)
 *   **[P0] LOWA HMAC Challenge-Response**: Implementation of cryptographically bound handshakes for local WebSocket listeners to neutralize CSWSH. (Added: 2026-03-21)
 *   **[P0] T2T Mailbox Sharding Middleware**: Performance optimization for horizontal teammate meshes, supporting 5+ concurrent agents. (Added: 2026-03-21)

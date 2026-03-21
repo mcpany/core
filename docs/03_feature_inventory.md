@@ -1413,6 +1413,31 @@
 - **Visual Attention Dashboard**: (P1) Now elevated to a critical requirement for supporting the **ALT** user-verification flow.
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support the new **Teammate Mailbox** security requirements.
 
+## Evolution: [2026-06-21] Updates
+
+### Proposed Additions
+- **Mission-Root Continuity Provider (MRCP)**: (P0) Authoritative resumption hub for long-running swarms, facilitating hardware-locked reasoning-path persistence across teammate rotations and framework handoffs.
+- **Mailbox Injection Shield (MIS)**: (P0) Advanced security extension for the Mailbox Integrity Middleware that performs real-time hardware-attested validation of task-claiming metadata to neutralize "Mailbox Splicing."
+- **Hardware-Attested Budget Persistence**: (P0) Compliance extension for the Reasoning-Budget Firewall (RBF) that cryptographically binds reasoning and token budgets to hardware sessions.
+- **Mesh-Resident Logic-Grafting Interceptor**: (P1) Stability middleware for the ARI Hub that monitors semantic entropy in shared shards to prevent unauthorized logic grafting.
+
+### Priority Shifts
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MIS** integration to counter horizontal mesh exploits.
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with mandatory support for **ARE v1.7** hardware-attested budget persistence.
+- **Intent-Resumption Gateway (IRG)**: (Re-affirmed P0) Designated as the primary infrastructure for implementing **MRCP-compliant** mission resumption.
+
+## Evolution: [2026-06-22] Updates
+
+### Proposed Additions
+- **Channel-Bound Session Isolation (CBSI) Provider**: (P0) Security middleware mandating absolute sovereignty between multi-channel sessions (WhatsApp, Slack, Discord) using platform-bound session tokens.
+- **Attention-Density Guard (ADG)**: (P0) Cognitive security service utilizing hardware-bound attention-locking headers to "pin" mission-critical intent fragments at the LLM attention layer.
+- **Headless Handoff Continuity (HHC) Bridge**: (P0) Orchestration middleware facilitating cryptographically signed parent-to-child intent transfers for process-based subagent handoffs.
+- **Multi-Modal Attention Sanitizer**: (P1) Security extension for the MIB performing real-time analysis of non-textual traces to block attention-eviction probes.
+
+### Priority Shifts
+- **Multi-modal Integrity Bridge (MIB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Attention Sanitization** to counter high-entropy multimodal probes.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to support the new **HHC-compliant** headless handoff patterns.
+
 ## Evolution: [2026-03-21] Updates
 
 ### Proposed Additions
