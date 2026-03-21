@@ -490,7 +490,5 @@ SPDX-License-Identifier: Apache-2.0
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
 
 #### Upcoming (2026-05-30 Evolution)
-- [ ] **[P0] Cognitive Integrity Monitor**: Real-time visualization of semantically sanitized reasoning traces and gaslighting alerts. (Added: 2026-05-30)
-- [ ] **[P0] RBCS Shard Inspector**: Visual debugger for reasoning-bound context shards and memory boundary violations. (Added: 2026-05-30)
-- [ ] **[P0] MTN Security Widget**: Real-time indicator for monotonic task nonces and context-mirroring replay alerts. (Added: 2026-05-30)
-- [ ] **[P0] Reasoning Gaslighting Alert Hub**: UI for reviewing and approving redacted reasoning fragments flagged by the RGD middleware. (Added: 2026-05-30)
+- [ ] **[P0] Cognitive Integrity Monitor** (Added: 2026-05-30)
+- [ ] **[P0] RBCS Shard Inspector** (Added: 2026-05-30)

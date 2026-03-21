@@ -650,7 +650,5 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Mesh-Bound Context Sovereignty Bridge**: Semantic fragment analysis across teammate boundaries for horizontal team stability. (Added: 2026-05-29)
 
 #### Upcoming (2026-05-30 Evolution)
-*   **[P0] Cognitive Integrity Arbiter (CIA)**: Authoritative middleware performing real-time semantic analysis of internal monologues to block "Reasoning Gaslighting." (Added: 2026-05-30)
-*   **[P0] RBCS Context Hub**: core context service implementing Reasoning-Bound Context Sharding to neutralize context-mirroring exploits. (Added: 2026-05-30)
-*   **[P0] Monotonic Task Nonce (MTN) Provider**: High-speed security service issuing session-bound nonces to prevent replay-based context mirroring. (Added: 2026-05-30)
-*   **[P0] Reasoning Gaslighting Detection (RGD)**: Security extension for CIA monitoring semantic drift and reasoning pressure in teammate coordination. (Added: 2026-05-30)
+*   **[P0] Cognitive Integrity Arbiter (CIA)** (Added: 2026-05-30)
+*   **[P0] RBCS Context Hub** (Added: 2026-05-30)

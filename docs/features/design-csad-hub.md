@@ -51,8 +51,5 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 * **2026-05-29:** Initial Document Creation.
 
 ### Update: [2026-05-30] - Integration with MTN Provider
-**Context**: Today's market sync revealed that "Context Mirroring" probes (CVE-2026-45012) can evade behavioral anomaly detection if the probe resembles a legitimate state handoff.
-**Architecture Adjustment**:
-* Integrating CSAD Hub with the **Monotonic Task Nonce (MTN) Provider**.
-* Every inter-agent task proposal monitored by CSAD must now carry a hardware-attested MTN.
-**Security Impact**: Allows CSAD to detect and block hivenet-driven context mirroring attempts by identifying task nonces that are out of sequence or cryptographically invalid for the current mission session.
+**Context**: "Context Mirroring" probes can evade anomaly detection.
+**Adjustment**: Integrating CSAD Hub with the **Monotonic Task Nonce (MTN) Provider** to block replay-based probes.

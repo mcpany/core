@@ -1140,13 +1140,5 @@ SPDX-License-Identifier: Apache-2.0
 - **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
 
 ## Evolution: [2026-05-30] Updates
-
-### Proposed Additions
-- **Cognitive Integrity Arbiter (CIA)**: (P0) Authoritative "Reasoning Validator" performing real-time semantic analysis of internal monologues to detect and block "Reasoning Gaslighting."
-- **Reasoning-Bound Context Sharding (RBCS) Hub**: (P0) A core context management service that cryptographically isolates context fragments based on the active reasoning branch.
-- **Monotonic Task Nonce (MTN) Provider**: (P0) High-speed security service that issues unique, session-bound task nonces to neutralize "Context Mirroring" replay attacks.
-- **Reasoning-Gaslighting Detection (RGD) Middleware**: (P0) Security extension for the CIA that monitors semantic drift in subagent monologues to prevent teammate coercion.
-
-### Priority Shifts
-- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory MTN validation to counter CVE-2026-45012.
-- **ContextEngine Lifecycle Adapter**: (Re-affirmed P0) Evolving to support RBCS-native context isolation.
+- **Cognitive Integrity Arbiter (CIA)**: (P0) Semantic reasoning validator.
+- **Reasoning-Bound Context Sharding (RBCS) Hub**: (P0) context isolation service.
