@@ -1,8 +1,11 @@
+filepath = 'ui/tests/e2e/traces.spec.ts'
 
+with open(filepath, 'w') as f:
+    f.write("""
 import { test, expect } from '@playwright/test';
 import { seedGlobalState } from './test-data';
 
-test.describe.skip('Trace Viewer', () => {
+test.describe('Trace Viewer', () => {
     test.beforeEach(async ({ page, request }) => {
         await seedGlobalState(request);
 
@@ -76,3 +79,6 @@ test.describe.skip('Trace Viewer', () => {
         await expect(page).toHaveURL(/.*\/playground.*/);
     });
 });
+""")
+
+print("Restored traces test fully with proper mock")

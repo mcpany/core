@@ -65,8 +65,8 @@ test.describe('Services Feature', () => {
     await expect(page.locator('h1')).toContainText('Services');
 
     // Verify services are listed
-    await expect(page.getByText('Payment Gateway')).toBeVisible();
-    await expect(page.getByText('User Service')).toBeVisible();
+    await expect(page.getByText('Payment Gateway').first()).toBeVisible();
+    await expect(page.getByText('User Service').first()).toBeVisible();
 
     // Verify Toggle exists and is interactive
     const paymentRow = page.locator('tr').filter({ hasText: 'Payment Gateway' });

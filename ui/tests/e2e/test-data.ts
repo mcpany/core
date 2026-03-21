@@ -17,6 +17,25 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
 
     const services = [
+
+        {
+            id: "service-1",
+            name: "service-1",
+            version: "v1.0",
+            http_service: { address: "http://localhost:8080" }
+        },
+        {
+            id: "service-2",
+            name: "service-2",
+            version: "v1.0",
+            http_service: { address: "http://localhost:8080" }
+        },
+        {
+            id: "service-3",
+            name: "service-3",
+            version: "v1.0",
+            http_service: { address: "http://localhost:8080" }
+        },
         {
             id: "svc_01",
             name: "Payment Gateway",
