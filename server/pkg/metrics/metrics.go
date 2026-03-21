@@ -12,15 +12,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/armon/go-metrics"
+	armometrics "github.com/armon/go-metrics"
 	"github.com/armon/go-metrics/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-// Label is an alias for metrics.Label. It represents a key-value pair for labeling metrics.
+// Label is an alias for armometrics.Label. It represents a key-value pair for labeling metrics.
 //
 // Summary: Represents a Label.
-type Label = metrics.Label
+type Label = armometrics.Label
 
 // NewPrometheusSink creates a new Prometheus sink for metrics collection.
 //
@@ -61,11 +61,11 @@ func Initialize() error {
 		}
 
 		// Create a metrics configuration
-		conf := metrics.DefaultConfig("mcpany")
+		conf := armometrics.DefaultConfig("mcpany")
 		conf.EnableHostname = false
 
 		// Initialize the metrics system
-		if _, err = metrics.NewGlobal(conf, sink); err != nil {
+		if _, err = armometrics.NewGlobal(conf, sink); err != nil {
 			return
 		}
 	})
@@ -134,13 +134,13 @@ func StartServer(addr string) error {
 // Side Effects:
 //   - Updates a global gauge metric.
 func SetGauge(name string, val float32, labels ...string) {
-	var metricLabels []metrics.Label
+	var metricLabels []armometrics.Label
 	if len(labels) > 0 {
-		metricLabels = []metrics.Label{
+		metricLabels = []armometrics.Label{
 			{Name: "service_name", Value: labels[0]},
 		}
 	}
-	metrics.SetGaugeWithLabels([]string{name}, val, metricLabels)
+	armometrics.SetGaugeWithLabels([]string{name}, val, metricLabels)
 }
 
 // IncrCounter increments a counter.
@@ -157,7 +157,7 @@ func SetGauge(name string, val float32, labels ...string) {
 // Side Effects:
 //   - Increments a global counter metric.
 func IncrCounter(name []string, val float32) {
-	metrics.IncrCounter(name, val)
+	armometrics.IncrCounter(name, val)
 }
 
 // IncrCounterWithLabels increments a counter with labels.
@@ -167,15 +167,15 @@ func IncrCounter(name []string, val float32) {
 // Parameters:
 //   - name ([]string): The name of the counter (as a path).
 //   - val (float32): The amount to increment.
-//   - labels ([]metrics.Label): The labels to apply.
+//   - labels ([]armometrics.Label): The labels to apply.
 //
 // Returns:
 //   - None.
 //
 // Side Effects:
 //   - Increments a global labeled counter metric.
-func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
-	metrics.IncrCounterWithLabels(name, val, labels)
+func IncrCounterWithLabels(name []string, val float32, labels []armometrics.Label) {
+	armometrics.IncrCounterWithLabels(name, val, labels)
 }
 
 // MeasureSince measures the time since a given start time and records it.
@@ -192,7 +192,7 @@ func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 // Side Effects:
 //   - Records a latency sample in the global metrics collector.
 func MeasureSince(name []string, start time.Time) {
-	metrics.MeasureSince(name, start)
+	armometrics.MeasureSince(name, start)
 }
 
 // MeasureSinceWithLabels measures the time since a given start time and records it with labels.
@@ -202,15 +202,15 @@ func MeasureSince(name []string, start time.Time) {
 // Parameters:
 //   - name ([]string): The name of the metric (as a path).
 //   - start (time.Time): The start time.
-//   - labels ([]metrics.Label): The labels to apply.
+//   - labels ([]armometrics.Label): The labels to apply.
 //
 // Returns:
 //   - None.
 //
 // Side Effects:
 //   - Records a labeled latency sample in the global metrics collector.
-func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Label) {
-	metrics.MeasureSinceWithLabels(name, start, labels)
+func MeasureSinceWithLabels(name []string, start time.Time, labels []armometrics.Label) {
+	armometrics.MeasureSinceWithLabels(name, start, labels)
 }
 
 // AddSample adds a sample to a histogram/summary.
@@ -227,7 +227,7 @@ func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Lab
 // Side Effects:
 //   - Records a sample in the global metrics collector.
 func AddSample(name []string, val float32) {
-	metrics.AddSample(name, val)
+	armometrics.AddSample(name, val)
 }
 
 // AddSampleWithLabels adds a sample to a histogram/summary with labels.
@@ -237,13 +237,13 @@ func AddSample(name []string, val float32) {
 // Parameters:
 //   - name ([]string): The name of the metric (as a path).
 //   - val (float32): The value to sample.
-//   - labels ([]metrics.Label): The labels to apply.
+//   - labels ([]armometrics.Label): The labels to apply.
 //
 // Returns:
 //   - None.
 //
 // Side Effects:
 //   - Records a labeled sample in the global metrics collector.
-func AddSampleWithLabels(name []string, val float32, labels []metrics.Label) {
-	metrics.AddSampleWithLabels(name, val, labels)
+func AddSampleWithLabels(name []string, val float32, labels []armometrics.Label) {
+	armometrics.AddSampleWithLabels(name, val, labels)
 }
