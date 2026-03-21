@@ -56,3 +56,9 @@ The 2026 Armis Cyberwarfare Report highlights a critical collapse in Mean Time t
         * Implementing "Reasoning-Aware Timing Jitter" for all quarantine revocation signals.
         * Decoupling the "Kill Switch" bitset update from the network notification loop to prevent timing correlation.
     * **Security Impact:** Neutralizes subagent ability to probe quarantine thresholds via ARE header timing analysis.
+
+### Update: [2026-06-03] - Policy-Triggered Quarantine
+**Context**: Today's market sync revealed that project-level policies can now trigger swarm-wide quarantine events if instructional integrity is compromised.
+**Architecture Adjustment**: * Integrating SIIG (Source-Instruction Integrity Guard) triggers into the MSSQ revocation logic.
+* High-confidence SIIG alerts will now automatically trigger a "Policy Breach" quarantine for the affected intent branch.
+**Security Impact**: Prevents "Instruction-Smuggling" in source files from spreading through the mesh via unauthorized teammate delegation.

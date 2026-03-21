@@ -512,3 +512,8 @@ SPDX-License-Identifier: Apache-2.0
 - [ ] **[P0] Spectral Jitter Monitor**: Real-time visualization of timing jitter injected by the Spectral Mitigator. (Added: 2026-06-02)
 - [ ] **[P0] Context Sovereignty Hub**: Dashboard for managing CSP-compliant redaction rules and state ownership. (Added: 2026-06-02)
 - [ ] **[P0] Granular Shard Streamer**: Visual monitor for dynamic context fragments streaming between teammates. (Added: 2026-06-02)
+
+#### Upcoming (2026-06-03 Evolution)
+- [ ] **[P0] Project Policy Manager**: UI for reviewing and attesting to repository-resident security policies. (Added: 2026-06-03)
+- [ ] **[P1] SIIG Alert Dashboard**: Real-time visualization of "Instruction-Smuggling" attempts in source files. (Added: 2026-06-03)
+- [ ] **[P0] Policy Attestation Hub**: Secure workspace for hardware-attested project policy approval. (Added: 2026-06-03)

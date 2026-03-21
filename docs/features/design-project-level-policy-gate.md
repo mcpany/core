@@ -8,45 +8,44 @@ SPDX-License-Identifier: Apache-2.0
 **Created:** 2026-06-03
 
 ## 1. Context and Scope
-With the release of Gemini CLI v0.30.0, the ecosystem is shifting toward repository-resident security policies. Managing security at a global level is becoming a bottleneck and often fails to address the unique tool and resource requirements of individual projects. MCP Any needs a standardized adapter to ingest and enforce these project-local policies (e.g., `mcp-policy.rego`) while ensuring they are hardware-attested and not subject to unauthorized overrides.
+As AI agents move from general-purpose assistants to project-specific collaborators (e.g., Claude Code, OpenClaw), the static global security policy becomes a bottleneck. Gemini CLI v0.30.0 has demonstrated the utility of project-resident policies.
+
+MCP Any needs a "Project-Level Policy Engine Adapter" to ingest and enforce security rules defined within the project repository itself. This ensures that tool permissions and data access are context-aware and move with the code, while remaining under the authoritative control of the user's hardware-attested gateway.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Support project-resident security policies (e.g., `mcp-policy.rego`, `.mcp-policy.json`).
-    * Implement a hardware-attested discovery mechanism for local policies.
-    * Provide framework-neutral enforcement of project-level constraints (Gemini, OpenClaw, Claude Code).
-    * Facilitate teammate-to-teammate policy synchronization in horizontal meshes.
+    * Ingest Gemini-style \`.mcp-policy.json\` or \`mcp-policy.rego\` files from project roots.
+    * Enforce repository-specific tool allow/deny lists.
+    * Require hardware-attestation for project-local policy overrides.
 * **Non-Goals:**
-    * Overwriting global security policies (project policies are sub-scopes).
-    * Providing a full Rego/CEL authoring environment (focus is on ingestion and enforcement).
+    * Automatically executing arbitrary code found in policy files.
+    * Replacing the global security policy (global always takes precedence).
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Repository Maintainer / Swarm Orchestrator
-* **Primary Goal:** Enforce a strict "No-Internet" policy for a specific project, regardless of which agent (Claude or OpenClaw) a contributor uses.
+* **User Persona:** Security-conscious Developer using OpenClaw Swarms.
+* **Primary Goal:** Restrict a specialized 'DB Specialist' agent to only read-only tools when working in a specific production-critical repository.
 * **The Happy Path (Tasks):**
-    1. Maintainer commits `mcp-policy.rego` to the repository root.
-    2. Contributor opens the project with an MCP Any-connected agent.
-    3. MCP Any performs a hardware-attested discovery of the local policy.
-    4. MCP Any validates the policy signature and prompts the user for initial attestation.
-    5. Once approved, all subsequent tool calls from any agent are validated against the project-local Rego rules.
-    6. If a subagent attempts an unauthorized network call, the Policy Gate blocks it and triggers an alert.
+    1. User adds a \`mcp-policy.rego\` to the repository root.
+    2. MCP Any discovers the policy during the project-local handshake.
+    3. User provides a hardware-bound (TPM) signature to attest the new local policy.
+    4. MCP Any enforces the restricted toolset for all agents operating within that repository.
 
 ## 4. Design & Architecture
 * **System Flow:**
-    `[Agent Call] -> [Policy Engine Adapter] -> [Local Policy Cache (Verified)] -> [Enforcement Point]`
+    * Discovery: Project-local scan for \`.mcp-policy.*\` files.
+    * Validation: Semantic check and hardware attestation.
+    * Enforcement: Policy Engine middleware merges global and local rules.
 * **APIs / Interfaces:**
-    * `policy.v1.IngestLocalPolicy(path, signature)`: Hardware-attested ingestion.
-    * `policy.v1.ValidateAction(mission_id, tool_call)`: Multi-framework validation hook.
+    * \`PolicyRegistry\`: Manages the lifecycle of project-bound policy shards.
 * **Data Storage/State:**
-    * `policies.db`: SQLite storage for verified project policy hashes and attestation status.
+    * Project-bound policy state is sharded and indexed by repository root hash.
 
 ## 5. Alternatives Considered
-* **Framework-Specific Implementation:** Rejected because it would require redundant logic for Gemini, Claude Code, and OpenClaw.
-* **Global Policy Expansion:** Rejected as it doesn't scale to thousands of heterogeneous repositories.
+* **Manual Global Overrides:** Rejected due to operational overhead and "Policy Drift."
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** Local policies must be hardware-attested to prevent a malicious repository from silently downgrading security.
-* **Observability:** Integration with the "Local Security Audit Dashboard" for policy violation tracking.
+* **Security (Zero Trust):** Local policies cannot grant more permission than the global root.
+* **Observability:** Audit logs will explicitly flag tool calls permitted or denied by "Project-Local Policy."
 
 ## 7. Evolutionary Changelog
 * **2026-06-03:** Initial Document Creation.

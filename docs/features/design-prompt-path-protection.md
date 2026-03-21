@@ -54,3 +54,9 @@ As agents become more autonomous, they increasingly consume untrusted data (web 
 ## 7. Evolutionary Changelog
 * **2026-03-13:** Initial Document Creation.
 * **2026-03-14:** Added "Semantic Boundary Detection" to counter advanced hijacking hidden in multimodal metadata (SVG, CSS). The scanner now includes a "Visual Intent Parser" that checks if rendered components contain instructions that conflict with the agent's primary mission.
+
+### Update: [2026-06-03] - Source-Instruction Integrity Integration
+**Context**: Emerging threats show that prompt injection is moving into source-embedded documentation (oh-my-opencode exploit).
+**Architecture Adjustment**: * Expanding the Content Validation Middleware to include SIIG scanning for all ingested source-code fragments.
+* Implementing "Instructional Entropy" checks to flag documentation that contains imperative agent commands.
+**Security Impact**: Neutralizes the risk of agents treating repository-resident guides as high-trust system prompts.
