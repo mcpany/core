@@ -65,6 +65,27 @@ func (b *Broadcaster) Reset() {
 	b.full = false
 }
 
+// ClearHistory clears the broadcaster history without affecting subscribers.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - Empties the history buffer.
+func (b *Broadcaster) ClearHistory() {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.history = make([]any, b.limit)
+	b.head = 0
+	b.full = false
+}
+
 // Subscribe returns a channel that will receive broadcast messages. The channel has a small buffer to prevent slow consumers from blocking the broadcaster. It is the caller's responsibility to read from the channel promptly.
 //
 // Parameters:

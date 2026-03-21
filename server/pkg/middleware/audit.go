@@ -328,6 +328,21 @@ func (m *AuditMiddleware) GetHistory() []any {
 	return m.broadcaster.GetHistory()
 }
 
+// ClearHistory clears the broadcast history.
+//
+// Summary: Clears the audit history from the broadcaster.
+//
+// Returns:
+//   - None.
+//
+// Side Effects:
+//   - Empties the history buffer in the broadcaster.
+func (m *AuditMiddleware) ClearHistory() {
+	if m.broadcaster != nil {
+		m.broadcaster.ClearHistory()
+	}
+}
+
 // Unsubscribe removes a subscriber channel.
 //
 // Summary: Unsubscribes from audit events.

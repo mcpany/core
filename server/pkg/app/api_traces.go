@@ -105,8 +105,36 @@ func toTrace(entry audit.Entry) *Trace {
 	}
 }
 
+func (a *Application) handleClearTraces() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodDelete {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		// Clear seeded traces
+		a.seededTracesMu.Lock()
+		a.seededTraces = nil
+		a.seededTracesMu.Unlock()
+
+		// Clear real traces in broadcaster
+		if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
+			a.standardMiddlewares.Audit.ClearHistory()
+		}
+
+		logging.GetLogger().Info("Cleared all traces from history")
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
 func (a *Application) handleTraces() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodDelete {
+			a.handleClearTraces()(w, r)
+			return
+		}
+
 		if r.Method != http.MethodGet {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
