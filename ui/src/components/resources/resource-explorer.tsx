@@ -243,7 +243,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         const currentIndex = filteredResources.findIndex(r => r.uri === selectedUri);
         if (currentIndex === -1) return;
 
-        const nextIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+        let nextIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
         if (nextIndex >= 0 && nextIndex < filteredResources.length) {
             setSelectedUri(filteredResources[nextIndex].uri);
         }

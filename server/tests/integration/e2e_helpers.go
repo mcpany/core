@@ -223,11 +223,12 @@ func runfilesWorkspaceName() string {
 
 func runfilesRoots() []string {
 	workspace := runfilesWorkspaceName()
-	var roots []string
+	roots := make([]string, 0, 2)
 	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
-		if base != "" {
-		    roots = append(roots, filepath.Join(base, workspace))
+		if base == "" {
+			continue
 		}
+		roots = append(roots, filepath.Join(base, workspace))
 	}
 	return roots
 }
