@@ -114,6 +114,30 @@ type Tool interface {
 	//   - Executes the underlying service logic (network calls, command execution, etc.).
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
 
+	// IsStreaming returns true if the tool supports streaming execution.
+	//
+	// Summary: Checks if the tool supports streaming execution.
+	//
+	// Returns:
+	//   - bool: True if streaming is supported.
+	IsStreaming() bool
+
+	// StreamExecute runs the tool in streaming mode, returning a channel of results.
+	//
+	// Summary: Executes the tool in streaming mode.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The execution context.
+	//   - req: *ExecutionRequest. The request payload.
+	//
+	// Returns:
+	//   - <-chan any: A channel that emits streaming results.
+	//   - error: An error if the operation fails or streaming is not supported.
+	//
+	// Side Effects:
+	//   - Executes the underlying service logic in a streaming manner.
+	StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error)
+
 	// GetCacheConfig returns the cache configuration for the tool.
 	//
 	// Summary: Retrieves cache configuration.
@@ -255,6 +279,24 @@ type Callable interface {
 	//   - any: The result of the execution.
 	//   - error: An error if the operation fails.
 	Call(ctx context.Context, req *ExecutionRequest) (any, error)
+}
+
+// StreamingCallable is an interface that represents a callable tool that can stream output.
+//
+// Summary: Interface for executing a tool with streaming output.
+type StreamingCallable interface {
+	Callable
+
+	// StreamCall executes the callable with the given request, emitting updates to the channel.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - req: *ExecutionRequest. The execution request details.
+	//
+	// Returns:
+	//   - <-chan any: A channel that emits streaming results.
+	//   - error: An error if the initial operation fails.
+	StreamCall(ctx context.Context, req *ExecutionRequest) (<-chan any, error)
 }
 
 // Action defines the decision made by a pre-call hook.
@@ -476,6 +518,41 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Makes a gRPC call to the upstream service.
 //   - Updates metrics (latency, success/error counts).
 //   - Logs execution details.
+// IsStreaming returns true if the tool supports streaming.
+//
+// Summary: Checks if the tool supports streaming execution.
+//
+// Returns:
+//   - bool: True if streaming is supported.
+func (t *GRPCTool) IsStreaming() bool {
+	return false
+}
+
+// StreamExecute executes the tool in streaming mode.
+//
+// Summary: Executes the tool in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *ExecutionRequest. The request object containing parameters.
+//
+// Returns:
+//   - <-chan any: A channel that emits streaming results.
+//   - error: An error if the operation fails or streaming is not supported.
+func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+	ch := make(chan any, 1)
+	go func() {
+		defer close(ch)
+		res, err := t.Execute(ctx, req)
+		if err != nil {
+			ch <- err
+		} else {
+			ch <- res
+		}
+	}()
+	return ch, nil
+}
+
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -791,6 +868,41 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Makes an HTTP request to the upstream service.
 //   - Updates metrics.
 //   - Logs execution details.
+// IsStreaming returns true if the tool supports streaming.
+//
+// Summary: Checks if the tool supports streaming execution.
+//
+// Returns:
+//   - bool: True if streaming is supported.
+func (t *HTTPTool) IsStreaming() bool {
+	return false
+}
+
+// StreamExecute executes the tool in streaming mode.
+//
+// Summary: Executes the tool in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *ExecutionRequest. The request object containing parameters.
+//
+// Returns:
+//   - <-chan any: A channel that emits streaming results.
+//   - error: An error if the operation fails or streaming is not supported.
+func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+	ch := make(chan any, 1)
+	go func() {
+		defer close(ch)
+		res, err := t.Execute(ctx, req)
+		if err != nil {
+			ch <- err
+		} else {
+			ch <- res
+		}
+	}()
+	return ch, nil
+}
+
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -880,7 +992,9 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 		attemptResp, err := httpClient.Do(httpReq)
 		if err != nil {
-			return fmt.Errorf("failed to execute http request: %w", err)
+			// 🛡️ Sentinel Security Update: Prevent Information Leakage
+			logging.GetLogger().ErrorContext(ctx, "Failed to execute HTTP request", "tool", t.tool.GetName(), "error", err)
+			return fmt.Errorf("failed to execute http request")
 		}
 
 		if attemptResp.StatusCode == http.StatusTooManyRequests {
@@ -1539,6 +1653,41 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 // Side Effects:
 //   - Makes an MCP call to the upstream service.
 //   - Logs execution details.
+// IsStreaming returns true if the tool supports streaming.
+//
+// Summary: Checks if the tool supports streaming execution.
+//
+// Returns:
+//   - bool: True if streaming is supported.
+func (t *MCPTool) IsStreaming() bool {
+	return false
+}
+
+// StreamExecute executes the tool in streaming mode.
+//
+// Summary: Executes the tool in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *ExecutionRequest. The request object containing parameters.
+//
+// Returns:
+//   - <-chan any: A channel that emits streaming results.
+//   - error: An error if the operation fails or streaming is not supported.
+func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+	ch := make(chan any, 1)
+	go func() {
+		defer close(ch)
+		res, err := t.Execute(ctx, req)
+		if err != nil {
+			ch <- err
+		} else {
+			ch <- res
+		}
+	}()
+	return ch, nil
+}
+
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -1823,6 +1972,41 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
 //   - Logs execution details.
+// IsStreaming returns true if the tool supports streaming.
+//
+// Summary: Checks if the tool supports streaming execution.
+//
+// Returns:
+//   - bool: True if streaming is supported.
+func (t *OpenAPITool) IsStreaming() bool {
+	return false
+}
+
+// StreamExecute executes the tool in streaming mode.
+//
+// Summary: Executes the tool in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *ExecutionRequest. The request object containing parameters.
+//
+// Returns:
+//   - <-chan any: A channel that emits streaming results.
+//   - error: An error if the operation fails or streaming is not supported.
+func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+	ch := make(chan any, 1)
+	go func() {
+		defer close(ch)
+		res, err := t.Execute(ctx, req)
+		if err != nil {
+			ch <- err
+		} else {
+			ch <- res
+		}
+	}()
+	return ch, nil
+}
+
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -1926,7 +2110,9 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	resp, err := t.client.Do(httpReq)
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute http request: %w", err)
+		// 🛡️ Sentinel Security Update: Prevent Information Leakage
+		logging.GetLogger().ErrorContext(ctx, "Failed to execute OpenAPI HTTP request", "tool", t.tool.GetName(), "error", err)
+		return nil, fmt.Errorf("failed to execute http request")
 	}
 	defer func() { _ = resp.Body.Close() }()
 
@@ -1942,7 +2128,9 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	if resp.StatusCode >= 400 {
-		return nil, fmt.Errorf("upstream OpenAPI request failed with status %d: %s", resp.StatusCode, string(respBody))
+		// 🛡️ Sentinel Security Update: Prevent Information Leakage
+		logging.GetLogger().ErrorContext(ctx, "Upstream OpenAPI request failed", "tool", t.tool.GetName(), "status", resp.StatusCode, "response", string(respBody))
+		return nil, fmt.Errorf("upstream OpenAPI request failed with status %d", resp.StatusCode)
 	}
 
 	if t.outputTransformer != nil {
@@ -2228,6 +2416,41 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Executes a subprocess on the local system.
 //   - Consumes system resources (CPU, memory).
 //   - Logs execution details.
+// IsStreaming returns true if the tool supports streaming.
+//
+// Summary: Checks if the tool supports streaming execution.
+//
+// Returns:
+//   - bool: True if streaming is supported.
+func (t *LocalCommandTool) IsStreaming() bool {
+	return false
+}
+
+// StreamExecute executes the tool in streaming mode.
+//
+// Summary: Executes the tool in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *ExecutionRequest. The request object containing parameters.
+//
+// Returns:
+//   - <-chan any: A channel that emits streaming results.
+//   - error: An error if the operation fails or streaming is not supported.
+func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+	ch := make(chan any, 1)
+	go func() {
+		defer close(ch)
+		res, err := t.Execute(ctx, req)
+		if err != nil {
+			ch <- err
+		} else {
+			ch <- res
+		}
+	}()
+	return ch, nil
+}
+
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2369,9 +2592,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		allowedEnvVars := []string{"PATH", "HOME", "USER", "SHELL", "TMPDIR", "SYSTEMROOT", "WINDIR"}
 		for _, key := range allowedEnvVars {
 			if val, ok := os.LookupEnv(key); ok {
-				// ⚡ BOLT: Replaced fmt.Sprintf with string concatenation for environment variables to avoid reflection overhead during frequent tool execution.
-				// Randomized Selection from Top 5 High-Impact Targets (Memory/Allocations)
-				env = append(env, key+"="+val)
+				env = append(env, fmt.Sprintf("%s=%s", key, val))
 			}
 		}
 	}
@@ -2388,7 +2609,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 
 	for k, v := range resolvedServiceEnv {
-		env = append(env, k+"="+v)
+		env = append(env, fmt.Sprintf("%s=%s", k, v))
 	}
 
 	for _, param := range t.callDefinition.GetParameters() {
@@ -2399,7 +2620,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
 			secrets = append(secrets, secretValue)
-			env = append(env, name+"="+secretValue)
+			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
 			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
@@ -2422,7 +2643,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			}
 
 			if safeForEnv {
-				env = append(env, name+"="+valStr)
+				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 			}
 
 			// Sentinel Security Update: Add sensitive inputs to the redactor's secret list
@@ -2461,7 +2682,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
 		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
+			// 🛡️ Sentinel Security Update: Prevent Information Leakage
+			logging.GetLogger().ErrorContext(ctx, "Failed to execute JSON CLI command with stdio", "tool", t.tool.GetName(), "error", err)
+			return nil, fmt.Errorf("failed to execute JSON CLI command")
 		}
 		// We don't defer stdin.Close() here because we close it in the writer goroutine
 
@@ -2505,7 +2728,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute command: %w", err)
+		// 🛡️ Sentinel Security Update: Prevent Information Leakage
+		logging.GetLogger().ErrorContext(ctx, "Failed to execute CLI command", "tool", t.tool.GetName(), "error", err)
+		return nil, fmt.Errorf("failed to execute command")
 	}
 
 	var stdoutBuf, stderrBuf bytes.Buffer
@@ -2648,6 +2873,41 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Executes a subprocess (potentially inside a container).
 //   - Consumes system resources.
 //   - Logs execution details.
+// IsStreaming returns true if the tool supports streaming.
+//
+// Summary: Checks if the tool supports streaming execution.
+//
+// Returns:
+//   - bool: True if streaming is supported.
+func (t *CommandTool) IsStreaming() bool {
+	return false
+}
+
+// StreamExecute executes the tool in streaming mode.
+//
+// Summary: Executes the tool in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *ExecutionRequest. The request object containing parameters.
+//
+// Returns:
+//   - <-chan any: A channel that emits streaming results.
+//   - error: An error if the operation fails or streaming is not supported.
+func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+	ch := make(chan any, 1)
+	go func() {
+		defer close(ch)
+		res, err := t.Execute(ctx, req)
+		if err != nil {
+			ch <- err
+		} else {
+			ch <- res
+		}
+	}()
+	return ch, nil
+}
+
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2785,7 +3045,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		allowedEnvVars := []string{"PATH", "HOME", "USER", "SHELL", "TMPDIR", "SYSTEMROOT", "WINDIR"}
 		for _, key := range allowedEnvVars {
 			if val, ok := os.LookupEnv(key); ok {
-				env = append(env, key+"="+val)
+				env = append(env, fmt.Sprintf("%s=%s", key, val))
 			}
 		}
 	}
@@ -2802,7 +3062,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	for k, v := range resolvedServiceEnv {
-		env = append(env, k+"="+v)
+		env = append(env, fmt.Sprintf("%s=%s", k, v))
 	}
 
 	if ce := t.service.GetContainerEnvironment(); ce != nil {
@@ -2814,7 +3074,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			secrets = append(secrets, v)
 		}
 		for k, v := range resolvedContainerEnv {
-			env = append(env, k+"="+v)
+			env = append(env, fmt.Sprintf("%s=%s", k, v))
 		}
 	}
 
@@ -2826,7 +3086,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
 			secrets = append(secrets, secretValue)
-			env = append(env, name+"="+secretValue)
+			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
 			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
@@ -2849,7 +3109,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			}
 
 			if safeForEnv {
-				env = append(env, name+"="+valStr)
+				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 			}
 
 			// Sentinel Security Update: Add sensitive inputs to the redactor's secret list
@@ -2888,7 +3148,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
 		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
+			// 🛡️ Sentinel Security Update: Prevent Information Leakage
+			logging.GetLogger().ErrorContext(ctx, "Failed to execute JSON CLI command with stdio", "tool", t.tool.GetName(), "error", err)
+			return nil, fmt.Errorf("failed to execute JSON CLI command")
 		}
 		// We don't defer stdin.Close() here because we close it in the writer goroutine
 
@@ -2932,7 +3194,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute command: %w", err)
+		// 🛡️ Sentinel Security Update: Prevent Information Leakage
+		logging.GetLogger().ErrorContext(ctx, "Failed to execute CLI command", "tool", t.tool.GetName(), "error", err)
+		return nil, fmt.Errorf("failed to execute command")
 	}
 
 	var stdoutBuf, stderrBuf bytes.Buffer
