@@ -1,0 +1,3 @@
+#!/bin/bash
+cd server
+$(go env GOPATH)/bin/golangci-lint run --config .golangci.yml ./pkg/util/...
