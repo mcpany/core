@@ -60,6 +60,7 @@ With the release of Claude Code "Agent Teams," the industry is moving from seque
 
 ### Update: 2026-05-13 - eBPF Observability Integration
 **Context:** Today's market sync revealed the "Socket Invisibility" gap in agent swarms moving to port-free transport.
-**Architecture Adjustment:** * Integrating **eBPF Socket Sentinel** hooks into the Coordination Hub in Section 4.
+**Architecture Adjustment:**
+* Integrating **eBPF Socket Sentinel** hooks into the Coordination Hub in Section 4.
 * Mandating real-time semantic auditing for all inter-teammate messages over isolated pipes.
 **Security Impact:** Restores mission-critical visibility to parallel agent teams, ensuring an immutable audit trail for all concurrent state mutations.
