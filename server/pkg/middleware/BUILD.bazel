@@ -7,7 +7,6 @@ go_library(
     name = "middleware",
     srcs = [
         "a2a_bridge.go",
-        "aia_broker.go",
         "audit.go",
         "auth.go",
         "binary_utils.go",
@@ -21,7 +20,6 @@ go_library(
         "debug.go",
         "debugger.go",
         "dlp.go",
-        "esb.go",
         "global_ratelimit.go",
         "guardrails.go",
         "gzip.go",
@@ -96,7 +94,6 @@ go_test(
     name = "middleware_test",
     srcs = [
         "a2a_bridge_test.go",
-        "aia_broker_test.go",
         "audit_export_test.go",
         "audit_test.go",
         "auth_benchmark_test.go",

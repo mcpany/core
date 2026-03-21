@@ -8,7 +8,6 @@ go_library(
     srcs = [
         "api.go",
         "api_alerts.go",
-        "api_alignment.go",
         "api_audit.go",
         "api_auth.go",
         "api_credential.go",
