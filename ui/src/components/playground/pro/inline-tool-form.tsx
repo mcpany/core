@@ -72,7 +72,7 @@ export function InlineToolForm({ tool, onSubmit, onCancel, isLoading }: InlineTo
             </div>
 
             <div className="p-4 max-h-[60vh] overflow-y-auto">
-                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
+                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "form" | "json")} className="w-full">
                     <TabsList className="grid w-[160px] grid-cols-2 h-8 mb-4">
                         <TabsTrigger value="form" className="text-xs">Form</TabsTrigger>
                         <TabsTrigger value="json" className="text-xs">JSON</TabsTrigger>
