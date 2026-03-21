@@ -52,10 +52,3 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 *   Implementing **Teammate Impersonation Signature Detection**. CSAD will now perform semantic analysis of inter-agent mailbox messages to detect "Instruction Splicing" and role-divergent commands.
 *   Integrating with the `T2T Identity Rotation Provider` to flag any request using a stale or un-rotated identity fragment.
 **Security Impact:** Prevents lateral movement within horizontal teams by ensuring that inter-teammate coordination remains bound to the mission-root intent and its authorized roles.
-
-### Update: 2026-06-02 - Machine-Speed Swarm Quarantine (MSSQ)
-**Context:** The 2026 Armis Cyberwarfare Report highlights the collapse of MTTC to seconds. Today's findings confirm the need for autonomous, machine-speed interdiction to counter "Credential Splicing" across meshes.
-**Architecture Adjustment:**
-*   Implementing the **Autonomous Interdiction Controller**. This extends the Pattern Matcher with "Hard-Kill" capability, allowing CSAD to automatically revoke discovery and peer-to-peer mailbox access across an entire mission scope without human-in-the-loop intervention.
-*   Introducing **Hivenet Quarantine (HQ) Zones**. Upon detection of a predator swarm pattern, CSAD will logically isolate the affected mission root into a hardware-attested sandbox, preserving the state for forensics while neutralizing the threat.
-**Security Impact:** Reduces MTTC from seconds to milliseconds by moving defense from passive monitoring to autonomous machine-speed interdiction.
