@@ -62,7 +62,7 @@ LOWA is a mandatory security layer for MCP Any that enforces session-bound authe
 ## 7. Evolutionary Changelog
 *   **2026-05-22:** Initial Document Creation.
 
-*   **2026-05-26: Architectural Hardening against CSWSH (OpenClaw Fix Alignment)**
+*   **2026-03-21: Architectural Hardening against CSWSH (OpenClaw Fix Alignment)**
     **Context:** Following OpenClaw v2026.3.11, local loopback trust is officially deprecated.
     **Architecture Adjustment:** * Introducing HMAC-based challenge-response pairings during the WebSocket handshake.
     * Enforcing SameSite: Strict cookie headers for any session-bound tokens issued via the gateway.

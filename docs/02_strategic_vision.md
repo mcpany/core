@@ -864,13 +864,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Identity Fragment Attestation (IFA)**: To counter "Stale Identity" reuse, we are mandating IFA. Every inter-agent mailbox request must be signed with a hardware-attested, session-bound identity token, ensuring that subagents cannot inherit unauthorized mailbox access from previous handoffs.
 
 ## Strategic Evolution: [2026-05-26]
-### Focus: Local Zero-Trust (LOWA) & Authenticated Mesh Discovery
-**Context**: The disclosure of "ClawJacked" (CVE-2026-3.11) and the stabilization of Gemini CLI's A2A auth suite confirm that "Implicit Local Trust" for loopback traffic is no longer a viable security paradigm. At the same time, the rise of Claude Code's "Agent Teams" signals a shift from vertical subagent hierarchies to horizontal meshes. The "Universal Agent Bus" must now act as the secure, authenticated bridge for both local control and teammate-to-teammate coordination.
+### Focus: Federated Governance Neutrality & Non-Blocking Teammate Coordination
+**Context**: The maturation of the OpenClaw Foundation and the emergence of "Mailbox Lock" in horizontal swarms (Claude Code Agent Teams) mark a shift from hierarchical control to **Federated Governance**. Security must now be framework-neutral, while coordination must move from synchronous locks to asynchronous, sharded state synchronization.
 **Strategic Pivot**:
-- **Local-Only WebSocket Auth (LOWA)**: MCP Any will evolve to mandate session-bound authentication for all local WebSocket listeners. This ensures that only verified local applications—not malicious browser scripts—can bridge into the agent's control plane via unvalidated loopback connections.
-- **Teammate-to-Teammate (T2T) Encryption Bridge**: Supporting horizontal swarms, MCP Any will implement a T2T Encryption Bridge. This service provides the infrastructure for teammates from disparate frameworks (Claude Code, OpenClaw, AutoGen) to securely exchange mailbox messages and synchronize their views of a "Shared Task List."
-- **Full-Mesh Discovery Authorization**: We are mandating "Auth-before-Discovery" for all A2A-compliant agents. Capabilities and "Agent Cards" will only be visible to peers who have completed a hardware-attested handshake within a verified mission scope.
-- **Mailbox Integrity Middleware**: To prevent "Mailbox Injection" by rogue teammates, we are introducing a message-validation layer. Every inter-agent mailbox message must be signed and validated against the "Mission Root" intent before reaching the target agent.
+- **Foundation Governance Sync**: MCP Any will evolve to act as the primary bridge for the OpenClaw Foundation's neutral governance protocols. We will implement standardized lifecycle hooks that allow agents from disparate frameworks to maintain mission-root sovereignty regardless of the orchestration layer.
+- **Asynchronous Mailbox Sharding (AMS)**: To neutralize "Mailbox Lock" latency, we are introducing AMS for the T2T Encryption Bridge. This allows parallel teammates to synchronize state via granular, task-bound mailbox shards, ensuring that coordination remains non-blocking as swarms scale horizontally.
+- **Intent-Scoped ARE Enforcement**: Leveraging Gemini CLI's ARE headers, MCP Any will implement "Budget Pinning." We will cryptographically bind reasoning-effort budgets to specific intent branches, preventing "Reasoning-Budget Hijacking" by rogue subagents or shadow delegations.
+- **Hardware-Attested Monologue Privacy**: Supporting the OpenClaw standard, we are mandating hardware-attested encryption for subagent reasoning monologues. This ensures that a specialized agent's cognitive path remains private and immutable, even from a parent agent, unless explicitly shared via a mission-bound handshake.
 
 ## Strategic Evolution: [2026-05-27]
 ### Focus: Sovereign Mesh Identity (SMI) & Fragment-Aware Mailbox Isolation
@@ -1064,3 +1064,31 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Semantic Entanglement Sanitizer (SES)**: To neutralize "Monologue Smearing," we are introducing the SES. This layer will perform real-time, high-entropy semantic analysis of entangled state shards, ensuring that private reasoning monologues are redacted before they are synchronized to the shared teammate mesh.
 - **Logic-Grafting Interceptor (LGI)**: Supporting the stability of horizontal meshes, MCP Any will implement the LGI. This service will perform fragment-level "Semantic Hash-Chaining" for inter-agent coordination, detecting and blocking unauthorized reasoning paths appended to shared shards before ingestion.
 - **Hardware-Locked Monotonic Re-Attestation**: We are mandating the use of hardware-bound (TPM) monotonic counters for all mission-resumption handshakes, providing a cryptographically signed proof of mission continuity that survives session-token decay in deep, multi-day swarms.
+
+---
+
+## Strategic Evolution: [2026-06-19]
+### Focus: Context-File Integrity & Attention-Locked Tooling (ALT)
+**Context**: The emergence of "Deceptive Context Hijacking" in Gemini CLI (via natural-language `GEMINI.md` files) reveals that passive sandbox boundaries are no longer sufficient. Attackers are now using "Invisible" project-local instructions to trick agents into executing exfiltration tools like `run_shell_command`. The "Universal Agent Bus" must now move beyond simple isolation to **Active Context Attestation** and **Hardware-Locked Attention Governance**.
+**Strategic Pivot**:
+- **Context-File Integrity Attestation (CFIA)**: MCP Any will evolve to act as the authoritative "Context Gatekeeper." We will implement CFIA, requiring hardware-attested, hash-based signatures for all project-local "Context Files" (e.g., `.mcpany/context.md`, `GEMINI.md`) before they are ingested by the agent reasoning engine. This ensures that "Deceptive Context" cannot be injected without explicit user attestation.
+- **Attention-Locked Tooling (ALT)**: To neutralize "Context-Hijacked Exfiltration," we are introducing ALT. High-risk tool calls (e.g., shell, filesystem write) will be cryptographically locked to specific, user-verified "Attention Anchors." If the agent attempts to call a high-risk tool while its reasoning trace shows "Injected Context" as the primary driver, the ALT middleware will interdict the call.
+- **Semantic Lineage Tracking**: Supporting the stability of "Headless Handoffs," MCP Any will implement Semantic Lineage Tracking. This provides a cryptographically signed "Chain of Reason" that verifies the lineage of a tool call back to the mission-root intent, ensuring that "Injected Context" cannot shadow the root authority.
+- **Visual Attention Dashboard**: To counter "Approval Blindness," we are evolving the UI to include a visual "Attention Map." Users will see a real-time heatmap of which context fragments (User, System, Injected) are driving the agent's current tool-call reasoning.
+
+## Strategic Evolution: [2026-06-20]
+### Focus: Context-File Integrity & Attention-Locked Tooling (ALT)
+**Context**: The emergence of "Deceptive Context Hijacking" in Gemini CLI (via natural-language `GEMINI.md` files) and the rise of "Teammate Mailbox" coordination patterns in Claude Code reveal that passive sandbox boundaries are no longer sufficient. Attackers are now using "Invisible" project-local instructions to trick agents into executing exfiltration tools.
+**Strategic Pivot**:
+- **Context-File Integrity Attestation (CFIA)**: MCP Any will evolve to act as the authoritative "Context Gatekeeper." We will implement CFIA, requiring hardware-attested, hash-based signatures for all project-local "Context Files" (e.g., `.mcpany/context.md`, `GEMINI.md`) before they are ingested by the agent reasoning engine.
+- **Attention-Locked Tooling (ALT)**: To neutralize "Context-Hijacked Exfiltration," we are introducing ALT. High-risk tool calls (e.g., shell, filesystem write) will be cryptographically locked to specific, user-verified "Attention Anchors." If the agent attempts to call a high-risk tool while its reasoning trace shows "Injected Context" as the primary driver, the ALT middleware will interdict the call.
+- **Semantic Lineage Tracking**: Supporting the stability of "Headless Handoffs," MCP Any will implement Semantic Lineage Tracking. This provides a cryptographically signed "Chain of Reason" that verifies the lineage of a tool call back to the mission-root intent, ensuring that "Injected Context" cannot shadow the root authority.
+
+## Strategic Evolution: [2026-03-21]
+### Focus: Local Zero-Trust (LOWA) & Asynchronous Mailbox Sharding
+**Context**: Recent security fixes in OpenClaw and scaling bottlenecks in Claude Code "Agent Teams" reveal that the Universal Agent Bus must evolve from passive connectivity to active security brokerage and sharded coordination.
+**Strategic Pivot**:
+- **Local-Only WebSocket Auth (LOWA)**: MCP Any will mandate session-bound HMAC challenge-response authentication for all local loopback listeners to neutralize CSWSH vulnerabilities.
+- **Asynchronous Mailbox Sharding (AMS)**: To scale horizontal teammate coordination, we will implement sharded mailbox middleware, eliminating the "Mailbox Lock" latency observed in high-density swarms.
+- **Reasoning-Budget Firewall (RBF)**: We will enforce hardware-attested, intent-scoped ARE budgets to prevent "Reasoning-Budget Hijacking" and ensure resource sovereignty.
+- **Authenticated A2A Discovery Broker**: Discovery will transition to a privileged, "Auth-Before-Discovery" model, where agent capabilities are only revealed to verified peers.

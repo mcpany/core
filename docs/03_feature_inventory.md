@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-03-20] Updates
+
+### Proposed Additions
+- **Intent-Bound Memory Shards**: (P0) Cryptographically isolated memory regions within the Shared KV Store (Blackboard) to prevent "Memory Smearing" and "EchoLeak" exfiltration during multi-hop reasoning.
+- **Ephemeral Discovery Sandbox**: (P0) A zero-trust, isolated environment for all discovery-time execution (e.g., `discoveryCommand`) to neutralize "Ghost-Execution" exploits.
+- **Multimodal Inference-Time Sanitizer (MITS)**: (P0) Real-time sanitization of non-textual reasoning traces (SVG, CSS, audio metadata) using matured OpenClaw `ContextEngine` hooks to detect and neutralize "Context Smuggling" via polyglot payloads.
+
+### Priority Shifts
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Elevated to support **Intent-Bound Memory Shards** as the primary state persistence model.
+- **Semantic Integrity Bridge**: (Re-affirmed P0) Evolving into the **MITS** to support multimodal trace sanitization.
+- **Negative Discovery Attestation Provider**: (Re-affirmed P0) Designated as a critical component of the **Ephemeral Discovery Sandbox** for pre-flight safety proofs.
+
 ## Evolution: [2026-06-16] Updates
 
 ### Proposed Additions
@@ -13,6 +25,13 @@
 - **Stylometric Mimicry Mitigator (SMM)**: (P0) Security middleware that performs real-time stylometric analysis of inter-agent messages to detect reasoning-path shadowing.
 - **Speculative Branching Guard (SBG)**: (P1) Isolation service for un-executed reasoning paths that prevents speculative attention leakage.
 - **Mesh-Resident Key Exchange (MRKE) Provider**: (P0) Hardware-bound session key rotation service for sub-100ms inter-teammate coordination.
+
+## Evolution: [2026-06-19] Updates
+
+### Proposed Additions
+- **Context-File Integrity Attestation (CFIA)**: (P0) Core security service requiring hardware-attested hash signatures for all project-local natural language context files.
+- **Attention-Locked Tooling (ALT)**: (P0) Security middleware that cryptographically locks high-risk tool calls to user-verified reasoning anchors, neutralizing context-hijacking.
+- **Visual Attention Dashboard**: (P1) Advanced UI component for visualizing reasoning drivers and attention-level heatmaps.
 
 ### Priority Shifts
 - **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ESB-compliant** state entanglement.
@@ -1140,14 +1159,13 @@
 ## Evolution: [2026-05-26] Updates
 
 ### Proposed Additions
-- **LOWA Challenge-Response Pairing**: (P0) Security extension for the LOWA Gateway using HMAC-based challenge-response pairings to neutralize local replay attacks and cross-site brute-force chains.
-- **T2T Mailbox Sharding Middleware**: (P0) Performance extension for the T2T Encryption Bridge designed to handle horizontal scaling of high-density agent teams (5+ concurrent teammates).
-- **A2A Capability Masking Provider**: (P1) Advanced discovery service that masks specific tool schemas behind generic "Capability Roles" until a hardware-attested session is established.
-- **Full-Mesh Discovery Auth (v2)**: (P0) Upgraded discovery protocol mandating hardware-bound "Proof of Intent" before any Agent Card discovery.
+- **Foundation Governance Sync**: (P0) Neutral coordination middleware for cross-framework agent coordination, implementing OpenClaw Foundation standards.
+- **Asynchronous Mailbox Sharding (AMS) Middleware**: (P0) Scaling extension for the T2T Bridge that hosts granular, task-bound mailbox shards to eliminate "Mailbox Lock" bottlenecks.
+- **Hardware-Attested Monologue Provider**: (P0) Advanced security service mandating hardware-bound encryption for subagent reasoning monologues to ensure cognitive privacy.
 
 ### Priority Shifts
-- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now designated as a mandatory prerequisite for all "Agent Team" deployments to prevent lateral movement by compromised teammates.
-- **LOWA Gateway**: (Re-affirmed P0) Elevated to "Blocking Prerequisite" for all local loopback listeners following the OpenClaw v2026.3.11 disclosure.
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for **Intent-Scoped ARE Enforcement** to counter subagent spoofing.
+- **T2T Encryption Bridge**: (Re-affirmed P0) Designated as the primary infrastructure for AMS-based non-blocking teammate coordination.
 
 ## Evolution: [2026-05-27] Updates
 
@@ -1383,3 +1401,26 @@
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SES-compliant** state sanitization to protect monologue privacy and mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Evolving to support the new **Logic-Grafting Interceptor** to counter CVE-2026-71002.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-20] Updates
+
+### Proposed Additions
+- **Context-File Integrity Attestation (CFIA)**: (P0) Authoritative security service mandating hardware-attested hash signatures for all project-local natural language context files (e.g., `GEMINI.md`).
+- **Attention-Locked Tooling (ALT)**: (P0) Security middleware that cryptographically locks high-risk tool calls to user-verified reasoning anchors, neutralizing context-hijacking.
+- **Semantic Lineage Tracking**: (P1) Security extension providing a cryptographically signed "Chain of Reason" for tool calls.
+
+### Priority Shifts
+- **Visual Attention Dashboard**: (P1) Now elevated to a critical requirement for supporting the **ALT** user-verification flow.
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support the new **Teammate Mailbox** security requirements.
+
+## Evolution: [2026-03-21] Updates
+
+### Proposed Additions
+- **LOWA Challenge-Response Pairing**: (P0) Security extension for the LOWA Gateway using HMAC-based challenge-response pairings to neutralize local replay attacks and cross-site brute-force chains.
+- **T2T Mailbox Sharding Middleware**: (P0) Performance extension for the T2T Encryption Bridge designed to handle horizontal scaling of high-density agent teams (5+ concurrent teammates).
+- **A2A Capability Masking Provider**: (P1) Advanced discovery service that masks specific tool schemas behind generic "Capability Roles" until a hardware-attested session is established.
+- **Full-Mesh Discovery Auth (v2)**: (P0) Upgraded discovery protocol mandating hardware-bound "Proof of Intent" before any Agent Card discovery.
+
+### Priority Shifts
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now designated as a mandatory prerequisite for all "Agent Team" deployments to prevent lateral movement by compromised teammates.
+- **LOWA Gateway**: (Re-affirmed P0) Elevated to "Blocking Prerequisite" for all local loopback listeners following the OpenClaw v2026.3.11 disclosure.
