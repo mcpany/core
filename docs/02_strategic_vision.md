@@ -1049,8 +1049,3 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Intent-Boundary Sovereignty:** Moving from flat Zero Trust to shard-aware boundary enforcement via cryptographically-bound telemetry.
 - **Resource-Locked Reasoning:** Neutralizing agentic DoS via hardware-attested Cognitive Proof-of-Work (CPoW).
 - **Active Lifecycle Management:** Implementing shard-aware garbage collection to eliminate state-fragment ghosting in parallel meshes.
-
-## Strategic Evolution: 2026-06-18
-- **Intent-Boundary Sovereignty:** Moving from flat Zero Trust to shard-aware boundary enforcement via cryptographically-bound telemetry.
-- **Resource-Locked Reasoning:** Neutralizing agentic DoS via hardware-attested Cognitive Proof-of-Work (CPoW).
-- **Active Lifecycle Management:** Implementing shard-aware garbage collection to eliminate state-fragment ghosting in parallel meshes.

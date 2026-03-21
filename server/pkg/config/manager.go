@@ -155,37 +155,7 @@ func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, confi
 	return services, nil
 }
 
-// loadAndMergeCollection fetches a remote collection of services and merges them into the manager.
-//
-// Summary: Executes loadAndMergeCollection operation.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the operation.
-//   - collection (*configv1.Collection): The collection to load.
-//
-// Returns:
-//   - (error): An error if the collection cannot be parsed or fetched.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Makes network requests and updates the internal services map.
 func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, collection *configv1.Collection) error {
-	// loadAndMergeCollection fetches a remote collection of services and merges them into the manager.
-	//
-	// Parameters:
-	//   - ctx (context.Context): The context for the operation.
-	//   - collection (*configv1.Collection): The collection to load.
-	//
-	// Returns:
-	//   - (error): An error if the collection cannot be parsed or fetched.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - Makes network requests and updates the internal services map.
 	url := collection.GetHttpUrl()
 	if url == "" {
 		m.log.Warn("Skipping collection with empty URL", "name", collection.GetName())
@@ -345,37 +315,7 @@ func (m *UpstreamServiceManager) unmarshalProtoJSON(data []byte, services *[]*co
 	return nil
 }
 
-// applyAuthentication adds authentication headers or credentials to an HTTP request.
-//
-// Summary: Executes applyAuthentication operation.
-//
-// Parameters:
-//   - req (*http.Request): The request to authenticate.
-//   - auth (*configv1.Authentication): The authentication configuration.
-//
-// Returns:
-//   - (error): An error if secret resolution fails.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Modifies the request headers or credentials.
 func (m *UpstreamServiceManager) applyAuthentication(req *http.Request, auth *configv1.Authentication) error {
-	// applyAuthentication adds authentication headers or credentials to an HTTP request.
-	//
-	// Parameters:
-	//   - req (*http.Request): The request to authenticate.
-	//   - auth (*configv1.Authentication): The authentication configuration.
-	//
-	// Returns:
-	//   - (error): An error if secret resolution fails.
-	//
-	// Errors:
-	//   - None.
-	//
-	// Side Effects:
-	//   - Modifies the request headers or credentials.
 	if auth == nil {
 		return nil
 	}

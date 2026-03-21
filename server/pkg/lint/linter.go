@@ -16,6 +16,8 @@ import (
 
 // Severity indicates the importance of a linting result.
 //
+// It is used to categorize findings based on their impact and urgency.
+//
 // Summary: Represents a Severity.
 type Severity int
 
@@ -327,7 +329,7 @@ func (l *Linter) checkCacheSettings() []Result {
 	for _, s := range l.cfg.GetUpstreamServices() {
 		// If cache is enabled but no TTL or default TTL
 		// Logic here depends on how cache is defined.
-		// `config.Validate` checks for negative TTL.
+		// config.Validate checks for negative TTL.
 		// Here we want to warn if TTL is missing for HTTP services maybe?
 		if s.GetCache() == nil {
 			// No cache configured at all. Maybe okay.
