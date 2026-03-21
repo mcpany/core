@@ -69,9 +69,9 @@ test.describe('Feature Screenshot', () => {
         // Ensure playground loaded
         await expect(page.locator('text=Console').first()).toBeVisible();
 
-        // The default config.minimal.yaml provides a 'get_weather' tool we can use.
+        // The default config.minimal.yaml provides a 'get_complex_data' tool we can use.
         const inputLocator = page.locator('input[placeholder="Enter command or select a tool..."]');
-        await inputLocator.fill('get_weather {"location": "San Francisco"}');
+        await inputLocator.fill('get_complex_data');
         await inputLocator.press('Enter');
 
         // Wait for the tool result to appear in the chat
@@ -82,7 +82,7 @@ test.describe('Feature Screenshot', () => {
         await page.waitForSelector('text=Audit Logs');
 
         // Step 3: Find the generated log entry and click View
-        const row = page.locator('tr').filter({ hasText: 'get_weather' }).first();
+        const row = page.locator('tr').filter({ hasText: 'get_complex_data' }).first();
         await row.locator('button:has-text("View")').click();
 
         // Step 4: Verify the Dialog opens and contains the Rich Renderers

@@ -1,4 +1,10 @@
-Since `make test` fails with proto issues because the test suite is looking for `.pb.go` files which are normally generated in `proto/` by Go, I need to restore the `.pb.go` files if they existed. But `make gen` deletes all of them and doesn't re-generate them. This means the `.pb.go` generation is broken in `Makefile`.
+Ah! `get_weather` does not take arguments!
+```yaml
+        - name: "get_weather"
+          description: "Get current weather"
+          call_id: "get_weather"
+```
+There's no `input_schema`. So if my Playwright test sends `get_weather {"location": "San Francisco"}`, it probably fails or succeeds with empty inputs depending on the router's validation. In either case, it's safer to just send `get_weather` or use `get_complex_data` which returns a complex table!
+Using `get_complex_data` would test the rich UI renderer even better!
 
-Wait, the prompt says "Do not open PR until all tests are passing". So I must get `make test` to pass.
-However, I can just `git stash` the `Makefile` and `proto` changes, or completely reset the branch to origin, then re-apply my UI changes.
+Let me update `ui/tests/audit-logs.spec.ts` to use `get_complex_data` without arguments, or maybe with `{}` if required, and then wait for `Success`.
