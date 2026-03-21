@@ -31,7 +31,7 @@ def _ts_proto_gen_impl(ctx):
         #   bazel-out/<config>/bin/<package>/<name>
         # protoc with --proto_path=. writes:
         #   {ts_proto_out}/<proto_package_path>/<basename>.ts
-        # e.g. for proto/api/v1/foo.proto → bazel-out/.../bin/proto/api/v1/foo.ts
+        # e.g. for proto/api/v1/foo.proto -> bazel-out/.../bin/proto/api/v1/foo.ts
         # Both paths agree when ts_proto_out = ctx.bin_dir.path.
         ts_file = ctx.actions.declare_file(
             src.basename.removesuffix(".proto") + ".ts",
