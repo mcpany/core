@@ -223,7 +223,7 @@ func runfilesWorkspaceName() string {
 
 func runfilesRoots() []string {
 	workspace := runfilesWorkspaceName()
-	var roots []string
+	var roots []string //nolint:prealloc
 	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
 		if base == "" {
 			continue
@@ -270,7 +270,7 @@ func isServerProjectRoot(dir string) bool {
 
 func symlinkIfPresent(src, dst string) error {
 	if _, err := os.Stat(src); err != nil {
-		return nil, err
+		return err
 	}
 	return os.Symlink(src, dst)
 }
@@ -512,7 +512,7 @@ func (mp *ManagedProcess) Start() error {
 			mp.t.Logf("[%s] Process %s exited successfully.", mp.label, mp.cmd.Path)
 		}
 	}()
-	return nil, err
+	return nil
 }
 
 // Allow patching for testing.
@@ -862,13 +862,13 @@ func (s *MCPANYTestServerInfo) SeedDatabase(ctx context.Context, seedData []byte
 	url := fmt.Sprintf("%s/api/v1/debug/seed?api_key=%s", s.JSONRPCEndpoint, s.APIKey)
 	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(seedData))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := s.HTTPClient.Do(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer resp.Body.Close()
 
@@ -876,7 +876,7 @@ func (s *MCPANYTestServerInfo) SeedDatabase(ctx context.Context, seedData []byte
 		body, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("seed failed: status=%d, body=%s", resp.StatusCode, string(body))
 	}
-	return nil, err
+	return nil
 }
 
 // WebsocketEchoServerInfo contains information about a running Websocket echo server.
@@ -1474,7 +1474,7 @@ func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 	reqBody, _ := json.Marshal(initReq)
 	httpReq, err := http.NewRequestWithContext(ctx, "POST", s.HTTPEndpoint, bytes.NewBuffer(reqBody))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json, text/event-stream")
@@ -1484,7 +1484,7 @@ func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 
 	resp, err := s.HTTPClient.Do(httpReq)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer func() { _ = resp.Body.Close() }()
 
@@ -1514,7 +1514,7 @@ func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 	reqBody, _ = json.Marshal(notifyReq)
 	httpReq, err = http.NewRequestWithContext(ctx, "POST", s.HTTPEndpoint, bytes.NewBuffer(reqBody))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json, text/event-stream")
@@ -1522,7 +1522,7 @@ func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 
 	respNotify, err := s.HTTPClient.Do(httpReq)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer func() { _ = respNotify.Body.Close() }()
 
@@ -1530,14 +1530,14 @@ func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 		body, _ := io.ReadAll(respNotify.Body)
 		return fmt.Errorf("initialized notification failed: status=%d, body=%s", respNotify.StatusCode, string(body))
 	}
-	return nil, err
+	return nil
 }
 
 // parseMCPResponse parses the response body, handling both JSON and SSE formats.
 func parseMCPResponse(_ *testing.T, resp *http.Response) ([]byte, error) {
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err, fmt.Errorf("failed to read body: %w", err)
+		return nil, fmt.Errorf("failed to read body: %w", err)
 	}
 
 	contentType := resp.Header.Get("Content-Type")
@@ -1550,7 +1550,7 @@ func parseMCPResponse(_ *testing.T, resp *http.Response) ([]byte, error) {
 				return data, nil
 			}
 		}
-		return nil, err, fmt.Errorf("failed to find valid JSON in SSE response. Body: %s", string(bodyBytes))
+		return nil, fmt.Errorf("failed to find valid JSON in SSE response. Body: %s", string(bodyBytes))
 	}
 	return bodyBytes, nil
 }
@@ -1569,12 +1569,12 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 		"id":      1,
 	})
 	if err != nil {
-		return nil, err, fmt.Errorf("failed to marshal request: %w", err)
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
 	httpReq, err := http.NewRequestWithContext(ctx, "POST", s.HTTPEndpoint, bytes.NewBuffer(reqBody))
 	if err != nil {
-		return nil, err, fmt.Errorf("failed to create request: %w", err)
+		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json, text/event-stream")
@@ -1584,18 +1584,18 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 
 	resp, err := s.HTTPClient.Do(httpReq)
 	if err != nil {
-		return nil, err, fmt.Errorf("failed to send request: %w", err)
+		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
-		return nil, err, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
+		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 
 	data, err := parseMCPResponse(s.T, resp)
 	if err != nil {
-		return nil, err, err
+		return nil, err
 	}
 
 	var rpcResp struct {
@@ -1603,11 +1603,11 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 		Error  *MCPJSONRPCError     `json:"error"`
 	}
 	if err := json.Unmarshal(data, &rpcResp); err != nil {
-		return nil, err, fmt.Errorf("failed to decode response: %w. Body: %s", err, string(data))
+		return nil, fmt.Errorf("failed to decode response: %w. Body: %s", err, string(data))
 	}
 
 	if rpcResp.Error != nil {
-		return nil, err, rpcResp.Error
+		return nil, rpcResp.Error
 	}
 
 	return rpcResp.Result, nil
@@ -1628,12 +1628,12 @@ func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToo
 		"id":      1,
 	})
 	if err != nil {
-		return nil, err, fmt.Errorf("failed to marshal request: %w", err)
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
 	httpReq, err := http.NewRequestWithContext(ctx, "POST", s.HTTPEndpoint, bytes.NewBuffer(reqBody))
 	if err != nil {
-		return nil, err, fmt.Errorf("failed to create request: %w", err)
+		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json, text/event-stream")
@@ -1643,18 +1643,18 @@ func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToo
 
 	resp, err := s.HTTPClient.Do(httpReq)
 	if err != nil {
-		return nil, err, fmt.Errorf("failed to send request: %w", err)
+		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
-		return nil, err, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
+		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 
 	data, err := parseMCPResponse(s.T, resp)
 	if err != nil {
-		return nil, err, err
+		return nil, err
 	}
 
 	var rpcResp struct {
@@ -1662,11 +1662,11 @@ func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToo
 		Error  *MCPJSONRPCError    `json:"error"`
 	}
 	if err := json.Unmarshal(data, &rpcResp); err != nil {
-		return nil, err, fmt.Errorf("failed to decode response: %w", err)
+		return nil, fmt.Errorf("failed to decode response: %w", err)
 	}
 
 	if rpcResp.Error != nil {
-		return nil, err, rpcResp.Error
+		return nil, rpcResp.Error
 	}
 
 	return rpcResp.Result, nil
