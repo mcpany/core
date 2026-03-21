@@ -11,7 +11,7 @@ test.describe('MCP Any UI E2E', () => {
 
   test.beforeEach(async ({ request, page }) => {
     // Consolidated seeding
-    await seedGlobalState(request).catch(() => console.log('Failed to seed global state'));
+    await seedGlobalState(request);
     await seedTraffic(request);
 
     // User "e2e-admin-core" is created by seedGlobalState
