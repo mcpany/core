@@ -34,8 +34,8 @@ find_tool() {
         fi
     done
     bin="$(command -v "${name}" 2>/dev/null || true)"
-    if [[ -z "$bin" && -x "/app/build/env/bin/${name}" ]]; then
-        bin="/app/build/env/bin/${name}"
+    if [[ -z "$bin" && -x "${PROJECT_ROOT}/build/env/bin/${name}" ]]; then
+        bin="${PROJECT_ROOT}/build/env/bin/${name}"
     fi
     echo "$bin"
 }
@@ -43,6 +43,8 @@ find_tool() {
 echo "==> Running Buildifier..."
 BUILDIFIER_BIN="$(find_tool buildifier)"
 if [[ -n "$BUILDIFIER_BIN" && -x "$BUILDIFIER_BIN" ]]; then
+    # Format first, then check
+    "$BUILDIFIER_BIN" $(find . -not -path "./build/*" -not -path "./bazel-*" -not -path "*/node_modules/*" \( -name "BUILD" -o -name "BUILD.bazel" -o -name "WORKSPACE" -o -name "*.bzl" \) -type f)
     "$BUILDIFIER_BIN" -mode=check $(find . -not -path "./build/*" -not -path "./bazel-*" -not -path "*/node_modules/*" \( -name "BUILD" -o -name "BUILD.bazel" -o -name "WORKSPACE" -o -name "*.bzl" \) -type f)
     echo "    Buildifier OK."
 else
