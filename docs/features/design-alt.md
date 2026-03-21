@@ -64,3 +64,10 @@ ALT addresses this by cryptographically locking high-risk tool capabilities to s
     *   High-risk tool calls are now locked not just to "Anchors," but to **Hardware-Attested Attention Tiers**.
     *   If the agent's reasoning trace indicates influence from "Noise Fragments" (un-attested fragments with high entropy), ALT will interdict the call regardless of anchor presence.
     **Security Impact:** Neutralizes "Noise Injection" attacks that attempt to flood the context window to evict ALT-pinned security constraints.
+* **2026-06-25: - Stylometric Anchoring**
+    **Context:** Today's research identified "Stylometric Splicing" where subagents mimic parent signatures to trick ALT into accepting instructions as "Attested Anchors."
+    **Architecture Adjustment:**
+    *   ALT anchors now include a **Stylometric Fingerprint** provided by the **SMS Provider**.
+    *   When the ALT middleware inspects a reasoning trace, it cross-references the driver fragment's style against the anchor's fingerprint.
+    *   If a mismatch is detected (even if the content hash matches), the tool call is blocked.
+    **Security Impact:** Prevents mimicry-based bypasses of attention-locked security controls.

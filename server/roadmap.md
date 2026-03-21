@@ -137,6 +137,12 @@
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Stylometric Mesh Sovereignty (SMS) Provider**: Behavioral security middleware for real-time stylometric consistency checks. (Added: 2026-06-25)
+*   **[P0] Reasoning Provenance Validator (RPV)**: Implementation of hash-chained reasoning lineages to ensure mission-root sovereignty. (Added: 2026-06-25)
+*   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Advanced discovery gateway supporting capability masking and ZKP-based skill verification. (Added: 2026-06-25)
+*   **[P0] Context-File Integrity Attestation (CFIA)**: Mandatory hash-based attestation for project-local natural language instructions. (Added: 2026-06-25)
+
 #### Upcoming (2026-06-23 Evolution)
 *   **[P0] Recursive Mission-Root Attestation (RMRA)**: Mandatory hardware-bound re-attestation of sub-process lineage for headless handoffs. (Added: 2026-06-23)
 *   **[P0] Attention-Density Guard (ADG) v2**: Integration of hardware-attested Attention Masks to prioritize mission-critical fragments. (Added: 2026-06-23)

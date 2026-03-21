@@ -1121,3 +1121,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Stylometric Mesh Sovereignty (SMS) Provider**: To neutralize "Stylometric Splicing," we are introducing SMS. This layer will perform real-time stylometric analysis of inter-agent messages, ensuring that subagent reasoning fragments cannot mimic the signature of the parent agent to bypass mission-root constraints.
 - **Lock-Free Sharded Mailbox Hub**: Supporting the efficiency of horizontal Agent Teams, MCP Any will implement "Sharded Mailbox Hub." This service will host granular, task-bound mailbox shards that allow parallel teammates to synchronize state without global coordination locks, ensuring non-blocking performance.
 - **Zero-Knowledge Discovery (ZKD) Proxy**: Leveraging Gemini CLI v0.42.0 patterns, we are mandating ZKD. Agent capabilities will remain cryptographically masked until a mission-bound, identity-verified handshake is completed, neutralizing "Shadow Capability" mapping by malicious subagents.
+
+---
+
+## Strategic Evolution: [2026-06-25]
+### Focus: ZKP-Native Discovery & Stylometric Mesh Sovereignty
+**Context**: The emergence of "Deceptive Context Hijacking" (via natural-language config files) and the rise of "Stylometric Splicing" confirm that simple connectivity is no longer enough. The Universal Agent Bus must now act as a **Sovereignty Broker**, validating not just the tool call, but the **Reasoning Provenance** of the entire chain. Simultaneously, the "Mailbox Lock" bottleneck in horizontal meshes demands lock-free, sharded coordination.
+**Strategic Pivot**:
+- **Zero-Knowledge Discovery (ZKD) Proxy**: To counter discovery-phase hijacking, MCP Any will evolve to act as a ZKD Proxy. Agent capabilities will be masked via Zero-Knowledge Proofs, ensuring that sensitive tool metadata and schemas are only revealed after a mission-bound, hardware-attested handshake.
+- **Stylometric Mesh Sovereignty (SMS) Provider**: To neutralize "Stylometric Splicing," we are introducing the SMS Provider. This service will perform real-time stylometric analysis of all inter-agent messages, ensuring that subagents cannot mimic parent signatures to bypass mission-root constraints or inject unauthorized tasks.
+- **Reasoning Provenance Validator (RPV)**: Supporting the sovereignty of the mission root, we will implement RPV. This layer will maintain a cryptographically signed, hash-chained lineage of the reasoning process, providing verifiable proof that every action remains anchored to the user's primary intent.
+- **Context-File Integrity Attestation (CFIA)**: We are mandating CFIA for all project-local natural-language instructions (e.g., `GEMINI.md`, `.claude/settings.json`). MCP Any will require hardware-attested hash signatures for these files before they are ingested by the reasoning engine, neutralizing "Invisible" instruction injection.

@@ -1461,3 +1461,14 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Zero-Knowledge Discovery (ZKD) Proxy**: (P1) Advanced discovery service allowing agents to advertise skills via Zero-Knowledge Proofs, masking tool schemas until mission-bound handshake.
+- **Stylometric Mesh Sovereignty (SMS) Provider**: (P0) Behavioral security middleware performing real-time stylometric analysis to detect "Stylometric Splicing" and mimicry-based hijacking.
+- **Reasoning Provenance Validator (RPV)**: (P0) Core security service that maintains a hardware-attested, hash-chained lineage of the reasoning process to ensure mission-root sovereignty.
+
+### Priority Shifts
+- **Mission-Locked Execution (MLE) Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RPV-compliant** reasoning provenance.
+- **PNTD Discovery Provider**: (Re-affirmed P0) Evolving to support **ZKD-masked** capability cards.

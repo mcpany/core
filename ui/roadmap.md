@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+#### Upcoming (2026-06-25 Evolution)
+- [ ] **[P0] Behavioral Anchoring Monitor**: (2026-06-25) Real-time visualization of stylometric consistency scores and mimicry alerts.
+- [ ] **[P0] Reasoning Lineage Inspector**: (2026-06-25) Forensic UI for visualizing hardware-attested reasoning hash-chains and provenance.
+- [ ] **[P1] ZKP Capability Reviewer**: (2026-06-25) Security workspace for reviewing Zero-Knowledge Proofs of agent skills before unmasking.
+- [ ] **[P0] CFIA Signature Hub**: (2026-06-25) UI for reviewing and signing project-local context files (e.g., `GEMINI.md`).

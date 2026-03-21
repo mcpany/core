@@ -49,3 +49,10 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+* **2026-06-25: - Integration with Zero-Knowledge Discovery (ZKD)**
+    **Context:** Today's market sync revealed the emergence of "Deceptive Context Hijacking" as a means to map the tool landscape during mission recovery.
+    **Architecture Adjustment:**
+    *   The AMR Gateway now supports **Masked Resumption**.
+    *   Upon mission resumption, tool schemas in the restored state are masked via **ZKD Proxy** by default.
+    *   The agent must perform a hardware-attested handshake to re-unmask its specialized toolset, ensuring that "Invisible Instructions" in the restored context cannot immediately exfiltrate data.
+    **Security Impact:** Prevents discovery-phase hijacking from persisting across agent cold-boots.
