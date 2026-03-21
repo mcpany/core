@@ -17,6 +17,7 @@ import (
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/storage"
+
 	"github.com/mcpany/core/server/pkg/util/passhash"
 )
 
