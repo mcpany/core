@@ -98,10 +98,10 @@ test.describe('Tool Exploration', () => {
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Change grouping to "service"
-        // Target the specific trigger button directly by looking for the unique icon it contains.
-        // Radix's ARIA roles and labels can be flaky when rendering default values.
-        await page.locator('button').filter({ has: page.locator('svg.lucide-layers') }).click();
-        await page.getByRole('option', { name: 'Group by Service' }).click();
+        // Force click the first combobox (Group By dropdown). Radix Select can sometimes
+        // block pointer events during hydration or animation.
+        await page.locator('button[role="combobox"]').first().click({ force: true });
+        await page.getByRole('option', { name: 'Group by Service' }).click({ force: true });
 
         // Verify that the Payment Gateway service grouping header is visible
         // We use a regex because the AccordionTrigger button's accessible name includes the tool count badge (e.g. "Payment Gateway 1")
