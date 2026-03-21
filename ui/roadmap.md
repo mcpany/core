@@ -1,7 +1,16 @@
-<!--
-Copyright 2026 Author(s) of MCP Any
-SPDX-License-Identifier: Apache-2.0
--->
+# Copyright 2026 MCP Any Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 # UI Roadmap
 
@@ -514,6 +523,6 @@ SPDX-License-Identifier: Apache-2.0
 - [ ] **[P0] Granular Shard Streamer**: Visual monitor for dynamic context fragments streaming between teammates. (Added: 2026-06-02)
 
 #### Upcoming (2026-06-03 Evolution)
-- [ ] **[P0] Project Policy Manager**: UI for reviewing and attesting to repository-resident security policies. (Added: 2026-06-03)
-- [ ] **[P1] SIIG Alert Dashboard**: Real-time visualization of "Instruction-Smuggling" attempts in source files. (Added: 2026-06-03)
-- [ ] **[P0] Policy Attestation Hub**: Secure workspace for hardware-attested project policy approval. (Added: 2026-06-03)
+- [ ] **[P0] Universal Policy Center**: UI for managing and visualizing reconciled CEL and Rego project policies. (Added: 2026-06-03)
+- [ ] **[P1] Source-Instruction Alert Hub**: Security dashboard for reviewing metadata-hidden prompt overrides detected by SIIG. (Added: 2026-06-03)
+- [ ] **[P0] Task-Bound Identity Monitor**: Visual tracker for hardware-attested identities scoped to specific CRDT task-IDs. (Added: 2026-06-03)

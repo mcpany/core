@@ -1,7 +1,16 @@
-<!--
-Copyright 2026 Author(s) of MCP Any
-SPDX-License-Identifier: Apache-2.0
--->
+# Copyright 2026 MCP Any Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 # Feature Inventory: MCP Any
 
@@ -1185,20 +1194,18 @@ SPDX-License-Identifier: Apache-2.0
 - **CSP v1.0 Native Bridge**: (P0) Authoritative adapter for the OpenClaw Context Sovereignty Protocol, providing recursive redaction and ownership hooks for context sidecars.
 - **Dynamic Context Sharding Adapter**: (P0) High-efficiency coordination middleware that enables granular context streaming between teammates, neutralizing "Mailbox Lock" bottlenecks.
 
-### Priority Shifts
-- **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hardware-Bound RPA** to ensure cognitive path integrity.
-- **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support **CSP-compliant recursive redaction** for sharded teammate meshes.
-
----
-
 ## Evolution: [2026-06-03] Updates
 
 ### Proposed Additions
-- **Project-Level Policy Engine Adapter**: (P0) Infrastructure for hosting and enforcing project-specific, repository-resident security policies (e.g., \`mcp-policy.rego\`), enabling Gemini-style granular governance.
-- **Source-Instruction Integrity Guard (SIIG)**: (P1) Advanced security middleware that performs real-time semantic scanning of source-code fragments and documentation to block "Instruction-Smuggling" and prompt injection.
-- **Hardware-Attested Policy Discovery Provider**: (P0) Advanced extension of the Policy Engine that mandates hardware-attested signatures for project-local policy overrides.
-- **Teammate-to-Teammate Policy Synchronizer**: (P1) Coordination service that facilitates the secure propagation of project-level policies between teammates in a horizontal mesh.
+- **Project-Level Policy Engine Adapter**: (P0) A universal policy gate that ingests and reconciles disparate project-local policies (Gemini's CEL, OpenClaw's Rego) into a hardware-attested manifest.
+- **Source-Instruction Integrity Guard (SIIG)**: (P1) Security middleware that performs semantic scanning of project-local metadata files to prevent smuggled system-prompt overrides.
+- **Hardware-Attested Policy Discovery Provider**: (P0) Security service that cryptographically binds project-local policy files to a TPM to prevent unauthorized rule modification.
+- **Task-Bound Identity Provider**: (P0) Implementation of the OpenClaw v2026.3.1 standard, issuing hardware-attested identities bound to specific CRDT task-IDs.
 
 ### Priority Shifts
-- **Policy-Bound Reasoning (PBR) Adapter**: (Re-affirmed P0) Evolving to support the integration of the new **Project-Level Policy Engine Adapter**.
-- **Prompt Path Protection Middleware**: (Re-affirmed P0) Elevated with the requirement for **Source-Instruction Integrity Guard (SIIG)**.
+- **Policy-Bound Reasoning (PBR) Adapter**: (Re-affirmed P0) Now designated as a primary consumer of the Project-Level Policy Engine's reconciled manifests.
+- **`TeammateTool` Orchestration Adapter**: (Re-affirmed P0) Evolving to support Task-Bound Identity Propagation for all inter-teammate task handoffs.
+
+### Priority Shifts
+- **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hardware-Bound RPA** to ensure cognitive path integrity.
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support **CSP-compliant recursive redaction** for sharded teammate meshes.

@@ -1,7 +1,16 @@
-<!--
-Copyright 2026 Author(s) of MCP Any
-SPDX-License-Identifier: Apache-2.0
--->
+# Copyright 2026 MCP Any Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 # Strategic Vision: MCP Any
 
@@ -895,13 +904,11 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **CSP v1.0 Native Bridge**: Supporting the OpenClaw standard, MCP Any will act as the authoritative backend for CSP-compliant context sidecars. We will implement lifecycle hooks for recursive redaction and context ownership, ensuring that agent privacy is maintained even within shared teammate shards.
 - **Dynamic Context Sharding Adapter**: To neutralize "Mailbox Lock" bottlenecks in high-density teams, we are adopting the Claude Code v2.2.0 sharding pattern. MCP Any will provide the infrastructure for "Granular State Streaming," allowing teammates to synchronize task-bound context fragments without global state locks.
 
----
-
 ## Strategic Evolution: [2026-06-03]
 ### Focus: Project-Local Policy Sovereignty & Source-Instruction Integrity
-**Context**: The maturation of Gemini CLI's policy engine (v0.30.0) and the emergence of prompt injection via source-embedded instructions (\`oh-my-opencode\`) confirm that **Governance** must now be project-resident and **Instruction Sanitization** must move beyond tool calls to the source code itself. As agents increasingly treat documentation and source-code comments as high-trust execution commands, the "Universal Agent Bus" must evolve to act as the authoritative gatekeeper for project-local security policies and source-resident instructions.
+**Context**: The release of Gemini CLI v0.30.0 (native CEL policies) and the disclosure of the "oh-my-opencode" exploit (CVE-2026-11822) confirm that project-local metadata and disparate policy engines are the next critical failure points. Security must now move from "Gateway Policies" to "Project-Local Sovereignty," where the project itself defines its immutable security boundaries regardless of the agent framework used.
 **Strategic Pivot**:
-- **Project-Level Policy Engine Adapter**: MCP Any will evolve to act as the authoritative host for project-specific security policies. We will implement an adapter that allows users to define granular, repository-resident policies (e.g., Gemini-style \`mcp-policy.rego\` or \`.mcp-policy.json\`) that are hardware-attested and enforced by the gateway, neutralizing "Global Policy Drift."
-- **Source-Instruction Integrity Guard (SIIG)**: To neutralize "Instruction-Smuggling" in source files and installation guides, we are introducing SIIG. This layer will perform real-time, semantic scanning of source-code fragments and documentation as they are ingested by the agent's context window, blocking hidden imperative instructions that attempt to coerce unauthorized agent behavior.
-- **Hardware-Attested Policy Discovery**: We are mandating hardware-attestation for the discovery of project-local security policies. This ensures that a malicious repository cannot "shadow" a global security policy with a local, permissive override without explicit user re-attestation at the hardware level.
-- **Teammate-to-Teammate Policy Sync**: Supporting horizontal swarms, MCP Any will facilitate the secure synchronization of project-local policies between teammates. This ensures that all agents in a mesh (Claude, OpenClaw, AutoGen) operate under a consistent, project-bound security posture regardless of their framework of origin.
+- **Project-Level Policy Engine Adapter**: MCP Any will evolve to act as the authoritative "Universal Policy Gate." We will implement an adapter that reconciles framework-specific project policies (Gemini's CEL, OpenClaw's Rego) into a single, hardware-attested security manifest that governs the entire swarm.
+- **Source-Instruction Integrity Guard (SIIG)**: To neutralize "Source-Instruction Smuggling," we are introducing the SIIG. This layer will perform real-time, semantic scanning of all project-local metadata files (`.gitignore`, `.env`, `.github/`) before they are ingested into the agent's context, blocking smuggled system-prompt overrides.
+- **Hardware-Attested Policy Discovery Provider**: To counter "Settings-Squatting," we are mandating that all project-local policy files are cryptographically bound to a Trusted Platform Module (TPM). This ensures that a compromised subagent cannot rewrite the project's security rules to bypass supervision.
+- **Task-Bound Identity Lifecycle**: We are adopting the OpenClaw v2026.3.1 standard for "Task-Scoped Identity Propagation." MCP Any will issue hardware-attested identity tokens that are cryptographically bound to specific CRDT task-IDs, ensuring they automatically expire upon task completion.
