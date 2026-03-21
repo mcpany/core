@@ -620,3 +620,9 @@
 - [ ] **[P0] Mailbox Integrity Auditor**: (2026-06-21) Forensic dashboard for reviewing hardware-attested coordinate messages and MIS-blocked injection attempts.
 - [ ] **[P0] Hardware-Bound Budget Widget**: (2026-06-21) Real-time monitor for ARE v1.7 budget consumption and hardware attestation status.
 - [ ] **[P1] Logic-Grafting Alert Center**: (2026-06-21) Real-time visualization of semantic entropy spikes and blocked logic-grafting events in shared shards.
+
+#### Upcoming (2026-06-22 Evolution)
+- [ ] **[P0] ZKCD Discovery Dashboard**: (2026-06-22) UI for reviewing hardware-attested, privacy-preserving capability proofs.
+- [ ] **[P0] Attention-Lock Heatmap**: (2026-06-22) Visualization of HAAL/ALS pinned fragments and attention-utilization levels.
+- [ ] **[P0] Stylometric Profile Viewer**: (2026-06-22) Security dashboard for managing behavioral reasoning profiles and mimicry alerts.
+- [ ] **[P1] Entropy Violation Monitor**: (2026-06-22) Real-time visualization of high-entropy reasoning traces blocked by the ARI Hub.

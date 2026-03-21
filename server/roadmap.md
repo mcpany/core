@@ -782,3 +782,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Mailbox Injection Shield (MIS)**: (P0) Advanced extension for Mailbox Integrity Middleware providing hardware-attested validation of task-claiming metadata.
 - **Hardware-Attested Budget Enforcement**: (P0) Integration of Gemini CLI ARE v1.7 headers for immutable, hardware-bound reasoning budgets.
 - **Resident Logic-Grafting Interceptor**: (P1) Real-time semantic entropy monitor for horizontal teammate shards to detect unauthorized branch grafting.
+
+#### Upcoming (2026-06-22 Evolution)
+*   **[P0] ZKCD-Bound Discovery Hub**: Advanced discovery service implementing A2A v2.0 Zero-Knowledge Capability Discovery. (Added: 2026-06-22)
+*   **[P0] Attention-Locked Governance (ALG)**: Security middleware utilizing ALS headers to cryptographically pin intent fragments. (Added: 2026-06-22)
+*   **[P0] Stylometric Identity Provider**: Extension for FSI Provider anchoring identities to behavioral reasoning profiles. (Added: 2026-06-22)
+*   **[P1] Semantic Entropy Interceptor**: Real-time monitoring for the ARI Hub to detect and block engineered refinement loops. (Added: 2026-06-22)

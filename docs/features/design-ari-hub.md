@@ -80,3 +80,10 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * The ARI Hub will now mandate **Lineage-Bound Context Verification**. Every context fragment ingested from project-local files must be cryptographically bound to a verified user attestation.
 * Implementing **Attention-Driver Analysis** in the Semantic Consistency Engine to detect when "Injected Context" is the primary driver for high-risk tool proposals.
 **Security Impact:** Prevents "Invisible" instructions from project-local files from hijacking the agent's reasoning loop.
+
+### Update: 2026-06-22 - Neutralizing Ghost-Anchor Exploits & Stylometric Mimicry
+**Context:** Today's market sync revealed the "Ghost-Anchor" exploit (triggering infinite loops via engineered context) and the emergence of "Stylometric Mimicry" for impersonation.
+**Architecture Adjustment:**
+* Integrating **Semantic Entropy Interception** into the consistency engine. The Hub will now monitor reasoning fragments for high-entropy patterns that signal adversarial "Ghost-Anchor" injections.
+* Mandating **Stylometric Identity Attestation (SIA)** for all high-trust fragments. Fragment signatures must now include a behavioral stylometry component to neutralize parent-persona impersonation.
+**Security Impact:** Prevents mission-root eviction via reasoning noise and hardens the "Reasoning Mainline" against identity-spoofing mimicry attacks.

@@ -1425,3 +1425,15 @@
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MIS** integration to counter horizontal mesh exploits.
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with mandatory support for **ARE v1.7** hardware-attested budget persistence.
 - **Intent-Resumption Gateway (IRG)**: (Re-affirmed P0) Designated as the primary infrastructure for implementing **MRCP-compliant** mission resumption.
+
+## Evolution: [2026-06-22] Updates
+
+### Proposed Additions
+- **ZKCD-Bound Discovery Hub**: (P0) Advanced discovery service implementing A2A v2.0 Zero-Knowledge Capability Discovery to prevent shadow mapping.
+- **Attention-Locked Governance (ALG) Middleware**: (P0) Security middleware utilizing ALS headers to cryptographically pin intent fragments at the LLM attention layer.
+- **Stylometric Identity Attestation (SIA) Provider**: (P0) Extension for the FSI Provider that anchors identities to unique behavioral reasoning profiles.
+- **Semantic Entropy Interceptor**: (P1) Monitoring service for the ARI Hub that detects high-entropy reasoning traces to prevent context exhaustion.
+
+### Priority Shifts
+- **Federated Swarm Identity (FSI) Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SIA** integration.
+- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Designated as the primary enforcement point for **Semantic Entropy Interception**.

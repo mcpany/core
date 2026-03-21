@@ -59,3 +59,10 @@ As AI agent frameworks like Gemini CLI and OpenClaw move toward high-intensity r
 *   Implementing **Cross-Mission Budget Continuity**. Reasoning budgets are now reconciled against a persistent "Mission Root Registry."
 *   Introducing a "Lease Migration Protocol" for framework-neutral handoffs, ensuring budget integrity as agents move between local and cloud environments.
 **Security Impact:** Prevents "Budget Reset" exploits where subagents trigger mission restarts to refresh their reasoning quotas.
+
+### Update: 2026-06-22 - ARE v1.7 Compliance & Attention-Locked Shards (ALS)
+**Context:** The release of Gemini CLI v0.41.0 (ARE v1.7) and the introduction of ALS confirm that economic integrity must now be bound to attention sovereignty.
+**Architecture Adjustment:**
+* Implementing support for **Hardware-Attested Budgets (ARE v1.7)**. Reasoning quotas are now cryptographically bound to the hardware-attested session, preventing header spoofing.
+* Integrating with the **Attention-Locked Governance (ALG)** middleware. The RBF will automatically apply ALS headers to mission-critical intent fragments during budget allocation to ensure they survive context flooding.
+**Security Impact:** Neutralizes "Reasoning-Budget Hijacking" via hardware-level enforcement and ensures user intent remains prioritized by the model attention mechanism.
