@@ -40,13 +40,13 @@
 - [ ] **Inter-Agent Mailbox Monitor**: ([2026-03-17]) Visual tracking and security auditing of teammate-to-teammate coordination messages.
 - [ ] **RL Reward Attestation Viewer**: ([2026-03-17]) UI for monitoring verifiable binary rewards and reasoning optimization metrics.
 - [x] **Tool Playground & Explorer**:
- - [x] Auto-generated forms from Tool JSON Schemas.
- - [x] "Execute" button with history and result visualization.
- - [x] "Copy as Curl/Python" code generation.
+- [x] Auto-generated forms from Tool JSON Schemas.
+- [x] "Execute" button with history and result visualization.
+- [x] "Copy as Curl/Python" code generation.
 - [ ] **Live Marble Diagrams**: Reactive visualization of concurrent agent flows, tool calls, and dependencies.
 - [ ] **Interactive Debugger**:
- - [ ] Breakpoint management for tool calls.
- - [ ] Variable inspection and modification during "Paused" state.
+- [ ] Breakpoint management for tool calls.
+- [ ] Variable inspection and modification during "Paused" state.
 - [ ] **[P2] Plugin Marketplace**: In-app browser to discover, install, and configure community MCP servers.
 - [ ] **[P2] Interactive Setup Wizard**: Guided "First Run" experience to generate `mcp.yaml` and configure agents.
 - [ ] **[P2] Agent Black Box Player**: Timeline-based replay of recorded agent sessions (Inputs, Outputs, State).
@@ -55,11 +55,11 @@
 ### Existing Planned Features
 
 - [ ] **Advanced Service Configuration & Sharing**:
- - [x] Visual editor for detailed service configuration (Connection, Auth, Advanced).
- - [x] Service Duplication: One-click cloning of existing services.
- - [x] Service Export: Download service configuration as JSON.
- - [ ] Import external services via gRPC auto-discovery or OpenAPI specs.
- - [ ] Export and share service configurations.
+- [x] Visual editor for detailed service configuration (Connection, Auth, Advanced).
+- [x] Service Duplication: One-click cloning of existing services.
+- [x] Service Export: Download service configuration as JSON.
+- [ ] Import external services via gRPC auto-discovery or OpenAPI specs.
+- [ ] Export and share service configurations.
 - [x] **Service Connection Diagnostic Tool**: Interactive tool to diagnose connection issues with upstream services (DNS, Handshake, Capabilities) - Added based on Ecosystem Audit.
  - _Update_: Enhanced with WebSocket support and browser-side connectivity probing.
 - [x] **Integrated Connection Diagnostics**: Added direct access to the Connection Diagnostic tool from the Service List status indicator, allowing users to quickly troubleshoot failed services.
