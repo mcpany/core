@@ -1461,3 +1461,15 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Mesh-Wide Behavioral Interdiction (MWBI)**: (P0) Collective monitoring service that detects coordinated swarm attack patterns and automatically revokes discovery capabilities across the mission scope.
+- **Autonomous Verification Quorum (AVQ) Hub**: (P0) Distributed security middleware facilitating hardware-attested, multi-agent task validation to bridge the HITL speed gap.
+- **Recursive Identity Attestation (RIA) Provider**: (P0) Core security service mandating hardware-bound proof of complete parentage lineage for sub-processes and recursive delegations.
+- **Trace-Level DLP (T-DLP) Middleware**: (P0) Semantic security scanner for reasoning fragments that detects and blocks micro-exfiltration hidden in chain-of-thought metadata.
+
+### Priority Shifts
+- **HITL Middleware**: (P1) Deprioritized for high-stakes autonomous tasks in favor of **AVQ** to address the "Speed Gap" bottleneck.
+- **Collective Swarm Anomaly Detection (CSAD) Hub**: (Re-affirmed P0) Evolving into the primary backend for the **MWBI** collective interdiction layer.

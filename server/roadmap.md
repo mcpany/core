@@ -149,6 +149,12 @@
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
 *   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Mesh-Wide Behavioral Interdiction (MWBI)**: Collective monitoring to detect coordinated swarm attack patterns across mission scopes. (Added: 2026-06-25)
+*   **[P0] Autonomous Verification Quorum (AVQ) Hub**: Machine-speed task validation utilizing multi-agent hardware-attested quorums. (Added: 2026-06-25)
+*   **[P0] Recursive Identity Attestation (RIA) Provider**: Hardware-bound proof of complete parentage lineage for sub-processes. (Added: 2026-06-25)
+*   **[P0] Trace-Level DLP (T-DLP) Middleware**: Real-time semantic scanning of reasoning fragments to prevent micro-exfiltration. (Added: 2026-06-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+### Upcoming: [2026-06-25]
+- [ ] **[P0] Swarm Behavior Interdiction Monitor**: (2026-06-25) Collective monitoring dashboard for detecting mesh-wide swarm attack patterns.
+- [ ] **[P0] AVQ Quorum Workspace**: (2026-06-25) Machine-speed authorization UI for reviewing multi-agent verification status.
+- [ ] **[P0] Identity Lineage Tracer v2**: (2026-06-25) Advanced visual tracer for RIA-compliant recursive parentage across process boundaries.
+- [ ] **[P0] T-DLP Exfiltration Dashboard**: (2026-06-25) Real-time security monitor for detecting micro-exfiltration in reasoning traces.

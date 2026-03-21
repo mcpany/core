@@ -47,3 +47,11 @@ While 60% of developers use AI agents, only 20% can "fully delegate" tasks due t
 
 ## 7. Evolutionary Changelog
 * **2026-06-02:** Initial Document Creation.
+
+### Update: 2026-06-25 - Collective Swarm Verification & Speed Gap Mitigation
+**Context:** Today's market sync confirmed that the "Speed Gap" between autonomous execution (80-90% headless) and HITL has reached a breaking point. Individual agent supervisor models are failing against coordinated swarm attacks like GTG-1002.
+**Architecture Adjustment:**
+*   Formalizing the move from HITL to **Autonomous Verification Quorums (AVQ)** for 80% of routine autonomous delegations.
+*   Mandating hardware-bound (TPM) approval tokens from independent auditors from disparate frameworks (e.g., OpenClaw + Claude Code).
+*   Introducing the `AVQ_LEDGER` for permanent, non-repudiable audit trails to meet EU AI Act and DORA adversarial resilience requirements.
+**Security Impact:** Neutralizes coordinated "low-and-slow" swarm probes via collective behavioral monitoring and machine-speed interdiction.
