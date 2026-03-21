@@ -6,18 +6,6 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
-## Evolution: [2026-05-19] Updates
-
-### Proposed Additions
-- **Standardized Trust-Label Translator**: (P0) A core security middleware that maps and normalizes trust-metadata (UAB attestation tokens, legacy MCP headers, etc.) during cross-framework state handoffs, ensuring trust continuity.
-- **Cross-Framework Wait-Graph Synchronizer**: (P1) A coordination service that provides a unified bus for agents to report "Wait-States," enabling swarm-wide deadlock detection across framework boundaries.
-- **MAQ Heartbeat Provider**: (P1) An efficiency-focused extension for the CQ Hub that monitors multi-agent coordination for stalls, providing real-time telemetry for swarm health.
-- **Intent-Weighted MRP Controller**: (P0) Upgrade for the MRP Middleware that integrates with OpenClaw RCE v2.0 to ensure pinned intents act as the primary weight for context summarization.
-
-### Priority Shifts
-- **State-Trust Labeling (STL) Provider**: (Re-affirmed P0) Now elevated with the requirement for "Standardized Trust-Metadata Translation" to support heterogeneous swarms.
-- **Wait-Graph Deadlock Resolver**: (Re-affirmed P0) Designated as a critical requirement for production teams using `TeammateTool`.
-
 ## Evolution: [2026-05-18] Updates
 
 ### Proposed Additions

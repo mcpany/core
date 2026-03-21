@@ -10,17 +10,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-05-19]
-### Focus: Standardized Trust Translation & Deadlock-Resilient Orchestration
-**Context**: The rapid adoption of OpenClaw RCE v2.0 and the consolidation of Claude Code's MAQ for high-stakes tool calls have highlighted a critical gap: **"Trust Fragmentation."** As agents bridge between disparate frameworks (UAB, A2A, MCP), the lack of standardized trust-metadata mapping is leading to "Trust Mismatch" errors and coordination deadlocks.
-**Strategic Pivot**:
-- **Standardized Trust-Metadata Translation**: MCP Any will evolve to act as the authoritative "Trust Translation Layer." We will provide the infrastructure to map and normalize trust-metadata (UAB attestation tokens, legacy MCP headers, etc.) during cross-framework state handoffs, ensuring seamless trust continuity.
-- **Cross-Framework Wait-Graph Sync**: To address "Teammate Deadlock" in heterogeneous swarms, we are introducing "Cross-Framework Wait-Graph Sync." MCP Any will provide a unified bus for agents to report their "Wait-States," enabling the Wait-Graph Deadlock Resolver to identify and break circular dependencies across framework boundaries.
-- **Intent-Weighted MRP**: Leveraging OpenClaw's RCE v2.0, we are upgrading Mission-Root Pinning (MRP) to be "Intent-Weighted." This ensures that the pinned mission intent is not only protected from eviction but also acts as the primary weight for all context summarization hooks.
-- **MAQ Heartbeat Monitoring**: Supporting the efficiency of MAQ quorums, we will implement "Quorum Heartbeat Monitoring" to proactively identify and alert on coordination stalls, reducing the latency overhead of multi-agent high-stakes actions.
-
----
-
 ## Strategic Evolution: [2026-05-18]
 ### Focus: Contextual Integrity & Deadlock-Resilient Orchestration
 **Context**: The emergence of "Mission Root Exhaustion" (MRE) and "Protocol-Agnostic State Injection" (PASI) proves that securing the transport layer is insufficient. We must now protect the **semantic integrity** of the mission itself. Simultaneously, the rise of "Teammate Deadlock" in parallel swarms (Claude Code Agent Teams) confirms that the Universal Agent Bus must move from passive routing to active lifecycle and state reconciliation.
@@ -136,7 +125,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Origin-Locked Agency & Intent-Sealed Memory
 **Context**: The "ClawJacked" (CVE-2026-25253) exploit proves that implicit local trust is a catastrophic failure point when browser-based attackers can bridge to agent control planes. Simultaneously, the persistent "Memory Smearing" pain point confirms that shared state without reasoning-aware isolation leads to swarm divergence and knowledge loss.
 **Strategic Pivot**:
-- **Mandatory Origin-Locked Connectivity**: MCP Any will transition from optional to mandatory browser-origin and session-token binding for all local listeners. This ensures that only verified local applications--not malicious websites--can command the Universal Agent Bus.
+- **Mandatory Origin-Locked Connectivity**: MCP Any will transition from optional to mandatory browser-origin and session-token binding for all local listeners. This ensures that only verified local applications—not malicious websites—can command the Universal Agent Bus.
 - **Intent-Sealed Reasoning Shards**: We are evolving RAMS into a default "Sealed Shard" model for the Blackboard. MCP Any will provide cryptographically isolated memory regions for every subagent, ensuring that "Intent Drift" or a compromised agent cannot pollute or exfiltrate state from siblings.
 - **Leased Fast-Path Attestation**: To address hardware overhead, we are introducing "Trust Leases." MCP Any will broker time-bound, hardware-attested capabilities, allowing agents to perform high-frequency tool calls without the per-call latency of full hardware signatures.
 
@@ -250,7 +239,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ## Strategic Evolution: [2026-04-22]
 ### Focus: Cognitive Sovereignty & Negative Trust Architectures
-**Context**: The emergence of "Cognitive Sovereignty" within the Sovereign Agent Collective and the discovery of "Replay-as-Delegation" attacks signal a move toward more granular, non-repudiable agent agency. Security must now account for "Negative Trust"--proving the absolute absence of malicious configurations--while ensuring subagents maintain reasoning privacy from their parents.
+**Context**: The emergence of "Cognitive Sovereignty" within the Sovereign Agent Collective and the discovery of "Replay-as-Delegation" attacks signal a move toward more granular, non-repudiable agent agency. Security must now account for "Negative Trust"—proving the absolute absence of malicious configurations—while ensuring subagents maintain reasoning privacy from their parents.
 **Strategic Pivot**:
 - **Cognitive Sovereignty Hub**: MCP Any will evolve to support "Encrypted Monologue" storage. This ensures that a specialized subagent's internal reasoning remains private and immutable, accessible only to the subagent and the user via the A2UI Gateway, preventing parent-agent "Reasoning Hijacking."
 - **A2A Replay Guard**: We are mandating a "Monotonic Task Nonce" for all A2A task proposals. This neutralizes replay attacks by ensuring every inter-agent delegation is unique, time-bound, and cryptographically linked to a specific session state.
@@ -734,6 +723,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Intent Integrity Arbitration**: MCP Any will evolve the RIG into a full "Arbitration Hub." It will perform recursive deconstruction of all "Reactive Intent" expansion requests, verifying them against the cryptographically signed "Root Mission Intent" to block smuggled sub-goals.
 - **Leased Trust Orchestration**: We are adopting the LFTA (Low-Frequency Trust Attestation) model as a core infrastructure utility. MCP Any will act as a "Trust Lease Broker," allowing sessions to maintain a high-strength security posture across a burst of tool calls without repeated hardware signature overhead.
 - **Continuous Sandbox Integrity Monitoring**: Transitioning from point-in-time attestation to a "Continuous Resident Monitor" (RIM). This provides hardware-bound proofs that the agent's environment remains immutable throughout the lifecycle of the mission, neutralizing "Delayed Payload" escapes.
+
+## Strategic Evolution: [2026-05-19]
+### Focus: Standardized Trust-Metadata Translation & Cross-Framework Wait-Graph Sync
+**Context**: The rapid emergence of "Trust Fragmentation" between UAB, A2A, and legacy MCP has created a critical friction point for multi-framework swarms. Following the widespread adoption of OpenClaw RCE v2.0 and Claude Code MAQ, the industry is pivoting from "Isolated Sandboxing" to "Standardized Trust-Labeling."
+**Strategic Pivot**:
+- **Standardized Trust-Metadata Translator**: MCP Any will introduce a translation layer to normalize trust signals between disparate frameworks. This allows a "High-Trust" attestation from a local Claude Code instance to be semantically understood and respected by an OpenClaw subagent.
+- **Cross-Framework Wait-Graph Synchronization**: To solve "Deadlock-Resilient Orchestration," we are implementing a shared wait-graph interface. MCP Any will act as the central "Lock Broker" to prevent circular dependencies between agents from different frameworks competing for local resources.
+- **Semantic Integrity Guardrails**: Beyond JSON validation, MCP Any will now enforce "Semantic Contract Verification" for all inter-agent tool calls, ensuring that outputs conform not just to a schema, but to the "Mission Intent" defined at the root of the swarm.
 
 ## Strategic Evolution: [2026-04-16]
 ### Focus: Reactive Intent Governance & Self-Healing Swarm Integrity

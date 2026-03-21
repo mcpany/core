@@ -1,46 +1,44 @@
-# Design Doc: State-Trust Labeling (STL) Provider
+# Design Doc: State Trust Labeling (STL) Provider
 **Status:** Draft
 **Created:** 2026-05-19
 
 ## 1. Context and Scope
-As AI agent swarms evolve from single-framework to heterogeneous "Agent Teams" (e.g., combining Claude Code, OpenClaw, and Gemini CLI), they are increasingly vulnerable to **Protocol-Agnostic State Injection (PASI)**. This occurs when an agent ingests state from a lower-trust origin and propagates it into a high-trust reasoning loop. The STL Provider solves this by cryptographically tagging every data fragment in the Shared KV Store (Blackboard) with its framework origin and trust level.
+With the rise of multi-framework agent swarms (OpenClaw, Claude Code, AutoGen), the "Shared Blackboard" (KV Store) has become a primary target for Cross-Framework State Injection. An agent from a low-trust framework can currently overwrite state that a high-trust framework relies on for mission-critical reasoning. The STL Provider introduces cryptographic trust-tagging for all blackboard entries to ensure framework-level provenance and integrity.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Implement a "Trust Labeling" mechanism for all Blackboard data.
-    * Provide a "Trust Translation Layer" to map metadata across UAB, A2A, and MCP.
-    * Enforce "Trust-Bound Reading," where high-trust agents are alerted or blocked when accessing low-trust data.
+    * Attach immutable "Trust Labels" to every KV pair in the Blackboard.
+    * Enable framework-specific "Write Isolation" policies.
+    * Provide a standardized API for agents to query the trust level of a state fragment.
 * **Non-Goals:**
-    * Providing a global identity for all agents (focus is on data trust).
-    * Modifying the internal reasoning of the agents.
+    * It will not perform deep semantic analysis of the *content* of the state (handled by Semantic Integrity Bridge).
+    * It will not manage agent-level identities (handled by A2A Messaging Hub).
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Heterogeneous Swarm Orchestrator
-* **Primary Goal:** Ensure a Claude-led team does not base critical decisions on unauthenticated data injected by a legacy subagent.
+* **User Persona:** Multi-Framework Swarm Orchestrator
+* **Primary Goal:** Prevent an unverified subagent from clobbering a "Root Mission Anchor" in the shared blackboard.
 * **The Happy Path (Tasks):**
-    1. An OpenClaw subagent writes a task result to the Blackboard via the UAB adapter.
-    2. The STL Provider intercepts the write and cryptographically tags it with `trust_level: hardware_attested`.
-    3. A legacy subagent writes a result to the same Blackboard via an unauthenticated MCP server.
-    4. The STL Provider tags it with `trust_level: low_unverified`.
-    5. A supervisor agent attempts to read both fragments; the STL Provider flags the `low_unverified` data, preventing trust pollution in the reasoning loop.
+    1. A "High-Trust" parent agent writes a mission anchor to the Blackboard with a hardware-attested label.
+    2. A "Low-Trust" subagent attempts to overwrite the same key.
+    3. The STL Provider intercepts the request, compares the trust labels, and rejects the write.
+    4. The parent agent is notified of the attempted integrity violation.
 
 ## 4. Design & Architecture
 * **System Flow:**
-    `[Agent Write/Read] -> [STL Provider] -> [Blackboard (SQLite)]`
+    `Agent Tool Call` -> `Blackboard Wrapper` -> `STL Policy Engine` -> `SQLite Store`
 * **APIs / Interfaces:**
-    * `STL.label_data(key, value, origin_token)`: Computes and attaches trust metadata to a write operation.
-    * `STL.verify_trust(key)`: Returns the cryptographically verified trust level of a data fragment.
-    * `STL.translate_metadata(raw_headers)`: Normalizes disparate framework metadata into the STL standard.
+    * `SetWithLabel(key, value, trust_token)`
+    * `GetWithMetadata(key) -> (value, trust_label, origin_framework)`
 * **Data Storage/State:**
-    * Trust labels are stored as metadata columns in the Blackboard SQLite table, signed by the MCP Any master key.
+    * Schema update for `blackboard` table to include `trust_label_id` and `signature_blob`.
 
 ## 5. Alternatives Considered
-* **Framework-Specific Tagging**: Rejected as it fails to provide a unified trust worldview across different frameworks.
-* **Global Access Control (ACL)**: Rejected as ACLs manage *who* can access, while STL manages the *provenance* and *reliability* of the data itself.
+* **Namespace Isolation:** Rejected because it prevents legitimate cross-framework coordination which is a core value proposition of MCP Any.
+* **Read-Only Shards:** Rejected because agents often need to collaboratively refine state, just with different levels of authority.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust)**: The STL labels must be immutable and signed to prevent "Label Spoofing" by compromised agents.
-* **Observability**: Trust distribution and "Trust Violation" events will be visualized in the Blackboard Isolation Inspector.
+* **Security (Zero Trust):** All trust labels are cryptographically bound to the session's hardware attestation.
+* **Observability:** Every label-check failure is logged as a security event in the `audit_log`.
 
 ## 7. Evolutionary Changelog
 * **2026-05-19:** Initial Document Creation.
