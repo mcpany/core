@@ -33,5 +33,7 @@ window.HTMLElement.prototype.releasePointerCapture = vi.fn();
    Promise.resolve({
      ok: true,
      json: () => Promise.resolve([]),
+     text: () => Promise.resolve("[]"),
+     headers: new Headers(),
    })
  );
