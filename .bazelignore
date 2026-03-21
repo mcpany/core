@@ -1,7 +1,9 @@
 build/
 node_modules/
+docker/
 docs/
 server/build/
+server/docker/
 server/docs/
 server/tests/integration/upstream/node_modules/
 ui/node_modules/

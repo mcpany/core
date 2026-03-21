@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bazel:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(node:*)",
+      "Bash(dpkg:*)",
+      "Bash(bazelisk:*)",
+      "Read(//tools/**)",
+      "Bash(grep:*)",
+      "Bash(curl:*)",
+      "Bash(tail:*)",
+      "Bash(docker pull:*)",
+      "Bash(make bazel-build-images:*)",
+      "Bash(git:*)",
+      "Bash(PATH=/home/kevin/core/build/env/bin:$PATH shellcheck:*)",
+      "Bash(sort:*)"
+    ]
+  }
+}

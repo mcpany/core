@@ -1,36 +1,25 @@
-<!-- markdownlint-disable MD013 MD024 MD032 MD004 MD022 MD030 MD007 -->
 # Market Sync: 2026-06-02
 
-**Objective:** Evolution of Task Traceability and Mesh Coordination Sovereignty.
+## 1. Ecosystem Shifts
 
-## Ecosystem Shifts
+### OpenClaw: Spectral Reasoning & ARP
+*   **Update:** OpenClaw v2.9 has pivoted to address "Spectral Reasoning" side-channels. This involves timing-based exfiltration of internal monologues.
+*   **Mechanism:** Introduced the **Attested Reasoning Path (ARP)** standard. Agents must now cryptographically sign their reasoning steps to prove they haven't been influenced by noise-injected side-channels.
+*   **Impact:** Standard MCP servers must now support "Reasoning Jitter" to mask processing times.
 
-### 1. OpenClaw: Traceability & System-Level Attestation
+### Gemini CLI: Context Shard Streaming (CSS)
+*   **Update:** Gemini CLI v0.35.0 introduced **CSS**. This allows for granular, on-demand streaming of context shards to sub-agents.
+*   **Benefit:** Reduces the "Context Tax" for deep swarms, as sub-agents only receive the shards relevant to their immediate task rather than a full context window replication.
+*   **Requirement:** Transport layers must now handle `x-gemini-css-shard-id` headers for routing.
 
-* **Observation:** OpenClaw's latest reliability updates focus on solving the "Hidden Problem" of agent automation—the lack of clear origin for unexpected actions.
-* **Technical Shift:** Introduction of system-level execution tracing that binds commands to their originating framework or webhook. This transforms OpenClaw from an experimental tool into a trusted system for macOS, Windows, and Linux environments.
-* **Trend:** Shift from "Black Box" automation to "Attested Execution Path."
+### Claude Code: Teammate Discovery v2 & Shard Splicing Exploit
+*   **Update:** Released **Teammate Discovery v2**, which mandates hardware-attested Capability Cards for all local teammate handoffs.
+*   **Vulnerability:** A new exploit, **"Local Loopback Shard Splicing,"** was disclosed. Sub-agents on the same host can use loopback timing to "splice" into CSS shards destined for other agents, potentially exfiltrating mission-root keys.
 
-### 2. Claude Code: Peer-to-Peer Mesh Maturity
+## 2. Autonomous Agent Pain Points
+*   **Reasoning Sovereignty:** Swarm orchestrators are reporting a "Delegation Gap." Supervisors cannot verify if a sub-agent's reasoning path was genuinely autonomous or subtly coerced by malicious tool outputs.
+*   **Attestation Latency:** Hardware-attested quorums are becoming a bottleneck for sub-millisecond task delegation in high-frequency trading and devops swarms.
 
-* **Observation:** The transition from "Agent Teams" to "Mesh Coordination" is complete. Teammates now operate as sovereign peers rather than hierarchical subagents.
-* **Technical Shift:** Standardization of the "Shared Mailbox" protocol for inter-teammate instructions, requiring decentralized state synchronization rather than a single parent-controlled context.
-* **Trend:** Horizontal Mesh Governance as the de-facto architecture for large-scale agent deployments.
-
-### 3. Agentic Security: The Verification Bottleneck
-
-* **Observation:** Industry reports confirm that while 60% of developers use AI, 80% of generated tasks still stall due to "Verification Fatigue."
-* **Pain Point:** The "Delegation Gap" exists because agents cannot provide hardware-attested proof of correctness that matches a human's security threshold.
-* **Requirement:** A universal "Verification Bus" that can automate the attestation of tool-call results across framework boundaries.
-
-## Unique Findings for Today
-
-* **Sovereign Execution:** The move toward local AI frameworks (OpenClaw) proves that users prioritize "Local Sovereignty" to control how systems operate and ensure data doesn't leave the machine.
-* **The "Reasoning Trace" Mandate:** Major enterprises are now mandating "Signed Reasoning Traces" for all agent-led pull requests to satisfy compliance audits.
-* **Identity Decay:** Session-bound identity is no longer sufficient for long-running mesh tasks; hardware-bound identity rotation is required to maintain trust.
-
-## Strategic Impact
-
-1. **Autonomous Verification:** MCP Any must prioritize the **AVQ (Autonomous Verification Quorum) Hub** to bridge the Delegation Gap by providing multi-agent attestation for tool results.
-2. **Traceability Binding:** Integrate OpenClaw-style execution tracing into our SRM (Signed Reasoning Monologue) provider to ensure every system-level command carries its full reasoning lineage.
-3. **Mailbox Sovereignty:** Harden the T2T bridge to support sharded, lock-free mailboxes that enforce mesh-resident identity rotation.
+## 3. GitHub & Social Trending
+*   **GitHub:** Trending repositories are focusing on "Noise-Injection Proxies" to mitigate the Spectral Reasoning threat.
+*   **Reddit:** Massive discussions on `r/AgenticEng` regarding the move toward **"TPM-Signed Reasoning Monologues"** as the only way to achieve Zero-Trust in deep swarms.

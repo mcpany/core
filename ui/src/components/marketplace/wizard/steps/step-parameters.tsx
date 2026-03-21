@@ -31,28 +31,13 @@ export function StepParameters() {
         updateState({ params: newParams });
 
         // Also update config env
+        // TODO: Sync `params` to `config.commandLineService.env` more robustly
+        // For now we just update basic env
         if (config.commandLineService) {
-            const env: any = { ...config.commandLineService.env };
-
-            // Remove old key if renamed
-            if (newKey !== undefined && newKey !== key) {
-                delete env[key];
-            }
-
-            // Set new value, preserving other secret properties if they exist
-            if (env[newKey || key]) {
-                env[newKey || key] = { ...env[newKey || key], plainText: value };
-            } else {
-                env[newKey || key] = { plainText: value };
-            }
-
-            // Clean up any keys that were deleted from params entirely
-            for (const k in env) {
-                if (!(k in newParams)) {
-                    delete env[k];
-                }
-            }
-
+            const env: any = {};
+            Object.entries(newParams).forEach(([k, v]) => {
+                env[k] = { plainText: v };
+            });
             updateConfig({
                 commandLineService: {
                     ...config.commandLineService,
@@ -73,8 +58,10 @@ export function StepParameters() {
         updateState({ params: newParams });
          // Sync with config
          if (config.commandLineService) {
-            const env: any = { ...config.commandLineService.env };
-            delete env[key];
+            const env: any = {};
+            Object.entries(newParams).forEach(([k, v]) => {
+                env[k] = { plainText: v };
+            });
             updateConfig({
                 commandLineService: {
                     ...config.commandLineService,
