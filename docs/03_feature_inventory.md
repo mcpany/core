@@ -925,7 +925,3 @@
 ## Priority Features: [2026-05-13]
 - **eBPF Socket Sentinel**: (P0) Kernel-resident semantic auditor for inter-agent traffic over isolated pipes.
 - **UID-Bound Socket Identity Verifier**: (P0) OS-level authentication for subagents using `SO_PEERCRED` to prevent identity squatting.
-
-## Priority Features: [2026-05-13]
-- **eBPF Socket Sentinel**: (P0) Kernel-resident semantic auditor for inter-agent traffic over isolated pipes.
-- **UID-Bound Socket Identity Verifier**: (P0) OS-level authentication for subagents using `SO_PEERCRED` to prevent identity squatting.
