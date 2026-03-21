@@ -2035,7 +2035,7 @@ func (a *Application) runServerMode(
 	// Note: Standard mux doesn't handle methods nicely, so we route by path and check method in handler.
 	// We route /credentials to list (GET) and create (POST)
 	// We route /credentials/ to get/update/delete (with ID)
-	mux.Handle("/credentials", authMiddleware(rbacAdmin(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/credentials", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			a.listCredentialsHandler(w, r)
@@ -2044,12 +2044,12 @@ func (a *Application) runServerMode(
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
-	}))))
+	})))
 	// mux.Handle("/api/v1/skills", authMiddleware(a.handleListSkills())) // Replaced by gRPC Gateway
 	// mux.Handle("/api/v1/skills/create", authMiddleware(a.handleCreateSkill())) // Replaced by gRPC Gateway
 
 	// Register Config Validation Endpoint
-	mux.Handle("/api/v1/config/validate", authMiddleware(rbacAdmin(http.HandlerFunc(rest.ValidateConfigHandler))))
+	mux.Handle("/api/v1/config/validate", authMiddleware(http.HandlerFunc(rest.ValidateConfigHandler)))
 
 	// Asset upload is handled later in the gRPC gateway block to support fallback
 
@@ -2068,7 +2068,7 @@ func (a *Application) runServerMode(
 	// `gwmux.ServeHTTP(w, r)`!
 	// Yes, I can use `gwmux` as fallback.
 
-	mux.Handle("/credentials/", authMiddleware(rbacAdmin(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/credentials/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// This handles /credentials/:id
 		switch r.Method {
 		case http.MethodGet:
@@ -2080,7 +2080,7 @@ func (a *Application) runServerMode(
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
-	}))))
+	})))
 	mux.Handle("/debug/auth-test", authMiddleware(http.HandlerFunc(a.testAuthHandler)))
 	mux.Handle("/api/v1/debug/seed_traffic", authMiddleware(a.handleDebugSeedTraffic()))
 	mux.Handle("/api/v1/debug/seed", authMiddleware(a.handleDebugSeed()))
