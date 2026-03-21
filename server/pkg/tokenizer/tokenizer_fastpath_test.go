@@ -273,7 +273,7 @@ func TestCountTokensReflectStruct_AllKinds(t *testing.T) {
 		BoolFalse   bool
 		IntField    int
 		InterfaceF  interface{}
-		_           string
+		Ignored     string
 	}
 
 	val := reflect.ValueOf(MyStruct{
@@ -282,6 +282,7 @@ func TestCountTokensReflectStruct_AllKinds(t *testing.T) {
 		BoolFalse:   false,
 		IntField:    123,
 		InterfaceF:  "interface string",
+		Ignored:     "ignored",
 	})
 
 	got, err := countTokensReflectStruct(st, val, make(map[uintptr]bool))
@@ -289,7 +290,7 @@ func TestCountTokensReflectStruct_AllKinds(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	want := 9
+	want := 10
 	if got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
