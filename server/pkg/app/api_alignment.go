@@ -14,11 +14,11 @@ import (
 
 // SubagentStatus defines the structure for AIA heartbeat responses.
 type SubagentStatus struct {
-	ID           string  `json:"id"`
-	Name         string  `json:"name"`
-	Status       string  `json:"status"`
-	EntropyScore float64 `json:"entropyScore"`
-	LastHeartbeat int64  `json:"lastHeartbeat"`
+	ID            string  `json:"id"`
+	Name          string  `json:"name"`
+	Status        string  `json:"status"`
+	EntropyScore  float64 `json:"entropyScore"`
+	LastHeartbeat int64   `json:"lastHeartbeat"`
 }
 
 var currentAIAStatus = []SubagentStatus{
