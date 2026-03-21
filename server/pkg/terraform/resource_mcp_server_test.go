@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -31,7 +30,9 @@ func TestTerraformResource(t *testing.T) {
 		}
 		if r.Method == "GET" && r.URL.Path == "/api/v1/servers/test" {
 			w.WriteHeader(http.StatusOK)
-			_ = json.NewEncoder(w).Encode(ResourceMCPServer{Name: "test", Port: 9090, Enabled: true}) //nolint:errcheck
+			if err := json.NewEncoder(w).Encode(ResourceMCPServer{Name: "test", Port: 9090, Enabled: true}); err != nil {
+				return
+			}
 			return
 		}
 		if r.Method == "GET" && r.URL.Path == "/api/v1/servers/error" {
