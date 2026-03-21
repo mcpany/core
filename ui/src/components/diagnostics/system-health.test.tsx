@@ -44,16 +44,18 @@ describe("SystemHealth", () => {
       uptime_seconds: 3600,
       version: "1.0.0"
     };
-    vi.mocked(apiClient.getDoctorStatus).mockResolvedValue(mockReport);
+    vi.mocked(apiClient.getDoctorStatus).mockResolvedValue(mockReport as any);
     vi.mocked(apiClient.getSystemStatus).mockResolvedValue(mockSysStatus);
 
     render(<SystemHealth />);
 
     await waitFor(() => {
         expect(screen.getByText('Network is Secure')).toBeInTheDocument();
-        // Since getByText with regex can match multiple or fail, just check the exact ones in the component.
-        expect(screen.getByText('network')).toBeInTheDocument();
-        expect(screen.getByText('All clear')).toBeInTheDocument();
+        // The text is split into two elements: 100 and /100
+        expect(screen.getByText('100')).toBeInTheDocument();
+        expect(screen.getByText('/100')).toBeInTheDocument();
+        expect(screen.getByText(/network/i)).toBeInTheDocument();
+        expect(screen.getByText(/All clear/i)).toBeInTheDocument();
     });
   });
 
@@ -88,7 +90,7 @@ describe("SystemHealth", () => {
         version: "1.0.0"
     };
 
-    vi.mocked(apiClient.getDoctorStatus).mockResolvedValue(mockReport);
+    vi.mocked(apiClient.getDoctorStatus).mockResolvedValue(mockReport as any);
     vi.mocked(apiClient.getSystemStatus).mockResolvedValue(mockSysStatus);
 
     render(<SystemHealth />);
@@ -97,6 +99,9 @@ describe("SystemHealth", () => {
         expect(screen.getByText('Action Recommended')).toBeInTheDocument();
         expect(screen.getByText(/No TLS configured on public interface/i)).toBeInTheDocument();
         expect(screen.getByText('database')).toBeInTheDocument();
+        // The text is split into two elements: 70 and /100
+        expect(screen.getByText('70')).toBeInTheDocument();
+        expect(screen.getByText('/100')).toBeInTheDocument();
     });
   });
 });

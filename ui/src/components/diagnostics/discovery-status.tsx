@@ -5,7 +5,7 @@ import { apiClient, DiscoveryData } from "@/lib/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, RefreshCw, FileText, FolderTree, Info, AlertTriangle, AlertCircle, Eye, Activity, Search } from "lucide-react";
+import { Loader2, RefreshCw, FileText, Info, AlertTriangle, AlertCircle, Eye, Activity, Search } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";

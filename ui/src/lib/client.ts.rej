@@ -25,22 +25,22 @@
  export interface DoctorReport {
      status: 'healthy' | 'degraded' | 'error';
      timestamp?: string;
-@@ -487,6 +505,18 @@
+@@ -183,6 +201,18 @@
+     // ---- Diagnostics ----
+     async getDoctorStatus(): Promise<DoctorReport> {
          const res = await fetch('/api/v1/doctor');
          if (!res.ok) throw new Error('Failed to fetch doctor status');
          return res.json();
 +    },
 +
-+    getSystemStatus: async (): Promise<SystemStatus> => {
++    async getSystemStatus(): Promise<SystemStatus> {
 +        const res = await fetch('/api/v1/system');
 +        if (!res.ok) throw new Error('Failed to fetch system status');
 +        return res.json();
 +    },
 +
-+    getDiscoveryStatus: async (): Promise<DiscoveryData> => {
++    async getDiscoveryStatus(): Promise<DiscoveryData> {
 +        const res = await fetch('/api/v1/discovery');
 +        if (!res.ok) throw new Error('Failed to fetch discovery status');
 +        return res.json();
      },
-
-     // ---- Auth Management ----

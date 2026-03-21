@@ -174,18 +174,6 @@ export const apiClient = {
         return res.json();
     },
 
-    getSystemStatus: async (): Promise<SystemStatus> => {
-        const res = await fetch('/api/v1/system');
-        if (!res.ok) throw new Error('Failed to fetch system status');
-        return res.json();
-    },
-
-    getDiscoveryStatus: async (): Promise<DiscoveryData> => {
-        const res = await fetch('/api/v1/discovery');
-        if (!res.ok) throw new Error('Failed to fetch discovery status');
-        return res.json();
-    },
-
     async getSystemStatus(): Promise<SystemStatus> {
         const res = await fetch('/api/v1/system');
         if (!res.ok) throw new Error('Failed to fetch system status');
