@@ -37,6 +37,17 @@
 - **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ESB-compliant** state entanglement.
 - **Stylometric Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving to support the new **Stylometric Mimicry** defense requirements.
 
+## Evolution: [2026-06-21] Updates
+
+### Proposed Additions
+- **OpenInference Provider**: (P0) Authoritative OTel-native tracing service that implements the OpenInference specification for MCP trajectories.
+- **Risk-Adaptive CQ Controller**: (P0) Dynamic security middleware that automatically scales attestation quorums based on real-time tool risk scores.
+- **Cross-Swarm Mission Relay (CSMR)**: (P0) Coordination service for secure handoff of mission-root intent and identity tokens between disparate framework swarms.
+
+### Priority Shifts
+- **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Now designated as the primary defense against **Reasoning-Path Mimicry (RPM)** exploits.
+- **VTD Autonomous Delegation Engine**: (Promoted to P0) Critical for mitigating **Attestation Fatigue** in production meshes.
+
 ## Evolution: [2026-06-08] Updates
 
 ### Proposed Additions

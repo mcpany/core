@@ -614,3 +614,8 @@
 - [ ] **[P0] CFIA Attestation Workspace**: (2026-06-20) Security dashboard for reviewed and TPM-signing project-local context files.
 - [ ] **[P1] Visual Attention Heatmap**: (2026-06-20) Advanced visualization of reasoning drivers for high-risk tool calls, supporting the ALT workflow.
 - [ ] **[P1] Reasoning Lineage Inspector**: (2026-06-20) Visual debugger for cryptographically signed "Chains of Reason".
+
+### Upcoming: [2026-06-21]
+- [ ] **[P0] OpenInference Trace Viewer**: Integration with Arize Phoenix/LangSmith for unified multi-framework tracing.
+- [ ] **[P0] Risk-Adaptive Quorum Dashboard**: Real-time visualization of dynamic attestation thresholds and tool risk scores.
+- [ ] **[P0] Cross-Swarm Mission Tracker**: Visual monitor for mission-root intent handoffs between Claude Code and OpenClaw swarms.

@@ -56,3 +56,7 @@ ALT addresses this by cryptographically locking high-risk tool capabilities to s
 
 ## 7. Evolutionary Changelog
 * **2026-06-20:** Initial Document Creation.
+* **2026-06-21:** **Mitigating Attestation Fatigue via Risk-Adaptive Quorums.**
+    * **Context:** Market sync revealed that high-security meshes are suffering from "Attestation Fatigue," leading to approval blindness.
+    * **Architecture Adjustment:** Integrating the **Risk-Adaptive CQ Controller** into the ALT middleware. Tool calls where driver fragments are attested *and* the tool's risk score is "Low" will be automatically verified, while "High" risk tools still require explicit user approval.
+    * **Security Impact:** Reduces user friction for safe operations while focusing human attention on critical, high-risk security gates.
