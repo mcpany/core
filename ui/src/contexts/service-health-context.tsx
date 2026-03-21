@@ -88,23 +88,14 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
 
             if (!res.ok) return;
 
-            const etag = res.headers?.get('ETag');
+            const etag = res.headers.get('ETag');
             if (etag) {
                 lastEtag.current = etag;
             }
 
             // ⚡ Bolt Optimization: Use text comparison to avoid expensive JSON operations.
             // res.text() + string comparison is much faster than res.json() + JSON.stringify().
-            let text: string;
-            // Handle mocked environments where res.text might not exist
-            if (typeof res.text === 'function') {
-                text = await res.text();
-            } else {
-                // Fallback for mocked `res`
-                const json = typeof res.json === 'function' ? await res.json() : await res;
-                text = JSON.stringify(json);
-            }
-
+            const text = await res.text();
             let graph: Graph;
 
             if (text === lastTopologyText.current && lastGraph.current) {
@@ -124,7 +115,6 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
             // might not match exactly what comes from API or recursion needs to be flexible
             // But we should try to be safer if possible.
             // Assuming Node type from @/types/topology
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const extractServiceNodes = (nodes: any[]) => {
                 nodes.forEach(node => {
                     if (node.type === 'NODE_TYPE_SERVICE') {
