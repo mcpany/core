@@ -47,6 +47,7 @@ test.describe('Inspector Page', () => {
     // mock the WS at the browser level to ensure the trace is delivered to the
     // InspectorTable without depending on proxy-level WS tunnelling.
     let wsSendFunc: ((data: string) => void) | null = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await page.routeWebSocket('**/api/v1/ws/traces', (ws: any) => {
       wsSendFunc = (data: string) => ws.send(data);
     });
@@ -89,6 +90,7 @@ test.describe('Inspector Page', () => {
 
   test('should clear traces permanently on backend when Clear is clicked', async ({ page }) => {
     let wsSendFunc: ((data: string) => void) | null = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await page.routeWebSocket('**/api/v1/ws/traces', (ws: any) => {
       wsSendFunc = (data: string) => ws.send(data);
     });
