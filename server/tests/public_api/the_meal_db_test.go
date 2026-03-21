@@ -111,10 +111,10 @@ func TestUpstreamService_TheMealDB(t *testing.T) {
 	err = json.Unmarshal([]byte(textContent.Text), &theMealDBResponse)
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
-	if _, ok := theMealDBResponse["meals"].(string); ok { //
+	if _, ok := theMealDBResponse["meals"].(string); ok {
 		t.Skip("Skipping test, no meals found in response")
 	}
-	if theMealDBResponse["meals"] == nil { //
+	if theMealDBResponse["meals"] == nil {
 		t.Skip("Skipping test, no meals found in response")
 	}
 	meals, ok := theMealDBResponse["meals"].([]interface{})

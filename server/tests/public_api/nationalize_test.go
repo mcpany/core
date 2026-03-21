@@ -19,7 +19,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamService_Nationalize(t *testing.T) { //
+func TestUpstreamService_Nationalize(t *testing.T) {
 	t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
