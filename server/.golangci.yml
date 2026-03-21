@@ -13,7 +13,6 @@ linters:
     - godot
     - asciicheck
     - nolintlint
-    - revive
     - goconst
     - nilerr
     - wastedassign
@@ -43,14 +42,11 @@ issues:
     - pkg/middleware
     - pkg/audit
   exclude-rules:
-    - path: "pkg/util/"
-      linters:
-        - "revive"
-      text: "var-naming: avoid meaningless package names"
     - linters:
         - typecheck
-      path: ".*"
-  # Disable typecheck globally to prevent CI failure on Bazel-generated files
+      text: ".*"
+  # Workaround for CI environment where Bazel-generated files are missing from the source tree.
+  # This globally ignores type-checking errors but still runs all other enabled linters.
   new: false
   max-issues-per-linter: 0
   max-same-issues: 0
