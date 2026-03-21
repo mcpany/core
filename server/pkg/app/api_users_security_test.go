@@ -56,7 +56,6 @@ func TestHandleUserDetail_IDOR_Reproduction(t *testing.T) {
 		// VULNERABILITY CHECK: Currently this likely returns 200 OK
 		if w.Code == http.StatusOK {
 			t.Log("VULNERABILITY REPRODUCED: User 'victim-user' accessed 'admin-user' profile.")
-			t.Fail()
 			assert.Fail(t, "IDOR Vulnerability found!")
 		} else {
 			assert.Equal(t, http.StatusForbidden, w.Code)
@@ -115,7 +114,6 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 		for _, role := range updatedUser.GetRoles() {
 			if role == "admin" {
 				t.Log("VULNERABILITY REPRODUCED: User 'victim-user' escalated privileges to 'admin'.")
-				t.Fail()
 				assert.Fail(t, "Privilege Escalation Vulnerability found!")
 			}
 		}
@@ -160,7 +158,6 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 
 		if !hasAdmin {
 			t.Log("VULNERABILITY REPRODUCED: Victim overwrote Admin's profile via JSON body spoofing.")
-			t.Fail()
 			assert.Fail(t, "IDOR via JSON Injection found!")
 		}
 	})
@@ -192,7 +189,6 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 		for _, pid := range updatedUser.GetProfileIds() {
 			if pid == "admin-profile" {
 				t.Log("VULNERABILITY REPRODUCED: User 'victim-user' escalated privileges to 'admin-profile'.")
-				t.Fail()
 				assert.Fail(t, "Profile Escalation Vulnerability found!")
 			}
 		}
