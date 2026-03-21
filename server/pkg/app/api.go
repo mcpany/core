@@ -841,7 +841,7 @@ func updateToolDisableStatus(svc *configv1.UpstreamServiceConfig, toolName strin
 	var tools []*configv1.ToolDefinition
 	var setToolsFunc func([]*configv1.ToolDefinition)
 
-	switch st := svc.ServiceConfig.(type) {
+	switch st := svc.GetServiceConfig().(type) {
 	case *configv1.UpstreamServiceConfig_McpService:
 		tools = st.McpService.GetTools()
 		setToolsFunc = func(t []*configv1.ToolDefinition) { st.McpService.SetTools(t) }
