@@ -206,7 +206,7 @@ func (m *MockTypesMCPClient) GetPrompt(_ context.Context, _ *mcp.GetPromptParams
 func (m *MockTypesMCPClient) Initialize(_ context.Context, _ *mcp.InitializeParams) (*mcp.InitializeResult, error) {
 	return nil, fmt.Errorf("not implemented")
 }
-func (m *MockTypesMCPClient) Close() error                   { return nil }
+func (m *MockTypesMCPClient) Close() error                 { return nil }
 func (m *MockTypesMCPClient) Ping(_ context.Context) error { return nil }
 
 func TestMCPTool_Execute(t *testing.T) {
