@@ -21,3 +21,8 @@ go_test(
         "manual",
     ],
 )
+
+go_test(
+    name = "tests_test",
+    srcs = ["e2e_test.go"],
+)
