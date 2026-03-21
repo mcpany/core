@@ -34,7 +34,7 @@ interface BackendHealthResponse {
  * @returns A NextResponse containing the service health object with services list and history map.
  */
 export async function GET(request: Request) {
-  const backendUrl = process.env.BACKEND_URL || 'http://localhost:8080';
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:50050';
   const authHeader = request.headers.get('Authorization');
 
   try {
