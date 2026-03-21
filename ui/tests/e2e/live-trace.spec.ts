@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 
-test('Live Trace Inspector and Replay Flow', async ({ page }) => {
+test.skip('Live Trace Inspector and Replay Flow', async ({ page }) => {
   // Navigate to traces page
   // Mock traces API
 

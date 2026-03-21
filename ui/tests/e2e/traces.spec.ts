@@ -4,7 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedGlobalState } from './test-data';
+import { seedGlobalState, seedTraces } from './test-data';
 
 test.describe.skip('Trace Viewer', () => {
   test.beforeEach(async ({ page, request }) => {
@@ -12,6 +12,7 @@ test.describe.skip('Trace Viewer', () => {
     // The app fetches /api/v1/traces (with the v1 prefix).
 
     await seedGlobalState(request);
+    await seedTraces(request);
 
     await page.goto('/login');
     await page.waitForLoadState('networkidle');
