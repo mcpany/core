@@ -6,7 +6,7 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe.skip('Marketplace Wizard and Service Lifecycle', () => {
+test.describe('Marketplace Wizard and Service Lifecycle', () => {
 
   test.beforeEach(async ({ page }) => {
     // Mock API responses
@@ -48,7 +48,7 @@ test.describe.skip('Marketplace Wizard and Service Lifecycle', () => {
     // Mock Auth Test
   });
 
-  test.skip('Complete CUJ: Create Config -> Instantiate -> Manage', async ({ page }) => {
+  test('Complete CUJ: Create Config -> Instantiate -> Manage', async ({ page }) => {
     // 1. Navigate to Marketplace
     await page.goto('/marketplace');
     await expect(page.getByText('Marketplace', { exact: true }).first()).toBeVisible();

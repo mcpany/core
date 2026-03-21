@@ -5,8 +5,8 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe.skip('Resource Explorer', () => {
-  test.skip('should load resources and allow selection', async ({ page }) => {
+test.describe('Resource Explorer', () => {
+  test('should load resources and allow selection', async ({ page }) => {
     // Navigate to the resources page
     // Mock resources endpoint
 

@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe.skip('Services Feature', () => {
+test.describe('Services Feature', () => {
   const services: any[] = [
     {
         name: "Payment Gateway",
@@ -60,7 +60,7 @@ test.describe.skip('Services Feature', () => {
     await page.goto('/upstream-services');
   });
 
-  test.skip('should list services, allow toggle, and manage services', async ({ page }) => {
+  test('should list services, allow toggle, and manage services', async ({ page }) => {
     await expect(page.locator('h1')).toContainText('Services');
 
     // Verify services are listed
@@ -128,7 +128,7 @@ test.describe.skip('Services Feature', () => {
     await page.getByRole('button', { name: 'Cancel' }).click();
   });
 
-  test.skip('should render schema visualizer in service tools dialog', async ({ page }) => {
+  test('should render schema visualizer in service tools dialog', async ({ page }) => {
     await page.getByRole('link', { name: 'Payment Gateway' }).click();
     await expect(page.getByRole('heading', { name: 'Payment Gateway' })).toBeVisible();
 
@@ -151,7 +151,7 @@ test.describe.skip('Services Feature', () => {
     await expect(typeBadges.first()).toBeVisible();
   });
 
-  test.skip('should navigate to logs from service list', async ({ page }) => {
+  test('should navigate to logs from service list', async ({ page }) => {
     const serviceName = 'Payment Gateway';
     const row = page.locator('tr').filter({ hasText: serviceName });
 

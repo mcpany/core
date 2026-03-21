@@ -5,11 +5,11 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe.skip('Credentials Management', () => {
+test.describe('Credentials Management', () => {
 
 
 
-  test.skip('should list, create, update and delete credentials', async ({ page }) => {
+  test('should list, create, update and delete credentials', async ({ page }) => {
     // 1. Initial List (Empty)
 
     await page.goto('/credentials');
