@@ -56,3 +56,6 @@ ALT addresses this by cryptographically locking high-risk tool capabilities to s
 
 ## 7. Evolutionary Changelog
 * **2026-06-20:** Initial Document Creation.
+* **2026-06-21:** Addressing **Frontmatter-Hijack** patterns.
+    * **Architecture Adjustment:** Integrating **Hardware-Bound Attention Anchors**. High-risk tool calls driven by metadata (YAML frontmatter) now require explicit user attestation of the metadata block during the initial file sign-off (MLA).
+    * **Security Impact:** Prevents agents from executing shell commands triggered by "invisible" instructions in repository markdown files.

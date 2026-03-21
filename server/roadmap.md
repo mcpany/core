@@ -137,6 +137,11 @@
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
 
+#### Upcoming (2026-06-21 Evolution)
+*   **[P0] Lock-Free Mailbox Coordination**: CRDT-based mesh arbiter for horizontal teammate swarms. (Added: 2026-06-21)
+*   **[P1] Frontmatter-Aware Context Guard (FCG)**: Real-time semantic validation of YAML/TOML metadata in context files. (Added: 2026-06-21)
+*   **[P0] Metadata-Locked Attestation (MLA)**: Cryptographic binding of structural metadata to hardware-attested context signatures. (Added: 2026-06-21)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

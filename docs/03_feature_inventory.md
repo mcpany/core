@@ -1412,3 +1412,14 @@
 ### Priority Shifts
 - **Visual Attention Dashboard**: (P1) Now elevated to a critical requirement for supporting the **ALT** user-verification flow.
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support the new **Teammate Mailbox** security requirements.
+
+## Evolution: [2026-06-21] Updates
+
+### Proposed Additions
+- **Lock-Free Mesh Arbiter (LFMA)**: (P0) A core coordination service implementing CRDT-based task list synchronization for non-blocking teammate coordination in horizontal swarms.
+- **Frontmatter-Aware Context Guard (FCG)**: (P1) Security middleware that performs real-time semantic analysis of YAML/TOML frontmatter in context files to block deceptive instructions.
+- **Metadata-Locked Attestation (MLA) Provider**: (P0) Advanced extension for the CFIA service that cryptographically binds structural metadata to the hardware-attested file signature.
+
+### Priority Shifts
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Evolving into **AMS v2** with mandatory hardware-bound task sharding.
+- **Context-File Integrity Attestation (CFIA)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MLA** integration.

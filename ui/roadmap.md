@@ -614,3 +614,8 @@
 - [ ] **[P0] CFIA Attestation Workspace**: (2026-06-20) Security dashboard for reviewed and TPM-signing project-local context files.
 - [ ] **[P1] Visual Attention Heatmap**: (2026-06-20) Advanced visualization of reasoning drivers for high-risk tool calls, supporting the ALT workflow.
 - [ ] **[P1] Reasoning Lineage Inspector**: (2026-06-20) Visual debugger for cryptographically signed "Chains of Reason".
+
+### Upcoming: [2026-06-21]
+- [ ] **[P0] Mailbox Contention Dashboard**: (2026-06-21) Real-time visualization of task claiming and CRDT resolution in horizontal meshes.
+- [ ] **[P1] Frontmatter Security Inspector**: (2026-06-21) Interactive UI for reviewing and attesting to hidden structural metadata in context files.
+- [ ] **[P1] ALT Anchor Reviewer Dashboard**: (2026-06-21) Forensic workspace for reviewing Hardware-Bound Attention Anchors and blocked frontmatter instructions.
