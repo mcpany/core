@@ -23,9 +23,6 @@ import { ToolDefinition } from "@proto/config/v1/tool";
 import { ToolInspector } from "@/components/tools/tool-inspector";
 import { SmartToolSearch } from "@/components/tools/smart-tool-search";
 import { usePinnedTools } from "@/hooks/use-pinned-tools";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Activity } from "lucide-react";
-import { ToolActivityFeed } from "@/components/tools/tool-activity-feed";
 import { ToolTable } from "@/components/tools/tool-table";
 import {
   Accordion,
@@ -48,7 +45,6 @@ export default function ToolsPage() {
   const { isPinned, togglePin, bulkPin, bulkUnpin, isLoaded } = usePinnedTools();
   const [showPinnedOnly, setShowPinnedOnly] = useState(false);
   const [selectedService, setSelectedService] = useState<string>("all");
-  const [activeTab, setActiveTab] = useState<string>("all-tools");
   const [searchQuery, setSearchQuery] = useState("");
   const [isCompact, setIsCompact] = useState(false);
   const [groupBy, setGroupBy] = useState<"none" | "service" | "category">("none");
@@ -215,11 +211,7 @@ export default function ToolsPage() {
   }, [filteredTools, groupBy, services]);
 
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
-  const effectivelyLoaded = isLoaded || mounted;
-
-  if (!effectivelyLoaded) {
+  if (!isLoaded) {
     return (
       <div className="flex-1 p-8 animate-pulse text-muted-foreground">
         Loading tools...
@@ -288,21 +280,9 @@ export default function ToolsPage() {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList>
-            <TabsTrigger value="all-tools" className="flex items-center gap-2">
-                <List className="h-4 w-4" />
-                All Tools
-            </TabsTrigger>
-            <TabsTrigger value="activity" className="flex items-center gap-2">
-                <Activity className="h-4 w-4" />
-                Activity Feed
-            </TabsTrigger>
-        </TabsList>
-        <TabsContent value="all-tools">
-          <Card className="backdrop-blur-sm bg-background/50">
-            <CardHeader>
-              <CardTitle>Available Tools</CardTitle>
+      <Card className="backdrop-blur-sm bg-background/50">
+        <CardHeader>
+          <CardTitle>Available Tools</CardTitle>
           <CardDescription>Manage exposed tools from connected services.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -347,13 +327,8 @@ export default function ToolsPage() {
               ))}
             </Accordion>
           )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="activity">
-            <ToolActivityFeed serviceIdFilter={selectedService} />
-        </TabsContent>
-      </Tabs>
+        </CardContent>
+      </Card>
 
       <ToolInspector
         tool={selectedTool}
