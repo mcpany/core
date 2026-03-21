@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { RichResultViewer } from "@/components/tools/rich-result-viewer";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 /**
  * Copyright 2025 Author(s) of MCP Any
@@ -19,6 +18,7 @@ import {
   Sparkles,
   Loader2,
   ExternalLink,
+  Bug,
   Plus,
   Pencil,
   Trash2,
@@ -551,14 +551,12 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                                   />
                                   {msg.role}
                                 </div>
-                                <div className="bg-background border rounded-md p-3 text-sm whitespace-pre-wrap">
-                                  <RichResultViewer
-                                    result={
-                                      msg.content?.type
-                                        ? { content: [msg.content] }
-                                        : msg.content
-                                    }
-                                  />
+                                <div className="bg-background border rounded-md p-3 text-sm whitespace-pre-wrap font-mono">
+                                  {msg.content?.type === "text"
+                                    ? msg.content.text
+                                    : typeof msg.content === "string"
+                                      ? msg.content
+                                      : JSON.stringify(msg.content)}
                                 </div>
                               </div>
                             ),

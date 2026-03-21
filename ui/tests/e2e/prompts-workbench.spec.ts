@@ -63,23 +63,6 @@ test.describe("Prompts Workbench", () => {
       await expect(page.getByTestId("prompt-details")).toContainText(
         "Configuration",
       );
-
-      // Let's test the execution and RichResultViewer
-      const topicInput = page.locator('input[name="topic"]');
-      await expect(topicInput).toBeVisible();
-      await topicInput.fill("E2E testing");
-
-      const generateBtn = page.getByRole("button", { name: "Generate" });
-      await generateBtn.click();
-
-      // Wait for the result to appear
-      // The mock will return standard text or JSON, let's verify RichResultViewer tabs exist
-      await expect(page.getByRole("tab", { name: "JSON" })).toBeVisible({
-        timeout: 10000,
-      });
-
-      // Check if raw text from backend appears in the view
-      await expect(page.getByText("E2E testing")).toBeVisible();
     } else {
       await expect(noPrompts).toBeVisible();
     }

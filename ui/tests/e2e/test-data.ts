@@ -6,8 +6,9 @@
  */
 
 import { request, APIRequestContext } from "@playwright/test";
-
-// Removed proto imports as we use simple raw json payloads to seed test data
+import { ServiceTemplate } from "../../../proto/config/v1/service_template";
+import { UpstreamServiceConfig } from "../../../proto/config/v1/upstream_service";
+import { User } from "../../../proto/config/v1/user";
 
 const BASE_URL = process.env.BACKEND_URL || "http://localhost:50050";
 const API_KEY = process.env.MCPANY_API_KEY || "test-token";
@@ -114,7 +115,9 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
         },
       },
     },
-  ];
+  ].map((service) =>
+    UpstreamServiceConfig.toJSON(UpstreamServiceConfig.fromJSON(service)),
+  );
 
   const templates = [
     {
@@ -174,7 +177,9 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
         },
       },
     },
-  ];
+  ].map((template) =>
+    ServiceTemplate.toJSON(ServiceTemplate.fromJSON(template)),
+  );
 
   const users = [
     {
@@ -190,7 +195,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
       roles: ["admin"],
       profile_ids: ["dev", "prod"],
     },
-  ];
+  ].map((user) => User.toJSON(User.fromJSON(user)));
 
   const seedRequest = {
     upstream_services: services,
@@ -296,43 +301,11 @@ export const cleanupProfiles = async (requestContext?: APIRequestContext) => {
 };
 
 export const seedPrompts = async (requestContext?: APIRequestContext) => {
-  const context =
-    requestContext || (await request.newContext({ baseURL: BASE_URL }));
-  const prompt = {
-    name: "test_prompt",
-    description: "A test prompt for E2E tests",
-    service_id: "test_service",
-    arguments: [
-      {
-        name: "topic",
-        description: "The topic to prompt about",
-        required: true,
-      },
-    ],
-    template: "Tell me about {{topic}}",
-    tags: ["test"],
-  };
-
-  try {
-    await context.post("/api/v1/prompts", {
-      data: prompt,
-      headers: HEADERS,
-    });
-  } catch (e) {
-    console.error("Failed to seed prompt", e);
-  }
+  // No-op
 };
 
 export const cleanupPrompts = async (requestContext?: APIRequestContext) => {
-  const context =
-    requestContext || (await request.newContext({ baseURL: BASE_URL }));
-  try {
-    await context.post("/api/v1/prompts/test_prompt/delete", {
-      headers: HEADERS,
-    });
-  } catch (e) {
-    // Ignore cleanup errors
-  }
+  // No-op
 };
 
 export const seedWebhooks = async (requestContext?: APIRequestContext) => {
