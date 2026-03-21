@@ -308,9 +308,9 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
           } else {
               toast({ variant: "destructive", title: "Validation Failed", description: response.message });
           }
-      } catch (error: any) {
-          toast({ variant: "destructive", title: "Validation Error", description: error.message });
-          setValidationResult({ valid: false, message: error.message });
+      } catch (error: unknown) {
+          toast({ variant: "destructive", title: "Validation Error", description: (error instanceof Error ? error.message : "Unknown error") });
+          setValidationResult({ valid: false, message: (error instanceof Error ? error.message : "Unknown error") });
       } finally {
           setIsValidating(false);
       }
@@ -328,12 +328,12 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
 
         setOpen(false);
         if (onSuccess) onSuccess();
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error(error);
         toast({
             variant: "destructive",
             title: isEditing ? "Update Failed" : "Registration Failed",
-            description: error.message || "Something went wrong.",
+            description: (error instanceof Error ? error.message : "Unknown error") || "Something went wrong.",
         });
     }
   };
@@ -350,12 +350,12 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
 
       await performSave(config);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
       toast({
         variant: "destructive",
         title: isEditing ? "Update Failed" : "Registration Failed",
-        description: error.message || "Something went wrong.",
+        description: (error instanceof Error ? error.message : "Unknown error") || "Something went wrong.",
       });
     }
   };
