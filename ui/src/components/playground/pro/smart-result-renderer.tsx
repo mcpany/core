@@ -129,16 +129,9 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
         return 'raw';
     }, [userViewMode, tableData, mcpContent]);
 
-    const renderRaw = () => {
-        if (typeof result === 'string') {
-            return (
-                <div className="whitespace-pre-wrap font-mono text-sm p-3 rounded-md border bg-muted/10 max-h-[400px] overflow-auto">
-                    {result}
-                </div>
-            );
-        }
-        return <JsonView data={result} maxHeight={400} />;
-    };
+    const renderRaw = () => (
+        <JsonView data={result} maxHeight={400} />
+    );
 
     const renderRich = () => {
         if (!mcpContent) return renderRaw();

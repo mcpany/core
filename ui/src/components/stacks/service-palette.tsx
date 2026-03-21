@@ -24,7 +24,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { apiClient, ServiceTemplate } from "@/lib/client";
-import yaml from 'js-yaml';
 
 // Map icons by name or category if dynamic
 const iconMap: Record<string, React.ElementType> = {
@@ -79,7 +78,10 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
                 // The backend `ServiceTemplate` proto has `description`, `icon`, etc.
                 // Let's manually construct a basic YAML for now or use a helper.
 
-
+                // TODO: proper YAML marshaling. For now, we might rely on the `description` or `name` to pick a snippet
+                // if we want to match the old behavior, OR we simply serialize the config.
+                // But the Stack Editor expects a YAML snippet to insert into the stack config.
+                // Stack config is YAML.
 
                 setTemplates(data);
             } catch (err) {
@@ -93,32 +95,31 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
     }, []);
 
     const generateYamlSnippet = (t: ServiceTemplate): string => {
-        // Use proper YAML marshaling instead of manual concatenation
-        const baseName = t.serviceConfig.name || t.name.toLowerCase().replace(/\s+/g, '-');
-
-        let serviceObj: any = { name: baseName };
+        // Construct a YAML snippet based on the template config
+        // This is a simplified generation.
+        let snippet = `  - name: ${t.serviceConfig.name || t.name.toLowerCase().replace(/\s+/g, '-')}\n`;
 
         if (t.serviceConfig.commandLineService) {
-            serviceObj.command = t.serviceConfig.commandLineService.command;
+            snippet += `    command: ${t.serviceConfig.commandLineService.command}\n`;
             if (t.serviceConfig.commandLineService.workingDirectory) {
-                serviceObj.working_dir = t.serviceConfig.commandLineService.workingDirectory;
+                snippet += `    working_dir: ${t.serviceConfig.commandLineService.workingDirectory}\n`;
             }
             if (t.serviceConfig.commandLineService.env && Object.keys(t.serviceConfig.commandLineService.env).length > 0) {
-                serviceObj.environment = {};
+                snippet += `    environment:\n`;
                 for (const [k, v] of Object.entries(t.serviceConfig.commandLineService.env)) {
-                     serviceObj.environment[k] = v;
+                     // Handle EnvVarValue or string? Client type says string map usually for simple config,
+                     // but UpstreamServiceConfig uses EnvVarValue?
+                     // client.ts: environment: { [key: string]: string }; in commandLineService mapping.
+                     // wait, client.ts mapping:
+                     // environment: config.commandLineService.env (which is map<string, string>)
+                     snippet += `      ${k}: ${v}\n`;
                 }
             }
         } else if (t.serviceConfig.httpService) {
-             serviceObj.url = t.serviceConfig.httpService.address;
+             snippet += `    url: ${t.serviceConfig.httpService.address}\n`;
         }
 
-        // Return formatted as an array item string but with proper 2-space indentation
-        const yamlStr = yaml.dump([serviceObj], { indent: 2 });
-        // The editor expects it without the leading array dash to match the list level,
-        // wait, if we dump an array, it has "- name: ...". The old one had "  - name: ...".
-        // Let's just indent each line by 2 spaces.
-        return yamlStr.split('\n').map(line => line ? '  ' + line : line).join('\n');
+        return snippet;
     };
 
     const getIcon = (t: ServiceTemplate) => {
