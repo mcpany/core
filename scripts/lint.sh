@@ -121,6 +121,22 @@ fi
 #    the path set by $GOLANGCI_LINT_BIN, then a local install, then
 #    build/env/bin/ (populated by `make prepare`).
 # ---------------------------------------------------------------------------
+echo "==> Generating Go Protos for golangci-lint..."
+export PATH="$PROJECT_ROOT/server/build/env/bin:$PROJECT_ROOT/build/env/bin:$PATH"
+if [[ -x "$PROJECT_ROOT/server/build/env/bin/protoc" || -x "$PROJECT_ROOT/build/env/bin/protoc" ]]; then
+    PROTOC_BIN="$(find_tool protoc)"
+    cd "$PROJECT_ROOT"
+    find proto -name "*.proto" -not -path "proto/third_party/*" -not -path "proto/google/*" -print0 | xargs -0 "$PROTOC_BIN" --proto_path=. \
+           --proto_path=server/build/grpc-gateway \
+           --proto_path=server/build/googleapis \
+           --proto_path=build/grpc-gateway \
+           --proto_path=build/googleapis \
+           --go_out=. \
+           --go_opt=module=github.com/mcpany/core \
+           --go-grpc_out=. \
+           --go-grpc_opt=module=github.com/mcpany/core || true
+fi
+
 echo "==> Running golangci-lint..."
 if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
     GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
@@ -129,7 +145,7 @@ fi
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
+    env GOMEMLIMIT=1536MiB "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
         ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
     echo "    golangci-lint OK."
 else
