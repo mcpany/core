@@ -8,16 +8,15 @@ import { test, expect } from '@playwright/test';
 test.describe('Bulk Service Actions', () => {
 
   const testServices = [
-    { id: "service-1-bulk", name: "service-1-bulk", version: "1.0.0", disable: false, tags: ["prod"], http_service: { address: "http://localhost:8001" } },
-    { id: "service-2-bulk", name: "service-2-bulk", version: "1.0.0", disable: true, tags: ["dev"], http_service: { address: "http://localhost:8002" } },
-    { id: "service-3-bulk", name: "service-3-bulk", version: "1.0.0", disable: false, tags: ["prod"], http_service: { address: "http://localhost:8003" } }
+    { id: "service-1-bulk", name: "service-1-bulk", version: "1.0.0", disable: false, tags: ["prod"], httpService: { address: "http://localhost:8001" } },
+    { id: "service-2-bulk", name: "service-2-bulk", version: "1.0.0", disable: true, tags: ["dev"], httpService: { address: "http://localhost:8002" } },
+    { id: "service-3-bulk", name: "service-3-bulk", version: "1.0.0", disable: false, tags: ["prod"], httpService: { address: "http://localhost:8003" } }
   ];
 
   test.beforeEach(async ({ page }) => {
     // Use Playwright's route interception to mock the API response.
-    // We do this because the real backend is failing to start in the CI pipeline
-    // due to missing Bazel-generated Protobuf types.
-    // The goal of this test is to verify the UI UX changes.
+    // The main focus of this test is the UI behavior of the bulk actions and AlertDialogs.
+
     await page.route('**/api/v1/services', async route => {
         if (route.request().method() === 'GET') {
             await route.fulfill({
