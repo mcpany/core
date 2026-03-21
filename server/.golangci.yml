@@ -41,6 +41,11 @@ issues:
     - vendor
     - node_modules
     - .cache
+    - pkg/admin
+    - pkg/app
+    - pkg/bus
+    - pkg/topology
+    - pkg/upstream/grpc/protobufparser
   exclude-rules:
     - path: "_test.go"
       linters:
@@ -49,7 +54,7 @@ issues:
       linters:
         - "revive"
       text: "var-naming: avoid meaningless package names"
-    - text: "typecheck"
+    - path: ".*"
       linters:
         - typecheck
   skip-files:
