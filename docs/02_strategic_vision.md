@@ -1121,3 +1121,12 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Stylometric Mesh Sovereignty (SMS) Provider**: To neutralize "Stylometric Splicing," we are introducing SMS. This layer will perform real-time stylometric analysis of inter-agent messages, ensuring that subagent reasoning fragments cannot mimic the signature of the parent agent to bypass mission-root constraints.
 - **Lock-Free Sharded Mailbox Hub**: Supporting the efficiency of horizontal Agent Teams, MCP Any will implement "Sharded Mailbox Hub." This service will host granular, task-bound mailbox shards that allow parallel teammates to synchronize state without global coordination locks, ensuring non-blocking performance.
 - **Zero-Knowledge Discovery (ZKD) Proxy**: Leveraging Gemini CLI v0.42.0 patterns, we are mandating ZKD. Agent capabilities will remain cryptographically masked until a mission-bound, identity-verified handshake is completed, neutralizing "Shadow Capability" mapping by malicious subagents.
+
+## Strategic Evolution: [2026-03-21]
+### Focus: Adaptive Trust Orchestration & Content-Addressable Config Integrity
+**Context**: The "Headless Handoff" crisis in OpenClaw v1.6 and the discovery of "Binary Smuggling" (CVE-2026-31042) reveal that ephemeral trust must be bridged, not just enforced. Simultaneously, the UACO v1.5 draft for Resource Capability Claims (RCC) provides a new framework for verifying agent maturity before delegation.
+**Strategic Pivot**:
+- **Adaptive Trust Continuity**: MCP Any will evolve the Trust Broker to support "Trust Persistence" across session boundaries for verified headless agents, using hardware-bound attestation to maintain security without manual intervention.
+- **Content-Addressable Configuration (CAC)**: Shifting from path-based config loading to hash-based validation. All executable configurations or "hooks" must match a pre-attested SHA-256 fingerprint, neutralizing "Binary Smuggling" in WASM or JSON metadata.
+- **RCC-Aware Task Delegation**: Integrating UACO v1.5 Resource Capability Claims into the orchestration hub. MCP Any will now mandate that agents prove they possess the required local toolset and security posture before they are eligible to bid on task cards.
+- **Deep Packet Exfiltration Defense**: Expanding the "Validating Proxy" to monitor L4 traffic (DNS/ICMP) for "Shadow Agent" exfiltration patterns, ensuring agents cannot bypass tool-level security via low-level network tunnels.

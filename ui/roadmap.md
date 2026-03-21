@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+#### Upcoming (2026-03-21 Evolution v2)
+- [ ] **[P0] CAC Attestation Workspace**: (2026-03-21) UI for hashing and approving project-local configuration fragments (hooks/WASM).
+- [ ] **[P0] UACO v1.5 RCC Monitor**: (2026-03-21) Security dashboard for reviewing agent Resource Capability Claims during handoffs.
+- [ ] **[P1] L4 Traffic Security Heatmap**: (2026-03-21) Real-time visualization of DNS/ICMP packets from agents, flagged by anomaly detection.
+- [ ] **[P1] Hardware Trust Status Widget**: (2026-03-21) Monitor for TPM/Secure Enclave attestation status for headless agents.

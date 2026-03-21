@@ -50,3 +50,9 @@ The discovery of "Binary Smuggling" (CVE-2026-31042) highlights a critical vulne
 * Introducing "Ghost Shell" mode for un-attested hooks.
 * Un-attested hooks are executed in an air-gapped, instrumented container that generates a behavioral profile (file I/O, network syscalls).
 **Security Impact:** Allows users to audit hook behavior without risk to the host, facilitating safer "Content-Addressable" attestation decisions.
+### Update: 2026-03-21 - Adaptive Trust & Hardware-Bound Attestation
+**Context:** The emergence of "Headless Handoff" friction in OpenClaw v1.6 and "Binary Smuggling" in Claude Code assets requires a transition to hardware-locked configuration integrity.
+**Architecture Adjustment:**
+* **Mandatory Hash Fingerprinting**: All project-local configuration blocks, including hooks and WASM-based tool definitions, now require a SHA-256 fingerprint attested in the user's local manifest.
+* **RCC-Aware Discovery**: Discovery logic now verifies Resource Capability Claims (RCC) against the local hardware posture before exposing sensitive tool schemas.
+**Security Impact:** Neutralizes "Binary Smuggling" exfiltration attempts and ensures that headless agents maintain a verified security posture across session boundaries.
