@@ -23,7 +23,7 @@ test.describe('Prompt Studio', () => {
             description: 'The first seeded prompt',
             messages: [
               {
-                role: 'user',
+                role: 'USER',
                 content: { type: 'text', text: 'Hello from prompt 1' }
               }
             ]
@@ -33,7 +33,7 @@ test.describe('Prompt Studio', () => {
             description: 'The second seeded prompt',
             messages: [
               {
-                role: 'user',
+                role: 'USER',
                 content: { type: 'text', text: 'Hello from prompt 2' }
               }
             ]
