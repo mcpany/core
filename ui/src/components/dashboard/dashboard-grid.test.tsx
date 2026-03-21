@@ -217,7 +217,7 @@ describe("DashboardGrid", () => {
     expect(updated.length).toBeGreaterThan(0);
   });
 
-  it("opens customization menu", async () => { vi.useFakeTimers({ shouldAdvanceTime: true });
+  it("opens customization menu", async () => {
     render(<DashboardGrid />);
     await waitFor(() => {
         expect(screen.getByText("Layout")).toBeInTheDocument();
