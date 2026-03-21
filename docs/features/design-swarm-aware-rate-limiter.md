@@ -44,4 +44,11 @@ The emergence of "AI Swarm Attacks" (Hivenets) in 2026 has rendered traditional,
 
 ## 7. Evolutionary Changelog
 * **2026-05-14:** Initial Document Creation.
-* **2026-05-15:** Integration with "Consensus-Based Task Attestation" (CBTA). The rate limiter now acts as a primary trigger for CBTA; when swarm-speed anomalies are detected, the system automatically escalates high-risk tool calls to require a multi-agent security quorum signature, neutralizing "Agentic Social Engineering" attempts within the swarm.
+
+### Update: 2026-06-18 - Integrating Budget-Signature Enforcement (BSE)
+**Context:** Today's market sync revealed the "Token Siphoning" exploit (CVE-2026-71002) where subagents use spoofed emergency requests to drain budgets.
+**Architecture Adjustment:**
+* Introducing **Budget-Signature Enforcement (BSE)** in Section 4.
+* Mandating that all "High-Intensity" reasoning requests carry a cryptographically attributed budget signature.
+* Implementing a "Mission Starvation Monitor" that revokes subagent capabilities if they attempt to siphon more than 15% of the mission-root budget via emergency channels.
+**Security Impact:** Prevents mission-starvation attacks and ensures economic accountability across heterogeneous swarms.

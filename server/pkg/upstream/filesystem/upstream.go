@@ -33,8 +33,6 @@ import (
 //
 // It provides tools for interacting with various filesystem backends (local,
 // S3, GCS, etc.) as defined in the service configuration.
-//
-// Summary: Represents a Upstream.
 type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer
@@ -45,20 +43,6 @@ type Upstream struct {
 //
 // Returns:
 //   - upstream.Upstream: A new instance of the filesystem upstream.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -79,20 +63,6 @@ func NewUpstream() upstream.Upstream {
 // Side Effects:
 //   - Stops the health checker.
 //   - Closes all registered filesystem providers.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -126,20 +96,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - Creates a filesystem provider.
 //   - Starts a health checker.
 //   - Registers tools with the tool manager.
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

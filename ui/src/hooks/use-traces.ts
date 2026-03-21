@@ -5,7 +5,6 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Trace } from "@/types/trace";
-import { apiClient } from "@/lib/client";
 
 interface UseTracesOptions {
     initialPaused?: boolean;
@@ -178,15 +177,7 @@ export function useTraces(options: UseTracesOptions = {}) {
         };
     }, []);
 
-    const clearTraces = async () => {
-        try {
-            await apiClient.clearTraces();
-            setTraces([]);
-            bufferRef.current = [];
-        } catch (e) {
-            console.error("Failed to clear traces", e);
-        }
-    };
+    const clearTraces = () => setTraces([]);
 
     const refresh = () => {
         setTraces([]);

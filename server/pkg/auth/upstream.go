@@ -22,8 +22,6 @@ import (
 // when communicating with upstream services. Each implementation is responsible
 // for modifying the HTTP request to include the necessary authentication
 // credentials.
-//
-// Summary: Represents a UpstreamAuthenticator.
 type UpstreamAuthenticator interface {
 	// Authenticate modifies the given HTTP request to add authentication
 	// information, such as headers or basic auth credentials.
@@ -63,20 +61,6 @@ type UpstreamAuthenticator interface {
 // Returns:
 //   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
 //   - An error if the configuration is invalid.
-//
-// Summary: Initializes NewUpstreamAuthenticator operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuthenticator, error) {
 	if authConfig == nil {
 		return nil, nil
@@ -142,8 +126,6 @@ func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuth
 
 // APIKeyAuth implements UpstreamAuthenticator for API key-based authentication.
 // It adds a specified header with a static API key value to the request.
-//
-// Summary: Represents a APIKeyAuth.
 type APIKeyAuth struct {
 	ParamName string
 	Value     *configv1.SecretValue
@@ -157,20 +139,6 @@ type APIKeyAuth struct {
 //
 // Returns:
 //   - nil on success, or an error if the secret cannot be resolved.
-//
-// Summary: Executes Authenticate operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 	if a.Value == nil {
 		return errors.New("api key secret is not configured")
@@ -200,8 +168,6 @@ func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 
 // BearerTokenAuth implements UpstreamAuthenticator for bearer token-based
 // authentication. It adds an "Authorization" header with a bearer token.
-//
-// Summary: Represents a BearerTokenAuth.
 type BearerTokenAuth struct {
 	Token *configv1.SecretValue
 }
@@ -213,20 +179,6 @@ type BearerTokenAuth struct {
 //
 // Returns:
 //   - nil on success, or an error if the secret cannot be resolved.
-//
-// Summary: Executes Authenticate operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 	if b.Token == nil {
 		return errors.New("bearer token secret is not configured")
@@ -241,8 +193,6 @@ func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 
 // BasicAuth implements UpstreamAuthenticator for basic HTTP authentication.
 // It adds an "Authorization" header with the username and password.
-//
-// Summary: Represents a BasicAuth.
 type BasicAuth struct {
 	Username string
 	Password *configv1.SecretValue
@@ -255,20 +205,6 @@ type BasicAuth struct {
 //
 // Returns:
 //   - nil on success, or an error if the secret cannot be resolved.
-//
-// Summary: Executes Authenticate operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (b *BasicAuth) Authenticate(req *http.Request) error {
 	if b.Password == nil {
 		return errors.New("basic auth password secret is not configured")
@@ -282,8 +218,6 @@ func (b *BasicAuth) Authenticate(req *http.Request) error {
 }
 
 // OAuth2Auth implements UpstreamAuthenticator for OAuth2 client credentials flow.
-//
-// Summary: Represents a OAuth2Auth.
 type OAuth2Auth struct {
 	ClientID     *configv1.SecretValue
 	ClientSecret *configv1.SecretValue
@@ -323,20 +257,6 @@ func (o *OAuth2Auth) getTokenURL(ctx context.Context) (string, error) {
 //
 // Returns:
 //   - nil on success, or an error if the token cannot be obtained.
-//
-// Summary: Executes Authenticate operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (o *OAuth2Auth) Authenticate(req *http.Request) error {
 	tokenURL, err := o.getTokenURL(req.Context())
 	if err != nil {

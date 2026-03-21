@@ -15,8 +15,6 @@ import (
 )
 
 // DB wraps the sql.DB connection.
-//
-// Summary: Represents a DB.
 type DB struct {
 	*sql.DB
 }

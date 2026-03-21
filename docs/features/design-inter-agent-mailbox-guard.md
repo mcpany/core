@@ -43,7 +43,3 @@ With the rise of "Agent Teams" (Claude Code) and swarms, agents now coordinate v
 
 ## 7. Evolutionary Changelog
 *   **2026-03-17:** Initial Document Creation.
-*   **2026-05-23: Evolution to Intent-Bound Mailbox Integrity**
-    *   **Context:** Market research revealed "Intent Leakage" patterns where subagents probe parent mission-root constraints.
-    *   **Architecture Adjustment:** Upgrading the IAMG from a simple signature verifier to an "Intent-Bound Mailbox Middleware." It now includes an entropy-based monitoring layer to detect and block probing requests that attempt to reveal mission-root boundaries.
-    *   **Security Impact:** Prevents a compromised subagent from coercing a parent into revealing private system-level constraints via reasoning traces.

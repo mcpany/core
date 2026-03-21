@@ -6,11 +6,10 @@ import json
 import sys
 
 import cowsay
-from fastmcp import FastMCP
+from fastmcp import mcp
 
-mcp = FastMCP("e2e-cowsay-server")
 
-def main():
+async def main():
     """
     Main entry point for the cowsay server.
     """
@@ -19,8 +18,12 @@ def main():
         """Says a message using cowsay."""
         return cowsay.get_output_string("cow", message)
 
-    mcp.run(transport='stdio', show_banner=False)
+    await mcp.run_stdio()
 
 
 if __name__ == "__main__":
-    main()
+    if "--mcp-stdio" in sys.argv:
+        asyncio.run(main())
+    else:
+        print("This is a mock MCP service and should be run with --mcp-stdio", file=sys.stderr)
+        sys.exit(1)

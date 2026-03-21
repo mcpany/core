@@ -18,8 +18,6 @@ import (
 )
 
 // ManagerInterface defines the interface for managing alerts.
-//
-// Summary: Represents a ManagerInterface.
 type ManagerInterface interface {
 	// ListAlerts returns a list of all alerts.
 	ListAlerts() []*Alert
@@ -54,8 +52,6 @@ type ManagerInterface interface {
 }
 
 // Manager implements ManagerInterface using in-memory storage.
-//
-// Summary: Represents a Manager.
 type Manager struct {
 	mu         sync.RWMutex
 	alerts     map[string]*Alert
@@ -76,20 +72,6 @@ type Manager struct {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Initializes NewManager operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func NewManager() *Manager {
 	m := &Manager{
 		alerts: make(map[string]*Alert),
@@ -126,20 +108,6 @@ func (m *Manager) seedData() {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Executes ListAlerts operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (m *Manager) ListAlerts() []*Alert {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -167,20 +135,6 @@ func (m *Manager) ListAlerts() []*Alert {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Retrieves GetAlert operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (m *Manager) GetAlert(id string) *Alert {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -200,20 +154,6 @@ func (m *Manager) GetAlert(id string) *Alert {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Initializes CreateAlert operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (m *Manager) CreateAlert(alert *Alert) *Alert {
 	m.mu.Lock()
 	if alert.ID == "" {
@@ -268,20 +208,6 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Retrieves GetAlertStats operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (m *Manager) GetAlertStats() *AlertStats {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -324,20 +250,6 @@ func (m *Manager) GetAlertStats() *AlertStats {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Executes UpdateAlert operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 	m.mu.Lock()
 	existing, ok := m.alerts[id]
@@ -396,20 +308,6 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Retrieves GetWebhookURL operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (m *Manager) GetWebhookURL() string {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -429,20 +327,6 @@ func (m *Manager) GetWebhookURL() string {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Updates SetWebhookURL operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (m *Manager) SetWebhookURL(url string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -462,20 +346,6 @@ func (m *Manager) SetWebhookURL(url string) {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Executes ListRules operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (m *Manager) ListRules() []*AlertRule {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -502,20 +372,6 @@ func (m *Manager) ListRules() []*AlertRule {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Retrieves GetRule operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (m *Manager) GetRule(id string) *AlertRule {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -535,20 +391,6 @@ func (m *Manager) GetRule(id string) *AlertRule {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Initializes CreateRule operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -574,20 +416,6 @@ func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Executes UpdateRule operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -619,20 +447,6 @@ func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Executes DeleteRule operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (m *Manager) DeleteRule(id string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

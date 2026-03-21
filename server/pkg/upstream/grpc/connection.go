@@ -17,8 +17,6 @@ import (
 // ConnectionFactory is responsible for creating new gRPC client connections.
 // It can be configured with a custom dialer for testing or special connection
 // scenarios.
-//
-// Summary: Represents a ConnectionFactory.
 type ConnectionFactory struct {
 	dialer func(context.Context, string) (net.Conn, error)
 }
@@ -31,20 +29,6 @@ type ConnectionFactory struct {
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Initializes NewConnectionFactory operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func NewConnectionFactory() *ConnectionFactory {
 	return &ConnectionFactory{}
 }
@@ -54,25 +38,11 @@ func NewConnectionFactory() *ConnectionFactory {
 //
 // Parameters:
 //   - dialer func(context.Context (string): The parameter.
-//   - (string): The parameter.
+//   -  (string): The parameter.
 //
 // Returns:
 //   - net.Conn: The result.
 //   - error): The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes WithDialer operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -94,20 +64,6 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 //
 // Errors:
 //   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewConnection operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

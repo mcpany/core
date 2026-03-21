@@ -12,8 +12,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/alexliesenfeld/health"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	mcphealth "github.com/mcpany/core/server/pkg/health"
@@ -33,8 +33,6 @@ type sanitizer func(string) (string, error)
 
 // Upstream implements the upstream.Upstream interface for services that
 // communicate over WebRTC data channels.
-//
-// Summary: Represents a Upstream.
 type Upstream struct {
 	poolManager       *pool.Manager
 	toolNameSanitizer sanitizer
@@ -52,20 +50,6 @@ type Upstream struct {
 //
 // Errors:
 //   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes CheckHealth operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -98,20 +82,6 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -130,20 +100,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Returns:
 //   - upstream.Upstream: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -175,20 +131,6 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
