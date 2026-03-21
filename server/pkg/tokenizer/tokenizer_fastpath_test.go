@@ -106,7 +106,9 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 			}
 
 			primCount := int(wt.Factor)
-			if primCount < 1 { primCount = 1 }
+			if primCount < 1 {
+				primCount = 1
+			}
 
 			var want int
 			switch v := tt.input.(type) {
@@ -114,23 +116,33 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 				want = primCount
 			case []int:
 				want = int(float64(len(v)) * wt.Factor)
-				if want < 1 && len(v) > 0 { want = 1 }
+				if want < 1 && len(v) > 0 {
+					want = 1
+				}
 			case []int64:
 				want = int(float64(len(v)) * wt.Factor)
-				if want < 1 && len(v) > 0 { want = 1 }
+				if want < 1 && len(v) > 0 {
+					want = 1
+				}
 			case []float64:
 				want = int(float64(len(v)) * wt.Factor)
-				if want < 1 && len(v) > 0 { want = 1 }
+				if want < 1 && len(v) > 0 {
+					want = 1
+				}
 			case []bool:
 				want = int(float64(len(v)) * wt.Factor)
-				if want < 1 && len(v) > 0 { want = 1 }
+				if want < 1 && len(v) > 0 {
+					want = 1
+				}
 			case []string:
 				var words int
 				for _, x := range v {
 					words += countWords(x)
 				}
 				want = int(float64(words) * wt.Factor)
-				if want < 1 && words > 0 { want = 1 }
+				if want < 1 && words > 0 {
+					want = 1
+				}
 			case map[string]string:
 				var words int
 				for k, v := range v {
@@ -138,7 +150,9 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 					words += countWords(v)
 				}
 				want = int(float64(words) * wt.Factor)
-				if want < 1 && words > 0 { want = 1 }
+				if want < 1 && words > 0 {
+					want = 1
+				}
 			}
 
 			if got != want {
@@ -208,17 +222,17 @@ func TestSimpleTokenizeInt64(t *testing.T) {
 		{"edge_10000", 10000, 1},
 		{"edge_100000", 100000, 1},
 		{"edge_1000000", 1000000, 1},
-		{"edge_10000000", 10000000, 2}, // 8 chars / 4 = 2 tokens
-		{"edge_100000000", 100000000, 2}, // 9 chars
-		{"edge_1000000000", 1000000000, 2}, // 10 chars -> 10/4 = 2
-		{"edge_10000000000", 10000000000, 2}, // 11 chars -> 11/4 = 2
-		{"edge_100000000000", 100000000000, 3}, // 12 chars -> 12/4 = 3
-		{"edge_1000000000000", 1000000000000, 3}, // 13 chars
-		{"edge_10000000000000", 10000000000000, 3}, // 14 chars
-		{"edge_100000000000000", 100000000000000, 3}, // 15 chars
-		{"edge_1000000000000000", 1000000000000000, 4}, // 16 chars -> 16/4 = 4
-		{"edge_10000000000000000", 10000000000000000, 4}, // 17 chars
-		{"edge_100000000000000000", 100000000000000000, 4}, // 18 chars
+		{"edge_10000000", 10000000, 2},                       // 8 chars / 4 = 2 tokens
+		{"edge_100000000", 100000000, 2},                     // 9 chars
+		{"edge_1000000000", 1000000000, 2},                   // 10 chars -> 10/4 = 2
+		{"edge_10000000000", 10000000000, 2},                 // 11 chars -> 11/4 = 2
+		{"edge_100000000000", 100000000000, 3},               // 12 chars -> 12/4 = 3
+		{"edge_1000000000000", 1000000000000, 3},             // 13 chars
+		{"edge_10000000000000", 10000000000000, 3},           // 14 chars
+		{"edge_100000000000000", 100000000000000, 3},         // 15 chars
+		{"edge_1000000000000000", 1000000000000000, 4},       // 16 chars -> 16/4 = 4
+		{"edge_10000000000000000", 10000000000000000, 4},     // 17 chars
+		{"edge_100000000000000000", 100000000000000000, 4},   // 18 chars
 		{"edge_1000000000000000000", 1000000000000000000, 4}, // 19 chars -> 19/4 = 4
 		{"min_int64", -9223372036854775808, 5},
 	}
