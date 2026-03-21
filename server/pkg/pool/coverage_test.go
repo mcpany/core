@@ -35,7 +35,6 @@ func TestNew_DisableHealthCheck_NilClient_Coverage(t *testing.T) {
 	assert.Contains(t, err.Error(), "factory returned nil client")
 }
 
-
 func TestGet_RetryItem_Coverage_Correct(t *testing.T) {
 	// Create a pool with larger capacity.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 2, 2)
@@ -162,80 +161,80 @@ func TestClose_AlreadyClosed_Coverage(t *testing.T) {
 }
 
 func TestGet_Wait_Retry_Coverage(t *testing.T) {
-    // This targets the second select statement where we wait for a client.
-    // maxIdle=1. Buffered.
+	// This targets the second select statement where we wait for a client.
+	// maxIdle=1. Buffered.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
-    require.NotNil(t, p)
-    defer func() { _ = p.Close() }()
+	require.NotNil(t, p)
+	defer func() { _ = p.Close() }()
 
-    // Pool has 1 item and size 1.
-    // Get the item to exhaust pool? No, it's empty but buffered.
-    // activeCount=0.
-    // Get(c1) -> tryAcquire(1) -> Success. active=1.
+	// Pool has 1 item and size 1.
+	// Get the item to exhaust pool? No, it's empty but buffered.
+	// activeCount=0.
+	// Get(c1) -> tryAcquire(1) -> Success. active=1.
 
-    c1, err := p.Get(context.Background())
-    require.NoError(t, err)
+	c1, err := p.Get(context.Background())
+	require.NoError(t, err)
 
-    // Now pool is empty and all permits taken (active=1, max=1).
-    // Next Get will block on second select.
+	// Now pool is empty and all permits taken (active=1, max=1).
+	// Next Get will block on second select.
 
-    done := make(chan struct{})
-    go func() {
-        defer close(done)
-        c2, err := p.Get(context.Background())
-        require.NoError(t, err)
-        assert.NotNil(t, c2)
-    }()
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		c2, err := p.Get(context.Background())
+		require.NoError(t, err)
+		assert.NotNil(t, c2)
+	}()
 
-    // Wait a bit to ensure Get is blocking.
-    time.Sleep(10 * time.Millisecond)
+	// Wait a bit to ensure Get is blocking.
+	time.Sleep(10 * time.Millisecond)
 
-    // Inject retry item.
-    // Channel size is 1.
-    p.(*poolImpl[*mockClient]).clients <- poolItem[*mockClient]{retry: true}
+	// Inject retry item.
+	// Channel size is 1.
+	p.(*poolImpl[*mockClient]).clients <- poolItem[*mockClient]{retry: true}
 
-    // The Get loop should consume this retry item and continue loop.
-    // Since permits are still exhausted (c1 still out), it will go back to blocking?
-    // Wait, retry item doesn't release permit?
-    // In Get loop:
-    // case item...: if item.retry { continue }
-    // It loops back to top.
-    // First select: empty? (we just consumed the retry item).
-    // TryAcquire: fails (c1 still out).
-    // Second select: blocks again.
+	// The Get loop should consume this retry item and continue loop.
+	// Since permits are still exhausted (c1 still out), it will go back to blocking?
+	// Wait, retry item doesn't release permit?
+	// In Get loop:
+	// case item...: if item.retry { continue }
+	// It loops back to top.
+	// First select: empty? (we just consumed the retry item).
+	// TryAcquire: fails (c1 still out).
+	// Second select: blocks again.
 
-    // So now we return c1.
-    p.Put(c1)
+	// So now we return c1.
+	p.Put(c1)
 
-    <-done
+	<-done
 }
 
 func TestGet_Wait_Unhealthy_Coverage(t *testing.T) {
-    // maxIdle=1. Buffered.
+	// maxIdle=1. Buffered.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
-    require.NotNil(t, p)
-    defer func() { _ = p.Close() }()
+	require.NotNil(t, p)
+	defer func() { _ = p.Close() }()
 
-    c1, err := p.Get(context.Background())
-    require.NoError(t, err)
+	c1, err := p.Get(context.Background())
+	require.NoError(t, err)
 
-    done := make(chan struct{})
-    go func() {
-        defer close(done)
-        c2, err := p.Get(context.Background())
-        require.NoError(t, err)
-        assert.NotNil(t, c2)
-        // Should be a new client
-        assert.NotEqual(t, c1, c2)
-    }()
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		c2, err := p.Get(context.Background())
+		require.NoError(t, err)
+		assert.NotNil(t, c2)
+		// Should be a new client
+		assert.NotEqual(t, c1, c2)
+	}()
 
-    time.Sleep(10 * time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 
-    // Make c1 unhealthy and put it back
-    c1.mu.Lock()
-    c1.isHealthy = false
-    c1.mu.Unlock()
-    p.Put(c1)
+	// Make c1 unhealthy and put it back
+	c1.mu.Lock()
+	c1.isHealthy = false
+	c1.mu.Unlock()
+	p.Put(c1)
 
-    <-done
+	<-done
 }

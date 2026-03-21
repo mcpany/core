@@ -19,9 +19,9 @@ import (
 
 func TestHTTPUpstream_InputSchema_Comprehensive(t *testing.T) {
 	testCases := []struct {
-		name          string
-		configJSON    string
-		validate      func(t *testing.T, schema *structpb.Struct)
+		name       string
+		configJSON string
+		validate   func(t *testing.T, schema *structpb.Struct)
 	}{
 		{
 			name: "InputSchema Only (No Parameters)",

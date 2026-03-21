@@ -82,8 +82,6 @@ func getMcpanyConfig(t *testing.T, serverURL string) string {
 	return buf.String()
 }
 
-
-
 func TestTransformerE2E_Extraction(t *testing.T) {
 	// Cannot use t.Parallel() with t.Setenv
 	// t.Parallel()

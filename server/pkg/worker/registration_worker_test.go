@@ -31,9 +31,9 @@ func boolPtr(b bool) *bool {
 type MockServiceRegistry struct {
 	serviceregistry.ServiceRegistryInterface // Embed to satisfy interface, but override methods we use
 
-	registerFunc       func(ctx context.Context, config *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
-	unregisterFunc     func(ctx context.Context, name string) error
-	getAllServicesFunc func() ([]*configv1.UpstreamServiceConfig, error)
+	registerFunc         func(ctx context.Context, config *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
+	unregisterFunc       func(ctx context.Context, name string) error
+	getAllServicesFunc   func() ([]*configv1.UpstreamServiceConfig, error)
 	getServiceConfigFunc func(serviceID string) (*configv1.UpstreamServiceConfig, bool)
 }
 

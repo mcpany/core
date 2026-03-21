@@ -60,8 +60,8 @@ func TestSettingsCoverage(t *testing.T) {
 
 	// Test SetMiddlewares / Middlewares
 	mws := []*configv1.Middleware{
-        configv1.Middleware_builder{Name: proto.String("test")}.Build(),
-    }
+		configv1.Middleware_builder{Name: proto.String("test")}.Build(),
+	}
 	s.SetMiddlewares(mws)
 	assert.Equal(t, mws, s.Middlewares())
 
@@ -90,103 +90,103 @@ func TestValidatorCoverage(t *testing.T) {
 		}.Build(),
 	}.Build()
 	err := config.ValidateOrError(context.Background(), cfg)
-    assert.NoError(t, err)
+	assert.NoError(t, err)
 
-    // Force an invalid config
-    invalidCfg := configv1.UpstreamServiceConfig_builder{
-        Name: proto.String(""),
-    }.Build()
-    // ValidateUpstreamService checks for ServiceConfig type
-    err = config.ValidateOrError(context.Background(), invalidCfg)
-    assert.Error(t, err)
+	// Force an invalid config
+	invalidCfg := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String(""),
+	}.Build()
+	// ValidateUpstreamService checks for ServiceConfig type
+	err = config.ValidateOrError(context.Background(), invalidCfg)
+	assert.Error(t, err)
 }
 
 func TestValidatorCoverageMore(t *testing.T) {
-    ctx := context.Background()
+	ctx := context.Background()
 
-    // Test Validate (Global Config) with errors
+	// Test Validate (Global Config) with errors
 
-    // 1. Client binary type with short API Key
-    cfgClient := configv1.McpAnyServerConfig_builder{
-        GlobalSettings: configv1.GlobalSettings_builder{
-            ApiKey: proto.String("short"),
-        }.Build(),
-    }.Build()
-    errs := config.Validate(ctx, cfgClient, config.Client)
-    assert.NotEmpty(t, errs)
-    assert.Contains(t, errs[0].Err.Error(), "at least 16 characters")
+	// 1. Client binary type with short API Key
+	cfgClient := configv1.McpAnyServerConfig_builder{
+		GlobalSettings: configv1.GlobalSettings_builder{
+			ApiKey: proto.String("short"),
+		}.Build(),
+	}.Build()
+	errs := config.Validate(ctx, cfgClient, config.Client)
+	assert.NotEmpty(t, errs)
+	assert.Contains(t, errs[0].Err.Error(), "at least 16 characters")
 
-    // 4. HTTP Service Invalid Scheme
-    cfgHttp := configv1.McpAnyServerConfig_builder{
-        UpstreamServices: []*configv1.UpstreamServiceConfig{
-            configv1.UpstreamServiceConfig_builder{
-                Name: proto.String("bad-http"),
-                HttpService: configv1.HttpUpstreamService_builder{
-                    Address: proto.String("ftp://example.com"),
-                }.Build(),
-            }.Build(),
-        },
-    }.Build()
-    errs = config.Validate(ctx, cfgHttp, config.Server)
-    assert.NotEmpty(t, errs)
-    assert.Contains(t, errs[0].Err.Error(), "invalid http address scheme")
+	// 4. HTTP Service Invalid Scheme
+	cfgHttp := configv1.McpAnyServerConfig_builder{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("bad-http"),
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: proto.String("ftp://example.com"),
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
+	errs = config.Validate(ctx, cfgHttp, config.Server)
+	assert.NotEmpty(t, errs)
+	assert.Contains(t, errs[0].Err.Error(), "invalid http address scheme")
 
-    // 5. Websocket Service Invalid Scheme
-    cfgWs := configv1.McpAnyServerConfig_builder{
-        UpstreamServices: []*configv1.UpstreamServiceConfig{
-            configv1.UpstreamServiceConfig_builder{
-                Name: proto.String("bad-ws"),
-                WebsocketService: configv1.WebsocketUpstreamService_builder{
-                    Address: proto.String("http://example.com"),
-                }.Build(),
-            }.Build(),
-        },
-    }.Build()
-    errs = config.Validate(ctx, cfgWs, config.Server)
-    assert.NotEmpty(t, errs)
-    assert.Contains(t, errs[0].Err.Error(), "invalid websocket address scheme")
+	// 5. Websocket Service Invalid Scheme
+	cfgWs := configv1.McpAnyServerConfig_builder{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("bad-ws"),
+				WebsocketService: configv1.WebsocketUpstreamService_builder{
+					Address: proto.String("http://example.com"),
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
+	errs = config.Validate(ctx, cfgWs, config.Server)
+	assert.NotEmpty(t, errs)
+	assert.Contains(t, errs[0].Err.Error(), "invalid websocket address scheme")
 
-    // 6. GC Settings Invalid Duration
-    cfgGC := configv1.McpAnyServerConfig_builder{
-        GlobalSettings: configv1.GlobalSettings_builder{
-            GcSettings: configv1.GCSettings_builder{
-                Interval: proto.String("invalid"),
-            }.Build(),
-        }.Build(),
-    }.Build()
-    errs = config.Validate(ctx, cfgGC, config.Server)
-    assert.NotEmpty(t, errs)
-    assert.Contains(t, errs[0].Err.Error(), "invalid interval")
+	// 6. GC Settings Invalid Duration
+	cfgGC := configv1.McpAnyServerConfig_builder{
+		GlobalSettings: configv1.GlobalSettings_builder{
+			GcSettings: configv1.GCSettings_builder{
+				Interval: proto.String("invalid"),
+			}.Build(),
+		}.Build(),
+	}.Build()
+	errs = config.Validate(ctx, cfgGC, config.Server)
+	assert.NotEmpty(t, errs)
+	assert.Contains(t, errs[0].Err.Error(), "invalid interval")
 
-    // 7. Duplicate Service Name
-    cfgDup := configv1.McpAnyServerConfig_builder{
-        UpstreamServices: []*configv1.UpstreamServiceConfig{
-            configv1.UpstreamServiceConfig_builder{
-                Name: proto.String("s1"),
-                HttpService: configv1.HttpUpstreamService_builder{
-                    Address: proto.String("http://a.com"),
-                }.Build(),
-            }.Build(),
-            configv1.UpstreamServiceConfig_builder{
-                Name: proto.String("s1"),
-                HttpService: configv1.HttpUpstreamService_builder{
-                    Address: proto.String("http://b.com"),
-                }.Build(),
-            }.Build(),
-        },
-    }.Build()
-    errs = config.Validate(ctx, cfgDup, config.Server)
-    assert.NotEmpty(t, errs)
-    assert.Contains(t, errs[0].Err.Error(), "duplicate service name")
+	// 7. Duplicate Service Name
+	cfgDup := configv1.McpAnyServerConfig_builder{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("s1"),
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: proto.String("http://a.com"),
+				}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("s1"),
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: proto.String("http://b.com"),
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
+	errs = config.Validate(ctx, cfgDup, config.Server)
+	assert.NotEmpty(t, errs)
+	assert.Contains(t, errs[0].Err.Error(), "duplicate service name")
 }
 
 func TestSecretsHydration(t *testing.T) {
-    // Test HydrateSecretsInService with various types to hit coverage
-    secrets := map[string]*configv1.SecretValue{
-        "MY_SECRET": configv1.SecretValue_builder{
+	// Test HydrateSecretsInService with various types to hit coverage
+	secrets := map[string]*configv1.SecretValue{
+		"MY_SECRET": configv1.SecretValue_builder{
 			PlainText: proto.String("real_secret"),
 		}.Build(),
-    }
+	}
 
 	// Command Line Service
 	cmdService := func() *configv1.UpstreamServiceConfig {
@@ -287,13 +287,13 @@ func TestSecretsHydration(t *testing.T) {
 		}.Build()
 	}()
 	config.HydrateSecretsInService(httpSvc, secrets)
-    assert.Equal(t, "real_secret", httpSvc.GetHttpService().GetCalls()["call1"].GetParameters()[0].GetSecret().GetPlainText())
+	assert.Equal(t, "real_secret", httpSvc.GetHttpService().GetCalls()["call1"].GetParameters()[0].GetSecret().GetPlainText())
 }
 
 func TestResolveEnvValueFallback(t *testing.T) {
-    // Test the CSV parsing fallback by providing a string that is invalid CSV
-    fs := afero.NewMemMapFs()
-    configContent := `
+	// Test the CSV parsing fallback by providing a string that is invalid CSV
+	fs := afero.NewMemMapFs()
+	configContent := `
 upstream_services:
   - name: "my-service"
     mcp_service:
@@ -301,59 +301,59 @@ upstream_services:
         command: "echo"
         args: ["original"]
 `
-    err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0644)
-    require.NoError(t, err)
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0644)
+	require.NoError(t, err)
 
-    envVar := "MCPANY__UPSTREAM_SERVICES__0__MCP_SERVICE__STDIO_CONNECTION__ARGS"
-    val := `foo"bar,baz`
+	envVar := "MCPANY__UPSTREAM_SERVICES__0__MCP_SERVICE__STDIO_CONNECTION__ARGS"
+	val := `foo"bar,baz`
 
-    _ = os.Setenv(envVar, val)
-    defer func() {
-        _ = os.Unsetenv(envVar)
-    }()
+	_ = os.Setenv(envVar, val)
+	defer func() {
+		_ = os.Unsetenv(envVar)
+	}()
 
-    store := config.NewFileStore(fs, []string{"/config.yaml"})
-    cfg, err := store.Load(context.Background())
-    require.NoError(t, err)
+	store := config.NewFileStore(fs, []string{"/config.yaml"})
+	cfg, err := store.Load(context.Background())
+	require.NoError(t, err)
 
-    args := cfg.GetUpstreamServices()[0].GetMcpService().GetStdioConnection().GetArgs()
-    // Fallback to split by comma: ["foo\"bar", "baz"]
-    assert.Len(t, args, 2)
-    assert.Equal(t, `foo"bar`, args[0])
-    assert.Equal(t, "baz", args[1])
+	args := cfg.GetUpstreamServices()[0].GetMcpService().GetStdioConnection().GetArgs()
+	// Fallback to split by comma: ["foo\"bar", "baz"]
+	assert.Len(t, args, 2)
+	assert.Equal(t, `foo"bar`, args[0])
+	assert.Equal(t, "baz", args[1])
 }
 
 func TestStoreBoolConversion(t *testing.T) {
-    fs := afero.NewMemMapFs()
-    configContent := `
+	fs := afero.NewMemMapFs()
+	configContent := `
 upstream_services:
   - name: "my-service"
     disable: false
 `
-    err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0644)
-    require.NoError(t, err)
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0644)
+	require.NoError(t, err)
 
-    envVar := "MCPANY__UPSTREAM_SERVICES__0__DISABLE"
-    _ = os.Setenv(envVar, "true")
-    defer func() {
-        _ = os.Unsetenv(envVar)
-    }()
+	envVar := "MCPANY__UPSTREAM_SERVICES__0__DISABLE"
+	_ = os.Setenv(envVar, "true")
+	defer func() {
+		_ = os.Unsetenv(envVar)
+	}()
 
-    store := config.NewFileStore(fs, []string{"/config.yaml"})
-    cfg, err := store.Load(context.Background())
-    require.NoError(t, err)
+	store := config.NewFileStore(fs, []string{"/config.yaml"})
+	cfg, err := store.Load(context.Background())
+	require.NoError(t, err)
 
-    assert.True(t, cfg.GetUpstreamServices()[0].GetDisable())
+	assert.True(t, cfg.GetUpstreamServices()[0].GetDisable())
 }
 
 func TestValidatorCommandExists(t *testing.T) {
-    // Create a dummy executable
-    tmpDir := t.TempDir()
-    exePath := filepath.Join(tmpDir, "myexe")
-    f, err := os.Create(exePath)
-    require.NoError(t, err)
-    f.Close()
-    os.Chmod(exePath, 0755)
+	// Create a dummy executable
+	tmpDir := t.TempDir()
+	exePath := filepath.Join(tmpDir, "myexe")
+	f, err := os.Create(exePath)
+	require.NoError(t, err)
+	f.Close()
+	os.Chmod(exePath, 0755)
 
 	// Valid command absolute path
 	cfg := func() *configv1.UpstreamServiceConfig {
@@ -366,19 +366,19 @@ func TestValidatorCommandExists(t *testing.T) {
 			CommandLineService: cmd,
 		}.Build()
 	}()
-    // We can't call validateCommandExists directly as it is private, but we can call ValidateOrError
-    err = config.ValidateOrError(context.Background(), cfg)
-    assert.NoError(t, err)
+	// We can't call validateCommandExists directly as it is private, but we can call ValidateOrError
+	err = config.ValidateOrError(context.Background(), cfg)
+	assert.NoError(t, err)
 
-    // Non-existent command
-    cfg.GetCommandLineService().SetCommand(filepath.Join(tmpDir, "notfound"))
-    err = config.ValidateOrError(context.Background(), cfg)
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "executable not found")
+	// Non-existent command
+	cfg.GetCommandLineService().SetCommand(filepath.Join(tmpDir, "notfound"))
+	err = config.ValidateOrError(context.Background(), cfg)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "executable not found")
 
-    // Directory as command
-    cfg.GetCommandLineService().SetCommand(tmpDir)
-    err = config.ValidateOrError(context.Background(), cfg)
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "is a directory")
+	// Directory as command
+	cfg.GetCommandLineService().SetCommand(tmpDir)
+	err = config.ValidateOrError(context.Background(), cfg)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "is a directory")
 }
