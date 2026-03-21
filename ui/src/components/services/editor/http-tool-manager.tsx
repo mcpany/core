@@ -194,10 +194,12 @@ export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
                         </Button>
                     </div>
                 )}
+                {/* ⚡ BOLT: [Render Optimization] Use stable callId instead of array index for list keys to prevent React state/focus loss and unnecessary remounts during tool deletion/reordering.
+                    Randomized Selection from Top 5 High-Impact Targets (Render Category) */}
                 {tools.map((tool: ToolDefinition, index: number) => {
                     const call = getCallForTool(tool);
                     return (
-                        <Card key={index} className="flex items-center justify-between p-4">
+                        <Card key={tool.callId || index} className="flex items-center justify-between p-4">
                             <div className="flex flex-col gap-1">
                                 <div className="flex items-center gap-2">
                                     <span className="font-semibold">{tool.name}</span>
