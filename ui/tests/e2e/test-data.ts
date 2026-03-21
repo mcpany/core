@@ -96,6 +96,24 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                         call_id: "echo_call"
                     }
                 ],
+                resources: [
+                    {
+                        uri: "file:///config.json",
+                        name: "config.json",
+                        description: "A config file",
+                        mime_type: "application/json"
+                    },
+                    {
+                        uri: "file:///README.md",
+                        name: "README.md",
+                        mime_type: "text/markdown"
+                    },
+                    {
+                        uri: "file:///script.py",
+                        name: "script.py",
+                        mime_type: "text/x-python"
+                    }
+                ],
                 calls: {
                     echo_call: {
                         args: ["echoed_output"]
