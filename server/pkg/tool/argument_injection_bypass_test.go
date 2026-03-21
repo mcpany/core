@@ -22,6 +22,11 @@ func TestValidateSafePathAndInjection_Bypass(t *testing.T) {
 			isDocker: false,
 		},
 		{
+			name:     "Argument Injection with URL Encoded Leading Space",
+			input:    "%20-dangerous",
+			isDocker: false,
+		},
+		{
 			name:     "Argument Injection with Leading Tab",
 			input:    "\t-dangerous",
 			isDocker: false,
@@ -37,6 +42,11 @@ func TestValidateSafePathAndInjection_Bypass(t *testing.T) {
 			isDocker: false,
 		},
 		{
+			name:     "Path Traversal with URL Encoded Leading Space",
+			input:    "%20../etc/passwd",
+			isDocker: false,
+		},
+		{
 			name:     "Path Traversal with Leading Tab",
 			input:    "\t../etc/passwd",
 			isDocker: false,
@@ -49,6 +59,11 @@ func TestValidateSafePathAndInjection_Bypass(t *testing.T) {
 		{
 			name:     "Local File Access with Leading Space",
 			input:    " /etc/passwd", // Absolute path check
+			isDocker: false,
+		},
+		{
+			name:     "Local File Access with URL Encoded Leading Space",
+			input:    "%20/etc/passwd", // Absolute path check
 			isDocker: false,
 		},
 		{

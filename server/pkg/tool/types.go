@@ -3164,34 +3164,33 @@ func isSensitiveHeader(key string) bool {
 }
 
 func checkForPathTraversal(val string) error {
-	trimmedVal := strings.TrimSpace(val)
-	if trimmedVal == ".." {
+	if val == ".." {
 		return fmt.Errorf("path traversal attempt detected")
 	}
 	// Check for standard traversal sequences
-	if strings.HasPrefix(trimmedVal, "../") || strings.HasPrefix(trimmedVal, "..\\") {
+	if strings.HasPrefix(val, "../") || strings.HasPrefix(val, "..\\") {
 		return fmt.Errorf("path traversal attempt detected")
 	}
-	if strings.HasSuffix(trimmedVal, "/..") || strings.HasSuffix(trimmedVal, "\\..") {
+	if strings.HasSuffix(val, "/..") || strings.HasSuffix(val, "\\..") {
 		return fmt.Errorf("path traversal attempt detected")
 	}
-	if strings.Contains(trimmedVal, "/../") || strings.Contains(trimmedVal, "\\..\\") || strings.Contains(trimmedVal, "/..\\") || strings.Contains(trimmedVal, "\\../") {
+	if strings.Contains(val, "/../") || strings.Contains(val, "\\..\\") || strings.Contains(val, "/..\\") || strings.Contains(val, "\\../") {
 		return fmt.Errorf("path traversal attempt detected")
 	}
 
 	// Also check for encoded traversal sequences often used to bypass filters
 	// %2e%2e is ..
 	// ⚡ Bolt Optimization: Manual scan to avoid strings.ToLower allocation
-	for i := 0; i < len(trimmedVal); {
-		idx := strings.IndexByte(trimmedVal[i:], '%')
+	for i := 0; i < len(val); {
+		idx := strings.IndexByte(val[i:], '%')
 		if idx == -1 {
 			break
 		}
 		i += idx
-		if i+5 < len(trimmedVal) {
-			if trimmedVal[i+1] == '2' && (trimmedVal[i+2]|0x20 == 'e') &&
-				trimmedVal[i+3] == '%' &&
-				trimmedVal[i+4] == '2' && (trimmedVal[i+5]|0x20 == 'e') {
+		if i+5 < len(val) {
+			if val[i+1] == '2' && (val[i+2]|0x20 == 'e') &&
+				val[i+3] == '%' &&
+				val[i+4] == '2' && (val[i+5]|0x20 == 'e') {
 				return fmt.Errorf("path traversal attempt detected (encoded)")
 			}
 		}
@@ -3327,37 +3326,35 @@ func cleanPathPreserveDoubleSlash(p string) string {
 }
 
 func checkForLocalFileAccess(val string) error {
-	trimmedVal := strings.TrimSpace(val)
-	if filepath.IsAbs(trimmedVal) {
-		return fmt.Errorf("absolute path detected: %s (only relative paths are allowed for local execution)", trimmedVal)
+	if filepath.IsAbs(val) {
+		return fmt.Errorf("absolute path detected: %s (only relative paths are allowed for local execution)", val)
 	}
 	// Also block "file:" scheme to prevent SSRF/LFI (e.g. curl file:///etc/passwd)
 	// We check for "file:" prefix case-insensitively.
-	if strings.HasPrefix(strings.ToLower(trimmedVal), "file:") {
-		return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", trimmedVal)
+	if strings.HasPrefix(strings.ToLower(val), "file:") {
+		return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", val)
 	}
 
 	// Sentinel Security Update: Ensure path is allowed and not sensitive.
 	// This prevents accessing sensitive files (e.g. .env) even if they are in the CWD,
 	// and resolves symlinks to ensure they don't point outside allowed paths or to sensitive files.
-	if err := validation.IsAllowedPath(trimmedVal); err != nil {
+	if err := validation.IsAllowedPath(val); err != nil {
 		return fmt.Errorf("path access denied: %w", err)
 	}
 	return nil
 }
 
 func checkForArgumentInjection(val string) error {
-	trimmedVal := strings.TrimSpace(val)
-	if strings.HasPrefix(trimmedVal, "-") {
+	if strings.HasPrefix(val, "-") {
 		// Allow negative numbers
-		if _, err := strconv.ParseFloat(trimmedVal, 64); err == nil {
+		if _, err := strconv.ParseFloat(val, 64); err == nil {
 			return nil
 		}
 		return fmt.Errorf("argument injection detected: value starts with '-'")
 	}
-	if strings.HasPrefix(trimmedVal, "+") {
+	if strings.HasPrefix(val, "+") {
 		// Allow positive numbers (e.g. +10, +1.5)
-		if _, err := strconv.ParseFloat(trimmedVal, 64); err == nil {
+		if _, err := strconv.ParseFloat(val, 64); err == nil {
 			return nil
 		}
 		return fmt.Errorf("argument injection detected: value starts with '+'")
@@ -4693,7 +4690,8 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 	}
 	// Also check decoded value just in case the input was already encoded
 	if decodedVal, err := url.QueryUnescape(trimmedVal); err == nil && decodedVal != trimmedVal {
-		if err := checkForPathTraversal(decodedVal); err != nil {
+		trimmedDecodedVal := strings.TrimSpace(decodedVal)
+		if err := checkForPathTraversal(trimmedDecodedVal); err != nil {
 			return fmt.Errorf("%w (decoded)", err)
 		}
 	}
@@ -4704,7 +4702,8 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		}
 		// Also check decoded value for local file access (e.g. %66ile://)
 		if decodedVal, err := url.QueryUnescape(trimmedVal); err == nil && decodedVal != trimmedVal {
-			if err := checkForLocalFileAccess(decodedVal); err != nil {
+			trimmedDecodedVal := strings.TrimSpace(decodedVal)
+			if err := checkForLocalFileAccess(trimmedDecodedVal); err != nil {
 				return fmt.Errorf("%w (decoded)", err)
 			}
 		}
@@ -4715,7 +4714,8 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 	}
 	// Also check decoded value for argument injection (e.g. %2drf)
 	if decodedVal, err := url.QueryUnescape(trimmedVal); err == nil && decodedVal != trimmedVal {
-		if err := checkForArgumentInjection(decodedVal); err != nil {
+		trimmedDecodedVal := strings.TrimSpace(decodedVal)
+		if err := checkForArgumentInjection(trimmedDecodedVal); err != nil {
 			return fmt.Errorf("%w (decoded)", err)
 		}
 	}
@@ -4729,7 +4729,8 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		}
 		// Also check decoded value for dangerous schemes
 		if decodedVal, err := url.QueryUnescape(trimmedVal); err == nil && decodedVal != trimmedVal {
-			if err := checkForDangerousSchemes(decodedVal); err != nil {
+			trimmedDecodedVal := strings.TrimSpace(decodedVal)
+			if err := checkForDangerousSchemes(trimmedDecodedVal); err != nil {
 				return fmt.Errorf("%w (decoded)", err)
 			}
 		}
