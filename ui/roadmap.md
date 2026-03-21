@@ -13,7 +13,6 @@
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
-- [ ] **[P0] Premium Tool Execution Timeline**: Implement high-fidelity, Apple-level interactive timeline for tool executions. (Added: 2026-03-21)
 - [ ] **[P0] Config Sandbox Monitor**: Real-time visualization of sandboxed hook execution, logs, and resource limits. (Added: 2026-03-10)
 - [ ] **[P1] Config Drift Alert System**: UI notification and diff viewer for modified project-local configuration files requiring re-attestation. (Added: 2026-03-10)
 - [ ] **[P0] Project Config Attestation Dashboard**: UI for reviewing and approving project-local configuration blocks (hooks/auto-execute). (Added: 2026-03-09)
@@ -198,12 +197,6 @@
 - [ ] **[P0] Local Trust Verification Dashboard**: (2026-04-05) UI for reviewing and signing local MCP server identity claims.
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
-
-#### Upcoming (2026-03-20 Evolution)
-- [ ] **[P0] Mission Manifest Editor**: (2026-03-20) UI for defining and TPM-signing Hardware-Attested Mission Manifests (HAMM).
-- [ ] **[P0] Mailbox Shard Monitor**: (2026-03-20) Real-time visualization of task-bound mailbox shards and coordination throughput.
-- [ ] **[P0] Mission Budget Dashboard**: (2026-03-20) Visual tracker for reasoning effort, token limits, and `maxTurns` consumption per mission.
-- [ ] **[P1] Multi-Channel Inbox Hub**: (2026-03-20) Unified UI for managing and monitoring agent messages across 20+ platform channels.
 
 #### Upcoming (2026-03-17 Evolution)
 - [ ] **[P0] Local Security Violation Monitor**: (2026-03-17) Real-time visualization of blocked loopback requests and origin violations. (Added: 2026-03-17)
@@ -504,7 +497,7 @@
 - [ ] **[P0] Authenticated Discovery Widget**: Security status indicator for masked agent capability cards and A2A auth-gate actions. (Added: 2026-06-01)
 
 #### Upcoming (2026-05-29 Evolution)
-- [x] **[P0] Swarm Anomaly Visualizer**: (Implemented via Multi-Agent Swarm Topology Monitor).
+- [ ] **[P0] Swarm Anomaly Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and CSAD neutralization events. (Added: 2026-05-29)
 - [ ] **[P0] Mesh Command Sovereignty Dashboard**: Visual "Chain of Mesh-Command" tracer for inter-teammate mailbox validation. (Added: 2026-05-29)
 - [ ] **[P0] Teammate Handshake Monitor**: Real-time status indicator for ATH identity exchange in horizontal swarms. (Added: 2026-05-29)
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
@@ -594,29 +587,7 @@
 - [ ] **[P0] WASM-Hook Safety Reporter**: (2026-06-15) UI for viewing behavioral profiling results for un-attested configuration hooks.
 
 ### Upcoming: [2026-06-17]
-- [x] **[P0] Active Intent Alignment Monitor**: (2026-06-17) Visual indicator for AIA heartbeat status and semantic drift alerts.
+- [ ] **[P0] Active Intent Alignment Monitor**: (2026-06-17) Visual indicator for AIA heartbeat status and semantic drift alerts.
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
-
-### Upcoming: [2026-06-18]
-- [ ] **[P0] Mission Resumption Status Widget**: (2026-06-18) Real-time monitor for hardware-locked re-attestation events and AMRA session health.
-- [ ] **[P0] Entanglement Privacy Auditor**: (2026-06-18) Security dashboard for reviewing SES-redacted fragments and monologue smearing alerts.
-- [ ] **[P0] Logic Grafting Alert Console**: (2026-06-18) Forensic UI for inspecting the ARI Hub "Reasoning Mainline" and blocked branch proposals.
-- [ ] **[P0] Hardware Monotonic Counter Monitor**: (2026-06-18) Status widget for visualizing mission-root continuity and TPM-attestation provenance.
-
-### Upcoming: [2026-06-19]
-- [ ] **[P1] Visual Attention Dashboard**: (2026-06-19) Heatmap visualization of context fragments (User, System, Injected) driving agent tool-call reasoning.
-- [ ] **[P0] CFIA Signature Reviewer**: (2026-06-19) UI for reviewing and hardware-signing project-local context files.
-- [ ] **[P0] Attention-Locked Tool Trigger Visualization**: (2026-06-19) Real-time alerts and visualization when a high-risk tool call is interdicted by the ALT middleware.
-
-### Upcoming: [2026-06-20]
-- [ ] **[P0] CFIA Attestation Workspace**: (2026-06-20) Security dashboard for reviewed and TPM-signing project-local context files.
-- [ ] **[P1] Visual Attention Heatmap**: (2026-06-20) Advanced visualization of reasoning drivers for high-risk tool calls, supporting the ALT workflow.
-- [ ] **[P1] Reasoning Lineage Inspector**: (2026-06-20) Visual debugger for cryptographically signed "Chains of Reason".
-
-### Upcoming: [2026-06-21]
-- [ ] **[P0] Mission Resumption Manager**: (2026-06-21) UI for monitoring and manually triggering MRCP-mediated mission checkpoints.
-- [ ] **[P0] Mailbox Integrity Auditor**: (2026-06-21) Forensic dashboard for reviewing hardware-attested coordinate messages and MIS-blocked injection attempts.
-- [ ] **[P0] Hardware-Bound Budget Widget**: (2026-06-21) Real-time monitor for ARE v1.7 budget consumption and hardware attestation status.
-- [ ] **[P1] Logic-Grafting Alert Center**: (2026-06-21) Real-time visualization of semantic entropy spikes and blocked logic-grafting events in shared shards.

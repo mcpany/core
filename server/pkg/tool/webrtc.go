@@ -202,41 +202,6 @@ func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The result of the execution.
 //   - error: An error if execution fails.
-// IsStreaming returns true if the tool supports streaming.
-//
-// Summary: Checks if the tool supports streaming execution.
-//
-// Returns:
-//   - bool: True if streaming is supported.
-func (t *WebrtcTool) IsStreaming() bool {
-	return false
-}
-
-// StreamExecute executes the tool in streaming mode.
-//
-// Summary: Executes the tool in streaming mode.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: *ExecutionRequest. The request object containing parameters.
-//
-// Returns:
-//   - <-chan any: A channel that emits streaming results.
-//   - error: An error if the operation fails or streaming is not supported.
-func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
-	ch := make(chan any, 1)
-	go func() {
-		defer close(ch)
-		res, err := t.Execute(ctx, req)
-		if err != nil {
-			ch <- err
-		} else {
-			ch <- res
-		}
-	}()
-	return ch, nil
-}
-
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized

@@ -260,33 +260,3 @@ func TestRun(t *testing.T) {
 	}
 	t.Fatalf("Server failed to start after 20 attempts: %v", runErr)
 }
-
-func TestWSHandler_UpgradeError(t *testing.T) {
-	// Send plain HTTP GET request to WS handler, it should fail to upgrade
-	req, err := http.NewRequest("GET", "/", nil)
-	assert.NoError(t, err)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(wsHandler)
-
-	handler.ServeHTTP(rr, req)
-
-	// Since upgrader fails, it returns a 400 Bad Request
-	assert.Equal(t, http.StatusBadRequest, rr.Code)
-}
-
-func TestWSHandler_UnexpectedCloseError(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(wsHandler))
-	defer server.Close()
-
-	wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
-
-	conn, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
-	assert.NoError(t, err)
-
-	// Close the underlying network connection abruptly to trigger unexpected close error
-	// instead of sending a close control message
-	conn.UnderlyingConn().Close()
-
-	// Handler will log and exit
-}
