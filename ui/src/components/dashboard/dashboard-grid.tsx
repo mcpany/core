@@ -69,7 +69,7 @@ export function DashboardGrid() {
     const [isMounted, setIsMounted] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const migrateLayout = (parsed: any): WidgetInstance[] => {
+    const migrateLayout = (parsed: unknown): WidgetInstance[] => {
         // Migration Logic
         // Case 1: Legacy format (DashboardWidget[]) where id matches type
         if (Array.isArray(parsed) && parsed.length > 0 && !parsed[0].instanceId) {
