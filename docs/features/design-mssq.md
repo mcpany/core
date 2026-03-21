@@ -1,8 +1,3 @@
-<!--
-Copyright 2026 Author(s) of MCP Any
-SPDX-License-Identifier: Apache-2.0
--->
-
 # Design Doc: Machine-Speed Swarm Quarantine (MSSQ)
 **Status:** Draft
 **Created:** 2026-06-01
