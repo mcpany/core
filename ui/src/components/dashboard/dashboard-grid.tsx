@@ -81,6 +81,7 @@ export function DashboardGrid() {
     const [isClearAllDialogOpen, setIsClearAllDialogOpen] = useState(false);
     const [isRestoreDefaultsDialogOpen, setIsRestoreDefaultsDialogOpen] = useState(false);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const migrateLayout = (parsed: any): WidgetInstance[] => {
         // Migration Logic
         // Case 1: Legacy format (DashboardWidget[]) where id matches type
