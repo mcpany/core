@@ -291,7 +291,7 @@ func TestSentinelRCE_Python_Eval_DoubleQuotes(t *testing.T) {
 	// 4. Assert
 	assert.Error(t, err)
 	assert.Nil(t, res)
-	assert.Contains(t, err.Error(), "python injection detected")
+	assert.Contains(t, err.Error(), "interpreter injection detected")
 }
 
 func TestSentinelRCE_NodeExecSync(t *testing.T) {
