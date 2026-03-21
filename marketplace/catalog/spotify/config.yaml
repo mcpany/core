@@ -1,0 +1,19 @@
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+upstream_services:
+  - id: "spotify"
+    name: "Spotify"
+    openapi_service:
+      spec_url: "https://raw.githubusercontent.com/sonallux/spotify-web-api-openapi/master/openapi.yml"
+    upstream_auth:
+      api_key:
+        param_name: "Authorization"
+        value:
+          plain_text: "Bearer {{SPOTIFY_TOKEN}}"
+    call_policies:
+      - default_action: ALLOW
+        rules:
+          # Example: Deny modifying playback state (POST/PUT on player) to be safe by default
+          - action: DENY
+            name_regex: "^(start|pause|seek|set).*"

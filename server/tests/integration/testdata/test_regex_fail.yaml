@@ -1,0 +1,12 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+upstream_services:
+  - name: test-regex
+    mcp_service:
+      stdio_connection:
+        command: ls
+        env:
+          TEST_KEY:
+            plain_text: "invalid-key"
+            validation_regex: "^sk-[a-zA-Z0-9]{10}$"

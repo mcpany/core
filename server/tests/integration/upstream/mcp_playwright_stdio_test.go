@@ -1,0 +1,101 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+package upstream
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"os/exec"
+	"testing"
+
+	apiv1 "github.com/mcpany/core/proto/api/v1"
+	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/tests/framework"
+	"github.com/mcpany/core/server/tests/integration"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/stretchr/testify/require"
+)
+
+func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
+	// Use a real (non-symlinked) temp directory for npm install so that the
+	// server's path validation (which resolves symlinks) accepts it.
+	npmDir := t.TempDir()
+
+	testCase := &framework.E2ETestCase{
+		Name:                "playwright server (Stdio)",
+		UpstreamServiceType: "stdio",
+		BuildUpstream:       func(_ *testing.T) *integration.ManagedProcess { return nil },
+		// Start the server with npmDir in its allowed_file_paths so the
+		// working_directory validation passes.
+		StartMCPANYServer: func(t *testing.T, testName string, _ ...string) *integration.MCPANYTestServerInfo {
+			configContent := fmt.Sprintf("global_settings:\n  allowed_file_paths:\n    - %q\n", npmDir)
+			return integration.StartMCPANYServerWithConfig(t, testName, configContent)
+		},
+		RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, _ string) {
+			npxPath, err := exec.LookPath("npx")
+			if err != nil {
+				t.Skipf("Skipping Playwright stdio test: npx not found in PATH: %v", err)
+			}
+			if _, err := exec.LookPath("npm"); err != nil {
+				t.Skipf("Skipping Playwright stdio test: npm not found in PATH: %v", err)
+			}
+
+			const serviceID = "playwright"
+			env := map[string]string{
+				"HOME":                             "/tmp",
+				"NPM_CONFIG_LOGLEVEL":              "warn",
+				"PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "1",
+				"NPM_CONFIG_YES":                   "true",
+			}
+			cmd := npxPath
+			args := []string{"playwright-mcp"}
+			setupCommands := []string{
+				"npm install --no-optional @playwright/mcp > /dev/null 2>&1",
+			}
+			integration.RegisterStdioServiceWithSetup(t, registrationClient, serviceID, cmd, true, npmDir, "", setupCommands, env, args...)
+
+		},
+		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
+			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
+			defer cancel()
+
+			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
+			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
+			require.NoError(t, err)
+			defer func() { _ = cs.Close() }()
+
+			// Verify tools are listed (confirms connection and registration)
+			listToolsRes, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
+			require.NoError(t, err)
+			require.NotEmpty(t, listToolsRes.Tools)
+
+			foundNavigate := false
+			for _, tool := range listToolsRes.Tools {
+				if tool.Name == "playwright.browser_navigate" {
+					foundNavigate = true
+					break
+				}
+			}
+			require.True(t, foundNavigate, "Expected to find playwright.browser_navigate tool")
+
+			t.Logf("Playwright service registered and tools listed successfully.")
+
+			serviceID, _ := util.SanitizeServiceName("playwright")
+			toolName, _ := util.SanitizeToolName("browser_navigate")
+			fullToolName := serviceID + "." + toolName
+
+			args := json.RawMessage(`{"url": "https://www.google.com"}`)
+
+			_, err = cs.CallTool(ctx, &mcp.CallToolParams{
+				Name:      fullToolName,
+				Arguments: args,
+			})
+			require.NoError(t, err)
+		},
+		RegistrationMethods: []framework.RegistrationMethod{framework.GRPCRegistration},
+	}
+
+	framework.RunE2ETest(t, testCase)
+}

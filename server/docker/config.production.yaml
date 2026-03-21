@@ -1,0 +1,10 @@
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+global_settings:
+  mcp_listen_address: "0.0.0.0:50050"
+  log_level: LOG_LEVEL_INFO
+  message_bus:
+    redis:
+      # Expects Redis address to be provided via environment variable or default to "redis:6379"
+      address: "${REDIS_ADDRESS:redis:6379}"

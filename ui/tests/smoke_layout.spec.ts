@@ -1,0 +1,40 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { test, expect } from '@playwright/test';
+import { seedCollection } from './e2e/test-data';
+
+test('layout smoke test', async ({ page, request }) => {
+  // Seed the expected system stack
+  await seedCollection('mcpany-system', request);
+
+  await page.goto('/');
+  // Wait for DOM content to load first, then wait for sidebar to appear
+  await page.waitForLoadState('domcontentloaded');
+
+  // Check for Sidebar
+  const sidebar = page.locator('text=MCP Any').first();
+  await expect(sidebar).toBeVisible();
+
+  // Check for Sidebar links
+  await expect(page.locator('a[href="/stacks"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/upstream-services"]').first()).toBeVisible({ timeout: 15000 });
+  await expect(page.locator('a[href="/settings"]').first()).toBeVisible();
+
+  // Navigate to Stacks
+  await page.getByRole('link', { name: 'Stacks' }).first().click();
+  await expect(page).toHaveURL(/\/stacks/);
+  await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible({ timeout: 15000 });
+
+  // Check for the "mcpany-system" stack
+  await expect(page.locator('text=mcpany-system').first()).toBeVisible();
+
+  // Navigate to Stack Detail
+  await page.getByText('mcpany-system', { exact: true }).first().click();
+  await expect(page).toHaveURL(/\/stacks\/mcpany-system/);
+
+  await expect(page.locator('h1')).toContainText('mcpany-system');
+  await expect(page.locator('h1')).toContainText('Stack');
+});

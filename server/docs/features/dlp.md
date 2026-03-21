@@ -1,0 +1,37 @@
+# Data Loss Prevention (DLP) Middleware
+
+The Data Loss Prevention (DLP) middleware scans and redacts sensitive information (PII) from request arguments (inputs) and result content (outputs).
+
+## Overview
+
+DLP is critical for preventing sensitive data leaks when interacting with LLMs. This middleware sits in the request/response path and automatically sanitizes data based on configured rules.
+
+## Features
+
+- **Tool Input Redaction**: Scans arguments in `CallToolRequest` for PII.
+- **Tool Output Redaction**: Scans text content in `CallToolResult` for PII.
+- **Prompt Redaction**: Scans arguments in `GetPromptRequest` and text content in `GetPromptResult`.
+- **Resource Redaction**: Scans text content in `ReadResourceResult`.
+- **Configurable Rules**: Define what patterns to look for (e.g., Credit Card numbers, SSN, Email addresses).
+
+## Configuration
+
+To enable DLP, add the `dlp` section to your configuration:
+
+```yaml
+dlp:
+  enabled: true
+  # Default patterns (Email, Credit Card, SSN) are automatically enabled.
+  # You can add additional regex patterns to redact here.
+  custom_patterns:
+    - "API_KEY_[A-Z0-9]+" # Example: Custom API Key pattern
+```
+
+## Implementation
+
+The middleware is implemented in `server/pkg/middleware/dlp.go`. It uses regex-based replacement to sanitize data before it reaches the tool (for inputs) or before it returns to the client (for outputs). It handles:
+- `CallToolRequest` (arguments)
+- `GetPromptRequest` (arguments)
+- `CallToolResult` (content)
+- `GetPromptResult` (content)
+- `ReadResourceResult` (content)

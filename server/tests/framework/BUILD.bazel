@@ -1,0 +1,55 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "framework",
+    srcs = [
+        "aitool.go",
+        "claude.go",
+        "copilot.go",
+        "e2e.go",
+        "everything.go",
+        "gemini.go",
+        "http.go",
+        "middleware.go",
+    ],
+    importpath = "github.com/mcpany/core/server/tests/framework",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/api/v1:api",
+        "//proto/config/v1:config",
+        "//server/tests/integration",
+        "@com_github_modelcontextprotocol_go_sdk//mcp",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//types/known/durationpb",
+    ],
+)
+
+go_test(
+    name = "framework_test",
+    srcs = [
+        "e2e_test.go",
+        "framework_test.go",
+    ],
+    data = [
+        "//server/cmd/server",
+        "//server/tests/integration/cmd/mocks/grpc_authed_weather_server",
+        "//server/tests/integration/cmd/mocks/grpc_weather_server",
+        "//server/tests/integration/cmd/mocks/http_authed_echo_server",
+        "//server/tests/integration/cmd/mocks/http_caching_server",
+        "//server/tests/integration/cmd/mocks/http_echo_server",
+        "//server/tests/integration/cmd/mocks/openapi_weather_server",
+        "//server/tests/integration/cmd/mocks/webrtc_weather_server",
+    ],
+    embed = [":framework"],
+    tags = ["integration"],
+    deps = [
+        "//server/tests/integration",
+        "@com_github_modelcontextprotocol_go_sdk//mcp",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

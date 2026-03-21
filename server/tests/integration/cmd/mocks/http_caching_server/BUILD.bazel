@@ -1,0 +1,17 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "http_caching_server_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mcpany/core/server/tests/integration/cmd/mocks/http_caching_server",
+    visibility = ["//visibility:private"],
+)
+
+go_binary(
+    name = "http_caching_server",
+    embed = [":http_caching_server_lib"],
+    visibility = ["//visibility:public"],
+)

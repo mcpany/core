@@ -1,0 +1,11 @@
+FROM mirror.gcr.io/library/golang:1.26 AS builder
+
+WORKDIR /go/src/github.com/ory/hydra
+RUN git clone --depth 1 --branch v2.2.0 https://github.com/ory/hydra.git .
+RUN go install .
+
+FROM gcr.io/distroless/base-debian12:nonroot
+
+COPY --from=builder /go/bin/hydra /usr/bin/hydra
+
+ENTRYPOINT ["hydra"]

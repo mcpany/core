@@ -1,0 +1,73 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.mcp_options.v1;
+
+option go_package = "github.com/mcpany/core/proto/mcp_options/v1";
+
+import "google/protobuf/descriptor.proto";
+import "google/protobuf/go_features.proto";
+
+option features.(pb.go).api_level = API_OPAQUE;
+
+// Option to specify the MCP tool name, applied to a method.
+extend google.protobuf.MethodOptions {
+   string tool_name = 301009001;
+}
+
+// Option to specify the MCP tool description, applied to a method.
+extend google.protobuf.MethodOptions {
+   string tool_description = 301009002;
+}
+
+// Option to specify the MCP prompt name, applied to a method.
+extend google.protobuf.MethodOptions {
+   string prompt_name = 301009003;
+}
+
+// Option to specify the MCP prompt description, applied to a method.
+extend google.protobuf.MethodOptions {
+   string prompt_description = 301009004;
+}
+
+// Option to specify the MCP prompt template, applied to a method.
+extend google.protobuf.MethodOptions {
+   string prompt_template = 301009005;
+}
+
+// Option to specify the MCP resource name, applied to a message.
+extend google.protobuf.MessageOptions {
+   string resource_name = 301009006;
+}
+
+// Option to specify the MCP resource description, applied to a message.
+extend google.protobuf.MessageOptions {
+     string resource_description = 301009007;
+}
+
+// Option to specify the MCP field description, applied to a field.
+extend google.protobuf.FieldOptions {
+     string field_description = 301009008;
+}
+
+// Option to specify the MCP tool read-only hint, applied to a method.
+extend google.protobuf.MethodOptions {
+   bool mcp_tool_readonly_hint = 301009009;
+}
+
+// Option to specify the MCP tool destructive hint, applied to a method.
+extend google.protobuf.MethodOptions {
+   bool mcp_tool_destructive_hint = 301009010;
+}
+
+// Option to specify the MCP tool idempotent hint, applied to a method.
+extend google.protobuf.MethodOptions {
+   bool mcp_tool_idempotent_hint = 301009011;
+}
+
+// Option to specify the MCP tool open-world hint, applied to a method.
+extend google.protobuf.MethodOptions {
+   bool mcp_tool_openworld_hint = 301009012;
+}

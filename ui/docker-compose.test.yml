@@ -1,0 +1,109 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+services:
+  server:
+    image: ${SERVER_IMAGE}
+
+    command:
+      [
+        "run",
+        "--config-path=config.minimal.yaml",
+        "--mcp-listen-address=:50050",
+        "--grpc-port=:50051"
+      ]
+    environment:
+      - MCPANY_API_KEY=test-token
+      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true
+      - MCPANY_ALLOW_LOOPBACK_RESOURCES=true
+      - MCPANY_ADMIN_INIT_USERNAME=e2e-admin
+      - MCPANY_ADMIN_INIT_PASSWORD=password
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ${HOST_WORKSPACE_ROOT:-..}/server/config.minimal.yaml:/app/config.minimal.yaml
+    networks:
+      default:
+        aliases:
+          - mcpany-server
+
+  # Standalone UI service — serves the pre-built Vite SPA and proxies
+  # all backend API paths to the real server container.
+  # Running it as a separate service mirrors the cloud-native k8s topology
+  # where the UI and server are independent, scalable Deployments.
+  ui:
+    image: mcpany-ui-e2e:latest
+    environment:
+      - BACKEND_URL=http://server:50050
+      - MCPANY_API_KEY=test-token
+    command:
+      [
+        "node_modules/.bin/vite", "preview",
+        "--host", "0.0.0.0",
+        "--port", "9111"
+      ]
+    healthcheck:
+      test:
+        [
+          "CMD", "node", "-e",
+          "require('http').get('http://localhost:9111/', r => process.exit(r.statusCode < 400 ? 0 : 1)).on('error', () => process.exit(1))"
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 12
+    depends_on:
+      server:
+        condition: service_healthy
+    networks:
+      default:
+        aliases:
+          - mcpany-ui
+
+  ui-tests:
+    image: mcpany-ui-e2e:latest
+    ipc: host
+    user: "${TEST_UID}:${TEST_GID}"
+    environment:
+      - MCPANY_LOG_LEVEL=info
+      # Tests point at the standalone ui service (cloud-native topology).
+      - PLAYWRIGHT_BASE_URL=http://mcpany-ui:9111
+      # Skip Playwright's built-in webServer — the ui service is already running.
+      - SKIP_WEBSERVER=true
+      - BACKEND_URL=http://server:50050
+      - MCPANY_API_KEY=test-token
+      - CI=true
+      - CAPTURE_SCREENSHOTS=${CAPTURE_SCREENSHOTS}
+      - PLAYWRIGHT_ARGS=${PLAYWRIGHT_ARGS}
+    command: >
+      sh -c "
+        mkdir -p test-results .audit playwright-report docs &&
+        npx playwright test $${PLAYWRIGHT_ARGS}
+      "
+    volumes:
+      - ${HOST_WORKSPACE_ROOT:-..}/ui/test-results:/work/ui/test-results
+      - ${HOST_WORKSPACE_ROOT:-..}/build/playwright-report:/work/ui/playwright-report
+      - ${HOST_WORKSPACE_ROOT:-..}/ui/.audit:/work/ui/.audit
+      - ${HOST_WORKSPACE_ROOT:-..}/ui/docs:/work/ui/docs
+      - ${HOST_WORKSPACE_ROOT:-..}/docs:/work/docs
+      - ${HOST_WORKSPACE_ROOT:-..}/ui/playwright.config.ts:/work/ui/playwright.config.ts
+      - ${HOST_WORKSPACE_ROOT:-..}/ui/playwright.screenshots.config.ts:/work/ui/playwright.screenshots.config.ts
+      - ${HOST_WORKSPACE_ROOT:-..}/ui/tests:/work/ui/tests
+    depends_on:
+      server:
+        condition: service_healthy
+      ui:
+        condition: service_healthy
+      ui-http-echo-server:
+        condition: service_started
+    networks:
+      default:
+
+  ui-http-echo-server:
+    image: mcpany/http-echo-server:latest
+    ports:
+      - "5678:5678"
+    command:
+      - "--port=5678"

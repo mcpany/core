@@ -1,0 +1,77 @@
+# Dockerfile.ci
+# Optimized CI builder image based on Alpine Linux
+
+FROM golang:1.26-alpine
+
+# Install system tools
+# libc6-compat and gcompat are needed for some pre-compiled binaries (protoc, node, etc)
+RUN apk add --no-cache \
+    git \
+    make \
+    bash \
+    curl \
+    docker-cli \
+    python3 \
+    py3-pip \
+    nodejs \
+    npm \
+    gcc \
+    musl-dev \
+    libc6-compat \
+    gcompat \
+    zip \
+    unzip \
+    which \
+    openssl
+
+# Install Python tools
+RUN pip3 install --break-system-packages pre-commit
+
+# Install specific versions of tools (Pre-bake to avoid download during build)
+# Using the same logic as Makefile but baking it in
+ENV TOOL_INSTALL_DIR=/usr/local/bin
+
+# Install GolangCI-Lint
+RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $TOOL_INSTALL_DIR v1.64.5
+
+# Install Protoc
+ENV PROTOC_VERSION=33.1
+RUN if [ "$(uname -m)" = "aarch64" ]; then ARCH="aarch_64"; else ARCH="x86_64"; fi && \
+    curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-${ARCH}.zip -o protoc.zip && \
+    unzip protoc.zip -d /usr/local && \
+    rm protoc.zip
+
+# Install Go Plugins
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11 && \
+    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1 && \
+    go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.27.3 && \
+    go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.27.3 && \
+    go install github.com/nats-io/nats-server/v2@latest
+
+# Install Helm
+ENV HELM_VERSION=v3.19.0
+RUN if [ "$(uname -m)" = "aarch64" ]; then ARCH="arm64"; else ARCH="amd64"; fi && \
+    case $(uname -m) in x86_64) ARCH=amd64 ;; aarch64) ARCH=arm64 ;; esac && \
+    curl -sSL https://get.helm.sh/helm-${HELM_VERSION}-linux-${ARCH}.tar.gz -o helm.tar.gz && \
+    tar -zxvf helm.tar.gz && \
+    mv linux-${ARCH}/helm /usr/local/bin/helm && \
+    rm -rf linux-${ARCH} helm.tar.gz
+
+# Install ShellCheck
+ENV SHELLCHECK_VERSION=v0.9.0
+RUN if [ "$(uname -m)" = "aarch64" ]; then ARCH="aarch64"; else ARCH="x86_64"; fi && \
+    curl -sSL https://github.com/koalaman/shellcheck/releases/download/${SHELLCHECK_VERSION}/shellcheck-${SHELLCHECK_VERSION}.linux.${ARCH}.tar.xz | tar -xJv && \
+    mv shellcheck-${SHELLCHECK_VERSION}/shellcheck /usr/local/bin/shellcheck && \
+    rm -rf shellcheck-${SHELLCHECK_VERSION}
+
+# Pre-download googleapis (optional but speeds up generation)
+WORKDIR /build-cache
+RUN curl -sSL -o googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip && \
+    unzip -q googleapis.zip && \
+    mv googleapis-master /usr/local/include/googleapis && \
+    rm googleapis.zip
+
+# Cleanup
+RUN rm -rf /go/pkg/mod/* /root/.cache
+
+WORKDIR /workspace

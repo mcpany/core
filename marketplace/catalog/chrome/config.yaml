@@ -1,0 +1,16 @@
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+upstream_services:
+  - id: "chrome-devtools"
+    name: "Chrome DevTools"
+    mcp_service:
+      stdio_connection:
+        command: "npx"
+        args: ["-y", "@modelcontextprotocol/server-puppeteer"]
+    call_policies:
+      - default_action: ALLOW
+        rules:
+          # Deny screenshots for privacy/speed in default config? (Optional)
+          # - action: DENY
+          #   name_regex: "screenshot"

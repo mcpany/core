@@ -1,0 +1,22 @@
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mcpany.fullname" . }}
+  labels:
+    {{- include "mcpany.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.jsonrpcPort }}
+      targetPort: jsonrpc
+      protocol: TCP
+      name: jsonrpc
+    - port: {{ .Values.service.grpcPort }}
+      targetPort: grpc
+      protocol: TCP
+      name: grpc
+  selector:
+    {{- include "mcpany.selectorLabels" . | nindent 4 }}

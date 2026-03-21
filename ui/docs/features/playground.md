@@ -1,0 +1,61 @@
+# Interactive Playground
+
+**Status:** Implemented
+
+## Goal
+
+The Playground is the central specialized interface for Developers to interactive discover, test, and debug MCP tools. It replaces manual CLI calls with a rich, form-based GUI.
+
+## Actors
+
+- **Developer**: Testing tool implementations.
+- **User**: Learning capability of a new service.
+
+## Usage Guide
+
+### 1. Overview
+
+Navigate to `/playground`. The interface presents a clean slate.
+
+![Playground Overview](screenshots/playground_blank.png)
+
+> **Note**: The page title is "Console".
+
+### 2. Select a Tool
+
+Click the **Available Tools** button (or press `Cmd+K`) to open the tool selection sheet.
+
+1. Click "Use Tool" on a tool card (e.g., `filesystem.list_dir`).
+2. A configuration sheet opens showing the **Tool Description** and a dynamically generated **Input Form**.
+
+![Tool Selected](screenshots/playground_tool_selected.png)
+
+### 3. Execute Tool
+
+Fill in the required arguments in the dialog. The form validates your input based on the JSON Schema provided by the tool.
+
+1. Enter values (e.g., `/var/log` for path).
+2. Click **"Run Tool"**.
+
+![Form Filled](screenshots/playground_form_filled.png)
+
+### 4. View Results
+
+The execution result is displayed in the chat stream.
+
+- **Success**: Shows the returned JSON payload.
+- **Error**: Displays the error message and code with distinct styling.
+
+## Advanced Features
+
+- **JSON Mode**: Switch to the "JSON" tab in the tool configuration sheet to input raw parameters if the form is too constraining.
+- **History**: Previous tool calls in the session remain visible above.
+- **Copy as Code**: Generate `curl` or `Python` code snippets for the current tool execution to easily integrate it into your scripts or applications.
+- **Native File Upload**: Automatically detects base64 encoded fields in tool schemas (e.g., `contentEncoding: "base64"`) and provides a native file picker for seamless file uploads.
+
+### 5. Session History (Import/Export)
+
+You can manage your playground session history using the buttons in the top right corner.
+
+- **Export**: Save your current session to a JSON file (`playground-history-<date>.json`) for sharing or debugging.
+- **Import**: Load a previously exported session file to replay tool executions and results.

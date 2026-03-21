@@ -1,0 +1,14 @@
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+upstream_services:
+- name: slack
+  upstream_auth:
+    bearer_token:
+      token:
+
+        plain_text: "${SLACK_API_TOKEN}"
+
+  openapi_service:
+    address: "https://slack.com/api"
+    spec_url: "https://api.slack.com/specs/openapi/v2/slack_web.json"

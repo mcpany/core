@@ -1,0 +1,9 @@
+go 1.26.1
+
+toolchain go1.26.1
+
+use (
+	.
+	// ./examples/upstream_service_demo/grpc/client
+	// ./examples/upstream_service_demo/grpc/greeter_server
+)

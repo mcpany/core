@@ -1,0 +1,2 @@
+# Verification Results
+INITIALIZED

@@ -1,0 +1,29 @@
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+upstream_services:
+  - name: "cached-weather-service"
+    http_service:
+      address: "https://api.weather.com"
+      tools:
+        - name: "get_forecast"
+          description: "Get weather for a location"
+          call_id: "get_weather"
+          input_schema:
+            type: "object"
+            properties:
+              location:
+                type: "string"
+            required: ["location"]
+      calls:
+        get_weather:
+          method: HTTP_METHOD_GET
+          endpoint_path: "/weather"
+          parameters:
+            - schema:
+                name: "location"
+                type: STRING
+                is_required: true
+    cache:
+      is_enabled: true
+      ttl: "10s"
