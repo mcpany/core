@@ -17,7 +17,6 @@ An exhaustive audit of 10 distinct documentation files (spanning UI, APIs, and S
 | `ui/docs/features/secrets.md` | Matched | Verified UI logic exists | `ui/src/components/settings/secrets-manager.tsx` supports secret masking and creation. |
 | `ui/docs/features/auth.md` | Matched | Verified UI logic exists | `ui/src/app/login/page.tsx` and `ui/src/app/users/page.tsx` enforce login and RBAC. |
 | `ui/docs/features/webhooks.md` | Drifted | **Case A: Documentation Drift** | UI is mocked (e.g. "Toggle active status not implemented"). Refactored documentation to state it is "Config-Driven (UI Planned)". |
-| `server/docs/roadmap.md` | Drifted | **Case B: Roadmap Debt** | Roadmap priority `Interactive mcp init CLI` was missing from codebase |
 
 ## Remediation Log
 
@@ -26,12 +25,6 @@ An exhaustive audit of 10 distinct documentation files (spanning UI, APIs, and S
   * *Code Reality:* The UI component at `ui/src/app/webhooks/page.tsx` contained explicit developer comments indicating the backend endpoints were missing (`// Toggle active status not implemented in backend yet`). The backend API itself (`proto/admin/v1`) did not contain webhook mutation endpoints.
   * *Roadmap Reality:* The Roadmap dictates Webhooks operate primarily as a "Sidecar pattern" driven by `config.yaml` (`server/cmd/webhooks`).
   * *Action:* Refactored `ui/docs/features/webhooks.md` to flag the status as "Config-Driven (UI Planned)" and aligned the usage instructions with the YAML-first approach documented in the backend `README.md`. No code changes were needed since the codebase correctly matched the Roadmap.
-
-* **Case B: Roadmap Debt (`Interactive mcp init CLI`)**
-  * *Context:* The `server/docs/roadmap.md` listed `Interactive mcp init CLI` as a planned feature to generate `config.yaml` to reduce copy-paste errors.
-  * *Code Reality:* The `mcpctl` command `init` did not exist in `server/cmd/mcpctl`.
-  * *Roadmap Reality:* It was clearly outlined under "Developer Experience" in the Roadmap.
-  * *Action:* Engineered the solution. Created `server/cmd/mcpctl/init.go` and `server/cmd/mcpctl/init_test.go` to implement `mcpctl init`, which writes a default `config.yaml` to the current directory. Registered the command in `server/cmd/mcpctl/main.go`. Passed unit tests.
 
 ## Security Scrub
 The audit report and associated commit logs have been scrubbed. No PII, API Keys, Database credentials, or internal IPs were exposed during testing or in this report.
