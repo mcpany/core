@@ -663,7 +663,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Mesh-Bound Context Sovereignty Bridge**: Semantic fragment analysis across teammate boundaries for horizontal team stability. (Added: 2026-05-29)
 
 #### Upcoming (2026-03-21 Evolution)
-*   **[P0] Attested Handshake Provider**: JIT "Permission Handshakes" for delegated tool access to reduce user prompts. (Added: 2026-03-21)
-*   **[P0] Ephemeral Tool Sandbox (ETS)**: Isolation middleware for short-lived, Docker-bound containers for high-risk tools. (Added: 2026-03-21)
-*   **[P0] Shared State Arbiter (SSA)**: Coordination service providing lock-management and conflict-resolution for the Blackboard. (Added: 2026-03-21)
-*   **[P1] Project-Level Context Anchor Manager**: Synthesis and protection of `.mcp-context` anchors for stable local context. (Added: 2026-03-21)
+*   **[P0] Attested Handshake Provider**: JIT authority delegation for Cognitive Handshakes. (Added: 2026-03-21)
+*   **[P0] Shared State Arbiter (SSA)**: Real-time wait-graph analysis for the Blackboard. (Added: 2026-03-21)
+*   **[P1] Spectral Mitigator Middleware**: Reasoning-aware timing jitter for inter-agent transport. (Added: 2026-03-21)

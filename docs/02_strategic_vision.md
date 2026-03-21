@@ -558,6 +558,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Active UACO Bid Validation**: Instead of just facilitating bids, MCP Any will perform "Pre-Flight Profiling" on agents submitting UACO bids. If an agent's historical behavior or current "Skill Profile" doesn't align with the task card, the bid will be automatically quarantined.
 
 ---
+---
 
 ## Strategic Evolution: [2026-03-21]
 ### Focus: Adaptive Trust Orchestration & Content-Addressable Config Integrity
@@ -879,13 +880,11 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Autonomous Task Reaper (ATR)**: Supporting the stability of horizontal meshes, MCP Any will implement the ATR. This service will monitor teammate liveness and reasoning monologues to proactively reclaim and re-auction "Ghost" tasks that remain locked in the mailbox after a teammate terminates.
 - **Hardware-Attested Identity Rotation (HAIR)**: To counter "Teammate Impersonation" in sharded meshes, we are mandating HAIR. Every inter-teammate request will be signed with a hardware-attested, session-bound identity token that rotates periodically, ensuring that a compromised subagent cannot "squat" on a mailbox shard.
 
----
-
 ## Strategic Evolution: [2026-03-21]
-### Focus: Attested Handshakes & Ephemeral Tool Sovereignty
-**Context**: The introduction of the "Cognitive Handshake" in Claude Code and the move toward ephemeral tool sandboxes in OpenClaw signal a shift from persistent tool access to **Just-in-Time (JIT) Attestation**. Simultaneously, the emergence of "Shared State Deadlocks" in deep swarms confirms that the Universal Agent Bus must move from passive storage to active **State Arbitration**.
+### Focus: Attested Authority Handoffs & Shared State Arbitration
+**Context**: The emergence of Claude Code v2.4.0's "Cognitive Handshake" and the increasing frequency of "Reasoning Deadlocks" in deep agent swarms reveal that transport-layer security and flat memory models are insufficient for multi-agent coordination. We must now protect the **delegation of authority** and provide **authoritative arbitration** for shared state.
 **Strategic Pivot**:
-- **Attested Handshake Provider**: MCP Any will evolve to act as the authoritative "Handshake Broker." We will implement a standardized, JWT-based "Permission Handshake" that allows agents to delegate tool-specific capabilities with cryptographic provenance, reducing "Permission Fatigue."
-- **Ephemeral Tool Sandboxing (ETS)**: To neutralize "Tool Injection" and persistent exfiltration, we are adopting ETS. Tools will be executed in isolated, short-lived containers (or Docker-bound pipes) that are destroyed immediately after execution, ensuring a clean state for every call.
-- **Shared State Arbiter (SSA)**: Supporting the stability of multi-agent swarms, MCP Any will implement the SSA. This service will provide lock-management and version-conflict resolution for the shared Blackboard, preventing "Reasoning Loops" caused by concurrent state mutations.
-- **Project-Level Context Anchoring**: We are introducing native support for project-specific context anchors. MCP Any will automatically synthesize and protect `.mcp-context` anchors to provide stable, intent-aligned context for all agents operating within a local project boundary.
+- **Attested Handshake Provider**: MCP Any will evolve to act as the authoritative JIT broker for inter-agent delegation. We will implement support for "Cognitive Handshakes," ensuring that parent agents can cryptographically delegate scoped authority to subagents without exposing long-lived credentials.
+- **Shared State Arbiter (SSA)**: To neutralize "Reasoning Loops," we are introducing the SSA. This service will perform real-time wait-graph analysis on the Blackboard (Shared KV Store), proactively breaking deadlocks and enforcing mission-aligned priority for state-locking.
+- **Mission-Bound Attestation Integration**: Leveraging Gemini CLI v0.35.0 patterns, we are mandating hardware-bound "Mission Root" anchoring for all delegated tasks, ensuring that subagents cannot be coerced into goals that diverge from the primary user intent.
+- **Spectral Reasoning Mitigator**: To counter inference-time side-channel attacks, MCP Any will implement reasoning-aware timing jitter in all inter-agent transport channels, neutralizing the ability of malicious teammates to reconstruct mission constraints via timing variance.

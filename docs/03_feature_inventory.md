@@ -1156,14 +1156,6 @@
 - **Autonomous Task Reaper (ATR)**: (P1) Stability service that monitors teammate liveness and reasoning monologues to reclaim and re-auction "Ghost" tasks.
 - **Hardware-Attested Identity Rotation (HAIR) Provider**: (P0) Security middleware mandating periodic, hardware-bound identity rotation for inter-teammate requests in sharded meshes.
 
-## Evolution: [2026-03-21] Updates
-
-### Proposed Additions
-- **Attested Handshake Provider**: (P0) A core security service that issues JWT-based "Permission Handshakes" for delegated tool access, reducing user-facing permission prompts.
-- **Ephemeral Tool Sandbox (ETS) Middleware**: (P0) Isolation service that manages short-lived, Docker-bound containers for high-risk tool execution, ensuring zero-persistence.
-- **Shared State Arbiter (SSA)**: (P0) Coordination service for the Blackboard that provides lock-management and version-conflict resolution for parallel agent swarms.
-- **Project-Level Context Anchor Manager**: (P1) Optimization service that synthesizes and protects `.mcp-context` anchors to provide stable, project-aligned context.
-
 ### Priority Shifts
 - **Teammate Task-List Arbiter**: (Evolved to Lock-Free Mesh Arbiter) Now designated as the primary mechanism for lock-free horizontal coordination.
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Evolved to Sharded Mailbox Sovereignty) Now elevated with mission-root intent anchoring.
@@ -1179,3 +1171,15 @@
 ### Priority Shifts
 - **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
 - **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
+
+## Evolution: [2026-03-21] Updates
+
+### Proposed Additions
+- **Attested Handshake Provider**: (P0) JIT authority delegation service for Claude Code v2.4.0 Cognitive Handshakes.
+- **Shared State Arbiter (SSA)**: (P0) Real-time wait-graph analysis and deadlock resolution for horizontal swarms.
+- **Spectral Reasoning Mitigator**: (P1) Middleware for injecting reasoning-aware timing jitter into transport channels to prevent side-channel intent reconstruction.
+- **Ephemeral Tool Sandbox (ETS) Middleware**: (P0) Security layer that enforces mission-bound attestation for every individual tool call within a sandboxed sub-session.
+
+### Priority Shifts
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Now elevated with the requirement for **SSA-compliant** lock arbitration.
+- **A2A Messaging Hub**: (Re-affirmed P0) Designated as the primary backend for the **Attested Handshake Provider**.

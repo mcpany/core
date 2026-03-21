@@ -503,7 +503,6 @@
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
 
 #### Upcoming (2026-03-21 Evolution)
-- [ ] **[P0] Handshake Approval Portal**: UI for reviewing and signing JIT "Permission Handshakes" for tool delegation. (Added: 2026-03-21)
-- [ ] **[P0] Ephemeral Sandbox Monitor**: Real-time visualization of short-lived tool containers and execution logs. (Added: 2026-03-21)
-- [ ] **[P0] Blackboard Lock Inspector**: Visualizer for the Shared State Arbiter (SSA) wait-graph and active key-locks. (Added: 2026-03-21)
-- [ ] **[P1] Project Context Anchor Hub**: Workspace for managing and reviewing `.mcp-context` anchors. (Added: 2026-03-21)
+- [ ] **[P0] Handshake Portal**: UI for reviewing and authorizing Cognitive Handshake delegations. (Added: 2026-03-21)
+- [ ] **[P0] Blackboard Lock Inspector**: Real-time visualization of SSA wait-graphs and contention heatmaps. (Added: 2026-03-21)
+- [ ] **[P1] Ephemeral Sandbox Monitor**: Visual tracker for task-bound sandbox lifecycle and mission attestation. (Added: 2026-03-21)
