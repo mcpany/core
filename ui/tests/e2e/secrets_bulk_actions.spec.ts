@@ -34,7 +34,7 @@ test.describe('Secrets Manager Bulk Actions', () => {
         for (const id of createdSecrets) {
             try {
                 await request.delete(`/api/v1/secrets/${id}`);
-            } catch (e) {
+            } catch (_e) {
                 // Ignore if already deleted
             }
         }
