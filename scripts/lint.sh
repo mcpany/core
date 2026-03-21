@@ -33,7 +33,9 @@ if [ -z "$GOLANGCI_LINT_BIN" ]; then
     exit 1
 fi
 
-"$GOLANGCI_LINT_BIN" run --timeout 20m --fix ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
+export GOGC=1
+export GOMAXPROCS=1
+"$GOLANGCI_LINT_BIN" run --timeout 20m --concurrency 1 --fix ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
 
 echo "Running pre-commit..."
 if command -v pre-commit >/dev/null 2>&1; then
