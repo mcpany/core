@@ -746,6 +746,15 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 	}
 }
 
+// handleTools returns a handler for the /tools endpoint, supporting GET and PUT.
+//
+// Summary: Handles tool listing and toggling.
+//
+// Parameters:
+//   - store: storage.Storage. The storage backend.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler function.
 func (a *Application) handleTools(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
