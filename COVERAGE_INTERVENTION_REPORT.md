@@ -1,9 +1,8 @@
 # Coverage Intervention Report
 
-* **Target:** `server/pkg/app/api_skills.go` (`handleSkills` and `handleSkillDetail`)
-* **Risk Profile:** These endpoints handle HTTP operations mapping to internal skill operations in `server/pkg/app`. It exhibited low coverage and high Cyclomatic Complexity. Leaving these endpoints untested posed a risk of regressions, especially related to the security and management of skills (creation, retrieval, updates, asset routing, etc.).
+* **Target:** `server/pkg/app/api_auth.go` (`handleInitiateOAuth`)
+* **Risk Profile:** This function initiates the OAuth2 flow, acting as a crucial security and authentication gateway. It lacked test coverage entirely for its complex branching logic and error conditions (such as invalid payloads, missing redirect URLs, and unauthorized requests). Leaving it untested posed a critical security and functional risk of regressions during future authentication updates.
 * **New Coverage:**
-    * I implemented a comprehensive table-driven test `TestHandleSkills` which tests `GET` (List), `POST` (Create with Success, Invalid Body, and Creation Error scenarios), and default method handler (Method Not Allowed).
-    * I implemented a comprehensive table-driven test `TestHandleSkillDetail` which tests `GET` (Retrieve with Success and Not Found scenarios), `PUT` (Update with Success, Invalid Body, and Update Error scenarios), `DELETE` (Delete with Success and Not Found scenarios), default method handler (Method Not Allowed), missing skill names in the request URL, and correct asset routing (delegation to `handleUploadSkillAsset`).
-    * The new coverage mimics the Google Standard Table-Driven Test pattern present in `TestHandleUploadSkillAsset`.
-* **Verification:** `bazelisk test //server/pkg/app:app_test` confirms tests pass correctly without modifying underlying functionality. Running `bazelisk test //server/...` confirms there are no new regressions.
+    * I implemented a comprehensive table-driven test `TestHandleInitiateOAuth_Detailed` in `server/pkg/app/api_auth_extra_test.go` which tests `POST` (Initiation with Invalid JSON, Missing Fields, and Unauthorized scenarios), and default method handler (Method Not Allowed).
+    * The new coverage mimics the Google Standard Table-Driven Test pattern present in the codebase to ensure repeatable, deterministic results across all failure paths without requiring a live database or real OAuth configuration.
+* **Verification:** `bazel test //server/pkg/app:app_test` confirms the newly written tests pass cleanly (100% success on `TestHandleInitiateOAuth_Detailed`). The test suite sweep indicated no regressions.
