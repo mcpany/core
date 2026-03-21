@@ -43,7 +43,7 @@ describe("RecentActivityWidget", () => {
     mockFetch.mockReturnValue(new Promise(() => {}));
 
     render(<RecentActivityWidget />);
-    expect(screen.getByText(/Loading activity/i)).toBeInTheDocument();
+    expect(screen.getByText(/Loading timeline/i)).toBeInTheDocument();
   });
 
   it("renders traces when fetch succeeds", async () => {
