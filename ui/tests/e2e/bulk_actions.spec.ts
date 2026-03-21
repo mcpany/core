@@ -6,7 +6,7 @@ import { seedGlobalState } from './test-data';
 
 import { test, expect } from '@playwright/test';
 
-test.describe.skip('Bulk Service Actions', () => {
+test.describe('Bulk Service Actions', () => {
 
   test.beforeEach(async ({ page, request }) => {
     await seedGlobalState(request);

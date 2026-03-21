@@ -1,78 +1,62 @@
 
 import { test, expect } from '@playwright/test';
-import { seedGlobalState } from './test-data';
+import { seedGlobalState, seedTraffic } from './test-data';
 
-test.describe.skip('Trace Viewer', () => {
+test.describe('Trace Viewer', () => {
     test.beforeEach(async ({ page, request }) => {
         await seedGlobalState(request);
+        // seedTraffic invokes the actual debug endpoint which might seed traces too?
+        await seedTraffic(request);
 
-        // We MUST mock traces because they are generated dynamically by background workers
-        // which may not reliably execute fast enough during this isolated test.
-        await page.route('**/api/v1/traces', async route => {
-            await route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify([{
-                    id: 'trace-123',
-                    call_id: 'calculate_sum',
-                    status: 'success',
-                    timestamp: new Date().toISOString(),
-                    duration_ms: 120,
-                    request: { arguments: { a: 5, b: 10 } },
-                    response: { result: 15 }
-                }])
-            });
-        });
+        const HEADERS = {
+            'Authorization': 'Basic ZTJlLWFkbWluLWNvcmU6cGFzc3dvcmQ=',
+            'Content-Type': 'application/json'
+        };
 
-        await page.goto('/traces');
+        await request.post('/api/v1/debug/traces', { headers: HEADERS });
 
-        // Ensure auth/navigation
-        // await page.waitForLoadState('networkidle');
+        await page.goto('/login');
+        await page.waitForLoadState('networkidle');
+        await page.fill('input[name="username"]', 'e2e-admin-core');
+        await page.fill('input[name="password"]', 'password');
+        await Promise.all([
+          page.waitForURL('/', { timeout: 30000 }),
+          page.click('button[type="submit"]', { force: true })
+        ]);
+        await expect(page).toHaveURL('/', { timeout: 15000 });
     });
 
     test('should navigate to traces page and view details', async ({ page }) => {
-        // Trigger reload to make sure intercepts work
-        await page.reload();
+        await page.goto('/traces');
 
-        // Actually, let's just check for any trace item
+        // Let's just wait for ANY element indicating a trace or "No traces"
+        // Wait, if no traces show up, it's because my seed didn't work.
+        // We will just expect a trace button to be visible.
         const firstTrace = page.locator('button.flex.flex-col').first();
-        await expect(firstTrace).toBeVisible({ timeout: 20000 });
-
-        // Click the first trace
+        await expect(firstTrace).toBeVisible({ timeout: 15000 });
         await firstTrace.click();
 
-        // Verify details panel opens and shows information
-        await expect(page.locator('text=Trace Details').first()).toBeVisible({ timeout: 20000 });
-
-        // Wait for JSON viewer to render
-        await expect(page.locator('.react-json-view').first()).toBeVisible({ timeout: 20000 });
-
-        // Close details
+        await expect(page.getByText('Trace Details').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.locator('.react-json-view').first()).toBeVisible({ timeout: 10000 });
         await page.click('button:has-text("Close")');
     });
 
     test('should filter traces', async ({ page }) => {
-        await page.reload();
+        await page.goto('/traces');
 
-        // Type in search box
-        await page.fill('input[placeholder="Search traces..."]', 'calculate');
-
-        // Expect only matching items
-        // and doesn't crash the page
-        await expect(page.locator('button.flex.flex-col').first()).toBeVisible({ timeout: 20000 });
+        // The mock generator uses 'orchestrator-task'
+        await page.fill('input[placeholder="Search traces..."]', 'orchestrator-task');
+        await expect(page.locator('button.flex.flex-col').first()).toBeVisible({ timeout: 15000 });
     });
 
     test('should replay trace in playground', async ({ page }) => {
-        await page.reload();
+        await page.goto('/traces');
 
         const firstTrace = page.locator('button.flex.flex-col').first();
-        await expect(firstTrace).toBeVisible({ timeout: 20000 });
+        await expect(firstTrace).toBeVisible({ timeout: 15000 });
         await firstTrace.click();
 
-        // Click "Replay in Playground"
         await page.click('button:has-text("Replay")');
-
-        // Should navigate to playground
         await expect(page).toHaveURL(/.*\/playground.*/);
     });
 });
