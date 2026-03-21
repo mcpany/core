@@ -750,6 +750,9 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 //
 // Summary: Handles requests to manage tool status.
 //
+// Parameters:
+//   - None.
+//
 // Returns:
 //   - http.HandlerFunc: The configured handler for tool requests.
 //
@@ -936,6 +939,9 @@ func updateToolDisableStatus(svc *configv1.UpstreamServiceConfig, toolName strin
 //
 // Summary: Executes a tool via POST request.
 //
+// Parameters:
+//   - None.
+//
 // Returns:
 //   - http.HandlerFunc: The configured handler for tool executions.
 //
@@ -990,6 +996,9 @@ func (a *Application) handleExecute() http.HandlerFunc {
 //
 // Summary: Lists available prompts.
 //
+// Parameters:
+//   - None.
+//
 // Returns:
 //   - http.HandlerFunc: The configured handler for prompts.
 //
@@ -1034,6 +1043,9 @@ func (a *Application) handlePrompts() http.HandlerFunc {
 // handleResources handles listing available resources.
 //
 // Summary: Lists available resources.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
 //   - http.HandlerFunc: The handler.

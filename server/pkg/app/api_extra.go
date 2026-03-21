@@ -16,6 +16,9 @@ import (
 //
 // Summary: Reads a specific resource.
 //
+// Parameters:
+//   - None.
+//
 // Returns:
 //   - http.HandlerFunc: The handler.
 //
@@ -59,6 +62,9 @@ func (a *Application) handleResourceRead() http.HandlerFunc {
 // handlePromptExecute handles requests to execute a specific prompt.
 //
 // Summary: Executes a specific prompt.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
 //   - http.HandlerFunc: The configured handler for prompt execution.
