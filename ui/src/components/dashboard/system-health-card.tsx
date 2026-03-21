@@ -49,11 +49,28 @@ export const SystemHealthCard = memo(function SystemHealthCard() {
     return (
       <Card className="col-span-1 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">System Health</CardTitle>
-          <Activity className="h-4 w-4 text-muted-foreground animate-pulse" />
+          <WidgetSkeleton className="h-4 w-28" />
+          <WidgetSkeleton className="h-4 w-4 rounded-full" />
         </CardHeader>
         <CardContent>
-          <div className="text-xs text-muted-foreground">Loading system status...</div>
+          <div className="grid gap-3 mt-2">
+            <div className="flex items-center justify-between">
+              <WidgetSkeleton className="h-3 w-16" />
+              <WidgetSkeleton className="h-3 w-20" />
+            </div>
+            <div className="flex items-center justify-between">
+              <WidgetSkeleton className="h-3 w-20" />
+              <WidgetSkeleton className="h-3 w-16" />
+            </div>
+            <div className="flex items-center justify-between border-t pt-3 mt-1">
+              <WidgetSkeleton className="h-3 w-24" />
+              <WidgetSkeleton className="h-4 w-12" />
+            </div>
+            <div className="flex items-center justify-between mt-1">
+              <WidgetSkeleton className="h-3 w-24" />
+              <WidgetSkeleton className="h-4 w-12" />
+            </div>
+          </div>
         </CardContent>
       </Card>
     )

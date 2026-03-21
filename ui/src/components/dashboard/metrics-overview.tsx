@@ -102,14 +102,17 @@ import { apiClient, Metric } from "@/lib/client";
  */
 export const MetricsOverview = memo(function MetricsOverview() {
   const [metrics, setMetrics] = useState<Metric[]>([]);
+  const [loading, setLoading] = useState(true);
   const { serviceId } = useDashboard();
 
   const fetchMetrics = useCallback(async () => {
     try {
       const data = await apiClient.getDashboardMetrics(serviceId);
-      setMetrics(data);
+      setMetrics(data || []);
     } catch (error) {
       console.error("Failed to fetch metrics", error);
+    } finally {
+      setLoading(false);
     }
   }, [serviceId]);
 
@@ -123,13 +126,35 @@ export const MetricsOverview = memo(function MetricsOverview() {
 
   return (
     <div className="space-y-4">
-      {metrics.length === 0 ? (
-        <div className="text-muted-foreground animate-pulse">Loading dashboard metrics...</div>
+      {loading && metrics.length === 0 ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i} className="backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <WidgetSkeleton className="h-4 w-24" />
+                <WidgetSkeleton className="h-4 w-4 rounded-full" />
+              </CardHeader>
+              <CardContent>
+                <WidgetSkeleton className="h-8 w-16 mb-2" />
+                <div className="flex items-center justify-between mt-1">
+                  <WidgetSkeleton className="h-3 w-12" />
+                  <WidgetSkeleton className="h-3 w-20" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {metrics.map((metric) => (
-              <MetricItem key={metric.label} metric={metric} />
-            ))}
+            {metrics.length === 0 ? (
+               <div className="col-span-4 text-sm text-muted-foreground p-4 border border-dashed rounded-lg bg-muted/20 text-center">
+                 No metrics available.
+               </div>
+            ) : (
+              metrics.map((metric) => (
+                <MetricItem key={metric.label} metric={metric} />
+              ))
+            )}
           </div>
       )}
       <SystemHealthCard />
