@@ -40,11 +40,11 @@ func TestWordTokenizer(t *testing.T) {
 	}{
 		{"", 0},
 		{"hello", 1},
-		{"hello world", 2}, // 2 * 1.3 = 2.6 -> 2
+		{"hello world", 2},             // 2 * 1.3 = 2.6 -> 2
 		{"this is a test sentence", 6}, // 5 * 1.3 = 6.5 -> 6
-		{"hello 🌍", 2}, // 2 * 1.3 = 2.6 -> 2 (ASCII + Emoji)
-		{"你好 世界", 2}, // 2 * 1.3 = 2.6 -> 2 (Chinese + Space + Chinese)
-		{"hello\tworld\n", 2}, // ASCII whitespace
+		{"hello 🌍", 2},                 // 2 * 1.3 = 2.6 -> 2 (ASCII + Emoji)
+		{"你好 世界", 2},                   // 2 * 1.3 = 2.6 -> 2 (Chinese + Space + Chinese)
+		{"hello\tworld\n", 2},          // ASCII whitespace
 	}
 
 	for _, tt := range tests {
@@ -97,11 +97,11 @@ func TestCountTokensInValue_Word(t *testing.T) {
 		{"int", 12345, 1},
 		{"bool", true, 1},
 		{"nil", nil, 1},
-		{"string", "hello world", 2}, // "hello world" -> 2 words * 1.3 -> 2
-		{"slice", []interface{}{1, "hello"}, 1 + 1}, // 1 (int) + 1 (hello)
-		{"map", map[string]interface{}{"a": 1}, 1 + 1}, // "a" (1) + 1 (int)
+		{"string", "hello world", 2},                        // "hello world" -> 2 words * 1.3 -> 2
+		{"slice", []interface{}{1, "hello"}, 1 + 1},         // 1 (int) + 1 (hello)
+		{"map", map[string]interface{}{"a": 1}, 1 + 1},      // "a" (1) + 1 (int)
 		{"string_slice", []string{"hello", "world"}, 1 + 1}, // 1 + 1
-		{"string_map", map[string]string{"a": "b"}, 1 + 1}, // "a"(1) + "b"(1)
+		{"string_map", map[string]string{"a": "b"}, 1 + 1},  // "a"(1) + "b"(1)
 	}
 
 	for _, tt := range tests {
@@ -270,7 +270,7 @@ func TestCountTokensInValue_Coverage(t *testing.T) {
 		// B -> D
 		// C -> D
 		// Should count D twice (expanded).
-		d := &ExportedStruct{Name: "D", Age: 1} // "D"(1) + "1"(1) = 2 tokens
+		d := &ExportedStruct{Name: "D", Age: 1}         // "D"(1) + "1"(1) = 2 tokens
 		b := &struct{ Child *ExportedStruct }{Child: d} // 2 tokens
 		c := &struct{ Child *ExportedStruct }{Child: d} // 2 tokens
 		a := &struct{ Left, Right interface{} }{Left: b, Right: c}
@@ -309,10 +309,10 @@ func TestWordTokenizer_Branches(t *testing.T) {
 		want  int
 	}{
 		{"  hello  ", 1}, // Leading/trailing whitespace
-		{"a\tb", 2}, // Tab
-		{"a\r\nb", 2}, // CR LF
-		{"a \x00 b", 3}, // Control char \x00
-		{"a\u00A0b", 2}, // NBSP (non-ASCII space)
+		{"a\tb", 2},      // Tab
+		{"a\r\nb", 2},    // CR LF
+		{"a \x00 b", 3},  // Control char \x00
+		{"a\u00A0b", 2},  // NBSP (non-ASCII space)
 	}
 
 	for _, tt := range tests {
@@ -344,7 +344,7 @@ func TestErrorPropagation(t *testing.T) {
 		}
 
 		// Struct with cycle (field)
-		type S struct { Field interface{} }
+		type S struct{ Field interface{} }
 		st := S{Field: node}
 		if _, err := CountTokensInValue(tokenizer, st); err == nil {
 			t.Error("Expected error from struct with cycle")
@@ -368,7 +368,7 @@ func TestErrorPropagation(t *testing.T) {
 		}
 
 		// Struct with cycle (field)
-		type S struct { Field interface{} }
+		type S struct{ Field interface{} }
 		st := S{Field: node}
 		if _, err := CountTokensInValue(tokenizer, st); err == nil {
 			t.Error("Expected error from struct with cycle")
@@ -409,12 +409,12 @@ func TestFloatConsistency(t *testing.T) {
 	// We expect the token count to match the standard JSON string representation,
 	// which avoids scientific notation for these ranges (unlike strconv %v).
 	tests := []struct {
-		val float64
+		val  float64
 		want int
 	}{
-		{1234567.0, 1}, // "1234567" -> 7 chars -> 1.75 -> 1 token (Changed from 3)
-		{9999999.0, 1}, // "9999999" -> 7 chars -> 1.75 -> 1 token (Changed from 3)
-		{10000000.0, 2}, // "10000000" -> 8 chars -> 2 tokens (Changed from 1: "1e+07" was 5 chars)
+		{1234567.0, 1},   // "1234567" -> 7 chars -> 1.75 -> 1 token (Changed from 3)
+		{9999999.0, 1},   // "9999999" -> 7 chars -> 1.75 -> 1 token (Changed from 3)
+		{10000000.0, 2},  // "10000000" -> 8 chars -> 2 tokens (Changed from 1: "1e+07" was 5 chars)
 		{123456789.0, 2}, // "123456789" -> 9 chars -> 2.25 -> 2 tokens (Changed from 3)
 	}
 
@@ -564,7 +564,7 @@ func TestCountSliceInterfaceSimple(t *testing.T) {
 		want  int
 	}{
 		{"Empty slice", []interface{}{}, 0},
-		{"Mixed slice", []interface{}{"hello world", 123, true}, 2 + 1 + 1}, // "hello world" (11 chars -> 2), 123 (3 chars -> 1), true (1)
+		{"Mixed slice", []interface{}{"hello world", 123, true}, 2 + 1 + 1},            // "hello world" (11 chars -> 2), 123 (3 chars -> 1), true (1)
 		{"Nested slice", []interface{}{"test", []interface{}{"nested string"}}, 1 + 3}, // "test" (4 chars -> 1), "nested string" (13 chars -> 3)
 	}
 
@@ -631,13 +631,13 @@ func TestCountSliceInterfaceSimpleMore(t *testing.T) {
 		want  int
 	}{
 		{"Float64 whole", []interface{}{float64(50.0)}, 1},
-		{"Float64 decimal", []interface{}{float64(50.555)}, 1}, // "50.555" len=6 -> /4 = 1
+		{"Float64 decimal", []interface{}{float64(50.555)}, 1},           // "50.555" len=6 -> /4 = 1
 		{"Float64 large decimal", []interface{}{float64(1234.56789)}, 2}, // "1234.56789" len=10 -> 2
 		{"Int", []interface{}{int(12345)}, 1},
 		{"Int64", []interface{}{int64(12345)}, 1},
 		{"Bool false", []interface{}{false}, 1},
 		{"Nil", []interface{}{nil}, 1},
-		{"Unsupported type (struct)", []interface{}{struct{A int}{1}}, 1}, // might fallback to countRecursive
+		{"Unsupported type (struct)", []interface{}{struct{ A int }{1}}, 1}, // might fallback to countRecursive
 	}
 
 	for _, tt := range tests {
@@ -662,8 +662,8 @@ func TestSimpleTokenizeInt64More(t *testing.T) {
 	}{
 		{"MinInt64", -9223372036854775808, 5},
 		{"Negative outside common range", -10000000, 2}, // len="-10000000" = 9 -> 9/4 = 2
-		{"Negative outside 1", -1000000, 2}, // -1M is exactly on boundary wait n > -1000000
-		{"Negative outside 2", -999999, 1}, // -999,999 is in range > -1000000
+		{"Negative outside 1", -1000000, 2},             // -1M is exactly on boundary wait n > -1000000
+		{"Negative outside 2", -999999, 1},              // -999,999 is in range > -1000000
 	}
 
 	for _, tt := range tests {
@@ -759,8 +759,9 @@ func TestSimpleTokenizeInt64DeadBranches(t *testing.T) {
 	// Wait, we can test just to be sure if anything bypasses it, but mathematically it's dead code.
 	got := simpleTokenizeInt64(-1000000)
 	if got != 2 {
-			t.Errorf("simpleTokenizeInt64(-1000000) = %d, want 2", got)
-	}}
+		t.Errorf("simpleTokenizeInt64(-1000000) = %d, want 2", got)
+	}
+}
 
 func TestCountSliceInterfaceSimpleCoverage(t *testing.T) {
 	tokenizer := NewSimpleTokenizer()
@@ -785,6 +786,7 @@ func TestCountSliceInterfaceSimpleCoverage(t *testing.T) {
 type errTokenizer struct {
 	*SimpleTokenizer
 }
+
 func (e *errTokenizer) CountTokens(text string) (int, error) {
 	return 0, fmt.Errorf("mock error")
 }
