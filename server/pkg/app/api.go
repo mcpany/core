@@ -831,8 +831,6 @@ func (a *Application) setToolDisableFlag(service *configv1.UpstreamServiceConfig
 		toolList = fsSvc.Tools
 	} else if vectorSvc := service.GetVectorService(); vectorSvc != nil {
 		toolList = vectorSvc.Tools
-	} else if browserSvc := service.GetBrowserService(); browserSvc != nil {
-		toolList = browserSvc.Tools
 	} else if websocketSvc := service.GetWebsocketService(); websocketSvc != nil {
 		toolList = websocketSvc.Tools
 	} else if webrtcSvc := service.GetWebrtcService(); webrtcSvc != nil {
@@ -874,8 +872,6 @@ func (a *Application) setToolDisableFlag(service *configv1.UpstreamServiceConfig
 			fsSvc.Tools = append(fsSvc.Tools, newTool)
 		} else if vectorSvc := service.GetVectorService(); vectorSvc != nil {
 			vectorSvc.Tools = append(vectorSvc.Tools, newTool)
-		} else if browserSvc := service.GetBrowserService(); browserSvc != nil {
-			browserSvc.Tools = append(browserSvc.Tools, newTool)
 		} else if websocketSvc := service.GetWebsocketService(); websocketSvc != nil {
 			websocketSvc.Tools = append(websocketSvc.Tools, newTool)
 		} else if webrtcSvc := service.GetWebrtcService(); webrtcSvc != nil {
