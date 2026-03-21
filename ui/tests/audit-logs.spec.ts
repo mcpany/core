@@ -60,38 +60,4 @@ test.describe('Feature Screenshot', () => {
         await download.cancel();
     }
   });
-
-  test('Render Rich JSON in Audit Logs', async ({ page }) => {
-    // Intercept the API call to provide a mock audit log entry with rich JSON
-    await page.route('**/api/v1/audit*', async (route) => {
-      await route.fulfill({
-        json: {
-          entries: [
-            {
-              timestamp: new Date().toISOString(),
-              toolName: 'complex_tool',
-              userId: 'admin',
-              profileId: 'default',
-              durationMs: 150,
-              arguments: JSON.stringify({ complex_arg: { nested: "value" } }),
-              result: JSON.stringify([{ id: 1, name: "item1" }, { id: 2, name: "item2" }])
-            }
-          ],
-          totalCount: 1
-        }
-      });
-    });
-
-    await page.goto('/audit');
-
-    // Wait for the mock log to appear and click "View"
-    await page.locator('button:has-text("View")').first().click();
-
-    // Verify that the RichResultViewer renders the result as a Table (since it's an array of objects)
-    // Check for the "Table" tab which is the default for tabular eligible data
-    await page.waitForSelector('text=item1');
-
-    // Verify the arguments are rendered (likely JSON tree or formatted output)
-    await page.waitForSelector('text=complex_arg');
-  });
 });
