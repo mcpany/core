@@ -1121,3 +1121,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Stylometric Mesh Sovereignty (SMS) Provider**: To neutralize "Stylometric Splicing," we are introducing SMS. This layer will perform real-time stylometric analysis of inter-agent messages, ensuring that subagent reasoning fragments cannot mimic the signature of the parent agent to bypass mission-root constraints.
 - **Lock-Free Sharded Mailbox Hub**: Supporting the efficiency of horizontal Agent Teams, MCP Any will implement "Sharded Mailbox Hub." This service will host granular, task-bound mailbox shards that allow parallel teammates to synchronize state without global coordination locks, ensuring non-blocking performance.
 - **Zero-Knowledge Discovery (ZKD) Proxy**: Leveraging Gemini CLI v0.42.0 patterns, we are mandating ZKD. Agent capabilities will remain cryptographically masked until a mission-bound, identity-verified handshake is completed, neutralizing "Shadow Capability" mapping by malicious subagents.
+
+---
+
+## Strategic Evolution: [2026-06-25]
+### Focus: Hardware-Attested Resumption Integrity (HARI) & Discovery Masking
+**Context**: The emergence of "Mission-Root Ghosting" and the discovery of "Negative Proof Exhaustion" in ZKP-based discovery reveal that **Resumption Continuity** and **Metadata Obfuscation** are the next security frontiers. As agents become atomic and resumable, infrastructure must ensure that resumption tokens are not just hardware-attested, but hardware-revocable. Simultaneously, discovery must move beyond masking to active noise-injection to prevent fingerprinting.
+**Strategic Pivot**:
+- **Hardware-Attested Resumption Integrity (HARI)**: MCP Any will evolve to act as the authoritative "Resumption Gatekeeper." We will implement HARI, mandating hardware-revocable, session-bound resumption tokens that are invalidated at the TPM level upon any mission-root state divergence, neutralizing "Ghosting" exploits.
+- **Mission-Bound Discovery Masking**: To counter "Negative Proof Exhaustion," we are introducing Discovery Masking. This layer will inject hardware-attested "Noise Capabilities" into the ZKP discovery bus, ensuring that attackers cannot map the agent's environment through negative proving.
+- **Reasoning Sovereignty Enforcement**: Supporting the Gemini CLI v0.43.0 standard, MCP Any will evolve to enforce mandatory `x-reasoning-sovereignty` headers. We will cryptographically bind reasoning paths to the hardware-attested intent, preventing subagent "Persona Drift" during multi-hop delegations.
+- **Shard-Key Affinity Orchestration**: To support the Claude Code horizontal coordination model, we are implementing Shard-Key Affinity. This service will automatically route coordination messages to the optimized teammate shard, ensuring zero-contention state synchronization in horizontal meshes.

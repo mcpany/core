@@ -147,7 +147,13 @@
 *   **[P0] Atomic Mission-Resumption (AMR) Gateway**: Hardware-locked resumption of agent states across cold-boots via BSH snapshots. (Added: 2026-06-24)
 *   **[P0] Stylometric Mesh Sovereignty (SMS) Provider**: Behavioral security layer detecting mimicry-based hijacking via real-time stylometry. (Added: 2026-06-24)
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
-*   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
+*   **[P0] Zero-Knowledge Discovery (ZKD) Proxy**: (Promoted to P0) Cryptographic capability masking for agent tool schemas. (Added: 2026-06-24)
+
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Hardware-Attested Resumption Verifier (HARV)**: Security controller enforcing hardware-revocable resumption tokens and monotonic consistency. (Added: 2026-06-25)
+*   **[P0] Discovery Masking Gateway**: Noise-injection service for the ZKD Proxy to neutralize negative-proof environment fingerprinting. (Added: 2026-06-25)
+*   **[P0] Reasoning Sovereignty Enforcer**: Mandatory `x-reasoning-sovereignty` header validation for all hardware-attested paths. (Added: 2026-06-25)
+*   **[P1] Shard-Affinity Router**: Contention-aware routing for AMS based on horizontal teammate shard-key affinity. (Added: 2026-06-25)
 
 ## 2. Top 10 Recommended Features
 

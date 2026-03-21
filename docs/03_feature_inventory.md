@@ -1458,6 +1458,14 @@
 - **Lock-Free Sharded Mailbox Hub**: (P0) High-performance coordination service implementing CRDT-based task list synchronization for non-blocking horizontal Agent Teams.
 - **Zero-Knowledge Discovery (ZKD) Proxy**: (P1) Advanced discovery gate that mandates cryptographic capability masking until a mission-bound handshake is completed.
 
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Hardware-Attested Resumption Verifier (HARV)**: (P0) Advanced security service for the AMR Gateway that manages hardware-revocable resumption tokens and enforces HARI-compliance.
+- **Discovery Masking Gateway**: (P0) Security middleware for the ZKD Proxy that injects hardware-attested "Noise Capabilities" to neutralize negative proof exhaustion.
+- **Reasoning Sovereignty Enforcer**: (P0) Compliance middleware enforcing mandatory `x-reasoning-sovereignty` headers for all hardware-attested reasoning paths.
+- **Shard-Affinity Router**: (P1) Optimization service for the AMS middleware that routes coordination messages based on shard-key affinity.
+
 ### Priority Shifts
-- **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
-- **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+- **Atomic Mission-Resumption (AMR) Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory **HARV** integration to counter ghosting.
+- **Zero-Knowledge Discovery (ZKD) Proxy**: (Promoted to P0) Critical requirement for mitigating metadata-based environment fingerprinting.

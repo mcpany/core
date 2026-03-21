@@ -49,3 +49,10 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+* **2026-06-25: - Integration with Hardware-Attested Resumption Integrity (HARI)**
+    **Context:** Today's research revealed "Mission-Root Ghosting" vulnerabilities where stale tokens can be re-played.
+    **Architecture Adjustment:**
+    *   Deprecated Section 4's passive token storage in favor of mandatory **HARV (Hardware-Attested Resumption Verifier)** integration.
+    *   Snapshots now include **TPM-bound Monotonic Counters** to enforce single-use consistency.
+    *   Introduced `x-reasoning-sovereignty` header validation as a requirement for all resumption handshakes.
+    **Security Impact:** Eliminates the risk of session hijacking via re-played frontier snapshots and ensures bit-perfect lineage persistence.
