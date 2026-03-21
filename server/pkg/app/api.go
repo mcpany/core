@@ -28,6 +28,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 // readBodyWithLimit reads the request body with a limit and returns the bytes.
@@ -856,9 +857,9 @@ func (a *Application) setToolDisableFlag(service *configv1.UpstreamServiceConfig
 				// We need to figure out exactly how the disable field is exposed.
 				// Wait! Earlier error: `t.Disable undefined (type *"github.com/mcpany/core/proto/config/v1".ToolDefinition has no field or method Disable)`
 				// Let's use proto reflection to set the field.
-				t.ProtoReflect().Set(t.ProtoReflect().Descriptor().Fields().ByName("disable"), proto.Bool(disable).ProtoReflect().Interface())
+				t.ProtoReflect().Set(t.ProtoReflect().Descriptor().Fields().ByName("disable"), protoreflect.ValueOfBool(disable))
 			} else {
-				t.ProtoReflect().Set(t.ProtoReflect().Descriptor().Fields().ByName("disable"), proto.Bool(false).ProtoReflect().Interface())
+				t.ProtoReflect().Set(t.ProtoReflect().Descriptor().Fields().ByName("disable"), protoreflect.ValueOfBool(false))
 			}
 			found = true
 			break
@@ -868,8 +869,8 @@ func (a *Application) setToolDisableFlag(service *configv1.UpstreamServiceConfig
 	// Auto-discovered tools might not be in the list yet, so we append an override
 	if !found {
 		newTool := &configv1.ToolDefinition{}
-		newTool.ProtoReflect().Set(newTool.ProtoReflect().Descriptor().Fields().ByName("name"), proto.String(toolName).ProtoReflect().Interface())
-		newTool.ProtoReflect().Set(newTool.ProtoReflect().Descriptor().Fields().ByName("disable"), proto.Bool(disable).ProtoReflect().Interface())
+		newTool.ProtoReflect().Set(newTool.ProtoReflect().Descriptor().Fields().ByName("name"), protoreflect.ValueOfString(toolName))
+		newTool.ProtoReflect().Set(newTool.ProtoReflect().Descriptor().Fields().ByName("disable"), protoreflect.ValueOfBool(disable))
 
 		// To avoid direct field assignment issues like `mcp.Tools = ...`, we use reflection to append:
 		// However, mcp.Tools is a slice of pointers, we can't easily reflect-append. Wait, actually `mcp.Tools` might not be named `Tools` either?
@@ -885,7 +886,7 @@ func (a *Application) setToolDisableFlag(service *configv1.UpstreamServiceConfig
 				toolsField := svcTypeMsg.Descriptor().Fields().ByName("tools")
 				if toolsField != nil {
 					list := svcTypeMsg.Mutable(toolsField).List()
-					list.Append(proto.ValueOf(newTool.ProtoReflect()))
+					list.Append(protoreflect.ValueOfMessage(newTool.ProtoReflect()))
 				}
 			}
 		}
