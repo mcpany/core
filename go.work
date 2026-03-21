@@ -1,9 +1,0 @@
-go 1.24.3
-
-use (
-	./
-	./k8s/operator
-	./proto
-	./server
-	./server/examples/upstream_service_demo/grpc/greeter_server
-)

@@ -5,11 +5,6 @@
 
 import { request, APIRequestContext } from '@playwright/test';
 
-// In e2e tests we avoid pulling proto types since they aren't compiled
-// in the same way for Playwright when running outside of Bazel or
-// without explicit path aliases in tsconfig.
-// We use loosely typed objects.
-
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const ECHO_SERVER_BASE_URL = process.env.UI_HTTP_ECHO_BASE_URL || 'http://ui-http-echo-server:5678';
@@ -179,6 +174,25 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
         }
     ];
 
+        const traces = [
+        {
+            id: 'trace-1',
+            rootSpan: {
+              id: 'span-1',
+              name: 'calculate_sum',
+              serviceName: 'Math',
+              type: 'tool',
+              status: 'success',
+              startTime: Date.now() - 150,
+              endTime: Date.now(),
+              children: [],
+            },
+            timestamp: new Date().toISOString(),
+            totalDuration: 150,
+            status: 'success',
+            trigger: 'user'
+        }
+    ];
     const seedRequest = {
         upstream_services: services,
         service_templates: templates,
@@ -311,5 +325,31 @@ export const cleanupCollection = async (name?: string, requestContext?: APIReque
         await context.delete(`/api/v1/collections/${name}`, { headers: HEADERS });
     } catch (e) {
         // Ignore cleanup errors (collection may not exist)
+    }
+};
+
+export const seedTraces = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const trace = {
+        id: 'trace-1',
+        rootSpan: {
+            id: 'span-1',
+            name: 'calculate_sum',
+            serviceName: 'Math',
+            type: 'tool',
+            status: 'success',
+            startTime: Date.now() - 150,
+            endTime: Date.now(),
+            children: []
+        },
+        timestamp: new Date().toISOString(),
+        totalDuration: 150,
+        status: 'success',
+        trigger: 'user'
+    };
+    try {
+        await context.post('/api/v1/debug/traces', { data: [trace], headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to seed trace: ${e}`);
     }
 };

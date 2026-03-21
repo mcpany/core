@@ -28,6 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
 import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
+import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 
 interface AuditLogEntry {
     timestamp: string;
@@ -61,12 +62,17 @@ export function AuditLogViewer() {
     const [startDate, setStartDate] = useState<Date | undefined>(undefined);
     const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
+    // Pagination
+    const [page, setPage] = useState(0);
+    const limit = 50;
+    const [hasMore, setHasMore] = useState(false);
+
     const fetchLogs = useCallback(async () => {
         setLoading(true);
         try {
             const filters: any = {
-                limit: 50,
-                offset: 0
+                limit: limit,
+                offset: page * limit
             };
             if (toolName) filters.tool_name = toolName;
             if (userId) filters.user_id = userId;
@@ -83,17 +89,27 @@ export function AuditLogViewer() {
             // Wait, looking at `admin.proto`:
             // string tool_name = 2;
             // In JSON it will be `toolName`.
-            setLogs(res.entries || []);
+            const newLogs = res.entries || [];
+            setLogs(newLogs);
+            setHasMore(newLogs.length === limit);
         } catch (e) {
             console.error("Failed to fetch audit logs", e);
         } finally {
             setLoading(false);
         }
-    }, [toolName, userId, startDate, endDate]);
+    }, [toolName, userId, startDate, endDate, page]);
 
     useEffect(() => {
         fetchLogs();
     }, [fetchLogs]);
+
+    const handleFilter = () => {
+        if (page === 0) {
+            fetchLogs();
+        } else {
+            setPage(0);
+        }
+    };
 
     const handleExport = async () => {
         setExporting(true);
@@ -121,13 +137,13 @@ export function AuditLogViewer() {
         }
     };
 
-    const formatJson = (jsonStr: string) => {
-        if (!jsonStr) return null;
+
+    const safeParse = (str: string | undefined | null) => {
+        if (!str) return null;
         try {
-            const obj = JSON.parse(jsonStr);
-            return JSON.stringify(obj, null, 2);
+            return JSON.parse(str);
         } catch (e) {
-            return jsonStr;
+            return str;
         }
     };
 
@@ -210,7 +226,7 @@ export function AuditLogViewer() {
                                 {exporting ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
                                 Export CSV
                             </Button>
-                            <Button onClick={fetchLogs} disabled={loading}>
+                            <Button onClick={handleFilter} disabled={loading}>
                                 {loading ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
                                 Filter
                             </Button>
@@ -269,6 +285,29 @@ export function AuditLogViewer() {
                         </TableBody>
                     </Table>
                 </CardContent>
+                <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/10">
+                    <div className="text-sm text-muted-foreground">
+                        Showing {logs.length > 0 ? page * limit + 1 : 0} to {page * limit + logs.length} entries
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPage(p => Math.max(0, p - 1))}
+                            disabled={page === 0 || loading}
+                        >
+                            Previous
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPage(p => p + 1)}
+                            disabled={!hasMore || loading}
+                        >
+                            Next
+                        </Button>
+                    </div>
+                </div>
             </Card>
 
             <Dialog open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
@@ -310,26 +349,14 @@ export function AuditLogViewer() {
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Arguments</h4>
                                 <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vs2015}
-                                        customStyle={{ margin: 0, fontSize: '12px' }}
-                                    >
-                                        {formatJson(selectedLog.arguments) || "{}"}
-                                    </SyntaxHighlighter>
+                                    <RichResultViewer result={safeParse(selectedLog.arguments) || {}} />
                                 </div>
                             </div>
 
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Result</h4>
                                 <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vs2015}
-                                        customStyle={{ margin: 0, fontSize: '12px', maxHeight: '300px' }}
-                                    >
-                                        {formatJson(selectedLog.result) || (selectedLog.error ? "null" : "{}")}
-                                    </SyntaxHighlighter>
+                                    <RichResultViewer result={safeParse(selectedLog.result) || (selectedLog.error ? null : {})} />
                                 </div>
                             </div>
                         </div>
