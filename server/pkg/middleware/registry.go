@@ -190,6 +190,7 @@ type StandardMiddlewares struct {
 	SmartRecovery    *SmartRecoveryMiddleware
 	RecursiveContext *RecursiveContextManager
 	A2ABridge        *A2ABridgeMiddleware
+	ESB              *ESBMiddleware
 	Cleanup          func() error
 }
 
@@ -449,6 +450,21 @@ func InitStandardMiddlewares(
 		}
 	})
 
+	esbMiddleware := NewESBMiddleware(nil)
+	RegisterMCP("esb", func(cfg *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+		if cfg != nil {
+			esbMiddleware = NewESBMiddleware(cfg)
+		} else {
+			esbMiddleware = NewESBMiddleware(nil)
+		}
+		return func(next mcp.MethodHandler) mcp.MethodHandler {
+			return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+				// Call the ESB execute which wraps the next handler
+				return esbMiddleware.Execute(ctx, method, req, next)
+			}
+		}
+	})
+
 	return &StandardMiddlewares{
 		Audit:            audit,
 		GlobalRateLimit:  globalRateLimit,
@@ -457,6 +473,7 @@ func InitStandardMiddlewares(
 		SmartRecovery:    smartRecovery,
 		RecursiveContext: recursiveContext,
 		A2ABridge:        a2aBridge,
+		ESB:              esbMiddleware,
 		Cleanup:          audit.Close,
 	}, nil
 }
