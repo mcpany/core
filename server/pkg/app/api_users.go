@@ -238,7 +238,7 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 
 			if !isAdmin {
 				// Prevent non-admin users from escalating their privileges by restoring their original roles
-				user.Roles = existingUser.GetRoles()
+				user.SetRoles(existingUser.GetRoles())
 			}
 
 			if err := hashUserPassword(r.Context(), &user, store, existingUser); err != nil {
