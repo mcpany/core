@@ -7,7 +7,7 @@ An exhaustive audit of 10 distinct documentation files (spanning UI, APIs, and S
 
 | Document Name | Status | Action Taken | Evidence |
 |---------------|--------|--------------|----------|
-| `ui/docs/features/services.md` | Matched | Verified UI logic exists | `ui/src/app/upstream-services/page.tsx` supports Service lists and config. |
+| `ui/docs/features/services.md` | Matched | Verified UI logic exists | `ui/src/app/services/page.tsx` supports Service lists and config. |
 | `ui/docs/features/playground.md` | Matched | Verified UI logic exists | `ui/src/components/playground/pro/playground-client-pro.tsx` correctly handles History Import/Export. |
 | `server/docs/features/admin_api.md` | Matched | Verified Code exists | `server/pkg/admin/server.go` explicitly implements all documented RPCs, including `DeleteUser`. |
 | `server/docs/features/dynamic_registration.md` | Matched | Verified Code exists | `server/pkg/discovery/` contains the auto-discovery handlers for gRPC, HTTP, etc. |
