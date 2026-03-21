@@ -51,14 +51,18 @@ describe("ProfileEditor", () => {
         render(<ProfileEditor profile={null} open={true} onOpenChange={() => {}} onSave={async () => {}} />);
 
         expect(screen.getByText("Create New Profile")).toBeInTheDocument();
-        await waitFor(() => expect(apiClient.listServices).toHaveBeenCalled());
-        expect(screen.getByText("service-a")).toBeInTheDocument();
+        await waitFor(() => {
+            expect(apiClient.listServices).toHaveBeenCalled();
+            expect(screen.getByText("service-a")).toBeInTheDocument();
+        });
     });
 
     it("allows adding and removing tags and updates service selection", async () => {
         render(<ProfileEditor profile={null} open={true} onOpenChange={() => {}} onSave={async () => {}} />);
 
-        await waitFor(() => expect(screen.getByText("service-a")).toBeInTheDocument());
+        await waitFor(() => {
+            expect(screen.getByText("service-a")).toBeInTheDocument();
+        });
 
         const input = screen.getByPlaceholderText("Add tag (e.g. finance, hr)");
 
