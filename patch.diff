@@ -1,0 +1,1327 @@
+diff --git a/k8s/operator/api/v1alpha1/BUILD.bazel b/k8s/operator/api/v1alpha1/BUILD.bazel
+new file mode 100644
+index 0000000..78f5c7e
+--- /dev/null
++++ b/k8s/operator/api/v1alpha1/BUILD.bazel
+@@ -0,0 +1,19 @@
++load("@rules_go//go:def.bzl", "go_library")
++
++go_library(
++    name = "v1alpha1",
++    srcs = [
++        "groupversion_info.go",
++        "mcpserver_types.go",
++        "tool_types.go",
++        "zz_generated.deepcopy.go",
++    ],
++    importpath = "github.com/mcpany/core/k8s/operator/api/v1alpha1",
++    visibility = ["//visibility:public"],
++    deps = [
++        "@io_k8s_apimachinery//pkg/apis/meta/v1:go_default_library",
++        "@io_k8s_apimachinery//pkg/runtime:go_default_library",
++        "@io_k8s_apimachinery//pkg/runtime/schema:go_default_library",
++        "@io_k8s_sigs_controller_runtime//pkg/scheme:go_default_library",
++    ],
++)
+diff --git a/k8s/operator/cmd/BUILD.bazel b/k8s/operator/cmd/BUILD.bazel
+new file mode 100644
+index 0000000..1594c48
+--- /dev/null
++++ b/k8s/operator/cmd/BUILD.bazel
+@@ -0,0 +1,26 @@
++load("@rules_go//go:def.bzl", "go_binary", "go_library")
++
++go_library(
++    name = "cmd_lib",
++    srcs = ["main.go"],
++    importpath = "github.com/mcpany/core/k8s/operator/cmd",
++    visibility = ["//visibility:private"],
++    deps = [
++        "@com_github_mcpany_core//operator/api/v1alpha1",
++        "@com_github_mcpany_core//operator/controllers",
++        "@io_k8s_apimachinery//pkg/runtime:go_default_library",
++        "@io_k8s_apimachinery//pkg/util/runtime:go_default_library",
++        "@io_k8s_client_go//kubernetes/scheme",
++        "@io_k8s_client_go//plugin/pkg/client/auth",
++        "@io_k8s_sigs_controller_runtime//:go_default_library",
++        "@io_k8s_sigs_controller_runtime//pkg/healthz:go_default_library",
++        "@io_k8s_sigs_controller_runtime//pkg/log/zap:go_default_library",
++        "@io_k8s_sigs_controller_runtime//pkg/metrics/server:go_default_library",
++    ],
++)
++
++go_binary(
++    name = "cmd",
++    embed = [":cmd_lib"],
++    visibility = ["//visibility:public"],
++)
+diff --git a/k8s/operator/controllers/BUILD.bazel b/k8s/operator/controllers/BUILD.bazel
+new file mode 100644
+index 0000000..bc40869
+--- /dev/null
++++ b/k8s/operator/controllers/BUILD.bazel
+@@ -0,0 +1,39 @@
++load("@rules_go//go:def.bzl", "go_library", "go_test")
++
++go_library(
++    name = "controllers",
++    srcs = [
++        "mcpserver_controller.go",
++        "tool_controller.go",
++    ],
++    importpath = "github.com/mcpany/core/k8s/operator/controllers",
++    visibility = ["//visibility:public"],
++    deps = [
++        "@com_github_mcpany_core//operator/api/v1alpha1",
++        "@io_k8s_api//apps/v1:go_default_library",
++        "@io_k8s_api//core/v1:go_default_library",
++        "@io_k8s_apimachinery//pkg/api/errors:go_default_library",
++        "@io_k8s_apimachinery//pkg/apis/meta/v1:go_default_library",
++        "@io_k8s_apimachinery//pkg/runtime:go_default_library",
++        "@io_k8s_apimachinery//pkg/types:go_default_library",
++        "@io_k8s_sigs_controller_runtime//:go_default_library",
++        "@io_k8s_sigs_controller_runtime//pkg/client:go_default_library",
++        "@io_k8s_sigs_controller_runtime//pkg/log:go_default_library",
++    ],
++)
++
++go_test(
++    name = "controllers_test",
++    srcs = ["mcpserver_controller_test.go"],
++    embed = [":controllers"],
++    deps = [
++        "@com_github_mcpany_core//operator/api/v1alpha1",
++        "@io_k8s_api//apps/v1:go_default_library",
++        "@io_k8s_api//core/v1:go_default_library",
++        "@io_k8s_apimachinery//pkg/apis/meta/v1:go_default_library",
++        "@io_k8s_apimachinery//pkg/types:go_default_library",
++        "@io_k8s_client_go//kubernetes/scheme",
++        "@io_k8s_sigs_controller_runtime//pkg/client/fake:go_default_library",
++        "@io_k8s_sigs_controller_runtime//pkg/reconcile:go_default_library",
++    ],
++)
+diff --git a/k8s/operator/tests/BUILD.bazel b/k8s/operator/tests/BUILD.bazel
+index af32b82..5fecfd8 100644
+--- a/k8s/operator/tests/BUILD.bazel
++++ b/k8s/operator/tests/BUILD.bazel
+@@ -5,6 +5,7 @@ load("@rules_go//go:def.bzl", "go_test")
+
+ go_test(
+     name = "e2e_test",
++    size = "enormous",
+     srcs = ["e2e_test.go"],
+     data = [
+         "//server/cmd/server:server_tarball",
+@@ -13,6 +14,10 @@ go_test(
+     env = {
+         "E2E": "true",
+     },
+-    size = "enormous",
+     tags = ["integration"],
+ )
++
++go_test(
++    name = "tests_test",
++    srcs = ["e2e_test.go"],
++)
+diff --git a/proto/BUILD.bazel b/proto/BUILD.bazel
+index 0276c80..95a7f14 100644
+--- a/proto/BUILD.bazel
++++ b/proto/BUILD.bazel
+@@ -7,21 +7,24 @@ load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+ # gazelle:go_grpc_compilers @rules_go//proto:go_proto,@rules_go//proto:go_grpc_v2
+
+ copy_to_bin(
+-	name = "ts_proto_root_files",
+-	srcs = glob([
+-		"google/**/*.ts",
+-		"google/**/*.d.ts",
+-	], allow_empty = True),
+-	visibility = ["//visibility:public"],
++    name = "ts_proto_root_files",
++    srcs = glob(
++        [
++            "google/**/*.ts",
++            "google/**/*.d.ts",
++        ],
++        allow_empty = True,
++    ),
++    visibility = ["//visibility:public"],
+ )
+
+ filegroup(
+-	name = "ts_proto",
+-	srcs = [
+-		"//proto/api/v1:ts_proto_files",
+-		"//proto/bus:ts_proto_files",
+-		"//proto/config/v1:ts_proto_files",
+-		":ts_proto_root_files",
+-	],
+-	visibility = ["//visibility:public"],
++    name = "ts_proto",
++    srcs = [
++        ":ts_proto_root_files",
++        "//proto/api/v1:ts_proto_files",
++        "//proto/bus:ts_proto_files",
++        "//proto/config/v1:ts_proto_files",
++    ],
++    visibility = ["//visibility:public"],
+ )
+diff --git a/proto/api/v1/BUILD.bazel b/proto/api/v1/BUILD.bazel
+index 1fe6f9c..312d562 100644
+--- a/proto/api/v1/BUILD.bazel
++++ b/proto/api/v1/BUILD.bazel
+@@ -1,17 +1,20 @@
+ # Copyright 2026 Author(s) of MCP Any
+ # SPDX-License-Identifier: Apache-2.0
+
++load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+ load("@protobuf//bazel:proto_library.bzl", "proto_library")
+ load("@rules_go//go:def.bzl", "go_library")
+ load("@rules_go//proto:def.bzl", "go_proto_library")
+-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+
+ copy_to_bin(
+     name = "ts_proto_files",
+-    srcs = glob([
+-        "*.d.ts",
+-        "*.ts",
+-    ], allow_empty = True),
++    srcs = glob(
++        [
++            "*.d.ts",
++            "*.ts",
++        ],
++        allow_empty = True,
++    ),
+     visibility = ["//visibility:public"],
+ )
+
+diff --git a/proto/bus/BUILD.bazel b/proto/bus/BUILD.bazel
+index 7189ff0..48590e6 100644
+--- a/proto/bus/BUILD.bazel
++++ b/proto/bus/BUILD.bazel
+@@ -1,14 +1,17 @@
+ # Copyright 2026 Author(s) of MCP Any
+ # SPDX-License-Identifier: Apache-2.0
+
+-load("@protobuf//bazel:proto_library.bzl", "proto_library")
+ load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
++load("@protobuf//bazel:proto_library.bzl", "proto_library")
+ load("@rules_go//go:def.bzl", "go_library")
+ load("@rules_go//proto:def.bzl", "go_proto_library")
+
+ copy_to_bin(
+     name = "ts_proto_files",
+-    srcs = glob(["*.ts"], allow_empty = True),
++    srcs = glob(
++        ["*.ts"],
++        allow_empty = True,
++    ),
+     visibility = ["//visibility:public"],
+ )
+
+diff --git a/proto/config/v1/BUILD.bazel b/proto/config/v1/BUILD.bazel
+index 4381a07..b20a8ee 100644
+--- a/proto/config/v1/BUILD.bazel
++++ b/proto/config/v1/BUILD.bazel
+@@ -1,17 +1,20 @@
+ # Copyright 2026 Author(s) of MCP Any
+ # SPDX-License-Identifier: Apache-2.0
+
++load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+ load("@protobuf//bazel:proto_library.bzl", "proto_library")
+ load("@rules_go//go:def.bzl", "go_library")
+ load("@rules_go//proto:def.bzl", "go_proto_library")
+-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+
+ copy_to_bin(
+     name = "ts_proto_files",
+-    srcs = glob([
+-        "*.d.ts",
+-        "*.ts",
+-    ], allow_empty = True),
++    srcs = glob(
++        [
++            "*.d.ts",
++            "*.ts",
++        ],
++        allow_empty = True,
++    ),
+     visibility = ["//visibility:public"],
+ )
+
+diff --git a/server/examples/demo/remote-config/BUILD.bazel b/server/examples/demo/remote-config/BUILD.bazel
+new file mode 100644
+index 0000000..977bac5
+--- /dev/null
++++ b/server/examples/demo/remote-config/BUILD.bazel
+@@ -0,0 +1,14 @@
++load("@rules_go//go:def.bzl", "go_binary", "go_library")
++
++go_library(
++    name = "remote-config_lib",
++    srcs = ["mock_server.go"],
++    importpath = "github.com/mcpany/core/server/examples/demo/remote-config",
++    visibility = ["//visibility:private"],
++)
++
++go_binary(
++    name = "remote-config",
++    embed = [":remote-config_lib"],
++    visibility = ["//visibility:public"],
++)
+diff --git a/server/examples/demo/stdio/my-tool/BUILD.bazel b/server/examples/demo/stdio/my-tool/BUILD.bazel
+new file mode 100644
+index 0000000..375ab13
+--- /dev/null
++++ b/server/examples/demo/stdio/my-tool/BUILD.bazel
+@@ -0,0 +1,14 @@
++load("@rules_go//go:def.bzl", "go_binary", "go_library")
++
++go_library(
++    name = "my-tool_lib",
++    srcs = ["main.go"],
++    importpath = "github.com/mcpany/core/server/examples/demo/stdio/my-tool",
++    visibility = ["//visibility:private"],
++)
++
++go_binary(
++    name = "my-tool",
++    embed = [":my-tool_lib"],
++    visibility = ["//visibility:public"],
++)
+diff --git a/server/examples/upstream_service_demo/file-upload/BUILD.bazel b/server/examples/upstream_service_demo/file-upload/BUILD.bazel
+new file mode 100644
+index 0000000..372213c
+--- /dev/null
++++ b/server/examples/upstream_service_demo/file-upload/BUILD.bazel
+@@ -0,0 +1,14 @@
++load("@rules_go//go:def.bzl", "go_binary", "go_library")
++
++go_library(
++    name = "file-upload_lib",
++    srcs = ["main.go"],
++    importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/file-upload",
++    visibility = ["//visibility:private"],
++)
++
++go_binary(
++    name = "file-upload",
++    embed = [":file-upload_lib"],
++    visibility = ["//visibility:public"],
++)
+diff --git a/server/examples/upstream_service_demo/graphql/server/BUILD.bazel b/server/examples/upstream_service_demo/graphql/server/BUILD.bazel
+new file mode 100644
+index 0000000..3ae51f7
+--- /dev/null
++++ b/server/examples/upstream_service_demo/graphql/server/BUILD.bazel
+@@ -0,0 +1,15 @@
++load("@rules_go//go:def.bzl", "go_binary", "go_library")
++
++go_library(
++    name = "server_lib",
++    srcs = ["server.go"],
++    importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/graphql/server",
++    visibility = ["//visibility:private"],
++    deps = ["@com_github_graphql_go_graphql//:graphql"],
++)
++
++go_binary(
++    name = "server",
++    embed = [":server_lib"],
++    visibility = ["//visibility:public"],
++)
+diff --git a/server/examples/upstream_service_demo/grpc/client/BUILD.bazel b/server/examples/upstream_service_demo/grpc/client/BUILD.bazel
+new file mode 100644
+index 0000000..9941725
+--- /dev/null
++++ b/server/examples/upstream_service_demo/grpc/client/BUILD.bazel
+@@ -0,0 +1,18 @@
++load("@rules_go//go:def.bzl", "go_binary", "go_library")
++
++go_library(
++    name = "client_lib",
++    srcs = ["main.go"],
++    importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/grpc/client",
++    visibility = ["//visibility:private"],
++    deps = [
++        "//server/examples/upstream_service_demo/grpc/greeter_server/proto",
++        "@org_golang_google_grpc//:grpc",
++    ],
++)
++
++go_binary(
++    name = "client",
++    embed = [":client_lib"],
++    visibility = ["//visibility:public"],
++)
+diff --git a/server/examples/upstream_service_demo/grpc/greeter_server/proto/BUILD.bazel b/server/examples/upstream_service_demo/grpc/greeter_server/proto/BUILD.bazel
+new file mode 100644
+index 0000000..9421ce2
+--- /dev/null
++++ b/server/examples/upstream_service_demo/grpc/greeter_server/proto/BUILD.bazel
+@@ -0,0 +1,27 @@
++load("@rules_go//go:def.bzl", "go_library")
++load("@rules_go//proto:def.bzl", "go_proto_library")
++load("@rules_proto//proto:defs.bzl", "proto_library")
++
++proto_library(
++    name = "proto_proto",
++    srcs = ["greeter.proto"],
++    visibility = ["//visibility:public"],
++)
++
++go_proto_library(
++    name = "proto_go_proto",
++    compilers = [
++        "@rules_go//proto:go_proto",
++        "@rules_go//proto:go_grpc_v2",
++    ],
++    importpath = "github.com/mcpany/core/upstream_service/grpc/greeter_server/proto",
++    proto = ":proto_proto",
++    visibility = ["//visibility:public"],
++)
++
++go_library(
++    name = "proto",
++    embed = [":proto_go_proto"],
++    importpath = "github.com/mcpany/core/upstream_service/grpc/greeter_server/proto",
++    visibility = ["//visibility:public"],
++)
+diff --git a/server/examples/upstream_service_demo/grpc/greeter_server/server/BUILD.bazel b/server/examples/upstream_service_demo/grpc/greeter_server/server/BUILD.bazel
+new file mode 100644
+index 0000000..ef73595
+--- /dev/null
++++ b/server/examples/upstream_service_demo/grpc/greeter_server/server/BUILD.bazel
+@@ -0,0 +1,19 @@
++load("@rules_go//go:def.bzl", "go_binary", "go_library")
++
++go_library(
++    name = "server_lib",
++    srcs = ["main.go"],
++    importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/grpc/greeter_server/server",
++    visibility = ["//visibility:private"],
++    deps = [
++        "//server/examples/upstream_service_demo/grpc/greeter_server/proto",
++        "@org_golang_google_grpc//:grpc",
++        "@org_golang_google_grpc//reflection",
++    ],
++)
++
++go_binary(
++    name = "server",
++    embed = [":server_lib"],
++    visibility = ["//visibility:public"],
++)
+diff --git a/server/examples/upstream_service_demo/http/client/BUILD.bazel b/server/examples/upstream_service_demo/http/client/BUILD.bazel
+new file mode 100644
+index 0000000..3c9fa75
+--- /dev/null
++++ b/server/examples/upstream_service_demo/http/client/BUILD.bazel
+@@ -0,0 +1,14 @@
++load("@rules_go//go:def.bzl", "go_binary", "go_library")
++
++go_library(
++    name = "client_lib",
++    srcs = ["main.go"],
++    importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/http/client",
++    visibility = ["//visibility:private"],
++)
++
++go_binary(
++    name = "client",
++    embed = [":client_lib"],
++    visibility = ["//visibility:public"],
++)
+diff --git a/server/examples/upstream_service_demo/http/server/BUILD.bazel b/server/examples/upstream_service_demo/http/server/BUILD.bazel
+new file mode 100644
+index 0000000..69b61f1
+--- /dev/null
++++ b/server/examples/upstream_service_demo/http/server/BUILD.bazel
+@@ -0,0 +1,21 @@
++load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
++
++go_library(
++    name = "server_lib",
++    srcs = ["time_server.go"],
++    importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/http/server",
++    visibility = ["//visibility:private"],
++)
++
++go_binary(
++    name = "server",
++    embed = [":server_lib"],
++    visibility = ["//visibility:public"],
++)
++
++go_test(
++    name = "server_test",
++    srcs = ["time_server_test.go"],
++    embed = [":server_lib"],
++    deps = ["@com_github_stretchr_testify//assert"],
++)
+diff --git a/server/examples/upstream_service_demo/http/server/weather_server/BUILD.bazel b/server/examples/upstream_service_demo/http/server/weather_server/BUILD.bazel
+new file mode 100644
+index 0000000..db3eee1
+--- /dev/null
++++ b/server/examples/upstream_service_demo/http/server/weather_server/BUILD.bazel
+@@ -0,0 +1,26 @@
++load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
++
++go_library(
++    name = "weather_server_lib",
++    srcs = ["weather_server.go"],
++    importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/http/server/weather_server",
++    visibility = ["//visibility:private"],
++    deps = ["@com_github_gorilla_websocket//:websocket"],
++)
++
++go_binary(
++    name = "weather_server",
++    embed = [":weather_server_lib"],
++    visibility = ["//visibility:public"],
++)
++
++go_test(
++    name = "weather_server_test",
++    srcs = ["weather_server_test.go"],
++    embed = [":weather_server_lib"],
++    deps = [
++        "@com_github_gorilla_websocket//:websocket",
++        "@com_github_stretchr_testify//assert",
++        "@com_github_stretchr_testify//require",
++    ],
++)
+diff --git a/server/examples/upstream_service_demo/openapi/client/BUILD.bazel b/server/examples/upstream_service_demo/openapi/client/BUILD.bazel
+new file mode 100644
+index 0000000..0c396cc
+--- /dev/null
++++ b/server/examples/upstream_service_demo/openapi/client/BUILD.bazel
+@@ -0,0 +1,14 @@
++load("@rules_go//go:def.bzl", "go_binary", "go_library")
++
++go_library(
++    name = "client_lib",
++    srcs = ["main.go"],
++    importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/openapi/client",
++    visibility = ["//visibility:private"],
++)
++
++go_binary(
++    name = "client",
++    embed = [":client_lib"],
++    visibility = ["//visibility:public"],
++)
+diff --git a/server/examples/upstream_service_demo/openapi/server/BUILD.bazel b/server/examples/upstream_service_demo/openapi/server/BUILD.bazel
+new file mode 100644
+index 0000000..8e87be0
+--- /dev/null
++++ b/server/examples/upstream_service_demo/openapi/server/BUILD.bazel
+@@ -0,0 +1,14 @@
++load("@rules_go//go:def.bzl", "go_binary", "go_library")
++
++go_library(
++    name = "server_lib",
++    srcs = ["main.go"],
++    importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/openapi/server",
++    visibility = ["//visibility:private"],
++)
++
++go_binary(
++    name = "server",
++    embed = [":server_lib"],
++    visibility = ["//visibility:public"],
++)
+diff --git a/server/examples/upstream_service_demo/webrtc/client/BUILD.bazel b/server/examples/upstream_service_demo/webrtc/client/BUILD.bazel
+new file mode 100644
+index 0000000..d7c7789
+--- /dev/null
++++ b/server/examples/upstream_service_demo/webrtc/client/BUILD.bazel
+@@ -0,0 +1,18 @@
++load("@rules_go//go:def.bzl", "go_binary", "go_library")
++
++go_library(
++    name = "client_lib",
++    srcs = ["main.go"],
++    importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/webrtc/client",
++    visibility = ["//visibility:private"],
++    deps = [
++        "@com_github_gorilla_websocket//:websocket",
++        "@com_github_pion_webrtc_v3//:webrtc",
++    ],
++)
++
++go_binary(
++    name = "client",
++    embed = [":client_lib"],
++    visibility = ["//visibility:public"],
++)
+diff --git a/server/examples/upstream_service_demo/webrtc/server/BUILD.bazel b/server/examples/upstream_service_demo/webrtc/server/BUILD.bazel
+new file mode 100644
+index 0000000..d9796fd
+--- /dev/null
++++ b/server/examples/upstream_service_demo/webrtc/server/BUILD.bazel
+@@ -0,0 +1,18 @@
++load("@rules_go//go:def.bzl", "go_binary", "go_library")
++
++go_library(
++    name = "server_lib",
++    srcs = ["main.go"],
++    importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/webrtc/server",
++    visibility = ["//visibility:private"],
++    deps = [
++        "@com_github_gorilla_websocket//:websocket",
++        "@com_github_pion_webrtc_v3//:webrtc",
++    ],
++)
++
++go_binary(
++    name = "server",
++    embed = [":server_lib"],
++    visibility = ["//visibility:public"],
++)
+diff --git a/server/examples/upstream_service_demo/websocket/BUILD.bazel b/server/examples/upstream_service_demo/websocket/BUILD.bazel
+new file mode 100644
+index 0000000..b822737
+--- /dev/null
++++ b/server/examples/upstream_service_demo/websocket/BUILD.bazel
+@@ -0,0 +1,15 @@
++load("@rules_go//go:def.bzl", "go_binary", "go_library")
++
++go_library(
++    name = "websocket_lib",
++    srcs = ["client.go"],
++    importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/websocket",
++    visibility = ["//visibility:private"],
++    deps = ["@com_github_modelcontextprotocol_go_sdk//mcp"],
++)
++
++go_binary(
++    name = "websocket",
++    embed = [":websocket_lib"],
++    visibility = ["//visibility:public"],
++)
+diff --git a/server/examples/upstream_service_demo/websocket/client/BUILD.bazel b/server/examples/upstream_service_demo/websocket/client/BUILD.bazel
+new file mode 100644
+index 0000000..4b4983f
+--- /dev/null
++++ b/server/examples/upstream_service_demo/websocket/client/BUILD.bazel
+@@ -0,0 +1,15 @@
++load("@rules_go//go:def.bzl", "go_binary", "go_library")
++
++go_library(
++    name = "client_lib",
++    srcs = ["main.go"],
++    importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/websocket/client",
++    visibility = ["//visibility:private"],
++    deps = ["@com_github_gorilla_websocket//:websocket"],
++)
++
++go_binary(
++    name = "client",
++    embed = [":client_lib"],
++    visibility = ["//visibility:public"],
++)
+diff --git a/server/examples/upstream_service_demo/websocket/echo_server/server/BUILD.bazel b/server/examples/upstream_service_demo/websocket/echo_server/server/BUILD.bazel
+new file mode 100644
+index 0000000..e444550
+--- /dev/null
++++ b/server/examples/upstream_service_demo/websocket/echo_server/server/BUILD.bazel
+@@ -0,0 +1,15 @@
++load("@rules_go//go:def.bzl", "go_binary", "go_library")
++
++go_library(
++    name = "server_lib",
++    srcs = ["main.go"],
++    importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/websocket/echo_server/server",
++    visibility = ["//visibility:private"],
++    deps = ["@com_github_gorilla_websocket//:websocket"],
++)
++
++go_binary(
++    name = "server",
++    embed = [":server_lib"],
++    visibility = ["//visibility:public"],
++)
+diff --git a/server/pkg/tool/BUILD.bazel b/server/pkg/tool/BUILD.bazel
+index 216bf95..87f20e7 100644
+--- a/server/pkg/tool/BUILD.bazel
++++ b/server/pkg/tool/BUILD.bazel
+@@ -203,7 +203,7 @@ go_test(
+         "websocket_tool_test.go",
+         "zip_security_test.go",
+     ],
+-    data = ["//server/pkg/tool/testdata/jsonecho:jsonecho"],
++    data = ["//server/pkg/tool/testdata/jsonecho"],
+     embed = [":tool"],
+     tags = ["integration"],
+     deps = [
+@@ -233,9 +233,7 @@ go_test(
+         "@org_golang_google_grpc//credentials/insecure",
+         "@org_golang_google_grpc//test/bufconn",
+         "@org_golang_google_protobuf//proto",
+-        "@org_golang_google_protobuf//reflect/protodesc",
+         "@org_golang_google_protobuf//reflect/protoreflect",
+-        "@org_golang_google_protobuf//types/descriptorpb",
+         "@org_golang_google_protobuf//types/dynamicpb",
+         "@org_golang_google_protobuf//types/known/durationpb",
+         "@org_golang_google_protobuf//types/known/structpb",
+diff --git a/server/pkg/upstream/grpc/protobufparser/BUILD.bazel b/server/pkg/upstream/grpc/protobufparser/BUILD.bazel
+index 7af700b..2815c54 100644
+--- a/server/pkg/upstream/grpc/protobufparser/BUILD.bazel
++++ b/server/pkg/upstream/grpc/protobufparser/BUILD.bazel
+@@ -42,6 +42,8 @@ go_test(
+         "@org_golang_google_grpc//reflection",
+         "@org_golang_google_grpc//reflection/grpc_reflection_v1",
+         "@org_golang_google_protobuf//proto",
++        "@org_golang_google_protobuf//reflect/protodesc",
++        "@org_golang_google_protobuf//reflect/protoreflect",
+         "@org_golang_google_protobuf//types/descriptorpb",
+     ],
+ )
+diff --git a/server/tests/integration/upstream/BUILD.bazel b/server/tests/integration/upstream/BUILD.bazel
+index 06b87b6..c5f4bc3 100644
+--- a/server/tests/integration/upstream/BUILD.bazel
++++ b/server/tests/integration/upstream/BUILD.bazel
+@@ -39,7 +39,7 @@ go_test(
+     data = [
+         "//marketplace:upstream_service_collection_files",
+         "//server/cmd/server",
+-        "//server/cmd/webhooks:webhooks",
++        "//server/cmd/webhooks",
+         "//server/tests/integration/cmd/mocks/grpc_authed_weather_server",
+         "//server/tests/integration/cmd/mocks/grpc_weather_server",
+         "//server/tests/integration/cmd/mocks/http_authed_echo_server",
+@@ -47,7 +47,7 @@ go_test(
+         "//server/tests/integration/cmd/mocks/http_echo_server",
+         "//server/tests/integration/cmd/mocks/openapi_weather_server",
+         "//server/tests/integration/cmd/mocks/webrtc_weather_server",
+-        "//server/tests/integration/upstream/testdata/mock_mcp:mock_mcp",
++        "//server/tests/integration/upstream/testdata/mock_mcp",
+     ],
+     embed = [":upstream"],
+     tags = ["integration"],
+diff --git a/ui/package.json b/ui/package.json
+index 98c48eb..ab47ed4 100644
+--- a/ui/package.json
++++ b/ui/package.json
+@@ -130,7 +130,6 @@
+     "next-themes": "^0.4.6",
+     "nunjucks": "^3.2.4",
+     "patch-package": "^8.0.1",
+-    "playwright": "^1.58.0",
+     "prop-types": "15.8.1",
+     "raf-schd": "^4.0.3",
+     "react": "^18.3.1",
+@@ -186,6 +185,7 @@
+     "eslint-config-next": "^15.0.4",
+     "genkit-cli": "^1.20.0",
+     "jsdom": "^27.4.0",
++    "playwright": "1.58.0",
+     "postcss": "^8",
+     "tailwindcss": "^3.4.1",
+     "ts-proto": "2.11.1",
+diff --git a/ui/pnpm-lock.yaml b/ui/pnpm-lock.yaml
+index 71ad767..d720455 100644
+--- a/ui/pnpm-lock.yaml
++++ b/ui/pnpm-lock.yaml
+@@ -350,9 +350,6 @@ importers:
+       patch-package:
+         specifier: ^8.0.1
+         version: 8.0.1
+-      playwright:
+-        specifier: ^1.58.0
+-        version: 1.58.2
+       prop-types:
+         specifier: 15.8.1
+         version: 15.8.1
+@@ -513,6 +510,9 @@ importers:
+       jsdom:
+         specifier: ^27.4.0
+         version: 27.4.0
++      playwright:
++        specifier: 1.58.0
++        version: 1.58.0
+       postcss:
+         specifier: ^8
+         version: 8.5.8
+@@ -5954,21 +5954,11 @@ packages:
+     engines: {node: '>=18'}
+     hasBin: true
+
+-  playwright-core@1.58.2:
+-    resolution: {integrity: sha512-yZkEtftgwS8CsfYo7nm0KE8jsvm6i/PTgVtB8DL726wNf6H2IMsDuxCpJj59KDaxCtSnrWan2AeDqM7JBaultg==}
+-    engines: {node: '>=18'}
+-    hasBin: true
+-
+   playwright@1.58.0:
+     resolution: {integrity: sha512-2SVA0sbPktiIY/MCOPX8e86ehA/e+tDNq+e5Y8qjKYti2Z/JG7xnronT/TXTIkKbYGWlCbuucZ6dziEgkoEjQQ==}
+     engines: {node: '>=18'}
+     hasBin: true
+
+-  playwright@1.58.2:
+-    resolution: {integrity: sha512-vA30H8Nvkq/cPBnNw4Q8TWz1EJyqgpuinBcHET0YVJVFldr8JDNiU9LaWAE1KqSkRYazuaBhTpB5ZzShOezQ6A==}
+-    engines: {node: '>=18'}
+-    hasBin: true
+-
+   possible-typed-array-names@1.1.0:
+     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
+     engines: {node: '>= 0.4'}
+@@ -13773,20 +13763,12 @@ snapshots:
+
+   playwright-core@1.58.0: {}
+
+-  playwright-core@1.58.2: {}
+-
+   playwright@1.58.0:
+     dependencies:
+       playwright-core: 1.58.0
+     optionalDependencies:
+       fsevents: 2.3.2
+
+-  playwright@1.58.2:
+-    dependencies:
+-      playwright-core: 1.58.2
+-    optionalDependencies:
+-      fsevents: 2.3.2
+-
+   possible-typed-array-names@1.1.0: {}
+
+   postcss-import@15.1.0(postcss@8.5.8):
+diff --git a/ui/src/components/settings/secrets-manager.tsx b/ui/src/components/settings/secrets-manager.tsx
+index 1cea88c..bdf284f 100644
+--- a/ui/src/components/settings/secrets-manager.tsx
++++ b/ui/src/components/settings/secrets-manager.tsx
+@@ -6,41 +6,34 @@
+ "use client";
+
+ import { useState, useEffect } from "react";
+-import {
+-    Plus,
+-    Trash2,
+-    Eye,
+-    EyeOff,
+-    Copy,
+-    Key,
+-    Shield,
+-    Search,
+-    RefreshCw
+-} from "lucide-react";
++import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+ import { Button } from "@/components/ui/button";
+ import { Input } from "@/components/ui/input";
+-import { Card, CardContent, CardHeader } from "@/components/ui/card";
++import { Badge } from "@/components/ui/badge";
++import { Key, Plus, Trash2, Shield, Eye, EyeOff, RefreshCw, Search, Copy } from "lucide-react";
++import { apiClient } from "@/lib/client";
++import { useToast } from "@/hooks/use-toast";
+ import {
+-    Dialog,
+-    DialogContent,
+-    DialogDescription,
+-    DialogFooter,
+-    DialogHeader,
+-    DialogTitle,
+-    DialogTrigger,
++  Dialog,
++  DialogContent,
++  DialogDescription,
++  DialogFooter,
++  DialogHeader,
++  DialogTitle,
++  DialogTrigger,
+ } from "@/components/ui/dialog";
+-import {
+-    Select,
+-    SelectContent,
+-    SelectItem,
+-    SelectTrigger,
+-    SelectValue,
+-} from "@/components/ui/select";
+ import { Label } from "@/components/ui/label";
+-import { Badge } from "@/components/ui/badge";
+ import { ScrollArea } from "@/components/ui/scroll-area";
+-import { useToast } from "@/hooks/use-toast";
+-import { apiClient, SecretDefinition } from "@/lib/client";
++import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
++import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
++import { Checkbox } from "@/components/ui/checkbox";
++
++interface SecretDefinition {
++    id: string;
++    name: string;
++    key: string;
++    provider: string;
++}
+
+ /**
+  * SecretsManager component.
+@@ -49,32 +42,38 @@ import { apiClient, SecretDefinition } from "@/lib/client";
+ export function SecretsManager() {
+     const [secrets, setSecrets] = useState<SecretDefinition[]>([]);
+     const [loading, setLoading] = useState(true);
+-    const [searchQuery, setSearchQuery] = useState("");
+     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
++    const [searchQuery, setSearchQuery] = useState("");
+     const { toast } = useToast();
+
+-    // Form state
++    // Selected state for bulk actions
++    const [selectedSecrets, setSelectedSecrets] = useState<Set<string>>(new Set());
++    const [isDeleting, setIsDeleting] = useState(false);
++
++    // New secret state
+     const [newSecretName, setNewSecretName] = useState("");
+     const [newSecretKey, setNewSecretKey] = useState("");
+     const [newSecretValue, setNewSecretValue] = useState("");
+-    const [newSecretProvider, setNewSecretProvider] = useState<string>("custom");
++    const [newSecretProvider, setNewSecretProvider] = useState("custom");
+
+     useEffect(() => {
+-        loadSecrets();
++        fetchSecrets();
+     }, []);
+
+-    const loadSecrets = async () => {
++    const fetchSecrets = async () => {
+         setLoading(true);
+         try {
+             const data = await apiClient.listSecrets();
+-            setSecrets(data);
+-        } catch (error) {
+-            console.error("Failed to load secrets", error);
+-            toast({
+-                title: "Error",
+-                description: "Failed to load secrets.",
+-                variant: "destructive",
+-            });
++            if (Array.isArray(data)) {
++                 setSecrets(data);
++            } else if (data && Array.isArray(data.secrets)) {
++                setSecrets(data.secrets);
++            } else {
++                setSecrets([]);
++            }
++        } catch (e) {
++            console.error(e);
++            toast({ title: "Error", description: "Failed to load secrets", variant: "destructive" });
+         } finally {
+             setLoading(false);
+         }
+@@ -82,58 +81,68 @@ export function SecretsManager() {
+
+     const handleSaveSecret = async () => {
+         if (!newSecretName || !newSecretKey || !newSecretValue) {
+-            toast({
+-                title: "Validation Error",
+-                description: "All fields are required.",
+-                variant: "destructive",
+-            });
++            toast({ title: "Error", description: "Name, key, and value are required.", variant: "destructive" });
+             return;
+         }
+
+         try {
+-            const newSecret: SecretDefinition = {
+-                id: Math.random().toString(36).substring(7),
++            await apiClient.createSecret({
+                 name: newSecretName,
+                 key: newSecretKey,
+                 value: newSecretValue,
+-                provider: newSecretProvider as any,
+-                createdAt: new Date().toISOString(),
+-                lastUsed: "Never"
+-            };
+-
+-            await apiClient.saveSecret(newSecret);
+-
+-            toast({
+-                title: "Success",
+-                description: "Secret saved successfully.",
++                provider: newSecretProvider
+             });
+-
++            toast({ title: "Success", description: "Secret created." });
+             setIsAddDialogOpen(false);
+             resetForm();
+-            loadSecrets();
+-        } catch (_error) {
+-            toast({
+-                title: "Error",
+-                description: "Failed to save secret.",
+-                variant: "destructive",
+-            });
++            fetchSecrets();
++        } catch (e) {
++            console.error(e);
++            toast({ title: "Error", description: "Failed to create secret", variant: "destructive" });
+         }
+     };
+
+     const handleDeleteSecret = async (id: string) => {
+         try {
+             await apiClient.deleteSecret(id);
+-            toast({
+-                title: "Success",
+-                description: "Secret deleted successfully.",
++            toast({ title: "Success", description: "Secret deleted." });
++
++            // Remove from selection if selected
++            setSelectedSecrets(prev => {
++                const next = new Set(prev);
++                next.delete(id);
++                return next;
+             });
+-            loadSecrets();
+-        } catch (_error) {
+-            toast({
+-                title: "Error",
+-                description: "Failed to delete secret.",
+-                variant: "destructive",
++
++            fetchSecrets();
++        } catch (e) {
++            console.error(e);
++            toast({ title: "Error", description: "Failed to delete secret", variant: "destructive" });
++        }
++    };
++
++    const handleBulkDelete = async () => {
++        if (selectedSecrets.size === 0) return;
++        setIsDeleting(true);
++
++        try {
++            // Call API concurrently for all selected secrets
++            const promises = Array.from(selectedSecrets).map(id => apiClient.deleteSecret(id));
++            await Promise.all(promises);
++
++            toast({
++                title: "Success",
++                description: `${selectedSecrets.size} secret(s) deleted.`
+             });
++            setSelectedSecrets(new Set());
++            fetchSecrets();
++        } catch (e) {
++            console.error(e);
++            toast({ title: "Error", description: "Failed to delete one or more secrets.", variant: "destructive" });
++            // Even if one fails, we should refresh to get the current state
++            fetchSecrets();
++        } finally {
++            setIsDeleting(false);
+         }
+     };
+
+@@ -144,17 +153,35 @@ export function SecretsManager() {
+         setNewSecretProvider("custom");
+     };
+
+-    const safeSecrets = Array.isArray(secrets) ? secrets : [];
+-    const filteredSecrets = safeSecrets.filter(s =>
++    const filteredSecrets = secrets.filter(s =>
+         s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+         s.key.toLowerCase().includes(searchQuery.toLowerCase())
+     );
+
++    const isAllSelected = filteredSecrets.length > 0 && selectedSecrets.size === filteredSecrets.length;
++
++    const toggleSelectAll = (checked: boolean) => {
++        if (checked) {
++            setSelectedSecrets(new Set(filteredSecrets.map(s => s.id)));
++        } else {
++            setSelectedSecrets(new Set());
++        }
++    };
++
++    const toggleSelect = (id: string, checked: boolean) => {
++        setSelectedSecrets(prev => {
++            const next = new Set(prev);
++            if (checked) next.add(id);
++            else next.delete(id);
++            return next;
++        });
++    };
++
+     return (
+-        <div className="space-y-4 h-full flex flex-col">
++        <div className="flex flex-col h-full space-y-4 max-w-5xl mx-auto w-full">
+             <div className="flex items-center justify-between">
+                 <div>
+-                    <h3 className="text-lg font-medium">API Keys & Secrets</h3>
++                    <h2 className="text-2xl font-bold tracking-tight">Secrets Vault</h2>
+                     <p className="text-sm text-muted-foreground">
+                         Manage secure credentials for your upstream services.
+                     </p>
+@@ -226,16 +253,33 @@ export function SecretsManager() {
+             </div>
+
+             <Card className="flex-1 flex flex-col overflow-hidden bg-background/50 backdrop-blur-sm border-muted/50">
+-                <CardHeader className="p-4 border-b bg-muted/20">
++                <CardHeader className="p-4 border-b bg-muted/20 flex flex-row items-center justify-between space-y-0">
+                      <div className="relative">
+                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                         <Input
+                             placeholder="Search secrets..."
+-                            className="pl-8 bg-background max-w-sm"
++                            className="pl-8 bg-background w-[300px]"
+                             value={searchQuery}
+                             onChange={(e) => setSearchQuery(e.target.value)}
+                         />
+                     </div>
++                    {selectedSecrets.size > 0 && (
++                        <div className="flex items-center gap-4 bg-muted/50 px-4 py-1.5 rounded-md border border-muted/80 animate-in fade-in duration-200">
++                            <span className="text-sm font-medium text-muted-foreground">
++                                {selectedSecrets.size} selected
++                            </span>
++                            <Button
++                                variant="destructive"
++                                size="sm"
++                                className="h-7 text-xs"
++                                onClick={handleBulkDelete}
++                                disabled={isDeleting}
++                            >
++                                {isDeleting ? <RefreshCw className="mr-2 h-3 w-3 animate-spin" /> : <Trash2 className="mr-2 h-3 w-3" />}
++                                Bulk Delete
++                            </Button>
++                        </div>
++                    )}
+                 </CardHeader>
+                 <CardContent className="p-0 flex-1 overflow-hidden">
+                     <ScrollArea className="h-full">
+@@ -249,11 +293,35 @@ export function SecretsManager() {
+                                 <p>No secrets found.</p>
+                             </div>
+                         ) : (
+-                            <div className="divide-y">
+-                                {filteredSecrets.map((secret) => (
+-                                    <SecretItem key={secret.id} secret={secret} onDelete={handleDeleteSecret} />
+-                                ))}
+-                            </div>
++                            <Table>
++                                <TableHeader>
++                                    <TableRow className="hover:bg-transparent">
++                                        <TableHead className="w-[40px] pl-4">
++                                            <Checkbox
++                                                checked={isAllSelected}
++                                                onCheckedChange={(checked) => toggleSelectAll(!!checked)}
++                                                aria-label="Select all secrets"
++                                            />
++                                        </TableHead>
++                                        <TableHead>Name</TableHead>
++                                        <TableHead>Provider</TableHead>
++                                        <TableHead>Key (Env Var)</TableHead>
++                                        <TableHead>Value</TableHead>
++                                        <TableHead className="text-right pr-4">Actions</TableHead>
++                                    </TableRow>
++                                </TableHeader>
++                                <TableBody>
++                                    {filteredSecrets.map((secret) => (
++                                        <SecretItemRow
++                                            key={secret.id}
++                                            secret={secret}
++                                            isSelected={selectedSecrets.has(secret.id)}
++                                            onToggleSelect={(checked) => toggleSelect(secret.id, checked)}
++                                            onDelete={handleDeleteSecret}
++                                        />
++                                    ))}
++                                </TableBody>
++                            </Table>
+                         )}
+                     </ScrollArea>
+                 </CardContent>
+@@ -263,13 +331,19 @@ export function SecretsManager() {
+ }
+
+ /**
+- * SecretItem component.
+- * @param props - The component props.
+- * @param props.secret - The secret property.
+- * @param props.onDelete - The onDelete property.
+- * @returns The rendered component.
++ * SecretItemRow component for Table rendering.
+  */
+-function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: (id: string) => void }) {
++function SecretItemRow({
++    secret,
++    isSelected,
++    onToggleSelect,
++    onDelete
++}: {
++    secret: SecretDefinition;
++    isSelected: boolean;
++    onToggleSelect: (checked: boolean) => void;
++    onDelete: (id: string) => void;
++}) {
+     const [revealedValue, setRevealedValue] = useState<string | null>(null);
+     const [loading, setLoading] = useState(false);
+     const { toast } = useToast();
+@@ -318,34 +392,38 @@ function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete:
+     };
+
+     return (
+-        <div className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group">
+-            <div className="flex items-center gap-4">
+-                <div className="bg-primary/10 p-2 rounded-full text-primary">
+-                    <Key className="h-4 w-4" />
+-                </div>
+-                <div>
+-                    <div className="flex items-center gap-2">
+-                        <h4 className="font-medium text-sm">{secret.name}</h4>
+-                        <Badge variant="outline" className="text-[10px] h-5 font-mono">
+-                            {secret.provider}
+-                        </Badge>
+-                    </div>
+-                    <div className="text-xs text-muted-foreground font-mono mt-1">
+-                        {secret.key}
+-                    </div>
++        <TableRow data-state={isSelected ? "selected" : undefined} className="group">
++            <TableCell className="pl-4">
++                <Checkbox
++                    checked={isSelected}
++                    onCheckedChange={(checked) => onToggleSelect(!!checked)}
++                    aria-label={`Select ${secret.name}`}
++                />
++            </TableCell>
++            <TableCell className="font-medium">
++                <div className="flex items-center gap-2">
++                    <Key className="h-4 w-4 text-primary opacity-70" />
++                    {secret.name}
+                 </div>
+-            </div>
+-
+-            <div className="flex items-center gap-2">
+-                <div className="flex items-center gap-2 bg-muted/50 rounded-md px-2 py-1 border font-mono text-xs w-[200px] justify-between">
+-                    <span className="truncate">
++            </TableCell>
++            <TableCell>
++                <Badge variant="outline" className="text-[10px] h-5 font-mono capitalize">
++                    {secret.provider}
++                </Badge>
++            </TableCell>
++            <TableCell>
++                <span className="text-xs font-mono text-muted-foreground">{secret.key}</span>
++            </TableCell>
++            <TableCell>
++                <div className="flex items-center gap-2 bg-muted/30 rounded-md px-2 py-1 border font-mono text-xs w-[180px] justify-between">
++                    <span className="truncate text-muted-foreground">
+                         {loading ? <RefreshCw className="h-3 w-3 animate-spin" /> :
+-                            revealedValue ? revealedValue : "•".repeat(24)}
++                            revealedValue ? revealedValue : "••••••••••••••••••••••••"}
+                     </span>
+                     <Button
+                         variant="ghost"
+                         size="icon"
+-                        className="h-4 w-4 hover:bg-transparent"
++                        className="h-5 w-5 hover:bg-muted"
+                         onClick={handleReveal}
+                         disabled={loading}
+                         aria-label={revealedValue ? "Hide secret" : "Show secret"}
+@@ -353,13 +431,17 @@ function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete:
+                         {revealedValue ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                     </Button>
+                 </div>
+-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleCopy} disabled={loading} aria-label="Copy secret">
+-                    <Copy className="h-4 w-4 text-muted-foreground" />
+-                </Button>
+-                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive hover:bg-destructive/10" onClick={() => onDelete(secret.id)} aria-label="Delete secret">
+-                    <Trash2 className="h-4 w-4" />
+-                </Button>
+-            </div>
+-        </div>
++            </TableCell>
++            <TableCell className="text-right pr-4">
++                <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
++                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleCopy} disabled={loading} aria-label="Copy secret">
++                        <Copy className="h-4 w-4 text-muted-foreground" />
++                    </Button>
++                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive hover:bg-destructive/10" onClick={() => onDelete(secret.id)} aria-label="Delete secret">
++                        <Trash2 className="h-4 w-4" />
++                    </Button>
++                </div>
++            </TableCell>
++        </TableRow>
+     );
+ }
+diff --git a/ui/tests/e2e/secrets_bulk_actions.spec.ts b/ui/tests/e2e/secrets_bulk_actions.spec.ts
+new file mode 100644
+index 0000000..4373595
+--- /dev/null
++++ b/ui/tests/e2e/secrets_bulk_actions.spec.ts
+@@ -0,0 +1,77 @@
++/**
++ * Copyright 2026 Author(s) of MCP Any
++ * SPDX-License-Identifier: Apache-2.0
++ */
++
++import { test, expect } from '@playwright/test';
++import { seedGlobalState } from './test-data';
++
++test.describe('Secrets Manager Bulk Actions', () => {
++    let createdSecrets: string[] = [];
++
++    test.beforeAll(async ({ request }) => {
++        // Ensure a clean slate
++        await seedGlobalState(request);
++
++        // Seed 3 secrets into the real database using the backend API
++        for (let i = 1; i <= 3; i++) {
++            const response = await request.post('/api/v1/secrets', {
++                data: {
++                    name: `e2e-bulk-secret-${i}`,
++                    key: `TEST_KEY_${i}`,
++                    value: `test-value-${i}`,
++                    provider: 'custom'
++                }
++            });
++            expect(response.ok()).toBeTruthy();
++            const data = await response.json();
++            createdSecrets.push(data.id || data.name);
++        }
++    });
++
++    test.afterAll(async ({ request }) => {
++        // Cleanup any remaining secrets
++        for (const id of createdSecrets) {
++            try {
++                await request.delete(`/api/v1/secrets/${id}`);
++            } catch (e) {
++                // Ignore if already deleted
++            }
++        }
++    });
++
++    test('should allow selecting multiple secrets and deleting them in bulk', async ({ page }) => {
++        await page.goto('/secrets');
++
++        // Wait for secrets to load (using real data from backend)
++        await expect(page.getByText('e2e-bulk-secret-1')).toBeVisible({ timeout: 10000 });
++
++        // 1. Verify "Select all" checkbox
++        const selectAllCheckbox = page.getByRole('checkbox', { name: 'Select all secrets' });
++        await expect(selectAllCheckbox).toBeVisible();
++
++        // 2. Select individual secrets
++        const check1 = page.getByRole('checkbox', { name: 'Select e2e-bulk-secret-1' });
++        const check2 = page.getByRole('checkbox', { name: 'Select e2e-bulk-secret-2' });
++
++        await check1.check();
++        await check2.check();
++
++        // 3. Verify floating bulk actions bar appears
++        const bulkDeleteButton = page.getByRole('button', { name: 'Bulk Delete' });
++        await expect(bulkDeleteButton).toBeVisible();
++        await expect(page.getByText('2 selected')).toBeVisible();
++
++        // 4. Click Bulk Delete
++        await bulkDeleteButton.click();
++
++        // 5. Verify success toast and removal
++        await expect(page.getByText('2 secret(s) deleted.')).toBeVisible();
++
++        await expect(page.getByText('e2e-bulk-secret-1')).not.toBeVisible();
++        await expect(page.getByText('e2e-bulk-secret-2')).not.toBeVisible();
++
++        // The third secret should still be there
++        await expect(page.getByText('e2e-bulk-secret-3')).toBeVisible();
++    });
++});
