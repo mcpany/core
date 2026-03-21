@@ -35,18 +35,28 @@ else
 fi
 
 echo "==> Running golangci-lint..."
-if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
+# Try to find a Go 1.26-built version first
+GOLANGCI_LINT_BIN="$(go env GOPATH)/bin/golangci-lint"
+if [[ ! -x "$GOLANGCI_LINT_BIN" ]]; then
     GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
 fi
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
+    # Filter modules to only those that exist and contain Go files
+    MODULES=()
     for d in server proto k8s/operator server/examples/upstream_service_demo/grpc/greeter_server; do
-        if [ -d "$d" ]; then
-            echo "    Linting $d..."
-            "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --config server/.golangci.yml "./$d/..."
+        if [ -d "$d" ] && find "$d" -maxdepth 2 -name "*.go" | grep -q .; then
+            MODULES+=("./$d/...")
         fi
     done
-    echo "    golangci-lint OK."
+
+    if [ ${#MODULES[@]} -gt 0 ]; then
+        echo "    Linting ${MODULES[*]}..."
+        "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --config server/.golangci.yml "${MODULES[@]}"
+        echo "    golangci-lint OK."
+    else
+        echo "    Warning: No Go modules found to lint."
+    fi
 else
     echo "    Warning: golangci-lint not found."
 fi
