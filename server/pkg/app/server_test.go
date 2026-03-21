@@ -2451,8 +2451,8 @@ upstream_services:
 		mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
 		mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
 		mockStore.On("Close").Return(nil)
-	mockStore.On("GetRecentLogs", mock.Anything, mock.Anything).Return([]*logging.LogEntry{}, nil)
-	mockStore.On("SaveLog", mock.Anything, mock.Anything).Return(nil)
+		mockStore.On("GetRecentLogs", mock.Anything, mock.Anything).Return([]*logging.LogEntry{}, nil)
+		mockStore.On("SaveLog", mock.Anything, mock.Anything).Return(nil)
 		app.Storage = mockStore
 
 		errChan := make(chan error, 1)
@@ -2498,8 +2498,8 @@ upstream_services: []
 		mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
 		mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
 		mockStore.On("Close").Return(nil)
-	mockStore.On("GetRecentLogs", mock.Anything, mock.Anything).Return([]*logging.LogEntry{}, nil)
-	mockStore.On("SaveLog", mock.Anything, mock.Anything).Return(nil)
+		mockStore.On("GetRecentLogs", mock.Anything, mock.Anything).Return([]*logging.LogEntry{}, nil)
+		mockStore.On("SaveLog", mock.Anything, mock.Anything).Return(nil)
 		app.Storage = mockStore
 
 		errChan := make(chan error, 1)
