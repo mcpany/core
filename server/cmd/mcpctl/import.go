@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v3"
+	yaml "gopkg.in/yaml.v3"
 )
 
 // ClaudeDesktopConfig represents the structure of claude_desktop_config.json.
