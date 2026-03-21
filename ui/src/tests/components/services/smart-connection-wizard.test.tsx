@@ -59,7 +59,8 @@ describe('SmartConnectionWizard', () => {
 
     it('handles successful validation and moves to step 3', async () => {
         // Setup successful mock response
-        (apiClient.validateService as any).mockResolvedValueOnce({
+        const mockValidateService = apiClient.validateService as ReturnType<typeof vi.fn>;
+        mockValidateService.mockResolvedValueOnce({
             valid: true,
             discoveredTools: [{ name: 'test_tool', description: 'A test tool' }]
         });
@@ -101,7 +102,8 @@ describe('SmartConnectionWizard', () => {
 
     it('displays error message when validation fails', async () => {
         // Setup failed mock response
-        (apiClient.validateService as any).mockResolvedValueOnce({
+        const mockValidateService = apiClient.validateService as ReturnType<typeof vi.fn>;
+        mockValidateService.mockResolvedValueOnce({
             valid: false,
             error: 'Invalid API Key'
         });

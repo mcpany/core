@@ -72,7 +72,7 @@ export function SmartConnectionWizard({ template, onCancel, onComplete }: SmartC
       setIsValidating(false);
       setStep(3);
     } catch (err: unknown) {
-      setValidationError((err as Error).message || "An unexpected error occurred during connection testing.");
+      setValidationError(err instanceof Error ? err.message : "An unexpected error occurred during connection testing.");
       setIsValidating(false);
     }
   };
