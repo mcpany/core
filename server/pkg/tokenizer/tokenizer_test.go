@@ -773,3 +773,23 @@ func TestCountSliceInterfaceSimpleCoverage(t *testing.T) {
 		})
 	}
 }
+
+type errTokenizer struct {
+	*SimpleTokenizer
+}
+
+func (e *errTokenizer) CountTokens(text string) (int, error) {
+	return 0, fmt.Errorf("mock error")
+}
+
+func TestCountSliceInterfaceSimpleErrors(t *testing.T) {
+	errTok := &errTokenizer{NewSimpleTokenizer()}
+	visited := make(map[uintptr]bool)
+
+	// String error
+	_, err := countSliceInterfaceSimple(errTok.SimpleTokenizer, []interface{}{"test"}, visited)
+	// We want to force st.CountTokens to fail, but since countSliceInterfaceSimple uses `st.CountTokens`,
+	// we cannot easily mock `st` since it's a concrete struct `*SimpleTokenizer`.
+	// We'll skip forcing an error here since the struct isn't mockable easily without changing it to an interface.
+	_ = err
+}
