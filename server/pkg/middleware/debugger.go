@@ -96,7 +96,8 @@ func (d *Debugger) process() {
 //   - None.
 //
 // Side Effects:
-//   - Closes the ingress channel and waits for the background processor to finish.
+//   - Closes the ingress channel.
+//   - Waits for the background processor to finish.
 func (d *Debugger) Close() {
 	close(d.ingress)
 	<-d.done
