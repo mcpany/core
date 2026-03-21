@@ -196,6 +196,22 @@ func (a *Application) clearData(ctx context.Context, log *slog.Logger) error {
 	return nil
 }
 
+// seedData writes all the given entities into the database using a retry wrapper.
+//
+// Summary: Persists the parsed models during the seeding process.
+//
+// Parameters:
+//   - ctx (context.Context): Context.
+//   - req (SeedRequest): The seed request containing raw JSON representations of the items.
+//
+// Returns:
+//   - error: An error if seeding any items fail.
+//
+// Errors:
+//   - Returns errors related to JSON parsing or storage persistence.
+//
+// Side Effects:
+//   - Writes entries to Storage and Audit stores.
 func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 	for _, raw := range req.ServicesRaw {
 		s := configv1.UpstreamServiceConfig_builder{}.Build()
