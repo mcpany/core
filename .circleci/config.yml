@@ -51,8 +51,9 @@ jobs:
       - run:
           name: Prepare Environment
           command: |
-            curl -fsSL https://github.com/bazelbuild/bazelisk/releases/download/v1.25.0/bazelisk-linux-amd64 -o /usr/local/bin/bazel
-            chmod +x /usr/local/bin/bazel
+            curl -fsSL https://github.com/bazelbuild/bazelisk/releases/download/v1.25.0/bazelisk-linux-amd64 -o /tmp/bazel
+            sudo mv /tmp/bazel /usr/local/bin/bazel
+            sudo chmod +x /usr/local/bin/bazel
       - run:
           name: Run Lint
           command: |
