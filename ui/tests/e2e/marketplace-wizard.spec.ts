@@ -158,9 +158,9 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
 
     // 7. Step 5: Review
     await expect(page.getByText('Review & Finish')).toBeVisible(); // Title is "5. Review & Finish" in create-config-wizard.tsx
-    // Check if JSON contains our changes
-    await expect(page.getByText('"MAX_CONNECTIONS"')).toBeVisible();
-    await expect(page.getByText('"100"')).toBeVisible();
+    // Check if JSON contains our changes (handling both raw JSON quotes or JsonView elements)
+    await expect(page.getByText('MAX_CONNECTIONS')).toBeVisible();
+    await expect(page.getByText('100')).toBeVisible();
     await expect(page.getByText('postgresql://test:test@localhost:5432/testdb')).toBeVisible();
 
     await page.click('button:has-text("Finish & Save")');
