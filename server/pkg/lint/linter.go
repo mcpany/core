@@ -16,21 +16,21 @@ import (
 
 // Severity indicates the importance of a linting result.
 //
-// Summary: Represents a Severity.
+// Summary: Represents a Severity level.
 type Severity int
 
 const (
 	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
 	//
-	// Summary: Defines Error.
+	// Summary: Defines Error severity.
 	Error Severity = iota
 	// Warning indicates a potential issue or best practice violation that should be addressed.
 	//
-	// Summary: Defines Warning.
+	// Summary: Defines Warning severity.
 	Warning
 	// Info indicates a suggestion or informational message for optimization or clarity.
 	//
-	// Summary: Defines Info.
+	// Summary: Defines Info severity.
 	Info
 )
 
@@ -64,7 +64,7 @@ func (s Severity) String() string {
 
 // Result represents a single linting finding.
 //
-// Summary: Represents a Result.
+// Summary: Represents a Result of a linting check.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -105,7 +105,7 @@ func (r Result) String() string {
 
 // Linter performs static analysis on the configuration.
 //
-// Summary: Represents a Linter.
+// Summary: Represents a Linter for server configuration.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
@@ -115,7 +115,7 @@ type Linter struct {
 // Summary: Initializes NewLinter operation.
 //
 // Parameters:
-//   - cfg: *configv1.McpAnyServerConfig. The server configuration to be linted.
+//   - cfg (*configv1.McpAnyServerConfig): The server configuration to be linted.
 //
 // Returns:
 //   - *Linter: A new Linter instance initialized with the provided configuration.
@@ -134,14 +134,14 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 // Summary: Executes Run operation.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
+//   - ctx (context.Context): The context for the request.
 //
 // Returns:
 //   - []Result: A list of linting findings.
-//   - error: An error if the linting process encounters a fatal issue (currently always nil).
+//   - error: An error if the linting process encounters a fatal issue.
 //
 // Errors:
-//   - None.
+//   - None (currently).
 //
 // Side Effects:
 //   - None.
