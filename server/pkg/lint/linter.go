@@ -38,16 +38,10 @@ const (
 // It converts the Severity enum to its string counterpart (ERROR, WARNING, INFO).
 //
 // Parameters:
-//   - s (Severity): The severity level to convert.
+//   - s: The severity level to convert.
 //
 // Returns:
-//   - string: The string representation of the severity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - The string representation of the severity.
 func (s Severity) String() string {
 	switch s {
 	case Error:
@@ -82,16 +76,10 @@ type Result struct {
 // It formats the result into a human-readable string suitable for CLI output.
 //
 // Parameters:
-//   - r (Result): The linting finding to format.
+//   - r: The linting finding to format.
 //
 // Returns:
-//   - string: A formatted string containing severity, service, path, and message.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - A formatted string containing severity, service, path, and message.
 func (r Result) String() string {
 	pathStr := ""
 	if r.Path != "" {
@@ -116,37 +104,26 @@ type Linter struct {
 // NewLinter creates a new Linter instance.
 //
 // Parameters:
-//   - cfg (*configv1.McpAnyServerConfig): The server configuration to be linted.
+//   - cfg: The server configuration to be linted.
 //
 // Returns:
-//   - *Linter: A new Linter instance initialized with the provided configuration.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - A new Linter instance initialized with the provided configuration.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
 
 // Run executes all linting checks.
 //
-// It aggregates results from multiple check categories including standard validation,
-// secret usage, shell injection risks, insecure HTTP, and cache settings.
+// It aggregates results from multiple check categories including standard
+// validation, secret usage, shell injection risks, insecure HTTP, and cache
+// settings.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx: The context for the request.
 //
 // Returns:
-//   - []Result: A list of linting findings.
-//   - error: An error if the linting process encounters a fatal issue.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - A list of linting findings.
+//   - An error if the linting process encounters a fatal issue.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// Pre-allocate to avoid performance warnings, though initial size is a guess.
 	results := make([]Result, 0, 10)
