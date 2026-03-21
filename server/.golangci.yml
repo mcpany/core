@@ -3,6 +3,7 @@
 
 run:
   timeout: 5m
+  concurrency: 1
   tests: false
 
 linters:

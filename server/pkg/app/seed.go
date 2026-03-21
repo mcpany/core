@@ -27,9 +27,10 @@ type SeedRequest struct {
 	ProfilesRaw    []json.RawMessage `json:"profiles"`
 	UsersRaw       []json.RawMessage `json:"users"`
 	TemplatesRaw   []json.RawMessage `json:"service_templates"`
-	SettingsRaw    json.RawMessage   `json:"settings,omitempty"`
 }
 
+// handleDebugSeed creates a handler to seed the database with data.
+// It clears existing data before inserting new data.
 // handleDebugSeed creates a handler to seed the database with data.
 // It clears existing data before inserting new data.
 func (a *Application) handleDebugSeed() http.HandlerFunc {
@@ -188,14 +189,6 @@ func (a *Application) clearData(ctx context.Context, log *slog.Logger) error {
 		}
 	}
 
-	// Settings
-	err = withRetry(ctx, log, func() error {
-		return a.Storage.SaveGlobalSettings(ctx, configv1.GlobalSettings_builder{}.Build())
-	})
-	if err != nil {
-		log.Error("Failed to clear global settings", "error", err)
-	}
-
 	return nil
 }
 
@@ -270,19 +263,6 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 		})
 		if err != nil {
 			return fmt.Errorf("failed to save service template %s: %w", t.GetId(), err)
-		}
-	}
-
-	if len(req.SettingsRaw) > 0 {
-		settings := configv1.GlobalSettings_builder{}.Build()
-		if err := protojson.Unmarshal(req.SettingsRaw, settings); err != nil {
-			return fmt.Errorf("invalid json for settings")
-		}
-		err := withRetry(ctx, logging.GetLogger(), func() error {
-			return a.Storage.SaveGlobalSettings(ctx, settings)
-		})
-		if err != nil {
-			return fmt.Errorf("failed to save global settings: %w", err)
 		}
 	}
 	return nil
