@@ -271,15 +271,40 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 
 		trace := generateMockTrace()
 
-		a.seededTracesMu.Lock()
-		a.seededTraces = append(a.seededTraces, &trace)
-		// Prevent memory leak: cap at 50 traces
-		if len(a.seededTraces) > 50 {
-			a.seededTraces = a.seededTraces[len(a.seededTraces)-50:]
-		}
-		a.seededTracesMu.Unlock()
+		if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
+			// Flatten and write to DB
+			var writeSpans func(span Span, parentID string)
+			writeSpans = func(span Span, parentID string) {
+				argsBytes, _ := json.Marshal(span.Input)
+				durationMs := span.EndTime - span.StartTime
+				entry := audit.Entry{
+					Timestamp:  time.UnixMilli(span.StartTime),
+					ToolName:   span.Name,
+					DurationMs: durationMs,
+					Duration:   (time.Duration(durationMs) * time.Millisecond).String(),
+					TraceID:    trace.ID,
+					SpanID:     span.ID,
+					ParentID:   parentID,
+					Arguments:  argsBytes,
+					Result:     span.Output,
+					Error:      span.ErrorMessage,
+					UserID:     "user",
+				}
+				if err := a.standardMiddlewares.Audit.Write(r.Context(), entry); err != nil {
+					logging.GetLogger().Error("failed to write seeded trace to audit", "error", err)
+				}
+				for _, child := range span.Children {
+					writeSpans(child, span.ID)
+				}
+			}
 
-		logging.GetLogger().Info("Seeded debug trace", "id", trace.ID)
+			writeSpans(trace.RootSpan, "")
+		} else {
+			http.Error(w, "Audit middleware not enabled, cannot seed trace to database", http.StatusServiceUnavailable)
+			return
+		}
+
+		logging.GetLogger().Info("Seeded debug trace to database", "id", trace.ID)
 
 		w.WriteHeader(http.StatusCreated)
 		_ = json.NewEncoder(w).Encode(map[string]string{"status": "seeded", "id": trace.ID})
