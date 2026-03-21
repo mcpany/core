@@ -137,6 +137,18 @@
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
 
+#### Upcoming (2026-06-23 Evolution)
+*   **[P0] Recursive Mission-Root Attestation (RMRA)**: Mandatory hardware-bound re-attestation of sub-process lineage for headless handoffs. (Added: 2026-06-23)
+*   **[P0] Attention-Density Guard (ADG) v2**: Integration of hardware-attested Attention Masks to prioritize mission-critical fragments. (Added: 2026-06-23)
+*   **[P0] Active Intent Sanitizer (AIS)**: Real-time semantic deconstruction of coordination messages crossing multi-channel boundaries. (Added: 2026-06-23)
+*   **[P0] SMM v2 (Stylometric Anchoring)**: Higher-dimensional behavioral anchoring of reasoning traces against the mission-root manifest. (Added: 2026-06-23)
+
+#### Upcoming (2026-06-24 Evolution)
+*   **[P0] Atomic Mission-Resumption (AMR) Gateway**: Hardware-locked resumption of agent states across cold-boots via BSH snapshots. (Added: 2026-06-24)
+*   **[P0] Stylometric Mesh Sovereignty (SMS) Provider**: Behavioral security layer detecting mimicry-based hijacking via real-time stylometry. (Added: 2026-06-24)
+*   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
+*   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
@@ -788,12 +800,6 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Density Guard (ADG)**: (P0) Cognitive security layer utilizing hardware-bound headers to "pin" mission-critical fragments at the LLM attention layer.
 - **Headless Handoff Continuity (HHC)**: (P0) Orchestration bridge facilitating signed intent transfers for process-based subagent spawning.
 - **Multi-Modal Attention Sanitizer**: (P1) Advanced security extension for the MIB to neutralize attention-eviction probes in non-textual traces.
-
-#### Upcoming (2026-03-21 Evolution)
-*   **[P0] LOWA HMAC Challenge-Response**: Implementation of cryptographically bound handshakes for local WebSocket listeners to neutralize CSWSH. (Added: 2026-03-21)
-*   **[P0] T2T Mailbox Sharding Middleware**: Performance optimization for horizontal teammate meshes, supporting 5+ concurrent agents. (Added: 2026-03-21)
-*   **[P0] Full-Mesh Discovery Auth (v2)**: Advanced "Auth-before-Discovery" protocol requiring mission-root attestation before revealing capabilities. (Added: 2026-03-21)
-*   **[P1] A2A Capability Masking**: Implementation of schema-masking for agent capability cards during the initial handshake. (Added: 2026-03-21)
 
 #### Upcoming (2026-03-21 Evolution)
 *   **[P0] LOWA HMAC Challenge-Response**: Implementation of cryptographically bound handshakes for local WebSocket listeners to neutralize CSWSH. (Added: 2026-03-21)

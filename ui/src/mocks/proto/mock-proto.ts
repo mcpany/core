@@ -3,133 +3,49 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/**
- * Mock class for GrpcWebImpl used in tests.
- */
+/** Mock GrpcWebImpl */
 export class GrpcWebImpl { }
-
-/**
- * Mock class for RegistrationServiceClientImpl used in tests.
- */
+/** Mock RegistrationServiceClientImpl */
 export class RegistrationServiceClientImpl { }
-
-/**
- * Mock constant for HttpUpstreamService used in tests.
- */
+/** Mock HttpUpstreamService */
 export const HttpUpstreamService = {};
-
-/**
- * Mock constant for ServiceProvenance used in tests.
- */
+/** Mock ServiceProvenance */
 export const ServiceProvenance = {};
-
-/**
- * Mock enum for CallPolicy_Action used in tests.
- */
-export enum CallPolicy_Action {
-  ALLOW = 0,
-  DENY = 1,
-  SAVE_CACHE = 2,
-  DELETE_CACHE = 3,
-}
-
-/**
- * Mock enum for ExportPolicy_Action used in tests.
- */
-export enum ExportPolicy_Action {
-  EXPORT = 0,
-  UNEXPORT = 1,
-}
-
-/**
- * Mock type placeholders for policy-related proto messages.
- */
+/** Mock CallPolicy_Action */
+export enum CallPolicy_Action { ALLOW = 0, DENY = 1, SAVE_CACHE = 2, DELETE_CACHE = 3 }
+/** Mock ExportPolicy_Action */
+export enum ExportPolicy_Action { EXPORT = 0, UNEXPORT = 1 }
+/** Mock CallPolicy */
 export const CallPolicy = {};
+/** Mock CallPolicyRule */
 export const CallPolicyRule = {};
+/** Mock ExportPolicy */
 export const ExportPolicy = {};
+/** Mock ExportRule */
 export const ExportRule = {};
-
-/**
- * Mock constant for ProfileDefinition used in tests.
- */
+/** Mock ProfileDefinition */
 export const ProfileDefinition = {};
-
-/**
- * Mock constant for ToolDefinition used in tests.
- */
+/** Mock ToolDefinition */
 export const ToolDefinition = {};
-
-/**
- * Mock enum for HttpCallDefinition_HttpMethod used in tests.
- */
-export enum HttpCallDefinition_HttpMethod {
-  HTTP_METHOD_UNSPECIFIED = 0,
-  HTTP_METHOD_GET = 1,
-  HTTP_METHOD_POST = 2,
-  HTTP_METHOD_PUT = 3,
-  HTTP_METHOD_DELETE = 4,
-  HTTP_METHOD_PATCH = 5,
-}
-
-/**
- * Mock enum for OutputTransformer_OutputFormat used in tests.
- */
-export enum OutputTransformer_OutputFormat {
-  JSON = 0,
-  XML = 1,
-  TEXT = 2,
-  RAW_BYTES = 3,
-  JQ = 4,
-}
-
-/**
- * Mock interface/type for HttpCallDefinition used in tests.
- */
+/** Mock HttpCallDefinition_HttpMethod */
+export enum HttpCallDefinition_HttpMethod { HTTP_METHOD_UNSPECIFIED = 0, HTTP_METHOD_GET = 1, HTTP_METHOD_POST = 2, HTTP_METHOD_PUT = 3, HTTP_METHOD_DELETE = 4, HTTP_METHOD_PATCH = 5 }
+/** Mock OutputTransformer_OutputFormat */
+export enum OutputTransformer_OutputFormat { JSON = 0, XML = 1, TEXT = 2, RAW_BYTES = 3, JQ = 4 }
+/** Mock HttpCallDefinition */
 export const HttpCallDefinition = {};
-
-/**
- * Mock enum for ParameterType used in tests.
- */
-export enum ParameterType {
-  STRING = 0,
-  NUMBER = 1,
-  INTEGER = 2,
-  BOOLEAN = 3,
-  ARRAY = 4,
-  OBJECT = 5,
-}
-
-/**
- * Mock type for InputTransformer used in tests.
- */
+/** Mock ParameterType */
+export enum ParameterType { STRING = 0, NUMBER = 1, INTEGER = 2, BOOLEAN = 3, ARRAY = 4, OBJECT = 5 }
+/** Mock InputTransformer */
 export const InputTransformer = {};
-
-/**
- * Mock type for OutputTransformer used in tests.
- */
+/** Mock OutputTransformer */
 export const OutputTransformer = {};
-
-/**
- * Mock type for HttpParameterMapping used in tests.
- */
+/** Mock HttpParameterMapping */
 export const HttpParameterMapping = {};
-
-/**
- * Mock type for ResourceDefinition used in tests.
- */
+/** Mock ResourceDefinition */
 export const ResourceDefinition = {};
-
-/**
- * Mock type for PromptDefinition used in tests.
- */
+/** Mock PromptDefinition */
 export const PromptDefinition = {};
-
-/**
- * Mock type for Credential used in tests.
- */
+/** Mock Credential */
 export const Credential = {};
-
-/**
- * Mock type for Authentication used in tests.
- */
+/** Mock Authentication */
 export const Authentication = {};

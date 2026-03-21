@@ -627,11 +627,17 @@
 - [ ] **[P0] Headless Handoff Continuity Tracker**: (2026-06-22) Visual hierarchical tracer for signed intent transfers across process boundaries.
 - [ ] **[P1] Multi-Modal Attention Probe Alert**: (2026-06-22) Security UI for inspecting blocked attention-eviction attempts in non-textual reasoning traces.
 
-#### Upcoming (2026-03-21 Evolution)
-- [ ] **[P0] LOWA Challenge Visualizer**: Real-time monitor of HMAC-based pairing requests and CSWSH violation attempts. (Added: 2026-03-21)
-- [ ] **[P0] T2T Mailbox Mesh Map**: Interactive graph visualization of teammate-to-teammate communication shards and state alignment. (Added: 2026-03-21)
-- [ ] **[P0] A2A Capability Masking Interface**: Management console for configuring schema masks and "Auth-before-Discovery" rules. (Added: 2026-03-21)
-- [ ] **[P1] Shared Task List Real-time Diff**: Visual diff engine for synchronizing the Blackboard across multiple parallel teammates. (Added: 2026-03-21)
+### Upcoming: [2026-06-23]
+- [ ] **[P0] Attention Masking Interface**: UI for configuring and monitoring ADG v2 hardware-attested attention masks. (Added: 2026-06-23)
+- [ ] **[P0] Mission-Root Lineage Visualizer**: Enhanced visualizer for RMRA-compliant headless mission chains. (Added: 2026-06-23)
+- [ ] **[P0] Cross-Channel Sanitization Log**: Security dashboard for reviewing AIS-redacted coordination messages. (Added: 2026-06-23)
+- [ ] **[P0] Behavioral Anchoring Monitor**: Real-time visualization of stylometric consistency scores vs. mission-root manifest. (Added: 2026-06-23)
+
+### Upcoming: [2026-06-24]
+- [ ] **[P0] Mission Resumption Manager**: (2026-06-24) UI for monitoring and manually triggering AMR-mediated mission recovery checkpoints.
+- [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
+- [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
+- [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
 
 #### Upcoming (2026-03-21 Evolution)
 - [ ] **[P0] LOWA Challenge Visualizer**: Real-time monitor of HMAC-based pairing requests and CSWSH violation attempts. (Added: 2026-03-21)
