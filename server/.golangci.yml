@@ -50,6 +50,8 @@ issues:
         - "revive"
       text: "var-naming: avoid meaningless package names"
   skip-files:
+    - ".*node_modules.*"
+    - ".*dist.*"
     - '.*\.pb\.go$'
     - lll
     - funlen
