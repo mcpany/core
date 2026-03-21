@@ -69,7 +69,7 @@ describe('PromptWorkbench', () => {
 
   it('executes a prompt', async () => {
     (apiClient.executePrompt as any).mockResolvedValue({
-      messages: [{ role: 'user', content: { type: "text", text: 'test output' } }]
+      messages: [{ role: 'user', content: 'test output' }]
     });
 
     render(<PromptWorkbench initialPrompts={mockPrompts} />);
