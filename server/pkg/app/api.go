@@ -211,6 +211,15 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	return mux
 }
 
+// handleServices handles the /services endpoint for listing and creating services.
+//
+// Summary: Handles service listing and creation.
+//
+// Parameters:
+//   - store: storage.Storage. The storage backend.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler function.
 func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -224,6 +233,14 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 	}
 }
 
+// handleListServices handles the GET /services request.
+//
+// Summary: Lists all upstream services.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The incoming HTTP request.
+//   - store: storage.Storage. The storage backend.
 func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request, store storage.Storage) {
 	var services []*configv1.UpstreamServiceConfig
 	var err error
@@ -302,6 +319,14 @@ func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request,
 	_, _ = w.Write(buf)
 }
 
+// handleCreateService handles the POST /services request.
+//
+// Summary: Creates a new upstream service.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The incoming HTTP request.
+//   - store: storage.Storage. The storage backend.
 func (a *Application) handleCreateService(w http.ResponseWriter, r *http.Request, store storage.Storage) {
 	var svc configv1.UpstreamServiceConfig
 	body, err := readBodyWithLimit(w, r, 1048576)
@@ -357,6 +382,12 @@ func (a *Application) handleCreateService(w http.ResponseWriter, r *http.Request
 	_, _ = w.Write([]byte("{}"))
 }
 
+// handleServiceValidate handles the /services/validate endpoint.
+//
+// Summary: Validates an upstream service configuration.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler function.
 func (a *Application) handleServiceValidate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
@@ -445,6 +476,16 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 	}
 }
 
+// checkURLReachability verifies that a URL is reachable.
+//
+// Summary: Checks URL reachability.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - urlStr: string. The URL to check.
+//
+// Returns:
+//   - error: An error if the URL is unreachable.
 func checkURLReachability(ctx context.Context, urlStr string) error {
 	client := util.NewSafeHTTPClient()
 	client.Timeout = 5 * time.Second
@@ -479,6 +520,15 @@ func checkURLReachability(ctx context.Context, urlStr string) error {
 	return nil
 }
 
+// checkFilesystemAccess verifies that a filesystem path exists and is accessible.
+//
+// Summary: Checks filesystem path access.
+//
+// Parameters:
+//   - path: string. The path to check.
+//
+// Returns:
+//   - error: An error if the path is inaccessible.
 func checkFilesystemAccess(path string) error {
 	_, err := os.Stat(path)
 	if err != nil {
@@ -491,6 +541,16 @@ func checkFilesystemAccess(path string) error {
 	return nil
 }
 
+// checkCommandAvailability verifies that a command is available to execute.
+//
+// Summary: Checks command availability.
+//
+// Parameters:
+//   - command: string. The command executable.
+//   - workDir: string. The working directory for the command.
+//
+// Returns:
+//   - error: An error if the command is unavailable.
 func checkCommandAvailability(command string, workDir string) error {
 	if command == "" {
 		return fmt.Errorf("command is empty")
@@ -522,6 +582,15 @@ func checkCommandAvailability(command string, workDir string) error {
 	return nil
 }
 
+// handleServiceDetail handles the /services/{name} endpoints.
+//
+// Summary: Handles operations on a specific service.
+//
+// Parameters:
+//   - store: storage.Storage. The storage backend.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler function.
 func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		path := strings.TrimPrefix(r.URL.Path, "/services/")
@@ -623,6 +692,15 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 	}
 }
 
+// handleServiceStatus handles the /services/{name}/status endpoint.
+//
+// Summary: Returns the operational status of a service.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The incoming HTTP request.
+//   - name: string. The service name.
+//   - store: storage.Storage. The storage backend.
 func (a *Application) handleServiceStatus(w http.ResponseWriter, r *http.Request, name string, store storage.Storage) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -660,6 +738,15 @@ func (a *Application) handleServiceStatus(w http.ResponseWriter, r *http.Request
 	})
 }
 
+// handleServiceRestart handles the POST /services/{name}/restart endpoint.
+//
+// Summary: Restarts a service's connections or processes.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The incoming HTTP request.
+//   - name: string. The service name.
+//   - store: storage.Storage. The storage backend.
 func (a *Application) handleServiceRestart(w http.ResponseWriter, r *http.Request, name string, store storage.Storage) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -695,6 +782,15 @@ func (a *Application) handleServiceRestart(w http.ResponseWriter, r *http.Reques
 	_, _ = w.Write([]byte("{}"))
 }
 
+// handleSettings handles the /settings endpoint for global configuration.
+//
+// Summary: Handles global configuration reading and writing.
+//
+// Parameters:
+//   - store: storage.Storage. The storage backend.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler function.
 func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -883,6 +979,12 @@ func (a *Application) handleTools(store storage.Storage) http.HandlerFunc {
 	}
 }
 
+// handleExecute handles the /execute endpoint for tools.
+//
+// Summary: Executes a tool.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler function.
 func (a *Application) handleExecute() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
@@ -922,6 +1024,12 @@ func (a *Application) handleExecute() http.HandlerFunc {
 	}
 }
 
+// handlePrompts handles the /prompts endpoint for listing prompts.
+//
+// Summary: Lists all registered prompts.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler function.
 func (a *Application) handlePrompts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -955,6 +1063,12 @@ func (a *Application) handlePrompts() http.HandlerFunc {
 	}
 }
 
+// handleResources handles the /resources endpoint for listing resources.
+//
+// Summary: Lists all registered resources.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler function.
 func (a *Application) handleResources() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -968,6 +1082,15 @@ func (a *Application) handleResources() http.HandlerFunc {
 	}
 }
 
+// handleSecrets handles the /secrets endpoint for listing and creating secrets.
+//
+// Summary: Handles secret listing and creation.
+//
+// Parameters:
+//   - store: storage.Storage. The storage backend.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler function.
 func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -1032,6 +1155,15 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 	}
 }
 
+// handleSecretDetail handles the /secrets/{id} endpoints.
+//
+// Summary: Handles operations on a specific secret.
+//
+// Parameters:
+//   - store: storage.Storage. The storage backend.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler function.
 func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		path := strings.TrimPrefix(r.URL.Path, "/secrets/")
@@ -1113,6 +1245,15 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 	}
 }
 
+// handleSecretReveal handles the POST /secrets/{id}/reveal endpoint.
+//
+// Summary: Reveals the value of a specific secret.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The incoming HTTP request.
+//   - id: string. The secret ID.
+//   - store: storage.Storage. The storage backend.
 func (a *Application) handleSecretReveal(w http.ResponseWriter, r *http.Request, id string, store storage.Storage) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -1140,6 +1281,15 @@ func (a *Application) handleSecretReveal(w http.ResponseWriter, r *http.Request,
 	})
 }
 
+// handleProfiles handles the /profiles endpoint for listing and creating profiles.
+//
+// Summary: Handles profile listing and creation.
+//
+// Parameters:
+//   - store: storage.Storage. The storage backend.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler function.
 func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -1205,6 +1355,15 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 	}
 }
 
+// handleProfileDetail handles the /profiles/{name} endpoints.
+//
+// Summary: Handles operations on a specific profile.
+//
+// Parameters:
+//   - store: storage.Storage. The storage backend.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler function.
 func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		name := strings.TrimPrefix(r.URL.Path, "/profiles/")
@@ -1297,6 +1456,15 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 	}
 }
 
+// handleCollections handles the /collections endpoint.
+//
+// Summary: Handles service collection listing and creation.
+//
+// Parameters:
+//   - store: storage.Storage. The storage backend.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler function.
 func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -1348,6 +1516,15 @@ func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc 
 	}
 }
 
+// handleCollectionDetail handles the /collections/{name} endpoints.
+//
+// Summary: Handles operations on a specific collection.
+//
+// Parameters:
+//   - store: storage.Storage. The storage backend.
+//
+// Returns:
+//   - http.HandlerFunc: The configured handler function.
 func (a *Application) handleCollectionDetail(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		name := strings.TrimPrefix(r.URL.Path, "/collections/")
@@ -1439,6 +1616,15 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 	}
 }
 
+// handleCollectionApply applies a service collection to the system.
+//
+// Summary: Applies a service collection.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The incoming HTTP request.
+//   - name: string. The collection name.
+//   - store: storage.Storage. The storage backend.
 func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Request, name string, store storage.Storage) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -1488,6 +1674,15 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 	_, _ = w.Write([]byte("{}"))
 }
 
+// isUnsafeConfig checks if a service configuration is potentially unsafe.
+//
+// Summary: Checks for unsafe configurations.
+//
+// Parameters:
+//   - service: *configv1.UpstreamServiceConfig. The configuration to check.
+//
+// Returns:
+//   - bool: True if the configuration is unsafe.
 func isUnsafeConfig(service *configv1.UpstreamServiceConfig) bool {
 	if mcp := service.GetMcpService(); mcp != nil {
 		connType := mcp.WhichConnectionType()
