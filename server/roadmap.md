@@ -316,17 +316,17 @@ Enterprise Readiness, Safety, and Developer Experience.
 
 | Rank | Feature Name | Why it matters | Difficulty |
 | :--- | :--- | :--- | :--- |
-| **P0** | **Policy Firewall** | **Security:** Critical for "Zero Trust" agent execution. | High |
-| **P0** | **HITL Middleware** | **Safety:** Prevents catastrophic agent actions. | High |
-| **P1** | **Recursive Context** | **Usability:** Solves subagent configuration pain. | Medium |
-| **P1** | **Shared KV Store** | **Reliability:** Prevents multi-agent hallucinations. | Medium |
-| 1 | **Team Configuration Sync** | **Collaboration**: Sync `mcpany` configs and secrets securely across teams. | Medium |
-| 2 | **Smart Error Recovery** | **Resilience**: LLM-based self-healing for automatic tool error recovery. | High |
-| 3 | **Service Health History** | **Observability**: Track historical health for availability trend visualization. | Medium |
-| 4 | **Tool Execution Timeline** | **Debugging**: Visual waterfall chart for debugging tool latency bottlenecks. | High |
-| 5 | **Canary Tool Deployment** | **Ops**: Gradual rollout of tool versions to mitigate regressions. | High |
-| 6 | **Compliance Reporting** | **Enterprise**: Auto-generate compliance reports (SOC2/GDPR) from Audit Logs. | Medium |
-| 7 | **Advanced Tiered Caching** | **Performance**: Multi-layer caching to reduce costs and latency. | Medium |
+| **P0** | **Policy Firewall** | Critical for "Zero Trust" security. | High |
+| **P0** | **HITL Middleware** | Prevents catastrophic agent actions. | High |
+| **P1** | **Recursive Context** | Fixes subagent config pain. | Medium |
+| **P1** | **Shared KV Store** | Prevents multi-agent hallucinations. | Medium |
+| 1 | **Team Configuration Sync** | Secure config/secret sync. | Medium |
+| 2 | **Smart Error Recovery** | LLM self-healing for errors. | High |
+| 3 | **Service Health History** | Health history tracking. | Medium |
+| 4 | **Tool Execution Timeline** | Latency waterfall chart. | High |
+| 5 | **Canary Tool Deployment** | Gradual tool rollouts. | High |
+| 6 | **Compliance Reporting** | Auto-generate compliance reports. | Medium |
+| 7 | **Advanced Tiered Caching** | Multi-layer caching. | Medium |
 
 ## 1. Completed Features
 
