@@ -10,17 +10,13 @@ test.describe('Resource Explorer', () => {
   const serviceName = 'e2e-resources-test-service';
 
   test.beforeEach(async ({ request }) => {
-    // Seed the database with a test service that uses echo command to return JSON
+    // Seed the database with a test service that has resources
     const response = await request.post('/api/v1/services', {
       data: {
-        name: serviceName,
+        name: "e2e-resources-service",
         priority: 10,
         command_line_service: {
             command: "echo",
-            // The command returns a valid JSON string that matches the expected ResourceContent structure for MCP
-            // Wait, MCP Resource reading returns an array of contents. The echo command output will be treated as the raw output.
-            // Let's use a simple JSON string output. The MCP adapter for Command Line takes stdout.
-            // But wait, the CLI adapter expects to return a proper MCP result or we configure an output transformer.
             args: ['{"contents": [{"uri": "file:///config.json", "mimeType": "application/json", "text": "{\\"foo\\":\\"bar\\"}"}]}']
         },
         resources: [
@@ -33,44 +29,56 @@ test.describe('Resource Explorer', () => {
         ],
         calls: {
             "file:///config.json": {
-                // Command line call definition
-                // If it's a CLI service, the call args will be appended to the command.
                 args: []
             }
         }
       }
     });
+    // We expect the backend to create the service successfully
     expect(response.ok()).toBeTruthy();
   });
 
   test.afterEach(async ({ request }) => {
-    await request.delete(`/api/v1/services/${serviceName}`);
+    await request.delete(`/api/v1/services/e2e-resources-service`);
   });
 
   test('should load resources and allow selection', async ({ page }) => {
     // Navigate to the resources page
     await page.goto('/resources');
 
-    // Wait for the resource list to populate
-    await expect(page.getByText('config.json').first()).toBeVisible({ timeout: 10000 });
+    // Wait for the resource list to populate (using actual API)
+    await expect(page.getByText('config.json').first()).toBeVisible();
 
-    // Select the resource
+    // Verify search functionality
+    const searchInput = page.getByPlaceholder('Search resources...');
+    await searchInput.fill('config');
+    await expect(page.getByText('config.json').first()).toBeVisible();
+    await searchInput.fill('not-found');
+    await expect(page.getByText('config.json')).not.toBeVisible();
+
+    // Clear search
+    await searchInput.fill('');
+    await expect(page.getByText('config.json').first()).toBeVisible();
+
+    // Select a resource
     await page.getByText('config.json').first().click();
 
-    // Verify preview loads and JSON is rendered using JsonView
-    // Since JsonView parses the JSON into a tree structure, we should see the key "foo" and value "bar"
-    // separated, not just a raw string like "{\\"foo\\":\\"bar\\"}".
-    // JsonView renders keys with a specific styling, but we can just check for text content.
+    // Verify preview loads
+    // Use first() because the list item also shows the URI
+    await expect(page.getByText('file:///config.json').first()).toBeVisible(); // URI header
 
-    // Wait for the resource viewer to load the content
-    await expect(page.getByText('foo')).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText('bar')).toBeVisible();
+    // Check if content area is visible. For JSON we expect the key 'foo' and value 'bar'
+    await expect(page.getByText('foo').first()).toBeVisible();
+    await expect(page.getByText('bar').first()).toBeVisible();
 
-    // Also verify the URI header is visible
-    await expect(page.getByText('file:///config.json').first()).toBeVisible();
+    // Verify toolbar buttons
+    await expect(page.getByTitle('List View')).toBeVisible();
+    await expect(page.getByTitle('Grid View')).toBeVisible();
 
     // Switch to Grid view
     await page.getByTitle('Grid View').click();
+
+    // Verify grid item exists
     await expect(page.getByText('config.json').first()).toBeVisible();
   });
 });

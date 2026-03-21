@@ -45,9 +45,8 @@ test.describe('Resource Preview Modal', () => {
     await resourceItem.click();
 
     // Wait for the inline preview to render before opening the modal.
-    const inlinePreview = page.locator('pre').first();
-    await expect(inlinePreview).toBeVisible();
-    await expect(inlinePreview).toContainText('content to test modal view');
+    // For JSON, we use JsonView which renders text content (keys/values). We can look for the specific text.
+    await expect(page.getByText('content to test modal view').first()).toBeVisible();
 
     // Wait for "Maximize" button and click it
     await page.click('button[title="Maximize"]');
@@ -57,9 +56,9 @@ test.describe('Resource Preview Modal', () => {
     await expect(modalTitle).toBeVisible();
 
     // Verify content in modal
-    const modalContent = page.locator("div[role='dialog']").locator('pre').first();
-    await expect(modalContent).toBeVisible();
-    await expect(modalContent).toContainText('content to test modal view');
+    // Because JsonView renders text directly (or via syntax highlighter for raw), we just check for text.
+    const modalContentContainer = page.locator("div[role='dialog']");
+    await expect(modalContentContainer.getByText('content to test modal view').first()).toBeVisible();
   });
 
 });
