@@ -11,6 +11,7 @@ import (
 	"github.com/docker/docker/client"
 )
 
+// IsDockerSocketAccessibleFunc provides documentation for IsDockerSocketAccessibleFunc.
 var (
 	// IsDockerSocketAccessibleFunc is a variable to allow mocking in tests.
 	// It checks if the Docker socket is accessible.

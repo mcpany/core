@@ -19,6 +19,7 @@ type Broadcaster struct {
 	limit       int
 }
 
+// GlobalBroadcaster provides documentation for GlobalBroadcaster.
 var (
 	// GlobalBroadcaster is the shared broadcaster instance for logs.
 	// Summary: Defines GlobalBroadcaster.

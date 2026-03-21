@@ -16,6 +16,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// SkillFileName provides documentation for SkillFileName.
 const (
 	// SkillFileName is the name of the main skill file.
 	// Summary: Defines SkillFileName.

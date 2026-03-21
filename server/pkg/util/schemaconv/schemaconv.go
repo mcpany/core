@@ -13,7 +13,17 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// JSON schema types.
+// TypeArray Object Boolean Integer Number String TypeArray TypeObject TypeBoolean TypeInteger TypeNumber JSON schema types.
+// TypeArray provides documentation for TypeArray.
+// TypeObject provides documentation for TypeObject.
+// TypeBoolean provides documentation for TypeBoolean.
+// TypeInteger provides documentation for TypeInteger.
+// TypeNumber provides documentation for TypeNumber.
+// TypeArray provides documentation for TypeArray.
+// TypeObject provides documentation for TypeObject.
+// TypeBoolean provides documentation for TypeBoolean.
+// TypeInteger provides documentation for TypeInteger.
+// TypeNumber provides documentation for TypeNumber.
 const (
 	// TypeNumber represents a JSON number type.
 	// Summary: Defines TypeNumber.

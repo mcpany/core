@@ -30,6 +30,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// Version provides documentation for Version.
 var (
 	// Version is set at build time.
 	//

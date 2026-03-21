@@ -21,6 +21,13 @@ import (
 
 type authContextKey string
 
+// ProfileIDContextKey UserContextKey APIKeyContextKey provides documentation for APIKeyContextKey.
+// ProfileIDContextKey provides documentation for ProfileIDContextKey.
+// UserContextKey provides documentation for UserContextKey.
+// ProfileIDContextKey provides documentation for ProfileIDContextKey.
+// UserContextKey provides documentation for UserContextKey.
+// ProfileIDContextKey provides documentation for ProfileIDContextKey.
+// UserContextKey provides documentation for UserContextKey.
 const (
 	// UserContextKey is the context key for the user ID.
 	//
