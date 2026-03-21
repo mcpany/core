@@ -23,7 +23,6 @@ func TestUpstreamService_Jira(t *testing.T) {
 	jiraTestIssueKey := os.Getenv("JIRA_TEST_ISSUE_KEY")
 	jiraTestIssueSummary := os.Getenv("JIRA_TEST_ISSUE_SUMMARY")
 
-
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 

@@ -4,21 +4,9 @@
  */
 
 import { request, APIRequestContext } from '@playwright/test';
-
-const UpstreamServiceConfig = {
-  fromJSON: (data: any) => data,
-  toJSON: (data: any) => data,
-};
-
-const ServiceTemplate = {
-  fromJSON: (data: any) => data,
-  toJSON: (data: any) => data,
-};
-
-const User = {
-  fromJSON: (data: any) => data,
-  toJSON: (data: any) => data,
-};
+import { ServiceTemplate } from '../../../proto/config/v1/service_template';
+import { UpstreamServiceConfig } from '../../../proto/config/v1/upstream_service';
+import { User } from '../../../proto/config/v1/user';
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';

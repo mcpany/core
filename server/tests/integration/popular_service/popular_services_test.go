@@ -17,7 +17,6 @@ import (
 )
 
 func TestUpstreamService_Trello(t *testing.T) {
-
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
@@ -59,7 +58,6 @@ func TestUpstreamService_Trello(t *testing.T) {
 }
 
 func TestUpstreamService_Miro(t *testing.T) {
-
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
@@ -101,7 +99,6 @@ func TestUpstreamService_Miro(t *testing.T) {
 }
 
 func TestUpstreamService_Figma(t *testing.T) {
-
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
