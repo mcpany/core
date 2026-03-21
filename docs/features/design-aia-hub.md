@@ -4,7 +4,7 @@
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
-As AI agent swarms grow deeper and more autonomous, the risk of "Semantic Drift"---where specialized subagents inadvertently or maliciously deviate from the primary mission root---has become a critical failure point. Cryptographic transport security (mTLS) and binary state handoffs (BSH) ensure *who* is talking, but not *what* they are doing.
+As AI agent swarms grow deeper and more autonomous, the risk of "Semantic Drift"---where specialized subagents inadvertently or maliciously deviate from the primary mission root---has become a critical failure point. Cryptographic transport security (mTLS) and binary state handoffs (BSH) ensure who is talking, but not what they are doing.
 
 The **Active Intent Alignment (AIA) Hub** is designed to provide real-time, semantic verification of agent reasoning paths. It moves beyond passive status heartbeats to active "Alignment Heartbeats" that prove a specialist's internal monologue and tool-call intents remain anchored to the mission-root.
 
