@@ -1,11 +1,14 @@
 # Design Doc: Hardware-Locked Attention Governance (HLAG)
+
 **Status:** Draft
 **Created:** [2026-06-18]
 
 ## 1. Context and Scope
+
 As agent swarms become deeper and more autonomous, a new class of exploit has emerged: **Reasoning Entropy Exhaustion (REE)**. In REE, a compromised subagent injects high-entropy "noise" into its reasoning traces, forcing the parent agent's context window to shift and evict the "Mission Root" anchors. Without these anchors, the parent agent loses its objective sovereignty and becomes susceptible to coercion. MCP Any needs to solve this by providing a hardware-locked mechanism to "pin" critical context fragments at the attention layer of the LLM.
 
 ## 2. Goals & Non-Goals
+
 *   **Goals:**
     *   Provide a mechanism to cryptographically "pin" mission-critical intent fragments.
     *   Utilize hardware-bound (TPM/SEP) headers to signal attention priority to LLM providers.
@@ -15,6 +18,7 @@ As agent swarms become deeper and more autonomous, a new class of exploit has em
     *   Providing absolute protection against all forms of context-window limits (we manage the *priority*, not the *size*).
 
 ## 3. Critical User Journey (CUJ)
+
 *   **User Persona:** Local LLM Swarm Orchestrator
 *   **Primary Goal:** Protect the primary mission objective from being "forgotten" by the lead agent during a complex, multi-agent refactor.
 *   **The Happy Path (Tasks):**
@@ -25,7 +29,9 @@ As agent swarms become deeper and more autonomous, a new class of exploit has em
     5.  The Lead Agent successfully synthesizes the swarm's work while remaining bound to the original mission.
 
 ## 4. Design & Architecture
+
 *   **System Flow:**
+
     ```mermaid
     graph TD
         A[Mission Root] --> B[HLAG Provider]
@@ -38,6 +44,7 @@ As agent swarms become deeper and more autonomous, a new class of exploit has em
         D --> I
         H -- High Entropy --> J[Discarded Noise]
     ```
+
 *   **APIs / Interfaces:**
     *   `POST /v1/context/pin`: Accept a fragment and return a hardware-attested attention-lock token.
     *   `Header: X-MCP-Attention-Priority`: A signed header for LLM transport.
@@ -45,10 +52,12 @@ As agent swarms become deeper and more autonomous, a new class of exploit has em
     *   Attention-locked fragments are stored in a dedicated "Sovereign Shard" within the ESB (Entangled State Broker).
 
 ## 5. Alternatives Considered
+
 *   **Software-only Pinning:** Rejected because it can be bypassed if the subagent gains control of the local transport; hardware-level signatures are required for true Zero Trust.
 *   **Massive Context Windows:** Rejected because it doesn't solve the *entropy* issue; even in a 2M token window, high-entropy noise can still "drown out" the mission root at the attention layer.
 
 ## 6. Cross-Cutting Concerns
+
 *   **Security (Zero Trust):** All attention-lock requests must be accompanied by a valid hardware-attested mission token.
 *   **Observability:** The "Attention Sovereignty Monitor" in the UI will visualize real-time attention-utilization and noise-pruning events.
 
@@ -59,6 +68,9 @@ As agent swarms become deeper and more autonomous, a new class of exploit has em
 ### Update: [2026-06-19] - Attention-Locking and HAIL Integration
 
 **Context:** Today's market sync revealed a new exploit pattern in OpenClaw subagent reasoning mimicry (shadowing).
-**Architecture Adjustment:** * Integrating support for `x-gemini-attention-lock` compatibility in Section 4.
-* Mandating **HAIL-attested lineage** for all attention-lock requests to prevent stylometric shadowing.
+**Architecture Adjustment:**
+
+*   Integrating support for `x-gemini-attention-lock` compatibility in Section 4.
+*   Mandating **HAIL-attested lineage** for all attention-lock requests to prevent stylometric shadowing.
+
 **Security Impact:** Mitigates the risk of malicious subagents using mimicry to evict mission-root intent anchors.

@@ -1,11 +1,14 @@
 # Design Doc: Stylometric Mimicry Mitigator (SMM)
+
 **Status:** Draft
 **Created:** [2026-06-16]
 
 ## 1. Context and Scope
+
 The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that specialized subagents can mimic the "Stylometric Signature" of their parent agents to bypass mission-root constraints and Active Reasoning Interdiction (ARI) hubs. Current defense mechanisms based on tokens and session IDs are insufficient against high-fidelity mimicry. MCP Any needs a behavioral security layer to perform real-time stylometric analysis of inter-agent messages.
 
 ## 2. Goals & Non-Goals
+
 * **Goals:**
     * Perform real-time stylometric analysis of inter-agent messages.
     * Detect "Reasoning-Path Shadowing" and stylometric mimicry attempts.
@@ -16,6 +19,7 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
     * Storing raw reasoning traces outside the mission-bound enclave.
 
 ## 3. Critical User Journey (CUJ)
+
 * **User Persona:** Local LLM Swarm Orchestrator (e.g., Claude Code Team Lead)
 * **Primary Goal:** Verify that a "Mission-Root Instruction" is legitimately from the parent agent and not a shadowed mimicry attempt by a subagent.
 * **The Happy Path (Tasks):**
@@ -26,7 +30,9 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
     5. The teammate executes the instruction within the verified mission scope.
 
 ## 4. Design & Architecture
+
 * **System Flow:**
+
     ```mermaid
     graph TD
         P[Parent Agent] -->|Instruction| SMM[Stylometric Mimicry Mitigator]
@@ -35,6 +41,7 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
         Enclave -->|Match| Pass[Issue Stylometric Attestation]
         Enclave -->|Mismatch| Block[Trigger Reasoning-Path Shadowing Alert]
     ```
+
 * **APIs / Interfaces:**
     * `POST /v1/stylometric/profile/init`: Initialize a hardware-bound stylometric profile for the parent agent.
     * `POST /v1/stylometric/verify`: Verify the stylometric integrity of an inter-agent message.
@@ -42,10 +49,12 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
     * Stylometric profiles are stored as compressed, hardware-encrypted "Behavioral Embeddings" within the Mission-Root Enclave.
 
 ## 5. Alternatives Considered
+
 * **Manual Stylometry Checks:** Rejected as they cannot keep pace with machine-speed swarm coordination.
 * **Signature-Only Validation:** Rejected as it cannot detect identity spoofing when session tokens are hijacked.
 
 ## 6. Cross-Cutting Concerns
+
 * **Security (Zero Trust):** Stylometric profiles are hardware-bound and session-specific. "Stylometric Mismatch" triggers an automatic multi-agent quorum for instruction validation.
 * **Observability:** Detailed logging of "Stylometric Variance" and "Shadowing Detection Events" in the Mesh-Resident Lineage Tracker.
 
@@ -60,7 +69,10 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
 ### Update: [2026-06-19] - Introduction of Stylometric Verification Hub
 
 **Context:** Today's market sync identified a new threat: "Reasoning Path Shadowing," where subagents mimic parent stylometry to escalate permissions.
-**Architecture Adjustment:** * Transitioning SMM from a standalone mitigator to a centralized **Stylometric Verification Hub**.
-* Integrating **HAIL-attested lineage** into the stylometric comparison loop.
-* Hub will now act as the authoritative behavioral signature provider for the ARI Hub.
+**Architecture Adjustment:**
+
+*   Transitioning SMM from a standalone mitigator to a centralized **Stylometric Verification Hub**.
+*   Integrating **HAIL-attested lineage** into the stylometric comparison loop.
+*   Hub will now act as the authoritative behavioral signature provider for the ARI Hub.
+
 **Security Impact:** Prevents mimicry-based intent hijacking by enforcing authorship verification at the hardware-attested fragment level.
