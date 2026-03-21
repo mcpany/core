@@ -45,8 +45,11 @@ export enum ExportPolicy_Action {
  * Mock type placeholders for policy-related proto messages.
  */
 export const CallPolicy = {};
+/** CallPolicyRule defines a policy rule for calling a resource. */
 export const CallPolicyRule = {};
+/** ExportPolicy defines a policy for exporting resources. */
 export const ExportPolicy = {};
+/** ExportRule defines a rule for exporting a resource to a remote address. */
 export const ExportRule = {};
 
 /**

@@ -19,11 +19,25 @@ const DiffEditor = (props: any) => (
     </Suspense>
 );
 
+/**
+ * SmartDiffRendererProps defines the properties for the SmartDiffRenderer component.
+ */
 interface SmartDiffRendererProps {
     original: any;
     modified: any;
 }
 
+/**
+ * SmartDiffRenderer renders a visual difference between two JSON objects or arrays.
+ * If both original and modified are tables (arrays of objects), it renders a
+ * formatted table diff with added and removed rows highlighted. Otherwise,
+ * it falls back to a Monaco Diff Editor.
+ *
+ * @param props - The component props.
+ * @param props.original - The original object or array.
+ * @param props.modified - The modified object or array.
+ * @returns The rendered component.
+ */
 export function SmartDiffRenderer({ original, modified }: SmartDiffRendererProps) {
     const { theme } = useTheme();
 
