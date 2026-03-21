@@ -556,7 +556,8 @@ export const apiClient = {
                 command: config.commandLineService.command,
                 working_directory: config.commandLineService.workingDirectory,
                 environment: config.commandLineService.env,
-                env: config.commandLineService.env
+                env: config.commandLineService.env,
+                resources: config.commandLineService.resources,
             };
         }
         if (config.mcpService) {
@@ -666,6 +667,7 @@ export const apiClient = {
             payload.command_line_service = {
                 command: config.commandLineService.command,
                 working_directory: config.commandLineService.workingDirectory,
+                resources: config.commandLineService.resources,
             };
         }
         if (config.mcpService) {
@@ -796,6 +798,7 @@ export const apiClient = {
                 working_directory: config.commandLineService.workingDirectory,
                 env: config.commandLineService.env,
                 container_environment: config.commandLineService.containerEnvironment, // Include this if needed
+                resources: config.commandLineService.resources,
             };
         }
         if (config.mcpService) {

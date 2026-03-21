@@ -177,7 +177,7 @@ func (u *Upstream) Register(
 	}
 	u.mu.Unlock()
 
-	discoveredTools, err := u.createAndRegisterCommandTools(
+	discoveredTools, discoveredResources, err := u.createAndRegisterCommandTools(
 		ctx,
 		serviceID,
 		commandLineService,
@@ -195,11 +195,13 @@ func (u *Upstream) Register(
 		serviceID,
 		"toolsAdded",
 		len(discoveredTools),
+		"resourcesAdded",
+		len(discoveredResources),
 	)
 
 	u.createAndRegisterPrompts(ctx, serviceID, commandLineService, promptManager, isReload)
 
-	return serviceID, discoveredTools, nil, nil
+	return serviceID, discoveredTools, discoveredResources, nil
 }
 
 // createAndRegisterCommandTools iterates through the command definitions in the
@@ -213,9 +215,10 @@ func (u *Upstream) createAndRegisterCommandTools(
 	toolManager tool.ManagerInterface,
 	resourceManager resource.ManagerInterface,
 	_ bool,
-) ([]*configv1.ToolDefinition, error) {
+) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(commandLineService.GetTools()))
+	discoveredResources := make([]*configv1.ResourceDefinition, 0, len(commandLineService.GetResources()))
 	definitions := commandLineService.GetTools()
 	calls := commandLineService.GetCalls()
 
@@ -304,7 +307,7 @@ func (u *Upstream) createAndRegisterCommandTools(
 		}
 		if err := toolManager.AddTool(newTool); err != nil {
 			log.Error("Failed to add tool", "error", err)
-			return nil, err
+			return nil, nil, err
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
 			Name: proto.String(command),
@@ -347,13 +350,15 @@ func (u *Upstream) createAndRegisterCommandTools(
 				continue
 			}
 			resourceManager.AddResource(dynamicResource)
+			discoveredResources = append(discoveredResources, resourceDef)
 		} else if resourceDef.GetStatic() != nil {
 			staticResource := resource.NewStaticResource(resourceDef, serviceID)
 			resourceManager.AddResource(staticResource)
+			discoveredResources = append(discoveredResources, resourceDef)
 		}
 	}
 
-	return discoveredTools, nil
+	return discoveredTools, discoveredResources, nil
 }
 
 func (u *Upstream) createAndRegisterPrompts(

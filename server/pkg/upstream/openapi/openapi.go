@@ -281,9 +281,16 @@ func (u *OpenAPIUpstream) Register(
 
 	numToolsAdded := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, toolManager, resourceManager, isReload, doc, serviceConfig)
 	u.createAndRegisterPrompts(ctx, serviceID, serviceConfig, promptManager, isReload)
-	log.Info("Registered OpenAPI service", "serviceID", serviceID, "toolsAdded", numToolsAdded)
 
-	return serviceID, discoveredTools, nil, nil
+	openapiService = serviceConfig.GetOpenapiService()
+	var discoveredResources []*configv1.ResourceDefinition
+	if openapiService != nil {
+		discoveredResources = openapiService.GetResources()
+	}
+
+	log.Info("Registered OpenAPI service", "serviceID", serviceID, "toolsAdded", numToolsAdded, "resourcesAdded", len(discoveredResources))
+
+	return serviceID, discoveredTools, discoveredResources, nil
 }
 
 // getHTTPClient retrieves or creates an HTTP client for a given service. It
@@ -569,6 +576,9 @@ func (u *OpenAPIUpstream) registerDynamicResources(
 				continue
 			}
 			resourceManager.AddResource(dynamicResource)
+		} else if resourceDef.GetStatic() != nil {
+			staticResource := resource.NewStaticResource(resourceDef, serviceID)
+			resourceManager.AddResource(staticResource)
 		}
 	}
 }

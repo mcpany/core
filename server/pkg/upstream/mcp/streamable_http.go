@@ -753,7 +753,7 @@ func (u *Upstream) Register(
 		return "", nil, nil, err
 	}
 
-	log.Info("Registered MCP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
+	log.Info("Registered MCP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools), "resourcesAdded", len(discoveredResources))
 	return serviceID, discoveredTools, discoveredResources, nil
 }
 

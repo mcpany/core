@@ -390,20 +390,21 @@ func (u *Upstream) Register(
 		}
 	}
 
-	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)
+	discoveredTools, discoveredResources := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)
 	u.createAndRegisterPrompts(ctx, serviceID, serviceConfig, promptManager, isReload)
-	log.Info("Registered HTTP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
+	log.Info("Registered HTTP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools), "resourcesAdded", len(discoveredResources))
 
-	return serviceID, discoveredTools, nil, nil
+	return serviceID, discoveredTools, discoveredResources, nil
 }
 
 // createAndRegisterHTTPTools iterates through the HTTP call definitions in the
 // service configuration, creates a new HTTPTool for each, and registers it
 // with the tool manager.
-func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, _ bool) []*configv1.ToolDefinition { //nolint:gocyclo // High complexity due to tool discovery logic
+func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, _ bool) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition) { //nolint:gocyclo // High complexity due to tool discovery logic
 	log := logging.GetLogger()
 	httpService := serviceConfig.GetHttpService()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(httpService.GetTools()))
+	discoveredResources := make([]*configv1.ResourceDefinition, 0, len(httpService.GetResources()))
 	calls := httpService.GetCalls()
 	callIDToDefinition := make(map[string]*configv1.ToolDefinition)
 	for _, d := range httpService.GetTools() {
@@ -427,14 +428,14 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 	compiledCallPolicies, err := tool.CompileCallPolicies(callPolicies)
 	if err != nil {
 		log.Error("Failed to compile call policies", "error", err)
-		return nil
+		return nil, nil
 	}
 
 	// Optimization: Parse baseURL once outside the loop to avoid redundant parsing for each call.
 	baseURL, err := url.Parse(address)
 	if err != nil {
 		log.Error("Failed to parse base URL", "address", address, "error", err)
-		return nil
+		return nil, nil
 	}
 
 	for _, callID := range sortedCallIDs {
@@ -860,14 +861,16 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				continue
 			}
 			resourceManager.AddResource(dynamicResource)
+			discoveredResources = append(discoveredResources, resourceDef)
 		} else {
 			// Static resource
 			staticRes := resource.NewStaticResource(resourceDef, serviceID)
 			resourceManager.AddResource(staticRes)
+			discoveredResources = append(discoveredResources, resourceDef)
 		}
 	}
 
-	return discoveredTools
+	return discoveredTools, discoveredResources
 }
 
 func (u *Upstream) createAndRegisterPrompts(_ context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.ManagerInterface, isReload bool) {
