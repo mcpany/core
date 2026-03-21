@@ -33,7 +33,7 @@ describe('JsonTree', () => {
 
   it('renders object keys and values', () => {
     const data = { foo: 'bar', num: 42 };
-    render(<JsonTree data={data} />);
+    render(<JsonTree data={data} defaultExpandedLevel={1} />);
     expect(screen.getByText(/"foo":/)).toBeInTheDocument();
     expect(screen.getByText(/"bar"/)).toBeInTheDocument();
     expect(screen.getByText(/"num":/)).toBeInTheDocument();
@@ -42,7 +42,7 @@ describe('JsonTree', () => {
 
   it('renders array elements', () => {
     const data = ['a', 'b'];
-    render(<JsonTree data={data} />);
+    render(<JsonTree data={data} defaultExpandedLevel={1} />);
     // Arrays don't show keys by default in my implementation (just values in order)
     expect(screen.getByText(/"a"/)).toBeInTheDocument();
     expect(screen.getByText(/"b"/)).toBeInTheDocument();
@@ -54,8 +54,8 @@ describe('JsonTree', () => {
     render(<JsonTree data={data} defaultExpandedLevel={0} />);
 
     // Should show root object structure collapsed
-    // The preview text containing "1 keys" should be visible
-    expect(screen.getByText(/1 keys/)).toBeInTheDocument();
+    // The preview text containing "nested" should be visible
+    expect(screen.getByText(/nested/)).toBeInTheDocument();
 
     // Value "value" should NOT be visible yet (it's inside nested object)
     expect(screen.queryByText(/"value"/)).not.toBeInTheDocument();
@@ -97,5 +97,20 @@ describe('JsonTree', () => {
       // Level 2 (string) is primitive, always visible if parent expanded.
 
       expect(screen.getByText(/"val"/)).toBeInTheDocument();
+  });
+
+  it('copies primitive value on click', () => {
+      render(<JsonTree data="copy me" />);
+      const copyButton = screen.getByTitle('Copy value');
+      fireEvent.click(copyButton);
+      expect(mockWriteText).toHaveBeenCalledWith("copy me");
+  });
+
+  it('copies object json on click', () => {
+      const data = { a: 1 };
+      render(<JsonTree data={data} />);
+      const copyButton = screen.getByTitle('Copy JSON');
+      fireEvent.click(copyButton);
+      expect(mockWriteText).toHaveBeenCalledWith(JSON.stringify(data, null, 2));
   });
 });
