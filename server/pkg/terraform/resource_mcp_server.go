@@ -106,7 +106,7 @@ func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) 
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequestWithContext(ctx, "POST", serverURL+"/api/v1/servers", bytes.NewBuffer(payload)) //nolint:noctx,gosec
+	req, err := http.NewRequestWithContext(ctx, "POST", serverURL+"/api/v1/servers", bytes.NewBuffer(payload)) //nolint:gosec
 	if err != nil {
 		return err
 	}
@@ -153,7 +153,7 @@ func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) 
 // Side Effects:
 //   - None.
 func Read(ctx context.Context, serverURL string, name string) (*ResourceMCPServer, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", serverURL+"/api/v1/servers/"+name, nil) //nolint:noctx,gosec
+	req, err := http.NewRequestWithContext(ctx, "GET", serverURL+"/api/v1/servers/"+name, nil) //nolint:gosec
 	if err != nil {
 		return nil, err
 	}
