@@ -49,7 +49,8 @@ With the identification of local network port exposure as a catastrophic vulnera
 
 ## 7. Evolutionary Changelog
 * **2026-05-13:** Initial Document Creation.
-* **Update: 2026-05-13 - Integrating eBPF Socket Monitoring**
-    **Context:** The move to port-free transport creates a visibility gap for traditional network monitoring tools.
-    **Architecture Adjustment:** Mandatory integration with the eBPF Socket Sentinel for all named-pipe connections.
-    **Security Impact:** Restores observability to inter-agent communication, enabling detection of unauthorized socket access.
+
+### Update: 2026-05-13 - Integrating eBPF Socket Monitoring
+**Context:** Today's market sync revealed the "Socket Invisibility" gap in agent swarms moving to port-free transport.
+**Architecture Adjustment:** * Mandatory integration with the eBPF Socket Sentinel for all named-pipe connections.
+**Security Impact:** Restores observability to inter-agent communication, enabling detection of unauthorized socket access.

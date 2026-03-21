@@ -662,3 +662,9 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Strategic Pivot**:
 - **Kernel-Resident Observability (eBPF)**: MCP Any will integrate eBPF-based tracing to monitor inter-agent communication on the kernel bus, ensuring that "Socket-less" swarms remain auditable and secure against pipe-siphoning.
 - **OS-Native Identity Enforcement**: We are pivoting from application-level tokens to kernel-verified identities using `SO_PEERCRED`. This binds agent capabilities directly to OS user accounts (UID/GID), making identity spoofing cryptographically hard to achieve for local swarms.
+
+## Strategic Evolution: [2026-05-13]
+**Context**: The move toward port-free transport (UNIX domain sockets) in agent swarms has created a "Socket Invisibility" gap in traditional observability stacks.
+**Strategic Pivot**:
+- **Kernel-Resident Observability (eBPF)**: MCP Any will integrate eBPF-based tracing to monitor inter-agent communication on the kernel bus, ensuring that "Socket-less" swarms remain auditable and secure against pipe-siphoning.
+- **OS-Native Identity Enforcement**: We are pivoting from application-level tokens to kernel-verified identities using `SO_PEERCRED`. This binds agent capabilities directly to OS user accounts (UID/GID), making identity spoofing cryptographically hard to achieve for local swarms.
