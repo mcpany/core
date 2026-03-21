@@ -321,6 +321,19 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 	}
 }
 
+// handleDebugDeleteTraces deletes the specified mock traces from memory.
+//
+// Summary: Deletes mock traces used for UI debugging.
+//
+// Returns:
+//   - (http.HandlerFunc): The HTTP handler function.
+//
+// Errors:
+//   - Returns 405 if the method is not DELETE.
+//   - Returns 400 if the request body cannot be parsed.
+//
+// Side Effects:
+//   - Mutates the server's seededTraces array.
 func (a *Application) handleDebugDeleteTraces() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodDelete {
