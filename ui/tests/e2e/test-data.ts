@@ -246,7 +246,21 @@ export const seedUser = async (requestContext: APIRequestContext | undefined, us
 };
 
 export const cleanupServices = async (requestContext?: APIRequestContext) => {
-    // No-op
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    try {
+        const res = await context.get('/api/v1/services', { headers: HEADERS });
+        if (res.ok()) {
+            const data = await res.json();
+            const services = Array.isArray(data) ? data : (data.services || []);
+            for (const svc of services) {
+                if (svc.name) {
+                    await context.delete(`/api/v1/services/${svc.name}`, { headers: HEADERS });
+                }
+            }
+        }
+    } catch (e) {
+        console.log(`cleanupServices failed: ${e}`);
+    }
 };
 
 export const cleanupUser = async (requestContext: APIRequestContext | undefined, username: string) => {
