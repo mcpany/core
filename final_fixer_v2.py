@@ -22,8 +22,7 @@ def super_fix(filepath):
         line = line.replace('—', '-').replace('–', '-').replace('\u201c', '"').replace('\u201d', '"').replace('\u2018', "'").replace('\u2019', "'")
 
         is_heading = line.strip().startswith('#')
-        # List item or blockquote or horizontal rule
-        is_block_start = line.strip().startswith('-') or line.strip().startswith('*') or re.match(r'^\d+\.', line.strip())
+        is_list = line.strip().startswith('-') or line.strip().startswith('*') or re.match(r'^\d+\.', line.strip())
 
         if is_heading:
             if processed and processed[-1].strip() != '':
@@ -31,14 +30,10 @@ def super_fix(filepath):
             processed.append(line)
             if i < len(content_lines) - 1 and content_lines[i+1].strip() != '':
                 processed.append('')
-        elif is_block_start:
-            # MD032: Lists should be surrounded by blank lines
-            # If previous was not a list item and not blank, add blank
-            prev_is_list = processed and (processed[-1].strip().startswith('-') or processed[-1].strip().startswith('*') or re.match(r'^\d+\.', processed[-1].strip()))
-            if processed and processed[-1].strip() != '' and not prev_is_list:
+        elif is_list:
+            if processed and processed[-1].strip() != '' and not (processed[-1].strip().startswith('-') or processed[-1].strip().startswith('*') or re.match(r'^\d+\.', processed[-1].strip())):
                 processed.append('')
             processed.append(line)
-            # If next is not a list item and not blank, add blank
             if i < len(content_lines) - 1:
                 next_line = content_lines[i+1].strip()
                 next_is_list = next_line.startswith('-') or next_line.startswith('*') or re.match(r'^\d+\.', next_line)
@@ -61,6 +56,8 @@ def super_fix(filepath):
 files = [
     'docs/02_strategic_vision.md',
     'docs/03_feature_inventory.md',
+    'docs/research/market-sync-2026-06-14.md',
+    'docs/features/design-hardware-locked-coordination-handshake.md',
     'docs/features/design-sci-interceptor.md',
     'server/roadmap.md',
     'ui/roadmap.md'

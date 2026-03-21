@@ -5,47 +5,51 @@ def super_fix(filepath):
     with open(filepath, 'r', encoding='utf-8') as f:
         lines = f.readlines()
 
-    license_header = [
-        "# Copyright 2026 Author(s) of MCP Any\n",
-        "# SPDX-License-Identifier: Apache-2.0\n"
-    ]
-
+    # Identify and strip existing license
     start_idx = 0
-    if len(lines) >= 2 and lines[0].startswith("# Copyright") and lines[1].startswith("# SPDX-License"):
-        start_idx = 2
+    while start_idx < len(lines):
+        line = lines[start_idx].strip()
+        if line.startswith("# Copyright") or line.startswith("# SPDX-License"):
+            start_idx += 1
+        elif line == "":
+            start_idx += 1
+        else:
+            break
 
     content_lines = lines[start_idx:]
+
     processed = []
+
+    def is_list_line(s):
+        s = s.strip()
+        return s.startswith('- ') or s.startswith('* ') or re.match(r'^\d+\. ', s)
+
+    def is_heading_line(s):
+        return s.strip().startswith('#')
 
     for i, line in enumerate(content_lines):
         line = line.rstrip()
         line = line.replace('—', '-').replace('–', '-').replace('\u201c', '"').replace('\u201d', '"').replace('\u2018', "'").replace('\u2019', "'")
 
-        is_heading = line.strip().startswith('#')
-        # List item or blockquote or horizontal rule
-        is_block_start = line.strip().startswith('-') or line.strip().startswith('*') or re.match(r'^\d+\.', line.strip())
-
-        if is_heading:
+        if is_heading_line(line):
             if processed and processed[-1].strip() != '':
                 processed.append('')
             processed.append(line)
             if i < len(content_lines) - 1 and content_lines[i+1].strip() != '':
                 processed.append('')
-        elif is_block_start:
-            # MD032: Lists should be surrounded by blank lines
-            # If previous was not a list item and not blank, add blank
-            prev_is_list = processed and (processed[-1].strip().startswith('-') or processed[-1].strip().startswith('*') or re.match(r'^\d+\.', processed[-1].strip()))
-            if processed and processed[-1].strip() != '' and not prev_is_list:
+            continue
+
+        if is_list_line(line):
+            if processed and processed[-1].strip() != '' and not is_list_line(processed[-1]):
                 processed.append('')
             processed.append(line)
-            # If next is not a list item and not blank, add blank
             if i < len(content_lines) - 1:
                 next_line = content_lines[i+1].strip()
-                next_is_list = next_line.startswith('-') or next_line.startswith('*') or re.match(r'^\d+\.', next_line)
-                if next_line != '' and not next_is_list:
+                if next_line != '' and not is_list_line(next_line):
                     processed.append('')
-        else:
-            processed.append(line)
+            continue
+
+        processed.append(line)
 
     final = []
     for line in processed:
@@ -53,14 +57,22 @@ def super_fix(filepath):
             continue
         final.append(line + '\n')
 
+    # Standard license block
+    license_block = [
+        "# Copyright 2026 Author(s) of MCP Any\n",
+        "# SPDX-License-Identifier: Apache-2.0\n",
+        "\n"
+    ]
+
     with open(filepath, 'w', encoding='utf-8') as f:
-        f.writelines(license_header)
-        f.write('\n')
+        f.writelines(license_block)
         f.writelines(final)
 
 files = [
     'docs/02_strategic_vision.md',
     'docs/03_feature_inventory.md',
+    'docs/research/market-sync-2026-06-14.md',
+    'docs/features/design-hardware-locked-coordination-handshake.md',
     'docs/features/design-sci-interceptor.md',
     'server/roadmap.md',
     'ui/roadmap.md'
@@ -68,4 +80,5 @@ files = [
 
 for f in files:
     if os.path.exists(f):
+        print(f"Super-fixing {f}...")
         super_fix(f)

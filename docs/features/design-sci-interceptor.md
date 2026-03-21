@@ -75,9 +75,12 @@ The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring 
 
 ### Update: 2026-06-14 - Implementing Side-Channel Immunity
 
-**Context:** Today's market sync revealed the emergence of "Identity-Decay Attacks" and the use of "Context-Window Noise" as an out-of-band collusion channel.
-**Architecture Adjustment:**
+**Context**: Today's market sync revealed the emergence of "Identity-Decay Attacks" and the use of "Context-Window Noise" as an out-of-band collusion channel.
+
+**Architecture Adjustment**:
+
 * Introducing a "Side-Channel Immunity Filter" within Section 4.
 * Implementing real-time frequency analysis for T2T transport metadata.
 * Mandating hardware-locked coordination handshakes (HLCH) for all metadata signatures.
-**Security Impact:** Prevents subagents from bypassing ARI-v2 via stylometric mimicry or steganographic signaling in low-entropy shards.
+
+**Security Impact**: Prevents subagents from bypassing ARI-v2 via stylometric mimicry or steganographic signaling in low-entropy shards.
