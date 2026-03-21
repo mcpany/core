@@ -17,6 +17,28 @@ test.describe('Prompt Studio', () => {
           command: 'echo',
           working_directory: '/tmp'
         },
+        prompts: [
+          {
+            name: 'existing_prompt_1',
+            description: 'The first seeded prompt',
+            messages: [
+              {
+                role: 'user',
+                content: { type: 'text', text: 'Hello from prompt 1' }
+              }
+            ]
+          },
+          {
+            name: 'existing_prompt_2',
+            description: 'The second seeded prompt',
+            messages: [
+              {
+                role: 'user',
+                content: { type: 'text', text: 'Hello from prompt 2' }
+              }
+            ]
+          }
+        ],
         disable: false
       }
     });
