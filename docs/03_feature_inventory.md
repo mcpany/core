@@ -1366,3 +1366,9 @@
 - [P0] **Cognitive Proof-of-Work (CPoW) Gateway**: Middleware for protecting reasoning compute budgets.
 - [P1] **Dynamic Context Reshuffling (DCR) Middleware**: Real-time attention-window optimizer for teammate coordination.
 - [P0] **Active Fragment Garbage Collection (AF-GC)**: Shard-lifecycle service to mitigate fragment-ghosting vulnerabilities.
+
+## Grooming Update: 2026-06-18
+- [P0] **Intent-Boundary Telemetry (IBT) Hub**: Real-time visibility and alerting for intent-shard traversals.
+- [P0] **Cognitive Proof-of-Work (CPoW) Gateway**: Middleware for protecting reasoning compute budgets.
+- [P1] **Dynamic Context Reshuffling (DCR) Middleware**: Real-time attention-window optimizer for teammate coordination.
+- [P0] **Active Fragment Garbage Collection (AF-GC)**: Shard-lifecycle service to mitigate fragment-ghosting vulnerabilities.

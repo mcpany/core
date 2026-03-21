@@ -597,3 +597,9 @@
 - [ ] **[P0] CPoW Attestation Widget**: (2026-06-18) Status indicator for hardware-attested computational proof for high-intensity requests.
 - [ ] **[P1] Context Reshuffling Timeline**: (2026-06-18) Visual tracker for DCR-driven context re-prioritization events.
 - [ ] **[P0] Fragment GC Activity Log**: (2026-06-18) Real-time log of AF-GC purged orphaned fragments and mission-root rotation events.
+
+### Upcoming: [2026-06-18]
+- [ ] **[P0] Intent-Boundary Telemetry Monitor**: (2026-06-18) Real-time visualization of inter-intent traversals and boundary smearing alerts.
+- [ ] **[P0] CPoW Attestation Widget**: (2026-06-18) Status indicator for hardware-attested computational proof for high-intensity requests.
+- [ ] **[P1] Context Reshuffling Timeline**: (2026-06-18) Visual tracker for DCR-driven context re-prioritization events.
+- [ ] **[P0] Fragment GC Activity Log**: (2026-06-18) Real-time log of AF-GC purged orphaned fragments and mission-root rotation events.
