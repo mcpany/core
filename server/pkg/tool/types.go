@@ -2117,13 +2117,13 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 							if err := checkForShellInjection(argStr, "", "", cmd, isShell(cmd)); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
-							} else {
-								// Sentinel Security Update: Enforce strict shell injection checks even if the command
-								// is not definitively identified as a shell, because args passed directly
-								// could be interpreted by a nested or indirectly invoked shell.
-								if err := checkUnquotedInjection(argStr, cmd, false); err != nil {
-									return nil, fmt.Errorf("args parameter injection blocked: %w", err)
-								}
+						} else {
+							// Sentinel Security Update: Enforce strict shell injection checks even if the command
+							// is not definitively identified as a shell, because args passed directly
+							// could be interpreted by a nested or indirectly invoked shell.
+							if err := checkUnquotedInjection(argStr, cmd, false); err != nil {
+								return nil, fmt.Errorf("args parameter injection blocked: %w", err)
+							}
 						}
 						args = append(args, argStr)
 					} else {
@@ -2492,13 +2492,13 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 							if err := checkForShellInjection(argStr, "", "", cmd, isShell(cmd)); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
-							} else {
-								// Sentinel Security Update: Enforce strict shell injection checks even if the command
-								// is not definitively identified as a shell, because args passed directly
-								// could be interpreted by a nested or indirectly invoked shell.
-								if err := checkUnquotedInjection(argStr, cmd, false); err != nil {
-									return nil, fmt.Errorf("args parameter injection blocked: %w", err)
-								}
+						} else {
+							// Sentinel Security Update: Enforce strict shell injection checks even if the command
+							// is not definitively identified as a shell, because args passed directly
+							// could be interpreted by a nested or indirectly invoked shell.
+							if err := checkUnquotedInjection(argStr, cmd, false); err != nil {
+								return nil, fmt.Errorf("args parameter injection blocked: %w", err)
+							}
 						}
 						args = append(args, argStr)
 					} else {
