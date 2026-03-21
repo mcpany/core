@@ -10,14 +10,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-05-13]
-### Focus: Kernel-Resident Observability & OS-Native Identity
-**Context**: The rapid pivot to \"Port-Free Transport\" (UNIX domain sockets) to eliminate local port exposure (GSA-2026-OPENCLAW-ROUTING) has created a \"Socket Invisibility\" gap. Traditional network monitoring cannot see inter-agent traffic on the kernel bus. Simultaneously, the Atlas Search Bar jailbreak proves that \"Agentic Browsers\" require hardware-isolated \"Kill Switches\" to prevent context exfiltration via hidden URLs.
-**Strategic Pivot**:
-- **Kernel-Resident Observability (eBPF)**: MCP Any will evolve to integrate eBPF-powered socket tracing. This ensures that even in isolated, port-free transport channels, every inter-agent request is logged and semantically audited in real-time within the kernel.
-- **OS-Native Identity Enforcement**: We are adopting the UID/GID-bound security model for all local listeners. By leveraging `SO_PEERCRED`, MCP Any will verify the OS-level identity of every connecting subagent, neutralizing \"Identity Squatting\" and token-theft attacks.
-- **Sovereign Browser Sandboxing**: To mitigate Browser-Mediated Prompt Injection (BMPI), we are mandating \"Discovery-Only\" browser sandboxes. These ephemeral environments will have no access to the primary agent's context or long-term memory, with hardware-enforced \"Kill Switches\" triggered by suspicious URL patterns.
-
 ## Strategic Evolution: [2026-05-12]
 ### Focus: Routing Isolation Sovereignty & Port-Free Transport
 **Context**: The GSA-2026-OPENCLAW-ROUTING advisory and the subsequent industry pivot confirm that local network port exposure is a critical vulnerability for multi-agent swarms. As coordination becomes parallel and distributed, inter-agent communication must move from the network stack to the kernel and filesystem for absolute isolation.
@@ -664,3 +656,9 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Universal Context Sidecar Hub**: MCP Any will evolve to act as the primary host for framework-agnostic Context Sidecars. By implementing a standardized "Context Bus," we will allow agents from disparate frameworks (OpenClaw, AutoGen) to share specialized state strategies (e.g., long-term memory, vector retrieval) securely.
 - **Hardware-Attested Boot Integrity**: We are moving from signed manifests to "Hardware-Locked Deterministic Boot." MCP Any will mandate that any project-local configuration be cryptographically bound to a Trusted Platform Module (TPM) or Secure Enclave, ensuring that cloned repositories cannot execute malicious hooks without explicit, hardware-bound user re-attestation.
 - **VTD-Powered Automation**: To break the "Approval Fatigue" bottleneck, we are accelerating the deployment of the Verifiable Task Delegation (VTD) layer, enabling autonomous A2A handoffs for verified low-risk operations.
+
+## Strategic Evolution: [2026-05-13]
+**Context**: The move toward port-free transport (UNIX domain sockets) in agent swarms has created a "Socket Invisibility" gap in traditional observability stacks.
+**Strategic Pivot**:
+- **Kernel-Resident Observability (eBPF)**: MCP Any will integrate eBPF-based tracing to monitor inter-agent communication on the kernel bus, ensuring that "Socket-less" swarms remain auditable and secure against pipe-siphoning.
+- **OS-Native Identity Enforcement**: We are pivoting from application-level tokens to kernel-verified identities using `SO_PEERCRED`. This binds agent capabilities directly to OS user accounts (UID/GID), making identity spoofing cryptographically hard to achieve for local swarms.
