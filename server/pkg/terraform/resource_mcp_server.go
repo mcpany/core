@@ -114,7 +114,7 @@ func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) 
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("failed to create server: status %d", resp.StatusCode)
 	}
@@ -160,7 +160,7 @@ func Read(ctx context.Context, serverURL string, name string) (*ResourceMCPServe
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode == http.StatusNotFound {
 		return nil, nil // not found
 	}
