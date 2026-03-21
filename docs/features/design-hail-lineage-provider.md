@@ -1,6 +1,5 @@
-<!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD013 MD024 MD032 MD030 MD007 MD004 MD022 MD031 MD040 -->
 # Design Doc: Hardware-Attested Intent Lineage (HAIL)
-
 **Status:** Draft
 **Created:** [2026-06-19]
 
@@ -49,18 +48,16 @@ The emergence of **Reasoning Path Shadowing** (stylometric mimicry) has exposed 
 ## 4. Design & Architecture
 
 * **System Flow:**
-
-```mermaid
-graph TD
-    A[Mission Root Token] --> B[SRM Provider]
-    B --> C{HAIL Token Minting}
-    C --> D[Hardware-Signed Fragment]
-    E[Subagent Reasoning Trace] --> F[Stylometric Hub]
-    F --> G[Signature Verification]
-    G -- Match --> H[Authenticated Instruction]
-    G -- Mismatch --> I[Lineage Alert / Block]
-
-```
+    ```mermaid
+    graph TD
+        A[Mission Root Token] --> B[SRM Provider]
+        B --> C{HAIL Token Minting}
+        C --> D[Hardware-Signed Fragment]
+        E[Subagent Reasoning Trace] --> F[Stylometric Hub]
+        F --> G[Signature Verification]
+        G -- Match --> H[Authenticated Instruction]
+        G -- Mismatch --> I[Lineage Alert / Block]
+    ```
 
 * **APIs / Interfaces:**
 

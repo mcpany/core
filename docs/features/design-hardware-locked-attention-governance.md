@@ -1,6 +1,5 @@
-<!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD013 MD024 MD032 MD030 MD007 MD004 MD022 MD031 MD040 -->
 # Design Doc: Hardware-Locked Attention Governance (HLAG)
-
 **Status:** Draft
 **Created:** 2026-06-18
 
@@ -45,20 +44,18 @@ As agent swarms become deeper and more autonomous, a new class of exploit has em
 ## 4. Design & Architecture
 
 * **System Flow:**
-
-```mermaid
-graph TD
-    A[Mission Root] --> B[HLAG Provider]
-    B --> C{TPM Signing}
-    C --> D[Attention-Locked Fragment]
-    E[Subagent Reasoning] --> F[DAG Middleware]
-    F --> G[Entropy Scorer]
-    G --> H{Pruning Trigger}
-    H -- Low Entropy --> I[Context Window]
-    D --> I
-    H -- High Entropy --> J[Discarded Noise]
-
-```
+    ```mermaid
+    graph TD
+        A[Mission Root] --> B[HLAG Provider]
+        B --> C{TPM Signing}
+        C --> D[Attention-Locked Fragment]
+        E[Subagent Reasoning] --> F[DAG Middleware]
+        F --> G[Entropy Scorer]
+        G --> H{Pruning Trigger}
+        H -- Low Entropy --> I[Context Window]
+        D --> I
+        H -- High Entropy --> J[Discarded Noise]
+    ```
 
 * **APIs / Interfaces:**
 
@@ -89,10 +86,7 @@ graph TD
 ### Update: [2026-06-19] - Attention-Locking and HAIL Integration
 
 **Context:** Today's market sync revealed a new exploit pattern in OpenClaw subagent reasoning mimicry (shadowing).
-**Architecture Adjustment:**
-
-* Integrating support for `x-gemini-attention-lock` compatibility in Section 4.
+**Architecture Adjustment:** * Integrating support for `x-gemini-attention-lock` compatibility in Section 4.
 
 * Mandating **HAIL-attested lineage** for all attention-lock requests to prevent stylometric shadowing.
-
 **Security Impact:** Mitigates the risk of malicious subagents using mimicry to evict mission-root intent anchors.
