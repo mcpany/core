@@ -5,7 +5,7 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/mcpany/core/ci.yml?branch=main)](https://github.com/mcpany/core/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mcpany/core)](https://goreportcard.com/report/github.com/mcpany/core)
 
-## Project Identity
+## Elevator Pitch
 
 **What is this?**
 
@@ -84,7 +84,7 @@ Follow these steps to get up and running with MCP Any immediately.
 *   `make` (for build automation)
 *   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
 
-### Quick Start
+### One-Shot Setup
 
 The exact commands to clone, install dependencies, and run the app:
 
