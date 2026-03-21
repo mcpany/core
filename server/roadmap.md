@@ -22,8 +22,8 @@
 
 #### Upcoming (2026-02-23 Evolution)
 
-* **[P0] Recursive Context Protocol**: Finalize header-based context
-  inheritance for swarms.
+* **[P0] Recursive Context Protocol**: Finalize header-based context inheritance
+  for swarms.
 
 * **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability
   tokens.
@@ -32,6 +32,7 @@
   sandboxes and local tools.
 
 * **[P1] Machine-Checkable Security Contracts**: Declarative tool safety models.
+
 * **[P0] Multi-Agent Session Management**: Session-aware middleware for agent
   coordination (Added: 2026-02-24).
 
@@ -40,15 +41,14 @@
 
 #### Upcoming (2026-02-25 Evolution)
 
-* **[P0] On-Demand Discovery Middleware (Lazy-MCP)**: Implements
-  similarity-based tool searching to prevent context pollution. (Added:
-  2026-02-25)
+* **[P0] On-Demand Discovery Middleware (Lazy-MCP)**: Implements similarity-
+  based tool searching to prevent context pollution. (Added: 2026-02-25)
 
 * **[P0] Supply Chain Integrity Guard**: Cryptographic provenance verification
   for MCP servers to prevent unauthorized tool injection. (Added: 2026-02-25)
 
-* **[P1] FastMCP Metadata Support**: Support for Pythonic FastMCP decorators
-  and native Gemini CLI slash command mapping. (Added: 2026-02-25)
+* **[P1] FastMCP Metadata Support**: Support for Pythonic FastMCP decorators and
+  native Gemini CLI slash command mapping. (Added: 2026-02-25)
 
 #### Upcoming (2026-02-26 Evolution)
 
@@ -63,8 +63,8 @@
 
 #### Upcoming (2026-02-28 Evolution)
 
-* **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost`
-  by default. Implement mandatory Attestation for remote exposure. (Added:
+* **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by
+  default. Implement mandatory Attestation for remote exposure. (Added:
   2026-02-28)
 
 * **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling
@@ -75,23 +75,23 @@
 
 #### Upcoming (2026-03-10 Evolution)
 
-* **[P0] Sandbox-as-a-Service for Config Hooks**: Natively managed,
-  ultra-lightweight execution environment for approved hooks found in
-  project-local settings. (Added: 2026-03-10)
+* **[P0] Sandbox-as-a-Service for Config Hooks**: Natively managed, ultra-
+  lightweight execution environment for approved hooks found in project-local
+  settings. (Added: 2026-03-10)
 
 * **[P0] Intent-Bound Context Isolation**: Cryptographic enforcement that
   prevents subagents from accessing state or tools outside their explicitly
   assigned "Intent-Scope." (Added: 2026-03-10)
 
-* **[P1] Project Configuration Drift Detection**: Background monitor that
-  alerts the user if a project-local configuration file is modified (e.g., via
-  `git pull`), requiring re-attestation of any hooks. (Added: 2026-03-10)
+* **[P1] Project Configuration Drift Detection**: Background monitor that alerts
+  the user if a project-local configuration file is modified (e.g., via `git
+  pull`), requiring re-attestation of any hooks. (Added: 2026-03-10)
 
 #### Upcoming (2026-03-09 Evolution)
 
-* **[P0] Project Configuration Security Guard**: Validating proxy for
-  project-local agent configs (e.g., `.claude/settings.json`) to prevent RCE.
-  (Added: 2026-03-09)
+* **[P0] Project Configuration Security Guard**: Validating proxy for project-
+  local agent configs (e.g., `.claude/settings.json`) to prevent RCE. (Added:
+  2026-03-09)
 
 * **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV
   Store to prevent cross-agent state injection. (Added: 2026-03-09)
@@ -117,17 +117,16 @@
 * **[P0] Verified Skill Registry**: Security-first marketplace/registry for
   agent skills requiring behavioral profiling. (Added: 2026-03-12)
 
-* **[P0] Mandatory MFA for Hooks**: Integration of HITL Middleware for
-  multi-factor attestation of executable configuration hooks. (Added:
-  2026-03-12)
+* **[P0] Mandatory MFA for Hooks**: Integration of HITL Middleware for multi-
+  factor attestation of executable configuration hooks. (Added: 2026-03-12)
 
 * **[P1] Offline-First Resilient Proxy**: Hardened gateway for complex proxy
   configurations and air-gapped environment support. (Added: 2026-03-12)
 
 #### Upcoming (2026-03-13 Evolution)
 
-* **[P0] Prompt Path Protection Middleware**: Real-time scanning of tool
-  outputs for "Indirect Prompt Injection" patterns. (Added: 2026-03-13)
+* **[P0] Prompt Path Protection Middleware**: Real-time scanning of tool outputs
+  for "Indirect Prompt Injection" patterns. (Added: 2026-03-13)
 
 * **[P0] OpenClaw ContextEngine Bridge**: Middleware to synchronize state with
   OpenClaw's pluggable context management. (Added: 2026-03-13 - Promoted to P0
@@ -138,9 +137,8 @@
 
 #### Upcoming (2026-03-14 Evolution)
 
-* **[P0] Same-Origin Policy (SOP) Enforcer**: Middleware to validate
-  browser-origin headers for local listeners (CVE-2026-25253). (Added:
-  2026-03-14)
+* **[P0] Same-Origin Policy (SOP) Enforcer**: Middleware to validate browser-
+  origin headers for local listeners (CVE-2026-25253). (Added: 2026-03-14)
 
 * **[P0] Semantic Boundary Detector**: Specialized scanner for Prompt Path
   Protection that analyzes multimodal metadata (SVG/CSS). (Added: 2026-03-14)
@@ -159,9 +157,8 @@
 * **[P0] Call-Graph Loop Monitor**: Middleware to detect and prevent recursive
   "M2M" tool loops and resource exhaustion. (Added: 2026-03-15)
 
-* **[P0] Signed Context Chain Protocol**: Cryptographic verification of
-  subagent lineage to prevent identity spoofing (CVE-2026-28190). (Added:
-  2026-03-15)
+* **[P0] Signed Context Chain Protocol**: Cryptographic verification of subagent
+  lineage to prevent identity spoofing (CVE-2026-28190). (Added: 2026-03-15)
 
 * **[P1] Universal Agent Bus (UAB) Adapter**: Native transport support for the
   UAB protocol for framework-neutral handoffs. (Added: 2026-03-15)
@@ -172,8 +169,8 @@
   `Origin` and `Sec-Fetch-Site` headers for all local listeners
   (CVE-2026-25253). (Added: 2026-03-16)
 
-* **[P0] Cross-Agent Loop Circuit Breaker**: Real-time monitoring of
-  inter-agent call graphs across framework boundaries. (Added: 2026-03-16)
+* **[P0] Cross-Agent Loop Circuit Breaker**: Real-time monitoring of inter-agent
+  call graphs across framework boundaries. (Added: 2026-03-16)
 
 * **[P1] Relational Identity Provider**: Service to map and verify agent
   identities across disparate frameworks for context continuity. (Added:
@@ -184,8 +181,8 @@
 
 #### Upcoming (2026-03-17 Evolution)
 
-* **[P0] Local-Loopback Rate Limiter**: Mandatory rate limiting and auditing
-  for all `127.0.0.1` / `::1` traffic to mitigate brute-force attacks. (Added:
+* **[P0] Local-Loopback Rate Limiter**: Mandatory rate limiting and auditing for
+  all `127.0.0.1` / `::1` traffic to mitigate brute-force attacks. (Added:
   2026-03-17)
 
 * **[P0] UAB Authenticated Task Delegation**: Core implementation of UAB v1.2
@@ -221,8 +218,8 @@
 * **[P0] Blackboard Integrity Validator**: Cryptographic validation of state
   lineage for Shared KV Store operations. (Added: 2026-03-20)
 
-* **[P1] UACO Bid Profiling Engine**: Behavioral monitoring for agent bidding
-  to prevent task-card shadowing. (Added: 2026-03-20)
+* **[P1] UACO Bid Profiling Engine**: Behavioral monitoring for agent bidding to
+  prevent task-card shadowing. (Added: 2026-03-20)
 
 * **[P1] Config Smuggling Scanner**: Metadata-aware scanner for project-local
   configuration files. (Added: 2026-03-20)
@@ -232,8 +229,8 @@
 * **[P0] Content-Addressable Config (CAC) Validator**: Core security service
   enforcing hash-based validation for all executable hooks. (Added: 2026-03-21)
 
-* **[P0] UACO v1.5 RCC Validator**: Implementation of Resource Capability
-  Claims to verify agent maturity during task bidding. (Added: 2026-03-21)
+* **[P0] UACO v1.5 RCC Validator**: Implementation of Resource Capability Claims
+  to verify agent maturity during task bidding. (Added: 2026-03-21)
 
 * **[P1] DNS/ICMP Exfiltration Monitor**: L4 telemetry middleware to detect and
   block non-HTTP exfiltration attempts. (Added: 2026-03-21)
@@ -241,10 +238,10 @@
 * **[P1] Hardware-Bound Trust Continuity**: TPM/Secure Enclave signatures to
   persist trust for verified headless agents. (Added: 2026-03-21)
 
-#### Upcoming (2026-03-17 Evolution) (v2)
+#### Upcoming (2026-03-17 Evolution) (ID 2)
 
-* **[P0] Inter-Agent Mailbox Guard (IAMG)**: Mandatory mediation for
-  teammate-to-teammate messaging with intent validation. (Added: 2026-03-17)
+* **[P0] Inter-Agent Mailbox Guard (IAMG)**: Mandatory mediation for teammate-
+  to-teammate messaging with intent validation. (Added: 2026-03-17)
 
 * **[P1] Verifiable RL Reward Provider**: Authoritative source for binary truth
   attestation to optimize RL reasoning loops. (Added: 2026-03-17)
@@ -254,8 +251,8 @@
 
 #### Upcoming (2026-03-22 Evolution)
 
-* **[P0] UACO Agentic SLA Middleware**: Enforcement of resource contracts
-  (token budget, reasoning time) during task delegation. (Added: 2026-03-22)
+* **[P0] UACO Agentic SLA Middleware**: Enforcement of resource contracts (token
+  budget, reasoning time) during task delegation. (Added: 2026-03-22)
 
 * **[P0] Ghost Shell Execution Mode**: Isolated profiling environment for
   behavioral analysis of un-attested hooks. (Added: 2026-03-22)
@@ -263,7 +260,7 @@
 * **[P1] Federated Policy Synchronizer**: Secure bus for synchronizing security
   guardrails across multiple MCP Any instances. (Added: 2026-03-22)
 
-#### Upcoming (2026-03-17 Evolution) (v3)
+#### Upcoming (2026-03-17 Evolution) (ID 3)
 
 * **[P0] Local-Loopback Rate Limiter**: Mandatory throttling for all loopback
   traffic to neutralize browser-based brute-force attacks. (Added: 2026-03-17)
@@ -280,9 +277,9 @@
 * **[P0] Multi-Signature Skill Attestation**: Security mechanism for dynamic
   skill grafting to prevent "Skill-Squatting." (Added: 2026-03-23)
 
-* **[P0] Binary State Handoff (BSH) Gateway**: High-performance binary
-  transport layer for agent state transfer. (Added: 2026-03-23 - Promoted to P0
-  on 2026-03-24)
+* **[P0] Binary State Handoff (BSH) Gateway**: High-performance binary transport
+  layer for agent state transfer. (Added: 2026-03-23 - Promoted to P0 on
+  2026-03-24)
 
 #### Upcoming (2026-03-24 Evolution)
 
@@ -300,14 +297,14 @@
 * **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary
   context handoffs. (Added: 2026-03-25)
 
-* **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for
-  sub-millisecond swarm handoffs. (Added: 2026-03-25)
+* **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-
+  millisecond swarm handoffs. (Added: 2026-03-25)
 
 * **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited
   Recursive Intent Delegation. (Added: 2026-03-25)
 
-* **[P1] Predictive Resource Locking**: Intent-aware concurrency control for
-  the Shared Blackboard. (Added: 2026-03-25)
+* **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the
+  Shared Blackboard. (Added: 2026-03-25)
 
 ## 2. Top 10 Recommended Features
 
@@ -316,99 +313,279 @@ Enterprise Readiness, Safety, and Developer Experience.
 
 | Rank | Feature Name | Why it matters | Difficulty |
 | :--- | :--- | :--- | :--- |
-| **P0** | **Policy Firewall** | Critical for "Zero Trust" security. | High |
-| **P0** | **HITL Middleware** | Prevents catastrophic agent actions. | High |
+
+| **P0** | **Policy Firewall** | Zero Trust security. | High |
+
+| **P0** | **HITL Middleware** | Prevents bad agent actions. | High |
+
 | **P1** | **Recursive Context** | Fixes subagent config pain. | Medium |
-| **P1** | **Shared KV Store** | Prevents multi-agent hallucinations. | Medium |
-| 1 | **Team Configuration Sync** | Secure config/secret sync. | Medium |
-| 2 | **Smart Error Recovery** | LLM self-healing for errors. | High |
-| 3 | **Service Health History** | Health history tracking. | Medium |
-| 4 | **Tool Execution Timeline** | Latency waterfall chart. | High |
-| 5 | **Canary Tool Deployment** | Gradual tool rollouts. | High |
-| 6 | **Compliance Reporting** | Auto-generate compliance reports. | Medium |
-| 7 | **Advanced Tiered Caching** | Multi-layer caching. | Medium |
+
+| **P1** | **Shared KV Store** | Prevents hallucinations. | Medium |
+
+| 1 | **Team Sync** | Sync configs/secrets securely. | Medium |
+
+| 2 | **Self-Healing** | LLM-based tool error recovery. | High |
+
+| 3 | **Health History** | Track health for uptime trends. | Medium |
+
+| 4 | **Timeline** | Latency debug waterfall chart. | High |
+
+| 3 | **Canary Tool Deployment** | ****Ops**: grad.. | High |  | |
+
+| 4 | **Compliance Reporting** | ****Enterprise*.. | Medium |  | |
+
+| 5 | **Advanced Tiered Caching** | ****Performance.. | Medium |  | |
+
+| 14 | **Partial Reloads** | ****Resilience*.. | High |  | |
+
+| 15 | **Filesystem Health Check** | ****Observabili.. | Low |  | |
+
+| 16 | **Safe Symlink Traversal** | ****Security**:.. | Medium |  | |
+
+| 17 | **Multi-Model Advisor** | ****Intelligenc.. | High |  | |
+
+| 18 | **MCP Server Aggregator/Proxy** | ****Architectur.. | High |  | |
+
+| 20 | **Configuration Migration Tool** | ****DevX**: A C.. | Low |  | |
+
+| 22 | **Dynamic Tool Pruning** | ****Performance.. | High |  | |
+
+| 23 | **Config Schema Migration** | ****Maintenance.. | Medium |  | |
+
+| 26 | **Linter Git Hook** | ****DevX**: Pro.. | Low |  | |
+
+| 27 | **Secret Rotation Helper** | ****Ops**: A CL.. | Medium |  | |
+
+| 28 | **Structured Logging for Config Errors** | ****DevX**: Out.. | Low |   |
+
+| 33 | **Interactive Config Validator** | ****DevX**: A C.. | Medium |  | |
+
+| 34 | **Secret Validation Pre-flight** | ****Security**:.. | Low |  | |
+
+| 29 | **Automatic Config Fixer** | ****DevX**: An .. | Medium |  | |
+
+| 30 | **Windows Filesystem Locking Fix** | ****Compatibili.. | Medium |  | |
+
+| 32 | **Interactive Config Generator** | ****DevX**: `mc.. | Low |  | |
+
+| 34 | **Configuration Diffing API** | ****Observabili.. | Medium |  | |
+
+| 35 | **Automatic WebSocket Reconnection Strategy** | ****Resilience*.. | Me |
+
+| 36 | **WebSocket Message Inspector** | ****Debugging**.. | Medium |  | |
+
+| 37 | **Config Diffing UI** | **UX**: A visua.. | Medium |  | |
+
+| 39 | **Config Snapshot/Restore** | ****Ops**: Abil.. | Medium |  | |
+
+| 40 | **Config Inheritance** | ****DevX**: Allow `config...** | High | |
+
+| 43 | **Doctor Auto-Fix** | ****DevX**: All.. | High |  | |
+
+| 44 | **Doctor Web Report** | ****DevX**: Gen.. | Low |  | |
+
+| 45 | **Upstream Latency Metrics** | ****Observabili.. | Low |  | |
+
+| 47 | **Interactive Doctor** | ****UX**: A TUI.. | Medium |  | |
+
+| 48 | **Doctor Integration with Telemetry** | ****Observabili.. | Low |  | |
+
+| 41 | **Hard Failure Mode** | ****Resilience*.. | Low |  | |
+
+| 41 | **Tool Name Fuzzy Matching** | ****UX**: Impro.. | Low |  | |
+
+| 42 | **Config Strict Mode** | ****Ops**: Add .. | Low |  | |
+
+| 43 | **Context-Aware Suggestions** | ****UX**: Refin.. | Medium |  | |
+
+| 43 | **Config Schema Visualization** | ****UX**: A UI .. | Low |  | |
+
+| 44 | **Validator Plugin System** | ****Extensibili.. | High |  | |
+
+| 44 | **Config Version History** | ****Ops**: Keep.. | High |  | |
+
+| 43 | **Stdio Error Channel** | ****DevX**: A d.. | Medium |  | |
+
+| 44 | **Log Redaction Rules** | ****Security**:.. | Medium |  | |
+
+| 45 | **Remote Schema Validation** | ****Feature**: .. | Medium |  | |
+
+| 46 | **Schema Validation Caching** | ****Performance.. | Low |  | |
+
+| 46 | **Health Webhooks** | ****Ops**: Conf.. | Medium |  | |
+
+| 47 | **Config Validation Dry Run** | ****DevX**: All.. | Medium |  | |
+
+| 47 | **Metrics Persistence** | ****Observabili.. | High |  | |
+
+| 50 | **Duplicate Tool Detection** | ****Safety**: D.. | Low |  | |
+
+| 51 | **Tool Execution Simulation** | ****DevX**: A U.. | Medium |  | |
+
+| 62 | **Config Validation Diff** | ****Experience*.. | High |  | |
+
+| 64 | **Service Retry Policy** | ****Resilience*.. | Medium |  | |
+
+| 65 | **Config Reload Status API** | ****DevX**: Exp.. | Low |  | |
+
+| 66 | **Dynamic Profile Switching** | ****UX**: Allow.. | Medium |  | |
+
+| 67 | **Config Schema Versioning** | ****Maintenance.. | High |  | |
+
+| 68 | **Connection Draining** | ****Availabilit.. | Medium |  | |
+
+| 69 | **Secure Defaults Enforcer** | ****Security**:.. | Medium |  | |
+
+| 70 | **Interactive Doctor Fixer** | ****DevX**: Ext.. | High |  | |
+
+| 71 | **Config Validation Webhook** | ****Ops**: A pr.. | Medium |  | |
+
+| 70 | **Tool Activity Feed** | ****UX**: A ded.. | Medium |  | |
+
+| 70 | **User Preference Storage** | ****UX/Backend*.. | Low |  | |
+
+| 71 | **Top Tools API Extensions** | ****Observabili.. | Medium |  | |
+
+| 72 | **Config Hot-Reload Validation** | ****Resilience*.. | High |  | |
+
+| 76 | **Config Auto-Format API** | ****DevX**: API.. | Low |  | |
+
+| 77 | **Service Dependency Alerts** | ****Ops**: Aler.. | Medium |  | |
+
+| 78 | **Tool Execution Timeout Configuration** | ****Resilience*.. | Medium  |
+
+| 79 | **Secret Versioning Support** | ****Security**:.. | Medium |  | |
+
+| 73 | **Docker Secret Native Support** | ****Ops**: Nati.. | Medium |  | |
+
+| 75 | **Health Check Flap Damping** | ****Resilience*.. | Medium |  | |
+
+| 74 | **Environment Variable Wizard** | ****DevX**: A U.. | Low |  | |
+
+| 75 | **Global Redaction Policy** | ****Security**:.. | Medium |  | |
+
+| 74 | **Tool Search & Filter API** | ****UX/DevX**: .. | Low |  | |
+
+| 75 | **Tool Execution Trace ID** | ****Observabili.. | Medium |  | |
+
+| 76 | **Auto-Discovery Status API** | ****Observabili.. | Low |  | |
+
+| 77 | **Configurable Discovery Providers** | ****Configurati.. | Medium |  | |
+
+| 76 | **Config Schema Validation with Line Numbers** | ****DevX**: Ext.. | M |
+| 77 | **YAML AST Caching** | ****Performance.. | Low |  | |
+
+| 78 | **Strict Config Validation on Reload** | ****Resilience*.. | High |  | |
+
+| 79 | **Conflict-Free Port Allocation** | ****DevX**: Add.. | Low |  | |
+
+| 80 | **Secret Format Validation for Known Services** | ****Security**:.. |  |
+
+| 81 | **Interactive Env Var Fixer** | ****DevX**: A C.. | Medium |  | |
+
+| 78 | **Upstream Connectivity Debugger** | ****DevX**: CLI.. | Medium |  | |
+
+| 79 | **Configuration Template Generator** | ****DevX**: CLI.. | Low |  | |
 
 ## 1. Completed Features
 
 * **Interactive Doctor Resilience**
+
   * **Description**: Enhanced `doctor` command to gracefully handle missing
     environment variables in configuration files, allowing it to report specific
     missing variables and proceed with other checks instead of aborting.
 
 * **Pre-flight Command Validation**
+
   * **Description**: Validates that the executable exists for command-based
     services before attempting to run it, providing a clear error message if
     it's missing.
 
 * **Actionable Configuration Errors**
+
   * **Description**: Improved configuration loading and validation to provide
     "Actionable Errors" with specific "Fix" suggestions for common issues like
     missing environment variables, missing files, and invalid paths.
 
 * **Environment Variable Fuzzy Matching**
+
   * **Description**: Enhances "Actionable Errors" by suggesting similar
     environment variables when a configured variable is missing, helping users
     catch typos (e.g., "Did you mean 'API_KEY'?").
 
 * **RegEx Environment Variable Validation**
+
   * **Description**: Validating the format of environment variables using regex
     (e.g., ensuring an API key matches a pattern) in addition to existence
     checks.
 
 * **Async Tool Loading**
+
   * **Description**: Ensure server waits for initial roots/tools to be loaded
     before accepting requests to prevent race conditions on startup.
 
 * **Preset Service Gallery**
+
   * **Description**: A curated list of popular services (like `wttr.in`,
     `sqlite`, etc.) that can be added via CLI or UI. Implemented via example
     configurations in `server/examples/popular_services`.
 
 * **HTTP Upstream Env Validation**
+
   * **Description**: Extend required environment variable validation to HTTP
     connections (e.g. for `http_address` or auth headers).
 
 * **Tool Poisoning Mitigation**
-  * **Description**: Integrity checks for tool definitions to prevent "Rug
-    Pull" attacks. Implemented via SHA256 hashing of tool definitions.
+
+  * **Description**: Integrity checks for tool definitions to prevent "Rug Pull"
+    attacks. Implemented via SHA256 hashing of tool definitions.
 
 * **Local LLM "One-Click" Connect**
+
   * **Description**: Auto-detection and template-based connection to local
     inference servers. Supports Ollama via `/api/tags` discovery.
 
 * **Tool "Dry Run" Mode**
+
   * **Description**: Allows tools to validate inputs and return a preview of
     side effects without executing them. Supported in the common tool execution
     lifecycle.
 
 * **Smart Retry Policies**
+
   * **Description**: Configurable exponential backoff and jitter for upstream
     connections, integrated with circuit breakers.
 
 * **Service Dependency Graph**
+
   * **Description**: Visual topology of the MCP ecosystem, visualizing clients,
     services, tools, and their relationships with real-time metrics.
 
 * **Runtime Health Visibility**
+
   * **Description**: Exposed real-time service health status (`last_error`) and
     tool counts in the API, enabling the UI to show error badges for failing
     upstreams instantly.
 
 * **Port Conflict Hints**
+
   * **Description**: Detects "Address already in use" errors during server
     startup and suggests using `--json-rpc-port` or `--grpc-port` flags to
     resolve the conflict.
 
 * **Whitespace URL Validation**
+
   * **Description**: Detects and warns about hidden whitespace in URL
     configurations (HTTP, WebSocket, OpenAPI, etc.) which often occurs when
     copying from external sources, providing actionable fixes.
 
 * **gRPC Health Checks**
+
   * **Description**: Implements `CheckHealth` for gRPC upstreams using the
     standard gRPC Health Checking Protocol to detect service availability.
 
 * **Context Optimizer Middleware**
+
   * **Description**: Automatically truncates large text outputs in JSON
     responses to prevent "Context Bloat" and reduce token usage.
 
@@ -423,7 +600,6 @@ Enterprise Readiness, Safety, and Developer Experience.
 1. **UI Component Duplication**: Some UI components in `ui/src/components` seem
 to have overlapping responsibilities (e.g., multiple "detail" views). A UI
 component audit is recommended.
-
 2. **Test Coverage gaps**: While core logic is tested, cloud providers (S3/GCS)
 and some new UI features lack comprehensive integration tests.
 
@@ -432,8 +608,8 @@ and some new UI features lack comprehensive integration tests.
 * **Core Middleware Pipeline**: The middleware architecture is robust and
   extensible.
 
-* **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates
-  protocol details from business logic.
+* **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol
+  details from business logic.
 
 * **Documentation**: The project has excellent documentation coverage for most
   features.
@@ -449,8 +625,8 @@ and some new UI features lack comprehensive integration tests.
 * **[P0] UAB Authenticated Task Delegation**: Implementation of UAB v1.2 task
   card verification for cross-framework handoffs. (Added: 2026-03-18)
 
-* **[P1] Lineage-Aware Context Signing**: Cryptographic context chain signing
-  to prevent subagent identity spoofing. (Added: 2026-03-18)
+* **[P1] Lineage-Aware Context Signing**: Cryptographic context chain signing to
+  prevent subagent identity spoofing. (Added: 2026-03-18)
 
 #### Upcoming (2026-03-26 Evolution)
 
@@ -518,18 +694,17 @@ and some new UI features lack comprehensive integration tests.
   recursive symlink resolution and inode validation for all project-local
   configurations. (Added: 2026-03-31)
 
-* **[P0] Parallel Intent Branch Manager**: Implementation of
-  "Snapshot-and-Merge" logic for parallel agent branches. (Added: 2026-03-31)
+* **[P0] Parallel Intent Branch Manager**: Implementation of "Snapshot-and-
+  Merge" logic for parallel agent branches. (Added: 2026-03-31)
 
-* **[P1] Federated Discovery Quorum (FDQ) Node**: Peer-to-peer discovery
-  service requiring multi-node attestation for new tool beacons. (Added:
-  2026-03-31)
+* **[P1] Federated Discovery Quorum (FDQ) Node**: Peer-to-peer discovery service
+  requiring multi-node attestation for new tool beacons. (Added: 2026-03-31)
 
 #### Upcoming (2026-03-30 Evolution)
 
-* **[P0] UACO v2.1 IPSC Middleware**: Implementation of Intent-Preserving
-  Self-Correction to prevent recursive "Cognitive Lock" refinement loops.
-  (Added: 2026-03-30)
+* **[P0] UACO v2.1 IPSC Middleware**: Implementation of Intent-Preserving Self-
+  Correction to prevent recursive "Cognitive Lock" refinement loops. (Added:
+  2026-03-30)
 
 * **[P0] Continuous BSH Integrity Monitor**: Real-time WASM-based integrity
   checks for Binary State Handoffs to detect "Ghost Fragment" mutations. (Added:
@@ -549,8 +724,8 @@ and some new UI features lack comprehensive integration tests.
 * **[P0] Path Normalization Engine (NaaS)**: Centralized OS-agnostic path
   normalization service. (Added: 2026-04-01)
 
-* **[P1] Optimistic Capability Loading**: Predictive tool registry for
-  Gemini-style optimistic loading. (Added: 2026-04-01)
+* **[P1] Optimistic Capability Loading**: Predictive tool registry for Gemini-
+  style optimistic loading. (Added: 2026-04-01)
 
 #### Upcoming (2026-04-02 Evolution)
 
@@ -560,11 +735,11 @@ and some new UI features lack comprehensive integration tests.
 * **[P0] Inode-Pinning Middleware**: Hardware-bound file handle protection for
   project-local configurations. (Added: 2026-04-02)
 
-* **[P0] Branch-Purity Blackboard Validator**: Integrity layer for the Shared
-  KV Store to prevent cross-branch state contamination. (Added: 2026-04-02)
+* **[P0] Branch-Purity Blackboard Validator**: Integrity layer for the Shared KV
+  Store to prevent cross-branch state contamination. (Added: 2026-04-02)
 
-* **[P1] Consensus Delegation Gateway**: Implementation of "Delegated
-  Authority" models for time-critical agent authorization. (Added: 2026-04-02)
+* **[P1] Consensus Delegation Gateway**: Implementation of "Delegated Authority"
+  models for time-critical agent authorization. (Added: 2026-04-02)
 
 #### Upcoming (2026-04-03 Evolution)
 
@@ -582,8 +757,8 @@ and some new UI features lack comprehensive integration tests.
 
 #### Upcoming (2026-04-04 Evolution)
 
-* **[P0] DCA Negotiation Guard**: Hardware-accelerated (HAN) broker for
-  subagent bidding to mitigate "Negotiation Exhaustion." (Added: 2026-04-04)
+* **[P0] DCA Negotiation Guard**: Hardware-accelerated (HAN) broker for subagent
+  bidding to mitigate "Negotiation Exhaustion." (Added: 2026-04-04)
 
 * **[P0] Metadata Provenance Engine**: Verification service for structural
   metadata lineage using cryptographic signing. (Added: 2026-04-04)
@@ -591,14 +766,13 @@ and some new UI features lack comprehensive integration tests.
 * **[P0] Tool Metadata Sanitizer**: Security middleware for detecting "Context
   Poisoning" in tool schemas (CVE-2026-42001). (Added: 2026-04-04)
 
-* **[P1] Unified Lifecycle Bridge**: Standardized commit/rollback middleware
-  for cross-framework lifecycle synchronization. (Added: 2026-04-04)
+* **[P1] Unified Lifecycle Bridge**: Standardized commit/rollback middleware for
+  cross-framework lifecycle synchronization. (Added: 2026-04-04)
 
 #### Upcoming (2026-04-05 Evolution)
 
-* **[P0] Attested Discovery Authority**: Cryptographic identity broker for
-  local MCP servers to satisfy Claude Code's "Trust Verification." (Added:
-  2026-04-05)
+* **[P0] Attested Discovery Authority**: Cryptographic identity broker for local
+  MCP servers to satisfy Claude Code's "Trust Verification." (Added: 2026-04-05)
 
 * **[P0] Optimistic Execution Gate**: Speculative context loading for tools,
   synchronized with background discovery quorums. (Added: 2026-04-05)
@@ -609,8 +783,8 @@ and some new UI features lack comprehensive integration tests.
 
 #### Upcoming (2026-04-06 Evolution)
 
-* **[P0] Structural Metadata Sanitizer**: Middleware to detect and block
-  context poisoning instructions in tool schemas. (Added: 2026-04-06)
+* **[P0] Structural Metadata Sanitizer**: Middleware to detect and block context
+  poisoning instructions in tool schemas. (Added: 2026-04-06)
 
 * **[P0] Hardware-Linked Inode Pinning**: Native filesystem security layer to
   prevent TOCTOU symlink races in project configs. (Added: 2026-04-06)
@@ -620,9 +794,9 @@ and some new UI features lack comprehensive integration tests.
 
 #### Upcoming (2026-04-08 Evolution)
 
-* **[P0] Pre-Flight Sandbox Validator**: Core security service for
-  environment-manifest generation and config-injection defense (CVE-2026-25725).
-  (Added: 2026-04-08)
+* **[P0] Pre-Flight Sandbox Validator**: Core security service for environment-
+  manifest generation and config-injection defense (CVE-2026-25725). (Added:
+  2026-04-08)
 
 * **[P0] Origin-Locked Session Bridge**: Hardened session manager binding agent
   tokens to cryptographically verified browser/CLI origins. (Added: 2026-04-08)
@@ -632,11 +806,11 @@ and some new UI features lack comprehensive integration tests.
 
 #### Upcoming (2026-04-11 Evolution)
 
-* **[P0] A2A Interoperability Layer**: Native messaging hub for the A2A
-  protocol to secure agent-to-agent delegation. (Added: 2026-04-11)
+* **[P0] A2A Interoperability Layer**: Native messaging hub for the A2A protocol
+  to secure agent-to-agent delegation. (Added: 2026-04-11)
 
-* **[P0] Deterministic Environment Attestation**: Full-state manifest service
-  to prevent configuration-based RCE and exfiltration. (Added: 2026-04-11)
+* **[P0] Deterministic Environment Attestation**: Full-state manifest service to
+  prevent configuration-based RCE and exfiltration. (Added: 2026-04-11)
 
 * **[P1] Structured Context Propagation**: Implementation of trace-linked
   security context for distributed agent swarms. (Added: 2026-04-11)
@@ -647,9 +821,9 @@ and some new UI features lack comprehensive integration tests.
   messaging implementation with integrated Zero-Trust policy enforcement.
   (Added: 2026-04-12)
 
-* **[P0] Settings Injection Guard**: Active interception layer for
-  project-local agent configurations to neutralize "Rug Pull" exfiltration
-  attacks. (Added: 2026-04-12)
+* **[P0] Settings Injection Guard**: Active interception layer for project-local
+  agent configurations to neutralize "Rug Pull" exfiltration attacks. (Added:
+  2026-04-12)
 
 * **[P0] Non-Existence Proof Generator**: Extension for the Deterministic
   Attestation Gateway to sign "Missing File" proofs (CVE-2026-25725). (Added:
@@ -670,9 +844,9 @@ and some new UI features lack comprehensive integration tests.
 
 #### Upcoming (2026-04-09 Evolution)
 
-* **[P0] Pre-Flight Sandbox Validator**: Core security service for
-  environment-manifest generation and config-injection defense (CVE-2026-25725).
-  (Added: 2026-04-09)
+* **[P0] Pre-Flight Sandbox Validator**: Core security service for environment-
+  manifest generation and config-injection defense (CVE-2026-25725). (Added:
+  2026-04-09)
 
 * **[P0] Origin-Locked Session Bridge**: Hardened session manager binding agent
   tokens to cryptographically verified browser/CLI origins. (Added: 2026-04-09)
@@ -698,8 +872,8 @@ and some new UI features lack comprehensive integration tests.
   evaluating A2A task proposals and generating "Safety Proofs." (Added:
   2026-04-14)
 
-* **[P0] TPM-Bound Configuration Boot**: Extension of the attestation gateway
-  to require hardware signatures for project-local hooks. (Added: 2026-04-14)
+* **[P0] TPM-Bound Configuration Boot**: Extension of the attestation gateway to
+  require hardware signatures for project-local hooks. (Added: 2026-04-14)
 
 * **[P1] Context Sidecar Adapter**: Middleware to synchronize state with
   external frameworks (e.g., OpenClaw ContextEngine) via native APIs. (Added:
@@ -714,20 +888,19 @@ and some new UI features lack comprehensive integration tests.
 * **[P1] CLAW-10 Compliance Mapper**: Automation layer for mapping system state
   to the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)
 
-* **[P0] Deterministic Boot Manifest Provider**: Core service for generating
-  and signing environment integrity manifests. (Added: 2026-04-13)
+* **[P0] Deterministic Boot Manifest Provider**: Core service for generating and
+  signing environment integrity manifests. (Added: 2026-04-13)
 
 #### Upcoming (2026-04-17 Evolution)
 
-* **[P0] Reactive Intent Arbitration Hub**: Advanced RIG extension for
-  recursive deconstruction and validation of expansion requests. (Added:
-  2026-04-17)
+* **[P0] Reactive Intent Arbitration Hub**: Advanced RIG extension for recursive
+  deconstruction and validation of expansion requests. (Added: 2026-04-17)
 
 * **[P0] Resident Integrity Monitor (RIM)**: Hardware-bound service for
   continuous sandbox persistence proofs (Promoted to P0 on 2026-04-17).
 
-* **[P1] LFTA Trust Lease Manager**: Security middleware for managing
-  low-frequency trust attestation leases in deep swarms. (Added: 2026-04-17)
+* **[P1] LFTA Trust Lease Manager**: Security middleware for managing low-
+  frequency trust attestation leases in deep swarms. (Added: 2026-04-17)
 
 * **[P0] Swarm Consensus Alignment Broker**: Authority for periodic state
   reconciliation to prevent swarm consensus drift. (Added: 2026-04-17)
@@ -737,8 +910,8 @@ and some new UI features lack comprehensive integration tests.
 * **[P0] Continuous Sandbox Policy Verifier**: Real-time validation of sandbox
   boundaries against resident security policy. (Added: 2026-04-18)
 
-* **[P0] LFTA Trust Lease Manager**: Scalable trust-lease management for
-  high-frequency agent tool calls (Promoted to P0 on 2026-04-18).
+* **[P0] LFTA Trust Lease Manager**: Scalable trust-lease management for high-
+  frequency agent tool calls (Promoted to P0 on 2026-04-18).
 
 * **[P1] Foundation Governance Adapter**: Bridge for the OpenClaw Foundation's
   neutral governance and transparency protocols. (Added: 2026-04-18)
@@ -752,9 +925,9 @@ and some new UI features lack comprehensive integration tests.
   "Boundary Expansion" requests, preventing Intent Smuggling. (Added:
   2026-04-16)
 
-* **[P0] Resident Integrity Monitor (RIM)**: Service for continuous,
-  hardware-bound sandbox attestation to detect post-boot environment drift.
-  (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)
+* **[P0] Resident Integrity Monitor (RIM)**: Service for continuous, hardware-
+  bound sandbox attestation to detect post-boot environment drift. (Added:
+  2026-04-16 - Promoted to P0 on 2026-04-17)
 
 * **[P0] Self-Healing Consensus Hub**: Autoritative "Truth Broker" for swarm
   self-correction, leveraging MAQ for state reconciliation. (Added: 2026-04-16)
@@ -768,14 +941,13 @@ and some new UI features lack comprehensive integration tests.
   Manifest" service to prevent config-injection (CVE-2026-25725). (Added:
   2026-04-21)
 
-* **[P1] WebSocket Context Compactor**: Native context-compaction middleware
-  for WebSocket-first streaming (OpenClaw v2026.3.1 compliance). (Added:
-  2026-04-21)
+* **[P1] WebSocket Context Compactor**: Native context-compaction middleware for
+  WebSocket-first streaming (OpenClaw v2026.3.1 compliance). (Added: 2026-04-21)
 
 #### Upcoming (2026-04-20 Evolution)
 
-* **[P0] ASH Consensus Broker**: Decentralized coordination service for
-  swarm-wide state re-alignment and voting. (Added: 2026-04-20)
+* **[P0] ASH Consensus Broker**: Decentralized coordination service for swarm-
+  wide state re-alignment and voting. (Added: 2026-04-20)
 
 * **[P0] A2A Safety Proof Validator**: Mandatory validation layer for task
   proposals to prevent inter-agent coercion. (Added: 2026-04-20)
@@ -805,8 +977,8 @@ and some new UI features lack comprehensive integration tests.
   environment integrity to local TPM/Secure Enclave signatures. (Added:
   2026-04-15)
 
-* **[P0] VTD Autonomous Delegation Engine**: Implementation of automated,
-  proof-based A2A task handoffs for low-risk operations. (Added: 2026-04-15)
+* **[P0] VTD Autonomous Delegation Engine**: Implementation of automated, proof-
+  based A2A task handoffs for low-risk operations. (Added: 2026-04-15)
 
 * **[P1] Standardized Context Sidecar Interface**: Universal "Context Bus" for
   bridging framework-specific state strategies (OpenClaw, etc.). (Added:
@@ -814,30 +986,28 @@ and some new UI features lack comprehensive integration tests.
 
 #### Upcoming (2026-04-23 Evolution)
 
-* **[P0] OpenClaw ContextEngine Adapter**: Implementation of lifecycle hooks
-  for external context management (Added: 2026-04-23).
+* **[P0] OpenClaw ContextEngine Adapter**: Implementation of lifecycle hooks for
+  external context management (Added: 2026-04-23).
 
 * **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight
   Validator to sign missing-file proofs (Added: 2026-04-23).
 
-* **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed
-  agent-generated UI fragments (Added: 2026-04-23).
+* **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-
+  generated UI fragments (Added: 2026-04-23).
 
 #### Upcoming (2026-05-02 Evolution)
 
-* **[P0] Risk-Adaptive CQ Controller**: Dynamic policy engine for scaling
-  quorum thresholds based on tool risk and reasoning confidence. (Added:
-  2026-05-02)
+* **[P0] Risk-Adaptive CQ Controller**: Dynamic policy engine for scaling quorum
+  thresholds based on tool risk and reasoning confidence. (Added: 2026-05-02)
 
-* **[P1] Reasoning-Responsive Rate Limiter (RRRL)**: Middleware to throttle
-  tool execution based on real-time reasoning confidence scores. (Added:
-  2026-05-02)
+* **[P1] Reasoning-Responsive Rate Limiter (RRRL)**: Middleware to throttle tool
+  execution based on real-time reasoning confidence scores. (Added: 2026-05-02)
 
 * **[P1] Inter-Swarm Deadlock Detector**: UACO monitoring service for detecting
   and breaking circular attestation dependencies. (Added: 2026-05-02)
 
-* **[P0] Deterministic Recovery Bridge (DSR)**: Standardized mapping of
-  subagent exit codes to automated PLSS rollbacks. (Added: 2026-05-02)
+* **[P0] Deterministic Recovery Bridge (DSR)**: Standardized mapping of subagent
+  exit codes to automated PLSS rollbacks. (Added: 2026-05-02)
 
 #### Upcoming (2026-05-07 Evolution)
 
@@ -889,8 +1059,8 @@ and some new UI features lack comprehensive integration tests.
 
 #### Upcoming (2026-05-03 Evolution)
 
-* **[P0] Deadlock-Resilient CQ Controller**: Advanced cycle-detection and
-  wait-graph analysis for the CQ Hub. (Added: 2026-05-03)
+* **[P0] Deadlock-Resilient CQ Controller**: Advanced cycle-detection and wait-
+  graph analysis for the CQ Hub. (Added: 2026-05-03)
 
 * **[P0] Hierarchical Intent Lease (HIL) Broker**: Task-bound, hierarchical
   capability management based on UACO v3.2. (Added: 2026-05-03)
@@ -912,8 +1082,8 @@ and some new UI features lack comprehensive integration tests.
 
 #### Upcoming (2026-04-30 Evolution)
 
-* **[P0] Mesh-Aware Blackboard Adaptor**: Graph-based intent mesh for
-  multi-agent swarm reconciliation. (Added: 2026-04-30)
+* **[P0] Mesh-Aware Blackboard Adaptor**: Graph-based intent mesh for multi-
+  agent swarm reconciliation. (Added: 2026-04-30)
 
 * **[P0] Kernel-Level Inode Pinning (KLIP)**: Hardware-bound file handle
   protection against SIR (Symlink-to-Inode Racing) exploits. (Added: 2026-04-30)
@@ -938,8 +1108,8 @@ and some new UI features lack comprehensive integration tests.
 
 #### Upcoming (2026-04-28 Evolution)
 
-* **[P0] Ephemeral Privilege Manager (EPM)**: Core security service managing
-  JIT privilege escalation and task-bound leases. (Added: 2026-04-28)
+* **[P0] Ephemeral Privilege Manager (EPM)**: Core security service managing JIT
+  privilege escalation and task-bound leases. (Added: 2026-04-28)
 
 * **[P0] Shadow-FS Virtualization Adapter**: Transactional filesystem overlay
   for speculative agent edits and atomic commits. (Added: 2026-04-28)
@@ -958,8 +1128,8 @@ and some new UI features lack comprehensive integration tests.
 * **[P0] Intent-Gated Shard Manager**: Cryptographic intent-alignment
   enforcement for Context Sharding lifecycle. (Added: 2026-04-27)
 
-* **[P1] Adaptive Anchor Pruner**: Implementation of OpenClaw v2026.3.9
-  semantic pruning for the Cognitive Anchor Manager. (Added: 2026-04-27)
+* **[P1] Adaptive Anchor Pruner**: Implementation of OpenClaw v2026.3.9 semantic
+  pruning for the Cognitive Anchor Manager. (Added: 2026-04-27)
 
 #### Upcoming (2026-04-26 Evolution)
 
@@ -988,8 +1158,8 @@ and some new UI features lack comprehensive integration tests.
   v0.33.0 style HTTP authentication for all agent-to-agent remote
   communications. (Added: 2026-04-24)
 
-* **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting
-  OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state
+* **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-
+  compatible ContextEngine plugins, supporting sovereignty-aware state
   management. (Added: 2026-04-24)
 
 * **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for
@@ -1001,8 +1171,8 @@ and some new UI features lack comprehensive integration tests.
   "Policy Anchors" at the pre-reasoning layer for cross-framework cognitive
   governance. (Added: 2026-05-20)
 
-* **[P0] Multi-modal Integrity Bridge (MIB)**: Real-time sanitization of
-  non-textual reasoning traces (SVG, CSS, Audio) to prevent context smuggling.
+* **[P0] Multi-modal Integrity Bridge (MIB)**: Real-time sanitization of non-
+  textual reasoning traces (SVG, CSS, Audio) to prevent context smuggling.
   (Added: 2026-05-20)
 
 * **[P1] AIR Reconciliation Broker**: Decentralized intent reconciliation
@@ -1011,8 +1181,8 @@ and some new UI features lack comprehensive integration tests.
 
 #### Upcoming (2026-05-19 Evolution)
 
-* **[P0] Signed Reasoning Monologue (SRM) Provider**: Cryptographically bind
-  and isolate an agent's internal reasoning from subagent inputs. (Added:
+* **[P0] Signed Reasoning Monologue (SRM) Provider**: Cryptographically bind and
+  isolate an agent's internal reasoning from subagent inputs. (Added:
   2026-05-19)
 
 * **[P0] Namespace-Locked Discovery (NLD)**: Deterministic and collision-free
@@ -1061,12 +1231,11 @@ and some new UI features lack comprehensive integration tests.
 * **[P0] Reasoning Quorum Middleware**: Infrastructure for multi-agent semantic
   consensus on reasoning traces. (Added: 2026-05-16)
 
-* **[P0] Transport-Layer Session Binder**: Cryptographically bind
-  named-pipe/local transport to hardware-attested session tokens. (Added:
-  2026-05-16)
+* **[P0] Transport-Layer Session Binder**: Cryptographically bind named-
+  pipe/local transport to hardware-attested session tokens. (Added: 2026-05-16)
 
-* **[P1] RRRA Budget Controller**: Dynamic resource allocation based on
-  real-time reasoning intensity. (Added: 2026-05-16)
+* **[P1] RRRA Budget Controller**: Dynamic resource allocation based on real-
+  time reasoning intensity. (Added: 2026-05-16)
 
 * **[P0] Coordination Token Optimizer**: Promoted to P0. Mandatory efficiency
   middleware for parallel swarm messages. (Added: 2026-05-16)
@@ -1084,15 +1253,15 @@ and some new UI features lack comprehensive integration tests.
   semantically isolated mission-root anchors for ContextEngine. (Added:
   2026-05-15)
 
-* **[P0] Negative Discovery Attestation Provider**: Cryptographic proof of
-  non-execution for restricted paths during the PNTD discovery phase. (Added:
+* **[P0] Negative Discovery Attestation Provider**: Cryptographic proof of non-
+  execution for restricted paths during the PNTD discovery phase. (Added:
   2026-05-15)
 
 #### Upcoming (2026-05-14 Evolution)
 
-* **[P0] ContextEngine Lifecycle Adapter**: Implementation of OpenClaw
-  v2026.3.7 "ContextEngine" lifecycle hooks for universal context plugin
-  hosting. (Added: 2026-05-14)
+* **[P0] ContextEngine Lifecycle Adapter**: Implementation of OpenClaw v2026.3.7
+  "ContextEngine" lifecycle hooks for universal context plugin hosting. (Added:
+  2026-05-14)
 
 * **[P0] Swarm-Aware Rate Limiter**: High-speed security middleware for
   neutralizing coordinated "Hivenet" swarm attacks at sub-millisecond speeds.
@@ -1101,8 +1270,8 @@ and some new UI features lack comprehensive integration tests.
 * **[P1] Hardware-Attested NHI Identity Wallets**: Integration of TPM/Secure
   Enclave-bound machine identities for all connected agents. (Added: 2026-05-14)
 
-* **[P1] Asynchronous Telemetry Sink**: Authoritative non-blocking collector
-  for OpenClaw-RL v1.0 reasoning traces and rollout tokens. (Added: 2026-05-14)
+* **[P1] Asynchronous Telemetry Sink**: Authoritative non-blocking collector for
+  OpenClaw-RL v1.0 reasoning traces and rollout tokens. (Added: 2026-05-14)
 
 #### Upcoming (2026-05-13 Evolution)
 
@@ -1110,13 +1279,11 @@ and some new UI features lack comprehensive integration tests.
   legacy loopback ports enforcing origin-locked authentication. (Added:
   2026-05-13)
 
-* **[P0] Injection-Shielding Middleware**: Pre-execution scanning layer for
-  tool inputs/outputs to neutralize prompt and command injection. (Added:
-  2026-05-13)
+* **[P0] Injection-Shielding Middleware**: Pre-execution scanning layer for tool
+  inputs/outputs to neutralize prompt and command injection. (Added: 2026-05-13)
 
-* **[P1] Coordination Token Optimizer**: Deduplication and compression proxy
-  for inter-teammate messages to reduce swarm token consumption. (Added:
-  2026-05-13)
+* **[P1] Coordination Token Optimizer**: Deduplication and compression proxy for
+  inter-teammate messages to reduce swarm token consumption. (Added: 2026-05-13)
 
 #### Upcoming (2026-05-12 Evolution)
 
@@ -1136,8 +1303,8 @@ and some new UI features lack comprehensive integration tests.
   supporting message passing and state reconciliation for parallel agent teams.
   (Added: 2026-05-11)
 
-* **[P0] Negative Discovery Attestation Provider**: Cryptographic proof of
-  non-execution for restricted paths during the tool discovery phase. (Added:
+* **[P0] Negative Discovery Attestation Provider**: Cryptographic proof of non-
+  execution for restricted paths during the tool discovery phase. (Added:
   2026-05-11)
 
 * **[P1] Async RL Rollout Orchestrator**: Non-blocking telemetry bridge for
@@ -1149,8 +1316,8 @@ and some new UI features lack comprehensive integration tests.
   environment for MCP discovery commands to prevent "Ghost-Execution" exploits.
   (Added: 2026-05-10)
 
-* **[P0] Session-Persistent DAP Provider**: Hardware-attested manifest of
-  non-existent files to neutralize "Shadow-Sandbox" escapes (CVE-2026-25725).
+* **[P0] Session-Persistent DAP Provider**: Hardware-attested manifest of non-
+  existent files to neutralize "Shadow-Sandbox" escapes (CVE-2026-25725).
   (Added: 2026-05-10)
 
 * **[P1] Async RL Telemetry Orchestrator**: High-speed, non-blocking telemetry
@@ -1159,13 +1326,12 @@ and some new UI features lack comprehensive integration tests.
 
 #### Upcoming (2026-05-09 Evolution)
 
-* **[P0] Cryptographic Lineage Validator**: Mandatory parent-child token
-  binding for all subagent spawns to neutralize shadow context contamination.
-  (Added: 2026-05-09)
-
-* **[P0] Continuous CPCP Enforcer**: High-frequency hardware-attested
-  validation of project-local configurations during every tool call. (Added:
+* **[P0] Cryptographic Lineage Validator**: Mandatory parent-child token binding
+  for all subagent spawns to neutralize shadow context contamination. (Added:
   2026-05-09)
+
+* **[P0] Continuous CPCP Enforcer**: High-frequency hardware-attested validation
+  of project-local configurations during every tool call. (Added: 2026-05-09)
 
 * **[P1] ARE-Responsive Budget Controller**: Dynamic prioritization of token
   allocation based on Gemini CLI ARE reasoning intensity headers. (Added:
@@ -1217,8 +1383,8 @@ and some new UI features lack comprehensive integration tests.
 * **[P0] Local-Only WebSocket Auth (LOWA) Gateway**: Mandatory session-bound
   authentication for all local WebSocket listeners. (Added: 2026-05-22)
 
-* **[P0] Teammate-to-Teammate (T2T) Encryption Bridge**: Secure,
-  cross-framework bus for encrypted teammate messaging. (Added: 2026-05-22)
+* **[P0] Teammate-to-Teammate (T2T) Encryption Bridge**: Secure, cross-framework
+  bus for encrypted teammate messaging. (Added: 2026-05-22)
 
 * **[P0] Mailbox Integrity Middleware**: Intent-bound message validation for
   inter-agent mailboxes. (Added: 2026-05-22)
@@ -1228,8 +1394,8 @@ and some new UI features lack comprehensive integration tests.
 
 #### Upcoming (2026-05-23 Evolution)
 
-* **[P0] Federated Swarm Identity (FSI) Provider**: Authority for
-  hardware-attested cross-framework agent identities. (Added: 2026-05-23)
+* **[P0] Federated Swarm Identity (FSI) Provider**: Authority for hardware-
+  attested cross-framework agent identities. (Added: 2026-05-23)
 
 * **[P0] Intent-Leakage Shielding (ILS)**: Semantic entropy monitoring to
   prevent subagent probing of mission-root constraints. (Added: 2026-05-23)
@@ -1237,8 +1403,8 @@ and some new UI features lack comprehensive integration tests.
 * **[P0] Hardware-Attested Discovery Handshake (HADH)**: Advanced A2A handshake
   mandating identity proof before capability discovery. (Added: 2026-05-23)
 
-* **[P0] Reasoning-Effort Quota Controller**: Dynamic budgeting for
-  high-intensity reasoning to prevent Agentic DoS. (Added: 2026-05-23)
+* **[P0] Reasoning-Effort Quota Controller**: Dynamic budgeting for high-
+  intensity reasoning to prevent Agentic DoS. (Added: 2026-05-23)
 
 #### Upcoming (2026-05-24 Evolution)
 
@@ -1272,11 +1438,11 @@ and some new UI features lack comprehensive integration tests.
 
 #### Upcoming (2026-05-26 Evolution)
 
-* **[P0] Foundation Governance Sync**: Implementation of neutral lifecycle
-  hooks for OpenClaw Foundation compliance. (Added: 2026-05-26)
+* **[P0] Foundation Governance Sync**: Implementation of neutral lifecycle hooks
+  for OpenClaw Foundation compliance. (Added: 2026-05-26)
 
-* **[P0] Non-Blocking AMS Core**: Kernel-level lock-free buffers for
-  high-density horizontal teammate coordination. (Added: 2026-05-26)
+* **[P0] Non-Blocking AMS Core**: Kernel-level lock-free buffers for high-
+  density horizontal teammate coordination. (Added: 2026-05-26)
 
 * **[P0] Intent-Scoped ARE Validator**: Cryptographic pinning of reasoning
   budgets to mission-root intent branches. (Added: 2026-05-26)
@@ -1304,9 +1470,9 @@ and some new UI features lack comprehensive integration tests.
   middleware issuing cryptographically signed "Chain of Command" tokens for
   every instruction. (Added: 2026-05-28)
 
-* **[P0] Autonomous PR Integrity Gate (APRIG)**: Multi-agent security quorum
-  for code-generating tool calls requiring independent attestation for pull
-  request safety. (Added: 2026-05-28)
+* **[P0] Autonomous PR Integrity Gate (APRIG)**: Multi-agent security quorum for
+  code-generating tool calls requiring independent attestation for pull request
+  safety. (Added: 2026-05-28)
 
 * **[P0] Trace-Aware Identity Propagation (TAIP)**: Extension for SMI Relay
   ensuring hardware-attested identities carry full lineage metadata. (Added:
@@ -1318,9 +1484,8 @@ and some new UI features lack comprehensive integration tests.
 
 #### Upcoming (2026-05-29 Evolution)
 
-* **[P0] Collective Swarm Anomaly Detection (CSAD) Hub**: Cross-agent
-  behavioral analysis middleware to detect "Hivenet" swarm attacks. (Added:
-  2026-05-29)
+* **[P0] Collective Swarm Anomaly Detection (CSAD) Hub**: Cross-agent behavioral
+  analysis middleware to detect "Hivenet" swarm attacks. (Added: 2026-05-29)
 
 * **[P0] Cross-Mesh Command Sovereignty (CMCS) Provider**: Hardware-attested
   "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms.
@@ -1335,25 +1500,17 @@ and some new UI features lack comprehensive integration tests.
 #### Upcoming (2026-05-30 Evolution)
 
 * **[P0] Intent Hierarchy Enforcer (IHE)**: Mandatory priority-based state
+
   validation for the Shared Blackboard. (Added: 2026-05-30)
 
 * **[P0] Kernel-Namespace (KNS) Command Runner**: High-performance isolation
+
   wrapper (runc/Firecracker) for tool execution. (Added: 2026-05-30)
 
 * **[P0] Mission Anchor Host (MAH)**: Orchestration service for pinned,
+
   team-wide context anchors. (Added: 2026-05-30)
 
 * **[P1] Zero-Knowledge Capability Masker**: Advanced discovery component for
-  metadata-less capability proving. (Added: 2026-05-30)
 
-* **[P0] Intent Hierarchy Enforcer (IHE)**: Mandatory priority-based state
-  validation for the Shared Blackboard. (Added: 2026-05-30)
-
-* **[P0] Kernel-Namespace (KNS) Command Runner**: High-performance isolation
-  wrapper (runc/Firecracker) for tool execution. (Added: 2026-05-30)
-
-* **[P0] Mission Anchor Host (MAH)**: Orchestration service for pinned,
-  team-wide context anchors. (Added: 2026-05-30)
-
-* **[P1] Zero-Knowledge Capability Masker**: Advanced discovery component for
   metadata-less capability proving. (Added: 2026-05-30)
