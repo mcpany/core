@@ -129,41 +129,19 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return !mcpContent && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
     }, [content, mcpContent]);
 
-    // Flatten a nested object to a single level object with dot-notation keys
-    const flattenObject = (obj: any, prefix = ''): Record<string, any> => {
-        if (obj === null || typeof obj !== 'object') {
-            return { [prefix]: obj };
-        }
-
-        return Object.keys(obj).reduce((acc: Record<string, any>, k: string) => {
-            const pre = prefix.length ? `${prefix}.${k}` : k;
-            if (typeof obj[k] === 'object' && obj[k] !== null && !Array.isArray(obj[k])) {
-                Object.assign(acc, flattenObject(obj[k], pre));
-            } else {
-                acc[pre] = obj[k];
-            }
-            return acc;
-        }, {});
-    };
-
-    const flattenedContent = useMemo(() => {
-        if (!isTableEligible) return [];
-        return content.map((item: any) => typeof item === 'object' && item !== null ? flattenObject(item) : { value: item });
-    }, [content, isTableEligible]);
-
     // Get columns for table
     const columns = useMemo(() => {
         if (!isTableEligible) return [];
-        // aggregate all keys from all flattened objects to handle sparse data
+        // aggregate all keys from all objects to handle sparse data
         const keys = new Set<string>();
         // Limit rows scanned for columns to avoid perf issues on huge datasets
-        flattenedContent.slice(0, 50).forEach((item: any) => {
+        content.slice(0, 50).forEach((item: any) => {
             if (typeof item === 'object' && item !== null) {
                 Object.keys(item).forEach(k => keys.add(k));
             }
         });
         return Array.from(keys);
-    }, [flattenedContent, isTableEligible]);
+    }, [content, isTableEligible]);
 
     const renderCell = (value: any) => {
         if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
@@ -208,35 +186,29 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             )}
 
             {isTableEligible && (
-                <TabsContent value="table" className="border rounded-md bg-muted/50 overflow-hidden">
-                    <ScrollArea className="h-[400px] w-full">
-                        <div className="min-w-max p-1">
-                            <Table>
-                                <TableHeader className="bg-muted/80 sticky top-0 z-10 backdrop-blur-sm">
-                                    <TableRow className="hover:bg-transparent">
+                <TabsContent value="table" className="border rounded-md">
+                    <ScrollArea className="h-[400px]">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    {columns.map(col => (
+                                        <TableHead key={col} className="whitespace-nowrap">{col}</TableHead>
+                                    ))}
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {content.map((row: any, i: number) => (
+                                    <TableRow key={i}>
                                         {columns.map(col => (
-                                            <TableHead key={col} className="whitespace-nowrap font-semibold text-xs tracking-wider uppercase">{col}</TableHead>
+                                            <TableCell key={col} className="py-2">
+                                                {renderCell(row[col])}
+                                            </TableCell>
                                         ))}
                                     </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {flattenedContent.map((row: any, i: number) => (
-                                        <TableRow key={i} className="hover:bg-muted/80 transition-colors">
-                                            {columns.map(col => (
-                                                <TableCell key={col} className="py-2.5 px-4 text-sm border-b border-border/50">
-                                                    {renderCell(row[col])}
-                                                </TableCell>
-                                            ))}
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </div>
+                                ))}
+                            </TableBody>
+                        </Table>
                     </ScrollArea>
-                    <div className="bg-muted/30 px-3 py-2 text-[10px] text-muted-foreground border-t flex items-center justify-between">
-                        <span>Showing {flattenedContent.length} items</span>
-                        <span className="font-mono">{columns.length} columns</span>
-                    </div>
                 </TabsContent>
             )}
 

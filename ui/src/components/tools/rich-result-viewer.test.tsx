@@ -25,28 +25,4 @@ describe('RichResultViewer', () => {
 
     expect(screen.getByRole('img')).toHaveAttribute('src', 'data:image/png;base64,base64data');
   });
-
-  it('renders flattened nested JSON object as a table', () => {
-    render(
-      <RichResultViewer
-        result={[
-          {
-            id: 1,
-            user: {
-              profile: {
-                name: 'Alice',
-                age: 30,
-              },
-            },
-          },
-        ]}
-      />,
-    );
-
-    // In a flat table, "user.profile.name" and "user.profile.age" should be the column headers
-    expect(screen.getByText('user.profile.name')).toBeInTheDocument();
-    expect(screen.getByText('user.profile.age')).toBeInTheDocument();
-    expect(screen.getByText('Alice')).toBeInTheDocument();
-    expect(screen.getByText('30')).toBeInTheDocument();
-  });
 });
