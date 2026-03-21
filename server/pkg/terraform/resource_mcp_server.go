@@ -40,13 +40,10 @@ type ResourceMCPServer struct {
 // Summary: Executes Schema operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -91,29 +88,26 @@ func Schema() map[string]interface{} {
 // Summary: Initializes Create operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
 func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) error {
 	payload, err := json.Marshal(resource)
 	if err != nil {
-		return err
+		return fmt.Errorf("marshal failed: %w", err)
 	}
 	req, err := http.NewRequestWithContext(ctx, "POST", serverURL+"/api/v1/servers", bytes.NewBuffer(payload)) //nolint:gosec
 	if err != nil {
-		return err
+		return fmt.Errorf("request creation failed: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := (&http.Client{Timeout: 10 * time.Second}).Do(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("request failed: %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
@@ -142,24 +136,21 @@ func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) 
 // Summary: Retrieves Read operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
 func Read(ctx context.Context, serverURL string, name string) (*ResourceMCPServer, error) {
 	req, err := http.NewRequestWithContext(ctx, "GET", serverURL+"/api/v1/servers/"+name, nil) //nolint:gosec
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("request creation failed: %w", err)
 	}
 	resp, err := (&http.Client{Timeout: 10 * time.Second}).Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("request failed: %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode == http.StatusNotFound {
@@ -170,7 +161,7 @@ func Read(ctx context.Context, serverURL string, name string) (*ResourceMCPServe
 	}
 	var res ResourceMCPServer
 	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("decode failed: %w", err)
 	}
 	return &res, nil
 }

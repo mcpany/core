@@ -25,7 +25,8 @@ func TestTerraformResource(t *testing.T) {
 		}
 		if r.Method == "GET" && r.URL.Path == "/api/v1/servers/test" {
 			w.WriteHeader(http.StatusOK)
-			_ = json.NewEncoder(w).Encode(ResourceMCPServer{Name: "test", Port: 9090, Enabled: true}) //nolint:errcheck
+			err := json.NewEncoder(w).Encode(ResourceMCPServer{Name: "test", Port: 9090, Enabled: true})
+			_ = err // Ignore test mock encoding error
 			return
 		}
 		http.Error(w, "not found", http.StatusNotFound)
