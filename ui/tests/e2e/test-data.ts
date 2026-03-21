@@ -159,6 +159,20 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                     spec_url: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
                 }
             }
+        },
+        {
+            id: "wizard-seed-template",
+            name: "Wizard Seed Template",
+            description: "A database-seeded template explicitly for wizard connection tests.",
+            icon: "database",
+            tags: ["test", "wizard"],
+            service_config: {
+                name: "wizard_seed_service",
+                command_line_service: {
+                    command: "echo"
+                },
+                wizard_metadata: "seeded-via-e2e-fixtures"
+            }
         }
     ].map((template) => ServiceTemplate.toJSON(ServiceTemplate.fromJSON(template)));
 
