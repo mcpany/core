@@ -4,8 +4,26 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedUser, cleanupUser } from './e2e/test-data';
 
 test.describe('User Guide Walkthrough', () => {
+  test.describe.configure({ mode: 'serial' });
+
+  test.beforeEach(async ({ request, page }) => {
+    await seedUser(request, "e2e-guide-user");
+
+    // Login first
+    await page.goto('/login');
+    await page.fill('input[name="username"]', 'e2e-guide-user');
+    await page.fill('input[name="password"]', 'password');
+    await page.click('button[type="submit"]');
+    await expect(page).toHaveURL('/', { timeout: 15000 });
+  });
+
+  test.afterEach(async ({ request }) => {
+    await cleanupUser(request, "e2e-guide-user");
+  });
+
   test('Dashboard loads key metrics', async ({ page }) => {
     // Mock the stats endpoint
     await page.route('**/api/v1/dashboard/metrics', async route => {
