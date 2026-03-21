@@ -111,6 +111,7 @@ func (a *Application) handleTraces() http.HandlerFunc {
 			if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
 				a.standardMiddlewares.Audit.ClearHistory()
 			}
+			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte(`{}`))
 			return

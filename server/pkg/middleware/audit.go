@@ -331,7 +331,7 @@ func (m *AuditMiddleware) GetHistory() []any {
 // ClearHistory clears the real-time broadcast history.
 // Note: This does NOT delete persistent audit logs in the Store.
 //
-// Summary: Clears the in-memory trace history buffer.
+// Summary: ClearHistory clears the in-memory trace history buffer.
 //
 // Parameters:
 //   - None
