@@ -28,6 +28,6 @@
     },
     "rootDirs": [".", ".."]
   },
-  "include": ["**/*.ts", "**/*.tsx", "../proto/**/*.ts"],
+  "include": ["**/*.ts", "**/*.tsx", "../proto/**/*.ts", "../bazel-bin/proto/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
