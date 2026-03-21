@@ -279,9 +279,6 @@
 - [ ] **[P0] Hardware Boot Integrity Monitor**: Real-time status indicator for TPM-bound configurations and boot manifest attestation. (Added: 2026-04-15)
 - [ ] **[P0] VTD Automation Workspace**: Dashboard for configuring autonomous delegation rules and reviewing automated handoff history. (Added: 2026-04-15)
 - [ ] **[P1] Universal Context Bus Viewer**: Visual debugger for monitoring state flow and synchronization across framework-specific Context Sidecars. (Added: 2026-04-15)
-- [ ] **[P0] Cognitive Domain Inspector**: (2026-06-18) Real-time visualization of isolated reasoning domains and cross-domain contamination alerts.
-- [ ] **[P0] Neural Fingerprint Dashboard**: (2026-06-18) Visual indicator for agent persona authenticity and stylometric mimicry alerts.
-- [ ] **[P0] BSE Budget Auditor**: (2026-06-18) UI for tracking cryptographically attributed token consumption and "Mission Starvation" warnings.
 
 #### Upcoming (2026-04-23 Evolution)
 - [ ] **[P0] A2UI Secure Component Host**: Sandboxed rendering for agent-generated interactive fragments (Added: 2026-04-23).
@@ -398,3 +395,7 @@
 - [ ] **[P0] A2A Replay Security Dashboard**: Visualize nonce status and replay attempt alerts in the A2A hub. (Added: 2026-04-22)
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)
 - [ ] **[P1] Encrypted Monologue Explorer**: Secure UI fragment for user-authorized decryption and review of subagent reasoning. (Added: 2026-04-22)
+- [ ] **[P0] Cognitive Domain Explorer**: (2026-06-18) Visual manager for isolated reasoning regions and hallucination bleeding alerts.
+- [ ] **[P0] Neural Identity Dashboard**: (2026-06-18) Real-time monitor for neural fingerprint verification and stylometric mimicry alerts.
+- [ ] **[P0] Budget-Signature Auditor**: (2026-06-18) Economic UI for tracking cryptographically attributed token consumption and BSE compliance.
+- [ ] **[P1] Speculative Handshake Visualizer**: (2026-06-18) Timeline of bundled speculative reasoning branches and pre-attestation status.

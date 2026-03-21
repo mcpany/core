@@ -126,6 +126,12 @@
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
 
+#### Upcoming (2026-06-18 Evolution)
+*   **[P0] Cognitive Domain Broker**: Implementation of isolated reasoning regions to prevent hallucination bleeding. (Added: 2026-06-18)
+*   **[P0] Neural Fingerprint Provider**: Identity attestation service using stylometric entropy signatures. (Added: 2026-06-18)
+*   **[P0] Budget-Signature Enforcement (BSE)**: Cryptographic attribution for all token and reasoning effort requests. (Added: 2026-06-18)
+*   **[P1] Speculative Intent Bundling Proxy**: Latency-optimized proxy for bundled speculative handshakes. (Added: 2026-06-18)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
@@ -433,12 +439,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Attested Boot Manifest Provider**: Core service for binding environment integrity to local TPM/Secure Enclave signatures. (Added: 2026-04-15)
 *   **[P0] VTD Autonomous Delegation Engine**: Implementation of automated, proof-based A2A task handoffs for low-risk operations. (Added: 2026-04-15)
 *   **[P1] Standardized Context Sidecar Interface**: Universal "Context Bus" for bridging framework-specific state strategies (OpenClaw, etc.). (Added: 2026-04-15)
-
-#### Upcoming (2026-06-18 Evolution)
-*   **[P0] Cognitive Domain Broker**: Implementation of isolated reasoning regions to prevent hallucination bleeding. (Added: 2026-06-18)
-*   **[P0] Neural Fingerprint Provider**: Identity attestation service using stylometric entropy signatures. (Added: 2026-06-18)
-*   **[P0] Budget-Signature Enforcement (BSE)**: Cryptographic attribution for all token and reasoning effort requests. (Added: 2026-06-18)
-*   **[P1] Speculative Intent Bundling Proxy**: Latency-optimized proxy for bundled speculative handshakes. (Added: 2026-06-18)
 
 #### Upcoming (2026-04-23 Evolution)
 *   **[P0] OpenClaw ContextEngine Adapter**: Implementation of lifecycle hooks for external context management (Added: 2026-04-23).

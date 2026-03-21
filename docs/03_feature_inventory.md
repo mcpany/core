@@ -212,13 +212,25 @@
 ### Proposed Additions
 - **Multi-Hop Trust Relay**: (P0) Security middleware implementing LFTA v2.0 multi-hop trust delegation, allowing attestation strength to persist across deep agent swarms.
 - **Cognitive Anchor Manager**: (P0) Extension for the ContextEngine Adapter that manages the lifecycle of immutable "Mission Anchors" to prevent semantic drift.
-- **A2UI Interactive Delegation Bridge**: (P0) Hardened A2UI component for multi-agent task delegation, supporting rich user approvals for high-risk handoffs.
+- **A2A Interactive Delegation Bridge**: (P0) Hardened A2UI component for multi-agent task delegation, supporting rich user approvals for high-risk handoffs.
 
 ### Priority Shifts
 - **A2A Session Persistence Middleware**: (Re-affirmed P0) Now integrates with the Multi-Hop Trust Relay for long-haul reasoning sessions.
 - **ContextEngine Plugin Adapter**: (Re-affirmed P0) Expanded to support Cognitive Anchoring as a core sovereignty utility.
 
 ---
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Cognitive Domain Broker**: (P0) Authoritative coordination service for "Cognitive Domains" that provide cryptographically isolated reasoning regions for subagents.
+- **Neural Fingerprint Provider**: (P0) Identity attestation service that utilizes neural stylometry to verify agent personas and prevent framework mimicry.
+- **Budget-Signature Enforcement Middleware**: (P0) Security extension for the Reasoning-Budget Firewall that mandates cryptographically attributed budget signatures for all token requests.
+- **Speculative Intent Bundling Proxy**: (P1) Efficiency middleware that bundles multiple speculative reasoning branches into single hardware-attested handshakes.
+
+### Priority Shifts
+- **Reasoning-Budget Firewall**: (Re-affirmed P0) Now elevated with the requirement for mandatory **BSE** (Budget-Signature Enforcement) to counter token siphoning.
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support the new **Neural Fingerprinting** requirement for inter-agent verification.
 
 ## Evolution: [2026-04-25] Updates
 
@@ -957,15 +969,3 @@
 ### Priority Shifts
 - **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Now elevated as the primary solution for the "Approval Fatigue" scaling bottleneck.
 - **Pluggable Context Bridge**: (Re-affirmed P0) Expanded to support the new Standardized Context Sidecar Interface.
-
-## Evolution: [2026-06-18] Updates
-
-### Proposed Additions
-- **Cognitive Domain Broker**: (P0) Authoritative coordination service for "Cognitive Domains" that provide cryptographically isolated reasoning regions for subagents.
-- **Neural Fingerprint Provider**: (P0) Identity attestation service that utilizes neural stylometry to verify agent personas and prevent framework mimicry.
-- **Budget-Signature Enforcement Middleware**: (P0) Security extension for the Reasoning-Budget Firewall that mandates cryptographically attributed budget signatures for all token requests.
-- **Speculative Intent Bundling Proxy**: (P1) Efficiency middleware that bundles multiple speculative reasoning branches into single hardware-attested handshakes.
-
-### Priority Shifts
-- **Reasoning-Budget Firewall**: (Re-affirmed P0) Now elevated with the requirement for mandatory **BSE** (Budget-Signature Enforcement) to counter token siphoning.
-- **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support the new **Neural Fingerprinting** requirement for inter-agent verification.

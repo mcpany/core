@@ -690,7 +690,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ## Strategic Evolution: [2026-06-18]
 ### Focus: Cognitive Domain Isolation & Neural Identity Attestation
-**Context**: The emergence of "State-Space Isolation" in OpenClaw v3.3.0 and the discovery of "Token Siphoning" (CVE-2026-71002) confirm that security must now protect the **structural integrity of the state-space** and the **authenticity of the reasoning persona**. As swarms become more heterogeneous, simple tokens are insufficient; we must now verify the "Neural Fingerprint" of teammates to prevent framework-mimicry attacks.
+**Context**: The emergence of "Cognitive Domain Isolation" in OpenClaw v3.3.0 and the discovery of "Token Siphoning" (CVE-2026-71002) confirm that security must now protect the **structural integrity of the state-space** and the **authenticity of the reasoning persona**. As swarms become more heterogeneous, simple tokens are insufficient; we must now verify the "Neural Fingerprint" of teammates to prevent framework-mimicry attacks.
 **Strategic Pivot**:
 - **Cognitive Domain Broker (CDB)**: MCP Any will evolve to act as the authoritative host for isolated reasoning regions. We will implement CDB, providing cryptographically separated "Cognitive Domains" for subagents to prevent hallucination bleeding and reasoning contamination across the mission mesh.
 - **Neural Fingerprint Provider (NFP)**: To neutralize "Stylometric Mimicry," we are introducing NFP. This service will utilize neural entropy signatures to perform hardware-attested identity verification of teammates, ensuring that specialist agents cannot be impersonated by rogue framework mimics.
