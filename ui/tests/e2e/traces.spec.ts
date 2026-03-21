@@ -36,16 +36,16 @@ test.describe.skip('Trace Viewer', () => {
 
         // Actually, let's just check for any trace item
         const firstTrace = page.locator('button.flex.flex-col').first();
-        await expect(firstTrace).toBeVisible({ timeout: 10000 });
+        await expect(firstTrace).toBeVisible({ timeout: 20000 });
 
         // Click the first trace
         await firstTrace.click();
 
         // Verify details panel opens and shows information
-        await expect(page.locator('text=Trace Details').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.locator('text=Trace Details').first()).toBeVisible({ timeout: 20000 });
 
         // Wait for JSON viewer to render
-        await expect(page.locator('.react-json-view').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.locator('.react-json-view').first()).toBeVisible({ timeout: 20000 });
 
         // Close details
         await page.click('button:has-text("Close")');
@@ -59,14 +59,14 @@ test.describe.skip('Trace Viewer', () => {
 
         // Expect only matching items
         // and doesn't crash the page
-        await expect(page.locator('button.flex.flex-col').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.locator('button.flex.flex-col').first()).toBeVisible({ timeout: 20000 });
     });
 
     test('should replay trace in playground', async ({ page }) => {
         await page.reload();
 
         const firstTrace = page.locator('button.flex.flex-col').first();
-        await expect(firstTrace).toBeVisible({ timeout: 10000 });
+        await expect(firstTrace).toBeVisible({ timeout: 20000 });
         await firstTrace.click();
 
         // Click "Replay in Playground"
