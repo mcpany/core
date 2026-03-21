@@ -83,12 +83,14 @@ export function SmartConnectionWizard({ template, onCancel, onComplete }: SmartC
       }
   };
 
+  const Icon = template.icon;
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
       <CardHeader className="px-0">
         <div className="flex items-center gap-2">
             <div className="p-2 bg-primary/10 rounded-md">
-                <template.icon className="w-6 h-6 text-primary" />
+                {Icon ? <Icon className="w-6 h-6 text-primary" /> : null}
             </div>
             <div>
                 <CardTitle>{template.name}</CardTitle>

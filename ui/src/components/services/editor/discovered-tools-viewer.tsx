@@ -22,7 +22,7 @@ interface DiscoveredToolsViewerProps {
 
 /**
  * DiscoveredToolsViewer component.
- * Displays a list of discovered tools in an accordion view.
+ * Displays a list of discovered tools in an accordion view for the wizard.
  */
 export function DiscoveredToolsViewer({ tools }: DiscoveredToolsViewerProps) {
     if (!tools || tools.length === 0) {
