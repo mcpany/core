@@ -14,7 +14,7 @@ global_settings:
   audit:
     enabled: true
     storage_type: STORAGE_TYPE_FILE
-    output_path: "/dev/null"
+    output_path: ""
     retention_days: 1
   middlewares:
     - name: "auth"
