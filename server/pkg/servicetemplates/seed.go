@@ -18,9 +18,6 @@ import (
 // Seeder seeds the database with service templates.
 //
 // Summary: Represents a Seeder.
-// Seeder seeds the database with service templates.
-//
-// Summary: Represents a Seeder.
 type Seeder struct {
 	Store       storage.Storage
 	ExamplesDir string
@@ -29,40 +26,10 @@ type Seeder struct {
 // ConfigFile represents the structure of the config.yaml in examples.
 //
 // Summary: Represents a ConfigFile.
-// ConfigFile represents the structure of the config.yaml in examples.
-//
-// Summary: Represents a ConfigFile.
 type ConfigFile struct {
 	UpstreamServices []map[string]any `yaml:"upstream_services"`
 }
 
-// Seed walks the examples directory and saves service templates.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Seed operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // Seed walks the examples directory and saves service templates.
 //
 // Parameters:

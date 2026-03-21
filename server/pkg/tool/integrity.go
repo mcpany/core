@@ -22,25 +22,6 @@ import (
 //
 // Returns:
 //   - error: An error if integrity check fails.
-//
-// Errors:
-//   - Returns "unsupported integrity algorithm: %s" if triggered.
-//   - Returns "failed to calculate hash: %w" if triggered.
-//   - Returns "integrity check failed: expected %s, got %s" if triggered.
-// VerifyIntegrity checks if the tool definition matches its expected hash.
-//
-// Summary: Verifies runtime tool integrity.
-//
-// Parameters:
-//   - t: *v1.Tool. The tool to verify.
-//
-// Returns:
-//   - error: An error if integrity check fails.
-//
-// Errors:
-//   - Returns "unsupported integrity algorithm: %s" if triggered.
-//   - Returns "failed to calculate hash: %w" if triggered.
-//   - Returns "integrity check failed: expected %s, got %s" if triggered.
 func VerifyIntegrity(t *v1.Tool) error {
 	if !t.HasIntegrity() {
 		return nil // No integrity check required
@@ -71,25 +52,6 @@ func VerifyIntegrity(t *v1.Tool) error {
 //
 // Returns:
 //   - error: An error if integrity check fails.
-//
-// Errors:
-//   - Returns "unsupported integrity algorithm: %s" if triggered.
-//   - Returns "failed to calculate hash: %w" if triggered.
-//   - Returns "integrity check failed: expected %s, got %s" if triggered.
-// VerifyConfigIntegrity checks if the config tool definition matches its expected hash.
-//
-// Summary: Verifies configuration tool integrity.
-//
-// Parameters:
-//   - t: *configv1.ToolDefinition. The tool definition to verify.
-//
-// Returns:
-//   - error: An error if integrity check fails.
-//
-// Errors:
-//   - Returns "unsupported integrity algorithm: %s" if triggered.
-//   - Returns "failed to calculate hash: %w" if triggered.
-//   - Returns "integrity check failed: expected %s, got %s" if triggered.
 func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
 	if t.GetIntegrity() == nil {
 		return nil // No integrity check required
@@ -121,22 +83,6 @@ func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
 // Returns:
 //   - string: The hex-encoded SHA256 hash.
 //   - error: An error if marshaling fails.
-//
-// Errors:
-//   - Returns "failed to marshal tool for integrity check: %w" if triggered.
-// CalculateHash computes the SHA256 hash of a runtime tool definition.
-//
-// Summary: Calculates hash for runtime tool.
-//
-// Parameters:
-//   - t: *v1.Tool. The tool to hash.
-//
-// Returns:
-//   - string: The hex-encoded SHA256 hash.
-//   - error: An error if marshaling fails.
-//
-// Errors:
-//   - Returns "failed to marshal tool for integrity check: %w" if triggered.
 func CalculateHash(t *v1.Tool) (string, error) {
 	// Create a copy of the tool without the integrity field to calculate the hash
 	toolCopy := proto.Clone(t).(*v1.Tool)
@@ -165,22 +111,6 @@ func CalculateHash(t *v1.Tool) (string, error) {
 // Returns:
 //   - string: The hex-encoded SHA256 hash.
 //   - error: An error if marshaling fails.
-//
-// Errors:
-//   - Returns "failed to marshal tool for integrity check: %w" if triggered.
-// CalculateConfigHash computes the SHA256 hash of a configuration tool definition.
-//
-// Summary: Calculates hash for configuration tool.
-//
-// Parameters:
-//   - t: *configv1.ToolDefinition. The tool definition to hash.
-//
-// Returns:
-//   - string: The hex-encoded SHA256 hash.
-//   - error: An error if marshaling fails.
-//
-// Errors:
-//   - Returns "failed to marshal tool for integrity check: %w" if triggered.
 func CalculateConfigHash(t *configv1.ToolDefinition) (string, error) {
 	// Create a copy of the tool to calculate the hash
 	toolCopy := proto.Clone(t).(*configv1.ToolDefinition)

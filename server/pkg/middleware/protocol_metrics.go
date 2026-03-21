@@ -22,13 +22,10 @@ var (
 	mcpOperationDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
 			// Summary: Defines Nam.
-// Name defines Nam.
 			Name: "mcp_operation_duration_seconds",
 			// Summary: Defines Hel.
-// Help defines Hel.
 			Help: "Histogram of MCP operation duration in seconds.",
 			// Summary: Defines Bucket.
-// Buckets defines Bucket.
 			Buckets: prometheus.DefBuckets,
 		},
 		[]string{"method", "status", "error_type"},
@@ -67,33 +64,6 @@ var (
 	)
 )
 
-// PrometheusMetricsMiddleware provides protocol-level metrics for all MCP requests. It intercepts requests to track duration, success/failure counts, payload sizes, and token counts.
-//
-// Parameters:
-//   - t (tokenizer.Tokenizer): The t parameter.
-//
-// Returns:
-//   - mcp.Middleware: The resulting mcp.Middleware.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes PrometheusMetricsMiddleware operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // PrometheusMetricsMiddleware provides protocol-level metrics for all MCP requests. It intercepts requests to track duration, success/failure counts, payload sizes, and token counts.
 //
 // Parameters:
@@ -266,28 +236,6 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 	return c
 }
 
-// CalculateToolResultTokens calculates the number of tokens in a tool result.
-//
-// Parameters:
-//   - t: tokenizer.Tokenizer. The tokenizer to use for counting.
-//   - result: any. The result object to analyze (can be *mcp.CallToolResult, string, []byte, or others).
-//
-// Returns:
-//   - int: The estimated token count.
-//
-// Summary: Executes CalculateToolResultTokens operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // CalculateToolResultTokens calculates the number of tokens in a tool result.
 //
 // Parameters:

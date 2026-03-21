@@ -285,9 +285,6 @@ func (a *Application) deleteCredentialHandler(w http.ResponseWriter, r *http.Req
 // TestAuthRequest defines the payload for testing authentication.
 //
 // Summary: Request payload for testing authentication configurations.
-// TestAuthRequest defines the payload for testing authentication.
-//
-// Summary: Request payload for testing authentication configurations.
 type TestAuthRequest struct {
 	// The credential to use (can be a reference ID or inline Credential).
 	CredentialID string `json:"credential_id"`
@@ -302,9 +299,6 @@ type TestAuthRequest struct {
 	Method string `json:"method"`
 }
 
-// TestAuthResponse defines the response for testing authentication.
-//
-// Summary: Response payload for authentication tests.
 // TestAuthResponse defines the response for testing authentication.
 //
 // Summary: Response payload for authentication tests.

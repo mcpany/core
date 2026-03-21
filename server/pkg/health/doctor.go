@@ -14,9 +14,6 @@ import (
 // CheckResult represents a single check result.
 //
 // Summary: The outcome of a single health check execution.
-// CheckResult represents a single check result.
-//
-// Summary: The outcome of a single health check execution.
 type CheckResult struct {
 	Status  string `json:"status"`
 	Message string `json:"message,omitempty"`
@@ -32,9 +29,6 @@ type CheckFunc func(context.Context) CheckResult
 // DoctorReport represents the full doctor report.
 //
 // Summary: Aggregated health report containing all check results.
-// DoctorReport represents the full doctor report.
-//
-// Summary: Aggregated health report containing all check results.
 type DoctorReport struct {
 	Status    string                 `json:"status"`
 	Timestamp time.Time              `json:"timestamp"`
@@ -44,24 +38,12 @@ type DoctorReport struct {
 // Doctor is the health check handler.
 //
 // Summary: Registry and handler for system health checks (Doctor).
-// Doctor is the health check handler.
-//
-// Summary: Registry and handler for system health checks (Doctor).
 type Doctor struct {
 	checks     map[string]CheckFunc
 	mu         sync.RWMutex
 	httpClient *http.Client
 }
 
-// NewDoctor creates a new Doctor.
-//
-// Summary: Initializes a new Doctor instance.
-//
-// Returns:
-//   - *Doctor: The initialized doctor registry.
-//
-// Side Effects:
-//   - Initializes internal maps and HTTP client.
 // NewDoctor creates a new Doctor.
 //
 // Summary: Initializes a new Doctor instance.
@@ -88,34 +70,12 @@ func NewDoctor() *Doctor {
 //
 // Side Effects:
 //   - Updates the internal checks map.
-// AddCheck adds a named health check.
-//
-// Summary: Registers a custom health check function.
-//
-// Parameters:
-//   - name: string. The unique name of the check.
-//   - check: CheckFunc. The function to execute.
-//
-// Side Effects:
-//   - Updates the internal checks map.
 func (d *Doctor) AddCheck(name string, check CheckFunc) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.checks[name] = check
 }
 
-// Handler returns the http handler.
-//
-// Summary: Returns an HTTP handler that runs all checks and returns a JSON report.
-//
-// Returns:
-//   - http.HandlerFunc: The HTTP handler.
-//
-// Side Effects:
-//   - Executes all registered health checks.
-//   - Makes an external network call to google.com (connectivity check).
-//   - Reads environment variables (Auth checks).
-//   - Writes JSON response to the client.
 // Handler returns the http handler.
 //
 // Summary: Returns an HTTP handler that runs all checks and returns a JSON report.

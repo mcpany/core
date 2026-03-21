@@ -32,10 +32,6 @@ var metricRateLimitRequestsTotal = []string{"rate_limit", "requests_total"}
 // functionality for upstream services.
 //
 // Summary: Middleware for rate limiting tool execution.
-// RateLimitMiddleware is a tool execution middleware that provides rate limiting
-// functionality for upstream services.
-//
-// Summary: Middleware for rate limiting tool execution.
 type RateLimitMiddleware struct {
 	toolManager tool.ManagerInterface
 	tokenizer   tokenizer.Tokenizer
@@ -59,31 +55,12 @@ type Option func(*RateLimitMiddleware)
 //
 // Returns:
 //   - (Option): The configured option.
-// WithTokenizer sets a custom tokenizer for the middleware.
-//
-// Summary: Configures a custom tokenizer.
-//
-// Parameters:
-//   - t (tokenizer.Tokenizer): The tokenizer to use.
-//
-// Returns:
-//   - (Option): The configured option.
 func WithTokenizer(t tokenizer.Tokenizer) Option {
 	return func(m *RateLimitMiddleware) {
 		m.tokenizer = t
 	}
 }
 
-// NewRateLimitMiddleware creates a new RateLimitMiddleware.
-//
-// Summary: Initializes the rate limit middleware.
-//
-// Parameters:
-//   - toolManager (tool.ManagerInterface): The tool manager.
-//   - opts (...Option): Optional configuration settings.
-//
-// Returns:
-//   - (*RateLimitMiddleware): The initialized middleware.
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
 //
 // Summary: Initializes the rate limit middleware.
@@ -132,34 +109,6 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 // Side Effects:
 //   - Checks against rate limits in memory or Redis.
 //   - Increments counters.
-//
-// Errors:
-//   - Returns "failed to get rate limiter for tool %s: %w" if triggered.
-//   - Returns "rate limit exceeded for tool %s: %w" if triggered.
-//   - Returns "failed to get rate limiter for service %s: %w" if triggered.
-//   - And potentially other underlying errors.
-// Execute executes the rate limiting middleware.
-//
-// Summary: Executes rate limiting logic before passing to the next handler.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The execution request.
-//   - next (tool.ExecutionFunc): The next handler.
-//
-// Returns:
-//   - (any): The result of the execution.
-//   - (error): An error if the limit is exceeded or the operation fails.
-//
-// Side Effects:
-//   - Checks against rate limits in memory or Redis.
-//   - Increments counters.
-//
-// Errors:
-//   - Returns "failed to get rate limiter for tool %s: %w" if triggered.
-//   - Returns "rate limit exceeded for tool %s: %w" if triggered.
-//   - Returns "failed to get rate limiter for service %s: %w" if triggered.
-//   - And potentially other underlying errors.
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

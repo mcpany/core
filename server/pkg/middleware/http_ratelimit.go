@@ -18,9 +18,6 @@ import (
 // HTTPRateLimitMiddleware provides global rate limiting for HTTP endpoints.
 //
 // Summary: Middleware for rate limiting HTTP requests based on IP address.
-// HTTPRateLimitMiddleware provides global rate limiting for HTTP endpoints.
-//
-// Summary: Middleware for rate limiting HTTP requests based on IP address.
 type HTTPRateLimitMiddleware struct {
 	limiters   *ttlcache.Cache[string, *rate.Limiter]
 	rps        rate.Limit
@@ -42,32 +39,12 @@ type HTTPRateLimitOption func(*HTTPRateLimitMiddleware)
 //
 // Returns:
 //   - HTTPRateLimitOption: The configuration option.
-// WithTrustProxy enables trusting the X-Forwarded-For header.
-//
-// Summary: Configures the middleware to trust the X-Forwarded-For header.
-//
-// Parameters:
-//   - trust: bool. Whether to trust the proxy headers.
-//
-// Returns:
-//   - HTTPRateLimitOption: The configuration option.
 func WithTrustProxy(trust bool) HTTPRateLimitOption {
 	return func(m *HTTPRateLimitMiddleware) {
 		m.trustProxy = trust
 	}
 }
 
-// NewHTTPRateLimitMiddleware creates a new HTTPRateLimitMiddleware.
-//
-// Summary: Initializes a new HTTP rate limit middleware.
-//
-// Parameters:
-//   - rps: float64. Requests per second allowed per IP.
-//   - burst: int. Maximum burst size allowed per IP.
-//   - opts: ...HTTPRateLimitOption. Optional configuration options.
-//
-// Returns:
-//   - *HTTPRateLimitMiddleware: The initialized middleware instance.
 // NewHTTPRateLimitMiddleware creates a new HTTPRateLimitMiddleware.
 //
 // Summary: Initializes a new HTTP rate limit middleware.
@@ -110,21 +87,6 @@ func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOpt
 //
 // Returns:
 //   - http.Handler: The wrapped handler.
-//
-// Side Effects:
-//   - Makes network calls via HTTP or gRPC.
-// Handler wraps an http.Handler with rate limiting.
-//
-// Summary: Returns a handler that enforces rate limiting.
-//
-// Parameters:
-//   - next: http.Handler. The next handler in the chain.
-//
-// Returns:
-//   - http.Handler: The wrapped handler.
-//
-// Side Effects:
-//   - Makes network calls via HTTP or gRPC.
 func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip := util.ExtractIP(r.RemoteAddr)

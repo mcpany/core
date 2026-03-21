@@ -31,23 +31,6 @@ import (
 //
 // Side Effects:
 //   - Executes a SELECT query on the service_templates table.
-// ListServiceTemplates retrieves all service templates.
-//
-// Summary: Fetches all stored service templates from the database.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//
-// Returns:
-//   - []*configv1.ServiceTemplate: A list of all service templates.
-//   - error: An error if the database query fails or data corruption is detected.
-//
-// Errors:
-//   - Returns error if SELECT query fails.
-//   - Returns error if scanning or unmarshaling config JSON fails.
-//
-// Side Effects:
-//   - Executes a SELECT query on the service_templates table.
 func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_templates")
 	if err != nil {
@@ -88,28 +71,6 @@ func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTe
 //
 // Side Effects:
 //   - Executes a SELECT query on the service_templates table.
-//
-// Errors:
-//   - Returns "failed to scan config_json: %w" if triggered.
-//   - Returns "failed to unmarshal service template: %w" if triggered.
-// GetServiceTemplate retrieves a service template by ID.
-//
-// Summary: Fetches a single service template by its unique identifier.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - id: string. The unique identifier of the template.
-//
-// Returns:
-//   - *configv1.ServiceTemplate: The requested template, or nil if not found.
-//   - error: An error if the query fails (excluding ErrNoRows).
-//
-// Side Effects:
-//   - Executes a SELECT query on the service_templates table.
-//
-// Errors:
-//   - Returns "failed to scan config_json: %w" if triggered.
-//   - Returns "failed to unmarshal service template: %w" if triggered.
 func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
 	query := "SELECT config_json FROM service_templates WHERE id = $1"
 	row := s.db.QueryRowContext(ctx, query, id)
@@ -129,25 +90,6 @@ func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.Se
 	return &template, nil
 }
 
-// SaveServiceTemplate saves a service template.
-//
-// Summary: Inserts or updates a service template.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - template: *configv1.ServiceTemplate. The template to save.
-//
-// Returns:
-//   - error: An error if the template is invalid or the database write fails.
-//
-// Errors:
-//   - Returns "template ID is required" if the ID is missing.
-//   - Returns error if marshaling the template fails.
-//   - Returns error if the UPSERT operation fails.
-//
-// Side Effects:
-//   - Writes a row to the service_templates table.
-//   - Updates the updated_at timestamp.
 // SaveServiceTemplate saves a service template.
 //
 // Summary: Inserts or updates a service template.
@@ -206,25 +148,6 @@ func (s *Store) SaveServiceTemplate(ctx context.Context, template *configv1.Serv
 //
 // Side Effects:
 //   - Deletes a row from the service_templates table.
-//
-// Errors:
-//   - Returns "failed to delete service template: %w" if triggered.
-// DeleteServiceTemplate deletes a service template by ID.
-//
-// Summary: Removes a service template from the database.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - id: string. The unique identifier of the template to delete.
-//
-// Returns:
-//   - error: An error if the deletion fails.
-//
-// Side Effects:
-//   - Deletes a row from the service_templates table.
-//
-// Errors:
-//   - Returns "failed to delete service template: %w" if triggered.
 func (s *Store) DeleteServiceTemplate(ctx context.Context, id string) error {
 	query := "DELETE FROM service_templates WHERE id = $1"
 	_, err := s.db.ExecContext(ctx, query, id)

@@ -21,40 +21,12 @@ import (
 // a ToolExecutionResult message.
 //
 // Summary: Represents a UpstreamWorker.
-// UpstreamWorker is a background worker that handles tool execution requests. It
-// listens for ToolExecutionRequest messages on the event bus, uses the
-// tool manager to execute the requested tool, and then publishes the outcome as
-// a ToolExecutionResult message.
-//
-// Summary: Represents a UpstreamWorker.
 type UpstreamWorker struct {
 	bus         *bus.Provider
 	toolManager tool.ManagerInterface
 	wg          sync.WaitGroup
 }
 
-// NewUpstreamWorker creates a new UpstreamWorker.
-//
-// Parameters:
-//   - bus: The event bus used for receiving requests and publishing results.
-//   - toolManager: The tool manager that will handle the actual tool execution.
-//
-// Returns:
-//   - *UpstreamWorker: A new upstream worker.
-//
-// Summary: Initializes NewUpstreamWorker operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // NewUpstreamWorker creates a new UpstreamWorker.
 //
 // Parameters:
@@ -84,26 +56,6 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 	}
 }
 
-// Start launches the worker in a new goroutine. It subscribes to tool execution
-// requests on the event bus and will continue to process them until the
-// provided context is canceled.
-//
-// Parameters:
-//   - ctx: The context that controls the lifecycle of the worker.
-//
-// Summary: Executes Start operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // Start launches the worker in a new goroutine. It subscribes to tool execution
 // requests on the event bus and will continue to process them until the
 // provided context is canceled.
@@ -175,33 +127,6 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 	}()
 }
 
-// Stop waits for the worker to stop.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Stop operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // Stop waits for the worker to stop.
 //
 // Parameters:

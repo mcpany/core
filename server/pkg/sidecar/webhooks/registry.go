@@ -12,10 +12,6 @@ import (
 // Implementations of this interface process incoming webhook events.
 //
 // Summary: Interface for webhook handlers.
-// Handler defines the interface for handling webhook requests.
-// Implementations of this interface process incoming webhook events.
-//
-// Summary: Interface for webhook handlers.
 type Handler interface {
 	// Handle processes the webhook request.
 	//
@@ -36,27 +32,11 @@ type Handler interface {
 // It provides a thread-safe mechanism to store and lookup handlers by name.
 //
 // Summary: Thread-safe registry for webhook handlers.
-// Registry manages the registration and retrieval of system webhooks.
-// It provides a thread-safe mechanism to store and lookup handlers by name.
-//
-// Summary: Thread-safe registry for webhook handlers.
 type Registry struct {
 	mu    sync.RWMutex
 	hooks map[string]Handler
 }
 
-// NewRegistry creates and initializes a new Registry instance.
-//
-// Summary: Creates a new webhook registry.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - *Registry: A pointer to a new, empty Registry.
-//
-// Side Effects:
-//   - Allocates memory for the registry map.
 // NewRegistry creates and initializes a new Registry instance.
 //
 // Summary: Creates a new webhook registry.
@@ -90,40 +70,12 @@ func NewRegistry() *Registry {
 //
 // Side Effects:
 //   - Updates the registry map.
-// Register registers a handler with a specific name.
-// If a handler with the same name already exists, it will be overwritten.
-//
-// Summary: Registers a webhook handler.
-//
-// Parameters:
-//   - name: string. The name/path to register the handler under.
-//   - handler: Handler. The Handler instance to register.
-//
-// Returns:
-//
-//	None.
-//
-// Side Effects:
-//   - Updates the registry map.
 func (r *Registry) Register(name string, handler Handler) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.hooks[name] = handler
 }
 
-// Get retrieves a handler by its name.
-//
-// Summary: Retrieves a webhook handler by name.
-//
-// Parameters:
-//   - name: string. The name of the handler to retrieve.
-//
-// Returns:
-//   - Handler: The registered handler, if found.
-//   - bool: True if the handler exists, false otherwise.
-//
-// Side Effects:
-//   - None.
 // Get retrieves a handler by its name.
 //
 // Summary: Retrieves a webhook handler by name.

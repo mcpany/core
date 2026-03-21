@@ -33,31 +33,18 @@ type Status string
 const (
 	// StatusOk indicates the check passed successfully.
 	// Summary: Defines StatusO.
-	// StatusOk indicates the check passed successfully.
-	// Summary: Defines StatusO.
 	StatusOk Status = "OK"
-	// StatusWarning indicates a partial failure or non-critical issue that should be investigated.
-	// Summary: Defines StatusWarnin.
 	// StatusWarning indicates a partial failure or non-critical issue that should be investigated.
 	// Summary: Defines StatusWarnin.
 	StatusWarning Status = "WARNING"
 	// StatusError indicates a critical failure that prevents the service from functioning correctly.
 	// Summary: Defines StatusErro.
-	// StatusError indicates a critical failure that prevents the service from functioning correctly.
-	// Summary: Defines StatusErro.
 	StatusError Status = "ERROR"
-	// StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
-	// Summary: Defines StatusSkippe.
 	// StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
 	// Summary: Defines StatusSkippe.
 	StatusSkipped Status = "SKIPPED"
 )
 
-// CheckResult represents the result of a single service check.
-//
-// It aggregates the status, any message, and potential error encountered during the check.
-//
-// Summary: Represents a CheckResult.
 // CheckResult represents the result of a single service check.
 //
 // It aggregates the status, any message, and potential error encountered during the check.
@@ -74,34 +61,6 @@ type CheckResult struct {
 	Error error
 }
 
-// RunChecks performs connectivity and health checks on the provided configuration.
-//
-// It iterates through all upstream services defined in the configuration and executes
-// the appropriate check logic for each service type.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request, used for timeouts and cancellation.
-//   - config: *configv1.McpAnyServerConfig. The server configuration containing upstream service definitions.
-//
-// Returns:
-//   - []CheckResult: A slice of results for each checked service.
-//
-// Side Effects:
-//   - Performs network I/O to connect to upstream services.
-//
-// Summary: Executes RunChecks operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // RunChecks performs connectivity and health checks on the provided configuration.
 //
 // It iterates through all upstream services defined in the configuration and executes
@@ -154,34 +113,6 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 	return results
 }
 
-// CheckService performs a connectivity check for a single service.
-//
-// It dispatches the check to the specific handler based on the service type (HTTP, gRPC, etc.)
-// and handles upstream authentication checks if configured.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - service: *configv1.UpstreamServiceConfig. The configuration of the service to check.
-//
-// Returns:
-//   - CheckResult: The result of the connectivity check.
-//
-// Side Effects:
-//   - Performs network I/O to connect to the upstream service.
-//
-// Summary: Executes CheckService operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // CheckService performs a connectivity check for a single service.
 //
 // It dispatches the check to the specific handler based on the service type (HTTP, gRPC, etc.)

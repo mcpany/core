@@ -18,40 +18,25 @@ type Status string
 const (
 	// SeverityCritical indicates a critical issue.
 	// Summary: Defines SeverityCritica.
-	// SeverityCritical indicates a critical issue.
-	// Summary: Defines SeverityCritica.
 	SeverityCritical Severity = "critical"
 	// SeverityWarning indicates a warning.
 	// Summary: Defines SeverityWarnin.
-	// SeverityWarning indicates a warning.
-	// Summary: Defines SeverityWarnin.
 	SeverityWarning Severity = "warning"
-	// SeverityInfo indicates an informational alert.
-	// Summary: Defines SeverityInf.
 	// SeverityInfo indicates an informational alert.
 	// Summary: Defines SeverityInf.
 	SeverityInfo Severity = "info"
 
 	// StatusActive indicates the alert is currently active.
 	// Summary: Defines StatusActiv.
-	// StatusActive indicates the alert is currently active.
-	// Summary: Defines StatusActiv.
 	StatusActive Status = "active"
-	// StatusAcknowledged indicates the alert has been acknowledged.
-	// Summary: Defines StatusAcknowledge.
 	// StatusAcknowledged indicates the alert has been acknowledged.
 	// Summary: Defines StatusAcknowledge.
 	StatusAcknowledged Status = "acknowledged"
 	// StatusResolved indicates the alert has been resolved.
 	// Summary: Defines StatusResolve.
-	// StatusResolved indicates the alert has been resolved.
-	// Summary: Defines StatusResolve.
 	StatusResolved Status = "resolved"
 )
 
-// Alert represents a system alert.
-//
-// Summary: Represents a Alert.
 // Alert represents a system alert.
 //
 // Summary: Represents a Alert.
@@ -69,9 +54,6 @@ type Alert struct {
 // AlertRule defines a condition for triggering an alert.
 //
 // Summary: Represents a AlertRule.
-// AlertRule defines a condition for triggering an alert.
-//
-// Summary: Represents a AlertRule.
 type AlertRule struct {
 	ID          string    `json:"id"`
 	Name        string    `json:"name"`
@@ -84,9 +66,6 @@ type AlertRule struct {
 	LastUpdated time.Time `json:"last_updated"`
 }
 
-// AlertStats represents aggregated statistics for alerts.
-//
-// Summary: Represents a AlertStats.
 // AlertStats represents aggregated statistics for alerts.
 //
 // Summary: Represents a AlertStats.

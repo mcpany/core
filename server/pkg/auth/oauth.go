@@ -17,41 +17,11 @@ import (
 // Tokens) presented in the HTTP Authorization header.
 //
 // Summary: Represents a OAuth2Authenticator.
-// OAuth2Authenticator implements the Authenticator interface for OAuth2-based
-// authentication using OpenID Connect (OIDC). It validates JWTs (JSON Web
-// Tokens) presented in the HTTP Authorization header.
-//
-// Summary: Represents a OAuth2Authenticator.
 type OAuth2Authenticator struct {
 	verifier  *oidc.IDTokenVerifier
 	audiences []string
 }
 
-// NewOAuth2Authenticator creates a new OAuth2Authenticator with the provided
-// configuration. It initializes the OIDC provider and creates a verifier for
-// validating ID tokens.
-//
-// Parameters:
-//   - ctx: The context for the OIDC provider initialization.
-//   - config: The OAuth2 configuration, including the issuer URL and client ID.
-//
-// Returns:
-//   - A new OAuth2Authenticator.
-//   - An error if the OIDC provider cannot be initialized.
-//
-// Summary: Initializes NewOAuth2Authenticator operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // NewOAuth2Authenticator creates a new OAuth2Authenticator with the provided
 // configuration. It initializes the OIDC provider and creates a verifier for
 // validating ID tokens.
@@ -105,31 +75,6 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 	}, nil
 }
 
-// Authenticate validates the JWT from the Authorization header of the request.
-// It checks for a "Bearer" token and verifies its signature, expiration, and
-// claims against the OIDC provider.
-//
-// Parameters:
-//   - ctx: The request context.
-//   - r: The HTTP request to authenticate.
-//
-// Returns:
-//   - The context with the user's identity (email) on success.
-//   - An error if authentication fails.
-//
-// Summary: Executes Authenticate operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // Authenticate validates the JWT from the Authorization header of the request.
 // It checks for a "Bearer" token and verifies its signature, expiration, and
 // claims against the OIDC provider.

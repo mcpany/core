@@ -13,18 +13,12 @@ import (
 // SimpleVectorStore is a naive in-memory vector store.
 //
 // Summary: Represents a SimpleVectorStore.
-// SimpleVectorStore is a naive in-memory vector store.
-//
-// Summary: Represents a SimpleVectorStore.
 type SimpleVectorStore struct {
 	mu         sync.RWMutex
 	items      map[string][]*VectorEntry
 	maxEntries int
 }
 
-// VectorEntry represents a single entry in the vector store.
-//
-// Summary: Represents a VectorEntry.
 // VectorEntry represents a single entry in the vector store.
 //
 // Summary: Represents a VectorEntry.
@@ -58,25 +52,6 @@ type VectorEntry struct {
 //
 // Side Effects:
 //   - None.
-// NewSimpleVectorStore creates a new SimpleVectorStore.
-// It initializes the store with a default configuration.
-//
-// Returns:
-//   - *SimpleVectorStore: A pointer to the newly created SimpleVectorStore.
-//
-// Summary: Initializes NewSimpleVectorStore operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func NewSimpleVectorStore() *SimpleVectorStore {
 	return &SimpleVectorStore{
 		items:      make(map[string][]*VectorEntry),
@@ -84,31 +59,6 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 	}
 }
 
-// Add adds a new entry to the vector store.
-// It evicts the oldest entry if the store exceeds the maximum number of entries for the key.
-//
-// Parameters:
-//   - key: The key associated with the entry.
-//   - vector: The embedding vector.
-//   - result: The result to cache.
-//   - ttl: The time-to-live for the entry.
-//
-// Returns:
-//   - error: An error if the operation fails (currently always nil).
-//
-// Summary: Executes Add operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // Add adds a new entry to the vector store.
 // It evicts the oldest entry if the store exceeds the maximum number of entries for the key.
 //
@@ -185,31 +135,6 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 //
 // Side Effects:
 //   - None.
-// Search searches for the most similar entry in the vector store for the given key and query vector.
-// It returns the result, the similarity score, and a boolean indicating if a match was found.
-//
-// Parameters:
-//   - key: The key to search for.
-//   - query: The query vector.
-//
-// Returns:
-//   - any: The cached result if found.
-//   - float32: The similarity score (cosine similarity).
-//   - bool: True if a match was found, false otherwise.
-//
-// Summary: Executes Search operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float32) (any, float32, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -245,24 +170,6 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 	return bestResult, bestScore, true
 }
 
-// Prune removes expired entries from the vector store for the given key.
-//
-// Parameters:
-//   - key: The key to prune entries for.
-//
-// Summary: Executes Prune operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // Prune removes expired entries from the vector store for the given key.
 //
 // Parameters:

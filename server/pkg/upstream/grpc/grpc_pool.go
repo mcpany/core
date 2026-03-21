@@ -52,27 +52,6 @@ type poolWithChecker[T pool.ClosableClient] struct {
 //
 // Side Effects:
 //   - None.
-// Close stops the health checker and closes the underlying pool.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Side Effects:
-//   - Stops the health checker.
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (p *poolWithChecker[T]) Close() error {
 	if p.checker != nil {
 		p.checker.Stop()
@@ -80,45 +59,6 @@ func (p *poolWithChecker[T]) Close() error {
 	return p.Pool.Close()
 }
 
-// NewGrpcPool creates a new connection pool for gRPC clients.
-//
-// It configures the pool with a factory function that establishes new gRPC connections with the
-// specified address, dialer, and credentials.
-//
-// Parameters:
-//   - minSize (int): The initial number of connections to create.
-//   - maxSize (int): The maximum number of connections the pool can hold.
-//   - idleTimeout (time.Duration): The duration after which an idle connection may be closed.
-//   - dialer (func(context.Context, string) (net.Conn, error)): An optional custom dialer.
-//   - creds (credentials.PerRPCCredentials): The per-RPC credentials to be used for authentication.
-//   - config (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
-//   - disableHealthCheck (bool): Whether to disable the health check.
-//
-// Returns:
-//   - pool.Pool[*client.GrpcClientWrapper]: The created pool.
-//   - error: An error if the pool cannot be created.
-//
-// Errors:
-//   - Returns error if config is nil or invalid.
-//   - Returns error if TLS configuration is invalid.
-//
-// Side Effects:
-//   - Reads certificate files if mTLS is configured.
-//   - Initializes gRPC clients.
-//
-// Summary: Initializes NewGrpcPool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // NewGrpcPool creates a new connection pool for gRPC clients.
 //
 // It configures the pool with a factory function that establishes new gRPC connections with the

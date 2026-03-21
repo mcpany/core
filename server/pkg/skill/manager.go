@@ -19,8 +19,6 @@ import (
 const (
 	// SkillFileName is the name of the main skill file.
 	// Summary: Defines SkillFileName.
-	// SkillFileName is the name of the main skill file.
-	// Summary: Defines SkillFileName.
 	SkillFileName = "SKILL.md"
 )
 
@@ -30,9 +28,6 @@ var (
 	validNameRegex = regexp.MustCompile(`^[a-z0-9]([-a-z0-9]*[a-z0-9])?$`)
 )
 
-// Manager handles the storage and retrieval of skills.
-//
-// Summary: Represents a Manager.
 // Manager handles the storage and retrieval of skills.
 //
 // Summary: Represents a Manager.
@@ -70,34 +65,6 @@ type Manager struct {
 //
 // Side Effects:
 //   - None.
-// NewManager creates a new Skill Manager. rootDir is the directory where skills are stored.
-//
-// Parameters:
-//   - rootDir (string): The rootDir parameter.
-//
-// Returns:
-//   - *Manager: The resulting *Manager.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewManager operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func NewManager(rootDir string) (*Manager, error) {
 	if err := os.MkdirAll(rootDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create skill root directory: %w", err)
@@ -107,34 +74,6 @@ func NewManager(rootDir string) (*Manager, error) {
 	}, nil
 }
 
-// ListSkills returns all available skills. It scans the root directory for subdirectories containing SKILL.md.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []*Skill: The resulting []*Skill.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes ListSkills operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // ListSkills returns all available skills. It scans the root directory for subdirectories containing SKILL.md.
 //
 // Parameters:
@@ -231,67 +170,12 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 //
 // Side Effects:
 //   - None.
-// GetSkill retrieves a specific skill by name. name is the name of the resource. Returns the result. Returns an error if the operation fails.
-//
-// Parameters:
-//   - name (string): The name parameter.
-//
-// Returns:
-//   - *Skill: The resulting *Skill.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Retrieves GetSkill operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (m *Manager) GetSkill(name string) (*Skill, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	return m.loadSkill(name)
 }
 
-// CreateSkill creates a new skill. It ensures the name is valid and the directory doesn't already exist.
-//
-// Parameters:
-//   - skill (*Skill): The skill parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes CreateSkill operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // CreateSkill creates a new skill. It ensures the name is valid and the directory doesn't already exist.
 //
 // Parameters:
@@ -347,34 +231,6 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 	return m.writeSkillFile(skillDir, skill)
 }
 
-// UpdateSkill updates an existing skill. If the name has changed, it renames the directory.
-//
-// Parameters:
-//   - originalName (string): The originalName parameter.
-//   - skill (*Skill): The skill parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes UpdateSkill operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // UpdateSkill updates an existing skill. If the name has changed, it renames the directory.
 //
 // Parameters:
@@ -461,33 +317,6 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 //
 // Side Effects:
 //   - None.
-// DeleteSkill deletes a skill. name is the name of the resource. Returns an error if the operation fails.
-//
-// Parameters:
-//   - name (string): The name parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes DeleteSkill operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (m *Manager) DeleteSkill(name string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -504,35 +333,6 @@ func (m *Manager) DeleteSkill(name string) error {
 	return os.RemoveAll(skillDir)
 }
 
-// SaveAsset saves an asset file (script, reference, etc.) for a skill. path is relative to the skill root (e.g. "scripts/myscript.py").
-//
-// Parameters:
-//   - skillName (string): The skillName parameter.
-//   - relPath (string): The relPath parameter.
-//   - content ([]byte): The content parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes SaveAsset operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // SaveAsset saves an asset file (script, reference, etc.) for a skill. path is relative to the skill root (e.g. "scripts/myscript.py").
 //
 // Parameters:

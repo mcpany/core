@@ -32,28 +32,6 @@ import (
 //
 // Side Effects:
 //   - None.
-// Password hashes a password using bcrypt.
-//
-// Parameters:
-//   - password: The password to hash.
-//
-// Returns:
-//   - string: The hashed password.
-//   - error: An error if the hashing fails.
-//
-// Summary: Executes Password operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func Password(password string) (string, error) {
 	// Increase cost to 12 for better security (default is 10)
 	const cost = 12
@@ -64,28 +42,6 @@ func Password(password string) (string, error) {
 	return string(bytes), nil
 }
 
-// CheckPassword checks if a password matches a hash.
-//
-// Parameters:
-//   - password: The password to check.
-//   - hash: The hash to compare against.
-//
-// Returns:
-//   - bool: True if the password matches the hash, false otherwise.
-//
-// Summary: Executes CheckPassword operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // CheckPassword checks if a password matches a hash.
 //
 // Parameters:

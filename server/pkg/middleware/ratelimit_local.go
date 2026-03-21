@@ -15,9 +15,6 @@ import (
 // LocalLimiter is an in-memory implementation of Limiter.
 //
 // Summary: Rate limiter implementation using golang.org/x/time/rate.
-// LocalLimiter is an in-memory implementation of Limiter.
-//
-// Summary: Rate limiter implementation using golang.org/x/time/rate.
 type LocalLimiter struct {
 	*rate.Limiter
 }
@@ -35,25 +32,6 @@ type LocalLimiter struct {
 //
 // Side Effects:
 //   - Consumes 1 token from the bucket if allowed.
-//
-// Errors:
-//   - Returns an error if the operation fails or inputs are invalid.
-// Allow checks if the request is allowed (cost 1).
-//
-// Summary: Checks if a single event is allowed by the rate limiter.
-//
-// Parameters:
-//   - _: context.Context. Unused.
-//
-// Returns:
-//   - bool: True if allowed, false otherwise.
-//   - error: Always nil.
-//
-// Side Effects:
-//   - Consumes 1 token from the bucket if allowed.
-//
-// Errors:
-//   - Returns an error if the operation fails or inputs are invalid.
 func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 	return l.Limiter.Allow(), nil
 }
@@ -72,40 +50,10 @@ func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 //
 // Side Effects:
 //   - Consumes n tokens from the bucket if allowed.
-//
-// Errors:
-//   - Returns an error if the operation fails or inputs are invalid.
-// AllowN checks if the request is allowed with a specific cost.
-//
-// Summary: Checks if N events are allowed by the rate limiter.
-//
-// Parameters:
-//   - _: context.Context. Unused.
-//   - n: int. The cost of the event.
-//
-// Returns:
-//   - bool: True if allowed, false otherwise.
-//   - error: Always nil.
-//
-// Side Effects:
-//   - Consumes n tokens from the bucket if allowed.
-//
-// Errors:
-//   - Returns an error if the operation fails or inputs are invalid.
 func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 	return l.Limiter.AllowN(time.Now(), n), nil
 }
 
-// Update updates the limiter configuration.
-//
-// Summary: Dynamically updates the rate limit and burst size.
-//
-// Parameters:
-//   - rps: float64. The new requests per second limit.
-//   - burst: int. The new burst size.
-//
-// Side Effects:
-//   - Modifies the underlying rate.Limiter state.
 // Update updates the limiter configuration.
 //
 // Summary: Dynamically updates the rate limit and burst size.
@@ -129,17 +77,8 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 // LocalStrategy implements RateLimitStrategy for local in-memory rate limiting.
 //
 // Summary: Strategy for creating local rate limiters.
-// LocalStrategy implements RateLimitStrategy for local in-memory rate limiting.
-//
-// Summary: Strategy for creating local rate limiters.
 type LocalStrategy struct{}
 
-// NewLocalStrategy creates a new LocalStrategy.
-//
-// Summary: Initializes a new LocalStrategy.
-//
-// Returns:
-//   - *LocalStrategy: The initialized strategy.
 // NewLocalStrategy creates a new LocalStrategy.
 //
 // Summary: Initializes a new LocalStrategy.
@@ -167,29 +106,6 @@ func NewLocalStrategy() *LocalStrategy {
 //
 // Side Effects:
 //   - Sets a minimum burst of 1 if configured lower.
-//
-// Errors:
-//   - Returns an error if the operation fails or inputs are invalid.
-// Create creates a new LocalLimiter.
-//
-// Summary: Creates a new in-memory rate limiter based on the provided configuration.
-//
-// Parameters:
-//   - _: context.Context. Unused.
-//   - _: string. Unused (serviceID).
-//   - _: string. Unused (limitScopeKey).
-//   - _: string. Unused (partitionKey).
-//   - config: *configv1.RateLimitConfig. The rate limit configuration.
-//
-// Returns:
-//   - Limiter: The created LocalLimiter.
-//   - error: Always nil.
-//
-// Side Effects:
-//   - Sets a minimum burst of 1 if configured lower.
-//
-// Errors:
-//   - Returns an error if the operation fails or inputs are invalid.
 func (s *LocalStrategy) Create(_ context.Context, _, _, _ string, config *configv1.RateLimitConfig) (Limiter, error) {
 	rps := config.GetRequestsPerSecond()
 	burst := int(config.GetBurst())
