@@ -409,6 +409,7 @@ These features represent the next logical steps for the product, focusing on Ent
 ### Warning Areas
 
 1.  **UI Component Duplication**: Some UI components in `ui/src/components` seem to have overlapping responsibilities (e.g., multiple "detail" views). A UI component audit is recommended.
+
 2.  **Test Coverage gaps**: While core logic is tested, cloud providers (S3/GCS) and some new UI features lack comprehensive integration tests.
 
 ### Healthy Areas
