@@ -36,7 +36,7 @@ fi
 # Use smaller memory profile for CI environment to avoid OOM
 if [ "$CI" = "true" ] || [ "$GITHUB_ACTIONS" = "true" ]; then
     export GOGC=10
-    export GOMEMLIMIT=512MiB
+    export GOMEMLIMIT=256MiB
     # Split directories into separate runs to reduce peak memory usage
     for dir in "cmd" "pkg" "tests" "examples"; do
         if [ -d "server/$dir" ]; then
@@ -45,7 +45,7 @@ if [ "$CI" = "true" ] || [ "$GITHUB_ACTIONS" = "true" ]; then
     done
 else
     export GOGC=10
-    export GOMEMLIMIT=512MiB
+    export GOMEMLIMIT=256MiB
     # Split directories into separate runs to reduce peak memory usage
     for dir in "cmd" "pkg" "tests" "examples"; do
         if [ -d "server/$dir" ]; then
