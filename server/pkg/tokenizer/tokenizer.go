@@ -49,13 +49,13 @@ type SimpleTokenizer struct{}
 // Summary: Initializes NewSimpleTokenizer operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -81,13 +81,13 @@ func NewSimpleTokenizer() *SimpleTokenizer {
 // Summary: Executes CountTokens operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -127,13 +127,13 @@ type WordTokenizer struct {
 // Summary: Initializes NewWordTokenizer operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -159,13 +159,13 @@ func NewWordTokenizer() *WordTokenizer {
 // Summary: Executes CountTokens operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -264,13 +264,13 @@ func countWords(text string) int {
 // Summary: Executes CountTokensInValue operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -320,13 +320,13 @@ type rawWordCounter struct{}
 // Summary: Executes CountTokens operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.

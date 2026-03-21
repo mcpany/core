@@ -68,13 +68,13 @@ type CachingMiddleware struct {
 // Summary: Initializes NewCachingMiddleware operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -153,13 +153,13 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 // Summary: Updates SetProviderFactory operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -187,13 +187,13 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 // Summary: Executes Execute operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -506,13 +506,13 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 // Summary: Executes Clear operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.

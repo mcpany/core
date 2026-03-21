@@ -79,13 +79,13 @@ type CheckResult struct {
 // Summary: Executes RunChecks operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -131,13 +131,13 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 // Summary: Executes CheckService operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.

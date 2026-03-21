@@ -42,13 +42,13 @@ type LocalProvider struct {
 // Summary: Initializes NewLocalProvider operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -73,13 +73,13 @@ func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPath
 // Summary: Retrieves GetFs operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -105,13 +105,13 @@ func (p *LocalProvider) GetFs() afero.Fs {
 // Summary: Executes ResolvePath operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -378,13 +378,13 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.

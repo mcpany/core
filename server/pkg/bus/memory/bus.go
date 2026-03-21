@@ -47,13 +47,13 @@ type DefaultBus[T any] struct {
 // Summary: Initializes New operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -80,13 +80,13 @@ func New[T any]() *DefaultBus[T] {
 // Summary: Executes Publish operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -140,13 +140,13 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 // Summary: Executes Subscribe operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -209,13 +209,13 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 // Summary: Executes SubscribeOnce operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.

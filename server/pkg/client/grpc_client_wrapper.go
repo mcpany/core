@@ -60,13 +60,13 @@ type GrpcClientWrapper struct {
 // Summary: Initializes NewGrpcClientWrapper operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -99,13 +99,13 @@ func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, che
 // Summary: Checks IsHealthy operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -139,13 +139,13 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.

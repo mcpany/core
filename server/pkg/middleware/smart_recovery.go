@@ -45,13 +45,13 @@ type SmartRecoveryMiddleware struct {
 // Summary: Initializes NewSmartRecoveryMiddleware operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -82,13 +82,13 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 // Summary: Executes Execute operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.

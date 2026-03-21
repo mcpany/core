@@ -33,13 +33,13 @@ const RolesContextKey authContextKey = "user_roles"
 // Summary: Executes ContextWithRoles operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -65,13 +65,13 @@ func ContextWithRoles(ctx context.Context, roles []string) context.Context {
 // Summary: Executes RolesFromContext operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -103,13 +103,13 @@ type RBACEnforcer struct {
 // Summary: Initializes NewRBACEnforcer operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -135,13 +135,13 @@ func NewRBACEnforcer() *RBACEnforcer {
 // Summary: Checks HasRole operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -170,13 +170,13 @@ func (e *RBACEnforcer) HasRole(user *configv1.User, role string) bool {
 // Summary: Checks HasAnyRole operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -210,13 +210,13 @@ func (e *RBACEnforcer) HasAnyRole(user *configv1.User, roles []string) bool {
 // Summary: Checks HasRoleInContext operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.

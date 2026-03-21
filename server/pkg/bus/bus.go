@@ -98,13 +98,13 @@ var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 // Summary: Initializes NewProvider operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -166,13 +166,13 @@ var GetBusHook func(p *Provider, topic string) (any, error)
 // Summary: Retrieves GetBus operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.

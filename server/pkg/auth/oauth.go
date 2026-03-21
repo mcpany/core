@@ -37,13 +37,13 @@ type OAuth2Authenticator struct {
 // Summary: Initializes NewOAuth2Authenticator operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -90,13 +90,13 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 // Summary: Executes Authenticate operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.

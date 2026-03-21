@@ -39,13 +39,13 @@ type UpstreamWorker struct {
 // Summary: Initializes NewUpstreamWorker operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -66,13 +66,13 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 // Summary: Executes Start operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -144,13 +144,13 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 // Summary: Executes Stop operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.

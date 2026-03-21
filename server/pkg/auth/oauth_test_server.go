@@ -44,13 +44,13 @@ type MockOAuth2Server struct {
 // Summary: Initializes NewMockOAuth2Server operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -142,13 +142,13 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 // Summary: Initializes NewIDToken operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.

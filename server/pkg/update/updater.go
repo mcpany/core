@@ -40,13 +40,13 @@ type Updater struct {
 // Summary: Initializes NewUpdater operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -85,13 +85,13 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 // Summary: Executes CheckForUpdate operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -130,13 +130,13 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 // Summary: Executes UpdateTo operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.

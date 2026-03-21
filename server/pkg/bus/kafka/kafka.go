@@ -51,13 +51,13 @@ type Bus[T any] struct {
 // Summary: Initializes New operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -98,13 +98,13 @@ func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 // Summary: Executes Publish operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -140,13 +140,13 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 // Summary: Executes Subscribe operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -239,13 +239,13 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 // Summary: Executes SubscribeOnce operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.

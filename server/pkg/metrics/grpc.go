@@ -37,13 +37,13 @@ type GrpcStatsHandler struct {
 // Summary: Executes TagRPC operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -63,13 +63,13 @@ func (h *GrpcStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) c
 // Summary: Executes HandleRPC operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -97,13 +97,13 @@ func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 // Summary: Executes TagConn operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -123,13 +123,13 @@ func (h *GrpcStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo)
 // Summary: Executes HandleConn operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.

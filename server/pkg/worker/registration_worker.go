@@ -44,13 +44,13 @@ type ServiceRegistrationWorker struct {
 // Summary: Initializes NewServiceRegistrationWorker operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -70,13 +70,13 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 // Summary: Updates SetRetryDelay operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -94,13 +94,13 @@ func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 // Summary: Executes Start operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -342,13 +342,13 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 // Summary: Executes Stop operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.

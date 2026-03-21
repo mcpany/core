@@ -41,13 +41,13 @@ type AuditHandler struct {
 // Summary: Initializes NewAuditHandler operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -113,13 +113,13 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 // Summary: Executes Enabled operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -145,13 +145,13 @@ func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 // Summary: Executes Handle operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -182,13 +182,13 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 // Summary: Executes WithAttrs operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -217,13 +217,13 @@ func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 // Summary: Executes WithGroup operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -253,13 +253,13 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 // Summary: Executes Export operation.
 //
 // Parameters:
-//   - Parameters are described in the interface.
+//   - None.
 //
 // Returns:
-//   - Returns the expected interface result.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
 //   - None.
