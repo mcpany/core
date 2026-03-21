@@ -53,4 +53,5 @@ The emergence of **Reasoning Path Shadowing** (stylometric mimicry) has exposed 
 *   **Observability:** The "Lineage Inspector" UI will provide a visual "Chain of Command" for every tool call in the swarm.
 
 ## 7. Evolutionary Changelog
-*   **[2026-06-19]:** Initial Document Creation.
+
+* **[2026-06-19]:** Initial Document Creation.

@@ -53,9 +53,11 @@ As agent swarms become deeper and more autonomous, a new class of exploit has em
 *   **Observability:** The "Attention Sovereignty Monitor" in the UI will visualize real-time attention-utilization and noise-pruning events.
 
 ## 7. Evolutionary Changelog
+
 * **[2026-06-18]:** Initial Document Creation.
 
 ### Update: [2026-06-19] - Attention-Locking and HAIL Integration
+
 **Context:** Today's market sync revealed a new exploit pattern in OpenClaw subagent reasoning mimicry (shadowing).
 **Architecture Adjustment:** * Integrating support for `x-gemini-attention-lock` compatibility in Section 4.
 * Mandating **HAIL-attested lineage** for all attention-lock requests to prevent stylometric shadowing.
