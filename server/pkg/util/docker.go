@@ -57,6 +57,20 @@ func IsDockerSocketAccessible() bool {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes CloseDockerClient operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func CloseDockerClient() {
 	if dockerClient != nil {
 		_ = dockerClient.Close()
