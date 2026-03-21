@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { ServiceTemplate } from "@/lib/templates";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
