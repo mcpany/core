@@ -121,10 +121,19 @@ wait_for_http() {
 find_free_port() {
   python3 - <<'PY'
 import socket
+import time
+import random
 
-with socket.socket() as sock:
-    sock.bind(("127.0.0.1", 0))
-    print(sock.getsockname()[1])
+for _ in range(100):
+    port = random.randint(10000, 60000)
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        try:
+            s.bind(('127.0.0.1', port))
+            print(port)
+            break
+        except socket.error:
+            time.sleep(0.01)
+            continue
 PY
 }
 
