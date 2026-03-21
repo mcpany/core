@@ -15,6 +15,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 interface RichResultViewerProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     result: any;
 }
 
@@ -106,8 +107,10 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         // e.g., { data: { items: [...] } } or { response: { data: [...] } }
         if (extractedContent && typeof extractedContent === 'object' && !Array.isArray(extractedContent)) {
             // Find the largest array in the object to use as the table
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let largestArray: any[] | null = null;
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const findArray = (obj: any, depth = 0) => {
                 if (depth > 3 || !obj || typeof obj !== 'object') return;
 
@@ -125,6 +128,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
             findArray(extractedContent);
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const validLargestArray = largestArray as any[] | null;
             if (validLargestArray && validLargestArray.length > 0 && typeof validLargestArray[0] === 'object') {
                  // We found a meaningful array to display, but we also want to keep the original content
@@ -140,6 +144,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
     const mcpContent = useMemo<McpContent[] | null>(() => {
         if (Array.isArray(content)) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const isValidArray = content.every((item: any) =>
                 (item.type === 'text' && typeof item.text === 'string') ||
                 (item.type === 'image' && typeof item.data === 'string' && typeof item.mimeType === 'string')
@@ -151,6 +156,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
         if (content && typeof content === 'object' && Array.isArray(content.content)) {
             // Check if it looks like MCP content
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const isValid = content.content.every((item: any) =>
                 (item.type === 'text' && typeof item.text === 'string') ||
                 (item.type === 'image' && typeof item.data === 'string' && typeof item.mimeType === 'string')
@@ -176,6 +182,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         // aggregate all keys from all objects to handle sparse data
         const keys = new Set<string>();
         // Limit rows scanned for columns to avoid perf issues on huge datasets
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         content.slice(0, 50).forEach((item: any) => {
             if (typeof item === 'object' && item !== null) {
                 Object.keys(item).forEach(k => keys.add(k));
@@ -184,6 +191,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return Array.from(keys);
     }, [content, isTableEligible]);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const renderCell = (value: any) => {
         if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
         if (typeof value === 'object') return <span className="font-mono text-xs text-muted-foreground truncate max-w-[200px] block" title={JSON.stringify(value)}>{JSON.stringify(value)}</span>;
@@ -243,6 +251,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
+                                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                                 {content.map((row: any, i: number) => (
                                     <TableRow key={i} className="hover:bg-muted/30 transition-colors">
                                         {columns.map(col => (
