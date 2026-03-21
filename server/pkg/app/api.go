@@ -841,40 +841,51 @@ func updateToolDisableStatus(svc *configv1.UpstreamServiceConfig, toolName strin
 	var tools []*configv1.ToolDefinition
 	var setToolsFunc func([]*configv1.ToolDefinition)
 
-	switch st := svc.GetServiceConfig().(type) {
-	case *configv1.UpstreamServiceConfig_McpService:
-		tools = st.McpService.GetTools()
-		setToolsFunc = func(t []*configv1.ToolDefinition) { st.McpService.SetTools(t) }
-	case *configv1.UpstreamServiceConfig_HttpService:
-		tools = st.HttpService.GetTools()
-		setToolsFunc = func(t []*configv1.ToolDefinition) { st.HttpService.SetTools(t) }
-	case *configv1.UpstreamServiceConfig_GrpcService:
-		tools = st.GrpcService.GetTools()
-		setToolsFunc = func(t []*configv1.ToolDefinition) { st.GrpcService.SetTools(t) }
-	case *configv1.UpstreamServiceConfig_OpenapiService:
-		tools = st.OpenapiService.GetTools()
-		setToolsFunc = func(t []*configv1.ToolDefinition) { st.OpenapiService.SetTools(t) }
-	case *configv1.UpstreamServiceConfig_CommandLineService:
-		tools = st.CommandLineService.GetTools()
-		setToolsFunc = func(t []*configv1.ToolDefinition) { st.CommandLineService.SetTools(t) }
-	case *configv1.UpstreamServiceConfig_WebsocketService:
-		tools = st.WebsocketService.GetTools()
-		setToolsFunc = func(t []*configv1.ToolDefinition) { st.WebsocketService.SetTools(t) }
-	case *configv1.UpstreamServiceConfig_WebrtcService:
-		tools = st.WebrtcService.GetTools()
-		setToolsFunc = func(t []*configv1.ToolDefinition) { st.WebrtcService.SetTools(t) }
-	case *configv1.UpstreamServiceConfig_GraphqlService:
-		tools = st.GraphqlService.GetTools()
-		setToolsFunc = func(t []*configv1.ToolDefinition) { st.GraphqlService.SetTools(t) }
-	case *configv1.UpstreamServiceConfig_SqlService:
-		tools = st.SqlService.GetTools()
-		setToolsFunc = func(t []*configv1.ToolDefinition) { st.SqlService.SetTools(t) }
-	case *configv1.UpstreamServiceConfig_FilesystemService:
-		tools = st.FilesystemService.GetTools()
-		setToolsFunc = func(t []*configv1.ToolDefinition) { st.FilesystemService.SetTools(t) }
-	case *configv1.UpstreamServiceConfig_VectorService:
-		tools = st.VectorService.GetTools()
-		setToolsFunc = func(t []*configv1.ToolDefinition) { st.VectorService.SetTools(t) }
+	switch svc.WhichServiceConfig() {
+	case configv1.UpstreamServiceConfig_McpService_case:
+		mcp := svc.GetMcpService()
+		tools = mcp.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { mcp.SetTools(t) }
+	case configv1.UpstreamServiceConfig_HttpService_case:
+		http := svc.GetHttpService()
+		tools = http.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { http.SetTools(t) }
+	case configv1.UpstreamServiceConfig_GrpcService_case:
+		grpc := svc.GetGrpcService()
+		tools = grpc.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { grpc.SetTools(t) }
+	case configv1.UpstreamServiceConfig_OpenapiService_case:
+		openapi := svc.GetOpenapiService()
+		tools = openapi.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { openapi.SetTools(t) }
+	case configv1.UpstreamServiceConfig_CommandLineService_case:
+		cmd := svc.GetCommandLineService()
+		tools = cmd.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { cmd.SetTools(t) }
+	case configv1.UpstreamServiceConfig_WebsocketService_case:
+		ws := svc.GetWebsocketService()
+		tools = ws.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { ws.SetTools(t) }
+	case configv1.UpstreamServiceConfig_WebrtcService_case:
+		rtc := svc.GetWebrtcService()
+		tools = rtc.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { rtc.SetTools(t) }
+	case configv1.UpstreamServiceConfig_GraphqlService_case:
+		graphql := svc.GetGraphqlService()
+		tools = graphql.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { graphql.SetTools(t) }
+	case configv1.UpstreamServiceConfig_SqlService_case:
+		sql := svc.GetSqlService()
+		tools = sql.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { sql.SetTools(t) }
+	case configv1.UpstreamServiceConfig_FilesystemService_case:
+		fs := svc.GetFilesystemService()
+		tools = fs.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { fs.SetTools(t) }
+	case configv1.UpstreamServiceConfig_VectorService_case:
+		vector := svc.GetVectorService()
+		tools = vector.GetTools()
+		setToolsFunc = func(t []*configv1.ToolDefinition) { vector.SetTools(t) }
 	default:
 		return fmt.Errorf("unknown service type")
 	}
