@@ -992,7 +992,9 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 		attemptResp, err := httpClient.Do(httpReq)
 		if err != nil {
-			return fmt.Errorf("failed to execute http request: %w", err)
+			// 🛡️ Sentinel Security Update: Prevent Information Leakage
+			logging.GetLogger().ErrorContext(ctx, "Failed to execute HTTP request", "tool", t.tool.GetName(), "error", err)
+			return fmt.Errorf("failed to execute http request")
 		}
 
 		if attemptResp.StatusCode == http.StatusTooManyRequests {
@@ -2108,7 +2110,9 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	resp, err := t.client.Do(httpReq)
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute http request: %w", err)
+		// 🛡️ Sentinel Security Update: Prevent Information Leakage
+		logging.GetLogger().ErrorContext(ctx, "Failed to execute OpenAPI HTTP request", "tool", t.tool.GetName(), "error", err)
+		return nil, fmt.Errorf("failed to execute http request")
 	}
 	defer func() { _ = resp.Body.Close() }()
 
@@ -2124,7 +2128,9 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	if resp.StatusCode >= 400 {
-		return nil, fmt.Errorf("upstream OpenAPI request failed with status %d: %s", resp.StatusCode, string(respBody))
+		// 🛡️ Sentinel Security Update: Prevent Information Leakage
+		logging.GetLogger().ErrorContext(ctx, "Upstream OpenAPI request failed", "tool", t.tool.GetName(), "status", resp.StatusCode, "response", string(respBody))
+		return nil, fmt.Errorf("upstream OpenAPI request failed with status %d", resp.StatusCode)
 	}
 
 	if t.outputTransformer != nil {
@@ -2676,7 +2682,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
 		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
+			// 🛡️ Sentinel Security Update: Prevent Information Leakage
+			logging.GetLogger().ErrorContext(ctx, "Failed to execute JSON CLI command with stdio", "tool", t.tool.GetName(), "error", err)
+			return nil, fmt.Errorf("failed to execute JSON CLI command")
 		}
 		// We don't defer stdin.Close() here because we close it in the writer goroutine
 
@@ -2720,7 +2728,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute command: %w", err)
+		// 🛡️ Sentinel Security Update: Prevent Information Leakage
+		logging.GetLogger().ErrorContext(ctx, "Failed to execute CLI command", "tool", t.tool.GetName(), "error", err)
+		return nil, fmt.Errorf("failed to execute command")
 	}
 
 	var stdoutBuf, stderrBuf bytes.Buffer
@@ -3138,7 +3148,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
 		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
+			// 🛡️ Sentinel Security Update: Prevent Information Leakage
+			logging.GetLogger().ErrorContext(ctx, "Failed to execute JSON CLI command with stdio", "tool", t.tool.GetName(), "error", err)
+			return nil, fmt.Errorf("failed to execute JSON CLI command")
 		}
 		// We don't defer stdin.Close() here because we close it in the writer goroutine
 
@@ -3182,7 +3194,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute command: %w", err)
+		// 🛡️ Sentinel Security Update: Prevent Information Leakage
+		logging.GetLogger().ErrorContext(ctx, "Failed to execute CLI command", "tool", t.tool.GetName(), "error", err)
+		return nil, fmt.Errorf("failed to execute command")
 	}
 
 	var stdoutBuf, stderrBuf bytes.Buffer
