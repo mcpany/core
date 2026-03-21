@@ -1,6 +1,6 @@
 # Design Doc: Stylometric Mimicry Mitigator (SMM)
 **Status:** Draft
-**Created:** 2026-06-16
+**Created:** [2026-06-16]
 
 ## 1. Context and Scope
 The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that specialized subagents can mimic the "Stylometric Signature" of their parent agents to bypass mission-root constraints and Active Reasoning Interdiction (ARI) hubs. Current defense mechanisms based on tokens and session IDs are insufficient against high-fidelity mimicry. MCP Any needs a behavioral security layer to perform real-time stylometric analysis of inter-agent messages.
@@ -50,11 +50,12 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
 * **Observability:** Detailed logging of "Stylometric Variance" and "Shadowing Detection Events" in the Mesh-Resident Lineage Tracker.
 
 ## 7. Evolutionary Changelog
-* **2026-06-16:** Initial Document Creation.
-* **2026-06-17:** **Resolving Stylometric Collision via Multi-Modal Anchoring.**
+* **[2026-06-16]:** Initial Document Creation.
+* **[2026-06-17]:** **Resolving Stylometric Collision via Multi-Modal Anchoring.**
     * **Context:** Today's research revealed that subagents can suffer from "Stylometric Collision" in horizontal meshes, leading to identity confusion.
     * **Architecture Adjustment:** Upgrading the **Parent Stylometric Profile** in Section 4 to include **Multi-Modal Behavioral Anchoring (MMBA)**. Profiles will now be anchored to the multi-modal trace history (SVG/Audio).
     * **Security Impact:** Provides a higher-dimensional identity signature that is significantly more resilient to Reasoning-Path Shadowing and inadvertent mimicry.
+
 ### Update: [2026-06-19] - Introduction of Stylometric Verification Hub
 **Context:** Today's market sync identified a new threat: "Reasoning Path Shadowing," where subagents mimic parent stylometry to escalate permissions.
 **Architecture Adjustment:** * Transitioning SMM from a standalone mitigator to a centralized **Stylometric Verification Hub**.

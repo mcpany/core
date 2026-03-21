@@ -1,6 +1,6 @@
 # Design Doc: Hardware-Locked Attention Governance (HLAG)
 **Status:** Draft
-**Created:** 2026-06-18
+**Created:** [2026-06-18]
 
 ## 1. Context and Scope
 As agent swarms become deeper and more autonomous, a new class of exploit has emerged: **Reasoning Entropy Exhaustion (REE)**. In REE, a compromised subagent injects high-entropy "noise" into its reasoning traces, forcing the parent agent's context window to shift and evict the "Mission Root" anchors. Without these anchors, the parent agent loses its objective sovereignty and becomes susceptible to coercion. MCP Any needs to solve this by providing a hardware-locked mechanism to "pin" critical context fragments at the attention layer of the LLM.
@@ -53,7 +53,8 @@ As agent swarms become deeper and more autonomous, a new class of exploit has em
 *   **Observability:** The "Attention Sovereignty Monitor" in the UI will visualize real-time attention-utilization and noise-pruning events.
 
 ## 7. Evolutionary Changelog
-*   **2026-06-18:** Initial Document Creation.
+* **[2026-06-18]:** Initial Document Creation.
+
 ### Update: [2026-06-19] - Attention-Locking and HAIL Integration
 **Context:** Today's market sync revealed a new exploit pattern in OpenClaw subagent reasoning mimicry (shadowing).
 **Architecture Adjustment:** * Integrating support for `x-gemini-attention-lock` compatibility in Section 4.

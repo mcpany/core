@@ -1,6 +1,6 @@
 # Design Doc: Lock-Free Mesh Coordination (LFMC)
 **Status:** Draft
-**Created:** 2026-06-18
+**Created:** [2026-06-18]
 
 ## 1. Context and Scope
 With the rise of horizontal "Agent Teams" (Claude Code), the traditional "Mailbox Lock" pattern—where only one agent can access the shared task list at a time—has become a major performance bottleneck. In complex refactors, parallel teammates are spending up to 40% of their time waiting for a lock to clear. MCP Any must provide a high-performance, lock-free coordination layer for the "Universal Agent Mesh" that allows teammates to claim, delegate, and synchronize tasks asynchronously.
@@ -50,7 +50,8 @@ With the rise of horizontal "Agent Teams" (Claude Code), the traditional "Mailbo
 *   **Observability:** The "Lock-Free Mesh Arbiter" in the UI will visualize real-time task claiming and CRDT convergence.
 
 ## 7. Evolutionary Changelog
-*   **2026-06-18:** Initial Document Creation.
+* **[2026-06-18]:** Initial Document Creation.
+
 ### Update: [2026-06-19] - Sovereign Sharding for Semantic Integrity
 **Context:** Claude Code v2.2.0-rc1 previews revealed "Semantic Smearing," where parallel teammates over-write intent fragments in adjacent shards.
 **Architecture Adjustment:** * Introducing **Sovereign Sharding** in Section 4.
