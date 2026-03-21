@@ -48,8 +48,7 @@ interface AuditLogEntry {
  * @returns The rendered AuditLogViewer component.
  */
 export function AuditLogViewer() {
-    ;
-    const [logs, setLogs] = useState<AuditLogEntry[]>([]);
+        const [logs, setLogs] = useState<AuditLogEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [exporting, setExporting] = useState(false);
     const [selectedLog, setSelectedLog] = useState<AuditLogEntry | null>(null);
