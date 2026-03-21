@@ -1,5 +1,7 @@
-# Copyright 2026 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
+<!--
+Copyright 2026 Author(s) of MCP Any
+SPDX-License-Identifier: Apache-2.0
+-->
 
 # Market Sync: 2026-06-14
 
@@ -24,4 +26,6 @@
 
 ## Unique Findings for Today
 
-The shift from "Point-in-Time Integrity" to "Continuous Behavioral Sovereignty" is accelerating. The standard for HLCH v1.0 is now the mandatory baseline for enterprise swarms.
+The shift from "Point-in-Time Integrity" to "Continuous Behavioral Sovereignty"
+is accelerating. The standard for HLCH v1.0 is now the mandatory baseline for
+enterprise swarms.

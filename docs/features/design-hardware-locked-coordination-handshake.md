@@ -1,5 +1,7 @@
-# Copyright 2026 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
+<!--
+Copyright 2026 Author(s) of MCP Any
+SPDX-License-Identifier: Apache-2.0
+-->
 
 # Design Doc: Hardware-Locked Coordination Handshake
 
@@ -8,20 +10,27 @@
 
 ## 1. Context and Scope
 
-The emergence of Identity-Decay Attacks (IDA) and session-hijacking vulnerabilities in the A2A protocol (CVE-2026-48201) necessitates a transition from software-only handshakes to hardware-locked sessions. Existing mechanisms rely on long-lived tokens that can be mimicked or recycled.
+The emergence of Identity-Decay Attacks (IDA) and session-hijacking
+vulnerabilities in the A2A protocol (CVE-2026-48201) necessitates a transition
+from software-only handshakes to hardware-locked sessions. Existing mechanisms
+rely on long-lived tokens that can be mimicked or recycled.
 
-The Hardware-Locked Coordination Handshake (HLCH) mandates that every inter-agent task bidding and state fragment transfer be bound to a unique, TPM-signed session key. This ensures that even if an agent's behavioral trust is established, its coordination remain anchored to a non-repudiable hardware root.
+The Hardware-Locked Coordination Handshake (HLCH) mandates that every
+inter-agent task bidding and state fragment transfer be bound to a unique,
+TPM-signed session key. This ensures that even if an agent's behavioral trust
+is established, its coordination remain anchored to a non-repudiable hardware
+root.
 
 ## 2. Goals & Non-Goals
 
 - **Goals:**
-    - Implement HLCH v1.0 standard for all inter-agent coordination.
-    - Mandate hardware-bound (TPM/Secure Enclave) signatures for coordination session keys.
-    - Neutralize nonce-recycling and stylometric mimicry (Identity-Decay).
-    - Provide collision-resistant attestation for reasoning fragments.
+  - Implement HLCH v1.0 standard for all inter-agent coordination.
+  - Mandate hardware-bound (TPM/Secure Enclave) signatures for coordination session keys.
+  - Neutralize nonce-recycling and stylometric mimicry (Identity-Decay).
+  - Provide collision-resistant attestation for reasoning fragments.
 - **Non-Goals:**
-    - Replacing primary user authentication (this is for inter-agent coordination).
-    - Managing persistent storage encryption (handled by HAPE/RAMS).
+  - Replacing primary user authentication (this is for inter-agent coordination).
+  - Managing persistent storage encryption (handled by HAPE/RAMS).
 
 ## 3. Critical User Journey (CUJ)
 
@@ -39,17 +48,17 @@ The Hardware-Locked Coordination Handshake (HLCH) mandates that every inter-agen
 ## 4. Design & Architecture
 
 - **System Flow:**
-    - Inter-agent request triggers session key generation.
-    - MRA Provider issues TPM-signed attestation for the key.
-    - HLCH Gateway validates the handshake before establishing the T2T pipe.
-    - SCI Interceptor enforces hardware-bound signatures on all transit metadata.
+  - Inter-agent request triggers session key generation.
+  - MRA Provider issues TPM-signed attestation for the key.
+  - HLCH Gateway validates the handshake before establishing the T2T pipe.
+  - SCI Interceptor enforces hardware-bound signatures on all transit metadata.
 
 - **APIs / Interfaces:**
-    - `hlch.InitiateHandshake(missionRoot, targetAgent) -> HandshakeToken`: Begins the hardware-locked handshake.
-    - `hlch.VerifySessionSignature(fragment, signature) -> bool`: Validates fragment integrity against the session key.
+  - `hlch.InitiateHandshake(missionRoot, targetAgent) -> HandshakeToken`: Begins the hardware-locked handshake.
+  - `hlch.VerifySessionSignature(fragment, signature) -> bool`: Validates fragment integrity against the session key.
 
 - **Data Storage/State:**
-    - **Handshake Registry**: Ephemeral, memory-mapped storage for active hardware-locked session metadata.
+  - **Handshake Registry**: Ephemeral, memory-mapped storage for active hardware-locked session metadata.
 
 ## 5. Alternatives Considered
 
