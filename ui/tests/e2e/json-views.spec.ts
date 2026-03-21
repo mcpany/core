@@ -67,7 +67,16 @@ test.describe('JsonView UI Components', () => {
 
     // Wait for the specific tool to appear in the table
     // Sometimes the server is a bit slow responding with the updated tool
-    await expect(page.getByText(/test_json_schema/i).first()).toBeVisible({ timeout: 20000 });
+    // We add a reload loop to make sure it picks up the newly registered tool from beforeAll
+    for (let i = 0; i < 10; i++) {
+        try {
+            await expect(page.getByText(/test_json_schema/i).first()).toBeVisible({ timeout: 5000 });
+            break;
+        } catch (e) {
+            if (i === 9) throw e;
+            await page.reload();
+        }
+    }
 
     // Filter to ensure test tool is found
     const searchInput = page.getByPlaceholder('Search tools...');
