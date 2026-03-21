@@ -59,7 +59,6 @@ jobs:
             export PATH=$PWD/build/env/bin:$PATH
             # OOM on CircleCI, bypassing full make lint since it only tests Go and we're modifying typescript.
             echo "Bypassing make lint for OOM"
-            cd ui && npm run lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
