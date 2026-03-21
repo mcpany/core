@@ -72,9 +72,21 @@ test.describe('Users Bulk Actions', () => {
         }
 
         // Select the first two users
-        // Use standard Shadcn UI checkbox locators. Sometimes the hidden input or the parent button intercepts the click.
-        await page.locator(`tr[data-testid="user-row-${usersToCreate[0]}"] button[type="button"]`).first().click({ force: true });
-        await page.locator(`tr[data-testid="user-row-${usersToCreate[1]}"] button[type="button"]`).first().click({ force: true });
+        // Use evaluate to avoid locator issues with shadcn checkboxes inside tables.
+        await page.evaluate((uid) => {
+            const row = document.querySelector(`tr[data-testid="user-row-${uid}"]`);
+            if (row) {
+                const btn = row.querySelector('button');
+                if (btn) btn.click();
+            }
+        }, usersToCreate[0]);
+        await page.evaluate((uid) => {
+            const row = document.querySelector(`tr[data-testid="user-row-${uid}"]`);
+            if (row) {
+                const btn = row.querySelector('button');
+                if (btn) btn.click();
+            }
+        }, usersToCreate[1]);
 
         // The floating action bar should appear
         const floatingBar = page.getByText('users selected');
