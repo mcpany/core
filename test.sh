@@ -1,0 +1,3 @@
+#!/bin/bash
+export PATH=/app/build/env/bin:$PATH
+golangci-lint run ./server/...
