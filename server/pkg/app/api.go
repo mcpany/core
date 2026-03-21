@@ -838,9 +838,9 @@ func (a *Application) setToolDisableFlag(service *configv1.UpstreamServiceConfig
 	} else if webrtcSvc := service.GetWebrtcService(); webrtcSvc != nil {
 		toolList = webrtcSvc.Tools
 	} else if graphqlSvc := service.GetGraphqlService(); graphqlSvc != nil {
-		toolList = graphqlSvc.Tools
+		// GraphQL service doesn't have an explicit Tool array
 	} else if sqlSvc := service.GetSqlService(); sqlSvc != nil {
-		toolList = sqlSvc.Tools
+		// SQL service doesn't have an explicit Tool array
 	} else {
 		return fmt.Errorf("unknown service config type")
 	}
@@ -881,9 +881,9 @@ func (a *Application) setToolDisableFlag(service *configv1.UpstreamServiceConfig
 		} else if webrtcSvc := service.GetWebrtcService(); webrtcSvc != nil {
 			webrtcSvc.Tools = append(webrtcSvc.Tools, newTool)
 		} else if graphqlSvc := service.GetGraphqlService(); graphqlSvc != nil {
-			graphqlSvc.Tools = append(graphqlSvc.Tools, newTool)
+			// Do nothing for Graphql
 		} else if sqlSvc := service.GetSqlService(); sqlSvc != nil {
-			sqlSvc.Tools = append(sqlSvc.Tools, newTool)
+			// Do nothing for SQL
 		}
 	}
 
