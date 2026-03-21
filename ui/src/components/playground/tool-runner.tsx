@@ -421,7 +421,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                       </TabsList>
                       <TabsContent value="visual" className="flex-1 overflow-hidden rounded-md border bg-muted/20 mt-0">
                          <ScrollArea className="h-full w-full p-4">
-                            <SchemaViewer schema={tool.inputSchema as any} />
+                            <SchemaViewer schema={tool.inputSchema as Schema} />
                          </ScrollArea>
                       </TabsContent>
                       <TabsContent value="json" className="flex-1 overflow-hidden rounded-md border bg-muted/50 mt-0">
