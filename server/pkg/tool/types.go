@@ -4337,7 +4337,7 @@ func checkAwkInjection(val, base string) error {
 
 		// Awk uses double quotes for string literals. Awk scripts are often passed via
 		// single quotes from bash (e.g. bash -c "awk '{print}'"). `val` is the payload
-		// We track if we are in an awk string (double quotes).
+		// string. We track if we are in an awk string (double quotes).
 		if char == '"' {
 			inDouble = !inDouble
 			continue
@@ -4347,7 +4347,7 @@ func checkAwkInjection(val, base string) error {
 			continue
 		}
 
-		// Not in quote, not in comment.
+		// Not in quote, not in comment
 		if char == '#' {
 			inComment = true
 			continue
