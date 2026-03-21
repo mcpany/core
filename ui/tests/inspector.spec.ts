@@ -52,7 +52,7 @@ test.describe("Inspector Page", () => {
 
     await page.routeWebSocket(
       "**/api/v1/ws/traces",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line
       (ws: any) => {
         wsSend = (data: string) => ws.send(data);
       },
@@ -105,7 +105,7 @@ test.describe("Inspector Page", () => {
 
     await page.routeWebSocket(
       "**/api/v1/ws/traces",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line
       (ws: any) => {
         wsSend = (data: string) => ws.send(data);
       },
