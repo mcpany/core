@@ -561,6 +561,30 @@ func TestSimpleTokenizeInt64(t *testing.T) {
 		{"edge_16", 9999999999999999, 4},
 		{"edge_17", 99999999999999999, 4},
 		{"edge_18", 999999999999999999, 4},
+		{"edge_n_100", -99, 1},
+		{"edge_n_1000", -999, 1},
+		{"edge_n_10000", -9999, 1},
+		{"edge_n_100000", -99999, 1},
+		{"edge_n_1000000", -999999, 1},
+		{"edge_n_10000000", -9999999, 2},
+		{"edge_n_100000000", -99999999, 2},
+		{"edge_n_1000000000", -999999999, 2},
+		{"edge_n_10000000000", -9999999999, 2},
+		{"edge_n_100000000000", -99999999999, 3},
+		{"edge_n_1000000000000", -999999999999, 3},
+		{"edge_n_10000000000000", -9999999999999, 3},
+		{"edge_n_100000000000000", -99999999999999, 3},
+		{"edge_n_1000000000000000", -999999999999999, 4},
+		{"edge_n_10000000000000000", -9999999999999999, 4},
+		{"edge_n_100000000000000000", -99999999999999999, 4},
+		{"edge_n_1000000000000000000", -999999999999999999, 4},
+		{"zero", 0, 1},
+		{"single_positive", 5, 1},
+		{"single_negative", -5, 1},
+		{"exactly_fast_path_max_plus_one", 10000000, 2},   // len 8 -> /4 = 2
+		{"exactly_fast_path_min_minus_one", -10000001, 2}, // len 9 -> /4 = 2
+		{"max_default", 9223372036854775807, 4},
+		{"negative_max_default", -9223372036854775807, 5},
 	}
 
 	for _, tt := range tests {
@@ -770,16 +794,6 @@ func TestCountTokensReflectSliceCoverage(t *testing.T) {
 	}
 }
 
-type errTokenizer struct{}
-
-func (e errTokenizer) CountTokens(s string) (int, error) {
-	return 0, fmt.Errorf("tokenizer error")
-}
-
-func (e errTokenizer) countRecursive(v interface{}, visited map[uintptr]bool) (int, error) {
-	return 0, fmt.Errorf("tokenizer error")
-}
-
 func TestCountTokensReflectMapCoverage(t *testing.T) {
 	st := NewSimpleTokenizer()
 	visited := make(map[uintptr]bool)
@@ -818,13 +832,16 @@ func TestCountTokensReflectMapCoverage(t *testing.T) {
 	if err == nil {
 		t.Errorf("expected error on non-string key count")
 	}
+}
 
-	// Error on value count
-	// Need a tokenizer that succeeds on key but fails on value
-	// We can achieve this by making countRecursive return an error
-	// but CountTokens succeed, because key is string (uses CountTokens)
-	// and value is int (uses countRecursive).
-	// Let's create a custom tokenizer for this.
+type errTokenizer struct{}
+
+func (e errTokenizer) CountTokens(s string) (int, error) {
+	return 0, fmt.Errorf("tokenizer error")
+}
+
+func (e errTokenizer) countRecursive(v interface{}, visited map[uintptr]bool) (int, error) {
+	return 0, fmt.Errorf("tokenizer error")
 }
 
 type errValTokenizer struct{}
@@ -846,218 +863,5 @@ func TestCountTokensReflectMapValueErrors(t *testing.T) {
 	_, err := countTokensReflectMap(et, reflect.ValueOf(m), visited)
 	if err == nil {
 		t.Errorf("expected error on value count")
-	}
-}
-
-func TestSimpleTokenizeInt64Coverage(t *testing.T) {
-	tests := []struct {
-		name  string
-		input int64
-		want  int
-	}{
-		{"fast_path_positive", 100, 1},
-		{"fast_path_negative", -100, 1},
-		{"exactly_fast_path_max", 9999999, 1},  // 7 digits
-		{"1e7", 10000000, 2},                   // 8 digits -> len=8 -> 2 tokens
-		{"1e8", 100000000, 2},                  // 9 digits -> 2 tokens
-		{"1e9", 1000000000, 2},                 // 10 digits -> 2 tokens
-		{"1e10", 10000000000, 2},               // 11 digits -> 2 tokens
-		{"1e11", 100000000000, 3},              // 12 digits -> 3 tokens
-		{"1e12", 1000000000000, 3},             // 13 digits -> 3 tokens
-		{"1e13", 10000000000000, 3},            // 14 digits -> 3 tokens
-		{"1e14", 100000000000000, 3},           // 15 digits -> 3 tokens
-		{"1e15", 1000000000000000, 4},          // 16 digits -> 4 tokens
-		{"1e16", 10000000000000000, 4},         // 17 digits -> 4 tokens
-		{"1e17", 100000000000000000, 4},        // 18 digits -> 4 tokens
-		{"1e18", 1000000000000000000, 4},       // 19 digits -> 4 tokens
-		{"max_int64", 9223372036854775807, 4},  // 19 digits -> 4 tokens
-		{"min_int64", -9223372036854775808, 5}, // 20 digits -> 5 tokens
-		{"negative_large", -10000000, 2},       // 9 digits (incl sign) -> 2 tokens
-		{"edge_1", 9, 1},
-		{"edge_2", 99, 1},
-		{"edge_3", 999, 1},
-		{"edge_4", 9999, 1},
-		{"edge_5", 99999, 1},
-		{"edge_6", 999999, 1},
-		{"edge_7", 9999999, 1},
-		{"edge_11", 99999999999, 2},
-		{"edge_12", 999999999999, 3},
-		{"edge_13", 9999999999999, 3},
-		{"edge_14", 99999999999999, 3},
-		{"edge_15", 999999999999999, 3},
-		{"edge_16", 9999999999999999, 4},
-		{"edge_17", 99999999999999999, 4},
-		{"edge_18", 999999999999999999, 4},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := simpleTokenizeInt64(tt.input)
-			if got != tt.want {
-				t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.input, got, tt.want)
-			}
-		})
-	}
-}
-
-func TestSimpleTokenizeInt64Coverage2(t *testing.T) {
-	tests := []struct {
-		name  string
-		input int64
-		want  int
-	}{
-		{"edge_10", 9999999999, 2},
-		{"negative_edge_10", -9999999999, 2},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := simpleTokenizeInt64(tt.input)
-			if got != tt.want {
-				t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.input, got, tt.want)
-			}
-		})
-	}
-}
-
-func TestSimpleTokenizeInt64Coverage3(t *testing.T) {
-	tests := []struct {
-		name  string
-		input int64
-		want  int
-	}{
-		{"edge_8", 99999999, 2},
-		{"edge_9", 999999999, 2},
-		{"edge_10", 9999999999, 2},
-		{"edge_11", 99999999999, 2},
-		{"edge_12", 999999999999, 3},
-		{"edge_13", 9999999999999, 3},
-		{"edge_14", 99999999999999, 3},
-		{"edge_15", 999999999999999, 3},
-		{"edge_16", 9999999999999999, 4},
-		{"edge_17", 99999999999999999, 4},
-		{"edge_18", 999999999999999999, 4},
-		{"edge_19", 9223372036854775806, 4},
-		{"edge_20", -9223372036854775807, 5},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := simpleTokenizeInt64(tt.input)
-			if got != tt.want {
-				t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.input, got, tt.want)
-			}
-		})
-	}
-}
-
-func TestSimpleTokenizeInt64Coverage4(t *testing.T) {
-	tests := []struct {
-		name  string
-		input int64
-		want  int
-	}{
-		{"zero", 0, 1},
-		{"single_positive", 5, 1},
-		{"single_negative", -5, 1},
-		{"exactly_fast_path_max_plus_one", 10000000, 2},   // len 8 -> /4 = 2
-		{"exactly_fast_path_min_minus_one", -10000001, 2}, // len 9 -> /4 = 2
-		{"max_default", 9223372036854775807, 4},
-		{"negative_max_default", -9223372036854775807, 5},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := simpleTokenizeInt64(tt.input)
-			if got != tt.want {
-				t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.input, got, tt.want)
-			}
-		})
-	}
-}
-
-func TestSimpleTokenizeInt64Coverage5(t *testing.T) {
-	tests := []struct {
-		name  string
-		input int64
-		want  int
-	}{
-		{"edge_n_100", -99, 1},
-		{"edge_n_1000", -999, 1},
-		{"edge_n_10000", -9999, 1},
-		{"edge_n_100000", -99999, 1},
-		{"edge_n_1000000", -999999, 1},
-		{"edge_n_10000000", -9999999, 2},
-		{"edge_n_100000000", -99999999, 2},
-		{"edge_n_1000000000", -999999999, 2},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := simpleTokenizeInt64(tt.input)
-			if got != tt.want {
-				t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.input, got, tt.want)
-			}
-		})
-	}
-}
-
-func TestSimpleTokenizeInt64Coverage6(t *testing.T) {
-	tests := []struct {
-		name  string
-		input int64
-		want  int
-	}{
-		{"edge_n_10000000000", -9999999999, 2},
-		{"edge_n_100000000000", -99999999999, 3},
-		{"edge_n_1000000000000", -999999999999, 3},
-		{"edge_n_10000000000000", -9999999999999, 3},
-		{"edge_n_100000000000000", -99999999999999, 3},
-		{"edge_n_1000000000000000", -999999999999999, 4},
-		{"edge_n_10000000000000000", -9999999999999999, 4},
-		{"edge_n_100000000000000000", -99999999999999999, 4},
-		{"edge_n_1000000000000000000", -999999999999999999, 4},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := simpleTokenizeInt64(tt.input)
-			if got != tt.want {
-				t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.input, got, tt.want)
-			}
-		})
-	}
-}
-
-func TestSimpleTokenizeInt64Coverage7(t *testing.T) {
-	tests := []struct {
-		name  string
-		input int64
-		want  int
-	}{
-		// These cover the early case statements which were missed because
-		// the fast path (n > -1000000 && n < 10000000) catches them.
-		// Wait, if the fast path catches them, how can they ever be reached?
-		// They can only be reached if the number is negative and its absolute value
-		// is small, but wait... if n is small and negative (e.g. -5), the fast path
-		// n > -1000000 already returns 1.
-		// To reach `n < 10` after the `n = -n`, we'd need a number that is <= -1000000 originally.
-		// But if it's <= -1000000, then after `n = -n`, `n >= 1000000`.
-		// This means the switch cases `n < 10`, `n < 100`, `n < 1000`, `n < 10000`, `n < 100000`, `n < 1000000`
-		// are ACTUALLY UNREACHABLE DEAD CODE!
-		// Because the only way to reach the switch is if n <= -1000000 or n >= 10000000.
-		// If n <= -1000000, then n becomes >= 1000000.
-		// If n >= 10000000, it's already >= 1000000.
-		// So `n < 1000000` is impossible in the switch statement!
-		// We'll just leave it be, as we have 94% coverage.
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := simpleTokenizeInt64(tt.input)
-			if got != tt.want {
-				t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.input, got, tt.want)
-			}
-		})
 	}
 }
