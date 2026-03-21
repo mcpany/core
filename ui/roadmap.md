@@ -615,8 +615,8 @@
 - [ ] **[P1] Visual Attention Heatmap**: (2026-06-20) Advanced visualization of reasoning drivers for high-risk tool calls, supporting the ALT workflow.
 - [ ] **[P1] Reasoning Lineage Inspector**: (2026-06-20) Visual debugger for cryptographically signed "Chains of Reason".
 
-### Upcoming: [2026-06-18]
-- [ ] **[P0] Active Intent Alignment Monitor**: (Added: 2026-06-18) Visual indicator for AIA heartbeat status and semantic drift alerts.
-- [ ] **[P0] Trace-Aware Identity (TAI) Explorer**: (Added: 2026-06-18) Security workspace for visualizing teammate lineage and reasoning-bound identity proofs.
-- [ ] **[P1] Mesh Reasoning-GC Status**: (Added: 2026-06-18) Real-time visualization of redundant fragment pruning and attention window efficiency.
-- [ ] **[P0] Semantic Entropy Alert Center**: (Added: 2026-06-18) UI for inspecting sharded memory fragments flagged for trace-injection patterns.
+### Upcoming: [2026-06-21]
+- [ ] **[P0] Active Intent Alignment Monitor**: (Added: 2026-06-21) Visual indicator for AIA heartbeat status and semantic drift alerts.
+- [ ] **[P0] Trace-Aware Identity (TAI) Explorer**: (Added: 2026-06-21) Security workspace for visualizing teammate lineage and reasoning-bound identity proofs.
+- [ ] **[P1] Mesh Reasoning-GC Status**: (Added: 2026-06-21) Real-time visualization of redundant fragment pruning and attention window efficiency.
+- [ ] **[P0] Semantic Entropy Alert Center**: (Added: 2026-06-21) UI for inspecting sharded memory fragments flagged for trace-injection patterns.

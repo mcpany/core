@@ -6,7 +6,7 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
-## Evolution: [2026-06-18] Updates
+## Evolution: [2026-06-21] Updates
 
 ### Proposed Additions
 - **Active Intent Alignment (AIA) Hub**: (P0) Advanced alignment service that issues hardware-attested heartbeats to ensure specialist agent reasoning traces remain mission-anchored.

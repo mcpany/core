@@ -777,8 +777,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Locked Tooling (ALT)**: (P0) Security middleware that cryptographically locks high-risk tool calls to user-verified reasoning anchors.
 - **Semantic Lineage Provider**: (P1) Advanced extension for the SRM Provider that implements cryptographically signed "Chains of Reason".
 
-### Upcoming: [2026-06-18]
-* **[P0] Active Intent Alignment (AIA) Hub**: Advanced alignment service utilizing hardware-attested heartbeats to ensure specialist reasoning remains mission-anchored. (Added: 2026-06-18)
-* **[P0] Trace-Aware Identity (TAI) Bridge**: Hardware-attested identity service binding teammate actions to their unique reasoning lineage. (Added: 2026-06-18)
-* **[P1] Mesh-Resident Reasoning-GC**: Decentralized stability middleware for purging redundant reasoning fragments from shared mesh memory. (Added: 2026-06-18)
-* **[P0] Semantic Entropy Filter (SEF)**: Transport-level security middleware for detecting "Trace-Injection" patterns in sharded caches. (Added: 2026-06-18)
+### Upcoming: [2026-06-21]
+* **[P0] Active Intent Alignment (AIA) Hub**: Advanced alignment service utilizing hardware-attested heartbeats to ensure specialist reasoning remains mission-anchored. (Added: 2026-06-21)
+* **[P0] Trace-Aware Identity (TAI) Bridge**: Hardware-attested identity service binding teammate actions to their unique reasoning lineage. (Added: 2026-06-21)
+* **[P1] Mesh-Resident Reasoning-GC**: Decentralized stability middleware for purging redundant reasoning fragments from shared mesh memory. (Added: 2026-06-21)
+* **[P0] Semantic Entropy Filter (SEF)**: Transport-level security middleware for detecting "Trace-Injection" patterns in sharded caches. (Added: 2026-06-21)
