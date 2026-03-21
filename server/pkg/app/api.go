@@ -205,7 +205,6 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
-	mux.HandleFunc("/traces/seed", a.handleDebugSeedTraces())
 	mux.HandleFunc("/ws/logs", a.handleLogsWS())
 	mux.HandleFunc("/ws/traces", a.handleTracesWS())
 

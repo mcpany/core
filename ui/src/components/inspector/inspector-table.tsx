@@ -20,11 +20,8 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { TraceDetail } from "@/components/traces/trace-detail";
-import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database, ChevronRight, ChevronDown, Trash2 } from "lucide-react";
+import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database, ChevronRight, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { apiClient } from "@/lib/client";
-import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
 import { TableVirtuoso } from "react-virtuoso";
 
@@ -40,10 +37,6 @@ interface InspectorTableProps {
    * Whether the table is currently loading data.
    */
   loading?: boolean;
-  /**
-   * Callback fired when a trace is deleted so the parent can refresh.
-   */
-  onRefresh?: () => void;
 }
 
 /**
@@ -94,10 +87,9 @@ interface VisibleRow {
  * @param props.loading - Whether the data is loading.
  * @returns The rendered table component.
  */
-export function InspectorTable({ traces, loading, onRefresh }: InspectorTableProps) {
+export function InspectorTable({ traces, loading }: InspectorTableProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
   const [expandedSpans, setExpandedSpans] = useState<Set<string>>(new Set());
-  const { toast } = useToast();
 
   const toggleExpand = (spanId: string) => {
       setExpandedSpans(prev => {
@@ -167,7 +159,6 @@ export function InspectorTable({ traces, loading, onRefresh }: InspectorTablePro
                     <TableHead className="bg-card z-10">Method / Name</TableHead>
                     <TableHead className="w-[100px] bg-card z-10">Status</TableHead>
                     <TableHead className="w-[100px] text-right bg-card z-10">Duration</TableHead>
-                    <TableHead className="w-[50px] bg-card z-10"></TableHead>
                     </TableRow>
                 )}
                 itemContent={(index, row: VisibleRow) => (
@@ -209,34 +200,6 @@ export function InspectorTable({ traces, loading, onRefresh }: InspectorTablePro
                     </TableCell>
                     <TableCell className="text-right font-mono text-xs">
                         {row.span.endTime - row.span.startTime < 1000 ? `${row.span.endTime - row.span.startTime}ms` : `${((row.span.endTime - row.span.startTime) / 1000).toFixed(2)}s`}
-                    </TableCell>
-                    <TableCell>
-                        {row.depth === 0 && (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                                onClick={async (e) => {
-                                    e.stopPropagation();
-                                    try {
-                                        await apiClient.deleteTrace(row.trace.id);
-                                        toast({
-                                            title: "Trace deleted",
-                                            description: `Trace ${row.trace.id} has been permanently removed.`,
-                                        });
-                                        onRefresh?.();
-                                    } catch (err: any) {
-                                        toast({
-                                            title: "Error deleting trace",
-                                            description: err.message,
-                                            variant: "destructive",
-                                        });
-                                    }
-                                }}
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        )}
                     </TableCell>
                     </>
                 )}
