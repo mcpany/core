@@ -17,7 +17,6 @@ import {
   Sparkles,
   Loader2,
   ExternalLink,
-  Bug,
   Plus,
   Pencil,
   Trash2
@@ -53,6 +52,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   const [selectedPrompt, setSelectedPrompt] = useState<PromptDefinition | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [argumentValues, setArgumentValues] = useState<Record<string, string>>({});
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [executionResult, setExecutionResult] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -87,6 +87,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
               setPrompts(list);
               // Refresh selected prompt if it exists in the new list
               if (selectedPrompt) {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   const updated = list.find((p: any) => p.name === selectedPrompt.name && (p as any).serviceId === (selectedPrompt as any).serviceId);
                   if (updated) setSelectedPrompt(updated);
               }
@@ -115,6 +116,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
 
   const getArguments = (prompt: PromptDefinition) => {
       if (!prompt.inputSchema || !prompt.inputSchema.properties) return [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const props = prompt.inputSchema.properties as Record<string, any>;
       const required = (prompt.inputSchema.required as string[]) || [];
       return Object.entries(props).map(([key, value]) => ({
@@ -158,6 +160,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
           const currentPrompts = service.service.prompts || [];
 
           // Check if updating existing
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const existingIdx = currentPrompts.findIndex((p: any) => p.name === newPrompt.name);
 
           let updatedPrompts = [...currentPrompts];
@@ -186,6 +189,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   const handleDeletePrompt = async (prompt: PromptDefinition) => {
       if (!confirm(`Are you sure you want to delete prompt "${prompt.name}"?`)) return;
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const serviceId = (prompt as any).serviceId;
       if (!serviceId) {
           toast({ title: "Error", description: "Cannot delete prompt: Service ID unknown", variant: "destructive" });
@@ -196,6 +200,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
           const service = await apiClient.getService(serviceId);
           if (!service) throw new Error("Service not found");
 
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const updatedPrompts = (service.service.prompts || []).filter((p: any) => p.name !== prompt.name);
 
           const updatedService = {
@@ -299,6 +304,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                         )}
                         <div className="flex items-center gap-2 mt-1">
                             <Badge variant="outline" className="text-[10px] px-1 py-0 h-4">
+                                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                                 {(prompt as any).serviceId || "System"}
                             </Badge>
                              {(getArguments(prompt).length || 0) > 0 && (
@@ -421,6 +427,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                                 <CardContent className="flex-1 p-0 overflow-auto">
                                     {executionResult ? (
                                         <div className="p-4 space-y-4">
+                                             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                                             {(executionResult?.messages || []).map((msg: any, idx: number) => (
                                                 <div key={idx} className="space-y-1">
                                                      <div className="text-[10px] font-mono uppercase text-muted-foreground flex items-center gap-2">

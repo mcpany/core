@@ -90,7 +90,7 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
                     <RichResultViewer result={parsed} />
                 </div>
             );
-        } catch (e) {
+        } catch (_e) {
             // Fallback to syntax highlighting if JSON parsing fails
             return (
                 <ScrollArea className="h-full">
