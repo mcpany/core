@@ -56,8 +56,9 @@ test('Tools page loads and inspector opens', async ({ page }) => {
   // The schema content from mock: { type: "object", properties: { location: { type: "string" } } }
   // We check for "location" property in the JSON view
   // Use getByText since JsonView breaks up strings into multiple span/div elements.
-  await expect(page.getByText('"location"')).toBeVisible();
-  await expect(page.getByText('"object"')).toBeVisible();
+  // Note: Depending on SyntaxHighlighter vs JsonTree fallback, we test for the raw text substring
+  await expect(page.locator('text=location').first()).toBeVisible();
+  await expect(page.locator('text=object').first()).toBeVisible();
 
   // Verify service name is shown in details (Scoped to the sheet)
   await expect(page.locator('div[role="dialog"]').getByText('weather-service')).toBeVisible();
