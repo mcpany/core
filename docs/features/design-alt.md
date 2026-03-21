@@ -56,3 +56,7 @@ ALT addresses this by cryptographically locking high-risk tool capabilities to s
 
 ## 7. Evolutionary Changelog
 * **2026-06-20:** Initial Document Creation.
+* **2026-06-21:** Update: Neutralizing Privilege Escalation via Context Hijacking.
+    **Context:** Market sync revealed a new class of deceptive context hijacking used for autonomous privilege escalation.
+    **Architecture Adjustment:** * Integrating with the new **Privilege Escalation Interceptor (PEI)** to validate if the driving attention fragment is attempting to escalate beyond the mission root's hardware-attested scope.
+    **Security Impact:** Prevents subagents from using "Deceptive Context" to gain unauthorized host-level file access or remote code execution.

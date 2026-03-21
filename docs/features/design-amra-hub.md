@@ -44,3 +44,7 @@ As AI agent swarms evolve toward "Long-Haul Agency," missions frequently exceed 
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.
+* **2026-06-21:** Update: Secure Resumption after Privilege Re-attestation.
+    **Context:** Emerging "Smart Exfiltration" patterns during mission resumption require hardware-locked validation of the complete mission lineage, not just the current session.
+    **Architecture Adjustment:** * Mandating **Privilege Escalation Interceptor (PEI)** validation as a prerequisite for issuing resumption tokens.
+    **Security Impact:** Ensures that resumed missions cannot inherit "Injected Context" from a previous decayed session to escalate privileges in the new session.

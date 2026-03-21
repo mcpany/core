@@ -1409,6 +1409,13 @@
 - **Attention-Locked Tooling (ALT)**: (P0) Security middleware that cryptographically locks high-risk tool calls to user-verified reasoning anchors, neutralizing context-hijacking.
 - **Semantic Lineage Tracking**: (P1) Security extension providing a cryptographically signed "Chain of Reason" for tool calls.
 
+## Evolution: [2026-06-21] Updates
+
+### Proposed Additions
+- **Privilege Escalation Interceptor (PEI)**: (P0) Security middleware that monitors the semantic intent of tool calls across agent handoffs to prevent autonomous privilege escalation.
+- **Compaction Integrity Validator (CIV)**: (P0) Real-time semantic validation service for context compaction to neutralize "Smart Exfiltration" vulnerabilities.
+- **Least-Privilege Coordination Provider**: (P1) Advanced extension for the T2T Bridge mandating role-attestation for inter-teammate task claiming.
+
 ### Priority Shifts
-- **Visual Attention Dashboard**: (P1) Now elevated to a critical requirement for supporting the **ALT** user-verification flow.
-- **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support the new **Teammate Mailbox** security requirements.
+- **Visual Attention Dashboard**: (Re-affirmed P1) Now also required for visualizing PEI-interdicted escalation attempts.
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Least-Privilege Coordination** to counter initial access brokering.

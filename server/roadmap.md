@@ -776,3 +776,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Context-File Integrity Attestation (CFIA)**: (P0) Core security service requiring hardware-attested hash signatures for all project-local natural language context files (e.g., `GEMINI.md`).
 - **Attention-Locked Tooling (ALT)**: (P0) Security middleware that cryptographically locks high-risk tool calls to user-verified reasoning anchors.
 - **Semantic Lineage Provider**: (P1) Advanced extension for the SRM Provider that implements cryptographically signed "Chains of Reason".
+
+### Upcoming: [2026-06-21]
+- **Privilege Escalation Interceptor (PEI)**: (P0) Real-time semantic monitoring of tool-call intent to prevent autonomous privilege escalation in swarms.
+- **Compaction Integrity Validator (CIV)**: (P0) Semantic validation of summarized context to neutralize "Smart Exfiltration" vulnerabilities.
+- **Least-Privilege Coordination Provider**: (P1) Extension for the T2T Bridge mandating role-attestation for inter-teammate task claiming.
