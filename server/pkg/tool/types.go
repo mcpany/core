@@ -1912,21 +1912,19 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 	}
 
-	if t.method == http.MethodGet {
-		q := httpReq.URL.Query()
-		for paramName, paramValue := range inputs {
-			if t.parameterDefs[paramName] == "query" {
-				if slice, ok := paramValue.([]interface{}); ok {
-					for _, v := range slice {
-						q.Add(paramName, util.ToString(v))
-					}
-				} else {
-					q.Add(paramName, util.ToString(paramValue))
+	q := httpReq.URL.Query()
+	for paramName, paramValue := range inputs {
+		if t.parameterDefs[paramName] == "query" {
+			if slice, ok := paramValue.([]interface{}); ok {
+				for _, v := range slice {
+					q.Add(paramName, util.ToString(v))
 				}
+			} else {
+				q.Add(paramName, util.ToString(paramValue))
 			}
 		}
-		httpReq.URL.RawQuery = q.Encode()
 	}
+	httpReq.URL.RawQuery = q.Encode()
 
 	resp, err := t.client.Do(httpReq)
 	if err != nil {
