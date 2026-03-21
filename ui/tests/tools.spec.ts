@@ -98,9 +98,10 @@ test.describe('Tool Exploration', () => {
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Change grouping to "service"
-        // The first combobox on the page is the "Group By" dropdown.
-        // Since it relies on Radix UI, the trigger is a button with role="combobox".
-        await page.getByRole('combobox').first().click();
+        // The Radix UI Select trigger rendering can cause flakiness with getByText or getByRole.
+        // Target the specific container by finding the distinct 'Layers' icon SVG (lucide-layers),
+        // then clicking the associated combobox button within that same block.
+        await page.locator('div.flex').filter({ has: page.locator('svg.lucide-layers') }).getByRole('combobox').click();
         await page.getByRole('option', { name: 'Group by Service' }).click();
 
         // Verify that the Payment Gateway service grouping header is visible
