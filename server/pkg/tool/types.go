@@ -1841,14 +1841,14 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
-	url := t.url
+	reqURL := t.url
 	for paramName, paramValue := range inputs {
 		if t.parameterDefs[paramName] == "path" {
 			valStr := util.ToString(paramValue)
 			if err := checkForPathTraversal(valStr); err != nil {
 				return nil, fmt.Errorf("path traversal attempt detected in parameter %q: %w", paramName, err)
 			}
-			url = strings.ReplaceAll(url, "{{"+paramName+"}}", url.PathEscape(valStr))
+			reqURL = strings.ReplaceAll(reqURL, "{{"+paramName+"}}", url.PathEscape(valStr))
 			delete(inputs, paramName)
 		}
 	}
@@ -1893,11 +1893,11 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 	}
 
-	if err := validation.IsSafeURL(url); err != nil {
+	if err := validation.IsSafeURL(reqURL); err != nil {
 		return nil, fmt.Errorf("unsafe url: %w", err)
 	}
 
-	httpReq, err := http.NewRequestWithContext(ctx, t.method, url, body)
+	httpReq, err := http.NewRequestWithContext(ctx, t.method, reqURL, body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create http request: %w", err)
 	}
