@@ -515,9 +515,6 @@ func TestSimpleTokenizeInt64(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.input, got, tt.want)
 			}
-			if got != tt.want {
-				t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.input, got, tt.want)
-			}
 		})
 	}
 }
@@ -672,9 +669,6 @@ func TestSimpleTokenizeInt64More(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.input, got, tt.want)
 			}
-			if got != tt.want {
-				t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.input, got, tt.want)
-			}
 		})
 	}
 }
@@ -703,9 +697,6 @@ func TestSimpleTokenizeInt64Full(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := simpleTokenizeInt64(tt.input)
-			if got != tt.want {
-				t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.input, got, tt.want)
-			}
 			if got != tt.want {
 				t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.input, got, tt.want)
 			}
