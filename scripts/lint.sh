@@ -13,6 +13,19 @@ cd "$PROJECT_ROOT"
 
 find_tool() {
     local name="$1"
+    # 1. Check GOPATH/bin
+    local gopath_bin
+    gopath_bin=$(go env GOPATH 2>/dev/null)/bin/"$name"
+    if [[ -x "$gopath_bin" ]]; then
+        echo "$gopath_bin"
+        return 0
+    fi
+    # 2. Check build/env/bin
+    if [[ -x "build/env/bin/$name" ]]; then
+        echo "$(pwd)/build/env/bin/$name"
+        return 0
+    fi
+    # 3. Check PATH
     command -v "$name" 2>/dev/null || true
 }
 
@@ -35,20 +48,18 @@ else
 fi
 
 echo "==> Running golangci-lint..."
-# Try to find a Go 1.26-built version first
-GOLANGCI_LINT_BIN="$(go env GOPATH)/bin/golangci-lint"
-if [[ ! -x "$GOLANGCI_LINT_BIN" ]]; then
-    GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
-fi
+GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
+    # Verify Go version of the linter if possible
+    LINT_VERSION_OUT=$("$GOLANGCI_LINT_BIN" --version)
+    echo "    Using linter: $LINT_VERSION_OUT"
+
     # Filter modules to only those that exist and contain Go files
     MODULES=()
     for d in server proto k8s/operator server/examples/upstream_service_demo/grpc/greeter_server; do
         if [ -d "$d" ]; then
-            # Use find to check for Go files, being careful about module boundaries if needed
-            # For simplicity, we just check if any .go files exist in the dir tree
-            if find "$d" -name "*.go" | grep -q .; then
+            if find "$d" -maxdepth 3 -name "*.go" | grep -q .; then
                 MODULES+=("./$d/...")
             fi
         fi
@@ -56,6 +67,7 @@ if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
 
     if [ ${#MODULES[@]} -gt 0 ]; then
         echo "    Linting ${MODULES[*]}..."
+        # We run from root to respect go.work if present, but specify paths
         "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --config server/.golangci.yml "${MODULES[@]}"
         echo "    golangci-lint OK."
     else
