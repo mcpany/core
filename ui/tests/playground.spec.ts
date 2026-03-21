@@ -7,37 +7,42 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Playground Tool Configuration', () => {
   // Use real backend data (weather-service.get_weather tool from config.minimal.yaml)
-  test('should allow configuring and running a tool via unified runner', async ({ page }) => {
+  test('should allow configuring and running a tool via inline wizard', async ({ page }) => {
     await page.goto('/playground');
 
     // Wait for sidebar to load tools (real data)
-    await expect(page.getByText('weather-service.get_weather')).toBeVisible({ timeout: 30000 });
+    // We get the first element to avoid strict mode violations if it appears in multiple places
+    await expect(page.getByText('weather-service.get_weather').first()).toBeVisible({ timeout: 30000 });
 
-    // Click tool card for weather-service.get_weather in Sidebar
-    // This should switch the main pane to "Tool Runner" mode
-    await page.locator('.group').filter({ hasText: 'weather-service.get_weather' }).click();
+    // Ensure we are in "Console" mode
+    await expect(page.getByRole('tab', { name: 'Console' })).toHaveAttribute('data-state', 'active');
 
-    // Verify "Tool Runner" tab is active
-    await expect(page.getByRole('tab', { name: 'Tool Runner' })).toHaveAttribute('data-state', 'active');
+    // Click the chat input box and type part of the tool name
+    await page.getByPlaceholder('Enter command or select a tool...').fill('get_weather');
 
-    // Verify Tool Runner content
-    // Should see "weather-service.get_weather" in the header
-    await expect(page.getByRole('heading', { name: 'weather-service.get_weather' })).toBeVisible();
+    // Wait for the autocomplete dropdown
+    await page.waitForSelector('.absolute.bottom-full.left-0');
 
-    // Switch to JSON tab to input arguments (since schema might be empty in minimal config)
+    // Click the autocomplete suggestion for weather-service.get_weather
+    // Ensure we click the element inside the dropdown that sets activeInlineTool
+    await page.locator('.absolute.bottom-full.left-0').getByText('weather-service.get_weather', { exact: true }).first().click();
+
+    // Wait for the tool execution UI to be ready
+    await page.waitForTimeout(2000);
+
+    // Verify the inline form appears
+    await expect(page.locator('h3:has-text("Configure")')).toBeVisible();
+
+    // Switch to the JSON tab
     await page.getByRole('tab', { name: 'JSON' }).first().click();
 
     // Fill JSON arguments
-    await page.getByPlaceholder('{}').fill('{"city": "San Francisco"}');
+    await page.getByPlaceholder('{}').first().fill('{"city": "San Francisco"}');
 
-    // Run Tool (Execute button in the runner header)
-    await page.getByRole('button', { name: 'Execute' }).click();
+    // Click "Execute Tool" or "Execute"
+    await page.getByRole('button', { name: /Execute/ }).first().click();
 
-    // Verify Result
-    // Expect "Success" badge
-    await expect(page.getByText('Success')).toBeVisible({ timeout: 10000 });
-
-    // Verify "Result" section is visible
-    await expect(page.getByText('Result', { exact: true })).toBeVisible();
+    // Verify "Result: weather-service.get_weather" appears in the chat stream
+    await expect(page.locator('.text-green-700, .text-green-400').filter({ hasText: /Result:/ }).first()).toBeVisible({ timeout: 10000 });
   });
 });
