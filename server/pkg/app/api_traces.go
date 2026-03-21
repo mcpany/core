@@ -19,6 +19,7 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
+
 // Span represents a span in a trace.
 type Span struct {
 	ID           string         `json:"id"`
