@@ -125,23 +125,41 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return null;
     }, [content]);
 
-    const isTableEligible = useMemo(() => {
-        return !mcpContent && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
+    const { isTableEligible, tableData } = useMemo(() => {
+        if (mcpContent) return { isTableEligible: false, tableData: [] };
+
+        // Direct array of objects
+        if (Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null) {
+            return { isTableEligible: true, tableData: content };
+        }
+
+        // Object with a single key that is an array of objects
+        if (content && typeof content === 'object' && !Array.isArray(content)) {
+            const keys = Object.keys(content);
+            if (keys.length === 1) {
+                const nested = content[keys[0]];
+                if (Array.isArray(nested) && nested.length > 0 && typeof nested[0] === 'object' && nested[0] !== null) {
+                    return { isTableEligible: true, tableData: nested };
+                }
+            }
+        }
+
+        return { isTableEligible: false, tableData: [] };
     }, [content, mcpContent]);
 
     // Get columns for table
     const columns = useMemo(() => {
-        if (!isTableEligible) return [];
+        if (!isTableEligible || !tableData) return [];
         // aggregate all keys from all objects to handle sparse data
         const keys = new Set<string>();
         // Limit rows scanned for columns to avoid perf issues on huge datasets
-        content.slice(0, 50).forEach((item: any) => {
+        tableData.slice(0, 50).forEach((item: any) => {
             if (typeof item === 'object' && item !== null) {
                 Object.keys(item).forEach(k => keys.add(k));
             }
         });
         return Array.from(keys);
-    }, [content, isTableEligible]);
+    }, [tableData, isTableEligible]);
 
     const renderCell = (value: any) => {
         if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
@@ -197,7 +215,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {content.map((row: any, i: number) => (
+                                {tableData.map((row: any, i: number) => (
                                     <TableRow key={i}>
                                         {columns.map(col => (
                                             <TableCell key={col} className="py-2">
