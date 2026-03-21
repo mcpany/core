@@ -19,7 +19,7 @@ import (
 	mcpv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
 )
 
-// MCPServerReconciler reconciles a MCPServer object
+// MCPServerReconciler reconciles a MCPServer object.
 type MCPServerReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
