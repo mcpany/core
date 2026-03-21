@@ -57,7 +57,6 @@ func TestHandleUserDetail_IDOR_Reproduction(t *testing.T) {
 		if w.Code == http.StatusOK {
 			t.Logf("VULNERABILITY REPRODUCED: User 'victim-user' accessed 'admin-user' profile.")
 			t.Fail()
-			assert.Fail(t, "IDOR Vulnerability found!")
 		} else {
 			assert.Equal(t, http.StatusForbidden, w.Code)
 		}
@@ -115,7 +114,6 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 			if role == "admin" {
 				t.Logf("VULNERABILITY REPRODUCED: User 'victim-user' escalated privileges to 'admin'.")
 				t.Fail()
-				assert.Fail(t, "Privilege Escalation Vulnerability found!")
 			}
 		}
 	})
