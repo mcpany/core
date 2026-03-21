@@ -37,6 +37,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Virtuoso, Components } from "react-virtuoso";
 
 // Defining locally to avoid proto import errors during compilation
+/** Local User type for UI display */
 export interface User extends ProtoUser {
     authentication?: any;
     [key: string]: any;
