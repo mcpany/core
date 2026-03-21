@@ -17,7 +17,6 @@ import (
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"
-
 	"gopkg.in/yaml.v3"
 )
 

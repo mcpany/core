@@ -1,74 +1,46 @@
 const fs = require('fs');
+let code = fs.readFileSync('ui/tests/onboarding.spec.ts', 'utf-8');
 
-const file = 'ui/src/components/users/user-list.tsx';
-let content = fs.readFileSync(file, 'utf-8');
+code = code.replace(
+    /test\('shows dashboard when services exist', async \(\{ page, request \}\) => \{[\s\S]*?\}\);/m,
+    `test('shows dashboard when services exist', async ({ page, request }) => {
+    // Seed a service
+    await seedCollection('mcpany-system', request);
 
-const importStr = `import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";`;
-const newImportStr = `import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { TableVirtuoso } from "react-virtuoso";`;
+    // Explicitly apply the collection to trigger service registration on the backend
+    try {
+        await request.post('/api/v1/collections/mcpany-system/apply', {
+            headers: {
+                'Authorization': \`Bearer test-token\`,
+                'Content-Type': 'application/json'
+            }
+        });
+    } catch(e) {}
 
-content = content.replace(importStr, newImportStr);
+    await page.waitForTimeout(2000); // Give backend a moment to process the service
+    await page.goto('/');
 
-const tableStart = `<div className="rounded-md border bg-background">
-                <Table>`;
-const newTableStart = `<div className="rounded-md border bg-background h-[calc(100vh-250px)]">
-                <TableVirtuoso
-                    data={filteredUsers}
-                    components={{
-                        Table: (props) => <Table {...props} />,
-                        TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => <TableBody {...props} ref={ref} />),
-                        TableRow: (props) => <TableRow {...props} />,
-                    }}
-                    fixedHeaderContent={() => (
-                        <TableRow className="bg-muted/50">
-                            <TableHead className="w-[250px]">User</TableHead>
-                            <TableHead>Roles</TableHead>
-                            <TableHead>Authentication</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                    )}
-                    itemContent={(index, user) => (`;
+    // Wait a bit and check content to debug if necessary
+    try {
+        await expect(page.getByRole('heading', { name: /Dashboard/i })).toBeVisible({ timeout: 15000 });
+    } catch (e) {
+        console.error("Dashboard not visible! HTML content:");
+        console.error(await page.content());
+        throw e;
+    }
 
-content = content.replace(`<div className="rounded-md border bg-background">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[250px]">User</TableHead>
-                            <TableHead>Roles</TableHead>
-                            <TableHead>Authentication</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {filteredUsers.length === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
-                                    No users found.
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            filteredUsers.map((user) => (`, newTableStart);
+    await expect(page.getByText('Welcome to MCP Any')).not.toBeVisible();
 
-content = content.replace(`))
-                        )}
-                    </TableBody>
-                </Table>
-            </div>`, `)}
-                />
-            </div>`);
+    // Cleanup
+    await cleanupCollection('mcpany-system', request);
+    try {
+        await request.delete('/api/v1/services/weather-service', {
+            headers: {
+                'Authorization': \`Bearer test-token\`
+            }
+        });
+    } catch(e) {}
+  });`
+);
 
-
-// Add signature
-const signature = `
-    // ⚡ BOLT: Implemented virtualization for user list using react-virtuoso.
-    // Randomized Selection from Top 5 High-Impact Targets (React/View)
-    const filteredUsers = useMemo(() => {`;
-
-content = content.replace(`const filteredUsers = useMemo(() => {`, signature);
-
-const reactImportStr = `import { useMemo, useState } from "react";`;
-const newReactImportStr = `import React, { useMemo, useState } from "react";`;
-content = content.replace(reactImportStr, newReactImportStr);
-
-
-fs.writeFileSync(file, content);
+fs.writeFileSync('ui/tests/onboarding.spec.ts', code);
