@@ -31,8 +31,8 @@ func TestLocalCommandTool_RubyPercentX_Injection(t *testing.T) {
 	}.Build()
 
 	// Ruby script argument WITHOUT quotes.
-	// This simulates: ruby -e {{input}}
-	// Or: bash -c "ruby -e {{input}}" (where bash strips quotes)
+    // This simulates: ruby -e {{input}}
+    // Or: bash -c "ruby -e {{input}}" (where bash strips quotes)
 	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"-e", "{{input}}"},
 		Parameters: []*configv1.CommandLineParameterMapping{
@@ -69,7 +69,7 @@ func TestLocalCommandTool_RubyPercentX_Injection(t *testing.T) {
 	} else {
 		t.Error("Vulnerability Reproduced: percent-x execution passed validation!")
 	}
-	assert.Error(t, err)
+    assert.Error(t, err)
 }
 
 func TestLocalCommandTool_RubyPercentX_NestedShell_Injection(t *testing.T) {
