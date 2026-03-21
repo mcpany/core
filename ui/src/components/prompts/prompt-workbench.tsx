@@ -159,7 +159,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
           // Check if updating existing
           const existingIdx = currentPrompts.findIndex((p: any) => p.name === newPrompt.name);
 
-          let updatedPrompts = [...currentPrompts];
+          const updatedPrompts = [...currentPrompts];
           if (existingIdx >= 0) {
               updatedPrompts[existingIdx] = newPrompt;
           } else {
