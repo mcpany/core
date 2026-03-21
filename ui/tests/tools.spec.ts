@@ -105,10 +105,11 @@ test.describe('Tool Exploration', () => {
         await page.getByRole('option', { name: 'Group by Service' }).click();
 
         // Verify that the Payment Gateway service grouping header is visible
-        await expect(page.getByRole('button', { name: 'Payment Gateway' })).toBeVisible({ timeout: 5000 });
+        // We use a regex because the AccordionTrigger button's accessible name includes the tool count badge (e.g. "Payment Gateway 1")
+        await expect(page.getByRole('button', { name: /Payment Gateway/ })).toBeVisible({ timeout: 5000 });
 
         // Verify that the User Service grouping header is visible
-        await expect(page.getByRole('button', { name: 'User Service' })).toBeVisible({ timeout: 5000 });
+        await expect(page.getByRole('button', { name: /User Service/ })).toBeVisible({ timeout: 5000 });
     });
 
     test('should allow inspecting a tool', async ({ page }) => {
