@@ -103,6 +103,7 @@ export default function UsersPage() {
 
     const handleSave = async (userUpdate: Partial<User>, password?: string, apiKey?: string) => {
         try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let authConfig: any = editingUser?.authentication || {};
 
             if (apiKey) {
@@ -126,6 +127,7 @@ export default function UsersPage() {
 
             // Construct the payload
             // Server expects snake_case for fields.
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const payload: any = {
                 id: userUpdate.id,
                 roles: userUpdate.roles,
