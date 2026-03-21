@@ -101,17 +101,26 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                         uri: "file:///config.json",
                         name: "config.json",
                         description: "A config file",
-                        mime_type: "application/json"
+                        mime_type: "application/json",
+                        static: {
+                            text_content: "{\n  \"foo\": \"bar\"\n}"
+                        }
                     },
                     {
                         uri: "file:///README.md",
                         name: "README.md",
-                        mime_type: "text/markdown"
+                        mime_type: "text/markdown",
+                        static: {
+                            text_content: "# Hello World\nThis is a test readme."
+                        }
                     },
                     {
                         uri: "file:///script.py",
                         name: "script.py",
-                        mime_type: "text/x-python"
+                        mime_type: "text/x-python",
+                        static: {
+                            text_content: "print('hello world')"
+                        }
                     }
                 ],
                 calls: {
@@ -263,31 +272,31 @@ export const seedUser = async (requestContext: APIRequestContext | undefined, us
     }
 };
 
-export const cleanupServices = async (requestContext?: APIRequestContext) => {
+export const cleanupServices = async (_requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const cleanupUser = async (requestContext: APIRequestContext | undefined, username: string) => {
+export const cleanupUser = async (_requestContext: APIRequestContext | undefined, _username: string) => {
     // No-op
 };
 
-export const seedProfiles = async (requestContext?: APIRequestContext) => {
+export const seedProfiles = async (_requestContext?: APIRequestContext) => {
     // Included in seedGlobalState (empty profiles list currently, but we can add if needed)
 };
 
-export const cleanupProfiles = async (requestContext?: APIRequestContext) => {
+export const cleanupProfiles = async (_requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const seedPrompts = async (requestContext?: APIRequestContext) => {
+export const seedPrompts = async (_requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const cleanupPrompts = async (requestContext?: APIRequestContext) => {
+export const cleanupPrompts = async (_requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const seedWebhooks = async (requestContext?: APIRequestContext) => {
+export const seedWebhooks = async (_requestContext?: APIRequestContext) => {
     // No-op
 };
 
@@ -325,7 +334,7 @@ export const cleanupCollection = async (name?: string, requestContext?: APIReque
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
         await context.delete(`/api/v1/collections/${name}`, { headers: HEADERS });
-    } catch (e) {
+    } catch (_e) {
         // Ignore cleanup errors (collection may not exist)
     }
 };

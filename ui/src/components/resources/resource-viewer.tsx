@@ -88,7 +88,7 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
             if (text) {
                 parsedData = JSON.parse(text);
             }
-        } catch (e) {
+        } catch (_e) {
             // Fall back to raw text if it doesn't parse
         }
 

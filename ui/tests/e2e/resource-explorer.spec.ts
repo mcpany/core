@@ -4,15 +4,13 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('Resource Explorer', () => {
-
-  const serviceName = 'e2e-resources-test-service';
 
   test.beforeEach(async ({ request }) => {
     // We will use seedGlobalState from test-data.ts, which seeds multiple services,
     // including Echo Service (svc_echo) which we just updated to expose our resources.
-    const { seedGlobalState } = await import('./test-data');
     await seedGlobalState(request);
   });
 
@@ -35,18 +33,6 @@ test.describe('Resource Explorer', () => {
     await expect(page.getByText('config.json').first()).toBeVisible();
 
     // Select a resource
-
-    // We still mock the read endpoint because our 'echo' service isn't wired up
-    // to actually read `config.json` via MCP in a predictable way without complex call mapping
-    // But the resources list itself is 100% real database data.
-    await page.route('**/api/v1/resources/read*', async route => {
-        await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ contents: [{ mimeType: 'application/json', text: '{\n  "foo": "bar"\n}' }] })
-        });
-    });
-
     await page.getByText('config.json').first().click();
 
     // Verify preview loads
