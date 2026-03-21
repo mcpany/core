@@ -13,9 +13,9 @@ global_settings:
     enabled: true
   audit:
     enabled: true
-    storage_type: STORAGE_TYPE_SQLITE
-    output_path: "file::memory:?cache=shared"
-    retention_days: 7
+    storage_type: STORAGE_TYPE_FILE
+    output_path: "/dev/null"
+    retention_days: 1
   middlewares:
     - name: "auth"
       priority: 1
