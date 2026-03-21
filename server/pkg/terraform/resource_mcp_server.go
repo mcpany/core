@@ -13,13 +13,13 @@ import (
 	"time"
 )
 
+// httpClient is a shared HTTP client with a timeout for the terraform provider.
 var httpClient = &http.Client{Timeout: 10 * time.Second}
 
 // ResourceMCPServer represents the configuration schema for an MCP Server resource
 // This would map to hashicorp/terraform-plugin-sdk in a real provider.
 //
 // Summary: Represents a ResourceMCPServer.
-
 type ResourceMCPServer struct {
 	Name    string `json:"name"`
 	Port    int    `json:"port"`
@@ -85,7 +85,7 @@ func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) 
 	if err != nil {
 		return fmt.Errorf("marshal failed: %w", err)
 	}
-	req, err := http.NewRequestWithContext(ctx, "POST", serverURL+"/api/v1/servers", bytes.NewBuffer(payload)) //nolint:gosec
+	req, err := http.NewRequestWithContext(ctx, "POST", serverURL+"/api/v1/servers", bytes.NewBuffer(payload)) //nolint:gosec // intentional API call
 	if err != nil {
 		return fmt.Errorf("request creation failed: %w", err)
 	}
@@ -94,7 +94,7 @@ func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) 
 	if err != nil {
 		return fmt.Errorf("request failed: %w", err)
 	}
-	defer resp.Body.Close() //nolint:errcheck
+	defer resp.Body.Close() //nolint:errcheck // defer close error ignored
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("failed to create server: status %d", resp.StatusCode)
 	}
@@ -120,7 +120,7 @@ func Create(ctx context.Context, serverURL string, resource *ResourceMCPServer) 
 // Side Effects:
 //   - Makes an HTTP GET request to the serverURL.
 func Read(ctx context.Context, serverURL string, name string) (*ResourceMCPServer, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", serverURL+"/api/v1/servers/"+name, nil) //nolint:gosec
+	req, err := http.NewRequestWithContext(ctx, "GET", serverURL+"/api/v1/servers/"+name, nil) //nolint:gosec // intentional API call
 	if err != nil {
 		return nil, fmt.Errorf("request creation failed: %w", err)
 	}
@@ -128,7 +128,7 @@ func Read(ctx context.Context, serverURL string, name string) (*ResourceMCPServe
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %w", err)
 	}
-	defer resp.Body.Close() //nolint:errcheck
+	defer resp.Body.Close() //nolint:errcheck // defer close error ignored
 	if resp.StatusCode == http.StatusNotFound {
 		return nil, nil // not found
 	}
