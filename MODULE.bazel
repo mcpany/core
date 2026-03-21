@@ -35,6 +35,12 @@ go_deps.gazelle_override(
     path = "github.com/cncf/xds/go",
 )
 go_deps.gazelle_override(
+    directives = [
+        "gazelle:resolve go google.golang.org/protobuf/types/pluginpb @org_golang_google_protobuf//types/pluginpb",
+    ],
+    path = "github.com/bufbuild/protocompile",
+)
+go_deps.gazelle_override(
     path = "google.golang.org/genproto/googleapis/api",
 )
 
@@ -42,12 +48,22 @@ go_deps.gazelle_override(
 # For now, let's let Gazelle handle it.
 use_repo(
     go_deps,
+    "com_github_alexliesenfeld_health",
+    "com_github_alicebob_miniredis_v2",
     "com_github_alitto_pond_v2",
+    "com_github_antchfx_xmlquery",
+    "com_github_antchfx_xpath",
+    "com_github_armon_go_metrics",
+    "com_github_aws_aws_sdk_go",
     "com_github_aws_aws_sdk_go_v2",
     "com_github_aws_aws_sdk_go_v2_config",
     "com_github_aws_aws_sdk_go_v2_service_secretsmanager",
+    "com_github_bufbuild_protocompile",
+    "com_github_cenkalti_backoff_v4",
+    "com_github_cloudevents_sdk_go_v2",
     "com_github_coder_websocket",
     "com_github_coreos_go_oidc_v3",
+    "com_github_data_dog_go_sqlmock",
     "com_github_docker_docker",
     "com_github_eko_gocache_lib_v4",
     "com_github_eko_gocache_store_go_cache_v4",
@@ -103,7 +119,13 @@ use_repo(
     "com_github_stretchr_testify",
     "com_github_tidwall_gjson",
     "com_github_valyala_fasttemplate",
+    "com_google_cloud_go_storage",
+    "dev_essio_al_pkg_shellescape",
+    "in_gopkg_square_go_jose_v2",
+    "in_gopkg_yaml_v2",
     "in_gopkg_yaml_v3",
+    "io_k8s_client_go",
+    "io_k8s_sigs_yaml",
     "io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc",
     "io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp",
     "io_opentelemetry_go_otel",
@@ -114,7 +136,6 @@ use_repo(
     "io_opentelemetry_go_otel_sdk",
     "io_opentelemetry_go_otel_sdk_metric",
     "org_golang_google_api",
-    "org_golang_google_genproto_googleapis_api",
     "org_golang_google_grpc",
     "org_golang_google_grpc_cmd_protoc_gen_go_grpc",
     "org_golang_google_protobuf",
@@ -123,6 +144,8 @@ use_repo(
     "org_golang_x_sync",
     "org_golang_x_time",
     "org_modernc_sqlite",
+    "org_uber_go_goleak",
+    "org_uber_go_mock",
 )
 
 oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
