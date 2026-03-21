@@ -39,5 +39,5 @@ global_settings:
 	require.NotNil(t, cfg.GetGlobalSettings().GetProfiles())
 	assert.Contains(t, cfg.GetGlobalSettings().GetProfiles(), "admin")
 	assert.Contains(t, cfg.GetGlobalSettings().GetProfiles(), "user")
-    assert.Len(t, cfg.GetGlobalSettings().GetProfiles(), 2)
+	assert.Len(t, cfg.GetGlobalSettings().GetProfiles(), 2)
 }

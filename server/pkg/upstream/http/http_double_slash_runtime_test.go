@@ -32,9 +32,9 @@ func TestHTTPUpstream_URLConstruction_RuntimeDoubleSlashRootBug(t *testing.T) {
 	defer server.Close()
 
 	testCases := []struct {
-		name          string
-		endpointPath  string
-		expectedPath  string // Path received by the server (relative to root)
+		name         string
+		endpointPath string
+		expectedPath string // Path received by the server (relative to root)
 	}{
 		{
 			name:         "endpoint path with just double slash",

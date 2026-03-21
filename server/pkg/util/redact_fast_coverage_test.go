@@ -52,24 +52,24 @@ func TestRedactFast_Coverage(t *testing.T) {
 		defer func() { maxUnescapeLimit = oldLimit }()
 
 		tests := []struct {
-			key      string
+			key       string
 			sensitive bool
 		}{
-			{`\u0070assword`, true}, // Valid hex
-			{`\u007`, false},        // Short hex (truncated)
-			{`\uZZZZ`, false},       // Invalid hex
-			{`\n`, false},           // \n
-			{`\r`, false},           // \r
-			{`\t`, false},           // \t
-			{`\b`, false},           // \b
-			{`\f`, false},           // \f
-			{`\"`, false},           // \"
-			{`\\`, false},           // \\
-			{`\/`, false},           // \/
-			{`\x`, false},           // Unknown escape
+			{`\u0070assword`, true},  // Valid hex
+			{`\u007`, false},         // Short hex (truncated)
+			{`\uZZZZ`, false},        // Invalid hex
+			{`\n`, false},            // \n
+			{`\r`, false},            // \r
+			{`\t`, false},            // \t
+			{`\b`, false},            // \b
+			{`\f`, false},            // \f
+			{`\"`, false},            // \"
+			{`\\`, false},            // \\
+			{`\/`, false},            // \/
+			{`\x`, false},            // Unknown escape
 			{`\u000apassword`, true}, // \n then password
 			{`\u`, false},            // \u at end
-            {`\u0`, false},           // \u0 at end
+			{`\u0`, false},           // \u0 at end
 		}
 
 		for _, tt := range tests {
@@ -94,7 +94,7 @@ func TestRedactFast_Coverage(t *testing.T) {
 			{`null`, 0, 4},
 			{`false`, 0, 5},
 			{`123,`, 0, 3}, // Number until comma
-			{`foo`, 3, 3}, // Out of bounds start
+			{`foo`, 3, 3},  // Out of bounds start
 		}
 		for _, tt := range tests {
 			got := skipJSONValue([]byte(tt.input), tt.start)
