@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { setupTestData } from './test-data';
 
 test.describe('Marketplace Wizard - Step Parameters Sync', () => {
   let initialData: any;
@@ -31,7 +30,7 @@ test.describe('Marketplace Wizard - Step Parameters Sync', () => {
 
     // Verify the pre-seeded environment variables are present and correctly parsed
     // Our seeded config has BASE_URL=https://api.example.com and an empty key mapping
-    const baseUrlInput = page.getByDisplayValue('https://api.example.com');
+    const baseUrlInput = page.locator('input[value="https://api.example.com"]');
     await expect(baseUrlInput).toBeVisible();
 
     // Make sure empty keys from the DB seeded data or UI interaction are stripped
