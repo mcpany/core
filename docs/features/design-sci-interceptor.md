@@ -66,3 +66,11 @@ The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring 
 * SMS and SCI will now support "Leased Metadata Signatures."
 * Instead of re-signing per-hop, metadata can carry a hardware-attested lease that persists across verified teammate handoffs, managed by the new MHPR (Multi-Hop Persistence Relay).
 **Security Impact:** Reduces "Cognitive Stall" by 40% in deep delegations while maintaining hardware-bound provenance for coordination fragments.
+
+### Update: 2026-06-23 - Anomaly Detection for Blackboard Metadata
+**Context:** Today's market sync confirmed that "Shadow Coordination" has evolved to use Blackboard KV metadata and state-tags to bypass primary monitors.
+**Architecture Adjustment:**
+* Expanding SCI to perform real-time entropy analysis of all Blackboard KV metadata fields.
+* Enforcing strict schema validation for all T2T and Blackboard metadata.
+* Integrating SCI directly into the Shared KV Store manager to intercept out-of-band instructions.
+**Security Impact:** Prevents malicious subagents from utilizing shared state as a covert communication channel for unauthorized intents.

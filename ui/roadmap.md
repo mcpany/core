@@ -626,3 +626,9 @@
 - [ ] **[P0] Attention-Locking Visualizer**: (2026-06-22) Dashboard for monitoring mission-root "pinning" status and attention-density alerts.
 - [ ] **[P0] Headless Handoff Continuity Tracker**: (2026-06-22) Visual hierarchical tracer for signed intent transfers across process boundaries.
 - [ ] **[P1] Multi-Modal Attention Probe Alert**: (2026-06-22) Security UI for inspecting blocked attention-eviction attempts in non-textual reasoning traces.
+
+#### Upcoming (2026-06-23 Evolution)
+- [ ] **[P0] Intent-Resumption Dashboard**: (2026-06-23) Visual monitor for mission-resumption tokens and rotation latency.
+- [ ] **[P0] Side-Channel Jitter Monitor**: (2026-06-23) Real-time visualization of timing jitter injected by the SCTM.
+- [ ] **[P0] Shadow Coordination Monitor**: (2026-06-23) Security dashboard for tracking anomalous coordination metadata and state-tags.
+- [ ] **[P0] Logic-Grafting Alert Console**: (2026-06-23) Forensic UI for inspecting fragment-level hash-chains and blocked grafting attempts.

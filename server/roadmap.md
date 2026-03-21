@@ -788,3 +788,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Density Guard (ADG)**: (P0) Cognitive security layer utilizing hardware-bound headers to "pin" mission-critical fragments at the LLM attention layer.
 - **Headless Handoff Continuity (HHC)**: (P0) Orchestration bridge facilitating signed intent transfers for process-based subagent spawning.
 - **Multi-Modal Attention Sanitizer**: (P1) Advanced security extension for the MIB to neutralize attention-eviction probes in non-textual traces.
+
+#### Upcoming (2026-06-23 Evolution)
+*   **[P0] Intent-Resumption Gateway (IRG)**: Implementation of hardware-locked mission resumption tokens for sub-100ms teammate rotation. (Added: 2026-06-23)
+*   **[P0] Side-Channel Timing Mitigator (SCTM)**: Security middleware injecting timing jitter to neutralize Spectral Reasoning attacks. (Added: 2026-06-23)
+*   **[P0] Shadow Coordination Interceptor (SCI)**: Transport-level monitor for coordination metadata and state-tags. (Added: 2026-06-23)
+*   **[P0] Logic-Grafting Interceptor (LGI)**: Advanced ARI Hub extension for fragment-level semantic hash-chaining. (Added: 2026-06-23)

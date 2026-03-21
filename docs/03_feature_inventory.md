@@ -1437,3 +1437,15 @@
 ### Priority Shifts
 - **Multi-modal Integrity Bridge (MIB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Attention Sanitization** to counter high-entropy multimodal probes.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to support the new **HHC-compliant** headless handoff patterns.
+
+## Evolution: [2026-06-23] Updates
+
+### Proposed Additions
+- **Intent-Resumption Gateway (IRG)**: (P0) Authoritative resumption broker that implements hardware-locked "Intent-Resumption Tokens" to eliminate cognitive stall during teammate rotation.
+- **Side-Channel Timing Mitigator (SCTM)**: (P0) Security middleware that injects hardware-attested timing jitter into gateway responses to neutralize "Spectral Reasoning" timing attacks.
+- **Shadow Coordination Interceptor (SCI)**: (P0) Transport-level monitor for coordination metadata and state-tags to detect and block out-of-band subagent collusion.
+- **Logic-Grafting Interceptor (LGI)**: (P0) Advanced extension for the ARI Hub that performs fragment-level "Semantic Hash-Chaining" to detect unauthorized reasoning paths (CVE-2026-71002).
+
+### Priority Shifts
+- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **LGI** integration to counter fragment-level logic grafting.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to support the new **IRG-compliant** mission resumption patterns.

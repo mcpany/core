@@ -55,3 +55,10 @@ As AI agent swarms evolve from linear execution to high-frequency teammate rotat
 
 ## 7. Evolutionary Changelog
 * **2026-06-15:** Initial Document Creation.
+
+### Update: 2026-06-23 - Side-Channel Timing Defense
+**Context:** Today's market sync revealed "Spectral Reasoning" attacks where subagents probe mission constraints via token issuance latency.
+**Architecture Adjustment:**
+* Integrating the **Side-Channel Timing Mitigator (SCTM)** into the token issuance pipeline.
+* IRG now injects hardware-attested timing jitter into the `/token` and `/verify` responses for non-primary mission-root requests.
+**Security Impact:** Prevents specialist subagents from mapping parent security boundaries through sub-millisecond timing variations.

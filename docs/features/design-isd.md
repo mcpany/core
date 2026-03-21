@@ -61,3 +61,11 @@ MCP Any needs to provide a robust defense mechanism that performs active deconst
 ## 7. Evolutionary Changelog
 * **2026-06-06:** Initial Document Creation.
 * **2026-06-07:** Integration of Semantic Shadowing Mitigator (SSM) for stylometric and contextual consistency checks.
+
+### Update: 2026-06-23 - Logic-Grafting Mitigation
+**Context:** The discovery of "Logic-Grafting" (CVE-2026-71002) confirm that subagents can weaponize shared teammate shards by appending unauthorized reasoning paths.
+**Architecture Adjustment:**
+* Introducing the **Logic-Grafting Interceptor (LGI)** as a core component of the fragment validation loop.
+* LGI performs fragment-level "Semantic Hash-Chaining" for inter-agent coordination fragments.
+* Every shard update must include a hardware-attested hash-chain link that verifies its lineage back to the previous authorized state.
+**Security Impact:** Prevents malicious subagents from "poisoning" shared teammate shards with grafted logic that diverges from the mission-root intent.
