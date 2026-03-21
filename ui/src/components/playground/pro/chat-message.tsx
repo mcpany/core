@@ -14,10 +14,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 import { useState, useEffect, lazy, Suspense } from "react";
 import { SmartResultRenderer } from "./smart-result-renderer";
+import { SmartDiffRenderer } from "./smart-diff-renderer";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTheme } from "next-themes";
-import { defineDraculaTheme } from "@/lib/monaco-theme";
 import { unwrapMcpResult, deepParseJson } from "@/lib/mcp-unwrap";
 
 // ⚡ BOLT: Lazy load heavy dependencies to improve initial bundle size and TTI.
@@ -38,13 +38,6 @@ const _SyntaxHighlighterLazy = lazy(
 const SyntaxHighlighter = (props: any) => (
     <Suspense fallback={<div className="p-4 bg-[rgba(0,0,0,0.4)] h-12 animate-pulse rounded" />}>
         <_SyntaxHighlighterLazy {...props} />
-    </Suspense>
-);
-
-const _DiffEditorLazy = lazy(() => import("@monaco-editor/react").then((mod) => ({ default: mod.DiffEditor })));
-const DiffEditor = (props: any) => (
-    <Suspense fallback={<div className="h-full w-full bg-[#1e1e1e] animate-pulse rounded-md" />}>
-        <_DiffEditorLazy {...props} />
     </Suspense>
 );
 
@@ -264,28 +257,7 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                             Output Difference
                         </DialogTitle>
                     </DialogHeader>
-                    <div className="flex-1 border rounded-md overflow-hidden bg-[#1e1e1e]">
-                        <DiffEditor
-                            original={JSON.stringify(prevUnwrapped, null, 2)}
-                            modified={JSON.stringify(currUnwrapped, null, 2)}
-                            language="json"
-                            theme={theme === "dark" ? "dracula" : "light"}
-                            onMount={(_editor: any, monaco: any) => {
-                                if (theme === "dark") {
-                                    defineDraculaTheme(monaco);
-                                    monaco.editor.setTheme("dracula");
-                                }
-                            }}
-                            options={{
-                                readOnly: true,
-                                minimap: { enabled: false },
-                                scrollBeyondLastLine: false,
-                                fontSize: 12,
-                                diffCodeLens: true,
-                                renderSideBySide: true,
-                            }}
-                        />
-                    </div>
+                    <SmartDiffRenderer original={prevUnwrapped} modified={currUnwrapped} />
                 </DialogContent>
             </Dialog>
             </>
