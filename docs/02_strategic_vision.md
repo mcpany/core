@@ -458,7 +458,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: The rapid adoption of "Agent Teams" (Claude Code) and the pivot to "RL-driven Reasoning" (DeepSeek/OpenClaw) confirm that the "Universal Agent Bus" must move from simple connectivity to **Active Inter-Agent Governance**. As swarms become deeper and more autonomous, the security frontier is no longer just the "tool," but the **Inbox** where agents coordinate and the **Reward** that optimizes their reasoning.
 **Strategic Pivot**:
 - **Inter-Agent Mailbox Guard (IAMG)**: MCP Any will evolve to act as the authoritative gatekeeper for inter-agent messaging (Mailboxes). We are mandating the use of "Intent-Bound Messaging" where every teammate-to-teammate request must be cryptographically signed and validated against a "Parental Mission Root." This ensures that a compromised subagent cannot "Mailbox Inject" a sibling into an unauthorized action.
-- **Verifiable Reward Provider (VRP)**: Supporting the next generation of RL-driven agents, MCP Any will act as the authoritative source for "Truth Attestation." We will provide the infrastructure for agents to request verifiable, binary rewards (e.g., "Was this shell command successful?" or "Does this file match this hash?") to optimize their internal reasoning loops without hallucination.
+- **Verifiable Reward Provider (VRP)**: Supporting the next generation of RL-driven agents, MCP Any will act as the authoritative source for "Truth Attestation." We will provide the infrastructure for agents to request verifiable, binary rewards (e.g., "Was this shell command successful " or "Does this file match this hash ") to optimize their internal reasoning loops without hallucination.
 - **Identity-Bound Discovery (IBD)**: To counter autonomous GitHub compromises, we are mandating "IBD." No capability (tool or subagent) will be exposed in the "Discovery Bus" unless the requester provides a cryptographically bound mission-token. This ensures that agents only "see" tools relevant to their specific, supervised task.
 
 ---
@@ -538,7 +538,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Intent Integrity & Binary State Handoffs
 **Context**: Today's findings show a shift from simple "Access Control" to "Intent Integrity." The emergence of "Context-Mirroring" attacks and the inefficiency of JSON-based state transfer (Token Storms) demand a more robust and performant orchestration layer.
 **Strategic Pivot**:
-- **Proof-of-Intent (PoI) Validation**: MCP Any will implement UACO v1.7 PoI headers. This moves security from "Can this agent call this tool?" to "Does this tool call align with the cryptographically signed intent of the session?"
+- **Proof-of-Intent (PoI) Validation**: MCP Any will implement UACO v1.7 PoI headers. This moves security from "Can this agent call this tool " to "Does this tool call align with the cryptographically signed intent of the session "
 - **Binary State Handoff (BSH)**: Adopting OpenClaw's approach to low-latency state transfer. MCP Any will support binary-encoded context handoffs between agents to mitigate "Token Storms" and reduce latency in deep agent chains.
 - **Skill Grafting Attestation**: To combat "Skill-Squatting," any dynamic tool loading must be accompanied by a multi-signature attestation from both the Agent Framework and the User's Security Policy.
 

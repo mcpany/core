@@ -239,7 +239,7 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Actionable Configuration Errors**
   - **Description**: Improved configuration loading and validation to provide "Actionable Errors" with specific "Fix" suggestions for common issues like missing environment variables, missing files, and invalid paths.
 - **Environment Variable Fuzzy Matching**
-  - **Description**: Enhances "Actionable Errors" by suggesting similar environment variables when a configured variable is missing, helping users catch typos (e.g., "Did you mean 'API_KEY'?").
+  - **Description**: Enhances "Actionable Errors" by suggesting similar environment variables when a configured variable is missing, helping users catch typos (e.g., "Did you mean 'API_KEY' ").
 - **RegEx Environment Variable Validation**
   - **Description**: Validating the format of environment variables using regex (e.g., ensuring an API key matches a pattern) in addition to existence checks.
 - **Async Tool Loading**
