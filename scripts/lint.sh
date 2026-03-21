@@ -130,7 +130,7 @@ fi
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     echo "Skipping golangci-lint run \
-        # ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
+        # # ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
