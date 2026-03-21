@@ -33,6 +33,24 @@ import (
 //   - Returns "unknown binary type: %s" if triggered.
 //   - Returns "global settings validation failed, check logs for details" if triggered.
 //   - And potentially other underlying errors.
+// LoadServices loads, validates, and processes the MCP Any server configuration from a given store.
+//
+// Summary: Loads and validates the server configuration.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - store: Store. The configuration store from which to load the configuration.
+//   - binaryType: string. The type of binary running the code (e.g., "server", "worker").
+//
+// Returns:
+//   - *configv1.McpAnyServerConfig: A validated configuration object.
+//   - error: An error if loading or validation fails.
+//
+// Errors:
+//   - Returns "%s" if triggered.
+//   - Returns "unknown binary type: %s" if triggered.
+//   - Returns "global settings validation failed, check logs for details" if triggered.
+//   - And potentially other underlying errors.
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
@@ -108,6 +126,22 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 	return fileConfig, nil
 }
 
+// LoadResolvedConfig loads key resolved configuration (merging services, setting defaults) without performing strict validation.
+//
+// Summary: Loads configuration with merging and defaults but without strict validation.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - store: Store. The configuration store.
+//
+// Returns:
+//   - *configv1.McpAnyServerConfig: The resolved configuration.
+//   - error: An error if loading fails.
+//
+// Errors:
+//   - Returns "failed to load config from store: %w" if triggered.
+//   - Returns "configuration sources provided but loaded configuration is empty. Check if the sources are empty or invalid" if triggered.
+//   - Returns "failed to load and merge services: %w" if triggered.
 // LoadResolvedConfig loads key resolved configuration (merging services, setting defaults) without performing strict validation.
 //
 // Summary: Loads configuration with merging and defaults but without strict validation.

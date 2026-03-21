@@ -28,10 +28,34 @@ type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
 // Upstream implements the upstream.Upstream interface for vector database services.
 //
 // Summary: Represents a Upstream.
+// Upstream implements the upstream.Upstream interface for vector database services.
+//
+// Summary: Represents a Upstream.
 type Upstream struct {
 	clientFactory ClientFactory
 }
 
+// NewUpstream creates a new instance of VectorUpstream.
+//
+// Returns:
+//   - upstream.Upstream: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewUpstream operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 // NewUpstream creates a new instance of VectorUpstream.
 //
 // Returns:
@@ -96,10 +120,72 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 //
 // Side Effects:
 //   - None.
+// Shutdown implements the upstream.Upstream interface.
+//
+// Parameters:
+//   - _ (context.Context): The parameter.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Shutdown operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
+// Register processes the configuration for a vector service. _ is an unused parameter. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
+//
+// Parameters:
+//   - _ (context.Context): The _ parameter.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - _ (prompt.ManagerInterface): The _ parameter.
+//   - _ (resource.ManagerInterface): The _ parameter.
+//   - _ (bool): The _ parameter.
+//
+// Returns:
+//   - string: The resulting string.
+//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
+//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None
+//
+// Summary: Executes Register operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 // Register processes the configuration for a vector service. _ is an unused parameter. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
@@ -263,6 +349,37 @@ type vectorCallable struct {
 //
 // Side Effects:
 //   - None.
+// Call executes the vector tool with the given arguments.
+// It accepts a context and an execution request containing arguments,
+// and returns the result of the tool execution or an error.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The parameter.
+//
+// Returns:
+//   - any: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Call operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.handler(ctx, req.Arguments)
 }
@@ -275,6 +392,9 @@ type vectorToolDef struct {
 	Handler     func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
+// Client interface for different vector DB implementations.
+//
+// Summary: Represents a Client.
 // Client interface for different vector DB implementations.
 //
 // Summary: Represents a Client.

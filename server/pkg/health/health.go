@@ -66,12 +66,42 @@ var (
 //
 // Side Effects:
 //   - None.
+// SetGlobalAlertConfig sets the global alert configuration.
+//
+// It updates the thread-safe global configuration used for sending alerts on health status changes.
+//
+// Parameters:
+//   - cfg: *configv1.AlertConfig. The new alert configuration.
+//
+// Returns:
+//
+//	None.
+//
+// Side Effects:
+//   - Updates a global variable protected by a mutex.
+//
+// Summary: Updates SetGlobalAlertConfig operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 	globalAlertConfigMu.Lock()
 	defer globalAlertConfigMu.Unlock()
 	globalAlertConfig = cfg
 }
 
+// HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
+//
+// Summary: Represents a HTTPServiceWithHealthCheck.
 // HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
 //
 // Summary: Represents a HTTPServiceWithHealthCheck.
@@ -88,6 +118,33 @@ type HTTPServiceWithHealthCheck interface {
 	GetHealthCheck() *configv1.HttpHealthCheck
 }
 
+// NewChecker creates a new health checker for the given upstream service.
+//
+// It determines the type of service (HTTP, gRPC, etc.) and creates an appropriate
+// health check strategy wrapped with latency metrics and status change listeners.
+//
+// Parameters:
+//   - uc: *configv1.UpstreamServiceConfig. The configuration of the upstream service to check.
+//
+// Returns:
+//   - health.Checker: A configured health checker instance. Returns nil if the configuration is nil or invalid.
+//
+// Side Effects:
+//   - Registers metrics for the health check.
+//
+// Summary: Initializes NewChecker operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 // NewChecker creates a new health checker for the given upstream service.
 //
 // It determines the type of service (HTTP, gRPC, etc.) and creates an appropriate

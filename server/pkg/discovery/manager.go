@@ -15,6 +15,9 @@ import (
 // ProviderStatus represents the status of a discovery provider.
 //
 // Summary: Represents a ProviderStatus.
+// ProviderStatus represents the status of a discovery provider.
+//
+// Summary: Represents a ProviderStatus.
 type ProviderStatus struct {
 	Name            string
 	Status          string // "OK", "ERROR"
@@ -26,12 +29,42 @@ type ProviderStatus struct {
 // Manager manages auto-discovery providers.
 //
 // Summary: Represents a Manager.
+// Manager manages auto-discovery providers.
+//
+// Summary: Represents a Manager.
 type Manager struct {
 	providers []Provider
 	mu        sync.RWMutex
 	statuses  map[string]*ProviderStatus
 }
 
+// NewManager creates a new discovery manager.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *Manager: The resulting *Manager.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+//
+// Summary: Initializes NewManager operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 // NewManager creates a new discovery manager.
 //
 // Parameters:
@@ -92,6 +125,33 @@ func NewManager() *Manager {
 //
 // Side Effects:
 //   - None.
+// RegisterProvider registers a new provider.
+//
+// Parameters:
+//   - p (Provider): The p parameter.
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+//
+// Summary: Executes RegisterProvider operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) RegisterProvider(p Provider) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -102,6 +162,33 @@ func (m *Manager) RegisterProvider(p Provider) {
 	}
 }
 
+// Run runs all registered providers and returns the aggregated discovered services. It also updates the internal status of each provider.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//
+// Returns:
+//   - []*configv1.UpstreamServiceConfig: The resulting []*configv1.UpstreamServiceConfig.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+//
+// Summary: Executes Run operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 // Run runs all registered providers and returns the aggregated discovered services. It also updates the internal status of each provider.
 //
 // Parameters:
@@ -203,6 +290,33 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 //
 // Side Effects:
 //   - None.
+// GetStatuses returns the current status of all providers.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - []*ProviderStatus: The resulting []*ProviderStatus.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+//
+// Summary: Retrieves GetStatuses operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) GetStatuses() []*ProviderStatus {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -218,6 +332,34 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 	return statuses
 }
 
+// GetProviderStatus returns the status of a specific provider.
+//
+// Parameters:
+//   - name (string): The name parameter.
+//
+// Returns:
+//   - *ProviderStatus: The resulting *ProviderStatus.
+//   - bool: True if successful, false otherwise.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+//
+// Summary: Retrieves GetProviderStatus operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 // GetProviderStatus returns the status of a specific provider.
 //
 // Parameters:

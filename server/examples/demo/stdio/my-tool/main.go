@@ -14,10 +14,16 @@ import (
 // Request represents a tool request.
 //
 // Summary: Represents the request component, defining its structure and configuration properties.
+// Request represents a tool request.
+//
+// Summary: Represents the request component, defining its structure and configuration properties.
 type Request struct {
 	Name string `json:"name"`
 }
 
+// Response represents a tool response.
+//
+// Summary: Represents the response component, defining its structure and configuration properties.
 // Response represents a tool response.
 //
 // Summary: Represents the response component, defining its structure and configuration properties.

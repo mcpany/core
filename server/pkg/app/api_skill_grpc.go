@@ -17,11 +17,23 @@ import (
 // SkillServiceServer implements the SkillService gRPC interface.
 //
 // Summary: Represents a SkillServiceServer.
+// SkillServiceServer implements the SkillService gRPC interface.
+//
+// Summary: Represents a SkillServiceServer.
 type SkillServiceServer struct {
 	pb.UnimplementedSkillServiceServer
 	manager *skill.Manager
 }
 
+// NewSkillServiceServer creates a new SkillServiceServer.
+//
+// Summary: Initializes a new gRPC server for Skill management.
+//
+// Parameters:
+//   - manager: *skill.Manager. The skill manager instance to handle business logic.
+//
+// Returns:
+//   - *SkillServiceServer: The initialized gRPC server.
 // NewSkillServiceServer creates a new SkillServiceServer.
 //
 // Summary: Initializes a new gRPC server for Skill management.
@@ -37,6 +49,20 @@ func NewSkillServiceServer(manager *skill.Manager) *SkillServiceServer {
 	}
 }
 
+// ListSkills lists all available skills.
+//
+// Summary: Retrieves a list of all skills managed by the server.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - req: *pb.ListSkillsRequest. The request object (currently empty).
+//
+// Returns:
+//   - *pb.ListSkillsResponse: The response containing the list of skills.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns "failed to list skills: %v" if triggered.
 // ListSkills lists all available skills.
 //
 // Summary: Retrieves a list of all skills managed by the server.
@@ -67,6 +93,20 @@ func (s *SkillServiceServer) ListSkills(_ context.Context, _ *pb.ListSkillsReque
 	}.Build(), nil
 }
 
+// GetSkill retrieves a specific skill by name.
+//
+// Summary: Retrieves details of a specific skill.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - req: *pb.GetSkillRequest. The request containing the skill name.
+//
+// Returns:
+//   - *pb.GetSkillResponse: The response containing the skill details.
+//   - error: An error if the skill is not found or the operation fails.
+//
+// Errors:
+//   - Returns "skill not found: %v" if triggered.
 // GetSkill retrieves a specific skill by name.
 //
 // Summary: Retrieves details of a specific skill.
@@ -112,6 +152,20 @@ func (s *SkillServiceServer) GetSkill(_ context.Context, req *pb.GetSkillRequest
 //
 // Errors:
 //   - Returns "failed to create skill: %v" if triggered.
+// CreateSkill creates a new skill.
+//
+// Summary: Creates a new skill from the provided definition.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - req: *pb.CreateSkillRequest. The request containing the new skill definition.
+//
+// Returns:
+//   - *pb.CreateSkillResponse: The response containing the created skill.
+//   - error: An error if the operation fails (e.g., validation error, storage error).
+//
+// Errors:
+//   - Returns "failed to create skill: %v" if triggered.
 func (s *SkillServiceServer) CreateSkill(_ context.Context, req *pb.CreateSkillRequest) (*pb.CreateSkillResponse, error) {
 	if req.GetSkill() == nil {
 		return nil, status.Error(codes.InvalidArgument, "skill is required")
@@ -127,6 +181,20 @@ func (s *SkillServiceServer) CreateSkill(_ context.Context, req *pb.CreateSkillR
 	}.Build(), nil
 }
 
+// UpdateSkill updates an existing skill.
+//
+// Summary: Updates an existing skill definition.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - req: *pb.UpdateSkillRequest. The request containing the skill name and new definition.
+//
+// Returns:
+//   - *pb.UpdateSkillResponse: The response containing the updated skill.
+//   - error: An error if the skill is not found or update fails.
+//
+// Errors:
+//   - Returns "failed to update skill: %v" if triggered.
 // UpdateSkill updates an existing skill.
 //
 // Summary: Updates an existing skill definition.
@@ -161,6 +229,20 @@ func (s *SkillServiceServer) UpdateSkill(_ context.Context, req *pb.UpdateSkillR
 	}.Build(), nil
 }
 
+// DeleteSkill deletes a skill.
+//
+// Summary: Deletes a skill by name.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - req: *pb.DeleteSkillRequest. The request containing the name of the skill to delete.
+//
+// Returns:
+//   - *pb.DeleteSkillResponse: An empty response on success.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns "failed to delete skill: %v" if triggered.
 // DeleteSkill deletes a skill.
 //
 // Summary: Deletes a skill by name.

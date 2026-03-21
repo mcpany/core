@@ -15,10 +15,25 @@ import (
 // GuardrailsConfig defines patterns to block.
 //
 // Summary: Configuration for the guardrails middleware.
+// GuardrailsConfig defines patterns to block.
+//
+// Summary: Configuration for the guardrails middleware.
 type GuardrailsConfig struct {
 	BlockedPhrases []string
 }
 
+// NewGuardrailsMiddleware creates a new Guardrails middleware.
+//
+// Summary: Initializes the guardrails middleware for blocking malicious prompts.
+//
+// Parameters:
+//   - config: GuardrailsConfig. The configuration for blocking patterns.
+//
+// Returns:
+//   - gin.HandlerFunc: The Gin middleware handler.
+//
+// Side Effects:
+//   - Makes network calls via HTTP or gRPC.
 // NewGuardrailsMiddleware creates a new Guardrails middleware.
 //
 // Summary: Initializes the guardrails middleware for blocking malicious prompts.

@@ -117,6 +117,16 @@ func init() {
 //
 // Returns:
 //   - []byte: The redacted JSON output.
+// RedactJSON parses a JSON byte slice and redacts sensitive keys.
+// If the input is not valid JSON object or array, it returns the input as is.
+//
+// Summary: Redacts sensitive keys in JSON data.
+//
+// Parameters:
+//   - input ([]byte): The JSON input to redact.
+//
+// Returns:
+//   - []byte: The redacted JSON output.
 func RedactJSON(input []byte) []byte {
 	// Check if input looks like JSON object or array.
 	// We skip whitespace and comments to find the first significant character.
@@ -134,6 +144,20 @@ func RedactJSON(input []byte) []byte {
 	return redactJSONFast(input)
 }
 
+// RedactMap recursively redacts sensitive keys in a map.
+//
+// Optimization: This function performs a copy-on-write.
+// If no sensitive keys are found, it returns the original map (zero allocation).
+// If sensitive keys are found, it returns a new map with redacted values (and copies other fields).
+// Note: This aligns with RedactJSON behavior which returns original slice if clean.
+//
+// Summary: Recursively redacts sensitive keys in a map.
+//
+// Parameters:
+//   - m (map[string]interface{}): The map to redact.
+//
+// Returns:
+//   - map[string]interface{}: The potentially redacted map.
 // RedactMap recursively redacts sensitive keys in a map.
 //
 // Optimization: This function performs a copy-on-write.
@@ -254,6 +278,15 @@ var sensitiveKeys = []string{
 	"passphrase", "passphrases", "ssh_key",
 }
 
+// IsSensitiveKey checks if a key name suggests it contains sensitive information.
+//
+// Summary: Checks if a key name implies sensitive data.
+//
+// Parameters:
+//   - key (string): The key name to check.
+//
+// Returns:
+//   - bool: True if the key is considered sensitive, false otherwise.
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
 //
 // Summary: Checks if a key name implies sensitive data.
@@ -500,6 +533,16 @@ var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
 //
 // Returns:
 //   - string: The redacted DSN string.
+// RedactDSN redacts the password from a DSN string.
+// Supported formats: postgres://user:password@host...
+//
+// Summary: Redacts passwords from DSN strings.
+//
+// Parameters:
+//   - dsn (string): The DSN string to redact.
+//
+// Returns:
+//   - string: The redacted DSN string.
 func RedactDSN(dsn string) string {
 	u, err := url.Parse(dsn)
 	if err == nil && u.User != nil {
@@ -606,10 +649,24 @@ func RedactDSN(dsn string) string {
 // It is optimized to pre-process the list of secrets once and reuse the configuration.
 //
 // Summary: Optimized text redactor for known secrets.
+// SecretRedactor handles redaction of secrets from text.
+// It is optimized to pre-process the list of secrets once and reuse the configuration.
+//
+// Summary: Optimized text redactor for known secrets.
 type SecretRedactor struct {
 	replacer *strings.Replacer
 }
 
+// NewSecretRedactor creates a new SecretRedactor with the given secrets.
+// It performs filtering, deduplication, and sorting of secrets to ensure optimal redaction.
+//
+// Summary: Creates a new SecretRedactor.
+//
+// Parameters:
+//   - secrets ([]string): The list of secrets to redact.
+//
+// Returns:
+//   - *SecretRedactor: The configured redactor.
 // NewSecretRedactor creates a new SecretRedactor with the given secrets.
 // It performs filtering, deduplication, and sorting of secrets to ensure optimal redaction.
 //
@@ -664,6 +721,15 @@ func NewSecretRedactor(secrets []string) *SecretRedactor {
 //
 // Returns:
 //   - string: The redacted text.
+// Redact replaces all occurrences of the configured secrets in the text with [REDACTED].
+//
+// Summary: Redacts secrets from text.
+//
+// Parameters:
+//   - text (string): The text to redact.
+//
+// Returns:
+//   - string: The redacted text.
 func (r *SecretRedactor) Redact(text string) string {
 	if text == "" || r.replacer == nil {
 		return text
@@ -671,6 +737,16 @@ func (r *SecretRedactor) Redact(text string) string {
 	return r.replacer.Replace(text)
 }
 
+// RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
+//
+// Summary: Convenience function to redact secrets from text.
+//
+// Parameters:
+//   - text (string): The text to redact.
+//   - secrets ([]string): A list of secret values to redact from the text.
+//
+// Returns:
+//   - string: The redacted text.
 // RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
 //
 // Summary: Convenience function to redact secrets from text.

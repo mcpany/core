@@ -28,6 +28,24 @@ import (
 //
 // Side Effects:
 //   - Opens and reads the specified file from the filesystem.
+// ReadLastNLines reads the last n lines from a file.
+// It is optimized to read from the end of the file.
+//
+// Summary: Reads the tail of a file.
+//
+// Parameters:
+//   - path: string. The path to the file.
+//   - n: int. The number of lines to read.
+//
+// Returns:
+//   - [][]byte: A slice of byte slices representing the lines.
+//   - error: An error if the file cannot be opened or read.
+//
+// Throws/Errors:
+//   - Returns error if file open or seek fails.
+//
+// Side Effects:
+//   - Opens and reads the specified file from the filesystem.
 func ReadLastNLines(path string, n int) ([][]byte, error) {
 	if n <= 0 {
 		return nil, nil

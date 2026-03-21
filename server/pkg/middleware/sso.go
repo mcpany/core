@@ -13,11 +13,28 @@ import (
 // SSOConfig defines the SSO configuration.
 //
 // Summary: Configuration options for Single Sign-On (SSO) middleware.
+// SSOConfig defines the SSO configuration.
+//
+// Summary: Configuration options for Single Sign-On (SSO) middleware.
 type SSOConfig struct {
 	Enabled bool
 	IDPURL  string
 }
 
+// SSOMiddleware creates a new SSO middleware.
+//
+// Summary: Middleware that enforces SSO authentication via trusted headers or bearer tokens.
+//
+// Parameters:
+//   - config: SSOConfig. The configuration settings for SSO.
+//
+// Returns:
+//   - gin.HandlerFunc: The Gin middleware handler.
+//
+// Side Effects:
+//   - Inspects headers for authentication information.
+//   - Aborts the request with 401 Unauthorized if authentication is missing or invalid.
+//   - Sets "UserID" in the context on successful authentication.
 // SSOMiddleware creates a new SSO middleware.
 //
 // Summary: Middleware that enforces SSO authentication via trusted headers or bearer tokens.

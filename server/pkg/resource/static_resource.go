@@ -19,6 +19,10 @@ import (
 // defined statically in the configuration (e.g. pointing to a URL).
 //
 // Summary: Represents a StaticResource.
+// StaticResource implements the Resource interface for resources that are
+// defined statically in the configuration (e.g. pointing to a URL).
+//
+// Summary: Represents a StaticResource.
 type StaticResource struct {
 	resource      *mcp.Resource
 	serviceID     string
@@ -26,6 +30,16 @@ type StaticResource struct {
 	staticContent *configv1.StaticResource
 }
 
+// NewStaticResource creates a new instance of StaticResource.
+//
+// Summary: Initializes a static resource.
+//
+// Parameters:
+//   - def: *configv1.ResourceDefinition. The resource definition.
+//   - serviceID: string. The ID of the service owning the resource.
+//
+// Returns:
+//   - *StaticResource: The initialized static resource.
 // NewStaticResource creates a new instance of StaticResource.
 //
 // Summary: Initializes a static resource.
@@ -57,6 +71,12 @@ func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *Stat
 //
 // Returns:
 //   - *mcp.Resource: The MCP resource definition.
+// Resource returns the MCP representation of the resource.
+//
+// Summary: Retrieves the MCP resource metadata.
+//
+// Returns:
+//   - *mcp.Resource: The MCP resource definition.
 func (r *StaticResource) Resource() *mcp.Resource {
 	return r.resource
 }
@@ -67,10 +87,35 @@ func (r *StaticResource) Resource() *mcp.Resource {
 //
 // Returns:
 //   - string: The service ID.
+// Service returns the ID of the service that provides this resource.
+//
+// Summary: Retrieves the service ID.
+//
+// Returns:
+//   - string: The service ID.
 func (r *StaticResource) Service() string {
 	return r.serviceID
 }
 
+// Read retrieves the content of the resource by fetching the URI.
+//
+// Summary: Fetches the resource content.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//
+// Returns:
+//   - *mcp.ReadResourceResult: The resource content.
+//   - error: An error if fetching fails.
+//
+// Side Effects:
+//   - Performs an HTTP GET request to the resource URI (if not inline content).
+//
+// Errors:
+//   - Returns "failed to create request: %w" if triggered.
+//   - Returns "failed to fetch resource: %w" if triggered.
+//   - Returns "failed to fetch resource, status: %d" if triggered.
+//   - And potentially other underlying errors.
 // Read retrieves the content of the resource by fetching the URI.
 //
 // Summary: Fetches the resource content.
@@ -171,6 +216,18 @@ func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, err
 	}, nil
 }
 
+// Subscribe is not yet implemented for static resources.
+//
+// Summary: Subscribes to resource updates (Not Implemented).
+//
+// Parameters:
+//   - _: context.Context. Unused.
+//
+// Returns:
+//   - error: Always returns an error indicating not implemented.
+//
+// Errors:
+//   - Returns "subscribing to static resources is not yet implemented" if triggered.
 // Subscribe is not yet implemented for static resources.
 //
 // Summary: Subscribes to resource updates (Not Implemented).

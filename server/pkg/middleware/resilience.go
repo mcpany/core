@@ -14,11 +14,23 @@ import (
 // ResilienceMiddleware provides circuit breaker and retry functionality for tool executions.
 //
 // Summary: Middleware that wraps tool executions with circuit breakers, retries, and timeouts.
+// ResilienceMiddleware provides circuit breaker and retry functionality for tool executions.
+//
+// Summary: Middleware that wraps tool executions with circuit breakers, retries, and timeouts.
 type ResilienceMiddleware struct {
 	toolManager tool.ManagerInterface
 	managers    sync.Map // map[string]*resilience.Manager (serviceID -> Manager)
 }
 
+// NewResilienceMiddleware creates a new ResilienceMiddleware.
+//
+// Summary: Initializes the ResilienceMiddleware with a tool manager.
+//
+// Parameters:
+//   - toolManager: tool.ManagerInterface. The manager for retrieving tool and service information.
+//
+// Returns:
+//   - *ResilienceMiddleware: The initialized middleware.
 // NewResilienceMiddleware creates a new ResilienceMiddleware.
 //
 // Summary: Initializes the ResilienceMiddleware with a tool manager.
@@ -34,6 +46,26 @@ func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddl
 	}
 }
 
+// Execute executes the resilience middleware.
+//
+// Summary: Executes the tool call within a resilience wrapper (circuit breaker, retry).
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *tool.ExecutionRequest. The tool execution request.
+//   - next: tool.ExecutionFunc. The next handler in the chain.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if the execution or resilience policy fails.
+//
+// Side Effects:
+//   - Checks circuit breaker state.
+//   - May retry the execution on failure.
+//   - Records success/failure to update circuit breaker stats.
+//
+// Errors:
+//   - Returns an error if the operation fails or inputs are invalid.
 // Execute executes the resilience middleware.
 //
 // Summary: Executes the tool call within a resilience wrapper (circuit breaker, retry).

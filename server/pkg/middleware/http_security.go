@@ -20,6 +20,18 @@ import (
 //
 // Side Effects:
 //   - Makes network calls via HTTP or gRPC.
+// HTTPSecurityHeadersMiddleware adds security headers to HTTP responses.
+//
+// Summary: Middleware that adds standard security headers to all HTTP responses.
+//
+// Parameters:
+//   - next: http.Handler. The next handler in the chain.
+//
+// Returns:
+//   - http.Handler: The wrapped handler that sets security headers.
+//
+// Side Effects:
+//   - Makes network calls via HTTP or gRPC.
 func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")

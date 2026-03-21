@@ -15,11 +15,23 @@ import (
 // Manager handles the lifecycle and resolution of profiles.
 //
 // Summary: Manages profile definitions and resolution.
+// Manager handles the lifecycle and resolution of profiles.
+//
+// Summary: Manages profile definitions and resolution.
 type Manager struct {
 	mu       sync.RWMutex
 	profiles map[string]*configv1.ProfileDefinition
 }
 
+// NewManager creates a new Profile Manager.
+//
+// Summary: Initializes a new Profile Manager.
+//
+// Parameters:
+//   - profiles: []*configv1.ProfileDefinition. Initial profile definitions.
+//
+// Returns:
+//   - *Manager: The initialized manager.
 // NewManager creates a new Profile Manager.
 //
 // Summary: Initializes a new Profile Manager.
@@ -37,6 +49,12 @@ func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 	return m
 }
 
+// Update updates the profile definitions managed by the manager.
+//
+// Summary: Updates the stored profile definitions.
+//
+// Parameters:
+//   - profiles: []*configv1.ProfileDefinition. The new list of profiles.
 // Update updates the profile definitions managed by the manager.
 //
 // Summary: Updates the stored profile definitions.
@@ -63,6 +81,16 @@ func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 // Returns:
 //   - *configv1.ProfileDefinition: The profile definition.
 //   - bool: True if found.
+// GetProfileDefinition returns the profile definition by name.
+//
+// Summary: Retrieves a profile definition.
+//
+// Parameters:
+//   - name: string. The name of the profile.
+//
+// Returns:
+//   - *configv1.ProfileDefinition: The profile definition.
+//   - bool: True if found.
 func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -70,6 +98,23 @@ func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition
 	return p, ok
 }
 
+// ResolveProfile computes the final effective configuration for a given profile,
+// applying inheritance and overrides.
+//
+// Summary: Resolves a profile hierarchy into a final configuration.
+//
+// Parameters:
+//   - profileName: string. The name of the profile to resolve.
+//
+// Returns:
+//   - map[string]*configv1.ProfileServiceConfig: Merged service configs.
+//   - map[string]*configv1.SecretValue: Merged secrets.
+//   - error: Error if profile not found or cycle detected.
+//
+// Errors:
+//   - Returns "profile not found: %s" if triggered.
+//   - Returns "cycle detected in profile inheritance: %s" if triggered.
+//   - Returns "parent profile not found: %s" if triggered.
 // ResolveProfile computes the final effective configuration for a given profile,
 // applying inheritance and overrides.
 //

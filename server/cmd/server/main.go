@@ -34,6 +34,9 @@ var (
 	// Version is set at build time.
 	//
 	// Summary: The version of the application, injected at build time.
+	// Version is set at build time.
+	//
+	// Summary: The version of the application, injected at build time.
 	Version              = "dev"
 	appRunner app.Runner = app.NewApplication()
 )

@@ -85,10 +85,26 @@ var (
 // ToolMetricsMiddleware provides detailed metrics for tool executions.
 //
 // Summary: Middleware that records Prometheus metrics for tool execution calls.
+// ToolMetricsMiddleware provides detailed metrics for tool executions.
+//
+// Summary: Middleware that records Prometheus metrics for tool execution calls.
 type ToolMetricsMiddleware struct {
 	tokenizer tokenizer.Tokenizer
 }
 
+// NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
+//
+// Summary: Initializes the tool metrics middleware and registers metrics if not already registered.
+//
+// Parameters:
+//   - t: tokenizer.Tokenizer. The tokenizer used to count tokens in tool inputs and outputs.
+//     If nil, a simple default tokenizer is used.
+//
+// Returns:
+//   - *ToolMetricsMiddleware: A new instance of ToolMetricsMiddleware with metrics registered.
+//
+// Side Effects:
+//   - Registers Prometheus metrics (globally, once).
 // NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
 //
 // Summary: Initializes the tool metrics middleware and registers metrics if not already registered.
@@ -120,6 +136,25 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	}
 }
 
+// Execute executes the tool metrics middleware.
+//
+// Summary: Wraps tool execution to record latency, size, and token metrics.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *tool.ExecutionRequest. The request containing tool execution details.
+//   - next: tool.ExecutionFunc. The next handler in the execution chain.
+//
+// Returns:
+//   - any: The result of the tool execution.
+//   - error: An error if the execution fails.
+//
+// Side Effects:
+//   - Updates Prometheus counters, histograms, and gauges.
+//   - Measures execution duration.
+//
+// Errors:
+//   - Returns an error if the operation fails or inputs are invalid.
 // Execute executes the tool metrics middleware.
 //
 // Summary: Wraps tool execution to record latency, size, and token metrics.

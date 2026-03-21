@@ -27,6 +27,9 @@ import (
 // GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
 //
 // Summary: Middleware that enforces global rate limits on MCP requests across the entire server.
+// GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
+//
+// Summary: Middleware that enforces global rate limits on MCP requests across the entire server.
 type GlobalRateLimitMiddleware struct {
 	mu     sync.RWMutex
 	config *configv1.RateLimitConfig
@@ -36,6 +39,18 @@ type GlobalRateLimitMiddleware struct {
 	redisClients sync.Map
 }
 
+// NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
+//
+// Summary: Initializes the global rate limit middleware with the provided configuration.
+//
+// Parameters:
+//   - config: *configv1.RateLimitConfig. The rate limit configuration settings.
+//
+// Returns:
+//   - *GlobalRateLimitMiddleware: The initialized middleware instance.
+//
+// Side Effects:
+//   - Initializes internal caches for limiters.
 // NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
 //
 // Summary: Initializes the global rate limit middleware with the provided configuration.
@@ -65,6 +80,16 @@ func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateL
 // Side Effects:
 //   - Acquires a lock to safely update the configuration.
 //   - Effectively changes rate limiting behavior for subsequent requests.
+// UpdateConfig updates the rate limit configuration safely.
+//
+// Summary: Updates the rate limit configuration at runtime.
+//
+// Parameters:
+//   - config: *configv1.RateLimitConfig. The new configuration settings.
+//
+// Side Effects:
+//   - Acquires a lock to safely update the configuration.
+//   - Effectively changes rate limiting behavior for subsequent requests.
 func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -74,6 +99,26 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 	// So we generally don't need to clear cache unless KeyBy changes.
 }
 
+// Execute executes the rate limiting middleware.
+//
+// Summary: Intercepts requests and enforces the configured rate limits.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - method: string. The MCP method being called.
+//   - req: mcp.Request. The request payload.
+//   - next: mcp.MethodHandler. The next handler in the chain.
+//
+// Returns:
+//   - mcp.Result: The result of the next handler if allowed.
+//   - error: An error if the rate limit is exceeded or the next handler fails.
+//
+// Errors:
+//   - Returns "global rate limit exceeded" if the request is blocked.
+//
+// Side Effects:
+//   - Records metrics for allowed and blocked requests.
+//   - May update the state of the rate limiter (e.g., consume tokens).
 // Execute executes the rate limiting middleware.
 //
 // Summary: Intercepts requests and enforces the configured rate limits.

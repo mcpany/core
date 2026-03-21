@@ -47,6 +47,19 @@ func ensureSchema() (*jsonschema.Schema, error) {
 // Errors:
 //   - Returns "schema generation failed: %w" if triggered.
 //   - Returns "schema validation failed: %w" if triggered.
+// ValidateConfigAgainstSchema validates the raw configuration map against the generated JSON schema.
+//
+// Summary: Validates configuration against the JSON schema.
+//
+// Parameters:
+//   - rawConfig: map[string]interface{}. The raw configuration data as a map.
+//
+// Returns:
+//   - error: An error if validation fails.
+//
+// Errors:
+//   - Returns "schema generation failed: %w" if triggered.
+//   - Returns "schema validation failed: %w" if triggered.
 func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 	schema, err := ensureSchema()
 	if err != nil {
@@ -59,6 +72,34 @@ func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 	return nil
 }
 
+// GenerateJSONSchemaBytes returns the JSON schema for McpAnyServerConfig as a byte slice. Side Effects: - None.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - []byte: The resulting []byte.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None
+//
+// Summary: Executes GenerateJSONSchemaBytes operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 // GenerateJSONSchemaBytes returns the JSON schema for McpAnyServerConfig as a byte slice. Side Effects: - None.
 //
 // Parameters:

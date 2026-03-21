@@ -12,10 +12,34 @@ import (
 // TmpfsProvider provides access to a temporary in-memory filesystem.
 //
 // Summary: Represents a TmpfsProvider.
+// TmpfsProvider provides access to a temporary in-memory filesystem.
+//
+// Summary: Represents a TmpfsProvider.
 type TmpfsProvider struct {
 	fs afero.Fs
 }
 
+// NewTmpfsProvider creates a new TmpfsProvider.
+//
+// Returns:
+//   - *TmpfsProvider: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewTmpfsProvider operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 // NewTmpfsProvider creates a new TmpfsProvider.
 //
 // Returns:
@@ -43,6 +67,27 @@ func NewTmpfsProvider() *TmpfsProvider {
 	}
 }
 
+// GetFs returns the underlying filesystem.
+//
+// Returns:
+//   - afero.Fs: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Retrieves GetFs operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 // GetFs returns the underlying filesystem.
 //
 // Returns:
@@ -96,11 +141,63 @@ func (p *TmpfsProvider) GetFs() afero.Fs {
 //
 // Side Effects:
 //   - None.
+// ResolvePath resolves the virtual path to a real path.
+//
+// Parameters:
+//   - virtualPath (string): The parameter.
+//
+// Returns:
+//   - string: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes ResolvePath operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 	// For MemMapFs, just clean the path. It's virtual.
 	return filepath.Clean(virtualPath), nil
 }
 
+// Close closes the provider.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Close operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 // Close closes the provider.
 //
 // Returns:

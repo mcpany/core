@@ -18,6 +18,9 @@ import (
 // Registry manages available middlewares.
 //
 // Summary: Represents a Registry.
+// Registry manages available middlewares.
+//
+// Summary: Represents a Registry.
 type Registry struct {
 	mu           sync.RWMutex
 	factories    map[string]Factory
@@ -41,6 +44,25 @@ var (
 	}
 )
 
+// Register registers a HTTP middleware factory.
+//
+// Parameters:
+//   - name (string): The name of the resource.
+//   - factory (Factory): The factory.
+//
+// Summary: Executes Register operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 // Register registers a HTTP middleware factory.
 //
 // Parameters:
@@ -85,12 +107,52 @@ func Register(name string, factory Factory) {
 //
 // Side Effects:
 //   - None.
+// RegisterMCP registers an MCP middleware factory.
+//
+// Parameters:
+//   - name (string): The name of the resource.
+//   - factory (MCPFactory): The factory.
+//
+// Summary: Executes RegisterMCP operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
 	globalRegistry.mcpFactories[name] = factory
 }
 
+// GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
+//
+// Parameters:
+//   - configs ([]*configv1.Middleware): The configs.
+//
+// Returns:
+//   - ([]func(http.Handler) http.Handler): The result.
+//
+// Summary: Retrieves GetHTTPMiddlewares operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 // GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
 //
 // Parameters:
@@ -156,6 +218,27 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 //
 // Side Effects:
 //   - None.
+// GetMCPMiddlewares returns a sorted list of MCP middlewares based on configuration.
+//
+// Parameters:
+//   - configs ([]*configv1.Middleware): The configs.
+//
+// Returns:
+//   - ([]func(mcp.MethodHandler) mcp.MethodHandler): The result.
+//
+// Summary: Retrieves GetMCPMiddlewares operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -182,6 +265,9 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 // StandardMiddlewares holds the standard middlewares that might need to be updated.
 //
 // Summary: Represents a StandardMiddlewares.
+// StandardMiddlewares holds the standard middlewares that might need to be updated.
+//
+// Summary: Represents a StandardMiddlewares.
 type StandardMiddlewares struct {
 	Audit            *AuditMiddleware
 	GlobalRateLimit  *GlobalRateLimitMiddleware
@@ -193,6 +279,36 @@ type StandardMiddlewares struct {
 	Cleanup          func() error
 }
 
+// InitStandardMiddlewares registers standard middlewares.
+//
+// Parameters:
+//   - authManager (*auth.Manager): The authManager.
+//   - toolManager (tool.ManagerInterface): The toolManager.
+//   - auditConfig (*configv1.AuditConfig): The auditConfig.
+//   - cachingMiddleware (*CachingMiddleware): The cachingMiddleware.
+//   - globalRateLimitConfig (*configv1.RateLimitConfig): The globalRateLimitConfig.
+//   - dlpConfig (*configv1.DLPConfig): The dlpConfig.
+//   - contextOptimizerConfig (*configv1.ContextOptimizerConfig): The contextOptimizerConfig.
+//   - debuggerConfig (*configv1.DebuggerConfig): The debuggerConfig.
+//   - smartRecoveryConfig (*configv1.SmartRecoveryConfig): The smartRecoveryConfig.
+//
+// Returns:
+//   - (*StandardMiddlewares): The result.
+//   - (error): An error if the operation fails.
+//
+// Summary: Executes InitStandardMiddlewares operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 // InitStandardMiddlewares registers standard middlewares.
 //
 // Parameters:

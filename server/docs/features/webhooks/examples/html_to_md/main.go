@@ -16,12 +16,18 @@ import (
 // WebhookRequest matches the data payload sent by mcpany
 //
 // Summary: Represents the webhook request component, defining its structure and configuration properties.
+// WebhookRequest matches the data payload sent by mcpany
+//
+// Summary: Represents the webhook request component, defining its structure and configuration properties.
 type WebhookRequest struct {
 	Kind     int    `json:"kind"` // 1=PreCall, 2=PostCall
 	ToolName string `json:"tool_name"`
 	Result   any    `json:"result"`
 }
 
+// WebhookResponse matches the expected response data
+//
+// Summary: Represents the webhook response component, defining its structure and configuration properties.
 // WebhookResponse matches the expected response data
 //
 // Summary: Represents the webhook response component, defining its structure and configuration properties.
@@ -119,6 +125,9 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(respBytes)
 }
 
+// StatusOK represents the HTTP 200 OK status code.
+//
+// Summary: Defines the configuration value or constant for status o k.
 // StatusOK represents the HTTP 200 OK status code.
 //
 // Summary: Defines the configuration value or constant for status o k.

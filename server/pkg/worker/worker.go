@@ -16,11 +16,17 @@ import (
 // Config holds the configuration for the worker.
 //
 // Summary: Configuration for worker pool.
+// Config holds the configuration for the worker.
+//
+// Summary: Configuration for worker pool.
 type Config struct {
 	MaxWorkers   int
 	MaxQueueSize int
 }
 
+// Worker is responsible for processing jobs from the bus.
+//
+// Summary: Processes background jobs.
 // Worker is responsible for processing jobs from the bus.
 //
 // Summary: Processes background jobs.
@@ -32,6 +38,16 @@ type Worker struct {
 	wg          sync.WaitGroup
 }
 
+// New creates a new Worker.
+//
+// Summary: Initializes a new Worker.
+//
+// Parameters:
+//   - busProvider: *bus.Provider. The bus provider.
+//   - cfg: *Config. The worker configuration.
+//
+// Returns:
+//   - *Worker: The initialized worker.
 // New creates a new Worker.
 //
 // Summary: Initializes a new Worker.
@@ -58,11 +74,44 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 //
 // Parameters:
 //   - ctx: context.Context. The context for the worker.
+// Start starts the worker and its background tasks.
+//
+// Summary: Starts the worker processing loop.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the worker.
 func (w *Worker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)
 }
 
+// Stop stops the worker and cleans up resources. Summary: Stops the worker. Side Effects: - Waits for pending jobs. - Unsubscribes from the bus.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+//
+// Summary: Executes Stop operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 // Stop stops the worker and cleans up resources. Summary: Stops the worker. Side Effects: - Waits for pending jobs. - Unsubscribes from the bus.
 //
 // Parameters:

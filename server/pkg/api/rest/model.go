@@ -9,11 +9,24 @@ package rest
 //
 // Parameters:
 //   - Content (string): The raw YAML/JSON content of the configuration file.
+// ValidateConfigRequest represents the request body for config validation.
+//
+// Summary: Request payload for config validation.
+//
+// Parameters:
+//   - Content (string): The raw YAML/JSON content of the configuration file.
 type ValidateConfigRequest struct {
 	// Content is the raw YAML/JSON content of the configuration file.
 	Content string `json:"content"`
 }
 
+// ValidateConfigResponse represents the response body for config validation.
+//
+// Summary: Response payload for config validation.
+//
+// Parameters:
+//   - Valid (bool): Indicates whether the configuration is valid.
+//   - Errors ([]string): A list of validation errors, if any.
 // ValidateConfigResponse represents the response body for config validation.
 //
 // Summary: Response payload for config validation.
@@ -28,6 +41,13 @@ type ValidateConfigResponse struct {
 	Errors []string `json:"errors,omitempty"`
 }
 
+// ValidationResult represents the result of the validation logic.
+//
+// Summary: Internal result of validation logic.
+//
+// Parameters:
+//   - Valid (bool): True if the configuration is valid.
+//   - Errors ([]string): A list of error messages if validation failed.
 // ValidationResult represents the result of the validation logic.
 //
 // Summary: Internal result of validation logic.

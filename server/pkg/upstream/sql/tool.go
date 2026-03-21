@@ -25,6 +25,9 @@ import (
 // Tool implements the Tool interface for a tool that executes a SQL query.
 //
 // Summary: Represents a Tool.
+// Tool implements the Tool interface for a tool that executes a SQL query.
+//
+// Summary: Represents a Tool.
 type Tool struct {
 	tool        *v1.Tool
 	mcpTool     *mcp.Tool
@@ -36,6 +39,34 @@ type Tool struct {
 	initError   error
 }
 
+// NewTool creates a new SQL Tool.
+//
+// Parameters:
+//   - t (*v1.Tool): The parameter.
+//   - db (*sql.DB): The parameter.
+//   - callDef (*configv1.SqlCallDefinition): The parameter.
+//   - policies ([]*configv1.CallPolicy): The parameter.
+//   - callID (string): The parameter.
+//
+// Returns:
+//   - *Tool: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 // NewTool creates a new SQL Tool.
 //
 // Parameters:
@@ -100,10 +131,52 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 //
 // Side Effects:
 //   - None.
+// Tool returns the protobuf definition of the tool.
+//
+// Returns:
+//   - *v1.Tool: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Tool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *Tool) Tool() *v1.Tool {
 	return t.tool
 }
 
+// MCPTool returns the MCP tool definition.
+//
+// Returns:
+//   - *mcp.Tool: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes MCPTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 // MCPTool returns the MCP tool definition.
 //
 // Returns:
@@ -157,6 +230,27 @@ func (t *Tool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - None.
+// GetCacheConfig returns the cache configuration for the tool.
+//
+// Returns:
+//   - *configv1.CacheConfig: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Retrieves GetCacheConfig operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDef == nil {
 		return nil
@@ -164,6 +258,35 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	return t.callDef.GetCache()
 }
 
+// Execute runs the SQL query with the provided inputs.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The parameter.
+//
+// Returns:
+//   - any: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Execute operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 // Execute runs the SQL query with the provided inputs.
 //
 // Parameters:

@@ -17,10 +17,33 @@ import (
 // DB wraps the sql.DB connection.
 //
 // Summary: Represents a DB.
+// DB wraps the sql.DB connection.
+//
+// Summary: Represents a DB.
 type DB struct {
 	*sql.DB
 }
 
+// NewDB opens or creates a SQLite database at the specified path.
+//
+// Summary: Initializes a SQLite database connection.
+//
+// Parameters:
+//   - path (string): The file path to the SQLite database.
+//
+// Returns:
+//   - *DB: The database connection.
+//   - error: An error if the database cannot be opened or initialized.
+//
+// Side Effects:
+//   - Creates the database file and directories if they don't exist.
+//   - Initializes the database schema.
+//
+// Errors:
+//   - Returns "failed to create db directory: %w" if triggered.
+//   - Returns "failed to open sqlite db: %w" if triggered.
+//   - Returns "failed to init schema: %w" if triggered.
+//   - And potentially other underlying errors.
 // NewDB opens or creates a SQLite database at the specified path.
 //
 // Summary: Initializes a SQLite database connection.

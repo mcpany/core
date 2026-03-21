@@ -19,6 +19,9 @@ import (
 // HTTPEmbeddingProvider implements a generic HTTP EmbeddingProvider.
 //
 // Summary: A generic provider that fetches embeddings from an arbitrary HTTP endpoint.
+// HTTPEmbeddingProvider implements a generic HTTP EmbeddingProvider.
+//
+// Summary: A generic provider that fetches embeddings from an arbitrary HTTP endpoint.
 type HTTPEmbeddingProvider struct {
 	url              string
 	headers          map[string]string
@@ -27,6 +30,26 @@ type HTTPEmbeddingProvider struct {
 	client           *http.Client
 }
 
+// NewHTTPEmbeddingProvider creates a new HTTPEmbeddingProvider.
+//
+// Summary: Initializes a new HTTPEmbeddingProvider with custom request formatting.
+//
+// Parameters:
+//   - url: string. The API endpoint URL.
+//   - headers: map[string]string. Custom HTTP headers to include in the request.
+//   - bodyTemplateStr: string. A Go template string for the request body (input text is available as {{.input}}).
+//   - responseJSONPath: string. The JSONPath expression to extract the embedding from the response.
+//
+// Returns:
+//   - *HTTPEmbeddingProvider: The initialized provider.
+//   - error: An error if the URL is empty or the body template is invalid.
+//
+// Errors:
+//   - Returns "url is required" if the URL is empty.
+//   - Returns error if template parsing fails.
+//
+// Side Effects:
+//   - Compiles the body template.
 // NewHTTPEmbeddingProvider creates a new HTTPEmbeddingProvider.
 //
 // Summary: Initializes a new HTTPEmbeddingProvider with custom request formatting.
@@ -66,6 +89,27 @@ func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplat
 	}, nil
 }
 
+// Embed generates an embedding for the given text.
+//
+// Summary: Generates an embedding by sending a templated HTTP request and extracting the result via JSONPath.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - text: string. The input text to embed.
+//
+// Returns:
+//   - []float32: The extracted embedding vector.
+//   - error: An error if the request fails or response parsing fails.
+//
+// Errors:
+//   - Returns error if template execution fails.
+//   - Returns error if HTTP request creation or execution fails.
+//   - Returns error if the API returns a non-success status code.
+//   - Returns error if JSON unmarshaling or JSONPath extraction fails.
+//   - Returns error if the extracted result is not a number array or is empty.
+//
+// Side Effects:
+//   - Makes an HTTP POST request to the configured URL.
 // Embed generates an embedding for the given text.
 //
 // Summary: Generates an embedding by sending a templated HTTP request and extracting the result via JSONPath.

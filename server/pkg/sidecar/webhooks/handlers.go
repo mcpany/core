@@ -20,14 +20,36 @@ import (
 // KindPostCall identifies a post-call webhook.
 //
 // Summary: Constant for post-call webhook kind.
+// KindPostCall identifies a post-call webhook.
+//
+// Summary: Constant for post-call webhook kind.
 const KindPostCall = "PostCall"
 
 // MarkdownHandler is a webhook handler that converts HTML content to Markdown.
 // It processes incoming CloudEvents containing HTML and returns the converted Markdown.
 //
 // Summary: Webhook handler for Markdown conversion.
+// MarkdownHandler is a webhook handler that converts HTML content to Markdown.
+// It processes incoming CloudEvents containing HTML and returns the converted Markdown.
+//
+// Summary: Webhook handler for Markdown conversion.
 type MarkdownHandler struct{}
 
+// Handle processes the markdown conversion request.
+// It expects a CloudEvent with "inputs" or "result" fields containing HTML strings or structures.
+//
+// Summary: Handles the markdown conversion request.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The HTTP response writer.
+//   - r: *http.Request. The HTTP request.
+//
+// Returns:
+//
+//	None.
+//
+// Side Effects:
+//   - Writes the converted Markdown to the response.
 // Handle processes the markdown conversion request.
 // It expects a CloudEvent with "inputs" or "result" fields containing HTML strings or structures.
 //
@@ -100,8 +122,27 @@ func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 // The maximum characters can be specified via the "max_chars" query parameter (default 100).
 //
 // Summary: Webhook handler for text truncation.
+// TruncateHandler is a webhook handler that truncates long strings to a specified length.
+// It processes incoming CloudEvents and truncates strings in "inputs" or "result" fields.
+// The maximum characters can be specified via the "max_chars" query parameter (default 100).
+//
+// Summary: Webhook handler for text truncation.
 type TruncateHandler struct{}
 
+// Handle processes the text truncation request.
+//
+// Summary: Handles the text truncation request.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The HTTP response writer.
+//   - r: *http.Request. The HTTP request.
+//
+// Returns:
+//
+//	None.
+//
+// Side Effects:
+//   - Writes the truncated text to the response.
 // Handle processes the text truncation request.
 //
 // Summary: Handles the text truncation request.
@@ -179,8 +220,27 @@ func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 // The page size can be specified via the "page_size" query parameter (default 1000).
 //
 // Summary: Webhook handler for pagination.
+// PaginateHandler is a webhook handler that splits long strings into pages.
+// It processes incoming CloudEvents and paginates strings in "inputs" or "result" fields.
+// The page size can be specified via the "page_size" query parameter (default 1000).
+//
+// Summary: Webhook handler for pagination.
 type PaginateHandler struct{}
 
+// Handle processes the pagination request.
+//
+// Summary: Handles the pagination request.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The HTTP response writer.
+//   - r: *http.Request. The HTTP request.
+//
+// Returns:
+//
+//	None.
+//
+// Side Effects:
+//   - Writes the paginated content to the response.
 // Handle processes the pagination request.
 //
 // Summary: Handles the pagination request.
