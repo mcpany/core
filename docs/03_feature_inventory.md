@@ -1461,3 +1461,15 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Attention-Density Firewall (ADF)**: (P0) High-speed security middleware that performs entropy analysis on coordination messages to prevent "Attention-Density" DoS attacks.
+- **Hardware-Locked Environment Sovereignty (HLES)**: (P0) Core security service that isolates hardware-attested identity tokens from process environment variables.
+- **Monotonic Mission Lineage (MML) Provider**: (P0) Identity extension for the SRM Provider that implements hardware-bound monotonic counters for reasoning provenance.
+- **CRDT-Native Mailbox Shards**: (P1) Performance upgrade for the SMS middleware utilizing Conflict-Free Replicated Data Types for lock-free horizontal coordination.
+
+### Priority Shifts
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Elevated to support **CRDT-native** synchronization to resolve the 2s+ coordination stall in Agent Teams.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to support mandatory **MML-compliant** monotonic attestation.

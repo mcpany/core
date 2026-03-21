@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+#### Upcoming (2026-06-25 Evolution)
+- [ ] **[P0] Attention Heatmap Visualizer**: Real-time dashboard for monitoring reasoning-density and ADF-gated noise. (Added: 2026-06-25)
+- [ ] **[P0] HLES Status Monitor**: Security widget for visualizing hardware-locked identity buffer status and environment isolation. (Added: 2026-06-25)
+- [ ] **[P0] Lineage Provenance Inspector**: Forensic UI for reviewing monotonic counters and cryptographically signed mission chains. (Added: 2026-06-25)
+- [ ] **[P1] Lock-Free Coordination Debugger**: Visualizer for CRDT-based mailbox shard synchronization and conflict resolution. (Added: 2026-06-25)
