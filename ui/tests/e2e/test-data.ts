@@ -102,7 +102,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-    ].map((service) => UpstreamServiceConfig.toJSON(UpstreamServiceConfig.fromJSON(service)));
+    ];
 
     const templates = [
         {
@@ -159,7 +159,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-    ].map((template) => ServiceTemplate.toJSON(ServiceTemplate.fromJSON(template)));
+    ];
 
     const users = [
         {
@@ -174,7 +174,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             roles: ["admin"],
             profile_ids: ["dev", "prod"]
         }
-    ].map((user) => User.toJSON(User.fromJSON(user)));
+    ];
 
     const seedRequest = {
         upstream_services: services,
