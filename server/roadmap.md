@@ -748,12 +748,6 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Locked Telemetry Proxy**: (P1) Authoritative telemetry sanitizer for Gemini-compliant reasoning traces, ensuring attention-mapping privacy during RL feedback export. (Added: 2026-06-15)
 - **WASM-Hook Behavioral Profiler**: (P0) Mandatory extension for the SMS that performs sandboxed profiling of AI-generated configuration hooks to counter PR "Logic Bombs." (Added: 2026-06-15)
 
-### Upcoming: [2026-06-18]
-- **Attention-Locked Sovereignty (ALS) Controller**: (P0) Hardware-bound attention locking to prevent context-window ghosting (Added: 2026-06-18).
-- **Phase-Bound Reasoning Budget (PBRB) Firewall**: (P0) Tiered reasoning budgets for Discovery, Planning, and Execution phases (Added: 2026-06-18).
-- **T2T Stylometric Attestation Relay**: (P0) Secure bridge for anchoring inter-teammate coordination to behavioral signatures (Added: 2026-06-18).
-- **Mission-Root Hardware Attestation (MRHA) Bridge**: (P0) Propagation of hardware-bound mission attestation across multi-hop chains (Added: 2026-06-18).
-
 ### Upcoming: [2026-06-17]
 - **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment service issuing hardware-attested heartbeats for mission-anchored reasoning (Added: 2026-06-17).
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).

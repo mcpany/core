@@ -27,7 +27,6 @@ type server struct {
 // Parameters:
 //   - ctx (context.Context): The request context.
 //   - in (*pb.HelloRequest): The greeting request.
-//
 // Returns:
 //   - *pb.HelloReply: The greeting reply.
 //   - error: Error if operation fails.

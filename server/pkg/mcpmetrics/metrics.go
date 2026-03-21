@@ -1,8 +1,8 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package metrics provides utilities for collecting and exposing application metrics.
-package metrics
+// Package mcpmetrics provides utilities for collecting and exposing application metrics.
+package mcpmetrics
 
 import (
 	"context"
@@ -41,9 +41,6 @@ var initOnce sync.Once
 // Initialize prepares the metrics system with a Prometheus sink.
 //
 // Summary: Initializes the global metrics collector.
-//
-// It sets up a global metrics collector that can be used throughout the application.
-// The metrics are exposed on the /metrics endpoint.
 //
 // Parameters:
 //   - None.

@@ -22,7 +22,7 @@ import (
 	"github.com/mcpany/core/server/pkg/doctor"
 	"github.com/mcpany/core/server/pkg/lint"
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/metrics"
+	"github.com/mcpany/core/server/pkg/mcpmetrics"
 	"github.com/mcpany/core/server/pkg/update"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
