@@ -128,7 +128,7 @@ eslint_bin.eslint_test(
     args = [
         "src/",
         "--max-warnings",
-        "600"
+        "600",
     ],
     chdir = package_name(),
     data = [
