@@ -152,7 +152,7 @@ echo "Starting MCP Any backend on 127.0.0.1:${backend_port}"
     --grpc-port="127.0.0.1:${backend_grpc_port}"
 ) >"$TEST_TMPDIR/mcpany-ui-backend.log" 2>&1 &
 backend_pid=$!
-wait_for_http "http://127.0.0.1:${backend_port}/healthz?api_key=test-token" "MCP Any backend" 240
+wait_for_http "http://127.0.0.1:${backend_port}/healthz?api_key=test-token" "MCP Any backend" 240 240
 
 cd "$ui_runtime"
 
