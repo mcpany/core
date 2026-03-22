@@ -215,6 +215,23 @@ func (t *Tool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute executes the SQL tool in streaming mode.
+//
+// Summary: Executes the tool and streams the results.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The execution request containing inputs.
+//
+// Returns:
+//   - <-chan any: A channel that emits streaming results.
+//   - error: An error if streaming initialization fails (always nil here).
+//
+// Errors:
+//   - Emits execution errors to the channel.
+//
+// Side Effects:
+//   - Spawns a goroutine to execute the underlying SQL query.
 func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -229,6 +246,24 @@ func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<
 	return ch, nil
 }
 
+// Execute performs a SQL tool execution.
+//
+// Summary: Executes the tool by running a SQL query.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The execution request containing inputs.
+//
+// Returns:
+//   - any: The SQL query result formatted as a structured value.
+//   - error: An error if execution fails or is blocked by policy.
+//
+// Errors:
+//   - Returns "failed to evaluate call policy" or "tool execution blocked by policy" if policy checks fail.
+//   - Returns "failed to execute SQL query" if the database operation fails.
+//
+// Side Effects:
+//   - Executes SQL queries against the configured database, potentially reading or modifying data depending on the query.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

@@ -10,6 +10,9 @@ import (
 )
 
 var (
+	// FastJSON provides a high-performance JSON iterator configuration.
+	//
+	// Summary: A globally configured instance of jsoniter.
 	FastJSON = jsoniter.Config{
 		EscapeHTML:             true,
 		SortMapKeys:            false,

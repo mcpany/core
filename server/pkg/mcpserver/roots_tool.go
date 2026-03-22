@@ -134,28 +134,64 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 // Side Effects:
 //   - Sends a "roots/list" request to the client.
 //
-// Summary: Executes Execute operation.
+// IsStreaming checks if the tool supports streaming execution.
+//
+// Summary: Checks if the tool supports streaming execution.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - bool: Always returns false as this tool does not support streaming.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
-
 func (t *RootsTool) IsStreaming() bool {
 	return false
 }
 
+// StreamExecute executes the tool in streaming mode.
+//
+// Summary: Executes the tool in streaming mode.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The execution request payload.
+//
+// Returns:
+//   - <-chan any: A channel that emits streaming results (always nil).
+//   - error: An error if streaming fails (always nil).
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *RootsTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	return nil, nil
 }
 
+// Execute executes the "mcp:list_roots" tool in non-streaming mode.
+//
+// Summary: Executes the tool in non-streaming mode.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request, must contain an active MCP session.
+//   - _ (*tool.ExecutionRequest): The execution request parameters (unused as this tool takes no inputs).
+//
+// Returns:
+//   - any: The result of the roots list operation (typically a list of roots).
+//   - error: An error if the session is missing or the list operation fails.
+//
+// Errors:
+//   - Returns "no active session available" if the session is missing.
+//   - Returns "failed to list roots" if the client fails to list roots.
+//
+// Side Effects:
+//   - Sends a "roots/list" request to the client via the active session.
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {

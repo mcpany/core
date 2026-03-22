@@ -224,6 +224,23 @@ func (t *WebrtcTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute executes the WebRTC tool in streaming mode.
+//
+// Summary: Executes the tool and streams the results.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*ExecutionRequest): The execution request containing inputs.
+//
+// Returns:
+//   - <-chan any: A channel that emits streaming results.
+//   - error: An error if streaming initialization fails (always nil here).
+//
+// Errors:
+//   - Emits execution errors to the channel.
+//
+// Side Effects:
+//   - Spawns a goroutine to execute the underlying WebRTC call.
 func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -238,6 +255,24 @@ func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (
 	return ch, nil
 }
 
+// Execute performs a WebRTC tool execution.
+//
+// Summary: Executes the tool by sending data over a WebRTC data channel.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*ExecutionRequest): The execution request containing inputs.
+//
+// Returns:
+//   - any: The response received over the WebRTC channel.
+//   - error: An error if execution fails or is blocked by policy.
+//
+// Errors:
+//   - Returns "failed to get peer connection from pool" if the connection pool is exhausted or failing.
+//   - Returns "failed to execute without pool" if the fallback execution fails.
+//
+// Side Effects:
+//   - Sends and receives messages over a WebRTC connection.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized

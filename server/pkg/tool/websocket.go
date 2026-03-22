@@ -144,6 +144,23 @@ func (t *WebsocketTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute executes the WebSocket tool in streaming mode.
+//
+// Summary: Executes the tool and streams the results.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*ExecutionRequest): The execution request containing inputs.
+//
+// Returns:
+//   - <-chan any: A channel that emits streaming results.
+//   - error: An error if streaming initialization fails (always nil here).
+//
+// Errors:
+//   - Emits execution errors to the channel.
+//
+// Side Effects:
+//   - Spawns a goroutine to execute the underlying WebSocket call.
 func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -158,6 +175,24 @@ func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest
 	return ch, nil
 }
 
+// Execute performs a WebSocket tool execution.
+//
+// Summary: Executes the tool by sending data over a WebSocket connection.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*ExecutionRequest): The execution request containing inputs.
+//
+// Returns:
+//   - any: The response received over the WebSocket connection.
+//   - error: An error if execution fails or is blocked by policy.
+//
+// Errors:
+//   - Returns "no websocket pool found for service" if the pool is missing.
+//   - Returns "failed to get websocket connection from pool" if connection acquisition fails.
+//
+// Side Effects:
+//   - Sends and receives messages over a WebSocket connection.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

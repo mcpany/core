@@ -128,7 +128,7 @@ We adhere to a strict development workflow to ensure code quality and maintainab
 ### Testing
 Run all unit and integration tests to ensure code correctness. We practice proactive testing and continuous integration.
 ```bash
-bazelisk test //...
+make test
 ```
 
 ### Linting
