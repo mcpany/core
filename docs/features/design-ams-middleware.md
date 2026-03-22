@@ -62,3 +62,11 @@ The AMS Middleware solves this by sharding the inter-agent mailbox based on the 
 
 ## 7. Evolutionary Changelog
 * **2026-03-20:** Initial Document Creation.
+
+### Update: 2026-03-22 - Lock-Free Mesh Coordination
+**Context:** Today's market sync reveals that horizontal Agent Teams are hitting a performance ceiling due to synchronous "Mailbox Locks" when synchronizing shared task lists.
+**Architecture Adjustment:**
+* Deprecating global synchronization locks in Section 4.
+* Introducing **Lock-Free Coordination** utilizing Conflict-Free Replicated Data Types (CRDTs) for shard-level state synchronization.
+* Implementing atomic "Task Claiming" via optimistic concurrency control (OCC) to ensure strict single-agent assignment without global wait-states.
+**Security Impact:** Reduces the risk of "Coordinated DoS" where a single lagging teammate stalls the entire mesh coordination bus.
