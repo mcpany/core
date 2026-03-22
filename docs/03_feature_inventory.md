@@ -1450,6 +1450,18 @@
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RMRA** integration for all headless missions.
 - **Channel-Bound Session Isolation (CBSI) Provider**: (Re-affirmed P0) Designated as the primary enforcement point for **AIS-compliant** cross-channel sanitization.
 
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Hardware-Locked Attention (HLA) Provider**: (P0) Security middleware that cryptographically "pins" mission-critical intent fragments at the model's attention layer, neutralizing Context-Window Flooding (CWF).
+- **Stylometric Identity Validator**: (P0) Behavioral security service that anchors identity to the "Writing Style" of reasoning traces to detect mimicry-based hijacking.
+- **Pre-Flight Config Attestation Hub**: (P0) Authoritative gatekeeper that performs hardware-attested validation of project-local settings before agent runtime initialization.
+- **Attention-Density Firewall**: (P1) Real-time monitor that evaluates the entropy of tool outputs, automatically summarizing payloads designed to saturate the context window.
+
+### Priority Shifts
+- **Context-File Integrity Attestation (CFIA)**: (Re-affirmed P0) Heightened importance as the primary defense against "Deceptive Context Hijacking" in local workspaces.
+- **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to integrate **Stylometric Identity** as a core verification factor.
+
 ## Evolution: [2026-06-24] Updates
 
 ### Proposed Additions

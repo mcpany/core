@@ -633,6 +633,12 @@
 - [ ] **[P0] Cross-Channel Sanitization Log**: Security dashboard for reviewing AIS-redacted coordination messages. (Added: 2026-06-23)
 - [ ] **[P0] Behavioral Anchoring Monitor**: Real-time visualization of stylometric consistency scores vs. mission-root manifest. (Added: 2026-06-23)
 
+### Upcoming: [2026-06-25]
+- [ ] **[P0] Attention-Locking Heatmap**: (2026-06-25) Real-time visualization of HLA-pinned fragments and model attention distribution.
+- [ ] **[P0] Stylometric Identity Dashboard**: (2026-06-25) Security workspace for visualizing reasoning-style consistency and mimicry alerts.
+- [ ] **[P0] Config Attestation Gatekeeper**: (2026-06-25) UI for reviewing and signing project-local settings before agent runtime initialization.
+- [ ] **[P1] Attention-Density Monitor**: (2026-06-25) Visual tracker for tool-output entropy and automated summarization events.
+
 ### Upcoming: [2026-06-24]
 - [ ] **[P0] Mission Resumption Manager**: (2026-06-24) UI for monitoring and manually triggering AMR-mediated mission recovery checkpoints.
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.

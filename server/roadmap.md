@@ -143,6 +143,12 @@
 *   **[P0] Active Intent Sanitizer (AIS)**: Real-time semantic deconstruction of coordination messages crossing multi-channel boundaries. (Added: 2026-06-23)
 *   **[P0] SMM v2 (Stylometric Anchoring)**: Higher-dimensional behavioral anchoring of reasoning traces against the mission-root manifest. (Added: 2026-06-23)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Hardware-Locked Attention (HLA) Provider**: Security middleware that cryptographically "pins" mission-critical intent fragments at the model's attention layer. (Added: 2026-06-25)
+*   **[P0] Stylometric Identity Validator**: Behavioral security service anchoring identity to the "Writing Style" of reasoning traces. (Added: 2026-06-25)
+*   **[P0] Pre-Flight Config Attestation Hub**: Authoritative gatekeeper for hardware-attested validation of project-local settings before agent boot. (Added: 2026-06-25)
+*   **[P1] Attention-Density Firewall**: Real-time monitor evaluating the entropy of tool outputs to prevent context-window flooding. (Added: 2026-06-25)
+
 #### Upcoming (2026-06-24 Evolution)
 *   **[P0] Atomic Mission-Resumption (AMR) Gateway**: Hardware-locked resumption of agent states across cold-boots via BSH snapshots. (Added: 2026-06-24)
 *   **[P0] Stylometric Mesh Sovereignty (SMS) Provider**: Behavioral security layer detecting mimicry-based hijacking via real-time stylometry. (Added: 2026-06-24)
