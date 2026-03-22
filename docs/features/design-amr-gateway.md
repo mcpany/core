@@ -49,3 +49,4 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+* **2026-06-25:** Added integration with **Hardware-Attested Attention Locking (HAAL)**. Resumption tokens now include attention-tier metadata, ensuring that the "Reasoning Frontier" is cryptographically pinned to the high-priority attention tier immediately upon mission resumption, neutralizing "Attention-Density Attacks" during the recovery phase.

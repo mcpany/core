@@ -143,6 +143,12 @@
 *   **[P0] Active Intent Sanitizer (AIS)**: Real-time semantic deconstruction of coordination messages crossing multi-channel boundaries. (Added: 2026-06-23)
 *   **[P0] SMM v2 (Stylometric Anchoring)**: Higher-dimensional behavioral anchoring of reasoning traces against the mission-root manifest. (Added: 2026-06-23)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] HAAL-Locked Attention Hub**: Authoritative attention governance implementing hardware-bound headers to cryptographically "lock" mission-critical fragments. (Added: 2026-06-25)
+*   **[P1] Graceful Mission-Decay Orchestrator**: Lifecycle management service for handling "Graceful Mission Decay" signals and managing restricted agency transitions. (Added: 2026-06-25)
+*   **[P0] Semantic Hash-Chaining Validator**: Security extension for the ARI Hub that performs fragment-level semantic hash-chaining to detect and block "Logic Grafting." (Added: 2026-06-25)
+*   **[P0] ADA-Responsive Attention Guard**: Stability middleware that performs real-time entropy analysis and dynamically prunes noise to prevent attention-eviction. (Added: 2026-06-25)
+
 #### Upcoming (2026-06-24 Evolution)
 *   **[P0] Atomic Mission-Resumption (AMR) Gateway**: Hardware-locked resumption of agent states across cold-boots via BSH snapshots. (Added: 2026-06-24)
 *   **[P0] Stylometric Mesh Sovereignty (SMS) Provider**: Behavioral security layer detecting mimicry-based hijacking via real-time stylometry. (Added: 2026-06-24)

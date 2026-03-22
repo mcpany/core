@@ -633,6 +633,12 @@
 - [ ] **[P0] Cross-Channel Sanitization Log**: Security dashboard for reviewing AIS-redacted coordination messages. (Added: 2026-06-23)
 - [ ] **[P0] Behavioral Anchoring Monitor**: Real-time visualization of stylometric consistency scores vs. mission-root manifest. (Added: 2026-06-23)
 
+### Upcoming: [2026-06-25]
+- [ ] **[P0] Attention Sovereignty Dashboard**: (2026-06-25) Real-time visualization of HAAL-locked intent fragments and attention-density alerts.
+- [ ] **[P0] Semantic Hash-Chaining Monitor**: (2026-06-25) Visual indicator for hash-chained coordination fragments and logic-grafting alerts.
+- [ ] **[P1] Mission Decay Progress Widget**: (2026-06-25) Visual tracker for mission sovereignty decay and re-attestation countdowns.
+- [ ] **[P0] ADA Noise-Reduction Log**: (2026-06-25) Security UI for reviewing high-entropy noise fragments pruned by the Attention Guard.
+
 ### Upcoming: [2026-06-24]
 - [ ] **[P0] Mission Resumption Manager**: (2026-06-24) UI for monitoring and manually triggering AMR-mediated mission recovery checkpoints.
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.

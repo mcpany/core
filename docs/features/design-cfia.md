@@ -59,3 +59,4 @@ MCP Any needs to bridge the "Attestation Gap" for these non-structural context s
 ## 7. Evolutionary Changelog
 * **2026-06-20:** Initial Document Creation.
 * **2026-06-21:** Added support for **Resumption-Aware Attestation**. CFIA signatures are now persistent across MRCP-mediated mission resumptions, eliminating redundant user approvals for previously verified context files.
+* **2026-06-25:** Introduced **Semantic Hash-Chaining** for context files. CFIA now generates a monotonic hash-chain for all approved context fragments within a project. This ensures that subagents cannot perform "Logic Grafting" by appending un-attested natural language instructions to an existing verified `GEMINI.md` or `.claude/settings.json` file.

@@ -26,6 +26,18 @@
 - **Speculative Branching Guard (SBG)**: (P1) Isolation service for un-executed reasoning paths that prevents speculative attention leakage.
 - **Mesh-Resident Key Exchange (MRKE) Provider**: (P0) Hardware-bound session key rotation service for sub-100ms inter-teammate coordination.
 
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **HAAL-Locked Attention Hub**: (P0) A core attention governance service implementing hardware-bound headers to cryptographically "lock" mission-critical fragments at the LLM attention layer.
+- **Graceful Mission-Decay Orchestrator**: (P1) Lifecycle management service for handling "Graceful Mission Decay" signals and managing restricted agency transitions.
+- **Semantic Hash-Chaining Validator**: (P0) Security extension for the ARI Hub that performs fragment-level semantic hash-chaining to detect and block "Logic Grafting."
+- **ADA-Responsive Attention Guard**: (P0) Stability middleware that performs real-time entropy analysis and dynamically prunes noise to prevent attention-eviction.
+
+### Priority Shifts
+- **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Now elevated as the primary enforcement mechanism for **Attention-Locked Context Windows**.
+- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Evolving to support the new **Semantic Hash-Chaining** requirement to counter Logic Grafting.
+
 ## Evolution: [2026-06-19] Updates
 
 ### Proposed Additions
