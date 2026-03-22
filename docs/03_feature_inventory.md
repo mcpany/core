@@ -1461,3 +1461,15 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **ZKIA-Compliant Reasoning Validator**: (P0) Advanced security service facilitating hardware-attested, zero-knowledge proofs of reasoning derivation to neutralize context-window flooding.
+- **Intent-Bound Stream (IBS) Middleware**: (P0) High-performance coordination service hosting hardware-attested reasoning channels for parallel teammates.
+- **Consensus Shell Orchestrator**: (P0) Authoritative security hub for mesh-resident "Reasoning Quorums" to authorize high-risk shell commands.
+- **CLI-Header Attestation Provider**: (P0) Context security service mandating "System-Verified" tagging for project-local context files.
+
+### Priority Shifts
+- **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ZKIA-compliant** reasoning proofs.
+- **Isolated Named-Pipe Transport Middleware**: (Re-affirmed P0) Evolving to act as the primary transport for **IBS-native** reasoning channels.

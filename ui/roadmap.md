@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+### Upcoming: [2026-06-25]
+- [ ] **[P0] ZKIA Derivation Inspector**: (2026-06-25) Security UI for verifying hardware-attested zero-knowledge proofs of reasoning derivation.
+- [ ] **[P0] Intent Stream Monitor**: (2026-06-25) Real-time visualization of hardware-attested reasoning channels and stream injection alerts.
+- [ ] **[P0] Consensus Shell Terminal**: (2026-06-25) Hardened shell interface for monitoring reasoning quorums during high-risk command execution.
+- [ ] **[P0] Context CLI-Header Manager**: (2026-06-25) UI for reviewing "System-Verified" context tags and gateway-attestation status.

@@ -149,6 +149,12 @@
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
 *   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] ZKIA-Compliant Reasoning Validator**: Hardware-attested, zero-knowledge proofs of reasoning derivation to neutralize context-window flooding. (Added: 2026-06-25)
+*   **[P0] Intent-Bound Stream (IBS) Middleware**: Hardware-attested reasoning channels for parallel teammates to prevent stream injection. (Added: 2026-06-25)
+*   **[P0] Consensus Shell Orchestrator**: Authoritative host for "Reasoning Quorums" to authorize high-risk shell commands. (Added: 2026-06-25)
+*   **[P0] CLI-Header Attestation Provider**: Gateway-level context tagging for "System-Verified" natural language context files. (Added: 2026-06-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
