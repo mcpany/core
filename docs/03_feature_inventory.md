@@ -1461,3 +1461,14 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Atomic Shard-Snapshot Integrity (ASSI) Validator**: (P0) Advanced security service for the AMR Gateway that performs real-time, hardware-attested integrity checks on BSH snapshots during handoffs.
+- **Secure Shard-Lock Orchestrator**: (P0) Authoritative coordination middleware for the ASLM that utilizes TPM monotonic counters to eliminate shard-lock race conditions.
+- **Multi-Modal Attention Masking Provider**: (P1) Security extension for the ADG v2 that allows users to cryptographically mask high-entropy subagent noise in reasoning traces.
+
+### Priority Shifts
+- **Atomic Mission-Resumption (AMR) Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ASSI-compliant** integrity validation.
+- **Atomic Shard Lock-Manager (ASLM)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Secure Shard-Lock Orchestration** to neutralize CVE-2026-91042.

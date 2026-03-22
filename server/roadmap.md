@@ -800,3 +800,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Density Guard (ADG)**: (P0) Cognitive security layer utilizing hardware-bound headers to "pin" mission-critical fragments at the LLM attention layer.
 - **Headless Handoff Continuity (HHC)**: (P0) Orchestration bridge facilitating signed intent transfers for process-based subagent spawning.
 - **Multi-Modal Attention Sanitizer**: (P1) Advanced security extension for the MIB to neutralize attention-eviction probes in non-textual traces.
+
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Atomic Shard-Snapshot Integrity (ASSI) Validator**: Real-time hardware-attested integrity checks for mission state snapshots. (Added: 2026-06-25)
+*   **[P0] Multi-Hop Persistence Relay (MHPR)**: Cryptographic propagation of mission-root trust leases across deep delegations. (Added: 2026-06-25)
+*   **[P0] Secure Shard-Lock Orchestrator**: TPM-bound monotonic counter enforcement for ASLM to eliminate race condition exploits. (Added: 2026-06-25)
+*   **[P1] Multi-Modal Attention Masking Provider**: Implementation of user-attested attention masks for ADG v2 noise reduction. (Added: 2026-06-25)

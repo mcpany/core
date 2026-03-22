@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+### Upcoming: [2026-06-25]
+- [ ] **[P0] MHPR Trust Persistence Monitor**: (2026-06-25) Detailed view of hardware-attested trust leases and their propagation across deep swarms.
+- [ ] **[P0] ASSI Integrity Dashboard**: (2026-06-25) Real-time visualization of fragment-level shard integrity and blocked splicing attempts.
+- [ ] **[P0] Shard-Lock Sequence Visualizer**: (2026-06-25) Forensic UI for monitoring strictly sequential shard access and race-condition alerts.
+- [ ] **[P1] Attention Masking Editor**: (2026-06-25) Interactive UI for defining and TPM-signing attention masks to prioritize mission instructions.

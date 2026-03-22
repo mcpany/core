@@ -49,3 +49,11 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+
+### Update: [2026-06-25] - Atomic Shard-Snapshot Integrity (ASSI)
+**Context:** Today's market sync revealed the emergence of "Fragment Splicing" and "Cross-Shard State Hijacking" (CVE-2026-91042) targeting session resumption.
+**Architecture Adjustment:**
+*   Integrating the **ASSI Validator** into the AMR Gateway.
+*   Mandating hardware-attested integrity checks for every shard fragment during the `ResumeMission` flow.
+*   Snapshots now include a **Hardware-Bound Monotonic Counter** from the mission root's TPM to prevent shard-lock race condition exploits.
+**Security Impact:** Neutralizes attempts to inject "Ghost Logic" into restored mission states and eliminates the race window for Siblings-Shard-Probing.
