@@ -26,6 +26,17 @@
 - **Speculative Branching Guard (SBG)**: (P1) Isolation service for un-executed reasoning paths that prevents speculative attention leakage.
 - **Mesh-Resident Key Exchange (MRKE) Provider**: (P0) Hardware-bound session key rotation service for sub-100ms inter-teammate coordination.
 
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Lock-Free Sharded Mailbox Hub**: (P0) A high-performance coordination service for horizontal Agent Teams implementing CRDT-based task list synchronization to eliminate "Mailbox Lock" bottlenecks.
+- **Multi-Channel Session Sovereignty (MCSS) Provider**: (P0) Security middleware mandating hardware-attested session tokens bound to platform origins (WhatsApp, Slack, Discord) to neutralize cross-platform intent hijacking.
+- **Deceptive Context Attestation (DCA) Gateway**: (P0) Implementation of hardware-attested, hash-based signatures for all project-local natural language context files (e.g., `GEMINI.md`) to prevent "Invisible Instruction" injections.
+
+### Priority Shifts
+- **Attention-Locked Tooling (ALT)**: (Re-affirmed P0) Now designated as the primary defense against "Context-Hijacked" exfiltration in multi-agent swarms.
+- **Context-File Integrity Attestation (CFIA)**: (Evolved to DCA) Now elevated with the requirement for mandatory hardware-attestation for all natural-language instruction fragments.
+
 ## Evolution: [2026-06-19] Updates
 
 ### Proposed Additions

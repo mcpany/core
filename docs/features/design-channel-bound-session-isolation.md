@@ -63,3 +63,9 @@ Currently, session context is stored in a shared control plane. If a subagent is
     *   Mandating real-time semantic deconstruction of all inter-teammate coordination messages as they cross platform-bound session shards.
     *   Implementing **Stylometric Verification** as a prerequisite for mailbox access, ensuring commands match the hardware-attested parent agent's behavioral baseline.
     **Security Impact:** Prevents low-trust channel subagents (e.g., Discord) from coercing high-trust channel teammates (e.g., Slack) via shared coordination buffers.
+### Update: 2026-06-25 - Evolution to Multi-Channel Session Sovereignty (MCSS)
+**Context:** Today's research confirmed the persistent risk of "Cross-Platform Intent Hijacking" in heterogeneous swarms.
+**Architecture Adjustment:** * Upgrading isolation tokens to be **Hardware-Attested Session Fragments**.
+* Mandating that every inter-channel state handoff includes a **Platform Origin Proof (POP)**.
+* Integrating with the **Lock-Free Sharded Mailbox Hub** to ensure shard-level isolation matches channel boundaries.
+**Security Impact:** Provides absolute cryptographic sovereignty, ensuring that a compromised subagent on one communication platform cannot probe or influence sessions on another.

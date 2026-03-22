@@ -137,6 +137,11 @@
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Lock-Free Sharded Mailbox Hub**: CRDT-based task list synchronization for horizontal Agent Teams to eliminate coordination locks. (Added: 2026-06-25)
+*   **[P0] Multi-Channel Session Sovereignty (MCSS)**: Hardware-attested isolation for sessions spanning WhatsApp, Slack, and Discord. (Added: 2026-06-25)
+*   **[P0] Deceptive Context Attestation (DCA)**: Hash-based attestation registry for natural-language instruction files (e.g., `GEMINI.md`). (Added: 2026-06-25)
+
 #### Upcoming (2026-06-23 Evolution)
 *   **[P0] Recursive Mission-Root Attestation (RMRA)**: Mandatory hardware-bound re-attestation of sub-process lineage for headless handoffs. (Added: 2026-06-23)
 *   **[P0] Attention-Density Guard (ADG) v2**: Integration of hardware-attested Attention Masks to prioritize mission-critical fragments. (Added: 2026-06-23)

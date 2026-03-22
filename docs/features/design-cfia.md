@@ -59,3 +59,9 @@ MCP Any needs to bridge the "Attestation Gap" for these non-structural context s
 ## 7. Evolutionary Changelog
 * **2026-06-20:** Initial Document Creation.
 * **2026-06-21:** Added support for **Resumption-Aware Attestation**. CFIA signatures are now persistent across MRCP-mediated mission resumptions, eliminating redundant user approvals for previously verified context files.
+### Update: 2026-06-25 - Evolution to Deceptive Context Attestation (DCA)
+**Context:** Today's market sync revealed the emergence of "Invisible Instructions" in natural-language files (e.g., `GEMINI.md`) used to trick agents into unauthorized exfiltration.
+**Architecture Adjustment:** * Renaming service scope to **Deceptive Context Attestation (DCA)**.
+* Mandating hardware-attested hash signatures for *all* natural-language context files identified by the agent during the reasoning loop.
+* Introducing a "Context Shadowing" check that compares ingested file content against the system-prompt intent before release.
+**Security Impact:** Prevents high-risk tools from being commanded by un-attested, repository-local natural language instructions.

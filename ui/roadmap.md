@@ -610,6 +610,11 @@
 - [ ] **[P0] CFIA Signature Reviewer**: (2026-06-19) UI for reviewing and hardware-signing project-local context files.
 - [ ] **[P0] Attention-Locked Tool Trigger Visualization**: (2026-06-19) Real-time alerts and visualization when a high-risk tool call is interdicted by the ALT middleware.
 
+### Upcoming: [2026-06-25]
+- [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-25) Real-time visualization of CRDT-based task claiming and conflict resolution.
+- [ ] **[P0] Multi-Channel Sovereignty Dashboard**: (2026-06-25) Monitor platform-bound isolation status and Platform Origin Proof (POP) validation.
+- [ ] **[P0] Deceptive Context Signature Reviewer**: (2026-06-25) Workspace for reviewing and hardware-signing repository-local natural language context files.
+
 ### Upcoming: [2026-06-20]
 - [ ] **[P0] CFIA Attestation Workspace**: (2026-06-20) Security dashboard for reviewed and TPM-signing project-local context files.
 - [ ] **[P1] Visual Attention Heatmap**: (2026-06-20) Advanced visualization of reasoning drivers for high-risk tool calls, supporting the ALT workflow.

@@ -1056,6 +1056,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-06-25]
+### Focus: Deceptive Context Attestation & Multi-Channel Sovereignty
+**Context**: The emergence of "Deceptive Context" in Gemini CLI (natural-language `GEMINI.md` files) and the persistent "Sandbox Persistence" exploits (CVE-2026-25725) prove that protecting the *tool* is no longer enough; we must now protect the *information* that drives the agent. Simultaneously, the "Mailbox Lock" bottleneck in high-density horizontal teams (Claude Code) confirms that coordination must move to sharded, lock-free state.
+**Strategic Pivot**:
+- **Deceptive Context Attestation (DCA)**: MCP Any will evolve to act as the authoritative "Context Gatekeeper." We will implement hardware-attested, hash-based signatures for all project-local "Context Files" (e.g., `GEMINI.md`, `.mcpany/context.md`) before ingestion. This ensures that "Invisible Instructions" cannot be injected without explicit user attestation.
+- **Attention-Locked Tooling (ALT)**: To neutralize context-hijacked exfiltration, we are introducing ALT. High-risk tool calls (e.g., shell, filesystem) will be cryptographically locked to user-verified "Attention Anchors." If the agent reasoning trace shows "Injected Context" as the primary driver, the ALT middleware will interdict the call.
+- **Lock-Free Sharded Mailbox Hub**: Supporting the efficiency of horizontal swarms, MCP Any will implement a "Sharded Mailbox Hub." This service will host granular, task-bound mailbox shards utilizing CRDT-based state synchronization, ensuring non-blocking performance for teammates from disparate frameworks.
+- **Multi-Channel Session Sovereignty**: We are mandating absolute sovereignty between multi-channel sessions (WhatsApp, Slack, Discord). MCP Any will utilize hardware-attested session tokens that are cryptographically bound to the platform origin, neutralizing "Cross-Platform Intent Hijacking" by specialized subagents.
+
+---
+
 ## Strategic Evolution: [2026-06-18]
 ### Focus: Autonomous Mission Resumption & Semantic Entanglement Sanitization
 **Context**: The discovery of **Logic-Grafting** (CVE-2026-71002) and the emergence of **Long-Haul Identity Decay** in swarms prove that static mission manifests and session-bound tokens are no longer sufficient. As agents run for days, infrastructure must provide **Autonomous Mission Resumption** with hardware-locked re-attestation. Simultaneously, the rise of "Monologue Smearing" in entangled meshes demands **Semantic Entanglement Sanitization** to protect subagent reasoning privacy.
