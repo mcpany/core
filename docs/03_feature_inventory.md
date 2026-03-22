@@ -1461,3 +1461,15 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: 2026-03-22 Updates
+
+### Proposed Additions
+- **Lethal Trifecta Interdiction Middleware**: (P0) A multi-stage validation pipeline for tool discovery that cross-references schemas against hardware-attested reputation quorums.
+- **Atomic Mission-Resumption (AMR) Gateway**: (P0) Infrastructure for hosting hardware-locked "Context Snapshots" to facilitate sub-100ms cold-boot recovery.
+- **Snapshot-Resident Key Exchange (SRKE)**: (P0) Hardware-bound key management service for reasoning snapshots to ensure resumption tokens are non-exportable.
+- **Deceptive Context Interceptor**: (P1) Security middleware mandating hardware-attested signatures for project-local natural language context files (e.g., GEMINI.md).
+
+### Priority Shifts
+- **Atomic Mission-Resumption (AMR) Gateway**: (Re-affirmed P0) Elevated to critical priority for AMR-compliance with OpenClaw v3.2.0-rc1.
+- **Verified Skill Registry**: (Re-affirmed P0) Designated as the primary reputation source for the **Lethal Trifecta Interdiction Middleware**.

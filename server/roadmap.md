@@ -110,6 +110,9 @@
 *   **[P0] UACO Agentic SLA Middleware**: Enforcement of resource contracts (token budget, reasoning time) during task delegation. (Added: 2026-03-22)
 *   **[P0] Ghost Shell Execution Mode**: Isolated profiling environment for behavioral analysis of un-attested hooks. (Added: 2026-03-22)
 *   **[P1] Federated Policy Synchronizer**: Secure bus for synchronizing security guardrails across multiple MCP Any instances. (Added: 2026-03-22)
+*   **[P0] Lethal Trifecta Interdiction Middleware**: Multi-stage validation pipeline to neutralize tool poisoning and shadowing. (Added: 2026-03-22)
+*   **[P0] Snapshot-Resident Key Exchange (SRKE)**: Hardware-bound key management for AMR reasoning snapshots. (Added: 2026-03-22)
+*   **[P1] Deceptive Context Interceptor**: Security gate for natural-language instructions in project-local context files. (Added: 2026-03-22)
 
 #### Upcoming (2026-03-17 Evolution)
 *   **[P0] Local-Loopback Rate Limiter**: Mandatory throttling for all loopback traffic to neutralize browser-based brute-force attacks. (Added: 2026-03-17)

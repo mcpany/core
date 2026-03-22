@@ -49,3 +49,10 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+
+### Update: 2026-03-22 - Hardware-Locked Snapshot Integrity
+**Context**: Today's market sync revealed the "Lethal Trifecta" pattern and OpenClaw v3.2.0-rc1's stabilization of AMR.
+**Architecture Adjustment**:
+*   Integrating **Snapshot-Resident Key Exchange (SRKE)** into Section 4.
+*   Mandating TPM-bound monotonic counters for all snapshots to prevent "Snapshot Shadowing" and replay attacks.
+**Security Impact**: Ensures that mission resumption is only possible through hardware-attested tokens that are cryptographically bound to the specific execution enclave.

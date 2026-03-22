@@ -198,6 +198,9 @@
 - [ ] **[P0] Local Trust Verification Dashboard**: (2026-04-05) UI for reviewing and signing local MCP server identity claims.
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
+- [ ] **[P0] Counter-Trifecta Validation Dashboard**: (2026-03-22) UI for reviewing tool reputation quorums and interdiction events.
+- [ ] **[P0] SRKE Key Security Widget**: (2026-03-22) Real-time monitor for hardware-bound snapshot keys and enclave status.
+- [ ] **[P1] Deceptive Context Alert Center**: (2026-03-22) Notification UI for un-attested context file injections.
 
 #### Upcoming (2026-03-20 Evolution)
 - [ ] **[P0] Mission Manifest Editor**: (2026-03-20) UI for defining and TPM-signing Hardware-Attested Mission Manifests (HAMM).
