@@ -47,3 +47,11 @@ While 60% of developers use AI agents, only 20% can "fully delegate" tasks due t
 
 ## 7. Evolutionary Changelog
 * **2026-06-02:** Initial Document Creation.
+
+### Update: 2026-06-25 - Neutralizing Sybil-Swarm Vulnerabilities
+**Context:** Today's market sync revealed a new "Sybil-Swarm" exploit pattern where attackers spawn thousands of low-cost subagents to overwhelm and "vote-stuff" distributed verification quorums.
+**Architecture Adjustment:**
+*   Implementing **Sybil-Resistant Quorum Selection** in Section 4.
+*   Integrating **Hardware-Attested Compute-Cost (HACC)** proofs for auditor selection. Agents must now provide cryptographic proof of underlying hardware lineage and "Compute-Equity" (demonstrable resource commitment) to qualify for high-stakes quorums.
+*   Mandating **Non-Repudiable Approval Tokens** using NRMP-compliant monotonic counters to prevent out-of-order vote injection.
+**Security Impact:** Prevents a single malicious entity from compromising the AVQ Hub's integrity via subagent flooding, ensuring that consensus remains anchored to unique, hardware-verified identities.

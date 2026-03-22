@@ -800,3 +800,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Density Guard (ADG)**: (P0) Cognitive security layer utilizing hardware-bound headers to "pin" mission-critical fragments at the LLM attention layer.
 - **Headless Handoff Continuity (HHC)**: (P0) Orchestration bridge facilitating signed intent transfers for process-based subagent spawning.
 - **Multi-Modal Attention Sanitizer**: (P1) Advanced security extension for the MIB to neutralize attention-eviction probes in non-textual traces.
+
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Sybil-Resistant Quorum Hub**: Authority for verification quorum management using HACC identity metrics. (Added: 2026-06-25)
+*   **[P0] Non-Repudiable Mailbox Provider (NRMP)**: Mandatory hardware-bound signing and sequence counters for inter-agent messages. (Added: 2026-06-25)
+*   **[P0] Reasoning-Provenance Validator**: Real-time cross-reference of reasoning fragments against mission-root manifest. (Added: 2026-06-25)
+*   **[P1] Temporal Integrity Controller**: Asynchronous hardware-attested validation for horizontal mesh state shards. (Added: 2026-06-25)

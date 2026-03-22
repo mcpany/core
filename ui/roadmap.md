@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+#### Upcoming (2026-06-25 Evolution)
+- [ ] **[P0] Quorum Identity Inspector**: Visualize HACC proofs and hardware lineage for quorum auditors. (Added: 2026-06-25)
+- [ ] **[P0] NRMP Mailbox Auditor**: Real-time visualization of non-repudiable teammate messages and sequence gaps. (Added: 2026-06-25)
+- [ ] **[P0] Provenance Trace Viewer**: Visual hierarchical tracer for reasoning provenance vs. mission-root intent. (Added: 2026-06-25)
+- [ ] **[P1] Asynchronous Validation Monitor**: Visualization of temporal integrity status for horizontal teammate shards. (Added: 2026-06-25)

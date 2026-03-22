@@ -1121,3 +1121,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Stylometric Mesh Sovereignty (SMS) Provider**: To neutralize "Stylometric Splicing," we are introducing SMS. This layer will perform real-time stylometric analysis of inter-agent messages, ensuring that subagent reasoning fragments cannot mimic the signature of the parent agent to bypass mission-root constraints.
 - **Lock-Free Sharded Mailbox Hub**: Supporting the efficiency of horizontal Agent Teams, MCP Any will implement "Sharded Mailbox Hub." This service will host granular, task-bound mailbox shards that allow parallel teammates to synchronize state without global coordination locks, ensuring non-blocking performance.
 - **Zero-Knowledge Discovery (ZKD) Proxy**: Leveraging Gemini CLI v0.42.0 patterns, we are mandating ZKD. Agent capabilities will remain cryptographically masked until a mission-bound, identity-verified handshake is completed, neutralizing "Shadow Capability" mapping by malicious subagents.
+
+---
+
+## Strategic Evolution: [2026-06-25]
+### Focus: Sybil-Resistant Governance & Non-Repudiable Mailbox Integrity
+**Context**: The emergence of "Sybil-Swarm" attacks and the disclosure of the "Mailbox-Splicing" exploit (CVE-2026-88102) reveal that mesh coordination now depends on the **cryptographic uniqueness** of agent identities and the **temporal integrity** of their mailbox messages. Transport-layer security is insufficient; we must now protect the **sovereignty of the quorum** and ensure that inter-teammate coordination fragments are non-repudiable and immune to out-of-order injection.
+**Strategic Pivot**:
+- **Sybil-Resistant Quorum Hub**: MCP Any will evolve to act as the authoritative "Quorum Mint." We will implement Sybil-Resistant selection, utilizing hardware-attested identity metrics (e.g., TPM lineage, compute-cost proofs) to ensure that verification quorums cannot be compromised by low-cost agent instances.
+- **Non-Repudiable Mailbox Provider (NRMP)**: To neutralize "Mailbox-Splicing," we are upgrading the T2T Bridge to include NRMP. This service will mandate hardware-bound signatures and monotonic sequence counters for every teammate-to-teammate request, ensuring that coordination fragments remain anchored to the mission-root and cannot be re-played or spliced.
+- **Reasoning-Provenance Validator**: Supporting the sovereignty of the "Chain of Reason," MCP Any will implement a provenance validator. This layer will cross-reference reasoning fragments against the hardware-attested mission-root manifest, ensuring that "Spliced Fragments" cannot trigger unauthorized tool-call reasoning.
+- **Temporal Integrity Controller**: To counter "State-Splicing" latency, we are introducing a Temporal Controller. This service will perform real-time, asynchronous validation of mailbox state shards, utilizing high-speed hardware signatures to reduce the "Validation Tax" on horizontal meshes.

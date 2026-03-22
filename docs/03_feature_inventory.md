@@ -1461,3 +1461,15 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Sybil-Resistant Quorum Hub**: (P0) Authoritative service for verification quorum management, utilizing hardware-attested identity metrics to prevent "Sybil-Swarm" attacks.
+- **Non-Repudiable Mailbox Provider (NRMP)**: (P0) Security extension for the T2T Bridge mandating hardware-bound signatures and monotonic counters for all teammate messages.
+- **Reasoning-Provenance Validator**: (P0) Advanced security middleware that cross-references reasoning fragments against the hardware-attested mission-root manifest to detect spliced fragments.
+- **Temporal Integrity Controller**: (P1) Stability service for asynchronous validation of mailbox state shards, reducing horizontal coordination latency.
+
+### Priority Shifts
+- **Autonomous Verification Quorum (AVQ) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Sybil-Resistant** quorum selection.
+- **Mailbox Integrity Middleware**: (Evolved to NRMP) Designated as the primary enforcement point for **Non-Repudiable** coordination messages.
