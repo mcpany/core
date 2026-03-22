@@ -143,6 +143,11 @@
 *   **[P0] Active Intent Sanitizer (AIS)**: Real-time semantic deconstruction of coordination messages crossing multi-channel boundaries. (Added: 2026-06-23)
 *   **[P0] SMM v2 (Stylometric Anchoring)**: Higher-dimensional behavioral anchoring of reasoning traces against the mission-root manifest. (Added: 2026-06-23)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Memory-Mapped Intent Isolator (MMII)**: Session-bound, hardware-attested memory management for BSH state persistence to prevent "Ghost-State" leakage. (Added: 2026-06-25)
+*   **[P0] Attention-Locked Auction Arbiter (ALAA)**: High-speed coordination middleware for resolving speculative bidding deadlocks via hardware-bound mission-root headers. (Added: 2026-06-25)
+*   **[P1] Integrity-Bound Bloom Filter Provider**: Security extension for horizontal teammate verification to neutralize "Filter Poisoning" in shared mailboxes. (Added: 2026-06-25)
+
 #### Upcoming (2026-06-24 Evolution)
 *   **[P0] Atomic Mission-Resumption (AMR) Gateway**: Hardware-locked resumption of agent states across cold-boots via BSH snapshots. (Added: 2026-06-24)
 *   **[P0] Stylometric Mesh Sovereignty (SMS) Provider**: Behavioral security layer detecting mimicry-based hijacking via real-time stylometry. (Added: 2026-06-24)

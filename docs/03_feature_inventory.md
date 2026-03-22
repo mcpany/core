@@ -26,6 +26,17 @@
 - **Speculative Branching Guard (SBG)**: (P1) Isolation service for un-executed reasoning paths that prevents speculative attention leakage.
 - **Mesh-Resident Key Exchange (MRKE) Provider**: (P0) Hardware-bound session key rotation service for sub-100ms inter-teammate coordination.
 
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Memory-Mapped Intent Isolator (MMII)**: (P0) Authoritative memory management service utilizing hardware-attested, session-bound memory regions to prevent "Ghost-State" leakage in MMIP-compliant agents.
+- **Attention-Locked Auction Arbiter (ALAA)**: (P0) High-speed coordination middleware for speculative task auctions, utilizing hardware-bound attention-locking headers to resolve coordination deadlocks.
+- **Integrity-Bound Bloom Filter Provider**: (P1) Security extension for horizontal meshes that ensures inter-teammate verification is resilient to coordination-noise injection.
+
+### Priority Shifts
+- **Pre-Commit Speculative Sanitizer (PCSS)**: (Re-affirmed P0) Evolving to support the new **MMII-compliant** memory-mapped state buffers.
+- **Lock-Free Sharded Mailbox Hub**: (Re-affirmed P0) Elevated with the requirement for **ALAA-native** task auctioning.
+
 ## Evolution: [2026-06-19] Updates
 
 ### Proposed Additions

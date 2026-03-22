@@ -633,6 +633,11 @@
 - [ ] **[P0] Cross-Channel Sanitization Log**: Security dashboard for reviewing AIS-redacted coordination messages. (Added: 2026-06-23)
 - [ ] **[P0] Behavioral Anchoring Monitor**: Real-time visualization of stylometric consistency scores vs. mission-root manifest. (Added: 2026-06-23)
 
+### Upcoming: [2026-06-25]
+- [ ] **[P0] Memory Isolation Inspector**: (2026-06-25) Visualizer for hardware-attested memory regions and "Ghost-State" purging events.
+- [ ] **[P0] Auction Arbitration Console**: (2026-06-25) Real-time monitor for speculative bidding deadlocks and mission-root arbitration decisions.
+- [ ] **[P1] Bloom Filter Integrity Dashboard**: (2026-06-25) Security monitor for horizontal teammate verification and "Filter Poisoning" alerts.
+
 ### Upcoming: [2026-06-24]
 - [ ] **[P0] Mission Resumption Manager**: (2026-06-24) UI for monitoring and manually triggering AMR-mediated mission recovery checkpoints.
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
