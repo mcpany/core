@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+### Upcoming: [2026-06-25]
+- [ ] **[P0] Attention-Weighted Shard Monitor**: (2026-06-25) Visualizer for real-time attention-weight telemetry and AWSR pre-fetching status.
+- [ ] **[P0] Reasoning Provenance Inspector**: (2026-06-25) Forensic UI for auditing multi-hop hardware-attested lineages and HBRP signatures.
+- [ ] **[P0] Shard Hash-Chain Auditor**: (2026-06-25) Security dashboard for verifying ARI hash-chains and detecting Shadow-Shard injections.
+- [ ] **[P0] Attention Density Monitor**: (2026-06-25) Real-time tracker for mission-root anchor focus and ALR alignment triggers.

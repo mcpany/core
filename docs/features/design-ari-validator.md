@@ -74,3 +74,10 @@ The Atomic Reasoning Integrity (ARI) Validator is needed to perform fragment-lev
 * Mandating that all ARI-attested fragments be committed to **Entanglement Shards** via the Entangled State Broker (ESB).
 * Introducing a "Late-Binding Integrity Check" where the recipient teammate re-verifies the hardware-attested entanglement signature before reasoning ingestion.
 **Security Impact:** Prevents "Time-of-Check to Time-of-Use" (TOCTOU) attacks on shared mailbox state by ensuring state fragments are cryptographically bound to the mission-root intent throughout their entire lifecycle.
+
+### Update: 2026-06-25 - HBRP-Compliant Hash-Chaining
+**Context:** Today's market sync revealed the "Shadow-Shard Injection" (CVE-2026-91042) exploit, where malicious subagents bypass fragment-level semantic checks during teammate rotations.
+**Architecture Adjustment:**
+* Upgrading Section 4 to include "HBRP-Compliant Hash-Chaining."
+* Every ARI-attested fragment must now be semantically hashed and chained to the previous fragment's hash, with the entire chain cryptographically bound to the hardware-attested reasoning provenance (HBRP) of the mission root.
+**Security Impact:** Neutralizes Shadow-Shard injection by ensuring that the order and content of state fragments are immutable and directly linked to the hardware-attested lineage of the mission.

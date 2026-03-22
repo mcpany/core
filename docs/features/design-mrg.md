@@ -42,3 +42,11 @@ As swarms scale horizontally and context becomes highly sharded (Claude Code v2.
 
 ## 7. Evolutionary Changelog
 * **2026-06-04:** Initial Document Creation.
+
+### Update: 2026-06-25 - Attention-Locking Re-attestation (ALR)
+**Context:** Today's market sync identified "Attention-Density Fatigue" in long-running agent sessions, where high-entropy noise from specialized subagents causes mission-root anchors to lose focus.
+**Architecture Adjustment:**
+* Introducing the "Attention-Locking Re-attestation (ALR)" middleware.
+* Section 4 now includes a periodic re-attestation loop where the MRG enforcer forces a hardware-bound "Semantic Alignment" of the mission-root anchors.
+* If the agent's "Attention-Density" exceeds a safe threshold, the ALR middleware will forcefully re-inject the mission-root as a primary attention fragment.
+**Security Impact:** Prevents "Attention Drift" in deep swarms by ensuring the mission-root intent remains the dominant reasoning driver despite specialist agent noise.

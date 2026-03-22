@@ -1461,3 +1461,15 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Attention-Weighted Shard Router (AWSR)**: (P0) Authoritative context orchestration service that pre-fetches and routes context shards based on real-time attention-weight telemetry to minimize latency in horizontal meshes.
+- **Hardware-Bound Reasoning Provenance (HBRP) Provider**: (P0) Security service mandating hardware-attested lineage signatures for all multi-hop agent delegations to prevent identity dilution.
+- **HBRP-Compliant Hash-Chaining**: (P0) Advanced upgrade for the ARI Hub providing fragment-level semantic integrity bound to mission-root hardware attestation, neutralizing "Shadow-Shard" injection.
+- **Attention-Locking Re-attestation (ALR)**: (P0) Middleware for the MRG enforcer to periodically force semantic alignment of mission-root anchors, countering attention-density fatigue.
+
+### Priority Shifts
+- **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **HBRP-compliant hash-chaining**.
+- **Mission-Root Gravity (MRG) Enforcer**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Attention-Locking Re-attestation**.

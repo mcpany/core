@@ -149,6 +149,12 @@
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
 *   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Attention-Weighted Shard Router (AWSR)**: Proactive context pre-fetching service based on real-time attention-weight telemetry. (Added: 2026-06-25)
+*   **[P0] Hardware-Bound Reasoning Provenance (HBRP)**: Mandatory hardware-attested lineage signatures for multi-hop delegations to prevent identity dilution. (Added: 2026-06-25)
+*   **[P0] HBRP-Compliant Hash-Chaining**: Fragment-level semantic integrity bound to hardware attestation, neutralizing Shadow-Shard injection. (Added: 2026-06-25)
+*   **[P0] Attention-Locking Re-attestation (ALR)**: Periodic semantic alignment of mission-root anchors to counter attention-density fatigue. (Added: 2026-06-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
