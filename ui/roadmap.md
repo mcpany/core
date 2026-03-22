@@ -638,3 +638,6 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+- [ ] **[P0] CMT Shard Density Widget**: (2026-06-25) Visual tracker for interleaved mission branches and hardware-locked memory shards.
+- [ ] **[P0] Authority Handoff Tracer**: (2026-06-25) Security UI for auditing the persistence of hardware signatures across frameworks.
+- [ ] **[P0] Mailbox Splicing Alert Hub**: (2026-06-25) Real-time dashboard for reviewing header-validation failures and MDPI interdiction events.

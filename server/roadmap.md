@@ -149,6 +149,12 @@
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
 *   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Cognitive Multi-tenancy (CMT) Hub**: Authoritative host for interleaved mission roots with hardware-locked memory shards. (Added: 2026-06-25)
+*   **[P0] Authority Continuity Provider (ACP)**: Identity bridge for maintaining hardware-bound signatures across framework delegations. (Added: 2026-06-25)
+*   **[P0] Mailbox Deep-Packet Inspector (MDPI)**: Real-time semantic validation of coordination headers to neutralize mailbox splicing. (Added: 2026-06-25)
+*   **[P1] Negotiation Fairness Arbiter (NFA)**: Unified auction protocol to resolve fairness policy conflicts and prevent bidding deadlocks. (Added: 2026-06-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

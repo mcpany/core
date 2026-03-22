@@ -1461,3 +1461,15 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Cognitive Multi-tenancy (CMT) Hub**: (P0) Authoritative coordination service for interleaved mission roots, providing hardware-locked memory shards for multi-mission specialist agents.
+- **Authority Continuity Provider (ACP)**: (P0) Identity middleware facilitating "Authority Handoffs" to prevent identity fragmentation and authority decay during cross-framework delegation.
+- **Mailbox Deep-Packet Inspector (MDPI)**: (P0) Security extension for the MIS middleware that performs real-time semantic validation of coordination headers to neutralize "Mailbox Splicing."
+- **Negotiation Fairness Arbiter (NFA)**: (P1) Stability service that provides a unified auction protocol to resolve fairness policy conflicts and prevent negotiation deadlocks.
+
+### Priority Shifts
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MDPI** integration to counter CVE-2026-81042.
+- **Federated Swarm Identity (FSI) Provider**: (Re-affirmed P0) Evolving to act as the primary backend for the **Authority Continuity Provider (ACP)**.

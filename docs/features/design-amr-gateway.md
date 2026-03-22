@@ -49,3 +49,4 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+* **2026-06-25:** Added support for **Multi-Mission Continuity** to align with the new CMT Hub. Resumption tokens now carry mission-tenancy metadata to prevent cross-mission state hijacking during cold boots.
