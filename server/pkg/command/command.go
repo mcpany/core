@@ -390,25 +390,6 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 }
 
 // ExecuteWithStdIO executes a command inside a docker container with stdin/stdout/stderr pipes.
-//
-// Summary: Executes a command inside a Docker container with full I/O streams.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - command (string): The command to execute.
-//   - args ([]string): The arguments for the command.
-//   - workingDir (string): The working directory for execution.
-//   - env ([]string): The environment variables.
-//
-// Returns:
-//   - io.WriteCloser: The standard input stream.
-//   - io.ReadCloser: The standard output stream.
-//   - io.ReadCloser: The standard error stream.
-//   - <-chan int: A channel that receives the exit code.
-//   - error: An error if the operation fails.
-//
-// Side Effects:
-//   - Creates and starts a Docker container.
 func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
 	cli, err := e.clientFactory()
