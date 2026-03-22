@@ -54,3 +54,10 @@ The `Shared KV Store` (Blackboard) is a core tool in MCP Any that allows multipl
 * **Read-Only Shared State**: By default, shared state from a parent is read-only for subagents unless explicit "Write" capabilities are granted via the policy engine.
 * **Automatic Cleanup**: Intent-bound data is automatically purged when the parent session expires, preventing long-term state leakage.
 **Security Impact**: Prevents "Cross-Agent State Poisoning," ensuring that compromised or misbehaving subagents cannot influence the execution of the parent or other specialized agents.
+
+### Update: 2026-03-22 - Mesh-Aware Lock Management for Swarm Coordination
+**Context**: Horizontal Agent Teams in Claude Code and OpenClaw are increasingly hitting coordination deadlocks and "Context Poisoning" where shared state is corrupted by parallel writes.
+**Architecture Adjustment**:
+*   **Mesh-Aware Lock Manager**: Introducing distributed, lease-based locking for Blackboard keys. Agents must acquire an `Intent-Bound Lock` before mutating shared state.
+*   **Conflict-Aware Merging**: Implementing "Snapshot-and-Merge" for the Blackboard, allowing parallel branches to reconcile state based on the mission-root priority.
+**Security Impact**: Neutralizes "Recursive Deadlocks" and prevents race conditions that could be exploited for "Context Poisoning" in deep swarms.

@@ -1121,3 +1121,12 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Stylometric Mesh Sovereignty (SMS) Provider**: To neutralize "Stylometric Splicing," we are introducing SMS. This layer will perform real-time stylometric analysis of inter-agent messages, ensuring that subagent reasoning fragments cannot mimic the signature of the parent agent to bypass mission-root constraints.
 - **Lock-Free Sharded Mailbox Hub**: Supporting the efficiency of horizontal Agent Teams, MCP Any will implement "Sharded Mailbox Hub." This service will host granular, task-bound mailbox shards that allow parallel teammates to synchronize state without global coordination locks, ensuring non-blocking performance.
 - **Zero-Knowledge Discovery (ZKD) Proxy**: Leveraging Gemini CLI v0.42.0 patterns, we are mandating ZKD. Agent capabilities will remain cryptographically masked until a mission-bound, identity-verified handshake is completed, neutralizing "Shadow Capability" mapping by malicious subagents.
+
+## Strategic Evolution: [2026-03-22]
+### Focus: Hardware-Optimized Agentic Infrastructure & Mesh Sovereignty
+**Context**: The GA release of NVIDIA OpenShell and the discovery of cross-site token exfiltration (CVE-2026-25253) confirm that agentic infrastructure must now be both hardware-aware and "Local-Zero-Trust" by default. Simultaneously, the sprawl of horizontal Claude Code meshes demands active "Mesh Sovereignty" to prevent context-compression amnesia and coordination deadlocks.
+**Strategic Pivot**:
+- **Hardware-Attested OpenShell Adapter**: MCP Any will evolve to act as the authoritative bridge for NVIDIA OpenShell. We will implement hardware-attested "Claw" wrappers that leverage GPU-bound security primitives for high-frequency reasoning tasks.
+- **Local-Zero-Trust WebSocket Proxy**: To neutralize CVE-2026-25253, we are mandating session-bound, origin-locked WebSocket listeners. All inter-agent and UI-to-gateway communication must pass through a cryptographically bound handshake.
+- **Mesh-Aware Lock Manager**: Supporting horizontal swarms, we are introducing a "Mesh-Aware Lock Manager." This service will provide distributed, lease-based file and state locking to prevent deadlocks in parallel Agent Teams.
+- **Stateful Mesh Persistence Hub**: To counter "Context-Compression Amnesia," MCP Any will host a "Mesh Persistence Hub" that maintains long-term semantic indices of swarm-wide discoveries, ensuring subsequent waves inherit knowledge without window exhaustion.

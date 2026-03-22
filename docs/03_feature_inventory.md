@@ -1461,3 +1461,14 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-03-22] Updates
+
+### Proposed Additions
+- **Agentic SLA Middleware**: (P0) Infrastructure for enforcing Service Level Agreements on tool calls, including reasoning time and token budgets.
+- **Ghost Shell Execution Mode**: (P0) Instrumented, isolated container for profiling un-attested configuration hooks before host-level execution.
+- **Federated Policy Synchronizer**: (P1) Centralized service for synchronizing security guardrails and allowed-origin lists across multiple MCP Any nodes.
+
+### Priority Shifts
+- **Recursive Depth-Limit Middleware**: (Promoted to P0) Critical for preventing infinite "Shadow Spawning" loops and coordination deadlocks.
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Elevated to support **Mesh-Aware Lock Management** for parallel teammate coordination.

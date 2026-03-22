@@ -45,3 +45,9 @@ With the discovery of "Binary Smuggling" in project-local configuration hooks (C
 
 ## 7. Evolutionary Changelog
 * **2026-03-24:** Initial Document Creation.
+* **2026-03-22:** Update: Ghost Shell Execution for Behavioral Profiling.
+    **Context**: Emerging pain points in multi-agent swarms highlight the risk of "Spiral of Death" loops and un-attested hooks that bypass static analysis.
+    **Architecture Adjustment**:
+    *   **Deep Instrumentation**: Ghost Shell will now include eBPF-based monitoring to capture all filesystem and network syscalls, even from obfuscated WASM hooks.
+    *   **SLA Integration**: Ghost Shell will automatically suggest Agentic SLA parameters (token limits, reasoning time) based on the hook's observed behavior during profiling.
+    **Security Impact**: Neutralizes "Binary Smuggling" and provides a safe "burn-in" environment for skills before they are promoted to production mesh status.
