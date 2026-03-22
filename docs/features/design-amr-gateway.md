@@ -49,3 +49,9 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+
+### Update: 2026-06-25 - HACS-Compliant Context Sealing & Attention Awareness
+**Context:** Today's research revealed the "Attention-Splicing" exploit (CVE-2026-91001) and the release of OpenClaw v3.2.0 GA with HACS.
+**Architecture Adjustment:** * Integrating HACS-compliant context sealing into the `SnapshotMission` lifecycle.
+* Adding attention-aware metadata to resumption tokens to ensure mission-root sovereignty is maintained during state injection.
+**Security Impact:** Prevents malicious subagents from utilizing "Resumption Windows" to splice unauthorized instructions into the parent reasoning frontier.

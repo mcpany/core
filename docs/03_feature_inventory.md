@@ -1461,3 +1461,15 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Attention-Splicing Interceptor (ASI)**: (P0) Authoritative attention guard utilizing hardware-attested "Attention Anchors" to detect and block malicious reasoning fragments.
+- **HACS-Compliant Context Sealing**: (P0) Security upgrade for the AMR Gateway to support cryptographically sealed state fragments bound to TPM-attested sessions.
+- **Budget-Aware Attention Controller**: (P1) Resource management middleware implementing Gemini-style contextual budgeting for token and attention allocation.
+- **AIS v2 Synchronization Engine**: (P0) Coordination extension for the Sharded Mailbox Hub utilizing optimistic state handoffs and background hardware-attestation.
+
+### Priority Shifts
+- **Atomic Mission-Resumption (AMR) Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory **HACS-compliant** context sealing.
+- **Attention-Density Guard (ADG) v2**: (Re-affirmed P0) Evolving to support the new **ASI-compliant** attention-splicing defense.

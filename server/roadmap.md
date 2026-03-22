@@ -149,6 +149,12 @@
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
 *   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Attention-Splicing Interceptor (ASI)**: Authoritative attention guard utilizing hardware-attested anchors to detect and block malicious reasoning fragments. (Added: 2026-06-25)
+*   **[P0] HACS Context-Sealing Engine**: Integration of Hardware-Attested Context Seals for cryptographically sealed state fragments. (Added: 2026-06-25)
+*   **[P1] Budget-Aware Attention Control**: Implementation of Gemini CLI v0.43.0 contextual budgeting for token and attention allocation. (Added: 2026-06-25)
+*   **[P0] AIS v2 Coordination Hub**: Optimistic state handoffs for the Sharded Mailbox Hub with background hardware-attestation. (Added: 2026-06-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

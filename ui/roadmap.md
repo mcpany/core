@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+### Upcoming: [2026-06-25]
+- [ ] **[P0] Attention Heatmap Dashboard**: (2026-06-25) Real-time visualization of LLM attention focus and ASI-blocked splicing attempts.
+- [ ] **[P0] Context Seal Inspector**: (2026-06-25) Security UI for verifying HACS-compliant state fragments and session-bound signatures.
+- [ ] **[P1] Budget-Aware Attention Monitor**: (2026-06-25) Visual tracker for contextual token and attention budgets across missions.
+- [ ] **[P0] Optimistic Handoff Debugger**: (2026-06-25) Real-time monitor for AIS v2 state synchronization and background attestation status.
