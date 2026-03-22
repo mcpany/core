@@ -61,7 +61,7 @@ Defines a collection of upstream services that can be loaded from a remote sourc
 | `name`           | `string`                 | The name of the collection.                                         |
 | `http_url`       | `string`                 | The HTTP URL to load the collection from.                           |
 | `priority`       | `int32`                  | The priority of the collection. Lower numbers have higher priority. |
-| `authentication` | `UpstreamAuthentication` | The authentication to use when fetching the collection.             |
+| `authentication` | `Authentication` | The authentication to use when fetching the collection.             |
 
 ### Use Case and Example
 
@@ -159,7 +159,7 @@ This is the top-level configuration for a single upstream service that MCP Any w
 | `id`                      | `string`                 | A UUID to uniquely identify this upstream service configuration, used for bindings.           |
 | `name`                    | `string`                 | A unique name for the upstream service. Used for identification, logging, and metrics.        |
 | `connection_pool`         | `ConnectionPoolConfig`   | Configuration for the pool of connections to the upstream service.                            |
-| `upstream_auth` | `UpstreamAuthentication` | Authentication configuration for MCP Any to use when connecting to the upstream service.      |
+| `upstream_auth` | `Authentication` | Authentication configuration for MCP Any to use when connecting to the upstream service.      |
 | `cache`                   | `CacheConfig`            | Caching configuration to improve performance and reduce load on the upstream.                 |
 | `rate_limit`              | `RateLimitConfig`        | Rate limiting to protect the upstream service from being overwhelmed.                         |
 | `load_balancing_strategy` | `enum`                   | Strategy for distributing requests among multiple instances of the service.                   |
@@ -816,16 +816,16 @@ authentication:
 | `issuer_url`        | `string` | The URL of the JWT issuer for token validation.  |
 | `audience`          | `string` | The audience for JWT token validation.           |
 
-#### `UpstreamAuthentication` (Outgoing)
+#### `Authentication` (Outgoing)
 
 Configures the authentication method for MCP Any to use when connecting to an upstream service.
 
 | Field          | Type                      | Description                                        |
 | -------------- | ------------------------- | -------------------------------------------------- |
-| `api_key`      | `UpstreamAPIKeyAuth`      | API key sent in a header.                          |
-| `bearer_token` | `UpstreamBearerTokenAuth` | Bearer token in the `Authorization` header.        |
-| `basic_auth`   | `UpstreamBasicAuth`       | Basic authentication with a username and password. |
-| `oauth2`       | `UpstreamOAuth2Auth`      | OAuth 2.0 client credentials flow.                 |
+| `api_key`      | `APIKeyAuth`      | API key sent in a header.                          |
+| `bearer_token` | `BearerTokenAuth` | Bearer token in the `Authorization` header.        |
+| `basic_auth`   | `BasicAuth`       | Basic authentication with a username and password. |
+| `oauth2`       | `OAuth2Auth`      | OAuth 2.0 client credentials flow.                 |
 
 ##### Use Case and Example
 
@@ -873,27 +873,27 @@ upstream_auth:
         region: "us-west-2"
 ```
 
-##### `UpstreamAPIKeyAuth`
+##### `APIKeyAuth`
 
 | Field         | Type          | Description                                  |
 | ------------- | ------------- | -------------------------------------------- |
 | `header_name` | `string`      | The name of the header to carry the API key. |
 | `api_key`     | `SecretValue` | The API key value, managed as a secret.      |
 
-##### `UpstreamBearerTokenAuth`
+##### `BearerTokenAuth`
 
 | Field   | Type          | Description                            |
 | ------- | ------------- | -------------------------------------- |
 | `token` | `SecretValue` | The bearer token, managed as a secret. |
 
-##### `UpstreamBasicAuth`
+##### `BasicAuth`
 
 | Field      | Type          | Description                            |
 | ---------- | ------------- | -------------------------------------- |
 | `username` | `string`      | The username for basic authentication. |
 | `password` | `SecretValue` | The password, managed as a secret.     |
 
-##### `UpstreamOAuth2Auth`
+##### `OAuth2Auth`
 
 | Field           | Type          | Description                               |
 | --------------- | ------------- | ----------------------------------------- |
