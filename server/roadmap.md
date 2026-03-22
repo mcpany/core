@@ -143,6 +143,12 @@
 *   **[P0] Active Intent Sanitizer (AIS)**: Real-time semantic deconstruction of coordination messages crossing multi-channel boundaries. (Added: 2026-06-23)
 *   **[P0] SMM v2 (Stylometric Anchoring)**: Higher-dimensional behavioral anchoring of reasoning traces against the mission-root manifest. (Added: 2026-06-23)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Cognitive Entropy Guard (CEG)**: High-entropy semantic filter for the reasoning stream to neutralize attention-hijacking noise. (Added: 2026-06-25)
+*   **[P0] Universal Reasoning Trace (URT) Bridge**: Normalization layer for hardware-attested reasoning audits across framework boundaries. (Added: 2026-06-25)
+*   **[P0] Shard-Lease Heartbeat Provider**: Hardware-attested liveness monitor for parallel teammates to prevent coordination stall. (Added: 2026-06-25)
+*   **[P1] Unified Trace Sovereignty Hub**: Authoritative audit trail provider linking user intent to attested reasoning paths. (Added: 2026-06-25)
+
 #### Upcoming (2026-06-24 Evolution)
 *   **[P0] Atomic Mission-Resumption (AMR) Gateway**: Hardware-locked resumption of agent states across cold-boots via BSH snapshots. (Added: 2026-06-24)
 *   **[P0] Stylometric Mesh Sovereignty (SMS) Provider**: Behavioral security layer detecting mimicry-based hijacking via real-time stylometry. (Added: 2026-06-24)

@@ -633,6 +633,12 @@
 - [ ] **[P0] Cross-Channel Sanitization Log**: Security dashboard for reviewing AIS-redacted coordination messages. (Added: 2026-06-23)
 - [ ] **[P0] Behavioral Anchoring Monitor**: Real-time visualization of stylometric consistency scores vs. mission-root manifest. (Added: 2026-06-23)
 
+### Upcoming: [2026-06-25]
+- [ ] **[P0] Cognitive Entropy Monitor**: (2026-06-25) Real-time visualization of reasoning stream entropy levels and CEG-blocked noise fragments.
+- [ ] **[P0] URT Audit Explorer**: (2026-06-25) Visual debugger for reviewing hardware-attested Universal Reasoning Traces across agent frameworks.
+- [ ] **[P0] Shard Heartbeat Status**: (2026-06-25) Visual indicator for hardware-attested liveness heartbeats in horizontal teammate meshes.
+- [ ] **[P1] Mission Lineage Trace Hub**: (2026-06-25) Authoritative UI for visualizing the cryptographically signed audit trail of mission-root reasoning.
+
 ### Upcoming: [2026-06-24]
 - [ ] **[P0] Mission Resumption Manager**: (2026-06-24) UI for monitoring and manually triggering AMR-mediated mission recovery checkpoints.
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.

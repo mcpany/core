@@ -49,3 +49,9 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+* **2026-06-25: URT Integration & Shard-Lease Heartbeats**
+    * **Context:** Today's market sync revealed the emergence of "Zombie Shards" and the proposal for the Universal Reasoning Trace (URT) standard.
+    * **Architecture Adjustment:**
+        * Designated AMR as the primary bridge for **URT-compliant** signatures, ensuring trace continuity across framework boundaries.
+        * Introduced **Shard-Lease Heartbeats** for all active resumption tokens to prevent coordination stalls.
+    * **Security Impact:** Neutralizes "Stale State Hijacking" by mandating hardware-attested liveness proofs for snapshot persistence.

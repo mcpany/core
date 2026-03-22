@@ -1450,6 +1450,18 @@
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RMRA** integration for all headless missions.
 - **Channel-Bound Session Isolation (CBSI) Provider**: (Re-affirmed P0) Designated as the primary enforcement point for **AIS-compliant** cross-channel sanitization.
 
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Cognitive Entropy Guard (CEG)**: (P0) Advanced reasoning-stream filter that performs real-time semantic analysis to detect and prune malicious noise designed to overwhelm agent attention.
+- **Universal Reasoning Trace (URT) Bridge**: (P0) Normalization layer for signing and verifying reasoning traces across disparate agent frameworks to support sovereign audits.
+- **Shard-Lease Heartbeat Provider**: (P0) High-frequency liveness monitoring service for parallel teammates, ensuring atomic reclamation of sharded state upon coordination stall.
+- **Unified Trace Sovereignty Hub**: (P1) Authoritative storage and verification service for mission-root audit trails, linking user intent to hardware-attested reasoning.
+
+### Priority Shifts
+- **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Shard-Lease Heartbeat** integration.
+- **Atomic Mission-Resumption (AMR) Gateway**: (Re-affirmed P0) Designated as the primary integration point for the **URT Bridge** to ensure trace continuity across cold-boots.
+
 ## Evolution: [2026-06-24] Updates
 
 ### Proposed Additions
