@@ -96,3 +96,66 @@ func TestManager_TestWebhook_Failure(t *testing.T) {
 		t.Errorf("expected status failure, got %s", updated.Status)
 	}
 }
+
+func TestManager_TestWebhook_NotFound(t *testing.T) {
+	m := NewManager()
+
+	err := m.TestWebhook(context.Background(), "non-existent-id")
+	if err == nil {
+		t.Fatalf("TestWebhook expected error for non-existent webhook, got nil")
+	}
+	if err.Error() != "webhook not found" {
+		t.Errorf("expected 'webhook not found' error, got: %v", err)
+	}
+}
+
+func TestManager_TestWebhook_BadURL(t *testing.T) {
+	m := NewManager()
+	w := &WebhookConfig{
+		URL:    "://invalid-url",
+		Events: []string{"test"},
+		Active: true,
+	}
+	m.AddWebhook(w)
+	id := m.ListWebhooks()[0].ID
+
+	err := m.TestWebhook(context.Background(), id)
+	if err == nil {
+		t.Fatalf("TestWebhook expected error for bad URL, got nil")
+	}
+
+	// Because http.NewRequestWithContext fails, status shouldn't be updated.
+	updated, _ := m.GetWebhook(id)
+	if updated.Status != "" {
+		t.Errorf("expected status to remain empty for bad URL, got %s", updated.Status)
+	}
+}
+
+func TestManager_TestWebhook_ContextCanceled(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer ts.Close()
+
+	m := NewManager()
+	w := &WebhookConfig{
+		URL:    ts.URL,
+		Events: []string{"test"},
+		Active: true,
+	}
+	m.AddWebhook(w)
+	id := m.ListWebhooks()[0].ID
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel() // Cancel the context immediately
+
+	err := m.TestWebhook(ctx, id)
+	if err == nil {
+		t.Fatalf("TestWebhook expected error for canceled context, got nil")
+	}
+
+	updated, _ := m.GetWebhook(id)
+	if updated.Status != "failure" {
+		t.Errorf("expected status failure, got %s", updated.Status)
+	}
+}

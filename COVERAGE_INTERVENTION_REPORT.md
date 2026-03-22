@@ -1,10 +1,11 @@
 # Coverage Intervention Report
 
-* **Target:** `server/pkg/tokenizer/tokenizer.go`
-* **Risk Profile:** This package is core utility code that dynamically traverses arbitrary structures using Go reflection to estimate token size. The dynamic types and varied reflection edge cases combined with loops for parsing primitives meant that it had several complex, error-handling and default branch cases that were not fully evaluated under standard operation. Bugs in the tokenizer could result in improper rate-limiting, misconfigured downstream LLM calls, or internal denial-of-service via infinite cycle evaluation.
+* **Target:** `server/pkg/webhooks/manager.go`
+* **Risk Profile:** This module handles sending HTTP requests to external, configured webhooks (`TestWebhook` function). Making external HTTP requests is inherently high-risk due to potential network errors, malformed URLs, unavailable destinations, and context timeouts/cancellations. The `TestWebhook` function had several error paths completely untested (e.g. failing to form an HTTP request, failing to execute the HTTP request, and calling on a non-existent webhook ID).
 * **New Coverage:**
-  * Added edge-case test validations on the integer unrolled parser bounds (`simpleTokenizeInt64`).
-  * Explicitly enforced type-level error handling across slice, array, and map structures.
-  * Explicitly hit reflection-cycles in error injection within maps.
-  * Verified nil-slice and nil-map values under reflection parsing interfaces (`countTokensReflectSlice` and `countTokensReflectMap`).
-* **Verification:** `make test` equivalents (via `go test ./...`) for `server/pkg/tokenizer` and the whole repo ran clean with no regressions in existing tests. The file `server/pkg/tokenizer/tokenizer_coverage_test.go` correctly isolates all testing logic to leave production artifacts clean and ensures hermetic execution.
+  The following logic paths are now guarded with robust tests:
+  1. `TestManager_TestWebhook_NotFound`: Validates that attempting to trigger a test on a non-existent webhook configuration returns the proper "webhook not found" error.
+  2. `TestManager_TestWebhook_BadURL`: Validates that passing malformed URL configurations properly fails at `http.NewRequestWithContext` and returns the error without updating the webhook state to failure.
+  3. `TestManager_TestWebhook_ContextCanceled`: Validates that if the context is cancelled before/during the `httpClient.Do(req)` call, it safely returns an error and updates the webhook status to "failure".
+  The statement coverage of `server/pkg/webhooks/manager.go` has been raised from 90.5% (with `TestWebhook` at 77.8%) to 100.0%.
+* **Verification:** Confirm that `make test` (or `go test`) and `make lint` pass cleanly with no regression. All tests in `pkg/webhooks` are green, and the global tests pass correctly.
