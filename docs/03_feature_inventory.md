@@ -1458,6 +1458,18 @@
 - **Lock-Free Sharded Mailbox Hub**: (P0) High-performance coordination service implementing CRDT-based task list synchronization for non-blocking horizontal Agent Teams.
 - **Zero-Knowledge Discovery (ZKD) Proxy**: (P1) Advanced discovery gate that mandates cryptographic capability masking until a mission-bound handshake is completed.
 
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Reasoning-Hallucination Interceptor (RHI)**: (P0) Authoritative cognitive security middleware that performs real-time semantic analysis of reasoning traces to detect and block hallucinatory state resumptions (CVE-2026-9210 defense).
+- **Autonomous State Pruning (ASP) Hub**: (P0) Context optimization service supporting OpenClaw v3.2.0 that automatically removes redundant context fragments to prevent attention-window hijacking.
+- **Monologue Subscription Bridge**: (P0) Semantic Pub/Sub broker for horizontal swarms, allowing teammates to subscribe to filtered reasoning streams and mitigate mailbox locks.
+- **Attention Governance (HLAG) Provider**: (P1) Hardware-attested attention locking service that cryptographically pins mission-critical intent fragments to the LLM attention layer.
+
+### Priority Shifts
+- **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RHI-compliant** hallucination detection.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Designated as the primary integration point for **ASP-mediated** context optimization.
+
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.

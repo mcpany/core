@@ -149,6 +149,12 @@
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
 *   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Reasoning-Hallucination Interceptor (RHI)**: Pre-injection semantic validator to block hallucinatory state resumptions (CVE-2026-9210 defense). (Added: 2026-06-25)
+*   **[P0] Autonomous State Pruning (ASP) Hub**: High-speed context optimization service for OpenClaw v3.2.0 compatibility. (Added: 2026-06-25)
+*   **[P0] Monologue Subscription Proxy**: Pub/Sub broker for filtered teammate reasoning streams in horizontal meshes. (Added: 2026-06-25)
+*   **[P1] Hardware-Locked Attention Headers**: Implementation of TPM-bound attention pinning for critical intent fragments. (Added: 2026-06-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

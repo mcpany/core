@@ -638,3 +638,7 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+- [ ] **[P0] Monologue Subscription Viewer**: (2026-06-25) Visual Pub/Sub monitor for filtered teammate reasoning streams.
+- [ ] **[P0] Hallucination Alert Console**: (2026-06-25) Security UI for inspecting blocked hallucinatory resumptions (CVE-2026-9210).
+- [ ] **[P1] Pruning Efficiency Overlay**: (2026-06-25) Real-time visualization of context shards removed by the ASP Hub.
+- [ ] **[P1] Attention-Locking Heatmap**: (2026-06-25) Dashboard showing the attention priority of hardware-pinned intent fragments.

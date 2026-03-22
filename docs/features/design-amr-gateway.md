@@ -49,3 +49,9 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+* **2026-06-25: Resolving State Drift during Pruning**
+    **Context:** Today's market sync revealed the emergence of "Reasoning-Hallucination" (CVE-2026-9210) during state re-alignment.
+    **Architecture Adjustment:**
+    * Integrating the **Reasoning-Hallucination Interceptor (RHI)** as a pre-injection validator for mission resumptions.
+    * Adding support for **Autonomous State Pruning (ASP)** signals to ensure that "Atomic Snapshots" do not contain redundant fragments that could trigger attention-window hijacking.
+    **Security Impact:** Prevents agents from bypassing mission-root constraints by hallucinating resolutions to conflicting hardware-attested states.
