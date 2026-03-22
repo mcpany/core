@@ -149,6 +149,12 @@
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
 *   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Pre-Loading Configuration Attestation (PLCA)**: Hardware-attested environment validation before any configuration parsing. (Added: 2026-06-25)
+*   **[P0] Zero-Knowledge Discovery (ZKD) Handshake Bridge**: Implementation of cryptographic capability masking for the A2A Messaging Hub. (Added: 2026-06-25)
+*   **[P0] Resumption Token Issuer**: High-speed resumption service implementing mission-root pre-attestation. (Added: 2026-06-25)
+*   **[P1] Delta-Aware HITL Reviewer**: Security middleware highlighting semantic intent shifts during tool call approvals. (Added: 2026-06-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

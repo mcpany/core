@@ -1458,6 +1458,15 @@
 - **Lock-Free Sharded Mailbox Hub**: (P0) High-performance coordination service implementing CRDT-based task list synchronization for non-blocking horizontal Agent Teams.
 - **Zero-Knowledge Discovery (ZKD) Proxy**: (P1) Advanced discovery gate that mandates cryptographic capability masking until a mission-bound handshake is completed.
 
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Pre-Loading Configuration Attestation (PLCA) Provider**: (P0) Core security service mandating hardware-attested environment validation before any configuration parsing.
+- **Zero-Knowledge Discovery (ZKD) Handshake Bridge**: (P0) Implementation of cryptographic capability masking for the A2A Messaging Hub, neutralizing shadow mapping.
+- **Delta-Aware HITL Reviewer**: (P1) Advanced security middleware highlighting semantic intent shifts during tool call approvals to counter "Approval Blindness."
+- **Resumption Token Issuer**: (P0) High-speed resumption service implementing mission-root pre-attestation to eliminate cognitive stall.
+
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+- **HITL Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Delta-Aware Review** to mitigate verification debt.

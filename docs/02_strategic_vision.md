@@ -1121,3 +1121,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Stylometric Mesh Sovereignty (SMS) Provider**: To neutralize "Stylometric Splicing," we are introducing SMS. This layer will perform real-time stylometric analysis of inter-agent messages, ensuring that subagent reasoning fragments cannot mimic the signature of the parent agent to bypass mission-root constraints.
 - **Lock-Free Sharded Mailbox Hub**: Supporting the efficiency of horizontal Agent Teams, MCP Any will implement "Sharded Mailbox Hub." This service will host granular, task-bound mailbox shards that allow parallel teammates to synchronize state without global coordination locks, ensuring non-blocking performance.
 - **Zero-Knowledge Discovery (ZKD) Proxy**: Leveraging Gemini CLI v0.42.0 patterns, we are mandating ZKD. Agent capabilities will remain cryptographically masked until a mission-bound, identity-verified handshake is completed, neutralizing "Shadow Capability" mapping by malicious subagents.
+
+---
+
+## Strategic Evolution: [2026-06-25]
+### Focus: Pre-Loading Attestation & Cryptographic Discovery Masking
+**Context**: The disclosure of a workspace trust bypass in Claude Code (CVE-2026-33068) and the release of Gemini CLI's ZKD suite reveal that **Configuration Integrity** and **Discovery Visibility** are the new primary attack surfaces. It is no longer enough to secure the tool call; we must now protect the **moment of loading** and the **visibility of capabilities** themselves.
+**Strategic Pivot**:
+- **Pre-Loading Configuration Attestation (PLCA)**: To neutralize configuration-order bugs, MCP Any will evolve to mandate PLCA. We will implement hardware-attested validation of the project-local environment *before* any configuration hooks or settings are parsed by the agent runtime, ensuring the gatekeeper remains external and independent.
+- **Zero-Knowledge Discovery (ZKD) Bridge**: Supporting "Capability Masking," MCP Any will facilitate ZKD handshakes. Agent tools and "Agent Cards" will remain cryptographically invisible to peers and browsers until a mission-bound, hardware-attested handshake is completed, neutralizing "Shadow Capability" mapping.
+- **Context-Resumption Orchestrator**: Leveraging OpenClaw's resumption patterns, we are introducing "Resumption Tokens." This service will pre-attest mission-root intent for sub-missions, facilitating sub-100ms teammate rotation and eliminating the "Cognitive Stall" typically observed during state handoffs.
+- **Verification-Debt Guard**: To counter "Approval Blindness," we are upgrading the HITL middleware to include "Delta-Aware Review." High-risk tool calls will be presented to the user alongside a semantic diff of the agent's reasoning-path shifts, highlighting the *change* in intent rather than just the action.
