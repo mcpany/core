@@ -49,3 +49,10 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+
+### Update: 2026-06-25 - OpenClaw v3.2.0-rc1 Stability Alignment
+**Context:** OpenClaw v3.2.0-rc1 has achieved broad stability, formalizing the hardware-locked "Context Snapshot" protocol for mission recovery.
+**Architecture Adjustment:**
+* Transitioning AMR from a "Passive Buffer" to an "Active Snapshot Authority."
+* Mandating hardware-attested monotonic counters for snapshot versioning to prevent "Resumption Rollback" attacks.
+**Security Impact:** Prevents malicious subagents from forcing the mission root back to a previous, less-secure state shard.

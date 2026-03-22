@@ -638,3 +638,8 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+#### Upcoming (2026-06-25 Evolution)
+- [ ] **[P0] AMR Recovery Dashboard**: Visual interface for managing and restoring hardware-locked reasoning snapshots. (Added: 2026-06-25)
+- [ ] **[P0] Atomic Shard Synchronizer View**: Real-time visualization of lock-free context synchronization and CRDT conflict resolution. (Added: 2026-06-25)
+- [ ] **[P0] Stylometric Continuity Monitor**: Behavioral security dashboard for tracking reasoning stylometry and detecting splicing attempts. (Added: 2026-06-25)

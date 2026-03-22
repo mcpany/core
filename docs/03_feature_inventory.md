@@ -1461,3 +1461,15 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Attention-Locked Tooling (ALT) v2**: (P0) Advanced security middleware mandating hardware-attested "Attention Anchors" for all high-risk tool calls to neutralize deceptive context.
+- **Atomic Shard Synchronization (ASS)**: (P0) High-performance coordination service providing lock-free synchronization of task-bound context shards.
+- **Zero-Knowledge Capability Discovery (ZKCD)**: (P1) Advanced discovery gateway that cryptographically masks agent capabilities until a mission-bound handshake is completed.
+- **Stylometric Continuity Validator**: (P0) Behavioral security service performing real-time analysis of reasoning stylometry to detect "Stylometric Splicing" attempts.
+
+### Priority Shifts
+- **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Atomic Shard Synchronization** to resolve horizontal scaling bottlenecks.
+- **Attention-Locked Tooling (ALT)**: (Re-affirmed P0) Evolving into **ALT v2** with mandatory attention-layer interdiction.
