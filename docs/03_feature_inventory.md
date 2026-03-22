@@ -1461,3 +1461,15 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Federated A2A Registry (FAR)**: (P0) Decentralized discovery node allowing agents to verify cross-organizational "Agent Cards" and prevent registry squatting.
+- **Privacy-Preserving A2A Handoffs (PPAH)**: (P0) Security middleware implementing differential privacy for task delegation to neutralize InversePrompt exploits.
+- **Cross-Mesh Governance Synchronizer (CMGS)**: (P0) Standardized policy distribution service for consistent Zero-Trust enforcement across disparate frameworks.
+- **Context-Minimization Warden**: (P1) Semantic pruning service for A2A messages to prevent accidental exfiltration of system prompts during handoffs.
+
+### Priority Shifts
+- **A2A Messaging Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **PPAH** integration to support context-minimizing handoffs.
+- **PNTD Discovery Provider**: (Re-affirmed P0) Evolving to support **FAR-native** federated discovery and identity verification.

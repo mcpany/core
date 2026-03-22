@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+### Upcoming: [2026-06-25]
+- [ ] **[P0] Federated Registry Explorer**: (2026-06-25) Dashboard for browsing and verifying Agent Cards across FAR nodes.
+- [ ] **[P0] Privacy Handoff Status**: (2026-06-25) Visual indicator for PPAH pruning events and minimization ratios.
+- [ ] **[P0] Cross-Mesh Governance Center**: (2026-06-25) UI for reviewing synchronized Zero-Trust policies and CMGS consistency.
+- [ ] **[P1] Context Minimization Debugger**: (2026-06-25) Tool for visualizing semantic pruning in task delegation messages.

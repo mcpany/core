@@ -1121,3 +1121,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Stylometric Mesh Sovereignty (SMS) Provider**: To neutralize "Stylometric Splicing," we are introducing SMS. This layer will perform real-time stylometric analysis of inter-agent messages, ensuring that subagent reasoning fragments cannot mimic the signature of the parent agent to bypass mission-root constraints.
 - **Lock-Free Sharded Mailbox Hub**: Supporting the efficiency of horizontal Agent Teams, MCP Any will implement "Sharded Mailbox Hub." This service will host granular, task-bound mailbox shards that allow parallel teammates to synchronize state without global coordination locks, ensuring non-blocking performance.
 - **Zero-Knowledge Discovery (ZKD) Proxy**: Leveraging Gemini CLI v0.42.0 patterns, we are mandating ZKD. Agent capabilities will remain cryptographically masked until a mission-bound, identity-verified handshake is completed, neutralizing "Shadow Capability" mapping by malicious subagents.
+
+---
+
+## Strategic Evolution: [2026-06-25]
+### Focus: Federated A2A Governance & Privacy-Preserving Handoffs
+**Context**: The GA release of the Agent2Agent (A2A) Protocol v2.0 and the maturation of InversePrompt (CVE-2025-54795) mitigation strategies signal a transition to **Federated Agency**. Security must now move from protecting the individual agent to governing the **Federated Mesh** and ensuring that handoffs are **Context-Minimizing** to prevent recursive prompt injection.
+**Strategic Pivot**:
+- **Federated A2A Registry (FAR)**: MCP Any will evolve to act as an authoritative FAR node. We will implement the Federated A2A Registry, allowing agents to discover each other across organizational boundaries using cryptographically signed "Agent Cards," neutralizing "Registry Squatting" via decentralized verification.
+- **Privacy-Preserving A2A Handoffs (PPAH)**: To neutralize InversePrompt exploits, we are introducing PPAH. This middleware ensures that inter-agent task delegation uses differential privacy to share only minimized "Intent Fragments" rather than full context, preventing the inheritance of system-prompt vulnerabilities.
+- **Cross-Mesh Governance Synchronizer (CMGS)**: Supporting the stability of heterogeneous swarms, MCP Any will implement the CMGS standard. This allows for the standardized distribution of Zero-Trust policies across disparate agent frameworks (OpenClaw, Claude Code, Gemini), ensuring consistent security guardrails.
+- **Context-Minimization Warden**: To counter "Handoff Leakage," we are mandating context-minimization for all A2A messages. MCP Any will perform real-time semantic pruning of task delegation objects, ensuring that only the absolute minimum state required for task execution is transmitted.

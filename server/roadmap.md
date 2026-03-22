@@ -149,6 +149,12 @@
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
 *   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Federated A2A Registry (FAR)**: Decentralized discovery node for cross-organizational Agent Card verification. (Added: 2026-06-25)
+*   **[P0] Privacy-Preserving A2A Handoff (PPAH)**: Middleware implementing context-minimization for task delegation to neutralize InversePrompt. (Added: 2026-06-25)
+*   **[P0] Cross-Mesh Governance Synchronizer (CMGS)**: Standardized policy distribution service for consistent mesh-wide Zero-Trust. (Added: 2026-06-25)
+*   **[P1] Context-Minimization Warden**: Semantic pruning service for inter-agent messages to prevent accidental system-prompt leakage. (Added: 2026-06-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

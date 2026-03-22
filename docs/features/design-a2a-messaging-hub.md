@@ -90,3 +90,10 @@ With the transition of the Agent2Agent (A2A) protocol to the Linux Foundation, i
 *   Integrating **MSSQ (Machine-Speed Swarm Quarantine)** triggers into the `/v1/a2a/mailbox` and delivery logic. The Hub will now check the high-speed bitset for quarantine status before delivering any task proposal or message.
 *   Enforcing **Mandatory Discovery Auth** for all UAB-connected peers, aligning with the Gemini CLI v0.33.0 baseline. Capability metadata is now cryptographically masked until a verified mission-bound handshake is completed.
 **Security Impact:** Neutralizes "Hivenet" propagation by cutting off inter-agent communication channels in sub-milliseconds and ensures "Zero-Visibility" for unauthenticated probes.
+
+### Update: 2026-06-25 - Integration with Federated A2A Registry (FAR)
+**Context:** The GA release of A2A v2.0 introduces federated discovery, shifting the Hub from organization-local to mesh-wide agency.
+**Architecture Adjustment:**
+* Added support for external FAR node synchronization in Section 4. The Hub now utilizes FAR for cryptographically verified Agent Card lookup before establishing peer-to-peer task channels.
+* Integrating the **Privacy-Preserving A2A Handoff (PPAH)** middleware as a mandatory egress filter for task proposals.
+**Security Impact:** Eliminates "Registry Squatting" by ensuring every peer identity is verified against the federated root and neutralizes InversePrompt exploits via context minimization.
