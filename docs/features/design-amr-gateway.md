@@ -49,3 +49,10 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+
+### Update: 2026-06-25 - Integration of Reasoning Deadlock Resolver (RDR)
+**Context:** Today's market sync revealed circular attestation dependencies in hardware-locked swarms using resumption tokens (OpenClaw v3.2.1-rc2).
+**Architecture Adjustment:**
+* Integrating the RDR service into the `ResumeMission` flow.
+* Implementing a "Dependency-Aware Token Exchange" that utilizes wait-graph analysis to detect and break attestation loops before they reach the hardware layer.
+**Security Impact:** Prevents "Denial-of-Mission" attacks where subagents deliberately create attestation cycles to stall the primary intent loop.

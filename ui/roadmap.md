@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+#### Upcoming (2026-06-25 Evolution)
+- [ ] **[P0] Deadlock Resolution Console**: (2026-06-25) Real-time visualization of circular attestation dependencies and RDR-mediated overrides.
+- [ ] **[P0] Behavioral Salting Monitor**: (2026-06-25) Visual indicator for BSP-injected noise and cognitive privacy scores.
+- [ ] **[P1] Skill-Tree Pruning Viewer**: (2026-06-25) Interactive dashboard for monitoring DSTP-pruned tools and attention levels per mission branch.
+- [ ] **[P0] ARE Quota Harmonization Widget**: (2026-06-25) Real-time monitor for cross-framework reasoning budget reconciliation.

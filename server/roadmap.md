@@ -800,3 +800,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Density Guard (ADG)**: (P0) Cognitive security layer utilizing hardware-bound headers to "pin" mission-critical fragments at the LLM attention layer.
 - **Headless Handoff Continuity (HHC)**: (P0) Orchestration bridge facilitating signed intent transfers for process-based subagent spawning.
 - **Multi-Modal Attention Sanitizer**: (P1) Advanced security extension for the MIB to neutralize attention-eviction probes in non-textual traces.
+
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Reasoning Deadlock Resolver (RDR)**: Authoritative arbiter service for hardware-attested resumption tokens to break circular dependencies. (Added: 2026-06-25)
+*   **[P0] Behavioral Salting Provider (BSP)**: Security middleware injecting hardware-attested noise to neutralize cognitive fingerprinting. (Added: 2026-06-25)
+*   **[P1] Dynamic Skill-Tree Pruner (DSTP) Adapter**: Automatic de-registration of inactive tools based on branch attention. (Added: 2026-06-25)
+*   **[P0] Mission-Root Quota Harmonizer**: Real-time reconciliation of ARE budgets to prevent terminal wait-states. (Added: 2026-06-25)

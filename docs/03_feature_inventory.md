@@ -1461,3 +1461,14 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Reasoning Deadlock Resolver (RDR)**: (P0) Authoritative arbiter service that performs wait-graph analysis for hardware-attested resumption tokens to break circular dependencies in deep swarms.
+- **Behavioral Salting Provider (BSP)**: (P0) Security middleware that injects hardware-attested cryptographic noise into an agent's reasoning traces to neutralize cognitive fingerprinting.
+- **Dynamic Skill-Tree Pruner (DSTP) Adapter**: (P1) Performance optimization service that automatically de-registers inactive tools from the agent's context window based on branch attention.
+
+### Priority Shifts
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for **Mission-Root Quota Harmonization** to prevent terminal wait-states during sub-mission delegation.
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support mandatory **CVE-2026-81042** mitigation via task-claiming metadata validation.
