@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+### Upcoming: [2026-06-25]
+- [ ] **[P0] Reasoning Provenance Dashboard**: (2026-06-25) Real-time visualization of RP-signed model fragments and verification status.
+- [ ] **[P0] Cognitive Path Sanitization Viewer**: (2026-06-25) Security UI for reviewing redacted "Reasoning Injection" tags and CPF alerts.
+- [ ] **[P0] Environment Sovereignty Monitor**: (2026-06-25) Visual tracker for hardware-attested process environment validation during mission resumption.
+- [ ] **[P0] LFMA v2 Conflict Resolver**: (2026-06-25) Interactive visualizer for CRDT-based state reconciliation in horizontal Agent Teams.

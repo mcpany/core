@@ -149,6 +149,12 @@
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
 *   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Reasoning Provenance (RP) Validator**: Mandatory cryptographically signed headers for model-generated reasoning fragments. (Added: 2026-06-25)
+*   **[P0] Cognitive Path Firewall (CPF)**: Authoritative sanitizer for reasoning traces to neutralize "Monologue Hijacking" and injected tags. (Added: 2026-06-25)
+*   **[P0] Environment Sovereignty Enforcer (ESE)**: Hardware-attested process environment validation for mission resumption. (Added: 2026-06-25)
+*   **[P0] Lock-Free Mesh Arbiter (LFMA) v2**: CRDT-based state reconciliation for non-blocking teammate coordination. (Added: 2026-06-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
