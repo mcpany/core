@@ -229,6 +229,25 @@ func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<
 	return ch, nil
 }
 
+// Execute performs an SQL query or execution based on tool configuration.
+//
+// Summary: Executes a configured SQL statement.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The execution request containing tool inputs.
+//
+// Returns:
+//   - any: The query results or execution status.
+//   - error: An error if the SQL execution fails.
+//
+// Errors:
+//   - Returns an error if the tool failed to initialize.
+//   - Returns an error if the database connection cannot be retrieved.
+//   - Returns an error if the SQL statement fails to execute.
+//
+// Side Effects:
+//   - Makes a database query which may modify database state.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

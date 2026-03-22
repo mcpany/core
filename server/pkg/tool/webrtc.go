@@ -238,6 +238,24 @@ func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (
 	return ch, nil
 }
 
+// Execute performs a WebRTC call using the configured data channel.
+//
+// Summary: Sends tool inputs over a WebRTC connection and awaits a response.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*ExecutionRequest): The execution request containing tool inputs.
+//
+// Returns:
+//   - any: The response payload received via WebRTC.
+//   - error: An error if the WebRTC communication fails.
+//
+// Errors:
+//   - Returns an error if peer connection pool retrieval fails.
+//   - Returns an error if sending data or receiving the response times out.
+//
+// Side Effects:
+//   - Performs network I/O over an established WebRTC connection.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized

@@ -158,6 +158,24 @@ func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest
 	return ch, nil
 }
 
+// Execute performs a WebSocket call using the configured endpoint.
+//
+// Summary: Sends tool inputs over a WebSocket connection and awaits a response.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*ExecutionRequest): The execution request containing tool inputs.
+//
+// Returns:
+//   - any: The response payload received via WebSocket.
+//   - error: An error if the WebSocket communication fails.
+//
+// Errors:
+//   - Returns an error if the connection pool retrieval fails.
+//   - Returns an error if sending data or receiving the response times out.
+//
+// Side Effects:
+//   - Performs network I/O over an established WebSocket connection.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

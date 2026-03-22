@@ -10,6 +10,21 @@ import (
 )
 
 var (
+	// FastJSON is a configured high-performance JSON library instance.
+	//
+	// Summary: Provides a global instance of optimized jsoniter.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - jsoniter.API: The frozen JSON configuration API.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - Escapes HTML, disables key sorting, and validates raw JSON messages.
 	FastJSON = jsoniter.Config{
 		EscapeHTML:             true,
 		SortMapKeys:            false,

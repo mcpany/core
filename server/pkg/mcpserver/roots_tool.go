@@ -140,22 +140,74 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 //   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []Root: A list of available filesystem roots.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns "no active session available" if the session is missing.
 //
 // Side Effects:
 //   - None.
 
+// IsStreaming indicates whether the tool supports streaming.
+//
+// Summary: Returns false as the Roots tool does not support streaming.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: Always returns false.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *RootsTool) IsStreaming() bool {
 	return false
 }
 
+// StreamExecute is an unsupported streaming execution method for the Roots tool.
+//
+// Summary: Returns nil as streaming is not supported.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The execution request parameters.
+//
+// Returns:
+//   - <-chan any: Always nil.
+//   - error: Always nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *RootsTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	return nil, nil
 }
 
+// Execute retrieves the list of filesystem roots from the client.
+//
+// Summary: Fetches filesystem roots using the active MCP session.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - _ (*tool.ExecutionRequest): The execution request parameters (unused).
+//
+// Returns:
+//   - any: The parsed list of Roots from the client.
+//   - error: An error if the session is inactive or if the client returns an error.
+//
+// Errors:
+//   - Returns an error if no active session is available.
+//   - Returns an error if the roots cannot be listed.
+//   - Returns an error if the client responds with an error.
+//
+// Side Effects:
+//   - Issues an RPC call to the client to request root information.
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {

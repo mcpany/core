@@ -554,6 +554,26 @@ func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
+// Execute performs a gRPC call using the configured method and inputs.
+//
+// Summary: Invokes a remote gRPC method.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*ExecutionRequest): The execution request containing tool inputs.
+//
+// Returns:
+//   - any: The gRPC response payload converted to a standard format.
+//   - error: An error if the gRPC call fails or is rejected by policy.
+//
+// Errors:
+//   - Returns an error if no gRPC pool is found.
+//   - Returns an error if the policy engine blocks the request.
+//   - Returns an error if the dynamic gRPC call fails.
+//
+// Side Effects:
+//   - Makes a network request to the configured upstream gRPC service.
+//   - Records telemetry and metrics.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -905,6 +925,26 @@ func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
+// Execute performs an HTTP request using the configured endpoint and inputs.
+//
+// Summary: Invokes a remote HTTP endpoint.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*ExecutionRequest): The execution request containing tool inputs.
+//
+// Returns:
+//   - any: The HTTP response parsed into a standard format.
+//   - error: An error if the HTTP request fails or is rejected by policy.
+//
+// Errors:
+//   - Returns an error if the policy engine blocks the request.
+//   - Returns an error if HTTP client creation or execution fails.
+//   - Returns an error if response parsing fails.
+//
+// Side Effects:
+//   - Makes a network request to the configured upstream HTTP service.
+//   - Records telemetry and metrics.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1691,6 +1731,26 @@ func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-c
 	return ch, nil
 }
 
+// Execute performs a proxied MCP call to an upstream server.
+//
+// Summary: Forwards an MCP tool call to an upstream MCP server.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*ExecutionRequest): The execution request containing tool inputs.
+//
+// Returns:
+//   - any: The response payload from the upstream MCP server.
+//   - error: An error if the call fails or is rejected by policy.
+//
+// Errors:
+//   - Returns an error if the tool failed to initialize.
+//   - Returns an error if no active session with the upstream is available.
+//   - Returns an error if the upstream MCP call fails.
+//
+// Side Effects:
+//   - Makes a network or standard I/O request to the upstream MCP server.
+//   - Records telemetry and metrics.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -2011,6 +2071,26 @@ func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 	return ch, nil
 }
 
+// Execute translates tool inputs into an OpenAPI request and executes it.
+//
+// Summary: Invokes a remote API defined by an OpenAPI specification.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*ExecutionRequest): The execution request containing tool inputs.
+//
+// Returns:
+//   - any: The HTTP response parsed from the OpenAPI endpoint.
+//   - error: An error if the request fails or is rejected by policy.
+//
+// Errors:
+//   - Returns an error if the tool failed to initialize.
+//   - Returns an error if the generated HTTP request is invalid.
+//   - Returns an error if the HTTP client execution fails.
+//
+// Side Effects:
+//   - Makes an HTTP network request to the upstream OpenAPI service.
+//   - Records telemetry and metrics.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2456,6 +2536,26 @@ func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequ
 	return ch, nil
 }
 
+// Execute runs a local command or script based on the tool configuration.
+//
+// Summary: Executes a configured local command line script safely.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*ExecutionRequest): The execution request containing tool inputs.
+//
+// Returns:
+//   - any: The standard output and standard error from the command.
+//   - error: An error if the command fails to execute or is rejected by policy.
+//
+// Errors:
+//   - Returns an error if the tool failed to initialize.
+//   - Returns an error if the command string construction fails.
+//   - Returns an error if the local OS command execution returns a non-zero exit code.
+//
+// Side Effects:
+//   - Executes an external process on the host OS.
+//   - May read or write to the local filesystem depending on the command.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2914,6 +3014,24 @@ func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 	return ch, nil
 }
 
+// Execute delegates the execution to a specific command runner based on configuration.
+//
+// Summary: Executes an interpreter script or local command.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*ExecutionRequest): The execution request containing tool inputs.
+//
+// Returns:
+//   - any: The output of the executed command or script.
+//   - error: An error if the execution fails or is rejected by policy.
+//
+// Errors:
+//   - Returns an error if the tool failed to initialize.
+//   - Returns an error if the sub-tool (local command or remote) fails.
+//
+// Side Effects:
+//   - Can execute local processes or run code within an interpreter.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
