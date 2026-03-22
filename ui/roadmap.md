@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+### Upcoming: [2026-06-25]
+- [ ] **[P0] RMRA Lineage Visualizer**: (2026-06-25) Real-time interactive tracer for hardware-attested recursive mission lineages.
+- [ ] **[P0] Attention Masking Configuration**: (2026-06-25) UI for managing hardware-bound attention tiers and protected fragments.
+- [ ] **[P0] Logic Grafting Alert Console**: (2026-06-25) Forensic workspace for reviewing blocked reasoning branch proposals and stylometric mismatches.
+- [ ] **[P1] Prefetching Efficiency Dashboard**: (2026-06-25) Metrics on speculative frontier hits and mission resumption speed gains.

@@ -49,3 +49,10 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+
+### Update: 2026-06-25 - Integration with Recursive Mission-Root Attestation (RMRA)
+**Context:** Today's market sync revealed the emergence of "Logic Grafting" where malicious subagents attempt to inject unauthorized reasoning branches into the shared mailbox.
+**Architecture Adjustment:**
+*   AMR Gateway now mandates that every "Atomic Snapshot" includes a hardware-attested **RMRA Lineage Proof**.
+*   Resumption tokens are now cryptographically bound to the mission-root's RMRA chain.
+**Security Impact:** Prevents "Grafted" reasoning branches from being persisted or resumed during cold-boots, ensuring that only verified, mission-anchored state is recovered.

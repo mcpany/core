@@ -1461,3 +1461,15 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Recursive Mission-Root Attestation (RMRA)**: (P0) Advanced security service mandating hardware-bound lineage proofs for all inter-agent delegations to prevent "Logic Grafting."
+- **Attention-Density Guard (ADG) v3**: (P0) Cognitive security layer utilizing hardware "Attention Masks" to protect mission-critical intent fragments from eviction.
+- **Logic-Grafting Interceptor (LGI)**: (P0) Advanced security extension for the ARI Hub that performs stylometric analysis to detect unauthorized reasoning branch appending.
+- **Speculative Frontier Prefetcher**: (P1) Performance optimization service for the AMR Gateway that speculatively loads the next cognitive shard to reduce resumption latency.
+
+### Priority Shifts
+- **Atomic Mission-Resumption (AMR) Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RMRA** integration to ensure lineage continuity across cold-boots.
+- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Now designated as the primary enforcement point for the new **LGI** stylometric defense.

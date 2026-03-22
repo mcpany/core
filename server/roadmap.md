@@ -800,3 +800,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Density Guard (ADG)**: (P0) Cognitive security layer utilizing hardware-bound headers to "pin" mission-critical fragments at the LLM attention layer.
 - **Headless Handoff Continuity (HHC)**: (P0) Orchestration bridge facilitating signed intent transfers for process-based subagent spawning.
 - **Multi-Modal Attention Sanitizer**: (P1) Advanced security extension for the MIB to neutralize attention-eviction probes in non-textual traces.
+
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Recursive Mission-Root Attestation (RMRA)**: Mandatory hardware-bound lineage proofs for all inter-agent delegations and task proposals. (Added: 2026-06-25)
+*   **[P0] Attention-Density Guard (ADG) v3**: Support for hardware "Attention Masking" to prevent security constraint eviction. (Added: 2026-06-25)
+*   **[P0] Logic-Grafting Interceptor (LGI)**: Stylometric and semantic analysis for detecting unauthorized reasoning branch appending. (Added: 2026-06-25)
+*   **[P1] Speculative Frontier Prefetcher**: Integration with AMR Gateway to reduce mission resumption latency to <20ms. (Added: 2026-06-25)
