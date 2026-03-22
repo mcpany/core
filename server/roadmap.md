@@ -800,3 +800,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Density Guard (ADG)**: (P0) Cognitive security layer utilizing hardware-bound headers to "pin" mission-critical fragments at the LLM attention layer.
 - **Headless Handoff Continuity (HHC)**: (P0) Orchestration bridge facilitating signed intent transfers for process-based subagent spawning.
 - **Multi-Modal Attention Sanitizer**: (P1) Advanced security extension for the MIB to neutralize attention-eviction probes in non-textual traces.
+
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Attention-Integrity Guard (AIG)**: Hardware-attested attention anchors to prevent context-window flooding (CWF). (Added: 2026-06-25)
+*   **[P0] Snapshot Integrity Attestation (SIA)**: Hardware-attested frontier hashing for AMR buffers to neutralize snapshot smuggling. (Added: 2026-06-25)
+*   **[P0] Atomic Shard Convergence (ASC) Hub**: Hardware-locked, low-latency shard synchronization for high-density teammate meshes. (Added: 2026-06-25)
+*   **[P0] Stylometric Blending Detector (SBD)**: Multi-dimensional time-series analysis to detect divergent intents hidden in reasoning patterns. (Added: 2026-06-25)

@@ -1461,3 +1461,16 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Attention-Integrity Guard (AIG)**: (P0) Cognitive security service utilizing hardware-attested "Attention Anchors" to ensure core instructions cannot be evicted from the context window by high-entropy noise (CWF defense).
+- **Snapshot Integrity Attestation (SIA) Provider**: (P0) Authoritative security service for the AMR Gateway that performs hardware-attested "Frontier Hashing" to prevent unauthorized state injection into resumption buffers.
+- **Atomic Shard Convergence (ASC) Hub**: (P0) High-performance mailbox service utilizing low-latency, hardware-locked synchronization to eliminate CRDT convergence bottlenecks in meshes exceeding 20+ teammates.
+- **Stylometric Blending Detector (SBD)**: (P0) Behavioral security extension for the SMS provider that performs multi-dimensional time-series analysis to detect divergent intents hidden within parent reasoning patterns.
+
+### Priority Shifts
+- **Atomic Mission-Resumption (AMR) Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SIA-compliant** buffer attestation to counter snapshot smuggling.
+- **Lock-Free Sharded Mailbox Hub**: (Re-affirmed P0) Designated as the primary infrastructure for **ASC-native** hardware-locked teammate coordination.
+- **Stylometric Mesh Sovereignty (SMS) Provider**: (Re-affirmed P0) Evolving to support the new **SBD-compliant** time-series behavioral anchoring.

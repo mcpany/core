@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+#### Upcoming (2026-06-25 Evolution)
+- [ ] **[P0] Attention Integrity Monitor**: (2026-06-25) Real-time visualization of hardware-attested attention anchors and CWF alerts.
+- [ ] **[P0] Snapshot Hash Inspector**: (2026-06-25) Forensic UI for verifying hardware-attested SIA hashes in AMR buffers.
+- [ ] **[P0] Atomic Shard Convergence Tracker**: (2026-06-25) Real-time monitor for hardware-locked ASC synchronization events.
+- [ ] **[P0] Stylometric Blending Alert Center**: (2026-06-25) Security dashboard for reviewing SBD-flagged reasoning pattern anomalies.

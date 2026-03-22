@@ -49,3 +49,11 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+
+### Update: 2026-06-25 - Neutralizing Snapshot Smuggling
+**Context:** Today's market sync revealed the first reports of "Snapshot Smuggling," where malicious subagents attempt to inject unauthorized state into the hardware-locked resumption buffer.
+**Architecture Adjustment:**
+* Introducing **Snapshot Integrity Attestation (SIA)** in Section 4.
+* Mandating a hardware-attested "Frontier Hash" for every mission snapshot.
+* The Gateway will now perform a hash-match verification before allowing any agent to resume from a BSH buffer.
+**Security Impact:** Prevents state-injection attacks that target the cognitive continuity of the swarm, ensuring that resumed sessions remain bit-perfectly anchored to the original reasoning path.
