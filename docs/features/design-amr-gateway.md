@@ -49,3 +49,10 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+
+### Update: 2026-06-25 - Mitigating Snapshot Collision in Heartbeat Meshes
+**Context:** The integration of OpenClaw's heartbeat protocol reveals a risk of "Snapshot Collision" where multiple parallel teammates attempt to overwrite the same mission frontier simultaneously.
+**Architecture Adjustment:**
+* Introducing **Versioned Frontier Shards** in Section 4.
+* Implementing **Heartbeat-Bound Locking** to ensure that only the teammate currently possessing the "Sovereignty Heartbeat" can commit reasoning snapshots.
+**Security Impact:** Prevents "State Hijacking" by rogue subagents attempting to revert the mission frontier to a stale but valid snapshot.

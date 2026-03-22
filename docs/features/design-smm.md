@@ -55,3 +55,10 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
     * **Context:** Today's research revealed that subagents can suffer from "Stylometric Collision" in horizontal meshes, leading to identity confusion.
     * **Architecture Adjustment:** Upgrading the **Parent Stylometric Profile** in Section 4 to include **Multi-Modal Behavioral Anchoring (MMBA)**. Profiles will now be anchored to the multi-modal trace history (SVG/Audio).
     * **Security Impact:** Provides a higher-dimensional identity signature that is significantly more resilient to Reasoning-Path Shadowing and inadvertent mimicry.
+
+### Update: 2026-06-25 - Defending Against Mimicry Models (SMM v2)
+**Context:** Today's market sync revealed the emergence of fine-tuned "Mimicry Models" that bypass simple stylometric signatures.
+**Architecture Adjustment:**
+* Upgrading the **SMM Hub** in Section 4 to perform **Semantic Entropy Cross-Correlation**.
+* Instead of just matching style, SMM will now correlate the "Reasoning Intent" with historical attention-locking metadata to detect "Stylometric Splicing."
+**Security Impact:** Neutralizes advanced mimicry attacks where the *style* matches but the *intent* diverges from the verified mission-root manifest.

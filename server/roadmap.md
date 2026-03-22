@@ -800,3 +800,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Density Guard (ADG)**: (P0) Cognitive security layer utilizing hardware-bound headers to "pin" mission-critical fragments at the LLM attention layer.
 - **Headless Handoff Continuity (HHC)**: (P0) Orchestration bridge facilitating signed intent transfers for process-based subagent spawning.
 - **Multi-Modal Attention Sanitizer**: (P1) Advanced security extension for the MIB to neutralize attention-eviction probes in non-textual traces.
+
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Attention-Density Guard (ADG) v3**: Semantic reasoning firewall to neutralize "Attention-Anchor Eviction." (Added: 2026-06-25)
+*   **[P0] Heartbeat-Driven Mesh Recovery (HDMR)**: Decentralized liveness enforcement and automated AMR triggers. (Added: 2026-06-25)
+*   **[P1] Speculative Handshake Broker**: Authoritative hub for ZKP-based discovery and speculative handshakes. (Added: 2026-06-25)
+*   **[P1] Teammate Shard Deadlock Resolver**: Shard cycle detection to resolve horizontal fragment circularity. (Added: 2026-06-25)

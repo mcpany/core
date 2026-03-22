@@ -1461,3 +1461,15 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Attention-Density Guard (ADG) v3**: (P0) Advanced reasoning firewall that performs real-time semantic entropy analysis to prevent "Attention-Anchor Eviction."
+- **Heartbeat-Driven Mesh Recovery (HDMR)**: (P0) Authoritative coordination service for decentralized, hardware-attested teammate heartbeats and automated AMR triggers.
+- **Speculative Handshake Broker**: (P1) Advanced discovery service for ZKP-based capability probing and speculative discovery handshakes.
+- **Shard Cycle Detector**: (P1) Orchestration middleware for sharded meshes that proactively breaks circular task dependencies (Fragment Circularity).
+
+### Priority Shifts
+- **Attention-Density Guard (ADG)**: (Re-affirmed P0) Elevated to support the new **Reasoning Firewall** requirements.
+- **Atomic Mission-Resumption (AMR) Gateway**: (Re-affirmed P0) Designated as the primary recovery engine for **HDMR-compliant** meshes.
