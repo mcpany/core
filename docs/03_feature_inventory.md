@@ -1461,3 +1461,15 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Semantic Reasoning Garbage Collector (SRGC)**: (P0) Advanced state management service for the Blackboard that prunes hallucinations and high-entropy reasoning fragments.
+- **Hardware-Attested Attention Pinning (HAAP)**: (P0) Core attention-governance middleware mandating hardware-locked headers for all multimodal tool calls.
+- **Stylometric Reasoning-Path Validator (SRPV)**: (P0) Framework-neutral identity service that anchors agent verification to behavioral stylometry patterns.
+- **Lock-Free Negotiation Arbiter Upgrade**: (P1) Autonomous bidding timeout and resolution policy extension for the LFMA to prevent negotiation deadlocks.
+
+### Priority Shifts
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SRGC-compliant** semantic pruning.
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Elevated with the requirement for autonomous resolution of non-convergent auctions.

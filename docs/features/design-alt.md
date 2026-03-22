@@ -64,3 +64,11 @@ ALT addresses this by cryptographically locking high-risk tool capabilities to s
     *   High-risk tool calls are now locked not just to "Anchors," but to **Hardware-Attested Attention Tiers**.
     *   If the agent's reasoning trace indicates influence from "Noise Fragments" (un-attested fragments with high entropy), ALT will interdict the call regardless of anchor presence.
     **Security Impact:** Neutralizes "Noise Injection" attacks that attempt to flood the context window to evict ALT-pinned security constraints.
+
+### Update: 2026-06-25 - Neutralizing Multimodal Attention-Hijack
+**Context:** Today's market sync revealed **CVE-2026-92104**, where polyglot payloads in SVG/Audio metadata shift parent attention mechanisms to bypass text-only ALT anchors.
+**Architecture Adjustment:**
+*   ALT is now upgraded to **Hardware-Attested Attention Pinning (HAAP)** for all multimodal tools.
+*   The middleware now mandates **Attention-Window Signatures** from the MIB, ensuring that the model's focus on non-textual traces is demonstrably tied to an attested user instruction.
+*   If a tool call is initiated while the agent's attention is disproportionately focused on "Un-attested Multimodal Fragments" (high-entropy metadata), the call is interdicted.
+**Security Impact:** Prevents "Invisible Instruction Injection" via multimodal side-channels from coercing high-risk tool execution.

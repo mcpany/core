@@ -638,3 +638,9 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+### Upcoming: [2026-06-25]
+- [ ] **[P0] SRGC Lifecycle Visualizer**: (2026-06-25) Real-time visualization of Blackboard pruning events and fragment entropy scores.
+- [ ] **[P0] Multimodal Attention Heatmap**: (2026-06-25) UI component for visualizing attention anchors across SVG, Audio, and Textual traces.
+- [ ] **[P0] Stylometric Identity Dashboard**: (2026-06-25) Security workspace for reviewing behavioral reasoning signatures and mimicry alerts.
+- [ ] **[P1] Negotiation Timeout Manager**: (2026-06-25) Interactive console for reviewing and resolving non-convergent agent auctions.

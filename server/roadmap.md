@@ -800,3 +800,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Density Guard (ADG)**: (P0) Cognitive security layer utilizing hardware-bound headers to "pin" mission-critical fragments at the LLM attention layer.
 - **Headless Handoff Continuity (HHC)**: (P0) Orchestration bridge facilitating signed intent transfers for process-based subagent spawning.
 - **Multi-Modal Attention Sanitizer**: (P1) Advanced security extension for the MIB to neutralize attention-eviction probes in non-textual traces.
+
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Semantic Reasoning Garbage Collector (SRGC)**: Advanced state management service for the Blackboard that prunes hallucinations and high-entropy reasoning fragments. (Added: 2026-06-25)
+*   **[P0] Hardware-Attested Attention Pinning (HAAP)**: Core attention-governance middleware mandating hardware-locked headers for all multimodal tool calls. (Added: 2026-06-25)
+*   **[P0] Stylometric Reasoning-Path Validator (SRPV)**: Framework-neutral identity service that anchors agent verification to behavioral stylometry patterns. (Added: 2026-06-25)
+*   **[P1] Lock-Free Negotiation Arbiter Upgrade**: Autonomous bidding timeout and resolution policy extension for the LFMA to prevent negotiation deadlocks. (Added: 2026-06-25)

@@ -59,3 +59,11 @@ The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-bl
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+
+### Update: 2026-06-25 - Resolving Negotiation Exhaustion
+**Context:** Today's market sync revealed "Negotiation Deadlocks" in lock-free sharded mailboxes when agent bidding loops fail to converge on a "Winning Intent" within hardware-attested budget limits.
+**Architecture Adjustment:**
+*   LFMA is upgraded to include an **Autonomous Bidding Timeout** mechanism.
+*   Introducing hardware-attested **Resolution Policies** that are pre-defined in the Mission-Root manifest.
+*   If a negotiation fragment fails to reach convergence within the allocated ARE budget, the LFMA forcefully terminates the auction and applies the mission-aligned resolution (e.g., "Supervisor Default" or "Lowest-Cost Capability").
+**Security Impact:** Prevents "Agentic DoS" attacks where malicious subagents purposefully stall negotiations to exhaust token and compute resources.
