@@ -110,6 +110,9 @@
 *   **[P0] UACO Agentic SLA Middleware**: Enforcement of resource contracts (token budget, reasoning time) during task delegation. (Added: 2026-03-22)
 *   **[P0] Ghost Shell Execution Mode**: Isolated profiling environment for behavioral analysis of un-attested hooks. (Added: 2026-03-22)
 *   **[P1] Federated Policy Synchronizer**: Secure bus for synchronizing security guardrails across multiple MCP Any instances. (Added: 2026-03-22)
+*   **[P0] Local Sovereignty Gate (LSG) Middleware**: Mandatory session-bound auth and origin validation for all local listeners. (Added: 2026-03-22)
+*   **[P0] Reasoning-Action Correlation (RAC) Provider**: Cryptographic correlation of tool actions with reasoning lineage. (Added: 2026-03-22)
+*   **[P0] Side-Channel Timing Mitigator (SCTM)**: Hardware-attested jitter injection for reasoning headers. (Added: 2026-03-22)
 
 #### Upcoming (2026-03-17 Evolution)
 *   **[P0] Local-Loopback Rate Limiter**: Mandatory throttling for all loopback traffic to neutralize browser-based brute-force attacks. (Added: 2026-03-17)

@@ -586,6 +586,10 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Agentic SLA Middleware**: MCP Any will implement "Service Level Agreements" for tool calls and UACO bids. Every delegation will include a contract for maximum reasoning time, token consumption, and an "Intent-Bound Budget."
 - **Federated Policy Synchronizer**: Moving from local config files to a "Global Policy Bus." Multiple MCP Any nodes can now synchronize their allowed-origin lists, CAC hashes, and security guardrails via a central attestation authority.
 - **Ghost Shell Execution (Behavioral Profiling)**: Instead of blocking un-attested hooks, MCP Any will offer a "Ghost Shell" mode where hooks are executed in an air-gapped, deeply instrumented container to profile behavior and suggest a CAC attestation policy.
+- **Local Sovereignty Gate (LSG)**: MCP Any will evolve to mandate non-bypassable, session-bound authentication for all local API and WebSocket listeners. We will enforce strict `Origin` and `Sec-Fetch-Site` validation to neutralize cross-site hijacking and brute-force attempts on local agent gateways.
+- **Reasoning-Action Correlation (RAC) Middleware**: To neutralize "Spectral Reasoning" side-channel attacks, we are introducing RAC. This layer will cryptographically correlate tool actions with the hardware-attested reasoning fragments that authorized them, ensuring that subagents cannot probe mission-root constraints via timing variations in reasoning outputs.
+- **Side-Channel Timing Mitigator (SCTM)**: Supporting the RAC, we will implement the SCTM. This service will inject hardware-attested timing jitter into reasoning headers, neutralizing timing-based side-channels that attempt to map parent attention maps.
+- **Zero-Trust Local Transport Mandate**: We are mandating the use of isolated, Docker-bound named pipes (UNIX domain sockets) for all local inter-agent coordination, eliminating local port exposure and neutralizing unauthenticated loopback access.
 
 ---
 

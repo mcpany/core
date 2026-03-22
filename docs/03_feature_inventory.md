@@ -873,10 +873,15 @@
 - **UACO Agentic SLA Middleware**: (P0) Enforcement layer for resource contracts (token budget, reasoning time) during UACO task delegation.
 - **Federated Policy Synchronizer**: (P1) A secure bus for synchronizing CAC hashes and allowed-origin lists across multiple MCP Any instances.
 - **Ghost Shell Execution Mode**: (P0) Isolated, instrumented profiling environment for un-attested hooks, providing behavioral insights before attestation.
+- **Local Sovereignty Gate (LSG) Middleware**: (P0) Mandatory security interceptor for all local listeners that enforces session-bound authentication and strict origin validation.
+- **Reasoning-Action Correlation (RAC) Provider**: (P0) Advanced security service that cryptographically correlates tool calls with their hardware-attested reasoning lineage.
+- **Side-Channel Timing Mitigator (SCTM)**: (P0) Jitter-injection middleware for reasoning headers to neutralize "Spectral Reasoning" timing attacks.
 
 ### Priority Shifts
 - **UACO v1.5 RCC Validator**: Re-affirmed as **P0**. Essential foundation for the new SLA middleware.
 - **Shared KV Store (Blackboard)**: (Re-affirmed P0) Expanded to support "SLA-Aware State Locking" to prevent resource-heavy contention.
+- **Isolated Named-Pipe Transport Middleware**: (Re-affirmed P0) Now designated as the mandatory transport for all local coordination to satisfy the new **LSG** requirements.
+- **Low-Only WebSocket Auth (LOWA) Gateway**: (Evolved to Local Sovereignty Gate) Now elevated to support broad API and WebSocket sovereignty hardening.
 
 ### Deprecations / Monitoring
 - **Unbounded Task Delegation**: Moving toward total deprecation. All UACO delegations must eventually include a resource contract (SLA).
@@ -1461,3 +1466,5 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+---
