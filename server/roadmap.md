@@ -820,3 +820,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Shadow-Handshake Interceptor (SHI)**: Transport-level monitoring to interdict unauthorized agency-initiation signals. (Added: 2026-06-26)
 *   **[P0] Differential Reasoning Validator (DRV)**: Framework-aware sanity checks for state fragments to prevent cross-framework poisoning. (Added: 2026-06-26)
 *   **[P0] Monotonic Handshake Lineage (MHL)**: Hardware-bound lineage tokens for all handshake and session-initiation events. (Added: 2026-06-26)
+
+#### Upcoming (2026-06-28 Evolution)
+*   **[P0] Hardware-Locked Configuration Anchor (HLCA)**: Cryptographically bind project settings to TPM-signed sessions to neutralize CVE-2026-33068. (Added: 2026-06-28)
+*   **[P0] Multi-Tenant Context Isolation Middleware**: Enforce strict state separation between missions using OpenClaw v2026.3.7 hooks. (Added: 2026-06-28)
+*   **[P1] Intent-Preserving ODCS Gateway**: On-demand context summarization to prevent "Context Ghosting" in deep swarms. (Added: 2026-06-28)

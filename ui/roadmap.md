@@ -657,3 +657,8 @@
 - [ ] **[P0] CRDT Shard Monitor**: Real-time visualization of lock-free mailbox synchronization and hardware-attested conflict resolution. (Added: 2026-06-27)
 - [ ] **[P0] Auditor Attestation Portal**: Interactive workspace for third-party security auditors to review and sign dynamic skill grafts. (Added: 2026-06-27)
 - [ ] **[P1] Reasoning Path Integrity Viewer**: Visual debugger for hardware-signed RPI fragments and semantic hash-chain integrity. (Added: 2026-06-27)
+
+#### Upcoming (2026-06-28 Evolution)
+- [ ] **[P0] HLCA Configuration Anchor Manager**: UI for reviewing and hardware-signing project-local settings files. (Added: 2026-06-28)
+- [ ] **[P0] Multi-Tenant Context Isolation Dashboard**: Visualize state boundaries and isolation status for sharded missions. (Added: 2026-06-28)
+- [ ] **[P1] ODCS Summarization Debugger**: Visualizer for on-demand context compression and intent-preservation scores. (Added: 2026-06-28)
