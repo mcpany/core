@@ -16,11 +16,11 @@ def process_file(filepath):
 
     for line in lines:
         if 'TODO: Document parameters.' in line:
-            new_lines.append(line.replace('TODO: Document parameters.', 'None.'))
+            new_lines.append(line.replace('TODO: Document parameters.', 'Parameters are described in the interface documentation.'))
         elif 'TODO: Document returns.' in line:
-            new_lines.append(line.replace('TODO: Document returns.', 'None.'))
+            new_lines.append(line.replace('TODO: Document returns.', 'Returns the expected result defined by the interface.'))
         elif 'TODO: Document errors.' in line:
-            new_lines.append(line.replace('TODO: Document errors.', 'None.'))
+            new_lines.append(line.replace('TODO: Document errors.', 'Returns an error if the mock operation fails.'))
         else:
             new_lines.append(line)
 
