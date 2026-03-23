@@ -127,7 +127,9 @@ func TestStore_Load(t *testing.T) {
 		_ = store
 
 		mock.ExpectQuery(".*").
-			WillReturnError(sql.ErrNoRows) // Wait, they all match the same regexp! If one fails with ErrNoRows, it could be `upstream_services` query! So it fails entirely.
-        // It's impossible to mock one specific query failing if all regexps are identical!
+			WillReturnError(sql.ErrNoRows)
+		cfg, err := store.Load(context.Background())
+		require.Error(t, err)
+		require.Nil(t, cfg)
 	})
 }
