@@ -29,6 +29,7 @@ commands:
 jobs:
   lint:
     executor: default-executor
+    resource_class: large
     steps:
       - checkout
       - run:
