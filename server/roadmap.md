@@ -247,7 +247,7 @@ SPDX-License-Identifier: Apache-2.0
 * **[P1] Hardware-Bound Trust Continuity**: TPM/Secure Enclave signatures to
   persist trust for verified headless agents. (Added: 2026-03-21)
 
-#### Upcoming (2026-03-17 Evolution) (Part 2)
+#### Upcoming (2026-03-17 Evolution - Core Infrastructure)
 
 * **[P0] Inter-Agent Mailbox Guard (IAMG)**: Mandatory mediation for teammate-
   to-teammate messaging with intent validation. (Added: 2026-03-17)
@@ -269,7 +269,7 @@ SPDX-License-Identifier: Apache-2.0
 * **[P1] Federated Policy Synchronizer**: Secure bus for synchronizing
   security guardrails across multiple MCP Any instances. (Added: 2026-03-22)
 
-#### Upcoming (2026-03-17 Evolution) (Part 3)
+#### Upcoming (2026-03-17 Evolution - Security Hardening)
 
 * **[P0] Local-Loopback Rate Limiter**: Mandatory throttling for all loopback
   traffic to neutralize browser-based brute-force attacks. (Added: 2026-03-17)
