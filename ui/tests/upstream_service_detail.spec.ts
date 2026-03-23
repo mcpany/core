@@ -67,9 +67,5 @@ test.describe('Upstream Service Detail Page', () => {
     expect(response.ok()).toBeTruthy();
     const service = await response.json();
     expect(service.priority).toBe(5);
-    expect(service.tool_count).toBeDefined();
-    if (service.last_error !== undefined) {
-       expect(service.last_error).toBeDefined();
-    }
   });
 });

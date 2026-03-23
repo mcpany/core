@@ -171,7 +171,6 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
               <TableHead>Name</TableHead>
               <TableHead>Trust</TableHead>
               <TableHead>Type</TableHead>
-              <TableHead>Tools</TableHead>
               <TableHead>Activity</TableHead>
               <TableHead>Tags</TableHead>
               <TableHead>Address / Command</TableHead>
@@ -370,13 +369,6 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
              </TableCell>
              <TableCell>
                  <Badge variant="outline">{type}</Badge>
-             </TableCell>
-             <TableCell>
-                  {service.toolCount !== undefined ? (
-                      <Badge variant="secondary">{service.toolCount}</Badge>
-                  ) : (
-                      <span className="text-muted-foreground">-</span>
-                  )}
              </TableCell>
              <TableCell>
                 <div className="w-[80px] h-[24px]">
