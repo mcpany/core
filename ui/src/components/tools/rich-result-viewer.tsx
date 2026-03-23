@@ -14,7 +14,7 @@ import remarkGfm from 'remark-gfm';
 import { unwrapMcpResult } from "@/lib/mcp-unwrap";
 
 interface RichResultViewerProps {
-    result: any;
+    result: unknown;
 }
 
 interface TextContent {
@@ -30,6 +30,7 @@ interface ImageContent {
 
 interface ResourceContent {
     type: 'resource';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resource?: any;
 }
 
@@ -94,6 +95,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                      if (Array.isArray(inner) || (typeof inner === 'object' && inner !== null)) {
                          content = inner;
                      }
+                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                  } catch (e) {
                      // stdout is not JSON
                  }
@@ -112,6 +114,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     // 2. Identify MCP Content
     const mcpContent = useMemo<McpContent[] | null>(() => {
         if (Array.isArray(unwrappedContent) && unwrappedContent.length > 0) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const isMcp = unwrappedContent.every((item: any) =>
                 typeof item === 'object' && item !== null &&
                 (item.type === 'text' || item.type === 'image' || item.type === 'resource')
@@ -124,6 +127,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     // 3. Identify Table Data
     const tableData = useMemo(() => {
         if (Array.isArray(fullyUnwrapped) && fullyUnwrapped.length > 0) {
+             // eslint-disable-next-line @typescript-eslint/no-explicit-any
              const isTable = fullyUnwrapped.every((item: any) => typeof item === 'object' && item !== null);
              const isRichMcp = mcpContent && mcpContent.some(c => c.type !== 'text');
              if (isTable && !isRichMcp) return fullyUnwrapped;
@@ -139,12 +143,14 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                     if (Array.isArray(parsed) && parsed.every(item => typeof item === 'object')) {
                         return parsed;
                     }
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 } catch (e) {}
              }
              return null;
         }
 
         if (Array.isArray(unwrappedContent) && unwrappedContent.length > 0) {
+             // eslint-disable-next-line @typescript-eslint/no-explicit-any
              const isTable = unwrappedContent.every((item: any) => typeof item === 'object' && item !== null);
              if (isTable) return unwrappedContent;
         }
@@ -190,6 +196,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         if (!tableData) return null;
 
         const allKeys = new Set<string>();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         tableData.slice(0, 10).forEach((row: any) => {
             if (row && typeof row === 'object') {
                 Object.keys(row).forEach(k => allKeys.add(k));
@@ -211,6 +218,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
+                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                             {tableData.map((row: any, idx: number) => (
                                 <TableRow key={idx} className="hover:bg-muted/50">
                                     {columns.map(col => {
