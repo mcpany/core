@@ -1,5 +1,5 @@
 prepare:
-	cd ui && npm ci
+	cd ui && npm install
 
 lint:
 	cd ui && npm run lint
