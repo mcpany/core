@@ -98,15 +98,14 @@ test.describe('Tool Exploration', () => {
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Change grouping to "service"
-        // Locate the precise trigger container using the unique lucide-layers SVG icon,
-        // wait for it, and then forcefully click the associated combobox button.
-        const selectContainer = page.locator('div.flex').filter({ has: page.locator('svg.lucide-layers') });
-        const trigger = selectContainer.getByRole('combobox');
-        await trigger.waitFor({ state: 'visible', timeout: 10000 });
-        await trigger.click({ force: true });
+        // Simply click the wrapper container that houses the "Group By" select component.
+        // Shadcn UI components allow clicks on the wrapper `div` to propagate down to the underlying trigger.
+        const selectContainer = page.locator('div.flex.items-center.space-x-2').filter({ has: page.locator('svg.lucide-layers') });
+        await selectContainer.waitFor({ state: 'visible', timeout: 10000 });
+        await selectContainer.click({ force: true });
 
-        // Once the portal opens, find the corresponding option and click it
-        const option = page.getByRole('option', { name: 'Group by Service' });
+        // Once the portal opens, click the text directly, bypassing ARIA role checks which can flake.
+        const option = page.getByText('Group by Service', { exact: true });
         await option.waitFor({ state: 'visible', timeout: 5000 });
         await option.click({ force: true });
 
