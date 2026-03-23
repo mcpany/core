@@ -48,19 +48,17 @@ var initOnce sync.Once
 func Initialize() error {
 	var err error
 	initOnce.Do(func() {
-		// Create a Prometheus sink
-		var sink *prometheus.PrometheusSink
-		sink, err = NewPrometheusSink()
-		if err != nil {
+		sink, sinkErr := NewPrometheusSink()
+		if sinkErr != nil {
+			err = sinkErr
 			return
 		}
 
-		// Create a metrics configuration
 		conf := armonmetrics.DefaultConfig("mcpany")
 		conf.EnableHostname = false
 
-		// Initialize the metrics system
-		if _, err = armonmetrics.NewGlobal(conf, sink); err != nil {
+		if _, globalErr := armonmetrics.NewGlobal(conf, sink); globalErr != nil {
+			err = globalErr
 			return
 		}
 	})
@@ -99,7 +97,6 @@ func StartServer(addr string) error {
 	}
 
 	if tcpAddr, ok := ln.Addr().(*net.TCPAddr); ok {
-		// Log to stdout so E2E tests can parse the dynamically assigned port
 		fmt.Printf("Metrics server listening on port %d\n", tcpAddr.Port)
 	}
 

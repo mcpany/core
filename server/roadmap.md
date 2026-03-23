@@ -449,6 +449,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Inter-Swarm Deadlock Detector**: UACO monitoring service for detecting and breaking circular attestation dependencies. (Added: 2026-05-02)
 *   **[P0] Deterministic Recovery Bridge (DSR)**: Standardized mapping of subagent exit codes to automated PLSS rollbacks. (Added: 2026-05-02)
 
+
 ### Update: 2026-06-18 - Strategic Infrastructure Alignment
-- **[P0] ALS Controller**: Context window protection implementation.
-- **[P0] PBRB Firewall**: Token-spend governance.
+- **[P0] ALS Controller**: implementation for Attention-Locked Sovereignty context protection. (Target: Q3 2026)
+- **[P0] PBRB Firewall**: development of economic governance safeguards for autonomous swarms. (Target: Q3 2026)
+- **[P1] MRHA Bridge**: Multi-modal reasoning alignment for horizontal coordination.
