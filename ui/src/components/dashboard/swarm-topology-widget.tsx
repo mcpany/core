@@ -31,6 +31,11 @@ interface SwarmTopologyData {
     anomalies: string[];
 }
 
+/**
+ * SwarmTopologyWidget component displays a visual representation of the swarm network of agents.
+ *
+ * @returns The rendered component.
+ */
 export function SwarmTopologyWidget() {
     const [data, setData] = useState<SwarmTopologyData | null>(null);
     const [loading, setLoading] = useState(true);

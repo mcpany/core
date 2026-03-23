@@ -20,6 +20,13 @@ interface SmartTableProps {
 
 type SortDirection = 'asc' | 'desc' | null;
 
+/**
+ * SmartTable renders a table with sorting and filtering.
+ *
+ * @param props - The component props.
+ * @param props.data - The data to display.
+ * @returns The rendered component.
+ */
 export function SmartTable({ data }: SmartTableProps) {
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: SortDirection }>({ key: '', direction: null });
   const [currentPage, setCurrentPage] = useState(1);
