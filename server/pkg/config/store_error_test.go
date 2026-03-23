@@ -38,6 +38,6 @@ upstream_services:
 	// Expect "line 6" in the error message
 	t.Logf("Error message: %v", err)
 
-    assert.Contains(t, err.Error(), "line 6")
-    assert.Contains(t, err.Error(), "upstream_auth_typo")
+	assert.Contains(t, err.Error(), "line 6")
+	assert.Contains(t, err.Error(), "upstream_auth_typo")
 }

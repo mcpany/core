@@ -21,9 +21,9 @@ func TestIsPrivateNetworkIP_Extended(t *testing.T) {
 		{"100.64.0.1", true}, // CGNAT
 		{"fc00::1", true},    // Unique Local
 		{"8.8.8.8", false},
-		{"127.0.0.1", false}, // Loopback is not "Private Network" in our definition (handled separately)
+		{"127.0.0.1", false},   // Loopback is not "Private Network" in our definition (handled separately)
 		{"169.254.1.1", false}, // Link-local is not "Private Network" (handled separately)
-		{"fe80::1", false},   // Link-local
+		{"fe80::1", false},     // Link-local
 	}
 
 	for _, tt := range tests {
@@ -45,12 +45,12 @@ func TestIsPrivateIP_Extended(t *testing.T) {
 		ip       string
 		expected bool
 	}{
-		{"100.64.0.1", true}, // CGNAT should now be true
-		{"fe80::1", true},    // Link-local IPv6 should be true
-		{"169.254.1.1", true},// Link-local IPv4
-		{"127.0.0.1", true},  // Loopback
-		{"::", true},         // Unspecified IPv6
-		{"0.0.0.0", true},    // Unspecified IPv4
+		{"100.64.0.1", true},  // CGNAT should now be true
+		{"fe80::1", true},     // Link-local IPv6 should be true
+		{"169.254.1.1", true}, // Link-local IPv4
+		{"127.0.0.1", true},   // Loopback
+		{"::", true},          // Unspecified IPv6
+		{"0.0.0.0", true},     // Unspecified IPv4
 	}
 
 	for _, tt := range tests {

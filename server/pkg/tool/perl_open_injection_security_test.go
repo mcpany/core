@@ -11,12 +11,12 @@ import (
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-    "google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestPerlOpenInjection(t *testing.T) {
 	// This test attempts to reproduce an RCE vulnerability where Perl open("|cmd")
-    // can be injected into a SINGLE-quoted argument string.
+	// can be injected into a SINGLE-quoted argument string.
 
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("perl"),
@@ -45,7 +45,7 @@ func TestPerlOpenInjection(t *testing.T) {
 	payload := "|echo PERL_RCE_SUCCESS"
 
 	req := &ExecutionRequest{
-		ToolName: "perl_open_single",
+		ToolName:   "perl_open_single",
 		ToolInputs: []byte(`{"input": "` + payload + `"}`),
 	}
 

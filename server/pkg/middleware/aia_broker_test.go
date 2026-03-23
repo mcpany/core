@@ -36,7 +36,7 @@ func TestAIABroker_MissingArguments(t *testing.T) {
 	broker := NewAIABroker(AIABrokerConfig{Enabled: true})
 
 	req := &tool.ExecutionRequest{
-		ToolName: "test_tool",
+		ToolName:  "test_tool",
 		Arguments: nil,
 	}
 
@@ -169,7 +169,7 @@ func TestAIABroker_RequiredFor_Skipped(t *testing.T) {
 	})
 
 	req := &tool.ExecutionRequest{
-		ToolName: "safe_tool",
+		ToolName:  "safe_tool",
 		Arguments: map[string]interface{}{},
 	}
 
@@ -193,7 +193,7 @@ func TestAIABroker_RequiredFor_Enforced(t *testing.T) {
 	})
 
 	req := &tool.ExecutionRequest{
-		ToolName: "critical_tool",
+		ToolName:  "critical_tool",
 		Arguments: map[string]interface{}{},
 	}
 

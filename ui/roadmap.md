@@ -662,3 +662,8 @@
 - [ ] **[P0] ZK-Capability Proof Viewer**: UI for visualizing and approving blind discovery handshakes. (Added: 2026-06-28)
 - [ ] **[P0] CRDT Shard Health Monitor**: Real-time visualization of lock-free teammate synchronization and conflict resolution metrics. (Added: 2026-06-28)
 - [ ] **[P0] Sovereign Trace Lineage Inspector**: Forensic UI for auditing hardware-attested "Sovereign Trace" chains back to the mission root. (Added: 2026-06-28)
+
+#### Upcoming (2026-06-28 Evolution)
+- [ ] **[P0] ZK-Capability Proof Viewer**: UI for visualizing and approving blind discovery handshakes. (Added: 2026-06-28)
+- [ ] **[P0] CRDT Shard Health Monitor**: Real-time visualization of lock-free teammate synchronization and conflict resolution metrics. (Added: 2026-06-28)
+- [ ] **[P0] Sovereign Trace Lineage Inspector**: Forensic UI for auditing hardware-attested "Sovereign Trace" chains back to the mission root. (Added: 2026-06-28)

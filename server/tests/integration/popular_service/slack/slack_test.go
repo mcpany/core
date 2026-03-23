@@ -70,7 +70,7 @@ func TestUpstreamService_Slack(t *testing.T) {
 			Address: proto.String(mockServer.URL),
 			Tools: []*configv1.ToolDefinition{
 				configv1.ToolDefinition_builder{
-					Name: proto.String("send_message"),
+					Name:   proto.String("send_message"),
 					CallId: proto.String("send_message"),
 				}.Build(),
 			},

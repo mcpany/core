@@ -35,9 +35,9 @@ func TestImageMagick_Injection_Security(t *testing.T) {
 	// Case 1: ImageMagick label:@/etc/passwd (LFI)
 	t.Run("label_scheme", func(t *testing.T) {
 		req := &ExecutionRequest{
-			ToolName: "convert",
+			ToolName:   "convert",
 			ToolInputs: []byte(`{"input": "label:@/etc/passwd"}`),
-			DryRun:   true,
+			DryRun:     true,
 		}
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)
@@ -49,9 +49,9 @@ func TestImageMagick_Injection_Security(t *testing.T) {
 	// Case 2: ImageMagick mvg:payload.mvg (RCE/LFI)
 	t.Run("mvg_scheme", func(t *testing.T) {
 		req := &ExecutionRequest{
-			ToolName: "convert",
+			ToolName:   "convert",
 			ToolInputs: []byte(`{"input": "mvg:payload.mvg"}`),
-			DryRun:   true,
+			DryRun:     true,
 		}
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)
@@ -63,9 +63,9 @@ func TestImageMagick_Injection_Security(t *testing.T) {
 	// Case 3: FFmpeg concat:file1|file2 (LFI/RCE)
 	t.Run("ffmpeg_concat_scheme", func(t *testing.T) {
 		req := &ExecutionRequest{
-			ToolName: "ffmpeg",
+			ToolName:   "ffmpeg",
 			ToolInputs: []byte(`{"input": "concat:file1|file2"}`),
-			DryRun:   true,
+			DryRun:     true,
 		}
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)

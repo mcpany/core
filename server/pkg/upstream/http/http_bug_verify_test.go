@@ -18,10 +18,10 @@ import (
 
 func TestHTTPUpstream_URLConstruction_InvalidQueryBug(t *testing.T) {
 	testCases := []struct {
-		name          string
-		address       string
-		endpointPath  string
-		expectedFqn   string
+		name         string
+		address      string
+		endpointPath string
+		expectedFqn  string
 	}{
 		{
 			name:         "endpoint query with invalid percent encoding should be preserved",
@@ -35,12 +35,12 @@ func TestHTTPUpstream_URLConstruction_InvalidQueryBug(t *testing.T) {
 			endpointPath: "/v1/test?baz=%",
 			expectedFqn:  "GET http://example.com/api/v1/test?foo=bar&baz=%",
 		},
-        {
-            name:         "partial invalid endpoint query",
-            address:      "http://example.com/api",
-            endpointPath: "/v1/test?valid=1&invalid=%",
-            expectedFqn:  "GET http://example.com/api/v1/test?valid=1&invalid=%",
-        },
+		{
+			name:         "partial invalid endpoint query",
+			address:      "http://example.com/api",
+			endpointPath: "/v1/test?valid=1&invalid=%",
+			expectedFqn:  "GET http://example.com/api/v1/test?valid=1&invalid=%",
+		},
 	}
 
 	for _, tc := range testCases {

@@ -4,8 +4,8 @@
 package util
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestFastMarshalToString(t *testing.T) {

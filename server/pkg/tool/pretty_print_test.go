@@ -27,8 +27,8 @@ func TestPrettyPrint_XMLRedaction(t *testing.T) {
 </root>`,
 		},
 		{
-			name: "redact sensitive attribute",
-			input: `<user name="john" password="secret123" />`,
+			name:     "redact sensitive attribute",
+			input:    `<user name="john" password="secret123" />`,
 			expected: `<user name="john" password="[REDACTED]"></user>`,
 		},
 		{
@@ -45,8 +45,8 @@ func TestPrettyPrint_XMLRedaction(t *testing.T) {
 </config>`,
 		},
 		{
-			name: "no redaction for safe content",
-			input: `<data>value</data>`,
+			name:     "no redaction for safe content",
+			input:    `<data>value</data>`,
 			expected: `<data>value</data>`,
 		},
 	}

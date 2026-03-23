@@ -47,7 +47,7 @@ func TestUpstreamService_GitHub(t *testing.T) {
 		}
 	]`
 	mockHandler := integration.DefaultMockHandler(t, map[string]string{
-		"/users/octocat": userResponse,
+		"/users/octocat":       userResponse,
 		"/users/octocat/repos": reposResponse,
 	})
 	mockServer := integration.StartMockServer(t, mockHandler)

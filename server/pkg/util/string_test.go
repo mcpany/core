@@ -41,7 +41,7 @@ func TestLevenshteinDistance_NonASCII(t *testing.T) {
 		want   int
 	}{
 		// Non-ASCII
-		{"café", "cafe", 1}, // é vs e
+		{"café", "cafe", 1},  // é vs e
 		{"こんにちは", "こんちは", 1}, // Deletion
 		{"😊", "😊", 0},
 		{"😊", "😢", 1},
@@ -107,7 +107,7 @@ func TestLevenshteinDistanceWithLimit(t *testing.T) {
 		{"abc", "abcd", 1, 1},
 		{"abc", "abcde", 1, 2}, // distance 2, limit 1 -> returns 2
 		{"kitten", "sitting", 3, 3},
-		{"kitten", "sitting", 2, 3}, // distance 3, limit 2 -> returns 3
+		{"kitten", "sitting", 2, 3},            // distance 3, limit 2 -> returns 3
 		{"rosettacode", "raisethysword", 5, 6}, // distance 8, limit 5 -> returns 6
 
 		// ASCII optimization check (length diff > limit)

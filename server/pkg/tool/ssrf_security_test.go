@@ -45,7 +45,7 @@ func TestLocalCommandTool_SSRF_Prevention(t *testing.T) {
 	defer func() { validation.IsSafeURL = originalIsSafeURL }()
 
 	tool := v1.Tool_builder{
-		Name:        proto.String("test-tool-curl"),
+		Name: proto.String("test-tool-curl"),
 	}.Build()
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("curl"),
@@ -61,9 +61,9 @@ func TestLocalCommandTool_SSRF_Prevention(t *testing.T) {
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	testCases := []struct {
-		name      string
-		input     string
-		shouldErr bool
+		name        string
+		input       string
+		shouldErr   bool
 		errContains string
 	}{
 		{"Unsafe URL", "http://unsafe.local", true, "unsafe url"},

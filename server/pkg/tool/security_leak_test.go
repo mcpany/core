@@ -37,7 +37,7 @@ func TestLocalCommandTool_DoesNotLeakHostEnv(t *testing.T) {
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	req := &ExecutionRequest{
-		ToolName: "test-env-leak",
+		ToolName:  "test-env-leak",
 		Arguments: map[string]interface{}{},
 	}
 	req.ToolInputs, _ = json.Marshal(req.Arguments)
@@ -78,7 +78,7 @@ func TestCommandTool_DoesNotLeakHostEnv(t *testing.T) {
 	cmdTool := NewCommandTool(tool, service, callDef, nil, "call-id-2")
 
 	req := &ExecutionRequest{
-		ToolName: "test-env-leak-2",
+		ToolName:  "test-env-leak-2",
 		Arguments: map[string]interface{}{},
 	}
 	req.ToolInputs, _ = json.Marshal(req.Arguments)

@@ -1,8 +1,8 @@
 package tokenizer
 
 import (
-	"testing"
 	"math"
+	"testing"
 )
 
 func TestCountTokensInValueFastPathMissingCoverage(t *testing.T) {

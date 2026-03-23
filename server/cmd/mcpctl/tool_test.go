@@ -76,14 +76,14 @@ upstream_services:
 		assert.Contains(t, err.Error(), "tool \"non-existent-tool\" not found")
 	})
 
-    t.Run("Invalid Configuration", func(t *testing.T) {
-        cmd := newRootCmd()
+	t.Run("Invalid Configuration", func(t *testing.T) {
+		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
-        // Point to a non-existent config file to trigger load error
+		// Point to a non-existent config file to trigger load error
 		cmd.SetArgs([]string{"tool", "hash", "http-tool", "--config-path", filepath.Join(tempDir, "non-existent.yaml")})
 		err := cmd.Execute()
 		assert.Error(t, err)
-        assert.Contains(t, err.Error(), "failed to load configuration")
-    })
+		assert.Contains(t, err.Error(), "failed to load configuration")
+	})
 }

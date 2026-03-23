@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/pool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/pion/webrtc/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -454,7 +454,7 @@ func TestWebrtcTool_Execute_TemplateRenderError(t *testing.T) {
 	require.NoError(t, err)
 
 	req := &ExecutionRequest{
-		ToolName:   "test-webrtc-render-err",
+		ToolName: "test-webrtc-render-err",
 		// Pass an empty object to trigger the missing field evaluation error
 		ToolInputs: json.RawMessage(`{}`),
 	}

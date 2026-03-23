@@ -178,7 +178,7 @@ func TestRegisterSkillResources(t *testing.T) {
 	// Create a skill
 	s := &skill.Skill{
 		Frontmatter: skill.Frontmatter{
-			Name: "my-skill",
+			Name:        "my-skill",
 			Description: "desc",
 		},
 		Instructions: "Do things",

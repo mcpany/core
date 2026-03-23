@@ -165,7 +165,7 @@ func TestRunChecks_Authentication_OAuth2(t *testing.T) {
 	config := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
 			configv1.UpstreamServiceConfig_builder{
-				Name: strPtr("auth-ok"),
+				Name:        strPtr("auth-ok"),
 				HttpService: configv1.HttpUpstreamService_builder{Address: strPtr(ts.URL)}.Build(), // Dummy service URL
 				UpstreamAuth: configv1.Authentication_builder{
 					Oauth2: configv1.OAuth2Auth_builder{
@@ -174,7 +174,7 @@ func TestRunChecks_Authentication_OAuth2(t *testing.T) {
 				}.Build(),
 			}.Build(),
 			configv1.UpstreamServiceConfig_builder{
-				Name: strPtr("auth-400"),
+				Name:        strPtr("auth-400"),
 				HttpService: configv1.HttpUpstreamService_builder{Address: strPtr(ts.URL)}.Build(),
 				UpstreamAuth: configv1.Authentication_builder{
 					Oauth2: configv1.OAuth2Auth_builder{
@@ -183,7 +183,7 @@ func TestRunChecks_Authentication_OAuth2(t *testing.T) {
 				}.Build(),
 			}.Build(),
 			configv1.UpstreamServiceConfig_builder{
-				Name: strPtr("auth-401"),
+				Name:        strPtr("auth-401"),
 				HttpService: configv1.HttpUpstreamService_builder{Address: strPtr(ts.URL)}.Build(),
 				UpstreamAuth: configv1.Authentication_builder{
 					Oauth2: configv1.OAuth2Auth_builder{
@@ -192,7 +192,7 @@ func TestRunChecks_Authentication_OAuth2(t *testing.T) {
 				}.Build(),
 			}.Build(),
 			configv1.UpstreamServiceConfig_builder{
-				Name: strPtr("auth-404"),
+				Name:        strPtr("auth-404"),
 				HttpService: configv1.HttpUpstreamService_builder{Address: strPtr(ts.URL)}.Build(),
 				UpstreamAuth: configv1.Authentication_builder{
 					Oauth2: configv1.OAuth2Auth_builder{
@@ -201,7 +201,7 @@ func TestRunChecks_Authentication_OAuth2(t *testing.T) {
 				}.Build(),
 			}.Build(),
 			configv1.UpstreamServiceConfig_builder{
-				Name: strPtr("auth-500"),
+				Name:        strPtr("auth-500"),
 				HttpService: configv1.HttpUpstreamService_builder{Address: strPtr(ts.URL)}.Build(),
 				UpstreamAuth: configv1.Authentication_builder{
 					Oauth2: configv1.OAuth2Auth_builder{
@@ -381,7 +381,7 @@ func TestRunChecks_OIDC(t *testing.T) {
 	config := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
 			configv1.UpstreamServiceConfig_builder{
-				Name: strPtr("oidc-service"),
+				Name:        strPtr("oidc-service"),
 				HttpService: configv1.HttpUpstreamService_builder{Address: strPtr(ts.URL)}.Build(),
 				UpstreamAuth: configv1.Authentication_builder{
 					Oidc: configv1.OIDCAuth_builder{

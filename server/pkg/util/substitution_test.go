@@ -37,7 +37,7 @@ func TestReplaceURLPath_DoubleSubstitution(t *testing.T) {
 func TestReplaceURLPath_Standard(t *testing.T) {
 	t.Parallel()
 	params := map[string]interface{}{
-		"id": "123",
+		"id":   "123",
 		"slug": "hello world",
 	}
 

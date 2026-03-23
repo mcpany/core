@@ -16,14 +16,14 @@ type mockMilvusClient struct {
 	client.Client // Embed to satisfy interface, will panic if unimplemented methods are called
 
 	// Mock function implementations
-	hasCollectionFunc    func(ctx context.Context, name string) (bool, error)
-	loadCollectionFunc   func(ctx context.Context, name string, async bool, opts ...client.LoadCollectionOption) error
-	describeCollectionFunc func(ctx context.Context, name string) (*entity.Collection, error)
-	searchFunc           func(ctx context.Context, collectionName string, partitions []string, expr string, outputFields []string, vectors []entity.Vector, vectorField string, metricType entity.MetricType, topK int, sp entity.SearchParam, opts ...client.SearchQueryOptionFunc) ([]client.SearchResult, error)
-	upsertFunc           func(ctx context.Context, collectionName string, partitionName string, columns ...entity.Column) (entity.Column, error)
-	deleteFunc           func(ctx context.Context, collectionName string, partitionName string, expr string) error
+	hasCollectionFunc           func(ctx context.Context, name string) (bool, error)
+	loadCollectionFunc          func(ctx context.Context, name string, async bool, opts ...client.LoadCollectionOption) error
+	describeCollectionFunc      func(ctx context.Context, name string) (*entity.Collection, error)
+	searchFunc                  func(ctx context.Context, collectionName string, partitions []string, expr string, outputFields []string, vectors []entity.Vector, vectorField string, metricType entity.MetricType, topK int, sp entity.SearchParam, opts ...client.SearchQueryOptionFunc) ([]client.SearchResult, error)
+	upsertFunc                  func(ctx context.Context, collectionName string, partitionName string, columns ...entity.Column) (entity.Column, error)
+	deleteFunc                  func(ctx context.Context, collectionName string, partitionName string, expr string) error
 	getCollectionStatisticsFunc func(ctx context.Context, name string) (map[string]string, error)
-	closeFunc            func() error
+	closeFunc                   func() error
 }
 
 func (m *mockMilvusClient) HasCollection(ctx context.Context, name string) (bool, error) {

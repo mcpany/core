@@ -182,7 +182,7 @@ func TestHandleAlertRuleDetail(t *testing.T) {
 
 	t.Run("UpdateRule", func(t *testing.T) {
 		updates := &alerts.AlertRule{
-			Name:      "Updated Rule",
+			Name:        "Updated Rule",
 			LastUpdated: time.Now(),
 		}
 		body, _ := json.Marshal(updates)

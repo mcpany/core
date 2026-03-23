@@ -51,7 +51,6 @@ func (m *mockResourceTool) Tool() *v1.Tool {
 	}.Build()
 }
 
-
 func (m *mockResourceTool) IsStreaming() bool {
 	return false
 }

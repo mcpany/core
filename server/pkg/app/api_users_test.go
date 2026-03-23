@@ -163,13 +163,13 @@ func TestHandleUserDetail(t *testing.T) {
 
 	// Create a user
 	user := configv1.User_builder{
-		Id: proto.String("user1"),
+		Id:    proto.String("user1"),
 		Roles: []string{"user"},
 	}.Build()
 	require.NoError(t, store.CreateUser(context.Background(), user))
 
 	updatedUser := configv1.User_builder{
-		Id: proto.String("user1"),
+		Id:    proto.String("user1"),
 		Roles: []string{"admin"},
 		Authentication: configv1.Authentication_builder{
 			BasicAuth: configv1.BasicAuth_builder{
@@ -181,7 +181,7 @@ func TestHandleUserDetail(t *testing.T) {
 	userBytes, _ := opts.Marshal(updatedUser)
 
 	updatedAdminUser := configv1.User_builder{
-		Id: proto.String("user1"),
+		Id:    proto.String("user1"),
 		Roles: []string{"editor"},
 	}.Build()
 	adminUserBytes, _ := opts.Marshal(updatedAdminUser)

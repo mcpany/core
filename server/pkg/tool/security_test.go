@@ -19,7 +19,7 @@ func TestLocalCommandTool_ArgumentInjection_Prevention(t *testing.T) {
 	// This test verifies that argument injection via placeholders is prevented.
 
 	tool := v1.Tool_builder{
-		Name:        proto.String("test-tool-cat"),
+		Name: proto.String("test-tool-cat"),
 	}.Build()
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("cat"),
@@ -301,7 +301,7 @@ func TestLocalCommandTool_Execute_PythonInjection(t *testing.T) {
 	jsonInput, _ := json.Marshal(map[string]string{"msg": injectionPayload})
 
 	req := &ExecutionRequest{
-		ToolName: "python_tool",
+		ToolName:   "python_tool",
 		ToolInputs: jsonInput,
 	}
 

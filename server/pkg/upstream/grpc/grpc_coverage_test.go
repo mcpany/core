@@ -31,7 +31,7 @@ func TestGRPCUpstream_Shutdown(t *testing.T) {
 	defer server.Stop()
 
 	grpcService := configv1.GrpcUpstreamService_builder{
-		Address:      proto.String(addr),
+		Address:       proto.String(addr),
 		UseReflection: proto.Bool(true), // Enable reflection to avoid "no proto files" error
 	}.Build()
 
@@ -170,7 +170,7 @@ func TestGRPCUpstream_Prompts_Coverage(t *testing.T) {
 	defer server.Stop()
 
 	grpcService := configv1.GrpcUpstreamService_builder{
-		Address:      proto.String(addr),
+		Address:       proto.String(addr),
 		UseReflection: proto.Bool(true),
 		Prompts: []*configv1.PromptDefinition{
 			configv1.PromptDefinition_builder{
@@ -209,7 +209,7 @@ func TestGRPCUpstream_DynamicResources_Coverage(t *testing.T) {
 	defer server.Stop()
 
 	grpcService := configv1.GrpcUpstreamService_builder{
-		Address:      proto.String(addr),
+		Address:       proto.String(addr),
 		UseReflection: proto.Bool(true),
 		Resources: []*configv1.ResourceDefinition{
 			configv1.ResourceDefinition_builder{

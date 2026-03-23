@@ -74,7 +74,7 @@ func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionReques
 	return nil, nil
 }
 func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
-func (m *mockToolManager) GetToolCountForService(_ string) int { return 0 }
+func (m *mockToolManager) GetToolCountForService(_ string) int                     { return 0 }
 
 func TestNew(t *testing.T) {
 	pm := pool.NewManager()
@@ -392,7 +392,6 @@ func TestServiceRegistry_ServiceInfo(t *testing.T) {
 
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
 
 func (m *mockTool) IsStreaming() bool {
 	return false

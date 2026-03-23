@@ -23,7 +23,7 @@ func TestCommandInjection_SpaceInjection(t *testing.T) {
 
 		// Input introduces new arguments to curl: -o /etc/passwd
 		req := &ExecutionRequest{
-			ToolName: "test",
+			ToolName:   "test",
 			ToolInputs: []byte(`{"input": "http://example.com -o /etc/passwd"}`),
 		}
 
@@ -39,18 +39,18 @@ func TestCommandInjection_SpaceInjection(t *testing.T) {
 		}
 	})
 
-    // Case: Safe usage with quotes
-    t.Run("quoted_space_safe", func(t *testing.T) {
-        cmd := "sh"
-        // Template uses quoted placeholder: sh -c "echo '{{input}}'"
-        tool := createTestCommandToolWithTemplate(cmd, "echo '{{input}}'")
+	// Case: Safe usage with quotes
+	t.Run("quoted_space_safe", func(t *testing.T) {
+		cmd := "sh"
+		// Template uses quoted placeholder: sh -c "echo '{{input}}'"
+		tool := createTestCommandToolWithTemplate(cmd, "echo '{{input}}'")
 
-        req := &ExecutionRequest{
-            ToolName: "test",
-            ToolInputs: []byte(`{"input": "hello world"}`),
-        }
+		req := &ExecutionRequest{
+			ToolName:   "test",
+			ToolInputs: []byte(`{"input": "hello world"}`),
+		}
 
-        _, err := tool.Execute(context.Background(), req)
-        assert.NoError(t, err, "Quoted input with space should be allowed")
-    })
+		_, err := tool.Execute(context.Background(), req)
+		assert.NoError(t, err, "Quoted input with space should be allowed")
+	})
 }

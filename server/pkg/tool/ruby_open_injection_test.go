@@ -45,7 +45,7 @@ func TestRubyOpenInjection(t *testing.T) {
 	payload := "|echo RCE_SUCCESS"
 
 	req := &ExecutionRequest{
-		ToolName: "ruby_open",
+		ToolName:   "ruby_open",
 		ToolInputs: []byte(`{"input": "` + payload + `"}`),
 	}
 

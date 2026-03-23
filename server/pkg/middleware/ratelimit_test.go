@@ -25,7 +25,6 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-
 func (m *rateLimitMockTool) IsStreaming() bool {
 	return false
 }

@@ -56,7 +56,7 @@ func TestHandleCollectionApply(t *testing.T) {
 				svc.SetHttpService(httpUpstream)
 
 				col := configv1.Collection_builder{
-					Name: proto.String("safe-collection"),
+					Name:     proto.String("safe-collection"),
 					Services: []*configv1.UpstreamServiceConfig{svc},
 				}.Build()
 
@@ -80,8 +80,7 @@ func TestHandleCollectionApply(t *testing.T) {
 					Command: proto.String("echo"),
 				}.Build()
 
-				mcpUpstream := configv1.McpUpstreamService_builder{
-				}.Build()
+				mcpUpstream := configv1.McpUpstreamService_builder{}.Build()
 				mcpUpstream.SetStdioConnection(stdioConn)
 
 				svc := configv1.UpstreamServiceConfig_builder{
@@ -90,7 +89,7 @@ func TestHandleCollectionApply(t *testing.T) {
 				svc.SetMcpService(mcpUpstream)
 
 				col := configv1.Collection_builder{
-					Name: proto.String("unsafe-collection"),
+					Name:     proto.String("unsafe-collection"),
 					Services: []*configv1.UpstreamServiceConfig{svc},
 				}.Build()
 
@@ -116,8 +115,7 @@ func TestHandleCollectionApply(t *testing.T) {
 					Command: proto.String("echo"),
 				}.Build()
 
-				mcpUpstream := configv1.McpUpstreamService_builder{
-				}.Build()
+				mcpUpstream := configv1.McpUpstreamService_builder{}.Build()
 				mcpUpstream.SetStdioConnection(stdioConn)
 
 				svc := configv1.UpstreamServiceConfig_builder{
@@ -126,7 +124,7 @@ func TestHandleCollectionApply(t *testing.T) {
 				svc.SetMcpService(mcpUpstream)
 
 				col := configv1.Collection_builder{
-					Name: proto.String("unsafe-blocked-collection"),
+					Name:     proto.String("unsafe-blocked-collection"),
 					Services: []*configv1.UpstreamServiceConfig{svc},
 				}.Build()
 
@@ -154,7 +152,7 @@ func TestHandleCollectionApply(t *testing.T) {
 				}.Build()
 
 				col := configv1.Collection_builder{
-					Name: proto.String("invalid-collection"),
+					Name:     proto.String("invalid-collection"),
 					Services: []*configv1.UpstreamServiceConfig{svc},
 				}.Build()
 

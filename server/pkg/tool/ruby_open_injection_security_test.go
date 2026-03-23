@@ -11,21 +11,21 @@ import (
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-    "google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestRubySingleQuoteInjection(t *testing.T) {
 	// This test attempts to reproduce an RCE vulnerability where Ruby open("|cmd")
-    // can be injected into a SINGLE-quoted argument string.
+	// can be injected into a SINGLE-quoted argument string.
 
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("ruby"),
 	}.Build()
 
 	// Ruby script: print open('{{input}}').read
-    // Note: The template uses single quotes around the placeholder.
-    // The shell sees: ruby -e "print open('{{input}}').read" (if passed as one arg)
-    // Or if args are split: "-e", "print open('{{input}}').read"
+	// Note: The template uses single quotes around the placeholder.
+	// The shell sees: ruby -e "print open('{{input}}').read" (if passed as one arg)
+	// Or if args are split: "-e", "print open('{{input}}').read"
 	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"-e", "print open('{{input}}').read"},
 		Parameters: []*configv1.CommandLineParameterMapping{
@@ -48,7 +48,7 @@ func TestRubySingleQuoteInjection(t *testing.T) {
 	payload := "|echo RCE_SUCCESS"
 
 	req := &ExecutionRequest{
-		ToolName: "ruby_open_single",
+		ToolName:   "ruby_open_single",
 		ToolInputs: []byte(`{"input": "` + payload + `"}`),
 	}
 
@@ -63,8 +63,8 @@ func TestRubySingleQuoteInjection(t *testing.T) {
 		stdout, ok := resMap["stdout"].(string)
 		require.True(t, ok)
 
-        // If execution succeeded, it means the command ran.
-        // We check if "RCE_SUCCESS" is in stdout.
+		// If execution succeeded, it means the command ran.
+		// We check if "RCE_SUCCESS" is in stdout.
 
 		t.Logf("Stdout: %s", stdout)
 

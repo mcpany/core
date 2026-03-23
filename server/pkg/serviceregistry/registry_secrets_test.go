@@ -39,15 +39,18 @@ func (m *hunterMockFactory) NewUpstream(_ *configv1.UpstreamServiceConfig) (upst
 type hunterMockToolManager struct {
 	tool.ManagerInterface
 }
+
 func (m *hunterMockToolManager) AddTool(_ tool.Tool) error             { return nil }
 func (m *hunterMockToolManager) ClearToolsForService(_ string)         {}
 func (m *hunterMockToolManager) GetTool(_ string) (tool.Tool, bool)    { return nil, false }
 func (m *hunterMockToolManager) ListTools() []tool.Tool                { return nil }
 func (m *hunterMockToolManager) ListServices() []*tool.ServiceInfo     { return nil }
 func (m *hunterMockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
-func (m *hunterMockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) { return nil, nil }
+func (m *hunterMockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+	return nil, nil
+}
 func (m *hunterMockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
-func (m *hunterMockToolManager) GetToolCountForService(_ string) int { return 0 }
+func (m *hunterMockToolManager) GetToolCountForService(_ string) int                     { return 0 }
 
 func TestServiceRegistry_SecretsLeak(t *testing.T) {
 	f := &hunterMockFactory{}

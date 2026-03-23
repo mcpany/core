@@ -34,7 +34,6 @@ func (m *mockMapTool) Tool() *v1.Tool {
 	return m.tool
 }
 
-
 func (m *mockMapTool) IsStreaming() bool {
 	return false
 }

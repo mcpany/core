@@ -60,7 +60,6 @@ func (m *controlledMockFs) OpenFile(name string, flag int, perm os.FileMode) (af
 	return m.Fs.OpenFile(name, flag, perm)
 }
 
-
 func TestNewUpdater(t *testing.T) {
 	t.Run("with nil http client", func(t *testing.T) {
 		updater := NewUpdater(nil, "")
@@ -476,45 +475,45 @@ func TestUpdateTo_MoreFailureScenarios(t *testing.T) {
 		assert.Contains(t, err.Error(), "checksum mismatch")
 	})
 
-    t.Run("tempfile creation fails", func(t *testing.T) {
+	t.Run("tempfile creation fails", func(t *testing.T) {
 		assetServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.Write([]byte(assetContent)) }))
 		defer assetServer.Close()
 		checksumsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(checksumsContent))
 		}))
 		defer checksumsServer.Close()
-        release := &github.RepositoryRelease{TagName: github.String("v1.0.1"), Assets: []*github.ReleaseAsset{{Name: github.String(assetName), BrowserDownloadURL: github.String(assetServer.URL)},{Name: github.String("checksums.txt"), BrowserDownloadURL: github.String(checksumsServer.URL)}}}
+		release := &github.RepositoryRelease{TagName: github.String("v1.0.1"), Assets: []*github.ReleaseAsset{{Name: github.String(assetName), BrowserDownloadURL: github.String(assetServer.URL)}, {Name: github.String("checksums.txt"), BrowserDownloadURL: github.String(checksumsServer.URL)}}}
 
-        memfs := afero.NewMemMapFs()
-        cmfs := &controlledMockFs{Fs: memfs}
-        cmfs.openFileHooks = []func(name string, flag int, perm os.FileMode) (afero.File, error){
-            func(name string, flag int, perm os.FileMode) (afero.File, error) { return nil, fmt.Errorf("disk full") },
-        }
+		memfs := afero.NewMemMapFs()
+		cmfs := &controlledMockFs{Fs: memfs}
+		cmfs.openFileHooks = []func(name string, flag int, perm os.FileMode) (afero.File, error){
+			func(name string, flag int, perm os.FileMode) (afero.File, error) { return nil, fmt.Errorf("disk full") },
+		}
 		updater := NewUpdater(http.DefaultClient, "")
 		err := updater.UpdateTo(context.Background(), cmfs, "/app/server", release, assetName, "checksums.txt")
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to create temp file")
-    })
+	})
 
-    t.Run("chmod fails", func(t *testing.T) {
+	t.Run("chmod fails", func(t *testing.T) {
 		assetServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.Write([]byte(assetContent)) }))
 		defer assetServer.Close()
 		checksumsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(checksumsContent))
 		}))
 		defer checksumsServer.Close()
-        release := &github.RepositoryRelease{TagName: github.String("v1.0.1"), Assets: []*github.ReleaseAsset{{Name: github.String(assetName), BrowserDownloadURL: github.String(assetServer.URL)},{Name: github.String("checksums.txt"), BrowserDownloadURL: github.String(checksumsServer.URL)}}}
+		release := &github.RepositoryRelease{TagName: github.String("v1.0.1"), Assets: []*github.ReleaseAsset{{Name: github.String(assetName), BrowserDownloadURL: github.String(assetServer.URL)}, {Name: github.String("checksums.txt"), BrowserDownloadURL: github.String(checksumsServer.URL)}}}
 
-        memfs := afero.NewMemMapFs()
-        cmfs := &controlledMockFs{Fs: memfs}
-        cmfs.chmodHooks = []func(name string, mode os.FileMode) error{
-            func(name string, mode os.FileMode) error { return fmt.Errorf("permission denied") },
-        }
+		memfs := afero.NewMemMapFs()
+		cmfs := &controlledMockFs{Fs: memfs}
+		cmfs.chmodHooks = []func(name string, mode os.FileMode) error{
+			func(name string, mode os.FileMode) error { return fmt.Errorf("permission denied") },
+		}
 		updater := NewUpdater(http.DefaultClient, "")
 		err := updater.UpdateTo(context.Background(), cmfs, "/app/server", release, assetName, "checksums.txt")
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to set executable permission")
-    })
+	})
 }
 
 func TestParseChecksums(t *testing.T) {
