@@ -39,16 +39,20 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v10-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-            - v10-lint-
+            - v12-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+            - v12-lint-
       - run:
           name: Prepare Environment
           command: |
             export GOTOOLCHAIN=go1.26.1
-            # Clean install of tools to avoid version conflicts
+            # Ensure workspace is in sync
+            go work sync || true
+            # Aggressively remove any pre-installed/cached linter to avoid version conflicts
+            sudo rm -f /usr/local/bin/golangci-lint
             rm -rf build/env/bin
+            mkdir -p build/env/bin
             make prepare
-            # Ensure the linter is built with Go 1.26
+            # Force Go 1.26 build of the linter from source
             go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.5
       - run:
           name: Run Lint
@@ -57,10 +61,10 @@ jobs:
             export GOTOOLCHAIN=go1.26.1
             export GOPATH=$HOME/go
             export PATH=$GOPATH/bin:$PWD/build/env/bin:$PATH
-            # Run lint via the hardened script
+            # Run lint directly via the hardened script to ensure correct environment
             ./scripts/lint.sh
       - save_cache:
-          key: v10-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+          key: v12-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
             - "build/env/bin"
             - "build/.cache"

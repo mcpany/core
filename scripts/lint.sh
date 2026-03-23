@@ -13,19 +13,20 @@ cd "$PROJECT_ROOT"
 
 find_tool() {
     local name="$1"
-    # Explicitly check GOPATH first
-    local gp
-    gp=$(go env GOPATH 2>/dev/null)
-    if [[ -x "$gp/bin/$name" ]]; then
-        echo "$gp/bin/$name"
-        return 0
-    fi
-    # Then check build/env/bin
-    if [[ -x "build/env/bin/$name" ]]; then
-        echo "$(pwd)/build/env/bin/$name"
-        return 0
-    fi
-    # Finally check PATH
+    # Check common locations in order of preference
+    local locations=(
+        "$(go env GOPATH 2>/dev/null)/bin/$name"
+        "$HOME/go/bin/$name"
+        "/home/circleci/go/bin/$name"
+        "$(pwd)/build/env/bin/$name"
+        "/usr/local/bin/$name"
+    )
+    for loc in "${locations[@]}"; do
+        if [[ -x "$loc" ]]; then
+            echo "$loc"
+            return 0
+        fi
+    done
     command -v "$name" 2>/dev/null || true
 }
 
@@ -48,17 +49,17 @@ else
 fi
 
 echo "==> Running golangci-lint..."
-# If linter is already in PATH and is the right version, use it.
-# Otherwise try to find it.
-LINT_BIN=$(find_tool golangci-lint)
+GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
 
-if [[ -x "$LINT_BIN" ]]; then
-    echo "    Using linter: $($LINT_BIN --version)"
+if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
+    echo "    Using linter: $($GOLANGCI_LINT_BIN --version)"
 
+    # We specify targets explicitly to ensure the linter sees all modules in the workspace
     TARGETS="./server/... ./proto/... ./k8s/operator/... ./server/examples/upstream_service_demo/grpc/greeter_server/..."
 
     echo "    Linting targets..."
-    "$LINT_BIN" run --timeout 20m --fix --config server/.golangci.yml $TARGETS
+    export GOTOOLCHAIN=go1.26.1
+    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --config server/.golangci.yml $TARGETS
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found."
