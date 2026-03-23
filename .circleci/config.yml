@@ -12,7 +12,7 @@ executors:
 
   bazel-executor:
     docker:
-      - image: cimg/base:current
+      - image: cimg/go:1.24
     resource_class: medium
 
 commands:
@@ -70,6 +70,10 @@ jobs:
             . venv/bin/activate
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
+
+            # Use go proxy
+            export GOPROXY=https://proxy.golang.org,direct
+
             bazel run //:lint
             bazel test //server/pkg/lint/... //ui:lint //ui:typecheck
       - save_cache:
