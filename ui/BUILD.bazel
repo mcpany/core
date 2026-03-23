@@ -166,13 +166,6 @@ filegroup(
     srcs = [":node_modules"],
 )
 
-genrule(
-    name = "filter_node_modules",
-    srcs = [":node_modules_files"],
-    outs = ["filtered_node_modules.tar"],
-    cmd = "tar --exclude=.aspect_rules_js -cf $@ -C $(RULEDIR)/node_modules .",
-)
-
 pkg_tar(
     name = "ui_node_modules_tar",
     srcs = [":node_modules_files"],
@@ -198,6 +191,8 @@ pkg_tar(
     srcs = [
         ":ui_config_files",
         ":ui_dist_files",
+    ],
+    deps = [
         ":ui_node_modules_tar",
     ],
 )

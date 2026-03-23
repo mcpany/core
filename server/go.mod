@@ -2,8 +2,6 @@ module github.com/mcpany/core/server
 
 go 1.24.0
 
-toolchain go1.26.1
-
 replace github.com/mcpany/core => ../
 
 require (
@@ -292,3 +290,5 @@ require (
 	modernc.org/memory v1.11.0 // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
 )
+
+replace github.com/mcpany/core/proto => ../proto
