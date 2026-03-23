@@ -216,9 +216,10 @@ upstream_services:
     if useLocal {
         cmd.Process.Kill()
         cmd.Wait()
-        time.Sleep(1 * time.Second)
+        time.Sleep(2 * time.Second)
         cmd = exec.Command(filepath.Join(rootDir, "build/bin/server"), "run", "--config-path", configPath, "--debug", "--api-key", "test-key")
         cmd.Start()
+        baseURL = fmt.Sprintf("http://127.0.0.1:%s", port3)
     }
 
 	// Wait for health
@@ -226,6 +227,7 @@ upstream_services:
 
 	// Re-connect
 	transport = &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}
+    time.Sleep(2 * time.Second)
 	session, err = client.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer session.Close()

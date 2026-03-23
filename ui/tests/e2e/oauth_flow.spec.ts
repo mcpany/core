@@ -63,14 +63,14 @@ test.describe('OAuth Flow Integration', () => {
 
         // Wait, if we fulfill /callback, the UI gets a success, but the DB doesn't get the token.
         // Let's just update the DB directly so the subsequent GET /credentials succeeds.
-        const listRes = await request.get('/api/v1/credentials');
+        const listRes = await page.request.get('/api/v1/credentials');
         if (listRes.ok()) {
            const body = await listRes.json();
            const creds = body.credentials || body || [];
            for (const c of creds) {
                if (c.name === 'GitHub OAuth') {
                    c.token = { accessToken: 'mock-token' };
-                   await request.put(`/api/v1/credentials/${c.id}`, { data: c });
+                   await page.request.put(`/api/v1/credentials/${c.id}`, { data: c });
                }
            }
         }
