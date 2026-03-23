@@ -77,27 +77,6 @@ var fastJSONNumber = jsoniter.Config{
 	UseNumber:              true,
 }.Froze()
 
-var bufferPool = sync.Pool{
-	New: func() any {
-		return new(bytes.Buffer)
-	},
-}
-
-// getBuffer returns a bytes.Buffer from the pool.
-func getBuffer() *bytes.Buffer {
-	return bufferPool.Get().(*bytes.Buffer)
-}
-
-// putBuffer returns a bytes.Buffer to the pool after resetting it.
-func putBuffer(b *bytes.Buffer) {
-	if b.Cap() > 64*1024 {
-		// Do not pool very large buffers to prevent temporary memory spikes
-		return
-	}
-	b.Reset()
-	bufferPool.Put(b)
-}
-
 // Tool is the fundamental interface for any executable tool in the system.
 //
 // Summary: Interface for defining and executing tools.
@@ -921,10 +900,7 @@ func (t *HTTPTool) logRequest(ctx context.Context, httpReq *http.Request, body i
 	}
 
 	// Log headers
-	// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool for O(1) memory reuse under high throughput HTTP traffic.
-	// Randomized Selection from Top 5 High-Impact Targets (Memory)
-	headerBuf := getBuffer()
-	defer putBuffer(headerBuf)
+	var headerBuf bytes.Buffer
 	headerBuf.WriteString(fmt.Sprintf("%s %s %s\n", httpReq.Method, pathAndQuery, httpReq.Proto))
 	headerBuf.WriteString(fmt.Sprintf("Host: %s\n", httpReq.Host))
 	for k, v := range httpReq.Header {
@@ -1265,10 +1241,7 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		// Log headers
-		// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool for O(1) memory reuse under high throughput HTTP traffic.
-		// Randomized Selection from Top 5 High-Impact Targets (Memory)
-		headerBuf := getBuffer()
-		defer putBuffer(headerBuf)
+		var headerBuf bytes.Buffer
 		headerBuf.WriteString(fmt.Sprintf("%s %s\n", resp.Proto, resp.Status))
 		for k, v := range resp.Header {
 			val := strings.Join(v, ", ")
@@ -2279,16 +2252,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		}
 		// We don't defer stdin.Close() here because we close it in the writer goroutine
 
-		// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool for O(1) memory reuse during command execution streams.
-		// Randomized Selection from Top 5 High-Impact Targets (Memory)
-		stderrBuf := getBuffer()
-		// We cannot defer putBuffer here because the goroutine below writes to it.
-		// It will be manually returned to the pool only after stderrDone is closed.
+		var stderrBuf bytes.Buffer
 		stderrDone := make(chan struct{})
 		go func() {
 			defer close(stderrDone)
 			defer func() { _ = stderr.Close() }()
-			_, _ = io.Copy(stderrBuf, io.LimitReader(stderr, limit))
+			_, _ = io.Copy(&stderrBuf, io.LimitReader(stderr, limit))
 		}()
 
 		var unmarshaledInputs map[string]interface{}
@@ -2308,19 +2277,10 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		}()
 
 		var result map[string]interface{}
-		decodeErr := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result)
-		<-stderrDone
-
-		if decodeErr != nil {
-			// Get string before returning buffer
-			errMsg := redactor.Redact(stderrBuf.String())
-			putBuffer(stderrBuf)
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", decodeErr, errMsg)
+		if err := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
+			<-stderrDone
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, redactor.Redact(stderrBuf.String()))
 		}
-
-		// Now that the goroutine has definitively exited, we can safely return the buffer.
-		putBuffer(stderrBuf)
-
 		return result, nil
 	}
 
@@ -2329,13 +2289,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		return nil, fmt.Errorf("failed to execute command: %w", err)
 	}
 
-	// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool for O(1) memory reuse during command execution streams.
-	// Randomized Selection from Top 5 High-Impact Targets (Memory)
-	stdoutBuf := getBuffer()
-	stderrBuf := getBuffer()
-	// We cannot defer putBuffer here because the goroutines below write to them.
-	// They will be manually returned to the pool only after wg.Wait() completes.
-
+	var stdoutBuf, stderrBuf bytes.Buffer
 	var combinedBuf threadSafeBuffer
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -2343,12 +2297,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	go func() {
 		defer wg.Done()
 		defer func() { _ = stdout.Close() }()
-		_, _ = io.Copy(io.MultiWriter(stdoutBuf, &combinedBuf), io.LimitReader(stdout, limit))
+		_, _ = io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), io.LimitReader(stdout, limit))
 	}()
 	go func() {
 		defer wg.Done()
 		defer func() { _ = stderr.Close() }()
-		_, _ = io.Copy(io.MultiWriter(stderrBuf, &combinedBuf), io.LimitReader(stderr, limit))
+		_, _ = io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), io.LimitReader(stderr, limit))
 	}()
 
 	wg.Wait()
@@ -2682,16 +2636,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 		// We don't defer stdin.Close() here because we close it in the writer goroutine
 
-		// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool for O(1) memory reuse during command execution streams.
-		// Randomized Selection from Top 5 High-Impact Targets (Memory)
-		stderrBuf := getBuffer()
-		// We cannot defer putBuffer here because the goroutine below writes to it.
-		// It will be manually returned to the pool only after stderrDone is closed.
+		var stderrBuf bytes.Buffer
 		stderrDone := make(chan struct{})
 		go func() {
 			defer close(stderrDone)
 			defer func() { _ = stderr.Close() }()
-			_, _ = io.Copy(stderrBuf, io.LimitReader(stderr, limit))
+			_, _ = io.Copy(&stderrBuf, io.LimitReader(stderr, limit))
 		}()
 
 		var unmarshaledInputs map[string]interface{}
@@ -2711,19 +2661,10 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}()
 
 		var result map[string]interface{}
-		decodeErr := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result)
-		<-stderrDone
-
-		if decodeErr != nil {
-			// Get string before returning buffer
-			errMsg := redactor.Redact(stderrBuf.String())
-			putBuffer(stderrBuf)
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", decodeErr, errMsg)
+		if err := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
+			<-stderrDone
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, redactor.Redact(stderrBuf.String()))
 		}
-
-		// Now that the goroutine has definitively exited, we can safely return the buffer.
-		putBuffer(stderrBuf)
-
 		return result, nil
 	}
 
@@ -2732,13 +2673,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return nil, fmt.Errorf("failed to execute command: %w", err)
 	}
 
-	// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool for O(1) memory reuse during command execution streams.
-	// Randomized Selection from Top 5 High-Impact Targets (Memory)
-	stdoutBuf := getBuffer()
-	stderrBuf := getBuffer()
-	// We cannot defer putBuffer here because the goroutines below write to them.
-	// They will be manually returned to the pool only after wg.Wait() completes.
-
+	var stdoutBuf, stderrBuf bytes.Buffer
 	var combinedBuf threadSafeBuffer
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -2746,12 +2681,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	go func() {
 		defer wg.Done()
 		defer func() { _ = stdout.Close() }()
-		_, _ = io.Copy(io.MultiWriter(stdoutBuf, &combinedBuf), io.LimitReader(stdout, limit))
+		_, _ = io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), io.LimitReader(stdout, limit))
 	}()
 	go func() {
 		defer wg.Done()
 		defer func() { _ = stderr.Close() }()
-		_, _ = io.Copy(io.MultiWriter(stderrBuf, &combinedBuf), io.LimitReader(stderr, limit))
+		_, _ = io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), io.LimitReader(stderr, limit))
 	}()
 
 	wg.Wait()
@@ -2830,12 +2765,9 @@ func prettyPrint(input []byte, contentType string) string {
 		// Redact sensitive keys
 		input = util.RedactJSON(input)
 
-		// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool to minimize GC pressure during intensive logging operations.
-		// Randomized Selection from Top 5 High-Impact Targets (Memory)
-		prettyJSON := getBuffer()
-		defer putBuffer(prettyJSON)
+		var prettyJSON bytes.Buffer
 		// Use stdjson for Indent
-		if err := stdjson.Indent(prettyJSON, input, "", "  "); err == nil {
+		if err := stdjson.Indent(&prettyJSON, input, "", "  "); err == nil {
 			return prettyJSON.String()
 		}
 		// If JSON parsing fails, fall through to return string(input)
@@ -2844,11 +2776,8 @@ func prettyPrint(input []byte, contentType string) string {
 	// Try XML
 	if strings.Contains(contentType, "xml") {
 		decoder := xml.NewDecoder(bytes.NewReader(input))
-		// ⚡ BOLT: Replaced heap-allocated bytes.Buffer with sync.Pool to minimize GC pressure during intensive logging operations.
-		// Randomized Selection from Top 5 High-Impact Targets (Memory)
-		buf := getBuffer()
-		defer putBuffer(buf)
-		encoder := xml.NewEncoder(buf)
+		var buf bytes.Buffer
+		encoder := xml.NewEncoder(&buf)
 		encoder.Indent("", "  ")
 
 		var stack []string
@@ -4648,4 +4577,44 @@ func checkWordSuffix(word []byte, keywords []string, runes []rune, nextIdx int, 
 		return nil
 	}
 	return nil
+}
+
+
+// bufferPool is a sync.Pool for bytes.Buffer to reduce allocations.
+//
+// Summary: Provides a thread-safe pool of bytes.Buffer objects to minimize heap allocations during tool execution.
+// Parameters: None
+// Returns: A sync.Pool instance.
+// Errors: None
+// Side Effects: Modifies memory allocations.
+var bufferPool = sync.Pool{
+	New: func() interface{} {
+		return new(bytes.Buffer)
+	},
+}
+
+// getBuffer returns a bytes.Buffer from the pool.
+//
+// Summary: Retrieves a bytes.Buffer from the shared bufferPool.
+// Parameters: None
+// Returns:
+//   - *bytes.Buffer: A pointer to a ready-to-use bytes.Buffer.
+// Errors: None
+// Side Effects: None
+func getBuffer() *bytes.Buffer {
+	return bufferPool.Get().(*bytes.Buffer)
+}
+
+// putBuffer resets and returns a bytes.Buffer to the pool.
+//
+// Summary: Resets the provided bytes.Buffer and returns it to the bufferPool for reuse.
+// Parameters:
+//   - buf (*bytes.Buffer): The buffer to return to the pool.
+// Returns: None
+// Errors: None
+// Side Effects:
+//   - Clears the contents of the provided buffer.
+func putBuffer(buf *bytes.Buffer) {
+	buf.Reset()
+	bufferPool.Put(buf)
 }
