@@ -50,7 +50,7 @@ MCP Any, as the universal infrastructure layer, must provide a standardized way 
 * **Monolithic Context Engines:** Rejected because it lacks the flexibility to bridge between OpenClaw, AutoGen, and Gemini's native context formats.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** Mission-root anchors are cryptographically signed. Subagents can add "Branch Anchors" but can -- not mutate the "Root Anchor" without parent-level re-attestation.
+* **Security (Zero Trust):** Mission-root anchors are cryptographically signed. Subagents can add "Branch Anchors" but cannot mutate the "Root Anchor" without parent-level re-attestation.
 * **Observability:** CAM will export "Alignment Scores" showing how closely active reasoning fragments align with the pinned anchors.
 
 ## 7. Evolutionary Changelog

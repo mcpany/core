@@ -40,9 +40,9 @@
 - [ ] **[P0] Inter-Agent Mailbox Monitor**: (2026-03-17) Visual tracking and security auditing of teammate-to-teammate coordination messages.
 - [ ] **[P1] RL Reward Attestation Viewer**: (2026-03-17) UI for monitoring verifiable binary rewards and reasoning optimization metrics.
 - [x] **[P1] Tool Playground & Explorer**:
-  - [x] Auto-generated forms from Tool JSON Schemas.
-  - [x] "Execute" button with history and result visualization.
-  - [x] "Copy as Curl/Python" code generation.
+- [x] Auto-generated forms from Tool JSON Schemas.
+- [x] "Execute" button with history and result visualization.
+- [x] "Copy as Curl/Python" code generation.
 - [ ] **[P1] Live Marble Diagrams**: Reactive visualization of concurrent agent flows, tool calls, and dependencies.
 - [ ] **[P1] Interactive Debugger**:
 - [ ] Breakpoint management for tool calls.
@@ -55,13 +55,13 @@
 ### Existing Planned Features
 
 - [ ] **Advanced Service Configuration & Sharing**:
-  - [x] Visual editor for detailed service configuration (Connection, Auth, Advanced).
-  - [x] Service Duplication: One-click cloning of existing services.
-  - [x] Service Export: Download service configuration as JSON.
+- [x] Visual editor for detailed service configuration (Connection, Auth, Advanced).
+- [x] Service Duplication: One-click cloning of existing services.
+- [x] Service Export: Download service configuration as JSON.
 - [ ] Import external services via gRPC auto-discovery or OpenAPI specs.
 - [ ] Export and share service configurations.
 - [x] **Service Connection Diagnostic Tool**: Interactive tool to diagnose connection issues with upstream services (DNS, Handshake, Capabilities) - Added based on Ecosystem Audit.
-  - _Update_: Enhanced with WebSocket support and browser-side connectivity probing.
+- _Update_: Enhanced with WebSocket support and browser-side connectivity probing.
 - [x] **Integrated Connection Diagnostics**: Added direct access to the Connection Diagnostic tool from the Service List status indicator, allowing users to quickly troubleshoot failed services.
 - [x] **Context-Aware Error Suggestions**: When a service error occurs, use heuristics to suggest a fix in the Connection Diagnostic dialog.
 - [x] **Fix E2E Testing Infrastructure**: Resolve persistent CI failures in `e2e-parallel` by implementing robust backend mocking for the Settings & Secrets page tests.
@@ -520,31 +520,31 @@
 - [ ] **[P0] Fragment Sovereignty Auditor**: (2026-06-08) Security dashboard for verifying ARI-attestation status across the teammate mesh.
 
 #### Upcoming ([2026-06-07] Evolution)
-- **Semantic Shadowing Dashboard**: (P0) A behavioral security workspace for the AID Hub that visualizes stylometric and contextual consistency alerts.
-- **Mission-Locked Execution (MLE) Visualizer**: (P0) Security UI for viewing and auditing cryptographically locked tool calls and their mission-root lineage.
-- **STR-Native Discovery Status**: (P1) Real-time monitor for "Sovereign Tool Registry" behavioral manifests and TPM-attestation events.
-- **Ephemeral Mission Root Monitor**: (P1) Lifecycle manager UI for monitoring the temporal sovereignty of mission-root tokens.
+- Semantic Shadowing Dashboard**: (P0) A behavioral security workspace for the AID Hub that visualizes stylometric and contextual consistency alerts.
+- Mission-Locked Execution (MLE) Visualizer**: (P0) Security UI for viewing and auditing cryptographically locked tool calls and their mission-root lineage.
+- STR-Native Discovery Status**: (P1) Real-time monitor for "Sovereign Tool Registry" behavioral manifests and TPM-attestation events.
+- Ephemeral Mission Root Monitor**: (P1) Lifecycle manager UI for monitoring the temporal sovereignty of mission-root tokens.
 
 #### Upcoming ([2026-06-05] Evolution)
-- **Intent-Splicing Audit Log**: (P0) Forensic UI for reviewing deconstructed inter-agent messages and splicing attempts.
-- **Capability Accountability Dashboard**: (P0) Real-time tracker for session-bound capabilities and their lineage-aware expiration.
-- **HAIL Lineage Tracer**: (P0) Visual debugger for hardware-attested intent lineage (HAIL), mapping tool calls to root mission intents.
-- **Synthetic Policy Workspace**: (P1) Interactive environment for reviewing and approving mesh-synthesized security policies.
+- Intent-Splicing Audit Log**: (P0) Forensic UI for reviewing deconstructed inter-agent messages and splicing attempts.
+- Capability Accountability Dashboard**: (P0) Real-time tracker for session-bound capabilities and their lineage-aware expiration.
+- HAIL Lineage Tracer**: (P0) Visual debugger for hardware-attested intent lineage (HAIL), mapping tool calls to root mission intents.
+- Synthetic Policy Workspace**: (P1) Interactive environment for reviewing and approving mesh-synthesized security policies.
 
 #### Upcoming ([2026-06-04] Evolution)
-- **Speculative Sanitization Dashboard**: Visualization of neutralized speculative poisoned fragments and their sources.
-- **Mission-Root Gravity Status**: Real-time monitoring of "Semantic Drift" and mission-root anchoring across agent teammate shards.
-- **Multi-Hop Trust Persistence Monitor**: Detailed view of hardware-attested trust leases and their propagation across deep swarms.
+- Speculative Sanitization Dashboard**: Visualization of neutralized speculative poisoned fragments and their sources.
+- Mission-Root Gravity Status**: Real-time monitoring of "Semantic Drift" and mission-root anchoring across agent teammate shards.
+- Multi-Hop Trust Persistence Monitor**: Detailed view of hardware-attested trust leases and their propagation across deep swarms.
 
 #### Upcoming ([2026-06-06] Evolution)
-- **Intent-Splicing Audit Log**: (P0) Real-time visualization of semantically deconstructed inter-agent messages and blocked splicing attempts.
-- **CGC Lifecycle Manager**: (P0) Security dashboard for monitoring capability garbage collection and identifying "Ghost Agents."
-- **MRLA Handshake Debugger**: (P0) Forensic UI for visualizing A2A discovery handshakes and mission-root lineage proofs.
+- Intent-Splicing Audit Log**: (P0) Real-time visualization of semantically deconstructed inter-agent messages and blocked splicing attempts.
+- CGC Lifecycle Manager**: (P0) Security dashboard for monitoring capability garbage collection and identifying "Ghost Agents."
+- MRLA Handshake Debugger**: (P0) Forensic UI for visualizing A2A discovery handshakes and mission-root lineage proofs.
 
 #### Upcoming ([2026-06-09] Evolution)
-- **Mesh-Resident Lineage Tracker**: (P0) Visualizer for auditing hardware-attested reasoning chains across multi-hop delegations. (Added: 2026-06-09)
-- **Context Attention Monitor**: (P0) Real-time tracker for CWP-pinned fragments and context-flooding alerts. (Added: 2026-06-09)
-- **Ephemeral Credential Vault**: (P1) UI for managing task-specific JWTs and mission-bound credential lifetimes. (Added: 2026-06-09)
+- Mesh-Resident Lineage Tracker**: (P0) Visualizer for auditing hardware-attested reasoning chains across multi-hop delegations. (Added: 2026-06-09)
+- Context Attention Monitor**: (P0) Real-time tracker for CWP-pinned fragments and context-flooding alerts. (Added: 2026-06-09)
+- Ephemeral Credential Vault**: (P1) UI for managing task-specific JWTs and mission-bound credential lifetimes. (Added: 2026-06-09)
 
 #### Upcoming ([2026-06-10] Evolution)
 - [ ] **[P0] L7 Semantic Inspection Monitor**: (P0) Real-time visualization of high-entropy semantic validation events and REE neutralization. (Added: 2026-06-10)

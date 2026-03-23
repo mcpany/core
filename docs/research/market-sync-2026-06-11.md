@@ -7,7 +7,7 @@
 - **ContextEngine v3.3.0**: Now supports "Asynchronous Shard Reconciliation," allowing parallel agents to merge divergent state without the 150ms "Streaming Tax" observed in earlier v3.2 builds.
 
 ### Gemini CLI
-- **HAAL (Hardware-Attested Attention Locking)**: A new standard to counter "Reasoning Entropy Exhaustion" (REE). HAAL allows the mission root to cryptographically "lock" specific attention heads in the LLM, ensuring critical intent fragments can -- not be evicted by high-entropy noise injected by subagents.
+- **HAAL (Hardware-Attested Attention Locking)**: A new standard to counter "Reasoning Entropy Exhaustion" (REE). HAAL allows the mission root to cryptographically "lock" specific attention heads in the LLM, ensuring critical intent fragments cannot be evicted by high-entropy noise injected by subagents.
 - **ARE v1.6**: Introduced "Mission-Root Budget Continuity," allowing reasoning-effort budgets to persist across multiple framework-neutral handoffs (e.g., from Gemini to OpenClaw).
 
 ### Claude Code

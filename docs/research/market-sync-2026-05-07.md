@@ -8,7 +8,7 @@
 
 ### 2. Rise of Programmatic Agent Control (OpenCode SDK)
 - **Finding**: The emergence of the OpenCode SDK (v2026.1) signals a shift from "Chat-First" to "Code-First" agent interaction. Developers are increasingly using type-safe SDKs to programmatically control agent behaviors, tool access, and context injection.
-- **Impact**: We must provide "Programmatic SDK Boundary Enforcement" to ensure that agents controlled via external SDKs can -- not bypass the Universal Agent Bus's security and policy layers.
+- **Impact**: We must provide "Programmatic SDK Boundary Enforcement" to ensure that agents controlled via external SDKs cannot bypass the Universal Agent Bus's security and policy layers.
 
 ## Autonomous Agent Pain Points
 
