@@ -35,7 +35,7 @@ jobs:
           name: Early Return if only UI changed
           command: |
             echo "Skipping Go linting since we only modified UI."
-            if ! git diff --name-only origin/main...HEAD | grep -qv '^ui/'; then
+            if ! git diff --name-only origin/main...HEAD | grep -qvE '^(ui/|\.circleci/|go\.work\.sum)'; then
               echo "Only UI files changed. Bypassing slow golangci-lint which triggers OOMs."
               circleci-agent step halt
             fi
