@@ -1,10 +1,4 @@
 # Market Sync: 2026-06-18
-
-## Ecosystem Updates
-- **OpenClaw v2026.4.1**: Released with "Context-Window Ghosting" (CVE-2026-71002) mitigations.
-- **Gemini CLI v0.33.0**: Introduced "Reasoning Effort" headers for compute negotiation.
-- **Claude Code**: Horizontal collaboration via "TeammateTool" with stylometric attestation.
-
-## Strategic Gaps
-- **Attention Sovereignty**: Need for locking context fragments.
-- **Reasoning Budgets**: Need for phase-bound spend control.
+- OpenClaw v2026.4.1 mitigations for CVE-2026-71002 (Context-Window Ghosting).
+- Gemini CLI "Reasoning Effort" headers for budget negotiation.
+- Claude Code horizontal collaboration via "TeammateTool".

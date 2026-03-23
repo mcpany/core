@@ -39,7 +39,7 @@ var initOnce sync.Once
 
 // Initialize prepares the metrics system.
 //
-// Summary: Initializes the system.
+// Summary: Initializes the metrics system.
 //
 // Parameters: None.
 //
@@ -55,7 +55,7 @@ func Initialize() error {
 		}
 		conf := armonmetrics.DefaultConfig("mcpany")
 		conf.EnableHostname = false
-		if _, globalErr := armonmetrics.NewGlobal(conf, sink); err != nil {
+		if _, globalErr := armonmetrics.NewGlobal(conf, sink); globalErr != nil {
 			err = globalErr
 			return
 		}
@@ -105,14 +105,14 @@ func StartServer(addr string) error {
 	return server.Serve(ln)
 }
 
-// SetGauge sets a gauge.
+// SetGauge sets a gauge value.
 //
 // Summary: Sets a gauge value.
 //
 // Parameters:
 //   - name (string): Metric name.
 //   - val (float32): Value.
-//   - labels (...string): Labels.
+//   - labels (...string): Optional labels.
 func SetGauge(name string, val float32, labels ...string) {
 	var metricLabels []armonmetrics.Label
 	if len(labels) > 0 {
@@ -139,14 +139,14 @@ func IncrCounter(name []string, val float32) {
 // Parameters:
 //   - name ([]string): Metric path.
 //   - val (float32): Increment amount.
-//   - labels ([]armonmetrics.Label): Labels.
+//   - labels ([]armonmetrics.Label): List of labels.
 func IncrCounterWithLabels(name []string, val float32, labels []armonmetrics.Label) {
 	armonmetrics.IncrCounterWithLabels(name, val, labels)
 }
 
 // MeasureSince records a latency.
 //
-// Summary: Records latency since start.
+// Summary: Records latency since a given start time.
 //
 // Parameters:
 //   - name ([]string): Metric path.
@@ -157,35 +157,35 @@ func MeasureSince(name []string, start time.Time) {
 
 // MeasureSinceWithLabels records a labeled latency.
 //
-// Summary: Records labeled latency since start.
+// Summary: Records labeled latency since a given start time.
 //
 // Parameters:
 //   - name ([]string): Metric path.
 //   - start (time.Time): Start time.
-//   - labels ([]armonmetrics.Label): Labels.
+//   - labels ([]armonmetrics.Label): List of labels.
 func MeasureSinceWithLabels(name []string, start time.Time, labels []armonmetrics.Label) {
 	armonmetrics.MeasureSinceWithLabels(name, start, labels)
 }
 
-// AddSample adds a sample.
+// AddSample adds a sample to a histogram.
 //
-// Summary: Adds a sample to a histogram.
+// Summary: Adds a sample to a histogram metric.
 //
 // Parameters:
 //   - name ([]string): Metric path.
-//   - val (float32): Value.
+//   - val (float32): Sample value.
 func AddSample(name []string, val float32) {
 	armonmetrics.AddSample(name, val)
 }
 
-// AddSampleWithLabels adds a labeled sample.
+// AddSampleWithLabels adds a labeled sample to a histogram.
 //
-// Summary: Adds a labeled sample.
+// Summary: Adds a labeled sample to a histogram metric.
 //
 // Parameters:
 //   - name ([]string): Metric path.
-//   - val (float32): Value.
-//   - labels ([]armonmetrics.Label): Labels.
+//   - val (float32): Sample value.
+//   - labels ([]armonmetrics.Label): List of labels.
 func AddSampleWithLabels(name []string, val float32, labels []armonmetrics.Label) {
 	armonmetrics.AddSampleWithLabels(name, val, labels)
 }

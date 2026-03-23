@@ -116,3 +116,7 @@ The AIA Broker provides a mechanism for hardware-attested "Alignment Heartbeats,
 ### Update: 2026-06-18 - Resolving Multi-Modal Trace History
 **Context:** Research into horizontal teammates requires image-based trace alignment.
 **Changelog:** Added Stylometric Attestation and Alignment Heartbeats.
+
+### Update: 2026-06-18 - Resolving Multi-Modal Trace History
+**Context:** Research into TeammateTool reveals need for image-based reasoning traces.
+**Architecture Adjustment:** Added Stylometric Attestation and Alignment Heartbeats to Section 4.
