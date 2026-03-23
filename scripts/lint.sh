@@ -29,18 +29,19 @@ fi
 
 echo "==> Running golangci-lint..."
 # Use 'go run' to definitively ensure the linter is built with the project's Go version (1.26.1).
-# This prevents the "Go language version used to build golangci-lint is lower than the targeted Go version" error.
 export GOTOOLCHAIN=go1.26.1
 LINT_VERSION="v1.64.5"
 
+# Specify module-relative paths for the linter
 TARGETS=(
     "./server/..."
     "./proto/..."
     "./k8s/operator/..."
-    "./server/examples/upstream_service_demo/grpc/greeter_server/..."
 )
 
 echo "    Linting targets: ${TARGETS[*]}"
+# Use GOWORK=off if needed, but normally linter handles it.
+# We explicitly set GOTOOLCHAIN to avoid any auto-downgrade.
 go run github.com/golangci/golangci-lint/cmd/golangci-lint@${LINT_VERSION} run --timeout 20m --fix --config server/.golangci.yml "${TARGETS[@]}"
 echo "    golangci-lint OK."
 
