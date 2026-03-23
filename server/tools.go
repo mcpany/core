@@ -5,8 +5,6 @@
 // +build tools
 
 // Package main provides toolchain dependencies.
-//
-// Summary: Dependency pinning for build tools.
 package main
 
 import (
