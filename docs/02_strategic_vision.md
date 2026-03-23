@@ -359,7 +359,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ---
 
 ## Strategic Evolution: [2026-03-14] (Validation)
-### Focus: Browser-Origin Validation & Intent-Preserving Context
+### Focus: Browser-Origin Validation & Intent-Preserving Context (Core)
 **Context**: The OpenClaw security crisis (CVE-2026-25253) reveals that "Local Trust" is a flawed assumption when browser-based attacks can bridge the gap. Simultaneously, the rise of "Context Ghosting" in swarms emphasizes that context compression must be intent-aware to maintain mission stability.
 **Strategic Pivot**:
 - **Zero-Trust Browser Origin Validation**: MCP Any will implement mandatory `Origin` and `Sec-Fetch-Site header verification for all local API/WebSocket endpoints. This ensures that only authorized local applications (not malicious websites) can communicate with the gateway.
@@ -470,7 +470,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ---
 
 ## Strategic Evolution: [2026-03-14]
-### Focus: Browser-Origin Validation & Intent-Preserving Context
+### Focus: Browser-Origin Validation & Intent-Preserving Context (Standardization)
 **Context**: The OpenClaw security crisis (CVE-2026-25253) reveals that "Local Trust" is a flawed assumption when browser-based attacks can bridge the gap. Simultaneously, the rise of "Context Ghosting" in swarms emphasizes that context compression must be intent-aware to maintain mission stability.
 **Strategic Pivot**:
 - **Zero-Trust Browser Origin Validation**: MCP Any will implement mandatory `Origin` and `Sec-Fetch-Site` header verification for all local API/WebSocket endpoints. This ensures that only authorized local applications (not malicious websites) can communicate with the gateway.
