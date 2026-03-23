@@ -42,18 +42,7 @@ if [ "$CI" != "true" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
     LINT_ARGS="$LINT_ARGS --fix"
 fi
 
-for pkg in $(cd server && go list ./... | grep -v "/vendor/"); do
-    pkg_path=$(echo "$pkg" | sed 's|github.com/mcpany/core/server||')
-    if [ "$pkg_path" == "" ]; then
-        pkg_path="."
-    else
-        pkg_path=".$pkg_path"
-    fi
-    if [ -d "server/$pkg_path" ]; then
-        echo "Linting server/$pkg_path"
-        (cd server && "$GOLANGCI_LINT_BIN" run --concurrency 1 $LINT_ARGS "$pkg_path") || exit 1
-    fi
-done
+cd server && "$GOLANGCI_LINT_BIN" run --concurrency 1 $LINT_ARGS ./...
 cd "$PROJECT_ROOT"
 
 echo "Running pre-commit..."
