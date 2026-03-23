@@ -61,6 +61,14 @@ The Atomic Reasoning Integrity (ARI) Validator is needed to perform fragment-lev
 ## 7. Evolutionary Changelog
 * **2026-06-08:** Initial Document Creation.
 
+### Update: 2026-06-29 - Intent Reflection Defense
+**Context:** Today's research reveals the "Intent Reflection" exploit, where subagents trick the validator into approving unauthorized tool calls by mimicking parent approved instructions.
+**Architecture Adjustment:**
+* Introducing **Recursive Attestation-Chaining** in Section 4.
+* The Validator now mandates that every reasoning fragment in the shard carry a hash-chain of all previous hops, recursively signed by the framework's hardware root.
+* Fragment validation now requires a cryptographic match against the *original* mission-root intent rather than just the immediate parent's state.
+**Security Impact:** Neutralizes mimicry-based hijacking by requiring a non-repudiable lineage back to the user's initial authorization.
+
 ### Update: 2026-06-09 - RIV Integration & Multi-Hop Lineage
 **Context:** Today's research into "Recursive Mesh Hijacking" revealed that fragment-level consistency is bypassable in deep meshes without ancestral lineage verification.
 **Architecture Adjustment:**

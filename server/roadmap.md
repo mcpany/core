@@ -161,6 +161,12 @@
 *   **[P0] MSSG Auditor Sidecars**: Integration of independent, sandboxed security auditor agents for real-time skill grafting validation. (Added: 2026-06-28)
 *   **[P1] Latency-Aware Attestation (LAA)**: Dynamic optimization of attestation depth based on mission-root risk to neutralize "Cognitive Stall." (Added: 2026-06-28)
 
+#### Upcoming (2026-06-29 Evolution)
+*   **[P0] Speculative Intent Buffer (SIB)**: Predictive orchestration service to pre-verify likely tool call paths and eliminate reasoning latency. (Added: 2026-06-29)
+*   **[P0] Reasoning Entropy Filter (REF)**: Semantic middleware performing statistical analysis of ARE headers to detect instruction-smuggling in noise. (Added: 2026-06-29)
+*   **[P0] Conflict-Free Intent Streams (CFIS)**: Mailbox coordination upgrade enforcing mission-root priority sovereignty in teammate shards. (Added: 2026-06-29)
+*   **[P0] Recursive Attestation-Chaining**: Identity provider extension for mandatory hardware-bound multi-hop trust lineage. (Added: 2026-06-29)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

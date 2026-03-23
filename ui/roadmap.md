@@ -661,3 +661,9 @@
 #### Upcoming (2026-06-28 Evolution)
 - [ ] **[P0] MSSG Sidecar Monitor**: Real-time visualization of sandboxed auditor agent traces and grafting status. (Added: 2026-06-28)
 - [ ] **[P1] Attestation Latency Heatmap**: Visual tracker for cognitive stall events and LAA-optimized attestation paths. (Added: 2026-06-28)
+
+#### Upcoming (2026-06-29 Evolution)
+- [ ] **[P0] Speculative Orchestration Visualizer**: Real-time Gantt chart showing pre-verified tool call paths and buffer status. (Added: 2026-06-29)
+- [ ] **[P0] Reasoning Entropy Heatmap**: Dashboard for visualizing ARE header entropy and blocked smuggling attempts. (Added: 2026-06-29)
+- [ ] **[P0] Intent Priority Monitor**: Visual tracker for CFIS-sharded mailboxes, highlighting mission-root sovereignty. (Added: 2026-06-29)
+- [ ] **[P0] Attestation Chain Inspector**: Forensic UI for verifying recursive hardware signatures in multi-hop delegations. (Added: 2026-06-29)

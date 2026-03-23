@@ -1511,3 +1511,15 @@
 ### Priority Shifts
 - **Multi-Signature Skill Grafting (MSSG) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Auditor Sidecar** behavioral analysis.
 - **Distributed Trust Lease Broker**: (Re-affirmed P0) Evolving to support the new **LAA-compliant** dynamic lease scaling.
+
+## Evolution: [2026-06-29] Updates
+
+### Proposed Additions
+- **Speculative Intent Buffer (SIB)**: (P0) Predictive orchestration service that pre-verifies likely tool call paths in an isolated buffer to neutralize "Cognitive Stall."
+- **Reasoning Entropy Filter (REF)**: (P0) High-speed security middleware performing statistical analysis of ARE headers to detect hidden exfiltration in reasoning noise.
+- **Conflict-Free Intent Stream (CFIS) Manager**: (P0) Authoritative coordination service for horizontal meshes that enforces mission-root priority sovereignty over teammate mailbox shards.
+- **Recursive Attestation-Chaining Provider**: (P0) Identity extension for the SMI Relay mandating that trust tokens be recursively signed by every hop in the delegation chain.
+
+### Priority Shifts
+- **Speculative Execution Guard**: (Re-affirmed P0) Now elevated with the requirement for **SIB-compliant** pre-verification.
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving into the **CFIS Manager** to counter Mailbox Shadowing.
