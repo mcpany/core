@@ -41,7 +41,7 @@ func TestOperatorE2E(t *testing.T) {
 
 	rootDir, err := getRootDir()
 	if err != nil {
-		fmt.Printf("Skipping E2E test: %v", err)
+		t.Skipf("Skipping E2E test: %v", err)
 	}
 	t.Logf("Project root detected: %s", rootDir)
 
@@ -203,7 +203,7 @@ func checkPrerequisites(t *testing.T) {
 	deps := []string{"kind", "kubectl", "helm", "docker"}
 	for _, dep := range deps {
 		if _, err := exec.LookPath(dep); err != nil {
-			fmt.Printf("Skipping E2E test: %s is not installed", dep)
+			t.Skipf("Skipping E2E test: %s is not installed", dep)
 		}
 	}
 }

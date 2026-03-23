@@ -309,7 +309,7 @@ func TestHelmChart(t *testing.T) {
 
 	helmPath := helmChartDir(t)
 	if _, err := os.Stat(helmPath); err != nil {
-		fmt.Printf("Helm chart directory not found at %s, skipping TestHelmChart.", helmPath)
+		t.Skipf("Helm chart directory not found at %s, skipping TestHelmChart.", helmPath)
 	}
 
 	// 1. Lint the chart
@@ -339,7 +339,7 @@ func TestK8sFullStack(t *testing.T) {
 
 	helmPath := helmChartDir(t)
 	if _, err := os.Stat(helmPath); err != nil {
-		fmt.Printf("Helm chart directory not found at %s, skipping TestK8sFullStack.", helmPath)
+		t.Skipf("Helm chart directory not found at %s, skipping TestK8sFullStack.", helmPath)
 	}
 
 	t.Parallel()

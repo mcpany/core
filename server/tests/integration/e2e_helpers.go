@@ -1226,7 +1226,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
 	if !IsDockerSocketAccessible() {
-		fmt.Println("Docker is not running or accessible or functional. Skipping test.")
+		t.Skip("Docker is not running or accessible or functional. Skipping test.")
 	}
 
 	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())
