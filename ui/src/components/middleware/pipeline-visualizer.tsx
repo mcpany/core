@@ -9,8 +9,10 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowUp, ArrowDown, Save, Loader2 } from "lucide-react";
+import { Save, Loader2, GripVertical } from "lucide-react";
 import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
+import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 
 interface Middleware {
     name: string;
@@ -52,18 +54,25 @@ export function PipelineVisualizer() {
         fetchSettings();
     }, []);
 
-    const moveUp = (index: number) => {
-        if (index === 0) return;
-        const newList = [...middlewares];
-        [newList[index - 1], newList[index]] = [newList[index], newList[index - 1]];
+    const onDragEnd = (result: DropResult) => {
+        if (!result.destination) return;
+
+        const sourceIndex = result.source.index;
+        const destinationIndex = result.destination.index;
+
+        if (sourceIndex === destinationIndex) return;
+
+        const newList = Array.from(middlewares);
+        const [reorderedItem] = newList.splice(sourceIndex, 1);
+        newList.splice(destinationIndex, 0, reorderedItem);
+
         updatePriorities(newList);
     };
 
-    const moveDown = (index: number) => {
-        if (index === middlewares.length - 1) return;
+    const toggleDisabled = (index: number, disabled: boolean) => {
         const newList = [...middlewares];
-        [newList[index + 1], newList[index]] = [newList[index], newList[index + 1]];
-        updatePriorities(newList);
+        newList[index].disabled = disabled;
+        setMiddlewares(newList);
     };
 
     const updatePriorities = (list: Middleware[]) => {
@@ -105,31 +114,47 @@ export function PipelineVisualizer() {
                 <Button onClick={saveOrder}><Save className="mr-2 h-4 w-4"/> Save Changes</Button>
             </CardHeader>
             <CardContent>
-                <div className="space-y-2">
-                    {middlewares.map((m, i) => (
-                        <div key={m.name} className="flex items-center justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors">
-                            <div className="flex items-center gap-4">
-                                <Badge variant="outline" className="w-8 h-8 flex items-center justify-center rounded-full">
-                                    {i + 1}
-                                </Badge>
-                                <div>
-                                    <div className="font-medium">{m.name}</div>
-                                    <div className="text-xs text-muted-foreground">Priority: {m.priority}</div>
-                                </div>
-                                {m.disabled && <Badge variant="destructive">Disabled</Badge>}
+                <DragDropContext onDragEnd={onDragEnd}>
+                    <Droppable droppableId="middleware-pipeline">
+                        {(provided) => (
+                            <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2">
+                                {middlewares.map((m, i) => (
+                                    <Draggable key={m.name} draggableId={m.name} index={i}>
+                                        {(provided) => (
+                                            <div
+                                                ref={provided.innerRef}
+                                                {...provided.draggableProps}
+                                                className="flex items-center justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors"
+                                            >
+                                                <div className="flex items-center gap-4">
+                                                    <div {...provided.dragHandleProps} className="cursor-grab hover:text-accent-foreground text-muted-foreground">
+                                                        <GripVertical className="h-5 w-5" />
+                                                    </div>
+                                                    <Badge variant="outline" className="w-8 h-8 flex items-center justify-center rounded-full">
+                                                        {i + 1}
+                                                    </Badge>
+                                                    <div>
+                                                        <div className="font-medium">{m.name}</div>
+                                                        <div className="text-xs text-muted-foreground">Priority: {m.priority}</div>
+                                                    </div>
+                                                    {m.disabled && <Badge variant="destructive">Disabled</Badge>}
+                                                </div>
+                                                <div className="flex gap-1 items-center">
+                                                    <Switch
+                                                        checked={!m.disabled}
+                                                        onCheckedChange={(checked) => toggleDisabled(i, !checked)}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </Draggable>
+                                ))}
+                                {provided.placeholder}
+                                {middlewares.length === 0 && <div className="text-center p-4 text-muted-foreground">No middlewares configured.</div>}
                             </div>
-                            <div className="flex gap-1">
-                                <Button variant="ghost" size="icon" disabled={i === 0} onClick={() => moveUp(i)}>
-                                    <ArrowUp className="h-4 w-4" />
-                                </Button>
-                                <Button variant="ghost" size="icon" disabled={i === middlewares.length - 1} onClick={() => moveDown(i)}>
-                                    <ArrowDown className="h-4 w-4" />
-                                </Button>
-                            </div>
-                        </div>
-                    ))}
-                     {middlewares.length === 0 && <div className="text-center p-4 text-muted-foreground">No middlewares configured.</div>}
-                </div>
+                        )}
+                    </Droppable>
+                </DragDropContext>
             </CardContent>
         </Card>
     );
