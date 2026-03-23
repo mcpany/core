@@ -28,6 +28,8 @@ type Severity int
 // Error provides documentation for Error.
 // Warning provides documentation for Warning.
 // Error provides documentation for Error.
+// Info defines the configuration value or constant for Info.
+// Error defines the configuration value or constant for Error.
 const (
 	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
 	// Summary: Defines Erro.

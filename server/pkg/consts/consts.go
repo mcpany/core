@@ -62,6 +62,25 @@ package consts
 // HeaderMcpSessionID provides documentation for HeaderMcpSessionID.
 // ContentTypeTextEventStream provides documentation for ContentTypeTextEventStream.
 // ContentTypeApplicationJSON provides documentation for ContentTypeApplicationJSON.
+// ContextKeyRemoteAddr defines the configuration value or constant for ContextKeyRemoteAddr.
+// DefaultMaxCommandOutputBytes defines the configuration value or constant for DefaultMaxCommandOutputBytes.
+// DefaultBindPort defines the configuration value or constant for DefaultBindPort.
+// NotificationResourcesListChanged defines the configuration value or constant for NotificationResourcesListChanged.
+// NotificationPromptsListChanged defines the configuration value or constant for NotificationPromptsListChanged.
+// MethodResourcesSubscribe defines the configuration value or constant for MethodResourcesSubscribe.
+// MethodResourcesRead defines the configuration value or constant for MethodResourcesRead.
+// MethodResourcesList defines the configuration value or constant for MethodResourcesList.
+// MethodPromptsGet defines the configuration value or constant for MethodPromptsGet.
+// MethodPromptsList defines the configuration value or constant for MethodPromptsList.
+// MethodToolsList defines the configuration value or constant for MethodToolsList.
+// MethodToolsCall defines the configuration value or constant for MethodToolsCall.
+// ToolNameServiceSeparator defines the configuration value or constant for ToolNameServiceSeparator.
+// DefaultOriginAllow defines the configuration value or constant for DefaultOriginAllow.
+// OauthCallbackPath defines the configuration value or constant for OauthCallbackPath.
+// MethodConfigureCache defines the configuration value or constant for MethodConfigureCache.
+// HeaderMcpSessionID defines the configuration value or constant for HeaderMcpSessionID.
+// ContentTypeTextEventStream defines the configuration value or constant for ContentTypeTextEventStream.
+// ContentTypeApplicationJSON defines the configuration value or constant for ContentTypeApplicationJSON.
 const (
 	// ContentTypeApplicationJSON defines the standard "application/json" content type.
 	// Summary: Defines ContentTypeApplicationJSON.
@@ -139,6 +158,8 @@ const (
 // CommandStatusSuccess provides documentation for CommandStatusSuccess.
 // CommandStatusError provides documentation for CommandStatusError.
 // CommandStatusSuccess provides documentation for CommandStatusSuccess.
+// CommandStatusTimeout defines the configuration value or constant for CommandStatusTimeout.
+// CommandStatusSuccess defines the configuration value or constant for CommandStatusSuccess.
 const (
 	// CommandStatusSuccess represents the status for a successful command execution.
 	// Summary: Defines CommandStatusSuccess.

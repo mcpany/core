@@ -21,6 +21,7 @@ import (
 // ErrPoolClosed provides documentation for ErrPoolClosed.
 // ErrPoolClosed provides documentation for ErrPoolClosed.
 // ErrPoolClosed provides documentation for ErrPoolClosed.
+// ErrPoolFull defines the configuration value or constant for ErrPoolFull.
 var (
 	// ErrPoolClosed is returned when an operation is attempted on a closed pool.
 	// Summary: Defines ErrPoolClosed.

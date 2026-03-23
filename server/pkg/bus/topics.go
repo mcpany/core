@@ -25,6 +25,13 @@ package bus
 // ServiceListRequestTopic provides documentation for ServiceListRequestTopic.
 // ServiceRegistrationResultTopic provides documentation for ServiceRegistrationResultTopic.
 // ServiceRegistrationRequestTopic provides documentation for ServiceRegistrationRequestTopic.
+// ToolExecutionResultTopic defines the configuration value or constant for ToolExecutionResultTopic.
+// ServiceGetResultTopic defines the configuration value or constant for ServiceGetResultTopic.
+// ServiceGetRequestTopic defines the configuration value or constant for ServiceGetRequestTopic.
+// ServiceListResultTopic defines the configuration value or constant for ServiceListResultTopic.
+// ServiceListRequestTopic defines the configuration value or constant for ServiceListRequestTopic.
+// ServiceRegistrationResultTopic defines the configuration value or constant for ServiceRegistrationResultTopic.
+// ServiceRegistrationRequestTopic defines the configuration value or constant for ServiceRegistrationRequestTopic.
 const (
 	// ServiceRegistrationRequestTopic defines the NATS subject for publishing service registration requests.
 	// Summary: Defines ServiceRegistrationRequestTopic.

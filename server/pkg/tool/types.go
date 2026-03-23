@@ -273,6 +273,9 @@ type Action int
 // ActionSaveCache provides documentation for ActionSaveCache.
 // ActionDeny provides documentation for ActionDeny.
 // ActionAllow provides documentation for ActionAllow.
+// ActionDeleteCache defines the configuration value or constant for ActionDeleteCache.
+// ActionDeny defines the configuration value or constant for ActionDeny.
+// ActionAllow defines the configuration value or constant for ActionAllow.
 const (
 	// ActionAllow indicates that the action is allowed to proceed.
 	//
