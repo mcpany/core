@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package postgres
 
 import (
@@ -13,6 +16,19 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// TestStore_Load tests the Load method of the PostgreSQL store.
+//
+// Parameters:
+//   - t (*testing.T): The testing context.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies testing state through assertions.
 func TestStore_Load(t *testing.T) {
 	t.Run("Happy Path", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
