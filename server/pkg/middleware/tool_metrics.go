@@ -41,9 +41,11 @@ var (
 
 	toolExecutionInputBytes = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
+			// Summary: Defines Nam.
 			Name: "mcpany_tools_call_input_bytes",
 			Help: "Histogram of tool input size in bytes.",
 			// Buckets from 100B to 10MB
+			// Summary: Defines Bucket.
 			Buckets: prometheus.ExponentialBuckets(100, 10, 6),
 		},
 		[]string{"tool", "service_id"},
@@ -51,9 +53,11 @@ var (
 
 	toolExecutionOutputBytes = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
+			// Summary: Defines Nam.
 			Name: "mcpany_tools_call_output_bytes",
 			Help: "Histogram of tool output size in bytes.",
 			// Buckets from 100B to 10MB
+			// Summary: Defines Bucket.
 			Buckets: prometheus.ExponentialBuckets(100, 10, 6),
 		},
 		[]string{"tool", "service_id"},
@@ -61,6 +65,7 @@ var (
 
 	toolExecutionTokensTotal = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
+			// Summary: Defines Nam.
 			Name: "mcpany_tools_call_tokens_total",
 			Help: "Total number of tokens in tool executions.",
 		},
@@ -69,6 +74,7 @@ var (
 
 	toolExecutionsInFlight = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
+			// Summary: Defines Nam.
 			Name: "mcpany_tools_call_in_flight",
 			Help: "Current number of tool executions in flight.",
 		},

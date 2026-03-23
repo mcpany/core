@@ -69,6 +69,20 @@ func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes GenerateJSONSchemaBytes operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func GenerateJSONSchemaBytes() ([]byte, error) {
 	cfg := configv1.McpAnyServerConfig_builder{}.Build()
 	schemaMap := GenerateSchemaMapFromProto(cfg.ProtoReflect())

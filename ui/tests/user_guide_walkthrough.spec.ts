@@ -37,7 +37,7 @@ test.describe('User Guide Walkthrough', () => {
     // Check for dialog opens
     await addButton.click();
     await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByText('New Service')).toBeVisible();
+    await expect(page.getByText('Select Service Template')).toBeVisible();
 
     // Close it
     await page.keyboard.press('Escape');
@@ -112,7 +112,7 @@ test.describe('User Guide Walkthrough', () => {
 
   test('Stack Composer', async ({ page }) => {
     await page.goto('/stacks');
-    await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Stacks', exact: true })).toBeVisible();
     // Check if stacks are present OR if the empty state with Create Stack button is shown
     // We relax this check because in a fresh environment without seeds, the list might be empty.
     const hasSystemStack = await page.getByText('mcpany-system').isVisible();
