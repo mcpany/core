@@ -25,8 +25,10 @@ type Label = metrics.Label
 // NewPrometheusSink creates a new Prometheus sink for metrics collection.
 //
 // Summary: Creates a Prometheus sink.
+// Parameters:
+//   - None.
 //
-// Returns: - error: An error if the operation fails.
+// Returns:
 //   - *prometheus.PrometheusSink: The initialized Prometheus sink.
 //   - error: An error if the sink creation fails.
 func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
@@ -42,7 +44,7 @@ var initOnce sync.Once
 // It sets up a global metrics collector that can be used throughout the application.
 // The metrics are exposed on the /metrics endpoint.
 //
-// Returns: - error: An error if the operation fails.
+// Returns:
 //   - error: An error if the initialization fails.
 func Initialize() error {
 	var err error
@@ -70,7 +72,7 @@ func Initialize() error {
 //
 // Summary: Retrieves the metrics HTTP handler.
 //
-// Returns: - error: An error if the operation fails.
+// Returns:
 //   - http.Handler: An http.Handler that serves the Prometheus metrics.
 func Handler() http.Handler {
 	return promhttp.Handler()
@@ -84,7 +86,7 @@ func Handler() http.Handler {
 //   - None.
 //   - addr: string. The address to listen on (e.g., ":8080").
 //
-// Returns: - error: An error if the operation fails.
+// Returns:
 //   - error: An error if the server fails to start.
 func StartServer(addr string) error {
 	mux := http.NewServeMux()
@@ -119,7 +121,7 @@ func StartServer(addr string) error {
 //   - None.
 //   - name: string. The name of the gauge.
 //   - val: float32. The value to set.
-//   - labels: ...string. A list of labels to apply to the gauge.
+//   - labels: .string. A list of labels to apply to the gauge.
 func SetGauge(name string, val float32, labels ...string) {
 	var metricLabels []metrics.Label
 	if len(labels) > 0 {

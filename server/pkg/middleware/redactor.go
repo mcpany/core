@@ -41,7 +41,7 @@ type Redactor struct {
 //   - config: *configv1.DLPConfig. The DLP configuration containing enabled status and custom patterns.
 //   - log: *slog.Logger. Logger for warning about invalid patterns.
 //
-// Returns: - error: An error if the operation fails.
+// Returns:
 //   - *Redactor: The initialized redactor, or nil if DLP is disabled or config is nil.
 //
 // Side Effects:
@@ -96,7 +96,7 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 //   - None.
 //   - data: []byte. The JSON data to redact.
 //
-// Returns: - error: An error if the operation fails.
+// Returns:
 //   - []byte: The redacted JSON data (or original if no redaction needed).
 //   - error: An error if JSON parsing fails (though often swallowed/ignored for safety).
 //
@@ -158,7 +158,7 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 //   - None.
 //   - s: string. The input string.
 //
-// Returns: - error: An error if the operation fails.
+// Returns:
 //   - string: The redacted string.
 //
 // Side Effects:
@@ -246,7 +246,7 @@ func (r *Redactor) RedactStruct(v map[string]interface{}) {
 //   - None.
 //   - val: interface{}. The value to redact.
 //
-// Returns: - error: An error if the operation fails.
+// Returns:
 //   - interface{}: The redacted value.
 //
 // Side Effects:
