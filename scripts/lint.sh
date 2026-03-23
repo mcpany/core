@@ -37,12 +37,22 @@ fi
 export GOGC=10
 export GOMEMLIMIT=256MiB
 
-LINT_ARGS="--timeout 20m"
+# Avoid parallel execution per package to avoid out of memory
+LINT_ARGS="--concurrency 1 --timeout 30m"
 if [ "$CI" != "true" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
     LINT_ARGS="$LINT_ARGS --fix"
 fi
 
-cd server && "$GOLANGCI_LINT_BIN" run --concurrency 1 $LINT_ARGS ./...
+# Build everything before linting to avoid ast lookup errors
+(cd server && go build -v ./...)
+
+for pkg in $(cd server && go list ./... | grep -v "/vendor/"); do
+    pkg_path=$(echo "$pkg" | sed 's|github.com/mcpany/core/server||')
+    if [ "$pkg_path" != "" ] && [ -d "server$pkg_path" ]; then
+        echo "Linting server$pkg_path"
+        (cd server && "$GOLANGCI_LINT_BIN" run $LINT_ARGS ".$pkg_path") || exit 1
+    fi
+done
 cd "$PROJECT_ROOT"
 
 echo "Running pre-commit..."
