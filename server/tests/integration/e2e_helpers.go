@@ -1724,7 +1724,6 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 	if _, ok := configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName]; !ok {
 		t.Fatalf("Invalid HTTP method provided: %s", httpMethod)
 	}
-	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
 	callID := "call-" + toolDef.GetName()
 	toolDef.SetCallId(callID)
@@ -1738,8 +1737,10 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 				callID: configv1.HttpCallDefinition_builder{
 					Id:           &callID,
 					EndpointPath: &endpointPath,
-					Method:       &method,
-					Parameters:   params,
+					Method: configv1.HttpCallDefinition_HttpMethod(
+						configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName],
+					).Ptr(),
+					Parameters: params,
 				}.Build(),
 			},
 		}.Build(),
@@ -2062,7 +2063,6 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 	if _, ok := configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName]; !ok {
 		t.Fatalf("Invalid HTTP method provided: %s", httpMethod)
 	}
-	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
 	toolDef := configv1.ToolDefinition_builder{Name: &operationID}.Build()
 	callID := "call-" + toolDef.GetName()
@@ -2077,7 +2077,9 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 				callID: configv1.HttpCallDefinition_builder{
 					Id:           &callID,
 					EndpointPath: &endpointPath,
-					Method:       &method,
+					Method: configv1.HttpCallDefinition_HttpMethod(
+						configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName],
+					).Ptr(),
 				}.Build(),
 			},
 		}.Build(),
