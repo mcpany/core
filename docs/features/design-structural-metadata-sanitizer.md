@@ -49,7 +49,8 @@ layer.
 ## 4. Design & Architecture
 
 - **System Flow:**
-  ```mermaid
+
+```mermaid
   graph TD
       A[MCP Discovery Payload] --> B[PNTD Provider]
       B --> C[SMS Sanitizer]
@@ -59,7 +60,9 @@ layer.
       F -- Yes --> G[Redact & Flag Tool]
       F -- No --> H[Sign & Publish to Discovery Bus]
       I[TPM Metadata Signer] --> H
-  ```
+
+```
+
 - **APIs / Interfaces:**
   - `sms.SanitizeSchema(schema) -> SanitizedSchema`: Processes a full tool
     schema.

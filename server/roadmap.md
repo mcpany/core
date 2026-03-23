@@ -196,7 +196,7 @@
 - **[P1] Hardware-Bound Trust Continuity**: TPM/Secure Enclave signatures to
   persist trust for verified headless agents. (Added: 2026-03-21)
 
-#### Upcoming (2026-03-17 Evolution) (Unknown Part 2)
+#### Upcoming (2026-03-17 Evolution) - UniquePart 2
 
 - **[P0] Inter-Agent Mailbox Guard (IAMG)**: Mandatory mediation for
   teammate-to-teammate messaging with intent validation. (Added: 2026-03-17)
@@ -214,7 +214,7 @@
 - **[P1] Federated Policy Synchronizer**: Secure bus for synchronizing security
   guardrails across multiple MCP Any instances. (Added: 2026-03-22)
 
-#### Upcoming (2026-03-17 Evolution) (Unknown Part 3)
+#### Upcoming (2026-03-17 Evolution) - UniquePart 3
 
 - **[P0] Local-Loopback Rate Limiter**: Mandatory throttling for all loopback
   traffic to neutralize browser-based brute-force attacks. (Added: 2026-03-17)
@@ -1470,7 +1470,7 @@ _None at this time._
 - **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative discovery gateway for
   hardware-attested tool capability card validation. (Added: 2026-06-14)
 
-### Upcoming: [2026-06-15] - Core
+### Upcoming: [2026-06-15] - Core Features
 
 - **Attention-Locked Context Sharding (ALCS)**: (P0) Middleware for
   hardware-attested context pinning. (Added: 2026-06-15)

@@ -14,6 +14,7 @@ attention layers using hardware-bound attestation.
 - **Goals:**
   - Cryptographically priority-tiering of context shards.
   - Real-time monitoring of attention occupancy.
+  - Integration with HAAL (Hardware-Attested Attention Locking).
 - **Non-Goals:**
   - Increasing raw context window size.
   - Managing long-term agent memory.

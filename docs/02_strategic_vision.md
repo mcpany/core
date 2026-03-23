@@ -109,7 +109,7 @@ Mesh Governance. **Strategic Pivot**:
 
 ---
 
-## Strategic Evolution: [2026-05-23] (2026-05-23 Part 2)
+## Strategic Evolution: [2026-05-23] - UniquePart 2
 
 ### Focus: Local Zero-Trust (LOWA) & Peer-to-Peer Agent Orchestration
 
@@ -1306,9 +1306,9 @@ _data_ flowing through them to prevent agent hijacking. **Strategic Pivot**:
 
 ---
 
-## Strategic Evolution: [2026-03-14] (2026-03-14 Part 2)
+## Strategic Evolution: [2026-03-14] - UniquePart 2
 
-### Focus: Browser-Origin Validation & Intent-Preserving Context (2026-03-14 Part 2)
+### Focus: Browser-Origin Validation & Intent-Preserving Context - UniquePart 2
 
 **Context**: The OpenClaw security crisis (CVE-2026-25253) reveals that "Local
 Trust" is a flawed assumption when browser-based attacks can bridge the gap.
@@ -1375,7 +1375,7 @@ agent control planes. **Strategic Pivot**:
 
 ---
 
-## Strategic Evolution: [2026-03-17] (2026-03-17 Part 2)
+## Strategic Evolution: [2026-03-17] - UniquePart 2
 
 ### Focus: Swarm Messaging Integrity & Verifiable Reward Infrastructure
 
@@ -1430,7 +1430,7 @@ Any matures from a tool gateway into a secure, cross-framework Relational Hub.
 
 ---
 
-## Strategic Evolution: [2026-03-17] (2026-03-17 Part 3)
+## Strategic Evolution: [2026-03-17] - UniquePart 3
 
 ### Focus: Local Zero-Trust & Behavioral Skill Attestation
 
@@ -2833,7 +2833,7 @@ trust can scale across deep, multi-framework swarms without "Cognitive Stall."
   exposed to the "Discovery Bus," ensuring that high-trust tools cannot be
   "shadowed" by malicious SDMI-compliant subagents.
 
-## Strategic Evolution: [2026-06-15] - Sovereignty
+## Strategic Evolution: [2026-06-15] - Sovereignty Pivot
 
 ### Focus: Cognitive Sovereignty & Attention Governance (2026-06-15)
 

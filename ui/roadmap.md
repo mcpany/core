@@ -1168,7 +1168,7 @@
 - [ ] **[P0] Sovereign Discovery Console**: (2026-06-14) Authorization workspace
       for hardware-attested SDP validation of capability cards.
 
-### Upcoming: [2026-06-15] - UI
+### Upcoming: [2026-06-15] - Dashboard Features
 
 - **ALCS Attention Dashboard**: Visual representation of context shard priority
   and attention levels. (Added: 2026-06-15)
