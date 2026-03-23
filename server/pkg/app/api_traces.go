@@ -19,12 +19,6 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true // Allow all origins for traces (secured by token auth later if needed)
-	},
-}
-
 // Span represents a span in a trace.
 type Span struct {
 	ID           string         `json:"id"`
