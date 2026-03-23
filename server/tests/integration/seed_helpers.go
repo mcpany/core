@@ -10,6 +10,7 @@ import (
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // SeedStandardData populates the server with a standard set of data for E2E testing.
@@ -94,7 +95,33 @@ func SeedStandardData(t *testing.T, serverInfo *MCPANYTestServerInfo) {
 				configv1.ToolDefinition_builder{
 					Name: proto.String("process_payment"),
 					Description: proto.String("Process a payment via Stripe."),
-					InputSchema: proto.String(`{"type":"object","properties":{"amount":{"type":"number","description":"Payment amount in cents"},"currency":{"type":"string","description":"Currency code (e.g., USD)"}},"required":["amount","currency"]}`),
+						InputSchema: &structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
+								"properties": {Kind: &structpb.Value_StructValue{StructValue: &structpb.Struct{
+									Fields: map[string]*structpb.Value{
+										"amount": {Kind: &structpb.Value_StructValue{StructValue: &structpb.Struct{
+											Fields: map[string]*structpb.Value{
+												"type": {Kind: &structpb.Value_StringValue{StringValue: "number"}},
+												"description": {Kind: &structpb.Value_StringValue{StringValue: "Payment amount in cents"}},
+											},
+										}}},
+										"currency": {Kind: &structpb.Value_StructValue{StructValue: &structpb.Struct{
+											Fields: map[string]*structpb.Value{
+												"type": {Kind: &structpb.Value_StringValue{StringValue: "string"}},
+												"description": {Kind: &structpb.Value_StringValue{StringValue: "Currency code (e.g., USD)"}},
+											},
+										}}},
+									},
+								}}},
+								"required": {Kind: &structpb.Value_ListValue{ListValue: &structpb.ListValue{
+									Values: []*structpb.Value{
+										{Kind: &structpb.Value_StringValue{StringValue: "amount"}},
+										{Kind: &structpb.Value_StringValue{StringValue: "currency"}},
+									},
+								}}},
+							},
+						},
 				}.Build(),
 			},
 		}.Build(),
