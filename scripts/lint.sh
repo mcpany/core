@@ -13,16 +13,16 @@ cd "$PROJECT_ROOT"
 
 find_tool() {
     local name="$1"
-    # 1. Check GOPATH/bin
+    # 1. Check build/env/bin (Highest priority for CI stability)
+    if [[ -x "build/env/bin/$name" ]]; then
+        echo "$(pwd)/build/env/bin/$name"
+        return 0
+    fi
+    # 2. Check GOPATH/bin
     local gopath_bin
     gopath_bin=$(go env GOPATH 2>/dev/null)/bin/"$name"
     if [[ -x "$gopath_bin" ]]; then
         echo "$gopath_bin"
-        return 0
-    fi
-    # 2. Check build/env/bin
-    if [[ -x "build/env/bin/$name" ]]; then
-        echo "$(pwd)/build/env/bin/$name"
         return 0
     fi
     # 3. Check PATH

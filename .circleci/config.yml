@@ -39,12 +39,13 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v7-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-            - v7-lint-
+            - v8-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+            - v8-lint-
       - run:
           name: Prepare Environment
           command: |
-            # Explicitly set GOTOOLCHAIN to ensure make prepare installs correct linter
+            # Explicitly force a clean install of the linter if it doesn't match Go 1.26
+            rm -f build/env/bin/golangci-lint
             export GOTOOLCHAIN=go1.26.1
             make prepare
       - run:
@@ -58,7 +59,7 @@ jobs:
             # Run lint via the hardened script
             ./scripts/lint.sh
       - save_cache:
-          key: v7-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+          key: v8-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
