@@ -106,7 +106,6 @@
 *   **[P0] Identity-Bound Discovery (IBD)**: Mission-token gated tool and capability discovery. (Added: 2026-03-17)
 
 #### Upcoming (2026-03-22 Evolution)
-*   **[P0] Premium Tool Execution Timeline**: (2026-03-21) Blueprint for high-fidelity interactive timeline.
 *   **[P0] UACO Agentic SLA Middleware**: Enforcement of resource contracts (token budget, reasoning time) during task delegation. (Added: 2026-03-22)
 *   **[P0] Ghost Shell Execution Mode**: Isolated profiling environment for behavioral analysis of un-attested hooks. (Added: 2026-03-22)
 *   **[P1] Federated Policy Synchronizer**: Secure bus for synchronizing security guardrails across multiple MCP Any instances. (Added: 2026-03-22)
@@ -125,29 +124,11 @@
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral profiling of un-attested configuration hooks. (Added: 2026-03-24)
 *   **[P1] BSH State Differential Sync**: Optimized binary state transfer that only sends deltas between agent handoffs. (Added: 2026-03-24)
 
-#### Upcoming (2026-03-20 Evolution)
-*   **[P0] Hardware-Attested Mission Manifest (HAMM) Provider**: Authoritative service for enforcing TPM-signed capability manifests. (Added: 2026-03-20)
-*   **[P0] Asynchronous Mailbox Sharding (AMS) Middleware**: High-density teammate coordination service with granular mailbox shards. (Added: 2026-03-20)
-*   **[P0] Mission-Root Budget Enforcer**: Resource management for reasoning effort and token limits based on process-bound agency. (Added: 2026-03-20)
-*   **[P1] A2A Multi-Channel Inbox Bridge**: Secure coordination and translation for handling 20+ messaging platforms simultaneously. (Added: 2026-03-20)
-
 #### Upcoming (2026-03-25 Evolution)
 *   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary context handoffs. (Added: 2026-03-25)
 *   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
-
-#### Upcoming (2026-06-23 Evolution)
-*   **[P0] Recursive Mission-Root Attestation (RMRA)**: Mandatory hardware-bound re-attestation of sub-process lineage for headless handoffs. (Added: 2026-06-23)
-*   **[P0] Attention-Density Guard (ADG) v2**: Integration of hardware-attested Attention Masks to prioritize mission-critical fragments. (Added: 2026-06-23)
-*   **[P0] Active Intent Sanitizer (AIS)**: Real-time semantic deconstruction of coordination messages crossing multi-channel boundaries. (Added: 2026-06-23)
-*   **[P0] SMM v2 (Stylometric Anchoring)**: Higher-dimensional behavioral anchoring of reasoning traces against the mission-root manifest. (Added: 2026-06-23)
-
-#### Upcoming (2026-06-24 Evolution)
-*   **[P0] Atomic Mission-Resumption (AMR) Gateway**: Hardware-locked resumption of agent states across cold-boots via BSH snapshots. (Added: 2026-06-24)
-*   **[P0] Stylometric Mesh Sovereignty (SMS) Provider**: Behavioral security layer detecting mimicry-based hijacking via real-time stylometry. (Added: 2026-06-24)
-*   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
-*   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
 ## 2. Top 10 Recommended Features
 
@@ -676,7 +657,7 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Authenticated A2A Discovery Enforcer**: Mandatory cryptographic masking of agent capability cards for unauthenticated peers. (Added: 2026-06-01)
 
 #### Upcoming (2026-05-29 Evolution)
-*   **[x]** **[P0] Collective Swarm Anomaly Detection (CSAD) Hub**: Cross-agent behavioral analysis middleware to detect "Hivenet" swarm attacks (Implemented via Multi-Agent Swarm Topology Monitor).
+*   **[P0] Collective Swarm Anomaly Detection (CSAD) Hub**: Cross-agent behavioral analysis middleware to detect "Hivenet" swarm attacks. (Added: 2026-05-29)
 *   **[P0] Cross-Mesh Command Sovereignty (CMCS) Provider**: Hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms. (Added: 2026-05-29)
 *   **[P0] Atomic Teammate Handshake (ATH) Gateway**: Mandatory identity exchange before teammate task delegation in horizontal teams. (Added: 2026-05-29)
 *   **[P0] Mesh-Bound Context Sovereignty Bridge**: Semantic fragment analysis across teammate boundaries for horizontal team stability. (Added: 2026-05-29)
@@ -768,35 +749,7 @@ These features represent the next logical steps for the product, focusing on Ent
 - **WASM-Hook Behavioral Profiler**: (P0) Mandatory extension for the SMS that performs sandboxed profiling of AI-generated configuration hooks to counter PR "Logic Bombs." (Added: 2026-06-15)
 
 ### Upcoming: [2026-06-17]
-- **Active Intent Alignment (AIA) Broker**: (Completed) (P0) Authoritative alignment service issuing hardware-attested heartbeats for mission-anchored reasoning (Added: 2026-06-17).
+- **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment service issuing hardware-attested heartbeats for mission-anchored reasoning (Added: 2026-06-17).
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
-
-### Upcoming: [2026-06-18]
-- **Autonomous Mission Resumption (AMRA) Hub**: (P0) Authoritative resumption service with hardware-locked re-attestation (Added: 2026-06-18).
-- **Semantic Entanglement Sanitizer (SES)**: (P0) High-entropy semantic analyzer for entangled state shards (Added: 2026-06-18).
-- **Logic-Grafting Interceptor (LGI)**: (P0) Advanced security extension for the ARI Hub to counter CVE-2026-71002 (Added: 2026-06-18).
-- **Hardware-Locked Monotonic Re-Attestation Provider**: (P0) Authoritative security service mandating TPM-bound counters for mission continuity (Added: 2026-06-18).
-
-### Upcoming: [2026-06-19]
-- **Context-File Integrity Attestation (CFIA)**: (P0) Implement hardware-attested, hash-based signatures for all project-local context files to prevent deceptive context injections.
-- **Attention-Locked Tooling (ALT)**: (P0) Middleware to interdict high-risk tool calls when they are primarily driven by un-attested injected context.
-- **Semantic Lineage Tracking**: (P1) Cryptographically signed "Chain of Reason" verifying tool call lineage back to mission-root intent.
-
-### Upcoming: [2026-06-20]
-- **Context-File Integrity Attestation (CFIA)**: (P0) Core security service requiring hardware-attested hash signatures for all project-local natural language context files (e.g., `GEMINI.md`).
-- **Attention-Locked Tooling (ALT)**: (P0) Security middleware that cryptographically locks high-risk tool calls to user-verified reasoning anchors.
-- **Semantic Lineage Provider**: (P1) Advanced extension for the SRM Provider that implements cryptographically signed "Chains of Reason".
-
-### Upcoming: [2026-06-21]
-- **Mission-Root Continuity Provider (MRCP)**: (P0) Resumption hub facilitating hardware-locked reasoning-path persistence across teammate rotations.
-- **Mailbox Injection Shield (MIS)**: (P0) Advanced extension for Mailbox Integrity Middleware providing hardware-attested validation of task-claiming metadata.
-- **Hardware-Attested Budget Enforcement**: (P0) Integration of Gemini CLI ARE v1.7 headers for immutable, hardware-bound reasoning budgets.
-- **Resident Logic-Grafting Interceptor**: (P1) Real-time semantic entropy monitor for horizontal teammate shards to detect unauthorized branch grafting.
-
-### Upcoming: [2026-06-22]
-- **Channel-Bound Session Isolation (CBSI)**: (P0) Security middleware mandating platform-bound cryptographic sovereignty between multi-channel sessions (WhatsApp, Slack, Discord).
-- **Attention-Density Guard (ADG)**: (P0) Cognitive security layer utilizing hardware-bound headers to "pin" mission-critical fragments at the LLM attention layer.
-- **Headless Handoff Continuity (HHC)**: (P0) Orchestration bridge facilitating signed intent transfers for process-based subagent spawning.
-- **Multi-Modal Attention Sanitizer**: (P1) Advanced security extension for the MIB to neutralize attention-eviction probes in non-textual traces.

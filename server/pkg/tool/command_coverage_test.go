@@ -142,8 +142,7 @@ func TestLocalCommandTool_Execute_NonExistent(t *testing.T) {
 	req := &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)}
 	_, err := tool.Execute(context.Background(), req)
 	assert.Error(t, err)
-	// 🛡️ Sentinel Security Update: Verified generic error prevents internal state leakage
-	assert.Contains(t, err.Error(), "failed to execute command")
+	assert.Contains(t, err.Error(), "executable file not found")
 }
 
 func TestLocalCommandTool_Execute_Timeout(t *testing.T) {

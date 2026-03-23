@@ -7,13 +7,12 @@
 
 import { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileJson, Table as TableIcon, Terminal, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { SmartTable } from "./smart-table";
-
 
 interface RichResultViewerProps {
     result: any;
@@ -188,9 +187,28 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
             {isTableEligible && (
                 <TabsContent value="table" className="border rounded-md">
-                    <div className="h-[400px]">
-                        <SmartTable data={content} />
-                    </div>
+                    <ScrollArea className="h-[400px]">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    {columns.map(col => (
+                                        <TableHead key={col} className="whitespace-nowrap">{col}</TableHead>
+                                    ))}
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {content.map((row: any, i: number) => (
+                                    <TableRow key={i}>
+                                        {columns.map(col => (
+                                            <TableCell key={col} className="py-2">
+                                                {renderCell(row[col])}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </ScrollArea>
                 </TabsContent>
             )}
 

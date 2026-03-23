@@ -31,6 +31,9 @@ func TestHandleTraces_Limit(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to execute middleware: %v", err)
 		}
+		// Artificial delay so that start times map neatly to tool-# index.
+		// Ensures deterministic sorting later.
+		time.Sleep(2 * time.Millisecond)
 	}
 
 	// Case 1: No limit (should return all 10, reversed?)

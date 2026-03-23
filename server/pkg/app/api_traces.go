@@ -53,15 +53,7 @@ const (
 	statusError   = "error"
 )
 
-func toTrace(entry audit.Entry) *Trace {
-	// Generate deterministic ID based on content to prevent duplicates during history replay
-	data := fmt.Sprintf("%d-%s-%s-%s", entry.Timestamp.UnixNano(), entry.ToolName, entry.UserID, entry.ProfileID)
-	hash := sha256.Sum256([]byte(data))
-	traceID := hex.EncodeToString(hash[:])
-
-	// Span ID can be same or derived
-	spanID := traceID + "-0"
-
+func toSpan(entry audit.Entry) Span {
 	status := statusSuccess
 	if entry.Error != "" {
 		status = statusError
@@ -78,9 +70,6 @@ func toTrace(entry audit.Entry) *Trace {
 
 	var output map[string]any
 	if entry.Result != nil {
-		// entry.Result is already an interface{}, but if it's a map/struct it works.
-		// If it's a primitive, we might want to wrap it?
-		// For now assume map or convertible.
 		b, err := json.Marshal(entry.Result)
 		if err == nil {
 			_ = json.Unmarshal(b, &output)
@@ -88,7 +77,7 @@ func toTrace(entry audit.Entry) *Trace {
 	}
 
 	span := Span{
-		ID:           spanID,
+		ID:           entry.SpanID,
 		Name:         entry.ToolName,
 		Type:         "tool",
 		StartTime:    startTime,
@@ -97,6 +86,15 @@ func toTrace(entry audit.Entry) *Trace {
 		Input:        input,
 		Output:       output,
 		ErrorMessage: entry.Error,
+		Children:     []Span{}, // initialize explicitly
+	}
+
+	if span.ID == "" {
+		// Fallback if SpanID wasn't set (e.g. older logs or different injection)
+		data := fmt.Sprintf("%d-%s-%s-%s", entry.Timestamp.UnixNano(), entry.ToolName, entry.UserID, entry.ProfileID)
+		hash := sha256.Sum256([]byte(data))
+		traceID := hex.EncodeToString(hash[:])
+		span.ID = traceID + "-0"
 	}
 
 	// Inject mock diff for seeding
@@ -109,13 +107,97 @@ func toTrace(entry audit.Entry) *Trace {
 		}
 	}
 
+	return span
+}
+
+func buildTraceTrees(entries []audit.Entry) []*Trace {
+	// 1. Group by TraceID
+	traceGroups := make(map[string][]audit.Entry)
+	for _, entry := range entries {
+		tid := entry.TraceID
+		if tid == "" {
+			// fallback generic trace ID
+			data := fmt.Sprintf("%d-%s-%s-%s", entry.Timestamp.UnixNano(), entry.ToolName, entry.UserID, entry.ProfileID)
+			hash := sha256.Sum256([]byte(data))
+			tid = hex.EncodeToString(hash[:])
+		}
+		traceGroups[tid] = append(traceGroups[tid], entry)
+	}
+
+	var traces []*Trace
+	for tid, groupEntries := range traceGroups {
+		trace := buildSingleTraceTree(tid, groupEntries)
+		if trace != nil {
+			traces = append(traces, trace)
+		}
+	}
+
+	return traces
+}
+
+func buildSingleTraceTree(traceID string, entries []audit.Entry) *Trace {
+	if len(entries) == 0 {
+		return nil
+	}
+
+	// Map to hold all spans by ID
+	spanMap := make(map[string]*Span)
+	var rootEntry *audit.Entry
+	var rootSpan *Span
+
+	for i := range entries {
+		entry := entries[i]
+		span := toSpan(entry)
+		spanMap[span.ID] = &span
+
+		// A span is considered the root if it has no parent, or if its parent isn't in this group.
+		// For now we'll find the explicit root (ParentID == "").
+		if entry.ParentID == "" {
+			if rootEntry == nil || entry.Timestamp.Before(rootEntry.Timestamp) {
+				rootEntry = &entries[i]
+				rootSpan = &span
+			}
+		}
+	}
+
+	// If no explicit root found (no empty ParentID), take the earliest entry
+	if rootSpan == nil {
+		for i := range entries {
+			if rootEntry == nil || entries[i].Timestamp.Before(rootEntry.Timestamp) {
+				rootEntry = &entries[i]
+				s := spanMap[entries[i].SpanID]
+				rootSpan = s
+			}
+		}
+	}
+
+	// Link children to parents
+	for i := range entries {
+		entry := entries[i]
+		if entry.ParentID != "" {
+			if parentSpan, ok := spanMap[entry.ParentID]; ok {
+				childSpan := spanMap[entry.SpanID]
+				parentSpan.Children = append(parentSpan.Children, *childSpan)
+			}
+		}
+	}
+
+	status := rootSpan.Status
+	// if any entry failed, the trace status is failed
+	for _, entry := range entries {
+		if entry.Error != "" {
+			status = statusError
+			break
+		}
+	}
+
 	return &Trace{
 		ID:            traceID,
-		RootSpan:      span,
-		Timestamp:     entry.Timestamp.Format(time.RFC3339),
-		TotalDuration: durationMs,
+		RootSpan:      *spanMap[rootSpan.ID], // use the linked structure from the map
+		Timestamp:     rootEntry.Timestamp.Format(time.RFC3339),
+		TotalDuration: rootEntry.DurationMs,
 		Status:        status,
-		Trigger:       "user", // Default to user for now
+		Trigger:       "user",
 	}
 }
 
@@ -359,35 +441,6 @@ func generateMockAuditEntries() []audit.Entry {
 			},
 			Duration:   "700ms",
 			DurationMs: 700,
-		},
-		{
-			Timestamp: now.Add(1200 * time.Millisecond),
-			ToolName:  "code-refactor",
-			UserID:    "system",
-			ProfileID: "default",
-			TraceID:   traceID,
-			SpanID:    traceID + "-3",
-			ParentID:  traceID + "-0",
-			Arguments: json.RawMessage(`{"file": "main.py", "action": "optimize"}`),
-			Result: map[string]any{
-				"diff":   "--- a/main.py\n+++ b/main.py\n@@ -1,5 +1,5 @@\n-def slow_func():\n-    pass\n+def fast_func():\n+    return True\n",
-				"status": "success",
-			},
-			Duration:   "150ms",
-			DurationMs: 150,
-		},
-		{
-			Timestamp:  now.Add(1350 * time.Millisecond),
-			ToolName:   "database-query",
-			UserID:     "system",
-			ProfileID:  "default",
-			TraceID:    traceID,
-			SpanID:     traceID + "-4",
-			ParentID:   traceID + "-0",
-			Arguments:  json.RawMessage(`{"query": "SELECT * FROM users WHERE active = 1"}`),
-			Error:      "Timeout: Query exceeded 5000ms limit",
-			Duration:   "5005ms",
-			DurationMs: 5005,
 		},
 	}
 	return entries

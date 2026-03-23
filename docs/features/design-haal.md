@@ -58,10 +58,3 @@ Hardware-Attested Attention Locking (HAAL) provides a cryptographic defense agai
 
 ## 7. Evolutionary Changelog
 * **2026-06-11:** Initial Document Creation. Evolving from Context-Window Pinning (2026-06-09) to support the hardware-attested HAAL standard.
-
-### Update: 2026-06-19 - Hardware-Attested Context Protection
-**Context:** Recent findings on deceptive context injection (Tracebit) confirm that natural language context is a primary attack vector for agent hijacking.
-**Architecture Adjustment:**
-* Extending HAAL to support **Context-File Integrity Attestation (CFIA)**.
-* Mandating hardware-bound attention locking for any fragment ingested from a project-local configuration or context file.
-**Security Impact:** Ensures that only user-verified, hardware-attested context can influence high-priority attention heads, neutralizing deceptive natural language injections.
