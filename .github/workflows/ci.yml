@@ -95,7 +95,6 @@ jobs:
             --config=remote \
             --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
           bazelisk test //ui:lint //ui:typecheck \
-            --test_env=FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true \
             --config=remote \
             --test_output=errors \
             --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
