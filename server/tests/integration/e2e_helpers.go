@@ -1770,10 +1770,6 @@ func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceC
 	t.Logf("Registering Websocket service '%s' with endpoint: %s", serviceID, baseURL)
 
 	callID := "call-" + operationID
-	callDef := configv1.WebsocketCallDefinition_builder{
-		Id: &callID,
-	}.Build()
-
 	toolDef := configv1.ToolDefinition_builder{
 		Name:   &operationID,
 		CallId: &callID,
@@ -1784,7 +1780,11 @@ func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceC
 		WebsocketService: configv1.WebsocketUpstreamService_builder{
 			Address: &baseURL,
 			Tools:   []*configv1.ToolDefinition{toolDef},
-			Calls:   map[string]*configv1.WebsocketCallDefinition{callID: callDef},
+			Calls: map[string]*configv1.WebsocketCallDefinition{
+				callID: configv1.WebsocketCallDefinition_builder{
+					Id: &callID,
+				}.Build(),
+			},
 		}.Build(),
 	}
 	if authConfig != nil {
@@ -1813,10 +1813,6 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 	t.Logf("Registering Webrtc service '%s' with endpoint: %s", serviceID, baseURL)
 
 	callID := "call-" + operationID
-	callDef := configv1.WebrtcCallDefinition_builder{
-		Id: &callID,
-	}.Build()
-
 	toolDef := configv1.ToolDefinition_builder{
 		Name:   &operationID,
 		CallId: &callID,
@@ -1827,7 +1823,11 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 		WebrtcService: configv1.WebrtcUpstreamService_builder{
 			Address: &baseURL,
 			Tools:   []*configv1.ToolDefinition{toolDef},
-			Calls:   map[string]*configv1.WebrtcCallDefinition{callID: callDef},
+			Calls: map[string]*configv1.WebrtcCallDefinition{
+				callID: configv1.WebrtcCallDefinition_builder{
+					Id: &callID,
+				}.Build(),
+			},
 		}.Build(),
 	}
 	if authConfig != nil {
@@ -1859,10 +1859,6 @@ func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServ
 	}.Build()
 
 	callID := "call-hello"
-	callDef := configv1.MCPCallDefinition_builder{
-		Id: &callID,
-	}.Build()
-
 	toolDef := configv1.ToolDefinition_builder{
 		Name: proto.String("hello"),
 	}.Build()
@@ -1874,7 +1870,11 @@ func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServ
 			ToolAutoDiscovery: &toolAutoDiscovery,
 			HttpConnection:    mcpStreamableHTTPConnection,
 			Tools:             []*configv1.ToolDefinition{toolDef},
-			Calls:             map[string]*configv1.MCPCallDefinition{callID: callDef},
+			Calls: map[string]*configv1.MCPCallDefinition{
+				callID: configv1.MCPCallDefinition_builder{
+					Id: &callID,
+				}.Build(),
+			},
 		}.Build(),
 	}
 	if authConfig != nil {
