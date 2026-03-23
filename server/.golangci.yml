@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 run:
-  go: "1.24"
+  go: "1.26"
   timeout: 5m
   tests: false
 

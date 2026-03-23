@@ -1402,3 +1402,8 @@
 - **[P0] ALS Controller**: Attention-Locked Sovereignty controller to mitigate CVE-2026-71002.
 - **[P0] PBRB Firewall**: Phase-Bound Reasoning Budget firewall for swarm token-spend governance.
 - **[P1] T2T Stylometric Attestation Relay**: verify agent identity in Teammate-to-Teammate (T2T) comms.
+
+### Strategic Additions: 2026-06-18
+- **[P0] ALS Controller**: Attention-Locked Sovereignty controller to mitigate CVE-2026-71002.
+- **[P0] PBRB Firewall**: Phase-Bound Reasoning Budget firewall for swarm token-spend governance.
+- **[P1] T2T Stylometric Attestation Relay**: verify agent identity in Teammate-to-Teammate (T2T) comms.
