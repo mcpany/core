@@ -24,7 +24,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { apiClient, ServiceTemplate } from "@/lib/client";
-import * as yaml from "js-yaml";
 
 // Map icons by name or category if dynamic
 const iconMap: Record<string, React.ElementType> = {
@@ -94,6 +93,10 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
 
     const generateYamlSnippet = (t: ServiceTemplate): string => {
         // Construct a YAML snippet based on the template config
+<<<<<<< Updated upstream
+        // This is a simplified generation.
+        let snippet = `  - name: ${t.serviceConfig.name || t.name.toLowerCase().replace(/\s+/g, '-')}\n`;
+=======
         // Use js-yaml to marshal the full configuration correctly
         const configObject = { ...t.serviceConfig } as Record<string, unknown>;
 
@@ -113,10 +116,29 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
             noRefs: true,
             skipInvalid: true,
         });
+>>>>>>> Stashed changes
 
-        // yaml.dump returns "- name: ..." without leading spaces.
-        // StackEditor expects it indented so it fits under "services:"
-        return yamlStr.split('\n').map(line => line ? `  ${line}` : line).join('\n');
+        if (t.serviceConfig.commandLineService) {
+            snippet += `    command: ${t.serviceConfig.commandLineService.command}\n`;
+            if (t.serviceConfig.commandLineService.workingDirectory) {
+                snippet += `    working_dir: ${t.serviceConfig.commandLineService.workingDirectory}\n`;
+            }
+            if (t.serviceConfig.commandLineService.env && Object.keys(t.serviceConfig.commandLineService.env).length > 0) {
+                snippet += `    environment:\n`;
+                for (const [k, v] of Object.entries(t.serviceConfig.commandLineService.env)) {
+                     // Handle EnvVarValue or string? Client type says string map usually for simple config,
+                     // but UpstreamServiceConfig uses EnvVarValue?
+                     // client.ts: environment: { [key: string]: string }; in commandLineService mapping.
+                     // wait, client.ts mapping:
+                     // environment: config.commandLineService.env (which is map<string, string>)
+                     snippet += `      ${k}: ${v}\n`;
+                }
+            }
+        } else if (t.serviceConfig.httpService) {
+             snippet += `    url: ${t.serviceConfig.httpService.address}\n`;
+        }
+
+        return snippet;
     };
 
     const getIcon = (t: ServiceTemplate) => {
