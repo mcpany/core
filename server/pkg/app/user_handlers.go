@@ -72,10 +72,10 @@ func (a *Application) handleUpdateUserPreferences(w http.ResponseWriter, r *http
 		// If user not found (e.g. system-admin), create it using Builder.
 		logging.GetLogger().Info("User not found in storage, creating new user for preferences", "user_id", userID)
 
-		user = configv1.User_builder{
+		user = (&configv1.User_builder{
 			Id:          proto.String(userID),
 			Preferences: prefs,
-		}.Build()
+		}).Build()
 
 		if err := a.Storage.CreateUser(ctx, user); err != nil {
 			logging.GetLogger().Error("Failed to create user", "error", err)
