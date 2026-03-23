@@ -1503,4 +1503,4 @@
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SHI** and **MHL** integration for all agency-initiation signals.
 
 ## Evolution: [2026-03-21] Updates
-Proposed: LOWA Pairing, T2T Sharding.
+Proposed: LOWA Pairing (P0), T2T Sharding (P0).
