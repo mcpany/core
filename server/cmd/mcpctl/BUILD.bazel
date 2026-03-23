@@ -11,6 +11,7 @@ go_library(
         "init.go",
         "main.go",
         "tool.go",
+        "validate.go",
     ],
     importpath = "github.com/mcpany/core/server/cmd/mcpctl",
     visibility = ["//visibility:private"],
