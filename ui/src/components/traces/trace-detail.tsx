@@ -11,9 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle, Coins, RefreshCcw, ArrowRight, ArrowLeft } from "lucide-react";
+import { Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle, Coins, RefreshCcw } from "lucide-react";
 import { Trace, Span } from "@/types/trace";
-import { SmartPayloadViewer } from "./smart-payload-viewer";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import React from "react";
@@ -379,18 +378,20 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                     />
                 </TabsContent>
                 <TabsContent value="payload" className="flex-1 p-0 overflow-hidden m-0">
-                     <ScrollArea className="h-full p-6 bg-muted/5">
-                        <div className="grid grid-cols-1 gap-6 max-w-4xl mx-auto">
-                            <SmartPayloadViewer
-                                data={trace.rootSpan.input}
-                                title="Request Payload"
-                                icon={<ArrowRight className="h-4 w-4" />}
-                            />
-                            <SmartPayloadViewer
-                                data={trace.rootSpan.output}
-                                title="Response Payload"
-                                icon={<ArrowLeft className="h-4 w-4" />}
-                            />
+                     <ScrollArea className="h-full p-6">
+                        <div className="grid grid-cols-1 gap-6">
+                            <div className="space-y-2">
+                                <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
+                                    <Code className="h-4 w-4" /> Request Payload
+                                </h3>
+                                <JsonView data={trace.rootSpan.input} maxHeight={400} />
+                            </div>
+                            <div className="space-y-2">
+                                <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
+                                    <Terminal className="h-4 w-4" /> Response Payload
+                                </h3>
+                                <JsonView data={trace.rootSpan.output} maxHeight={400} />
+                            </div>
                         </div>
                      </ScrollArea>
                 </TabsContent>
