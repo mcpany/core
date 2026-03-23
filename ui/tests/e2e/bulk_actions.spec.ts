@@ -7,7 +7,8 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Bulk Service Actions', () => {
 
-  const HEADERS = { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token', 'Content-Type': 'application/json' };
+  // Default API Key from configuration instead of process.env to prevent linting errors
+  const HEADERS = { 'X-API-Key': 'test-token', 'Content-Type': 'application/json' };
 
   test.beforeEach(async ({ request }) => {
     const seedServices = [
