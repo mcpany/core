@@ -732,6 +732,10 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Hardware-Locked Coordination Handshake**: (Re-affirmed P0) Designated as the primary enforcement point for **Attention Sovereignty** and **Side-Channel Immunity**.
 
 #### Upcoming (2026-06-14 Evolution)
-- **[P0] HLCH Handshake Gateway**: Mandate hardware-locked session attestation for all coordination fragments. (Added: 2026-06-14)
-- **[P0] Side-Channel Immunity Filter**: Frequency-analysis middleware for SCI to detect hidden coordination noise. (Added: 2026-06-14)
-- **[P0] MRA-Backed Lineage Provider**: Hardware-bound collision-resistant semantic hashes for deep reasoning chains. (Added: 2026-06-14)
+
+* **[P0]** HLCH Handshake Gateway: Mandate hardware-locked session attestation for
+  all coordination fragments. (Added: 2026-06-14)
+* **[P0]** Side-Channel Immunity Filter: Frequency-analysis middleware for SCI to
+  detect hidden coordination noise. (Added: 2026-06-14)
+* **[P0]** MRA-Backed Lineage Provider: Hardware-bound collision-resistant semantic
+  hashes for deep reasoning chains. (Added: 2026-06-14)
