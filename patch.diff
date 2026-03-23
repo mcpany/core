@@ -1,0 +1,26 @@
+<<<<<<< SEARCH
+              <SelectTrigger className="w-[140px] bg-background/50 border-white/10 text-white/80 hover:bg-white/5 transition-colors focus:ring-0 focus:ring-offset-0">
+                <Filter className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+=======
+              <SelectTrigger className="w-[160px] bg-background/50 border-white/10 text-white/80 hover:bg-white/5 transition-colors focus:ring-0 focus:ring-offset-0">
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4" />
+                  <SelectValue placeholder="Filter by status" />
+                </div>
+              </SelectTrigger>
+>>>>>>> REPLACE
+<<<<<<< SEARCH
+              <SelectTrigger className="w-[140px] bg-background/50 border-white/10 text-white/80 hover:bg-white/5 transition-colors focus:ring-0 focus:ring-offset-0">
+                <Filter className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Filter by type" />
+              </SelectTrigger>
+=======
+              <SelectTrigger className="w-[160px] bg-background/50 border-white/10 text-white/80 hover:bg-white/5 transition-colors focus:ring-0 focus:ring-offset-0">
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4" />
+                  <SelectValue placeholder="Filter by type" />
+                </div>
+              </SelectTrigger>
+>>>>>>> REPLACE
