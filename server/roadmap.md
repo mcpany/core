@@ -12,12 +12,6 @@
 ### Status: Active Development
 
 #### Upcoming (2026-02-23 Evolution)
-*   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
-*   **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
-*   **[P1] Environment Bridging Middleware**: Secure state sync between cloud sandboxes and local tools.
-*   **[P1] Machine-Checkable Security Contracts**: Declarative tool safety models.
-*   **[P0] Multi-Agent Session Management**: Session-aware middleware for agent coordination (Added: 2026-02-24).
-*   **[P1] Unified MCP Discovery Service**: Automated registry for Stdio/HTTP/FastMCP servers (Added: 2026-02-24).
 
 #### Upcoming (2026-02-25 Evolution)
 *   **[P0] On-Demand Discovery Middleware (Lazy-MCP)**: Implements similarity-based tool searching to prevent context pollution. (Added: 2026-02-25)

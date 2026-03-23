@@ -1,11 +1,5 @@
 # Feature Inventory: MCP Any
 
-## Current Backlog (P0/P1)
-- **Policy Firewall**: Rego/CEL based hooking for tool calls.
-- **HITL Middleware**: Suspension protocol for user approval flows.
-- **Recursive Context Protocol**: Standardized headers for subagent inheritance.
-- **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
-
 ## Evolution: [2026-05-06] Updates
 
 ### Proposed Additions
@@ -16,6 +10,12 @@
 ### Priority Shifts
 - **RAMS Hub**: (Re-affirmed P0) Now elevated with the requirement for "Temporal Isolation" to counter SME exploits.
 - **Same-Origin Policy (SOP) Enforcer**: (Re-affirmed P0) Expanded to integrate with the RBW Controller for origin-locked reasoning proofs.
+
+## Current Backlog (P0/P1)
+- **Policy Firewall**: Rego/CEL based hooking for tool calls.
+- **HITL Middleware**: Suspension protocol for user approval flows.
+- **Recursive Context Protocol**: Standardized headers for subagent inheritance.
+- **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
 ## Evolution: [2026-05-05] Updates
 

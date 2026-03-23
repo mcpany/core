@@ -63,23 +63,7 @@ find_tool() {
 }
 
 # ---------------------------------------------------------------------------
-# 1. Gazelle – keeps Go BUILD targets in sync with Go source files.
-#    Binary supplied via data dep @gazelle//:gazelle.
-#    Run Gazelle before Buildifier so that any generated BUILD files are
-#    subsequently formatted.
-# ---------------------------------------------------------------------------
-echo "==> Running Gazelle..."
-GAZELLE_BIN="$(find_tool gazelle)"
-if [[ -n "$GAZELLE_BIN" && -x "$GAZELLE_BIN" ]]; then
-    "$GAZELLE_BIN" -repo_root="$PROJECT_ROOT"
-    echo "    Gazelle OK."
-else
-    echo "    Warning: gazelle binary not found in runfiles – skipping."
-    echo "    To update BUILD files manually, run: bazel run //:gazelle"
-fi
-
-# ---------------------------------------------------------------------------
-# 2. Buildifier – formats/lints Bazel BUILD files.
+# 1. Buildifier – formats/lints Bazel BUILD files.
 #    Binary supplied via data dep @buildifier_prebuilt//:buildifier.
 #    We use `find` to enumerate files instead of `-r .` so we can exclude
 #    read-only Go module caches (build/, bazel-*) and node_modules that are
@@ -92,29 +76,44 @@ if [[ -z "$BUILDIFIER_BIN" || ! -x "$BUILDIFIER_BIN" ]]; then
     exit 1
 fi
 # Collect Bazel BUILD / .bzl / WORKSPACE files, excluding caches and symlinks.
-mapfile -t buildifier_files < <(find . \
-    -not \( \
-        -path './build/*' \
-        -o -path './bazel-*' \
-        -o -path './node_modules/*' \
-        -o -path './.git/*' \
-        -o -path './ui/node_modules/*' \
-        -o -path './server/node_modules/*' \
-    \) \
-    \( \
-        -name 'BUILD' \
-        -o -name 'BUILD.bazel' \
-        -o -name 'WORKSPACE' \
-        -o -name 'WORKSPACE.bazel' \
-        -o -name 'MODULE.bazel' \
-        -o -name '*.bzl' \
-    \) \
-    -type f \
-    2>/dev/null)
+buildifier_files=(
+    $(find . \
+        -not \( \
+            -path './build/*' \
+            -o -path './bazel-*' \
+            -o -path './node_modules/*' \
+            -o -path './.git/*' \
+            -o -path './ui/node_modules/*' \
+            -o -path './server/node_modules/*' \
+        \) \
+        \( \
+            -name 'BUILD' \
+            -o -name 'BUILD.bazel' \
+            -o -name 'WORKSPACE' \
+            -o -name 'WORKSPACE.bazel' \
+            -o -name '*.bzl' \
+        \) \
+        -type f \
+        2>/dev/null)
+)
 if [[ ${#buildifier_files[@]} -gt 0 ]]; then
     "$BUILDIFIER_BIN" "${buildifier_files[@]}"
 fi
 echo "    Buildifier OK."
+
+# ---------------------------------------------------------------------------
+# 2. Gazelle – keeps Go BUILD targets in sync with Go source files.
+#    Binary supplied via data dep @gazelle//:gazelle.
+# ---------------------------------------------------------------------------
+echo "==> Running Gazelle..."
+GAZELLE_BIN="$(find_tool gazelle)"
+if [[ -n "$GAZELLE_BIN" && -x "$GAZELLE_BIN" ]]; then
+    "$GAZELLE_BIN" -repo_root="$PROJECT_ROOT"
+    echo "    Gazelle OK."
+else
+    echo "    Warning: gazelle binary not found in runfiles – skipping."
+    echo "    To update BUILD files manually, run: bazel run //:gazelle"
+fi
 
 # ---------------------------------------------------------------------------
 # 3. golangci-lint – comprehensive Go static analysis.
@@ -131,7 +130,7 @@ fi
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
-        ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/... ./k8s/operator/...
+        ./server/cmd/... ./k8s/operator/... ./server/pkg/... ./server/tests/... ./server/examples/...
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."

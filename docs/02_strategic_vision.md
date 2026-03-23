@@ -132,7 +132,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Strategic Pivot**:
 - **Cognitive Sovereignty Hub**: MCP Any will evolve to support "Encrypted Monologue" storage. This ensures that a specialized subagent's internal reasoning remains private and immutable, accessible only to the subagent and the user via the A2UI Gateway, preventing parent-agent "Reasoning Hijacking."
 - **A2A Replay Guard**: We are mandating a "Monotonic Task Nonce" for all A2A task proposals. This neutralizes replay attacks by ensuring every inter-agent delegation is unique, time-bound, and cryptographically linked to a specific session state.
-- **Negative Trust Attestation**: Transitioning from allow-lists to "Deterministic Absence Proofs (DAP)." MCP Any will act as the authoritative provider of signed "Non-Existence Manifests," providing a cryptographic guarantee that no unauthorized project-local hooks exist before any agent execution.
+- **Negative Trust Attestation**: Transitioning from allow-lists to "Deterministic Absence Proofs (DAP)." MCP Any will act the authoritative provider of signed "Non-Existence Manifests," providing a cryptographic guarantee that no unauthorized project-local hooks exist before any agent execution.
 
 ## Strategic Evolution: [2026-04-12]
 ### Focus: Secure A2A Interoperability & Deterministic Environment Integrity
@@ -180,7 +180,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Browser-Origin Validation & Intent-Preserving Context
 **Context**: The OpenClaw security crisis (CVE-2026-25253) reveals that "Local Trust" is a flawed assumption when browser-based attacks can bridge the gap. Simultaneously, the rise of "Context Ghosting" in swarms emphasizes that context compression must be intent-aware to maintain mission stability.
 **Strategic Pivot**:
-- **Zero-Trust Browser Origin Validation**: MCP Any will implement mandatory `Origin` and `Sec-Fetch-Site header verification for all local API/WebSocket endpoints. This ensures that only authorized local applications (not malicious websites) can communicate with the gateway.
+- **Zero-Trust Browser Origin Validation**: MCP Any will implement mandatory `Origin` and `Sec-Fetch-Site` header verification for all local API/WebSocket endpoints. This ensures that only authorized local applications (not malicious websites) can communicate with the gateway.
 - **Intent-Preserving Context Lifecycle**: Our Context Bridge will evolve to support "Intent-Scoped" summaries. Instead of generic compression, it will use the parent agent's verified intent to guide the summarization process, ensuring critical goals are never "ghosted."
 - **Optimized Swarm mTLS**: Introducing a lightweight "Session-Bound" mTLS implementation for A2A communications, reducing handshake overhead while maintaining cryptographic isolation between agents.
 
@@ -382,7 +382,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Intent Integrity & Binary State Handoffs
 **Context**: Today's findings show a shift from simple "Access Control" to "Intent Integrity." The emergence of "Context-Mirroring" attacks and the inefficiency of JSON-based state transfer (Token Storms) demand a more robust and performant orchestration layer.
 **Strategic Pivot**:
-- **Proof-of-Intent (PoI) Validation**: MCP Any will implement UACO v1.7 PoI headers. This moves security from "Can this agent call this tool?" to "Does this tool call align with the cryptographically signed intent of the session?"
+- **Proof-of-Intent (PoI) Validator**: MCP Any will implement UACO v1.7 PoI headers. This moves security from "Can this agent call this tool?" to "Does this tool call align with the cryptographically signed intent of the session?"
 - **Binary State Handoff (BSH)**: Adopting OpenClaw's approach to low-latency state transfer. MCP Any will support binary-encoded context handoffs between agents to mitigate "Token Storms" and reduce latency in deep agent chains.
 - **Skill Grafting Attestation**: To combat "Skill-Squatting," any dynamic tool loading must be accompanied by a multi-signature attestation from both the Agent Framework and the User's Security Policy.
 
