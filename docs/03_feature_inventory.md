@@ -6,17 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
-## Evolution: [2026-05-16] Updates
+[2026-05-16] Updates
 
 ### Proposed Additions
-- **Hardware-Locked Intent Store (HLIS)**: (P0) Cryptographic anchoring of mission-root intents in Secure Enclaves (TPM/SEP), ensuring core goals remain immutable even if the agent is partially compromised.
-- **Secure Coordination Bus**: (P0) Implementation of cryptographically signed teammate-to-teammate messaging and state reconciliation for parallel agent teams.
-- **Multi-Modal Trace Sanitizer**: (P1) Semantic scanning and sanitization for visual and auditory reasoning traces to prevent multi-modal prompt injection.
-- **Identity-Bound Discovery (IBD) Enforcer**: (P0) Discovery-phase security gate that restricts tool and peer visibility to those cryptographically linked to the mission-token.
+- **Hardware-Locked Intent Store (HLIS)**: (P0) A core security service that utilizes Secure Enclaves (TPM/SEP) to cryptographically anchor the "Mission-Root" intent, ensuring goal immutability.
+- **Secure Coordination Bus**: (P0) Cryptographically signed messaging layer for parallel teammate coordination, neutralizing "Mailbox Injection" and identity shadowing in swarms.
+- **Multi-Modal Trace Sanitizer**: (P1) Semantic scanning and sanitization service for visual/auditory reasoning traces before re-ingestion into the collective context.
+- **Identity-Bound Discovery (IBD) Enforcer**: (P0) A security gate that mandates cryptographically bound mission-tokens for all capability discovery, neutralizing "Shadow Delegation."
 
 ### Priority Shifts
-- **Consensus Tool Validation Hub**: (Re-affirmed P0) Designated as a mandatory prerequisite for parallel team task delegation.
-- **Parallel Team Coordination Hub**: (Promoted to P0) Critical for supporting the new Claude Code "Agent Teams" model with secure coordination.
+- **Contextual Quorum (CQ) Hub**: (Re-affirmed P0) Evolving to act as the primary "Truth Broker" for consensus-based mission re-alignment when hardware drift is detected.
+- **Blackboard Versioning Hub**: (Re-affirmed P0) Designated as the authoritative state persistence model for "Snapshot-and-Merge" parallel teammate coordination.
 
 ## Evolution: [2026-05-15] Updates
 
@@ -531,7 +531,6 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
----
 ---
 
 ## Evolution: [2026-03-09] Updates

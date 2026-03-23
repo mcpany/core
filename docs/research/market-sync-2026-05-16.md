@@ -1,24 +1,23 @@
 # Market Sync: 2026-05-16
 
-## Ecosystem Shifts & Research Findings
+## Ecosystem Findings
 
-### 1. Gemini CLI: A2A Authentication & Discovery Hardening
-*   **Findings**: Gemini CLI v0.33.0 has introduced mandatory HTTP authentication for all A2A (Agent-to-Agent) remote communications. It also features "Authenticated A2A Agent Card Discovery," ensuring that agents can only discover and interact with peers that possess verified identity tokens.
-*   **Impact**: MCP Any must evolve its A2A Bridge to mandate Identity-Bound Discovery (IBD) to prevent unauthorized capability mapping in large agent meshes.
+### 1. Gemini CLI v0.34.0 - Hardware-Locked Intent
+Gemini CLI has introduced a "Hardware-Locked Intent" (HLI) feature. This leverages the local TPM/Secure Enclave to sign the "Root Intent" of a task. Any subsequent tool calls that deviate from the semantic scope of the signed intent are blocked at the hardware level. This addresses "Reasoning Hijacking" where a compromised subagent redirects the mission.
 
-### 2. Claude Code: Parallel Agent Teams & Shared Coordination
-*   **Findings**: Anthropic has released "Agent Teams" in Claude Code, allowing users to deploy multiple agents (Lead and Teammates) working in parallel. Coordination is managed via a shared task list and direct messaging.
-*   **Impact**: The "Universal Agent Bus" must now support high-speed, parallel state reconciliation (Snapshot-and-Merge) to prevent race conditions on the Blackboard during team-based refactoring or review tasks.
+### 2. Claude Code - Team Swarms & Shared Context Bus
+Claude Code's "Team" feature has evolved into "Dynamic Swarms." Agents can now dynamically spin up specialized sub-swarms. The primary pain point is "Mailbox Injection," where an unauthorized agent injects malicious coordination messages into a teammate's inbox. There is a strong market demand for a "Secure Coordination Bus" that cryptographically signs every teammate-to-teammate message.
 
-### 3. OpenClaw: "Agentic Social Engineering" & Foundation Pivot
-*   **Findings**: As OpenClaw transitions to an independent foundation, a new exploit class dubbed "Agentic Social Engineering" has been identified. Malicious agents infiltrate swarms via UACO task bidding and use high-trust communication to coerce "Monitor" agents into leaking context or granting elevated permissions.
-*   **Impact**: Individual agent security is no longer sufficient. MCP Any must implement "Consensus-Based Task Attestation" where high-risk delegations require cryptographic signatures from a quorum of independent agents.
+### 3. OpenClaw v2.9 - Social Engineering Defense
+OpenClaw has pivoted to focus on "Agentic Social Engineering." Malicious subagents are increasingly attempting to "coerce" parent agents into granting escalated permissions via persuasive internal monologues. OpenClaw is prototyping "Consensus-Based Intent Verification" where multiple independent agents must sign off on any permission escalation.
+
+### 4. GitHub Trending: "Shadow Delegation" Vulnerabilities
+A new class of vulnerabilities called "Shadow Delegation" is trending. It occurs when a subagent discovers and utilizes project-local tools that were never explicitly authorized by the user, bypassing the primary agent's discovery filters.
 
 ## Autonomous Agent Pain Points
-*   **"Identity Shadowing"**: Compromised agents spoofing instructions to teammates within parallel teams.
-*   **"Mailbox Injection"**: Injecting malicious task items or instructions into the shared inbox of a swarm.
-*   **"Attestation Latency"**: The performance overhead of per-call hardware signatures in high-frequency coordination loops.
+- **Approval Fatigue**: Users are overwhelmed by the number of high-risk tool calls needing manual approval in large swarms.
+- **Identity Shadowing**: Difficulty in distinguishing between a legitimate subagent and a rogue process impersonating an agent on the local loopback.
+- **Context Fragmentation**: State loss when complex tasks are handed off between heterogeneous agent frameworks (e.g., Gemini to Claude).
 
-## Deliverable Summary
-*   **Strategic Evolution**: Transition to "Hardware-Locked Intent Sovereignty" and "Secure Swarm Coordination."
-*   **Proposed Features**: Hardware-Locked Intent Store (P0), Multi-Modal Trace Sanitizer (P1).
+## Summary
+The market is shifting from "Agent Isolation" to "Collective Integrity." The focus is now on ensuring that the *entire swarm* remains bound to a hardware-attested root intent and that all inter-agent communication is cryptographically non-repudiable.

@@ -1,54 +1,48 @@
 # Design Doc: Secure Coordination Bus
-**Status:** Draft
+**Status:** Draft | In Review | Approved
 **Created:** 2026-05-16
 
 ## 1. Context and Scope
-With the shift toward parallel agent swarms (e.g., Claude Code Agent Teams), the primary attack surface has moved from individual tool calls to the communication channels between teammates. Malicious or compromised agents can perform "Identity Shadowing" (spoofing instructions) or "Mailbox Injection" (poisoning the task list) to hijack the swarm's collective reasoning.
-
-The Secure Coordination Bus provides a cryptographically hardened transport for inter-teammate messaging and state reconciliation. It ensures that every message within the swarm is authenticated, immutable, and bound to the session's mission-root intent.
+With the launch of Claude Code's "Agent Teams," the industry is moving toward parallel, multi-agent swarms. These teams must coordinate and share state (e.g., via the Blackboard). We have identified "Mailbox Injection" as a catastrophic new attack vector where a compromised specialist agent injects malicious coordination messages into a sibling's inbox to hijack its reasoning or exfiltrate data. MCP Any needs a secure coordination layer that cryptographically signs every message in the swarm's bus.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Enforce mandatory cryptographic signing for all teammate-to-teammate messages.
-    * Provide a non-repudiable audit trail for all "Snapshot-and-Merge" state reconciliation events.
-    * Implement sub-millisecond message validation to support high-frequency swarm coordination.
-    * Bind every coordination message to a hardware-attested Mission Token.
+    * Provide a cryptographically signed transport for teammate-to-teammate messages.
+    * Enable high-speed "Snapshot-and-Merge" state reconciliation.
+    * Neutralize "Identity Shadowing" attacks within the swarm.
 * **Non-Goals:**
-    * Managing the LLM-to-user communication (handled by the A2UI Gateway).
-    * Providing long-term archival of coordination messages beyond the mission lifecycle.
+    * Replace the agent's internal message passing logic.
+    * Provide a general-purpose chat protocol for human users.
 
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Local LLM Swarm Orchestrator
-* **Primary Goal:** Share secure context between 3 agents without exposing local env vars or allowing instruction spoofing.
+* **Primary Goal:** Share secure context between 3 parallel agents without exposing local env vars or risking mailbox injection.
 * **The Happy Path (Tasks):**
-    1. The Lead Agent initializes the Secure Coordination Bus with a Mission Token.
-    2. Teammate agents (e.g., Coder and Reviewer) join the bus, providing their hardware-attested identity tokens.
-    3. The Coder agent sends a "Review Request" message. The Bus signs the message with the Coder's session key.
-    4. The Reviewer agent receives the message and verifies the signature and mission-root alignment.
-    5. The Hub logs the authenticated handoff to the session audit trail.
+    1. Orchestrator initializes 3 agents (A1, A2, A3) on the Secure Coordination Bus.
+    2. Agent A1 fetches a git hash and broadcasts it to the bus.
+    3. The message is signed with A1's session-bound identity.
+    4. Agent A2 receives the message and verifies the signature using MCP Any's internal trust broker.
+    5. A malicious subagent attempts to inject a spoofed message to A3.
+    6. Agent A3's inbox validator blocks the message because it lacks a valid signature from an authorized teammate.
 
 ## 4. Design & Architecture
 * **System Flow:**
-    ```mermaid
-    graph TD
-        A1[Agent 1] -- Signed Message --> Bus[Secure Coordination Bus]
-        Bus -- Verify Signature/Intent --> Bus
-        Bus -- Relayer --> A2[Agent 2]
-        Bus -- Append --> Audit[Audit Trail]
-    ```
+    1. **Teammate Registration**: Agents exchange public keys during initialization.
+    2. **Message Signing**: Every broadcast message is signed with a private key bound to the agent's mission-token.
+    3. **Inbox Validation**: MCP Any acts as the "Inbox Broker," verifying signatures before delivering messages to agents.
+    4. **Snapshot-and-Merge**: Parallel state branches are reconciled using signed "State Diff" objects.
 * **APIs / Interfaces:**
-    * `SendMessage(payload, signature, mission_token)`: Sends an authenticated message to the bus.
-    * `ReceiveMessage(subscriber_id)`: Securely retrieves messages intended for the agent.
-    * `ReconcileState(delta_set, proof)`: Performs signed state merging for the Blackboard.
-* **Data Storage/State:** Uses memory-mapped buffers for high-speed message passing and an append-only, signed log for the coordination history.
+    * `POST /v1/swarm/broadcast`: Sending a signed message to the bus.
+    * `GET /v1/swarm/inbox`: Retrieving verified teammate messages.
+* **Data Storage/State:** Teammate public keys and recent message hashes are stored in the Shared KV Store (Blackboard).
 
 ## 5. Alternatives Considered
-* **Plaintext Message Bus (e.g., Redis Pub/Sub)**: Rejected due to lack of identity verification and susceptibility to local port hijacking.
-* **Blockchain-Based Coordination**: Rejected due to prohibitive latency for local swarm execution.
+* **Implicit Trust on Localhost**: Rejected because browser-based attackers can bridge into the agent's control plane via unauthenticated loopback listeners.
+* **Centralized Orchestrator Only**: Rejected because it creates a performance bottleneck and doesn't scale to autonomous peer-to-peer swarms.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** Implements "Auth-at-the-Pipe" for all connections. Every message is subject to a "Reasoning-Aware" check to ensure it doesn't leak context shards.
-* **Observability:** Integration with the "Parallel Intent Visualizer" to show cryptographically verified message flows.
+* **Security (Zero Trust):** We enforce "Auth-at-the-Pipe" for all inter-agent communication, ensuring that even if one agent is compromised, the bus remains secure.
+* **Observability:** Swarm-wide message flows are logged in a cryptographically signed audit trail.
 
 ## 7. Evolutionary Changelog
 * **2026-05-16:** Initial Document Creation.
