@@ -1004,9 +1004,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Attention-Locked Context Windows**: Leveraging the HAAL standard, MCP Any will provide hardware-bound attention locking for mission-critical intent fragments, ensuring they remain "pinned" in the LLM context window despite high-entropy noise injections by subagents.
 
 ## Strategic Evolution: [2026-06-14]
-
 ### Focus: Attention Sovereignty & MDRA-Native Mesh Governance
-
 **Context**: Today's findings on **Attention-Aware Routing (AAR)** and **Multi-Dimensional Reasoning Attestation (MDRA)** reveal that coordination integrity must now account for specialist availability and unified attestation tokens. The discovery of gRPC-based side-channels in "Shadow Coordination" proves that transport-layer metadata is a critical new attack vector.
 **Strategic Pivot**:
 - **Attention-Locked Routing Hub (ALRH)**: MCP Any will evolve the ARI Hub to support ALRH. This layer will perform real-time attention-utilization analysis of specialists, dynamically routing tasks to preserve mission-root cognitive sovereignty and neutralizing REE attacks.

@@ -3,11 +3,6 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
-
-- [ ] **[P0] Attention Sovereignty Visualizer**: Real-time tracker for DAG-gated fragments and ALRH-locked intent segments. (Added: 2026-06-14)
-- [ ] **[P0] Unified MDRA Attestation Viewer**: Monitor for multi-dimensional reasoning proofs and coordination drift alerts. (Added: 2026-06-14)
-- [ ] **[P1] gRPC Metadata Security Dashboard**: Visualization of scrubbed metadata and blocked shadow coordination handshakes. (Added: 2026-06-14)
-- [ ] **[P0] Three-Factor Handshake Debugger**: Forensic tool for visualizing autonomous agency handoffs. (Added: 2026-06-14)
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)
@@ -572,3 +567,9 @@
 - [ ] **[P0] Shadow Coordination Monitor**: (Re-affirmed P0) Enhanced dashboard for real-time visualization of entropy spikes in T2T transport metadata.
 - [ ] **[P0] Attention Sovereignty Visualizer**: (2026-06-13) Real-time tracker for DAG-gated fragments and HAAL-locked intent segments.
 - [ ] **[P0] Hardware-Locked Coordination Debugger**: (2026-06-13) UI for reviewing hardware-bound session tokens and blocked out-of-band handoffs.
+
+### Upcoming: [2026-06-14]
+- [ ] **[P0] Attention-Aware Routing Monitor**: Visualizer for the ALRH, showing real-time specialist attention availability and routing decisions.
+- [ ] **[P0] MDRA Attestation Dashboard**: UI for reviewing multi-dimensional reasoning proofs and MDRA-unified token lineage.
+- [ ] **[P1] Metadata Scrubbing Alert Hub**: Security dashboard for visualizing blocked shadow coordination handshakes in gRPC metadata.
+- [ ] **[P0] Three-Factor Handshake Workspace**: Interaction point for human approval of high-risk autonomous agent handoffs.
