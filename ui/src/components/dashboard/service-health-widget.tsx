@@ -14,7 +14,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { analyzeConnectionError } from "@/lib/diagnostics-utils";
 import { useServiceHealthHistory, ServiceHealth, HealthHistoryPoint } from "@/hooks/use-service-health-history";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { WidgetSkeleton } from "./widget-skeleton";
 
 const getStatusIcon = (status: string) => {
   switch (status) {
@@ -89,7 +88,7 @@ const HealthTimeline = memo(function HealthTimeline({ history }: { history: Heal
 
   return (
     <div className="flex items-center gap-[2px] h-3 ml-4">
-      {history.map((point, i) => {
+      {history.map((point, _i) => {
         let colorClass = "bg-muted";
         switch (point.status) {
           case "healthy": colorClass = "bg-green-500/80 hover:bg-green-500"; break;

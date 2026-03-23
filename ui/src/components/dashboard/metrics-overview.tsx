@@ -26,7 +26,7 @@ import { WidgetSkeleton } from "./widget-skeleton";
 
 // Metric interface now imported from @/lib/client
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, React.ElementType> = {
   Users,
   Activity,
   Server,
@@ -101,6 +101,7 @@ import { apiClient, Metric } from "@/lib/client";
  * @returns The rendered MetricsOverview component.
  */
 export const MetricsOverview = memo(function MetricsOverview() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState(true);
   const { serviceId } = useDashboard();

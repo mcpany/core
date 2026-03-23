@@ -6,13 +6,12 @@
 
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { AlertCircle, ArrowUpRight } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { apiClient } from "@/lib/client";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
-import { WidgetSkeleton } from "./widget-skeleton";
 
 interface ToolFailureRate {
     name: string;
