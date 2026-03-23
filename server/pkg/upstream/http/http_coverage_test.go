@@ -764,8 +764,10 @@ func TestHTTPUpstream_Register_DisabledItems(t *testing.T) {
 	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, tools, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+	_, tools, resources, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 	require.NoError(t, err)
+
+    assert.Len(t, resources, 1)
 
     // Tools
     assert.Len(t, tools, 1)

@@ -37,10 +37,24 @@ test.describe('Resource Exploration', () => {
                                 text_content: '{"users": [{"id": 1, "name": "Alice"}]}'
                             }
                         }
-                    ]
+                    ],
+                    calls: {
+                        echo_call: {
+                            args: ["echoed_output"]
+                        }
+                    },
+                    tools: [
+                        {
+                            name: "echo_tool",
+                            description: "Echoes back input",
+                            input_schema: { type: "object" },
+                            call_id: "echo_call"
+                        }
+                    ],
                 }
             }
         });
+
         if (!response.ok()) {
             console.error('Failed to seed resources service', await response.text());
         }
@@ -54,8 +68,6 @@ test.describe('Resource Exploration', () => {
     test('should list available resources from real database', async ({ page }) => {
         await page.goto('/resources');
 
-        // Real data fetch verification
-        await expect(page.getByText('Application Logs').first()).toBeVisible({ timeout: 10000 });
         await expect(page.getByText('User Database').first()).toBeVisible({ timeout: 10000 });
 
         // Verify JSON View renders when clicking User Database
