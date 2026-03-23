@@ -33,6 +33,7 @@ if [ -z "$GOLANGCI_LINT_BIN" ]; then
     exit 1
 fi
 
+export GOGC=off
 "$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
 
 echo "Running pre-commit..."
