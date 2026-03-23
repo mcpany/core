@@ -33,18 +33,13 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v21-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-            - v21-lint-
+            - v22-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+            - v22-lint-
       - run:
-          name: Install Toolchain and Linter
+          name: Install Toolchain
           command: |
             export GOTOOLCHAIN=go1.26.1
-            export GOPATH=$HOME/go
-            echo "Installing golangci-lint with $(go version)..."
-            go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.5
             make prepare
-            cp $GOPATH/bin/golangci-lint build/env/bin/golangci-lint
-            build/env/bin/golangci-lint version
       - run:
           name: Run Lint
           command: |
@@ -52,9 +47,11 @@ jobs:
             export GOTOOLCHAIN=go1.26.1
             export GOPATH=$HOME/go
             export PATH=$GOPATH/bin:$PWD/build/env/bin:$PATH
+            # Diagnostics
+            go version
             ./scripts/lint.sh
       - save_cache:
-          key: v21-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+          key: v22-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
             - "build/env/bin"
             - "build/.cache"

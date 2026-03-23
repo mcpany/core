@@ -11,36 +11,37 @@ else
 fi
 cd "$PROJECT_ROOT"
 
-find_tool() {
-    local name="$1"
-    if [[ -x "$(pwd)/build/env/bin/$name" ]]; then
-        echo "$(pwd)/build/env/bin/$name"
-    elif [[ -x "$(go env GOPATH 2>/dev/null)/bin/$name" ]]; then
-        echo "$(go env GOPATH)/bin/$name"
-    else
-        command -v "$name" 2>/dev/null || true
-    fi
-}
+echo "==> Running Buildifier..."
+if command -v buildifier >/dev/null 2>&1; then
+    find . -name "BUILD" -o -name "BUILD.bazel" -o -name "*.bzl" -not -path "./build/*" -exec buildifier {} +
+    echo "    Buildifier OK."
+else
+    echo "    Warning: buildifier not found."
+fi
+
+echo "==> Running Gazelle..."
+if command -v gazelle >/dev/null 2>&1; then
+    gazelle -repo_root="$PROJECT_ROOT"
+    echo "    Gazelle OK."
+else
+    echo "    Warning: gazelle not found."
+fi
 
 echo "==> Running golangci-lint..."
-LINT_BIN=$(find_tool golangci-lint)
+# Use 'go run' to definitively ensure the linter is built with the project's Go version (1.26.1).
+# This prevents the "Go language version used to build golangci-lint is lower than the targeted Go version" error.
+export GOTOOLCHAIN=go1.26.1
+LINT_VERSION="v1.64.5"
 
-if [[ -x "$LINT_BIN" ]]; then
-    LINT_VER_OUT=$($LINT_BIN --version)
-    echo "    Using linter: $LINT_VER_OUT"
+TARGETS=(
+    "./server/..."
+    "./proto/..."
+    "./k8s/operator/..."
+    "./server/examples/upstream_service_demo/grpc/greeter_server/..."
+)
 
-    if echo "$LINT_VER_OUT" | grep -q "go1.24"; then
-        echo "    ERROR: Linter built with Go 1.24 detected. Project needs Go 1.26+."
-        # No exit for session
-    else
-        MODULES=("./server/..." "./proto/..." "./k8s/operator/...")
-        echo "    Linting ${MODULES[*]}..."
-        export GOTOOLCHAIN=go1.26.1
-        "$LINT_BIN" run --timeout 20m --fix --config server/.golangci.yml "${MODULES[@]}"
-        echo "    golangci-lint OK."
-    fi
-else
-    echo "    Error: golangci-lint not found."
-fi
+echo "    Linting targets: ${TARGETS[*]}"
+go run github.com/golangci/golangci-lint/cmd/golangci-lint@${LINT_VERSION} run --timeout 20m --fix --config server/.golangci.yml "${TARGETS[@]}"
+echo "    golangci-lint OK."
 
 echo "==> Lint complete."
