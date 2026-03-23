@@ -13,16 +13,14 @@ test.describe('Inspector Page', () => {
     // Wait for the page to load by checking for the "Inspector" header
     await expect(page.getByRole('heading', { name: 'Inspector' })).toBeVisible();
 
-    // Either we see the skeleton loader OR we already reached the empty state
-    // We cannot reliably assert the skeleton loader if the API resolves instantly.
+    // Wait for initial load
+    await page.waitForTimeout(1000);
+
+    // Verify the initial loading state is a skeleton loader and not text
     await expect(page.getByText('Loading traces...')).not.toBeVisible();
+    await expect(page.locator('.animate-pulse').first()).toBeVisible();
 
     // Wait for the "No traces found" state since we just started
-    // If the test has already run in the backend, traces might exist.
-    // So we first clear to guarantee a clean slate before seeding.
-    const setupClearBtn = page.getByRole('button', { name: 'Clear' });
-    await expect(setupClearBtn).toBeVisible();
-    await setupClearBtn.click();
     await expect(page.getByText('No traces found')).toBeVisible({ timeout: 10000 });
 
     // Click the "Seed Trace" button

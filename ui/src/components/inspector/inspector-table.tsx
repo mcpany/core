@@ -14,13 +14,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Sheet,
-  SheetContent,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { TraceDetail } from "@/components/traces/trace-detail";
-import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database, ChevronRight, ChevronDown } from "lucide-react";
+import {
+  CheckCircle2,
+  AlertCircle,
+  Clock,
+  Terminal,
+  Globe,
+  Database,
+  ChevronRight,
+  ChevronDown,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { TableVirtuoso } from "react-virtuoso";
@@ -47,9 +53,17 @@ interface InspectorTableProps {
  * @param props.className - Optional CSS classes.
  * @returns The status icon component.
  */
-function StatusIcon({ status, className }: { status: SpanStatus, className?: string }) {
-  if (status === 'error') return <AlertCircle className={cn("text-destructive", className)} />;
-  if (status === 'success') return <CheckCircle2 className={cn("text-green-500", className)} />;
+function StatusIcon({
+  status,
+  className,
+}: {
+  status: SpanStatus;
+  className?: string;
+}) {
+  if (status === "error")
+    return <AlertCircle className={cn("text-destructive", className)} />;
+  if (status === "success")
+    return <CheckCircle2 className={cn("text-green-500", className)} />;
   return <Clock className={cn("text-muted-foreground", className)} />;
 }
 
@@ -61,13 +75,17 @@ function StatusIcon({ status, className }: { status: SpanStatus, className?: str
  * @param props.className - Optional CSS classes.
  * @returns The type icon component.
  */
-function TypeIcon({ type, className }: { type: string, className?: string }) {
-    switch(type) {
-        case 'tool': return <Terminal className={className} />;
-        case 'service': return <Globe className={className} />;
-        case 'resource': return <Database className={className} />;
-        default: return <Clock className={className} />;
-    }
+function TypeIcon({ type, className }: { type: string; className?: string }) {
+  switch (type) {
+    case "tool":
+      return <Terminal className={className} />;
+    case "service":
+      return <Globe className={className} />;
+    case "resource":
+      return <Database className={className} />;
+    default:
+      return <Clock className={className} />;
+  }
 }
 
 interface VisibleRow {
@@ -92,32 +110,32 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
   const [expandedSpans, setExpandedSpans] = useState<Set<string>>(new Set());
 
   const toggleExpand = (spanId: string) => {
-      setExpandedSpans(prev => {
-          const next = new Set(prev);
-          if (next.has(spanId)) {
-              next.delete(spanId);
-          } else {
-              next.add(spanId);
-          }
-          return next;
-      });
+    setExpandedSpans((prev) => {
+      const next = new Set(prev);
+      if (next.has(spanId)) {
+        next.delete(spanId);
+      } else {
+        next.add(spanId);
+      }
+      return next;
+    });
   };
 
   const visibleRows = useMemo(() => {
-      const rows: VisibleRow[] = [];
+    const rows: VisibleRow[] = [];
 
-      const addSpan = (trace: Trace, span: Span, depth: number) => {
-          const hasChildren = !!span.children && span.children.length > 0;
-          const isExpanded = expandedSpans.has(span.id);
-          rows.push({ trace, span, depth, hasChildren, isExpanded });
+    const addSpan = (trace: Trace, span: Span, depth: number) => {
+      const hasChildren = !!span.children && span.children.length > 0;
+      const isExpanded = expandedSpans.has(span.id);
+      rows.push({ trace, span, depth, hasChildren, isExpanded });
 
-          if (isExpanded && hasChildren) {
-              span.children!.forEach(child => addSpan(trace, child, depth + 1));
-          }
-      };
+      if (isExpanded && hasChildren) {
+        span.children!.forEach((child) => addSpan(trace, child, depth + 1));
+      }
+    };
 
-      traces.forEach(trace => addSpan(trace, trace.rootSpan, 0));
-      return rows;
+    traces.forEach((trace) => addSpan(trace, trace.rootSpan, 0));
+    return rows;
   }, [traces, expandedSpans]);
 
   return (
@@ -128,119 +146,182 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
             Randomized Selection from Top 5 High-Impact Targets
         */}
         {traces.length === 0 && !loading ? (
-             <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-muted-foreground">
-                <Terminal className="h-12 w-12 text-muted-foreground/30 mb-4" />
-                <p className="text-lg font-medium">No traces found</p>
-                <p className="text-sm">Traces will appear here when tools are executed.</p>
-             </div>
+          <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-muted-foreground">
+            <Terminal className="h-12 w-12 text-muted-foreground/30 mb-4" />
+            <p className="text-lg font-medium">No traces found</p>
+            <p className="text-sm">
+              Traces will appear here when tools are executed.
+            </p>
+          </div>
         ) : loading && traces.length === 0 ? (
-             <div className="w-full flex flex-col h-full overflow-hidden">
-                 <div className="border-b bg-muted/20 px-4 py-3 flex text-sm font-medium text-muted-foreground sticky top-0">
-                     <div className="w-[180px]">Timestamp</div>
-                     <div className="w-[50px]">Type</div>
-                     <div className="flex-1">Method / Name</div>
-                     <div className="w-[100px]">Status</div>
-                     <div className="w-[100px] text-right">Duration</div>
-                 </div>
-                 <div className="flex-1 overflow-auto">
-                     {Array.from({ length: 15 }).map((_, i) => (
-                         <div key={i} className="flex px-4 py-3 border-b items-center gap-4">
-                             <div className="w-[180px]">
-                                 <div className="h-4 bg-muted rounded w-24 mb-2 animate-pulse"></div>
-                                 <div className="h-3 bg-muted rounded w-16 animate-pulse"></div>
-                             </div>
-                             <div className="w-[50px]">
-                                 <div className="h-4 w-4 bg-muted rounded-full animate-pulse"></div>
-                             </div>
-                             <div className="flex-1 flex flex-col gap-2">
-                                 <div className="h-4 bg-muted rounded w-48 animate-pulse"></div>
-                                 <div className="h-3 bg-muted rounded w-32 animate-pulse"></div>
-                             </div>
-                             <div className="w-[100px]">
-                                 <div className="h-5 bg-muted rounded-full w-16 animate-pulse"></div>
-                             </div>
-                             <div className="w-[100px] flex justify-end">
-                                 <div className="h-4 bg-muted rounded w-12 animate-pulse"></div>
-                             </div>
-                         </div>
-                     ))}
-                 </div>
-             </div>
+          <div className="w-full flex flex-col h-full overflow-hidden">
+            <div className="border-b bg-muted/20 px-4 py-3 flex text-sm font-medium text-muted-foreground sticky top-0">
+              <div className="w-[180px]">Timestamp</div>
+              <div className="w-[50px]">Type</div>
+              <div className="flex-1">Method / Name</div>
+              <div className="w-[100px]">Status</div>
+              <div className="w-[100px] text-right">Duration</div>
+            </div>
+            <div className="flex-1 overflow-auto">
+              {Array.from({ length: 15 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="flex px-4 py-3 border-b items-center gap-4"
+                >
+                  <div className="w-[180px]">
+                    <div className="h-4 bg-muted rounded w-24 mb-2 animate-pulse"></div>
+                    <div className="h-3 bg-muted rounded w-16 animate-pulse"></div>
+                  </div>
+                  <div className="w-[50px]">
+                    <div className="h-4 w-4 bg-muted rounded-full animate-pulse"></div>
+                  </div>
+                  <div className="flex-1 flex flex-col gap-2">
+                    <div className="h-4 bg-muted rounded w-48 animate-pulse"></div>
+                    <div className="h-3 bg-muted rounded w-32 animate-pulse"></div>
+                  </div>
+                  <div className="w-[100px]">
+                    <div className="h-5 bg-muted rounded-full w-16 animate-pulse"></div>
+                  </div>
+                  <div className="w-[100px] flex justify-end">
+                    <div className="h-4 bg-muted rounded w-12 animate-pulse"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         ) : (
-            <TableVirtuoso
-                style={{ height: '100%', width: '100%' }}
-                data={visibleRows}
-                context={{ onClick: setSelectedTrace }}
-                components={{
-                    // Use shadcn/ui Table components where possible.
-                    // Table: The root table element. shadcn Table is a wrapper. We need the table element.
-                    Table: ({ style, ...props }) => (
-                        <table {...props} style={{...style, width: '100%', borderCollapse: 'collapse'}} className="w-full caption-bottom text-sm" />
-                    ),
-                    TableHead: TableHeader,
-                    TableBody: TableBody,
-                    TableRow: ({ item, context, ...props }: any) => (
-                        <TableRow {...props} className="cursor-pointer hover:bg-muted/50" onClick={() => context.onClick(item.trace)} />
-                    ),
-                }}
-                fixedHeaderContent={() => (
-                    <TableRow>
-                    <TableHead className="w-[180px] bg-card z-10">Timestamp</TableHead>
-                    <TableHead className="w-[50px] bg-card z-10">Type</TableHead>
-                    <TableHead className="bg-card z-10">Method / Name</TableHead>
-                    <TableHead className="w-[100px] bg-card z-10">Status</TableHead>
-                    <TableHead className="w-[100px] text-right bg-card z-10">Duration</TableHead>
-                    </TableRow>
-                )}
-                itemContent={(index, row: VisibleRow) => (
+          <TableVirtuoso
+            style={{ height: "100%", width: "100%" }}
+            data={visibleRows}
+            context={{ onClick: setSelectedTrace }}
+            components={{
+              // Use shadcn/ui Table components where possible.
+              // Table: The root table element. shadcn Table is a wrapper. We need the table element.
+              Table: ({ style, ...props }) => (
+                <table
+                  {...props}
+                  style={{
+                    ...style,
+                    width: "100%",
+                    borderCollapse: "collapse",
+                  }}
+                  className="w-full caption-bottom text-sm"
+                />
+              ),
+              TableHead: TableHeader,
+              TableBody: TableBody,
+              TableRow: ({
+                item,
+                context,
+                ...props
+              }: {
+                item: VisibleRow;
+                context: { onClick: (t: Trace) => void };
+                [key: string]: unknown;
+              }) => (
+                <TableRow
+                  {...props}
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => context.onClick(item.trace)}
+                />
+              ),
+            }}
+            fixedHeaderContent={() => (
+              <TableRow>
+                <TableHead className="w-[180px] bg-card z-10">
+                  Timestamp
+                </TableHead>
+                <TableHead className="w-[50px] bg-card z-10">Type</TableHead>
+                <TableHead className="bg-card z-10">Method / Name</TableHead>
+                <TableHead className="w-[100px] bg-card z-10">Status</TableHead>
+                <TableHead className="w-[100px] text-right bg-card z-10">
+                  Duration
+                </TableHead>
+              </TableRow>
+            )}
+            itemContent={(index, row: VisibleRow) => (
+              <>
+                <TableCell className="font-mono text-xs text-muted-foreground">
+                  {row.depth === 0 ? (
                     <>
-                    <TableCell className="font-mono text-xs text-muted-foreground">
-                        {row.depth === 0 ? (
-                            <>
-                            {new Date(row.trace.timestamp).toLocaleTimeString()}
-                            <br />
-                            <span className="opacity-50 text-[10px]">
-                                {formatDistanceToNow(new Date(row.trace.timestamp), { addSuffix: true })}
-                            </span>
-                            <br />
-                            <span className="opacity-50 text-[10px] font-mono">{row.trace.id}</span>
-                            </>
-                        ) : null}
-                    </TableCell>
-                    <TableCell>
-                        <TypeIcon type={row.span.type} className="h-4 w-4 text-muted-foreground" />
-                    </TableCell>
-                    <TableCell>
-                        <div className="flex items-center gap-2" style={{ paddingLeft: `${row.depth * 1.5}rem` }}>
-                            {row.hasChildren ? (
-                                <div className="cursor-pointer p-1 hover:bg-muted rounded-md -ml-1" onClick={(e) => { e.stopPropagation(); toggleExpand(row.span.id); }}>
-                                    {row.isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                                </div>
-                            ) : <div className="w-5" />}
-                            <div className="flex flex-col">
-                                <span className="font-medium">{row.span.name}</span>
-                                <span className="text-xs text-muted-foreground font-mono">{row.span.id}</span>
-                            </div>
-                        </div>
-                    </TableCell>
-                    <TableCell>
-                        <Badge variant={row.span.status === 'success' ? 'outline' : 'destructive'} className="gap-1">
-                            <StatusIcon status={row.span.status} className="h-3 w-3" />
-                            {row.span.status}
-                        </Badge>
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-xs">
-                        {row.span.endTime - row.span.startTime < 1000 ? `${row.span.endTime - row.span.startTime}ms` : `${((row.span.endTime - row.span.startTime) / 1000).toFixed(2)}s`}
-                    </TableCell>
+                      {new Date(row.trace.timestamp).toLocaleTimeString()}
+                      <br />
+                      <span className="opacity-50 text-[10px]">
+                        {formatDistanceToNow(new Date(row.trace.timestamp), {
+                          addSuffix: true,
+                        })}
+                      </span>
+                      <br />
+                      <span className="opacity-50 text-[10px] font-mono">
+                        {row.trace.id}
+                      </span>
                     </>
-                )}
-            />
+                  ) : null}
+                </TableCell>
+                <TableCell>
+                  <TypeIcon
+                    type={row.span.type}
+                    className="h-4 w-4 text-muted-foreground"
+                  />
+                </TableCell>
+                <TableCell>
+                  <div
+                    className="flex items-center gap-2"
+                    style={{ paddingLeft: `${row.depth * 1.5}rem` }}
+                  >
+                    {row.hasChildren ? (
+                      <div
+                        className="cursor-pointer p-1 hover:bg-muted rounded-md -ml-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleExpand(row.span.id);
+                        }}
+                      >
+                        {row.isExpanded ? (
+                          <ChevronDown className="h-4 w-4" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4" />
+                        )}
+                      </div>
+                    ) : (
+                      <div className="w-5" />
+                    )}
+                    <div className="flex flex-col">
+                      <span className="font-medium">{row.span.name}</span>
+                      <span className="text-xs text-muted-foreground font-mono">
+                        {row.span.id}
+                      </span>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    variant={
+                      row.span.status === "success" ? "outline" : "destructive"
+                    }
+                    className="gap-1"
+                  >
+                    <StatusIcon status={row.span.status} className="h-3 w-3" />
+                    {row.span.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right font-mono text-xs">
+                  {row.span.endTime - row.span.startTime < 1000
+                    ? `${row.span.endTime - row.span.startTime}ms`
+                    : `${((row.span.endTime - row.span.startTime) / 1000).toFixed(2)}s`}
+                </TableCell>
+              </>
+            )}
+          />
         )}
       </div>
 
-      <Sheet open={!!selectedTrace} onOpenChange={(open) => !open && setSelectedTrace(null)}>
+      <Sheet
+        open={!!selectedTrace}
+        onOpenChange={(open) => !open && setSelectedTrace(null)}
+      >
         <SheetContent className="w-full sm:w-[800px] sm:max-w-[800px] p-0 overflow-y-auto border-l">
-            {selectedTrace && <TraceDetail trace={selectedTrace} />}
+          {selectedTrace && <TraceDetail trace={selectedTrace} />}
         </SheetContent>
       </Sheet>
     </>
