@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Audit Logs Viewer', () => {
     test.beforeAll(async ({ request }) => {
         // Seed an audit log by registering a service and executing a tool
-        const svcRes = await request.post('/api/v1/services', {
+        await request.post('/api/v1/services', {
             data: {
                 name: 'audit-test-service',
                 command_line_service: {
