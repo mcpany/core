@@ -20,6 +20,11 @@ interface SubagentStatus {
 
 
 
+/**
+ * ActiveIntentAlignmentWidget displays the intent alignment of active subagents.
+ *
+ * @returns The rendered component.
+ */
 export function ActiveIntentAlignmentWidget() {
     const [agents, setAgents] = useState<SubagentStatus[]>([]);
 
