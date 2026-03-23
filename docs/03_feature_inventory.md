@@ -471,33 +471,21 @@
 - **Resident Integrity Monitor (RIM)**: (Re-affirmed P0) Now elevated to the primary mechanism for supporting "Continuous Sandbox Persistence Proofs."
 - **LFTA Trust Lease Manager**: Promoted to **P0**. Essential for scaling high-frequency attestation in deep swarms.
 
----
-
-## Evolution: [2026-04-17] Updates
-
-### Proposed Additions
-- **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment service that issues hardware-attested heartbeats to ensure specialist agent reasoning traces remain mission-anchored.
-- **Multi-Modal Behavioral Attestation (MMBA) Provider**: (P0) Advanced identity service anchoring stylometric profiles to multi-modal trace history (SVG/Audio) to neutralize stylometric collision.
-- **Reasoning-Aware Garbage Collection (R-GC) Manager**: (P1) Stability middleware for the Speculative Branching Guard that purges low-utility context fragments.
-- **Temporal Shard Jitter (TSJ) Injector**: (P0) Security extension for the ESB that injects hardware-attested timing jitter to neutralize CVE-2026-62001.
-
-### Priority Shifts
-- **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
-- **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
-
----
-
 ## Evolution: [2026-06-18] Updates
 
 ### Proposed Additions
-- **RIA Provider (Recursive Intent Attestation)**: (P0) Authoritative root for multi-hop intent attestation, ensuring that every sub-intent is mathematically derived from the mission-root.
-- **Mesh-Resident Cognitive Load Balancer (MCLB)**: (P0) Dynamic task redistribution service that manages reasoning capacity and latency across the agent mesh.
-- **IBET (Intent-Bound Ephemeral Tunnels) Manager**: (P0) Secure inter-agent communication layer that creates temporary, intent-scoped conduits to neutralize CVE-2026-65002.
-- **CFIA (Chain-of-Custody Lineage Tracker)**: (P0) Absolute provenance ledger that maintains a tamper-proof record of every agentic hop for "destructive" actions.
+- **RIA Provider (Recursive Intent Attestation)**: (P0) Authoritative root for multi-hop intent attestation, ensuring each sub-intent is mathematically derived from the mission-root.
+- **Mesh-Resident Cognitive Load Balancer (MCLB)**: (P0) Dynamic task redistribution service for balancing reasoning load across the mesh.
+- **Intent-Bound Ephemeral Tunnels (IBET)**: (P0) Secure, task-specific communication conduits designed to neutralize CVE-2026-65002.
+- **CFIA (Chain-of-Custody Lineage Tracker)**: (P0) Authoritative provenance ledger for multi-hop agent actions.
 
 ### Priority Shifts
-- **Universal Agent Bus (UAB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Chain-of-Custody (CoC)** lineage tracking for all cross-agent commands.
-- **Recursive Context Manager**: (P0) Evolving to support the new **Recursive Intent Attestation (RIA)** requirement for multi-hop context sovereignty.
+- **Recursive Context Protocol**: (Re-affirmed P0) Elevated with requirements for **RIA** cryptographic chaining.
+- **Local Listener Origin Enforcement**: (Re-affirmed P0) Expanded to support **IBET** auto-destruction triggers.
+
+---
+
+## Evolution: [2026-04-17] Updates
 
 ### Proposed Additions
 - **LFTA Trust Lease Manager**: (P1) A performance-optimizing security middleware that manages "Trust Leases" for high-frequency agent tool calls, reducing hardware attestation overhead while maintaining mission integrity.
@@ -1372,18 +1360,6 @@
 ### Priority Shifts
 - **Atomic Shard Lock-Manager (ASLM)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SCTM** integration to counter timing-based side-channel attacks.
 - **Structural Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving to support the new **WASM-Hook Behavioral Profiling** requirement.
-
-## Evolution: [2026-06-18] Updates
-
-### Proposed Additions
-- **RIA Provider (Recursive Intent Attestation)**: (P0) Authoritative root for multi-hop intent attestation, ensuring each sub-intent is mathematically derived from the mission-root.
-- **Mesh-Resident Cognitive Load Balancer (MCLB)**: (P0) Dynamic task redistribution service for balancing reasoning load across the mesh.
-- **Intent-Bound Ephemeral Tunnels (IBET)**: (P0) Secure, task-specific communication conduits designed to neutralize CVE-2026-65002.
-- **CFIA (Chain-of-Custody Lineage Tracker)**: (P0) Tamper-proof provenance ledger for multi-hop agent actions.
-
-### Priority Shifts
-- **Recursive Context Protocol**: (Re-affirmed P0) Elevated with requirements for **RIA** cryptographic chaining.
-- **Local Listener Origin Enforcement**: (Re-affirmed P0) Expanded to support **IBET** auto-destruction triggers.
 
 ## Evolution: [2026-06-17] Updates
 

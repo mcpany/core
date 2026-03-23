@@ -586,6 +586,12 @@
 - [ ] **[P1] Attention-Locked Telemetry Viewer**: (2026-06-15) Security UI for reviewing sanitized reasoning traces and attention-mapping redactions.
 - [ ] **[P0] WASM-Hook Safety Reporter**: (2026-06-15) UI for viewing behavioral profiling results for un-attested configuration hooks.
 
+### Upcoming: [2026-06-18]
+- [ ] **[P0] RIA Lineage Explorer**: (2026-06-18) Visualizer for multi-hop recursive intent attestation chains.
+- [ ] **[P0] Mesh Cognitive Load Balancing Dashboard**: (2026-06-18) Real-time monitor for mesh-wide cognitive utilization and rebalancing events.
+- [ ] **[P0] IBET Tunnel Monitor**: (2026-06-18) Tracker for intent-bound ephemeral communication tunnels.
+- [ ] **[P0] Chain-of-Custody Provenance Ledger**: (2026-06-18) Forensic UI for auditing absolute instruction provenance.
+
 ### Upcoming: [2026-06-17]
 - [ ] **[P0] Active Intent Alignment Monitor**: (2026-06-17) Visual indicator for AIA heartbeat status and semantic drift alerts.
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.

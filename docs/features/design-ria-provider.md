@@ -1,48 +1,43 @@
-# Design Doc: Recursive Intent Attestation (RIA) Provider
+# Design Doc: RIA Provider (Recursive Intent Attestation)
 **Status:** Draft
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
-As agent swarms become deeper and more horizontal, the risk of "Intent Hijacking" or "Instruction Splicing" increases. Current security models rely on point-to-point attestation which fails in multi-hop delegations (A -> B -> C). If agent B is compromised, it can coerce agent C into actions that violate the original mission root intent of agent A.
-
-The RIA Provider solves this by facilitating a cryptographic chain of custody for intent. Every sub-mission spawned within the mesh must carry a hardware-attested token that is mathematically derived from its parent intent, allowing any downstream tool or agent to verify the entire lineage back to the mission root.
+As agent swarms become deeper and more autonomous, the risk of "intent spoofing" and "hallucination hijacking" increases. Traditional attestation only verifies the identity of the immediate caller. MCP Any needs a way to mathematically prove that every sub-task in a chain is a legitimate descendant of the original, user-authorized mission root.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Implement a recursive cryptographic signing mechanism for agent intents.
-    * Provide a verification interface for downstream tools to validate intent lineage.
-    * Ensure multi-framework compatibility (Claude, OpenClaw, AutoGen).
+    * Provide a cryptographic chain of custody for agentic intent.
+    * Enable agents to verify the provenance of received instructions across multiple framework hops.
+    * Support auto-revocation of sub-intents if the parent intent is pruned.
 * **Non-Goals:**
-    * This system will NOT perform semantic analysis of the intent (handled by the AID Hub).
-    * It will NOT manage agent identity (handled by FSI/SMI).
+    * Replacing existing transport-layer security (mTLS/TLSB).
+    * Enforcing reasoning-level semantic alignment (handled by AIA Broker).
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Multi-Agent Swarm Orchestrator
-* **Primary Goal:** Securely delegate a file-writing task to a specialist sub-agent without risking host-level command execution.
+* **User Persona:** Security-Conscious Swarm Architect
+* **Primary Goal:** Ensure that a 3rd-hop subagent cannot perform unauthorized filesystem edits by claiming it was ordered to do so.
 * **The Happy Path (Tasks):**
-    1. Primary Agent A generates a signed Mission-Root Intent (MRI) token.
-    2. Agent A spawns Sub-Agent B, passing a derived RIA token for "File Access: /tmp".
-    3. Sub-Agent B calls a file-write tool.
-    4. The Tool-Sovereignty middleware uses the RIA Provider to verify that the "File Access" intent is a valid child of the original MRI.
-    5. Tool execution is granted based on the verified lineage.
+    1. Primary Agent requests a new sub-intent token from the RIA Provider, providing its own root-signed token.
+    2. RIA Provider verifies the lineage and issues a cryptographically linked sub-token.
+    3. Subagent presents this token to a local tool.
+    4. Local tool validates the entire RIA chain against the mission-root via MCP Any before execution.
 
 ## 4. Design & Architecture
 * **System Flow:**
-    [User] -> MRI Token -> [Agent A] -> Derived RIA Token -> [Agent B] -> [Tool]
-    The RIA Provider sits as a middleware component that intercepts intent creation and tool execution.
+    `User -> Mission Root (Signed) -> RIA Token A -> RIA Token B (Linked to A) -> Tool Execution (Verified Chain)`
 * **APIs / Interfaces:**
-    * `DeriveIntent(parentToken, subIntent) -> riaToken`: Generates a child token.
-    * `VerifyLineage(riaToken) -> rootIntent`: Validates the chain back to MRI.
-* **Data Storage/State:**
-    Tokens are session-bound and ephemeral; the RIA Provider maintains a transient cache of verified chain-hashes for performance.
+    * `POST /v1/ria/token/issue`: Request a new sub-intent token.
+    * `POST /v1/ria/token/verify`: Validate a full RIA chain.
+* **Data Storage/State:** RIA tokens are ephemeral and stored in a versioned, hardware-attested shard of the Blackboard.
 
 ## 5. Alternatives Considered
-* **Flat Intent Tokens:** Rejected because they don't prevent sub-agents from escalating their own privileges by generating new tokens.
-* **Centralized Attestation Server:** Rejected due to the latency requirements of machine-speed meshes.
+* **Flat Session Tokens**: Rejected because they do not provide provenance beyond the immediate parent.
+* **Full Monologue Signing**: Rejected due to prohibitive latency and token overhead.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** RIA enforces the principle of least privilege by ensuring children can only have a subset of parent intents.
-* **Observability:** Every RIA derivation and verification event is logged in the structured audit trail with full lineage metadata.
+* **Security (Zero Trust):** RIA tokens are hardware-bound and expire upon task completion.
+* **Observability:** RIA chain events are logged to the tamper-evident audit log for full auditability.
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.

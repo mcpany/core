@@ -1036,6 +1036,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-06-18]
+### Focus: Absolute Instruction Provenance & Load-Aware Mesh Balancing
+**Context**: The introduction of OpenClaw's RIA and Gemini CLI's IBET, alongside the "Intent-Grafting" vulnerability (CVE-2026-65002), necessitates a move toward absolute instruction provenance. It is no longer enough to attest intent; we must secure the **entire multi-hop chain of custody** and treat **cognitive load** as a dynamically balanced mesh resource.
+**Strategic Pivot**:
+- **RIA Provider (Recursive Intent Attestation)**: MCP Any will evolve to act as the authoritative root for RIA. We will implement the RIA Provider, which facilitates multi-hop cryptographic attestation of intent, ensuring that each sub-intent is mathematically derived from the mission-root.
+- **Mesh-Resident Cognitive Load Balancer (MCLB)**: Inspired by Claude Code, we are introducing the MCLB. This component will dynamically redistribute reasoning tasks across the agent mesh based on real-time cognitive capacity and latency metrics, preventing "reasoning stall" in complex swarms.
+- **Intent-Bound Ephemeral Tunnels (IBET)**: To neutralize CVE-2026-65002, we are upgrading the inter-agent communication layer to support IBET. This ensures that every data exchange occurs within a temporary, intent-scoped conduit that auto-destructs upon mission completion.
+- **Chain-of-Custody (CoC) Lineage Tracker**: To provide absolute instruction provenance, we will implement the CoC Lineage Tracker. This service will maintain a tamper-proof ledger of every agentic hop, allowing for full auditability of "destructive" actions back to the primary orchestrator.
+
 ---
 
 ## Strategic Evolution: [2026-06-17]
@@ -1046,14 +1055,3 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Multi-Modal Behavioral Attestation (MMBA)**: Supporting the sovereignty of the teammate mesh, we are introducing MMBA. This anchors the agent's stylometric profile to its multi-modal trace history (SVG/Audio), providing a higher-dimensional identity signature that is resilient to reasoning-path shadowing.
 - **Reasoning-Aware Garbage Collection (R-GC)**: To neutralize "Speculative Overload," MCP Any will implement R-GC for the Speculative Branching Guard. This service automatically purges speculative context fragments that exhibit high reasoning entropy but low mission utility, preventing cognitive stall in deep swarms.
 - **Temporal Shard Jitter (TSJ) Injection**: To counter CVE-2026-62001, we are upgrading the ESB to include TSJ Injection. This layer will inject hardware-attested timing jitter into entangled state synchronization for non-primary mission-root requests, ensuring absolute temporal isolation in sharded meshes.
-
----
-
-## Strategic Evolution: [2026-06-18]
-### Focus: Absolute Instruction Provenance & Load-Aware Mesh Balancing
-**Context**: The introduction of OpenClaw's RIA and Gemini CLI's IBET, alongside the "Intent-Grafting" vulnerability (CVE-2026-65002), necessitates a move toward absolute instruction provenance. It is no longer enough to attest intent; we must secure the **entire multi-hop chain of custody** and treat **cognitive load** as a dynamically balanced mesh resource.
-**Strategic Pivot**:
-- **RIA Provider (Recursive Intent Attestation)**: MCP Any will evolve to act as the authoritative root for RIA. We will implement the RIA Provider, which facilitates multi-hop cryptographic attestation of intent, ensuring that each sub-intent is mathematically derived from the mission-root.
-- **Mesh-Resident Cognitive Load Balancer (MCLB)**: Inspired by Claude Code, we are introducing the MCLB. This component will dynamically redistribute reasoning tasks across the agent mesh based on real-time cognitive capacity and latency metrics, preventing "reasoning stall" in complex swarms.
-- **Intent-Bound Ephemeral Tunnels (IBET)**: To neutralize CVE-2026-65002, we are upgrading the inter-agent communication layer to support IBET. This ensures that every data exchange occurs within a temporary, intent-scoped conduit that auto-destructs upon mission completion.
-- **Chain-of-Custody (CoC) Lineage Tracker**: To provide absolute instruction provenance, we will implement the CoC Lineage Tracker. This service will maintain a tamper-proof ledger of every agentic hop, allowing for full auditability of "destructive" actions back to the primary orchestrator.

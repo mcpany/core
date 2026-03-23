@@ -2,18 +2,24 @@
 
 ## Ecosystem Shifts
 
-### OpenClaw: Recursive Intent Attestation (RIA)
-OpenClaw has introduced a new protocol for multi-hop agent delegation called RIA. It ensures that when an agent spawns a sub-agent, the intent is cryptographically signed and can be verified by any downstream tool. This prevents "intent-grafting" where a sub-agent might be coerced into performing actions outside the original mission scope.
+### OpenClaw: RIA (Recursive Intent Attestation)
+OpenClaw has introduced RIA, a cryptographic method for ensuring that every sub-intent spawned by an agent can be traced back to the original mission root. This prevents "intent spoofing" and "hallucination hijacking" in deep agent swarms.
 
-### Gemini CLI: Intent-Bound Ephemeral Tunnels (IBET)
-Gemini CLI now supports IBET for inter-agent communication. These tunnels are temporary, task-specific, and isolated at the kernel level. They auto-destruct upon completion of the sub-task, significantly reducing the attack surface for side-channel data exfiltration.
+### Gemini CLI: IBET (Intent-Bound Ephemeral Tunnels)
+Gemini CLI now supports IBET, which provides secure, auto-destructing communication channels between agents. These tunnels are cryptographically bound to the specific intent of the task, neutralizing the risk of long-term credential leakage or session hijacking.
 
-### Claude Code: Mesh-Resident Cognitive Load Balancer (MCLB)
-Claude Code has implemented a mesh-resident load balancer that distributes reasoning tasks across a swarm based on real-time cognitive load metrics. This prevents "reasoning stall" in high-concurrency environments.
-
-## New Autonomous Agent Pain Points
-- **Recursive Accountability Debt**: Identifying which agent in a deep chain was responsible for a specific state mutation is becoming increasingly difficult.
-- **Context Fragmentation**: High-speed teammate rotation is leading to frequent "Context Amnesia" where agents lose track of the primary mission root.
+### Claude Code: MCLB (Mesh-Resident Cognitive Load Balancer)
+Claude Code has prototyped a mesh-resident load balancer that dynamically redistributes reasoning effort across a swarm of agents based on real-time cognitive load and latency metrics. This ensures that no single agent becomes a bottleneck during complex multi-step reasoning.
 
 ## Security Vulnerabilities
-- **CVE-2026-65002 (Intent-Grafting)**: A side-channel vulnerability in un-attested sub-agent spawns allowing for capability escalation via malicious prompt injection in the parent-child handoff.
+
+### CVE-2026-65002: Intent-Grafting
+A critical vulnerability has been discovered where malicious subagents can "graft" unauthorized instructions onto a legitimate agent's reasoning trace. If not properly validated, the parent agent may unknowingly execute these instructions within its higher-privilege context.
+
+## Autonomous Agent Pain Points
+- **Handshake Fatigue**: Agents are experiencing significant latency due to repeated full-hardware handshakes in deep delegations.
+- **Speculative Attention Leakage**: Speculative reasoning paths are inadvertently leaking mission-root constraints to less-trusted subagents.
+- **Traceability Debt**: Swarms are generating massive amounts of reasoning data that are difficult to audit for provenance.
+
+## Today's Unique Findings
+The industry is moving from simple "identity verification" to "absolute instruction provenance." It is no longer enough to know *who* an agent is; we must mathematically prove *why* it is performing every single action. Cognitive load is also being treated as a first-class mesh resource that requires dynamic balancing.
