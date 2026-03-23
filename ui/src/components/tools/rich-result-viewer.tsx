@@ -21,7 +21,7 @@ import remarkGfm from "remark-gfm";
 import { unwrapMcpResult, deepParseJson } from "@/lib/mcp-unwrap";
 
 interface RichResultViewerProps {
-  result: any;
+  result: unknown;
 }
 
 interface TextContent {
@@ -104,7 +104,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     // If content is an array and matches MCP types
     if (Array.isArray(content)) {
       const isValidArray = content.every(
-        (item: any) =>
+        (/* eslint-disable-next-line @typescript-eslint/no-explicit-any */ item: any) =>
           (item.type === "text" && typeof item.text === "string") ||
           (item.type === "image" &&
             typeof item.data === "string" &&
@@ -121,7 +121,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     // Directly check if content is an array of objects
     if (Array.isArray(content) && content.length > 0) {
       const isTable = content.every(
-        (item: any) => typeof item === "object" && item !== null,
+        (/* eslint-disable-next-line @typescript-eslint/no-explicit-any */ item: any) => typeof item === "object" && item !== null,
       );
       // Ensure it's not just an array of MCP image content (which we want to render rich)
       const isRichMcp = mcpContent && mcpContent.some((c) => c.type !== "text");
@@ -136,7 +136,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     // aggregate all keys from all objects to handle sparse data
     const keys = new Set<string>();
     // Limit rows scanned for columns to avoid perf issues on huge datasets
-    content.slice(0, 50).forEach((item: any) => {
+    content.slice(0, 50).forEach((/* eslint-disable-next-line @typescript-eslint/no-explicit-any */ item: any) => {
       if (typeof item === "object" && item !== null) {
         Object.keys(item).forEach((k) => keys.add(k));
       }
@@ -144,7 +144,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     return Array.from(keys);
   }, [content, isTableEligible]);
 
-  const renderCell = (value: any) => {
+  const renderCell = (/* eslint-disable-next-line @typescript-eslint/no-explicit-any */ value: any) => {
     if (value === null || value === undefined)
       return <span className="text-muted-foreground">-</span>;
     if (typeof value === "object")
@@ -226,7 +226,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {content.map((row: any, i: number) => (
+                {content.map(( /* eslint-disable-next-line @typescript-eslint/no-explicit-any */ row: any, i: number) => (
                   <TableRow key={i}>
                     {columns.map((col) => (
                       <TableCell key={col} className="py-2">
