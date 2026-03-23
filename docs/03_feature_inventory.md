@@ -9,21 +9,6 @@
 ## Evolution: [2026-05-15] Updates
 
 ### Proposed Additions
-- **UACO v3.5 S2S Mesh Gateway**: (P0) Native implementation of Swarm-to-Swarm (S2S) handshakes and "Swarm Wallets," facilitating multi-agent collective negotiations.
-- **Hardware-Enforced Intent Sovereignty (IBHI) Broker**: (P0) Security middleware that binds "Mission Root" intents to hardware-protected memory regions to prevent goal manipulation.
-- **Negative Feedback Attestation (NFA) Middleware**: (P1) Governance service that cryptographically binds user corrective feedback to subsequent reasoning steps, preventing agent feedback evasion.
-- **Zero-Copy Shared-Memory BSH Transport**: (P0) High-performance context handoff layer using shared-memory regions to eliminate serialization latency for parallel agent teams.
-- **Discovery Sandbox Middleware**: (Promoted to P0) Ephemeral, zero-trust execution environment for MCP discovery commands to prevent "Ghost-Execution" exploits in untrusted repositories.
-- **Consensus-Aware Delegation Optimizer**: (P1) Middleware to reduce coordination token overhead by identifying high-trust paths in swarm negotiations.
-- **NHI Identity Aggregator**: (P1) Enterprise service for managing hardware-attested non-human identities across large-scale swarms to reduce identity fragmentation.
-
-### Priority Shifts
-- **A2A Messaging Hub**: (Re-affirmed P0) Evolving into the **S2S Mesh Gateway** to support collective swarm identity and negotiation.
-- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Designated as the primary state provider for **Zero-Copy Shared-Memory BSH** coordination.
-
-## Evolution: [2026-05-15] Updates
-
-### Proposed Additions
 - **S2S Mesh Gateway**: (P0) Native UACO v3.5 support for Swarm-to-Swarm Mesh orchestration and S2S negotiation.
 - **IBHI Intent Broker**: (P0) Hardware-protected "Mission Root" intent binding using Intent-Bound Hardware Isolation.
 - **Negative Feedback Attestation (NFA) Middleware**: (P1) Cryptographic binding of user corrections to autonomous reasoning loops.

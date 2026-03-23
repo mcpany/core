@@ -11,7 +11,6 @@ import (
 
 	pb "github.com/mcpany/core/upstream_service/grpc/greeter_server/proto"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
@@ -21,7 +20,7 @@ const (
 
 func main() {
 	// Set up a connection to the server.
-	conn, err := grpc.NewClient(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -36,10 +35,10 @@ func main() {
 	r, err := c.SayHello(ctx, &pb.HelloRequest{Name: name})
 	if err != nil {
 		cancel()
-		conn.Close()
+		_ = conn.Close()
 		log.Fatalf("could not greet: %v", err)
 	}
 	cancel()
-	conn.Close()
+	_ = conn.Close()
 	log.Printf("Greeting: %s", r.GetMessage())
 }
