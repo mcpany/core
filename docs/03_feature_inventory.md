@@ -1314,11 +1314,15 @@
 - **Mesh-Resident Attestation (MRA) Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SCI-compliant** metadata signing.
 
 ## Evolution: [2026-06-14] Updates
+
 ### Proposed Additions
+
 - **Attention-Locked Routing Hub (ALRH)**: (P0) Authoritative coordination middleware for the ARI Hub that performs real-time attention-utilization analysis to neutralize REE attacks.
 - **MDRA Attestation Bridge**: (P0) Unified security service that merges hardware, stylometric, and lineage proofs into a single MDRA-compliant attestation block.
 - **Three-Factor Agency Gateway**: (P1) Multi-factor authentication hub for high-risk autonomous task handoffs, requiring hardware, mission-token, and reputation signatures.
 - **Side-Channel Shield (gRPC Metadata)**: (P0) Advanced security listener for the T2T Bridge that performs metadata scrubbing to block shadow coordination handshakes.
+
 ### Priority Shifts
+
 - **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ALRH** integration to support attention-aware routing.
 - **A2A Messaging Hub**: (Re-affirmed P0) Designated as the primary transport for **MDRA-unified** tokens to ensure cross-framework trust continuity.

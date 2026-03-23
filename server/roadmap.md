@@ -731,7 +731,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Hardware-Locked Coordination Handshake**: (Re-affirmed P0) Designated as the primary enforcement point for **Attention Sovereignty** and **Side-Channel Immunity**.
 
 #### Upcoming (2026-06-14 Evolution)
-* **[P0] Attention-Locked Routing Hub (ALRH)**: Authoritative coordination middleware performing real-time attention analysis.
-* **[P0] MDRA Attestation Bridge**: Unified security service for MDRA-compliant attestation merging.
-* **[P1] Three-Factor Agency Gateway**: Multi-factor authentication hub for autonomous handoffs.
-* **[P0] Side-Channel Shield**: gRPC metadata scrubbing for shadow coordination defense.
+
+*   **[P0] Attention-Locked Routing Hub (ALRH)**: Authoritative coordination middleware performing real-time attention analysis.
+*   **[P0] MDRA Attestation Bridge**: Unified security service for MDRA-compliant attestation merging.
+*   **[P1] Three-Factor Agency Gateway**: Multi-factor authentication hub for autonomous handoffs.
+*   **[P0] Side-Channel Shield**: gRPC metadata scrubbing for shadow coordination defense.

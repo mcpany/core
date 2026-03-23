@@ -3,7 +3,7 @@
 **Created:** 2026-06-11
 
 ## 1. Context and Scope
-As agent swarms scale horizontally and deep delegation becomes common, the integrity of the reasoning process itself has become a critical vulnerability. Current fragment-level validation (ARI Validator) ensures local consistency but fails to prevent "Logic Grafting"a technique where malicious subagents append plausible but unauthorized reasoning paths to a shared mission state.
+As agent swarms scale horizontally and deep delegation becomes common, the integrity of the reasoning process itself has become a critical vulnerability. Current fragment-level validation (ARI Validator) ensures local consistency but fails to prevent "Logic Grafting"--a technique where malicious subagents append plausible but unauthorized reasoning paths to a shared mission state.
 
 The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into an authoritative, central authority that enforces "Semantic Hash-Chaining" across all inter-agent coordination fragments. This ensures that every step in a mission is not only semantically valid but also cryptographically bound to its verified history, preventing the insertion of malicious reasoning "branches."
 
@@ -68,6 +68,7 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 **Security Impact:** Prevents subagents from colluding via metadata while appearing to follow the "Reasoning Mainline."
 
 ### Update: 2026-06-14 - Mission-Anchored Attention Sovereignty
+
 **Context:** Today's market sync revealed the emergence of **Attention-Aware Routing (AAR)** and unified **MDRA** tokens.
 **Architecture Adjustment:**
 * Integrating the **Attention-Locked Routing Hub (ALRH)** in Section 4 to support dynamic routing based on specialist attention availability.
