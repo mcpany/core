@@ -1137,7 +1137,6 @@
 
 ## Evolution: Execution Sovereignty (2026-05-30)
 
-
 ### Proposed Additions (2026-05-30 Expansion)
 
 * **Intent Hierarchy Enforcer (IHE)**: Mandatory priority for state fragments.

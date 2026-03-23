@@ -48,7 +48,6 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 
 ### Update: 2026-05-30 - Intent Hierarchy Integration
 
-
 **Context**: Research identified "Context Shadowing" vulnerabilities.
 
 **Architecture Adjustment**:

@@ -487,6 +487,5 @@
 
 #### Upcoming: Infrastructure Evolution Expansion (2026-05-30)
 
-
 - [ ] **[P0] Mission Anchor Visualization**: Real-time display of anchors.
 - [ ] **[P0] IEC/KNS Health Dashboard**: Visualization of micro-VM usage.
