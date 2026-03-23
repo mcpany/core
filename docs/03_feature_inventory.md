@@ -1221,12 +1221,6 @@
 
 ## Evolution: [2026-06-06] Updates
 
-### Proposed Additions
-- **Active Intent-Deconstruction (AID) Hub**: (P0) Advanced security middleware extension for the Semantic Integrity Bridge that performs real-time deconstruction and structural validation of all inter-agent messages.
-- **Capability Garbage Collection (CGC) Provider**: (P0) Authoritative security service for the EPM and LFTA providers that recursively tracks capability lineage and enforces immediate revocation upon sub-intent termination.
-- **HAIL v0.36.1 Lineage Provider**: (P0) Identity extension for the SRM Provider supporting hardware-attested intent lineage for non-repudiable mission-root attestation.
-- **Mission-Root Lineage Attestation (MRLA) Gateway**: (P0) Advanced A2A handshake gateway mandating proof of mission-root lineage before capability discovery.
-
 ## Evolution: [2026-06-07] Updates
 
 ### Proposed Additions
@@ -1238,6 +1232,14 @@
 ### Priority Shifts
 - **Inter-Agent Mailbox Guard (IAMG)**: (Re-affirmed P0) Now elevated with the requirement for mandatory CASI integration for parallel teammate coordination.
 - **`TeammateTool` Orchestration Adapter**: (Re-affirmed P0) Evolving to support CFIB-native task auctions across heterogeneous meshes.
+
+## Evolution: [2026-06-06] Updates
+
+### Proposed Additions
+- **Active Intent-Deconstruction (AID) Hub**: (P0) Advanced security middleware extension for the Semantic Integrity Bridge that performs real-time deconstruction and structural validation of all inter-agent messages.
+- **Capability Garbage Collection (CGC) Provider**: (P0) Authoritative security service for the EPM and LFTA providers that recursively tracks capability lineage and enforces immediate revocation upon sub-intent termination.
+- **HAIL v0.36.1 Lineage Provider**: (P0) Identity extension for the SRM Provider supporting hardware-attested intent lineage for non-repudiable mission-root attestation.
+- **Mission-Root Lineage Attestation (MRLA) Gateway**: (P0) Advanced A2A handshake gateway mandating proof of mission-root lineage before capability discovery.
 
 ### Priority Shifts
 - **Semantic Integrity Bridge**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Active Intent-Deconstruction (AID)** to counter semantic splicing.
