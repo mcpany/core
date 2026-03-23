@@ -729,3 +729,57 @@ func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest
 	}
 	return pb.ListAuditLogsResponse_builder{Entries: pbEntries}.Build(), nil
 }
+
+// ClearAuditLogs clears audit logs matching the filter.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*pb.ClearAuditLogsRequest): The request object.
+//
+// Returns:
+//   - *pb.ClearAuditLogsResponse: The resulting response.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - Deletes audit logs from the store.
+func (s *Server) ClearAuditLogs(ctx context.Context, req *pb.ClearAuditLogsRequest) (*pb.ClearAuditLogsResponse, error) {
+	if s.auditMiddleware == nil {
+		return nil, status.Error(codes.FailedPrecondition, "audit logging is not enabled")
+	}
+
+	var startTime, endTime *time.Time
+	if req.GetStartTime() != "" {
+		t, err := time.Parse(time.RFC3339, req.GetStartTime())
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid start_time: %v", err)
+		}
+		startTime = &t
+	}
+	if req.GetEndTime() != "" {
+		t, err := time.Parse(time.RFC3339, req.GetEndTime())
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid end_time: %v", err)
+		}
+		endTime = &t
+	}
+
+	filter := audit.Filter{
+		StartTime: startTime,
+		EndTime:   endTime,
+		ToolName:  req.GetToolName(),
+		UserID:    req.GetUserId(),
+		ProfileID: req.GetProfileId(),
+	}
+
+	deletedCount, err := s.auditMiddleware.Clear(ctx, filter)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to clear audit logs: %v", err)
+	}
+
+	return pb.ClearAuditLogsResponse_builder{
+		DeletedCount: proto.Int64(deletedCount),
+	}.Build(), nil
+}
