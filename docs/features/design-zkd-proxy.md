@@ -55,3 +55,6 @@ The Zero-Knowledge Discovery (ZKD) Proxy evolves the discovery process by mandat
 
 ## 7. Evolutionary Changelog
 * **2026-06-27:** Initial Document Creation.
+* **2026-06-28: Mission-Root Sovereignty Integration**
+    * **Context:** Market research revealed the MRSA protocol as a defense against stylometric mimicry.
+    * **Architecture Adjustment:** The `POST /v1/discovery/unmask` endpoint now requires an MRSA-compliant hardware-attested proof of lineage, ensuring that unmasking requests are semantically aligned with the mission-root.

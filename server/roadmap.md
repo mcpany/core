@@ -820,3 +820,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Shadow-Handshake Interceptor (SHI)**: Transport-level monitoring to interdict unauthorized agency-initiation signals. (Added: 2026-06-26)
 *   **[P0] Differential Reasoning Validator (DRV)**: Framework-aware sanity checks for state fragments to prevent cross-framework poisoning. (Added: 2026-06-26)
 *   **[P0] Monotonic Handshake Lineage (MHL)**: Hardware-bound lineage tokens for all handshake and session-initiation events. (Added: 2026-06-26)
+
+#### Upcoming (2026-06-28 Evolution)
+*   **[P0] Mission-Root Sovereignty Attestation (MRSA) Provider**: Authoritative service for issuing hardware-attested proofs of semantically aligned reasoning lineage. (Added: 2026-06-28)
+*   **[P0] Teammate Mailbox Shard Arbiter (TMSA)**: Kernel-level service managing concurrent write-access to CRDT mailbox shards via lightweight leases. (Added: 2026-06-28)
+*   **[P1] Entropy-Aware Attention Firewall**: Real-time monitoring of reasoning entropy budgets to prevent mission-root eviction (REDoS defense). (Added: 2026-06-28)
+*   **[P1] Cross-Cloud Identity Bridge**: Infrastructure for re-attesting local identity tokens against cloud HSMs to maintain attestation strength. (Added: 2026-06-28)

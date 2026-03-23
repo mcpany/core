@@ -1501,3 +1501,15 @@
 ### Priority Shifts
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Elevated with mandatory **CFSA** integration to counter mimicry-based hijacking.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SHI** and **MHL** integration for all agency-initiation signals.
+
+## Evolution: [2026-06-28] Updates
+
+### Proposed Additions
+- **Mission-Root Sovereignty Attestation (MRSA) Provider**: (P0) Authoritative service for issuing hardware-attested proofs that specialist reasoning remains semantically aligned with the primary mission-root.
+- **Teammate Mailbox Shard Arbiter (TMSA)**: (P0) Kernel-level coordination service for managing concurrent write-access to CRDT-based mailbox shards in high-density teams.
+- **Entropy-Aware Attention Firewall**: (P1) Security extension for the ADF that monitors reasoning entropy budgets to prevent lead agent attention eviction (REDoS defense).
+- **Cross-Cloud Identity Bridge**: (P1) Infrastructure service for re-attesting local identity tokens against cloud-resident HSMs to maintain attestation strength across environments.
+
+### Priority Shifts
+- **Attention-Density Firewall (ADF)**: (Re-affirmed P0) Elevated with the requirement for mandatory **Entropy-Aware gating** to counter REDoS attacks.
+- **CRDT-Native Mailbox Sharding**: (Re-affirmed P0) Now designated as the primary backend for the **Teammate Mailbox Shard Arbiter (TMSA)**.
