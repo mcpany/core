@@ -72,6 +72,7 @@ go_test(
         "awk_system_security_test.go",
         "backtick_injection_security_test.go",
         "benchmark_check_test.go",
+        "callable_test.go",
         "clean_path_test.go",
         "command_coverage_test.go",
         "command_injection_repro_test.go",

@@ -21,6 +21,7 @@ go_test(
     name = "alerts_test",
     srcs = [
         "manager_test.go",
+        "manager_webhook_test.go",
         "rules_test.go",
     ],
     embed = [":alerts"],
