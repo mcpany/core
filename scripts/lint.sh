@@ -130,7 +130,8 @@ fi
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     # Limiting concurrency to avoid OOM
-    "$GOLANGCI_LINT_BIN" run --concurrency=2 --timeout 20m --fix \
+    # GOGC=50 encourages more aggressive garbage collection at the cost of some CPU
+    GOGC=50 "$GOLANGCI_LINT_BIN" run --concurrency=2 --timeout 20m --fix \
         ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
     echo "    golangci-lint OK."
 else
