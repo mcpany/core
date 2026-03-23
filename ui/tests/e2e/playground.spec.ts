@@ -5,8 +5,8 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe.skip('Playground Complex Schema Support', () => {
-  test.skip('should allow configuring and running a tool with complex nested schema', async ({ page }) => {
+test.describe('Playground Complex Schema Support', () => {
+  test('should allow configuring and running a tool with complex nested schema', async ({ page }) => {
     // Mock the tools API to return a tool with complex schema
 
     // Mock the execute API

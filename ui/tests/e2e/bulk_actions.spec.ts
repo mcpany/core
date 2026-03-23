@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe.skip('Bulk Service Actions', () => {
+test.describe('Bulk Service Actions', () => {
 
   test.beforeEach(async ({ page }) => {
     // Mock services API
@@ -13,7 +13,7 @@ test.describe.skip('Bulk Service Actions', () => {
      // Mock doctor API
   });
 
-  test.skip('should select all services and show bulk actions', async ({ page }) => {
+  test('should select all services and show bulk actions', async ({ page }) => {
     await page.goto('/upstream-services');
 
     // Wait for services to load
@@ -30,7 +30,7 @@ test.describe.skip('Bulk Service Actions', () => {
     await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible();
   });
 
-  test.skip('should select individual services', async ({ page }) => {
+  test('should select individual services', async ({ page }) => {
      await page.goto('/upstream-services');
      await expect(page.getByText('service-1')).toBeVisible();
 
@@ -45,7 +45,7 @@ test.describe.skip('Bulk Service Actions', () => {
      await expect(page.getByText('2 selected')).toBeVisible();
   });
 
-  test.skip('should toggle services', async ({ page }) => {
+  test('should toggle services', async ({ page }) => {
       // Mock the toggle API
       const toggleRequests: string[] = [];
 
@@ -65,7 +65,7 @@ test.describe.skip('Bulk Service Actions', () => {
       expect(toggleRequests.some(url => url.includes('service-3'))).toBeTruthy();
   });
 
-    test.skip('should delete services', async ({ page }) => {
+    test('should delete services', async ({ page }) => {
       // Mock the delete API
       const deleteRequests: string[] = [];
 

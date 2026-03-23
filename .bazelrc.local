@@ -1,0 +1,3 @@
+startup --host_jvm_args=-Xmx12g
+build --local_ram_resources=16384
+build --jobs=2

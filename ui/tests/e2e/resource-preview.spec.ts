@@ -5,9 +5,9 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe.skip('Resource Preview Modal', () => {
+test.describe('Resource Preview Modal', () => {
 
-  test.skip('should open resource in modal from explorer', async ({ page }) => {
+  test('should open resource in modal from explorer', async ({ page }) => {
     // Mock resources list
 
     // Mock resource read with regex to handle encoded URI

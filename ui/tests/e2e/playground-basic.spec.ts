@@ -5,8 +5,8 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe.skip('Playground Basic Verification', () => {
-  test.skip('should execute calculator tool and verify output', async ({ page }) => {
+test.describe('Playground Basic Verification', () => {
+  test('should execute calculator tool and verify output', async ({ page }) => {
     // Mock the tools API
 
     // Mock the execute API
