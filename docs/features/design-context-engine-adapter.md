@@ -13,6 +13,7 @@ The release of OpenClaw v2026.3.7-beta.1's "ContextEngine" has introduced a stan
     * Implement a native host for OpenClaw-compatible ContextEngine plugins.
     * Provide "Cognitive Anchoring" to protect critical mission intents from "Context-Splicing."
     * Standardize state mutation signals across connected agent frameworks.
+
 * **Non-Goals:**
     * Replacing existing framework-specific state management (e.g., AutoGen's internal state).
     * Providing a standalone database (will leverage the Shared KV Store/Blackboard).
@@ -20,7 +21,9 @@ The release of OpenClaw v2026.3.7-beta.1's "ContextEngine" has introduced a stan
 ## 3. Critical User Journey (CUJ)
 
 * **User Persona:** Agentic Software Engineer
+
 * **Primary Goal:** Implement a custom "Long-Term Memory" strategy for a swarm without modifying the agent's core reasoning logic.
+
 * **The Happy Path (Tasks):**
     1. Engineer develops an OpenClaw-compatible `ContextEngine` plugin.
     2. Engineer registers the plugin with MCP Any via the `config.yaml`.
@@ -32,20 +35,24 @@ The release of OpenClaw v2026.3.7-beta.1's "ContextEngine" has introduced a stan
 
 * **System Flow:**
     `[Agent] -> [Context Bridge] -> [ContextEngine Plugin Adapter] -> [Shared KV Store (Blackboard)]`
+
 * **APIs / Interfaces:**
     * `ContextEngine.onContextUpdate()`: Hook for processing context mutations.
     * `ContextEngine.getAnchoredIntent()`: Interface for retrieving the protected root mission intent.
+
 * **Data Storage/State:**
     * Plugin-specific micro-state is stored in the Shared KV Store, isolated by `mission_id`.
 
 ## 5. Alternatives Considered
 
 * **Internal State Forking:** Rejected as it lacks interoperability with the growing OpenClaw ecosystem.
+
 * **Hardcoded Summarization Logic:** Rejected due to lack of flexibility for specialized agent domains (e.g., legal or medical reasoning).
 
 ## 6. Cross-Cutting Concerns
 
 * **Security (Zero Trust):** Plugins are executed in an isolated WASM sandbox (via the WASM-BSH Sanitizer) to prevent unauthorized host access.
+
 * **Observability:** State mutations are logged in the Mission Audit Trail, including the ID of the plugin that performed the mutation.
 
 ## 7. Evolutionary Changelog
