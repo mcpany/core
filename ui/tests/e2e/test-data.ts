@@ -353,3 +353,28 @@ export const seedTraces = async (requestContext?: APIRequestContext) => {
         console.log(`Failed to seed trace: ${e}`);
     }
 };
+
+
+export const seedAuditLogs = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    try {
+        // Execute a tool to generate a real audit log
+        const res = await context.post('/mcp/jsonrpc', {
+            data: {
+                jsonrpc: "2.0",
+                id: 1,
+                method: "tools/call",
+                params: {
+                    name: "echo_tool",
+                    arguments: { text: "hello world" }
+                }
+            },
+            headers: HEADERS,
+        });
+        if (!res.ok()) {
+            console.log(`seedAuditLogs failed: ${res.status()}`);
+        }
+    } catch (e) {
+        console.log(`Error seeding audit logs: ${e}`);
+    }
+};

@@ -7,7 +7,7 @@
 import { test, expect } from '@playwright/test';
 import * as path from 'path';
 import * as fs from 'fs';
-import { seedGlobalState } from './e2e/test-data';
+import { seedGlobalState, seedAuditLogs } from './e2e/test-data';
 
 test.describe('Feature Screenshot', () => {
     // Enabled audit screenshots
@@ -20,6 +20,7 @@ test.describe('Feature Screenshot', () => {
         // Attempt to seed data if backend is available
         try {
             await seedGlobalState(request);
+            await seedAuditLogs(request);
         } catch (e) {
             console.warn('Backend not available for seeding, proceeding without it:', e);
         }
@@ -48,43 +49,10 @@ test.describe('Feature Screenshot', () => {
     // We can't rely on the backend being alive or correctly seeded in this specific test
     // environment, so we intercept the API calls to guarantee the UI has data to render.
 
-    // Mock config requests to prevent stalling
-    await page.route('**/api/v1/doctor*', async route => {
-        await route.fulfill({ json: { status: "healthy" } });
-    });
-    await page.route('**/api/v1/users/me*', async route => {
-        await route.fulfill({ json: { id: "e2e-admin-core" } });
-    });
-    await page.route('**/api/v1/topology*', async route => {
-        await route.fulfill({ json: { nodes: [], edges: [] } });
-    });
-    await page.route('**/api/v1/services*', async route => {
-        await route.fulfill({ json: [] });
-    });
-
-    // Mock the audit logs list to include a JSON-based tool call
-    await page.route('**/api/v1/audit/logs*', async route => {
-        await route.fulfill({
-            json: {
-                entries: [
-                    {
-                        timestamp: new Date().toISOString(),
-                        toolName: "echo_tool",
-                        userId: "e2e-admin-core",
-                        arguments: JSON.stringify({ "hello": "world" }),
-                        result: JSON.stringify({ "output": "world" }),
-                        duration: "10ms",
-                        error: ""
-                    }
-                ]
-            }
-        });
-    });
-
     await page.goto('/audit');
 
     // Wait for the mock to populate the list
-    await expect(page.locator('text=echo_tool').first()).toBeVisible();
+    await expect(page.locator('text=echo_tool').first()).toBeVisible({ timeout: 15000 });
 
     // Click "View"
     await page.locator('button:has-text("View")').first().click();
@@ -104,14 +72,9 @@ test.describe('Feature Screenshot', () => {
     const exportBtn = page.locator('button:has-text("Export CSV")');
     await exportBtn.waitFor({ state: 'visible' });
 
-    // Click it (which triggers an export on backend)
-    await page.route('**/api/v1/audit/export*', async route => {
-        await route.fulfill({ status: 200, body: 'a,b,c\n1,2,3' });
-    });
-
     await exportBtn.click();
 
-    // We mocked it so no actual file is downloaded, just checking the Toast
+    // We check the Toast showing successful export
     await expect(page.locator('text=Export Successful').first()).toBeVisible();
   });
 });

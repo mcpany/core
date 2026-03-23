@@ -569,3 +569,41 @@ func TestServer_ListServices_Fallback(t *testing.T) {
 	assert.Equal(t, "svc_fallback", resp.GetServices()[0].GetName())
 	assert.Equal(t, "OK", resp.GetServiceStates()[0].GetStatus())
 }
+
+func TestServer_ExportAuditLogs(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	tm := tool.NewMockManagerInterface(ctrl)
+	store := memory.NewStore()
+
+	// Setup audit middleware
+	am, _ := middleware.NewAuditMiddleware(&configv1.AuditConfig{})
+
+	// Inject mock store
+	now := time.Now()
+	mockStore := &MockAuditStore{
+		entries: []audit.Entry{
+			{
+				Timestamp: now,
+				ToolName: "test-tool",
+				UserID: "user1",
+				Duration: "100ms",
+				DurationMs: 100,
+			},
+		},
+	}
+	am.SetStore(mockStore)
+
+	s := NewServer(nil, tm, nil, store, nil, am)
+	ctx := context.Background()
+
+	// Test ExportAuditLogs - Success
+	resp, err := s.ExportAuditLogs(ctx, pb.ListAuditLogsRequest_builder{
+		StartTime: proto.String(now.Add(-1 * time.Hour).Format(time.RFC3339)),
+		EndTime:   proto.String(now.Add(1 * time.Hour).Format(time.RFC3339)),
+	}.Build())
+	require.NoError(t, err)
+	assert.Contains(t, resp.GetCsvData(), "test-tool")
+	assert.Contains(t, resp.GetCsvData(), "user1")
+}
