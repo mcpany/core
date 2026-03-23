@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ToolDefinition, apiClient, ToolAnalytics } from "@/lib/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlayCircle, Loader2, Zap, Activity, History as HistoryIcon, RefreshCw, Code, Terminal, Coins, ArrowRightLeft, Download } from "lucide-react";
+import { PlayCircle, Loader2, Zap, Activity, History as HistoryIcon, RefreshCw, Code, Terminal, Coins, Download } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
