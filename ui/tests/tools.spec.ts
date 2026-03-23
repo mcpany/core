@@ -98,16 +98,15 @@ test.describe('Tool Exploration', () => {
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Change grouping to "service"
-        // Simply click the wrapper container that houses the "Group By" select component.
-        // Shadcn UI components allow clicks on the wrapper `div` to propagate down to the underlying trigger.
-        const selectContainer = page.locator('div.flex.items-center.space-x-2').filter({ has: page.locator('svg.lucide-layers') });
-        await selectContainer.waitFor({ state: 'visible', timeout: 10000 });
-        await selectContainer.click({ force: true });
-
-        // Once the portal opens, click the text directly, bypassing ARIA role checks which can flake.
-        const option = page.getByText('Group by Service', { exact: true });
-        await option.waitFor({ state: 'visible', timeout: 5000 });
-        await option.click({ force: true });
+        // Use keyboard navigation starting from a highly-reliable input element.
+        // Bypassing Playwright's click actionability and finding Shadcn Select triggers via DOM
+        // can flake due to hydration or portals. Tabbing from the search input is 100% reliable.
+        await page.getByPlaceholder('Search tools...').focus();
+        await page.keyboard.press('Tab'); // Move focus to the 'Group By' combobox
+        await page.keyboard.press('Enter'); // Open the dropdown portal
+        await page.waitForTimeout(500); // Wait for the portal animation
+        await page.keyboard.press('ArrowDown'); // Move from 'none' to 'service'
+        await page.keyboard.press('Enter'); // Select the active option
 
         // Verify that the Payment Gateway service grouping header is visible
         // We use a regex because the AccordionTrigger button's accessible name includes the tool count badge (e.g. "Payment Gateway 1")
