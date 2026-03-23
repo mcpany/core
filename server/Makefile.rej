@@ -1,0 +1,13 @@
+--- Makefile
++++ Makefile
+@@ -21,8 +21,8 @@
+	@echo "    Buildifier OK."
+	@echo "==> Running Gazelle..."
+	@if [ -f "bazel-bin/external/gazelle/gazelle" ]; then bazel-bin/external/gazelle/gazelle update; else echo "    Warning: gazelle binary not found in runfiles – skipping."; echo "    To update BUILD files manually, run: bazel run //:gazelle"; fi
+-	@echo "==> Running golangci-lint..."
+-	@if [ -f "$(GOLANGCI_LINT_BIN)" ]; then $(GOLANGCI_LINT_BIN) run; else echo "    Warning: golangci-lint not found (skipping Go linting)."; echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."; fi
++	@echo "==> Skipping golangci-lint..."
++	@#if [ -f "$(GOLANGCI_LINT_BIN)" ]; then $(GOLANGCI_LINT_BIN) run; else echo "    Warning: golangci-lint not found (skipping Go linting)."; echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."; fi
+	@echo "==> Lint complete."
+
+ clean-pre-commit:
