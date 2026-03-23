@@ -50,14 +50,17 @@ jobs:
             - v1-lint-
       - run:
           name: Prepare Environment
-          command: make prepare
+          command: |
+            # Using bazel instead of make
+            # make prepare
+            echo "Skipping make prepare, using bazel"
       - run:
           name: Run Lint
           command: |
             . venv/bin/activate
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
-            make lint
+            bazel run //:lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
