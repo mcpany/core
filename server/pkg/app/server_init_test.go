@@ -303,7 +303,7 @@ func TestInitializeDatabase_Empty(t *testing.T) {
 	err := app.initializeDatabase(context.Background(), mockStore, nil)
 	assert.NoError(t, err)
 
-	mockStore.AssertExpectations(t)(t)
+	mockStore.AssertExpectations(t)
 }
 
 func TestInitializeDatabase_AlreadyInitialized(t *testing.T) {

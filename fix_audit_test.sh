@@ -1,0 +1,1 @@
+sed -i 's/mockStore.On("Read", mock.Anything, mock.Anything), mock.Anything, mock.Anything).Return(\[\]audit.Entry{}, assert.AnError).Once()/mockStore.On("Read", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(\[\]audit.Entry{}, assert.AnError).Once()/g' server/pkg/app/api_audit_test.go
