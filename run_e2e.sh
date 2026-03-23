@@ -1,3 +1,0 @@
-#!/bin/bash
-export PATH="$PATH:/usr/local/bin"
-bazelisk test //ui:eslint //ui:tsc //server/...
