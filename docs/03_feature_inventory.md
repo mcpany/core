@@ -1,4 +1,5 @@
 <!-- markdownlint-disable -->
+
 # Feature Inventory: MCP Any
 
 ## Current Backlog (P0/P1)
@@ -1316,7 +1317,7 @@
 
 ## Evolution: [2026-06-14] Updates
 
-### Proposed Additions (104)
+### Proposed Additions (2026-06-14)
 
 - **MRA-Backed Lineage Provider**: (P0) Advanced security service utilizing Mesh-
   Resident Attestation for reasoning fragments.
@@ -1327,7 +1328,7 @@
 - **Identity-Decay Detector**: (P1) Behavioral monitoring service for IDA
   neutralizing mimicry.
 
-### Priority Shifts (92)
+### Priority Shifts (2026-06-14)
 
 - **Shadow Coordination Interceptor (SCI)**: (Re-affirmed P0) Now elevated with
   the requirement for mandatory **Side-Channel Immunity** filtering.
