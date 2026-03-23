@@ -1,6 +1,6 @@
 module github.com/mcpany/core/webhooks/examples/html_to_md
 
-go 1.26.1
+go 1.24.0
 
 require (
 	github.com/JohannesKaufmann/html-to-markdown v1.6.0
@@ -151,7 +151,7 @@ require (
 	golang.org/x/text v0.32.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251202230838-ff82c1b0f217 // indirect
-	google.golang.org/grpc v1.79.2 // indirect
+	google.golang.org/grpc v1.77.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/client-go v0.34.1 // indirect
 	modernc.org/libc v1.66.10 // indirect
