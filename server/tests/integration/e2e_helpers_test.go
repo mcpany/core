@@ -68,7 +68,7 @@ func TestDockerHelpers(t *testing.T) {
 	}
 	t.Parallel()
 	if !IsDockerSocketAccessible() {
-		// t.Skip("Docker is not available")
+		t.Skip("Docker is not available")
 	}
 
 	// Test StartDockerContainer
