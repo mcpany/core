@@ -8,8 +8,7 @@
 
 ## 1. Context and Scope
 
-The AIA Broker ensures that specialist agent reasoning remains mission-
-anchored
+The AIA Broker ensures that specialist agent reasoning remains mission-anchored
 by issuing hardware-attested heartbeats.
 
 ## 2. Goals & Non-Goals
@@ -26,9 +25,7 @@ by issuing hardware-attested heartbeats.
 * **Primary Goal:** Ensure multi-hop delegations remain within intent bounds.
 * **The Happy Path (Tasks):**
     1. Parent agent delegates task to specialist via AIA Broker.
-    2. AIA Broker attaches a hardware-attested alignment heartbeat
-       requirement.
-
+    2. AIA Broker attaches a hardware-attested alignment heartbeat requirement.
     3. Specialist provides periodic alignment proofs during reasoning.
     4. Broker validates proofs against mission-root signature.
 

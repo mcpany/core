@@ -25,9 +25,7 @@ monitoring and governance of this entropy.
 ## 3. Critical User Journey (CUJ)
 
 * **User Persona:** Swarm Security Architect.
-* **Primary Goal:** Prevent a deep swarm from diverging into unauthorized
-  paths.
-
+* **Primary Goal:** Prevent a deep swarm from diverging into unauthorized paths.
 * **The Happy Path (Tasks):**
     1. Define an "Entropy Budget" for the mission.
     2. CEC intercepts traces and calculates scores.
