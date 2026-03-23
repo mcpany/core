@@ -1990,6 +1990,9 @@ func (a *Application) runServerMode(
 	mux.Handle("/api/v1/alignment/status", authMiddleware(a.handleActiveIntentAlignment()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
+	// A2A Routes
+	a.setupA2ARoutes(mux)
+
 	// OIDC Routes
 	var oidcConfig *config_v1.OIDCConfig
 	if globalSettings != nil {

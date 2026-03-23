@@ -1,0 +1,20 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "api",
+    srcs = ["a2a.go"],
+    importpath = "github.com/mcpany/core/server/api",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//server/pkg/middleware",
+    ],
+)
+
+go_test(
+    name = "api_test",
+    srcs = ["a2a_test.go"],
+    embed = [":api"],
+    deps = [
+        "@com_github_stretchr_testify//assert",
+    ],
+)
