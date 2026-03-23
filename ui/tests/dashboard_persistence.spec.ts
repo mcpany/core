@@ -4,21 +4,36 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './e2e/test-data';
 
 test('dashboard layout persistence', async ({ page, request }) => {
-  // 1. Initial Load
-  await page.goto('/');
+  // 0. Seed global state (Database Seeding constraint)
+  await seedGlobalState(request);
+
+  // 1. Login to get authenticated session
+  await page.goto('/login');
+  await page.fill('input[type="text"]', 'e2e-admin-core');
+  await page.fill('input[type="password"]', 'secure-password');
+  await page.click('button[type="submit"]');
+
+  // Wait for successful login and redirect to home
+  await page.waitForURL('**/*');
+
+  // Create an authenticated request context
+  const storageState = await page.context().storageState();
+  const authRequest = await request.newContext({
+      storageState: storageState
+  });
 
   // Wait for loading to finish
   await expect(page.locator('.animate-spin')).not.toBeVisible();
 
-  // If dashboard is empty, we see "Your dashboard is empty"
-  // If defaults are loaded, we might see widgets.
-  // The test env might start fresh.
-
   // Clear preferences via API first to ensure clean state
-  await request.post('/api/v1/user/preferences', {
-      data: { "dashboard-layout": "[]" }
+  await authRequest.post('/api/v1/user/preferences', {
+      data: { "dashboard-layout": "[]" },
+      headers: {
+          'Content-Type': 'application/json'
+      }
   });
 
   await page.reload();
@@ -49,7 +64,7 @@ test('dashboard layout persistence', async ({ page, request }) => {
   await expect(page.getByText('Your dashboard is empty')).not.toBeVisible();
 
   // 7. Verify API state
-  const response = await request.get('/api/v1/user/preferences');
+  const response = await authRequest.get('/api/v1/user/preferences');
   expect(response.ok()).toBeTruthy();
   const data = await response.json();
   expect(data['dashboard-layout']).toBeDefined();
