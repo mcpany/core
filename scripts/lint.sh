@@ -28,7 +28,7 @@ fi
 if [[ -n "${BUILD_WORKSPACE_DIRECTORY:-}" ]]; then
     PROJECT_ROOT="$BUILD_WORKSPACE_DIRECTORY"
 else
-    PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+    PROJECT_ROOT="$(git rev-parse --show-toplevel  || pwd)"
 fi
 cd "$PROJECT_ROOT"
 
@@ -58,7 +58,7 @@ find_tool() {
     done
 
     # 4. Fall back to $PATH.
-    bin="$(command -v "${name}" 2>/dev/null || true)"
+    bin="$(command -v "${name}"  || true)"
     echo "$bin"
 }
 
@@ -76,8 +76,8 @@ if [[ -z "$BUILDIFIER_BIN" || ! -x "$BUILDIFIER_BIN" ]]; then
     exit 1
 fi
 # Collect Bazel BUILD / .bzl / WORKSPACE files, excluding caches and symlinks.
-buildifier_files=(
-    $(find . \
+mapfile -t buildifier_files < <(
+find . \
         -not \( \
             -path './build/*' \
             -o -path './bazel-*' \
@@ -95,7 +95,8 @@ buildifier_files=(
         \) \
         -type f \
         2>/dev/null)
-)
+
+
 if [[ ${#buildifier_files[@]} -gt 0 ]]; then
     "$BUILDIFIER_BIN" "${buildifier_files[@]}"
 fi
