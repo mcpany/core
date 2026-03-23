@@ -192,7 +192,7 @@ func (r *realLocator) TextContent(options ...playwright.LocatorTextContentOption
 }
 
 // playwrightFetcher is the production PageFetcher that uses playwright-go.
-type playwrightFetcher struct{
+type playwrightFetcher struct {
 	runner playwrightRunner
 }
 

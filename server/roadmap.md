@@ -808,3 +808,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Environment Sovereignty (HLES)**: Secure, kernel-bound memory for hardware-attested identity tokens. (Added: 2026-06-25)
 *   **[P0] Monotonic Mission Lineage (MML) Provider**: Identity extension for TPM-signed monotonic counters for reasoning provenance. (Added: 2026-06-25)
 *   **[P1] CRDT-Native Mailbox Shards**: Lock-free horizontal coordination using Conflict-Free Replicated Data Types. (Added: 2026-06-25)
+
+#### Upcoming (2026-06-26 Evolution)
+*   **[P0] Cross-Framework Stylometric Arbiter (CFSA)**: Real-time behavioral analysis of reasoning traces to prevent mimicry-based hijacking. (Added: 2026-06-26)
+*   **[P0] Shadow-Handshake Interceptor (SHI)**: Transport-level monitoring to interdict unauthorized agency-initiation signals. (Added: 2026-06-26)
+*   **[P0] Differential Reasoning Validator (DRV)**: Framework-aware sanity checks for state fragments to prevent cross-framework poisoning. (Added: 2026-06-26)
+*   **[P0] Monotonic Handshake Lineage (MHL)**: Hardware-bound lineage tokens for all handshake and session-initiation events. (Added: 2026-06-26)
