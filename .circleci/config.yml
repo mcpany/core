@@ -19,7 +19,7 @@ jobs:
           command: |
             sudo rm -f /usr/local/bin/golangci-lint
             rm -rf build/env/bin
-            mkdir -p build/env/bin
+            rm -rf build/linter
       - run:
           name: Install Python dependencies
           command: |
@@ -33,24 +33,20 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v30-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-            - v30-lint-
+            - v31-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+            - v31-lint-
       - run:
-          name: Prepare Environment
-          command: |
-            export GOTOOLCHAIN=go1.26.1
-            make prepare
-      - run:
-          name: Run Lint
+          name: Prepare and Run Lint
           command: |
             . venv/bin/activate
             export GOTOOLCHAIN=go1.26.1
-            export GOWORK=off
+            make prepare
             ./scripts/lint.sh
       - save_cache:
-          key: v30-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+          key: v31-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
             - "build/env/bin"
+            - "build/linter"
             - "build/.cache"
             - "venv"
 
