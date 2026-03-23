@@ -140,34 +140,19 @@ export function AnalyticsDashboard() {
     }, [timeRange]);
 
     const { totalRequests, avgLatency, errorRate, avgRps } = useMemo(() => {
-        // ⚡ BOLT: [Algorithmic Optimization] Consolidated three O(N) array reductions into a single O(N) pass to minimize iteration overhead over traffic data.
+        // ⚡ BOLT: Memoized traffic stats calculation to prevent re-render waste.
         // Randomized Selection from Top 5 High-Impact Targets
-        let reqs = 0;
-        let lat = 0;
-        let errs = 0;
-
-        if (Array.isArray(trafficData)) {
-            for (let i = 0; i < trafficData.length; i++) {
-                const cur = trafficData[i];
-                reqs += (cur?.requests || cur?.total || 0);
-                lat += (cur?.latency || 0);
-                errs += (cur?.errors || 0);
-            }
-        }
-
-        const computedAvgLatency = trafficData?.length ? Math.floor(lat / trafficData.length) : 0;
-        const computedErrorRate = reqs ? ((errs / reqs) * 100).toFixed(2) : "0.00";
+        const totalRequests = trafficData.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
+        const avgLatency = trafficData.length
+            ? Math.floor(trafficData.reduce((acc, cur) => acc + (cur.latency || 0), 0) / trafficData.length)
+            : 0;
+        const errorCount = trafficData.reduce((acc, cur) => acc + (cur.errors || 0), 0);
+        const errorRate = totalRequests ? ((errorCount / totalRequests) * 100).toFixed(2) : "0.00";
         // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
-        const durationMinutes = trafficData?.length || 0;
-        const computedAvgRps = (durationMinutes && reqs) ? (reqs / (durationMinutes * 60)).toFixed(2) : "0.00";
+        const durationMinutes = trafficData.length;
+        const avgRps = (durationMinutes && totalRequests) ? (totalRequests / (durationMinutes * 60)).toFixed(2) : "0.00";
 
-        return {
-            totalRequests: reqs,
-            avgLatency: computedAvgLatency,
-            errorCount: errs,
-            errorRate: computedErrorRate,
-            avgRps: computedAvgRps
-        };
+        return { totalRequests, avgLatency, errorCount, errorRate, avgRps };
     }, [trafficData]);
 
     const handleToggleTool = async (name: string, disable: boolean) => {
