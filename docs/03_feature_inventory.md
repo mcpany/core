@@ -1135,10 +1135,10 @@
 - **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
 - **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
 
-## Evolution: Execution Sovereignty (2026-05-30)
+## Evolution: [2026-05-30] Updates
 
 ### Proposed Additions (2026-05-30 Expansion)
 
-* **Intent Hierarchy Enforcer (IHE)**: Mandatory priority for state fragments.
-* **Kernel-Namespace (KNS) Command Runner**: Namespace-based isolation wrapper.
-* **Mission Anchor Host (MAH)**: Orchestration for pinned team-wide context.
+* **Intent Hierarchy Enforcer (IHE)**: (P0) Security extension for state priority.
+* **Kernel-Namespace (KNS) Command Runner**: (P0) isolation wrapper.
+* **Mission Anchor Host (MAH)**: (P0) Orchestration for pinned context.

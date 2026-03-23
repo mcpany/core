@@ -2,19 +2,19 @@
 
 ## Ecosystem Shifts & Ingestion
 
-### 1. Claude Code: Team-Wide Context Pinning
+### 1. Claude Code
 
-* Update: Anthropic introduced "Context Anchoring" for Agent Teams.
-* Key Pattern: Common mission constraints are pinned across all teammates.
+* Update: Anthropic introduced Context Anchoring for Agent Teams.
+* Key Pattern: Common mission constraints are pinned across teammates.
 
-### 2. OpenClaw: Isolated Execution Contexts (IEC)
+### 2. OpenClaw
 
-* Update: OpenClaw is transitioning to IECs using micro-VM isolation.
-* Discovery: Emergence of "Proof-of-Isolation" (PoI) headers.
+* Update: OpenClaw transitioning to micro-VM isolation (Firecracker).
+* Discovery: Emergence of Proof-of-Isolation headers.
 
-### 3. Market Vulnerability: Context Shadowing
+### 3. Market Vulnerability
 
-* Findings: Exploit where subagents override parent system instructions.
+* Findings: Exploit where subagents override parent instructions.
 
 ## Summary
 

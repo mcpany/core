@@ -845,13 +845,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Atomic Teammate Handshake (ATH)**: Supporting the SMI standard, MCP Any will implement the ATH. This ensures that teammates (Claude, OpenClaw, AutoGen) must complete a hardware-attested identity exchange before they can "claim" or "delegate" tasks from the shared mailbox.
 - **Mesh-Bound Context Sovereignty**: To counter "Context-Dump" exfiltration in deep teams, we are evolving the DCG middleware to support Mesh-Bound Sovereignty. This layer will perform semantic analysis of state fragments as they cross teammate boundaries, ensuring they remain anchored to the mission-root intent.
 
-## Strategic Evolution: Enforced Intent Hierarchies (2026-05-30)
+## Strategic Evolution: [2026-05-30]
 
-### Focus: Execution Sovereignty & Isolated Contexts
+### Focus: Intent Hierarchy Enforcement & Isolated Execution Contexts
 
-**Context**: Findings on "Context Shadowing" signal a transition to sovereignty.
+**Context**: Findings on "Context Shadowing" signal a transition to **Active Execution Sovereignty**.
 
 **Strategic Pivot**:
 
-* **Enforced Intent Hierarchies (EIH)**: Lineage Priority for state fragments.
-* **Kernel-Namespace (KNS) Tool Isolation**: Neutralizing RCE via namespaces.
+* **EIH**: Enforced Intent Hierarchies for state fragments.
+* **KNS**: Kernel-Namespace Tool Isolation for security.
