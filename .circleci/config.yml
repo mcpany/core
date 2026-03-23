@@ -1,7 +1,6 @@
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-# CircleCI Configuration
 version: 2.1
 
 executors:
@@ -10,28 +9,23 @@ executors:
       - image: cimg/go:1.26
     resource_class: medium
 
-commands:
-  check-skip:
-    description: "Check if CI should skip based on changed files"
-    steps:
-      - run:
-          name: Early Return if Docs Only
-          command: |
-            echo "Running lint on all commits"
-
 jobs:
   lint:
     executor: default-executor
     steps:
       - checkout
       - run:
+          name: Clean Environment
+          command: |
+             sudo rm -f /usr/local/bin/golangci-lint
+             rm -rf build/env/bin
+             mkdir -p build/env/bin
+      - run:
           name: Install Python dependencies
           command: |
              sudo apt-get update
              sudo apt-get install -y python3-pip python3-venv
              python3 -m venv venv
-             . venv/bin/activate
-             pip install pre-commit
       - run:
           name: Install Node.js
           command: |
@@ -39,20 +33,18 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v16-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-            - v16-lint-
+            - v21-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+            - v21-lint-
       - run:
-          name: Prepare Environment
+          name: Install Toolchain and Linter
           command: |
             export GOTOOLCHAIN=go1.26.1
             export GOPATH=$HOME/go
-            export PATH=$GOPATH/bin:$PATH
-            rm -f build/env/bin/golangci-lint
-            sudo rm -f /usr/local/bin/golangci-lint
-            echo "Installing golangci-lint from source..."
+            echo "Installing golangci-lint with $(go version)..."
             go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.5
             make prepare
-            $(go env GOPATH)/bin/golangci-lint version
+            cp $GOPATH/bin/golangci-lint build/env/bin/golangci-lint
+            build/env/bin/golangci-lint version
       - run:
           name: Run Lint
           command: |
@@ -60,11 +52,9 @@ jobs:
             export GOTOOLCHAIN=go1.26.1
             export GOPATH=$HOME/go
             export PATH=$GOPATH/bin:$PWD/build/env/bin:$PATH
-            go version
-            golangci-lint version
             ./scripts/lint.sh
       - save_cache:
-          key: v16-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+          key: v21-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
