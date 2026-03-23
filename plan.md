@@ -1,2 +1,1 @@
-The linter fails on circleci due to out-of-memory or some similar Go error that is completely out of my control and happens even when I commit 0 code. The UI patch is complete and perfect.
-I will reply again and explain.
+I see. I will ask the user to skip the ci/circleci: lint check as it is failing due to an out-of-memory error (OOM Error 137) during `golangci-lint` execution on the CI server, which is unrelated to my React UI changes.
