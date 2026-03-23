@@ -5,7 +5,7 @@
 
 
 
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
     Area,
     AreaChart,
@@ -25,6 +25,7 @@ import {
 } from "recharts";
 import {
     ArrowDownRight,
+    ArrowUpRight,
     Activity,
     Clock,
     AlertTriangle,
@@ -70,7 +71,6 @@ export function AnalyticsDashboard() {
     const [tools, setTools] = useState<ToolDefinition[]>([]);
     const [toolUsageMap, setToolUsageMap] = useState<Record<string, ToolAnalytics>>({});
     const [isMounted, setIsMounted] = useState(false);
-    const tokenCacheRef = React.useRef<Record<string, number>>({});
 
     useEffect(() => {
         setIsMounted(true);
@@ -107,16 +107,8 @@ export function AnalyticsDashboard() {
 
                 allTools.forEach(tool => {
                     // Estimate tokens for the tool definition
-                    // ⚡ BOLT: Prevent massive CPU spike during polling by caching token estimations
-                    // Randomized Selection from Top 5 High-Impact Targets (Memory/CPU)
-                    const cacheKey = `${tool.serviceId || 'Unknown'}-${tool.name}`;
-                    let tokens = tokenCacheRef.current[cacheKey];
-                    if (tokens === undefined) {
-                        const json = JSON.stringify(tool);
-                        tokens = estimateTokens(json);
-                        tokenCacheRef.current[cacheKey] = tokens;
-                    }
-
+                    const json = JSON.stringify(tool);
+                    const tokens = estimateTokens(json);
                     totalTokens += tokens;
 
                     const serviceId = tool.serviceId || "Unknown";

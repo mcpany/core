@@ -2,12 +2,6 @@
 
 ## Status: Active Development
 
-### Universal Agent Bus (2026-06-07 Strategic Evolution)
-- [ ] **[P0] Mission Receipt Tracer**: Visualize the recursive hierarchy of hardware-attested mission tokens. (Added: 2026-06-07)
-- [ ] **[P0] CASI Shard Inspector**: Debugger for semantically isolated mailbox shards and fragment-level access violations. (Added: 2026-06-07)
-- [ ] **[P1] CFIB Bidding Workspace**: Real-time visualization of cross-framework task auctions and bid translations. (Added: 2026-06-07)
-- [ ] **[P0] Intent Sovereignty Audit Log**: Forensic UI for reviewing cryptographically logged mission receipts. (Added: 2026-06-07)
-
 ### Universal Agent Bus (New Strategic Priorities)
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
@@ -519,12 +513,9 @@
 - [ ] **[P0] Shard Lock Visualizer**: Real-time dashboard for monitoring atomic locks and shard ownership. (Added: 2026-06-03)
 - [ ] **[P1] Prefetching Performance Overlay**: Visualization of speculative context hit/miss rates. (Added: 2026-06-03)
 
-### Upcoming: [2026-06-08]
-- [ ] **[P0] ARI Fragment Monitor**: (2026-06-08) Real-time visualization of fragment-level semantic validation events and blocked state-splicing attempts.
-- [ ] **[P0] HAMM Manifest Reviewer**: (2026-06-08) UI for reviewing pre-declared hardware-attested mission manifests before sub-mission execution.
-- [ ] **[P1] Graceful Decay Indicator**: (2026-06-08) Visual status widget for monitoring mission sovereignty decay and re-attestation windows.
-- [ ] **[P0] Fragment Sovereignty Auditor**: (2026-06-08) Security dashboard for verifying ARI-attestation status across the teammate mesh.
-
+### Upcoming: [2026-06-05]
+- **Intent-Splicing Audit Log**: (P0) Forensic UI for reviewing deconstructed inter-agent messages and splicing attempts.
+- **Capability Accountability Dashboard**: (P0) Real-time tracker for session-bound capabilities and their lineage-aware expiration.
 - **HAIL Lineage Tracer**: (P0) Visual debugger for hardware-attested intent lineage (HAIL), mapping tool calls to root mission intents.
 - **Synthetic Policy Workspace**: (P1) Interactive environment for reviewing and approving mesh-synthesized security policies.
 
@@ -538,53 +529,7 @@
 - **CGC Lifecycle Manager**: (P0) Security dashboard for monitoring capability garbage collection and identifying "Ghost Agents."
 - **MRLA Handshake Debugger**: (P0) Forensic UI for visualizing A2A discovery handshakes and mission-root lineage proofs.
 
-### Upcoming: [2026-06-09]
-- **Mesh-Resident Lineage Tracker**: (P0) Visualizer for auditing hardware-attested reasoning chains across multi-hop delegations. (Added: 2026-06-09)
-- **Context Attention Monitor**: (P0) Real-time tracker for CWP-pinned fragments and context-flooding alerts. (Added: 2026-06-09)
-- **Ephemeral Credential Vault**: (P1) UI for managing task-specific JWTs and mission-bound credential lifetimes. (Added: 2026-06-09)
-
-### Upcoming: [2026-06-10]
-- [ ] **[P0] L7 Semantic Inspection Monitor**: (P0) Real-time visualization of high-entropy semantic validation events and REE neutralization. (Added: 2026-06-10)
-- [ ] **[P0] Environment Isolation Dashboard**: (P0) Visual tracker for hardware-attested environment scrubbing and metadata wipe events. (Added: 2026-06-10)
-- [ ] **[P0] Mission-Root Registry Viewer**: (P0) Authoritative UI for reviewing and auditing the hardware-attested Mission-Root Attestation Registry. (Added: 2026-06-10)
-
-### Upcoming: [2026-06-11]
-- [ ] **[P0] ARI Lineage Visualizer**: (P0) Real-time visualization of semantic hash-chains and logic grafting alerts in shared shards. (Added: 2026-06-11)
-- [ ] **[P0] Attention Governance Dashboard**: (P0) Visual tracker for HAAL-locked intent fragments and REE noise levels. (Added: 2026-06-11)
-- [ ] **[P1] DTAI Performance Overlay**: (P1) Performance dashboard for monitoring trace-aware identity verification latency. (Added: 2026-06-11)
-- [ ] **[P0] Reasoning Provenance Inspector**: (P0) Forensic UI for reviewing the hardware-attested reasoning lineage of high-risk actions. (Added: 2026-06-11)
-
-### Upcoming: [2026-06-12]
-- [ ] **[P0] Shadow Coordination Monitor**: (2026-06-12) Real-time visualization of anomalous entropy in non-primary coordination channels.
-- [ ] **[P0] MRA Attestation Dashboard**: (2026-06-12) UI for monitoring hardware-bound semantic hash generation and verification.
-- [ ] **[P1] Attention Gating Visualizer**: (2026-06-12) Dashboard showing real-time gating of subagent fragments based on parent attention levels.
-- [ ] **[P0] Coordination Handshake Debugger**: (2026-06-12) Forensic tool for visualizing hardware-locked handshake sequences.
-
-### Upcoming: [2026-06-13]
-- [ ] **[P0] Shadow Coordination Monitor**: (Re-affirmed P0) Enhanced dashboard for real-time visualization of entropy spikes in T2T transport metadata.
-- [ ] **[P0] Attention Sovereignty Visualizer**: (2026-06-13) Real-time tracker for DAG-gated fragments and HAAL-locked intent segments.
-- [ ] **[P0] Hardware-Locked Coordination Debugger**: (2026-06-13) UI for reviewing hardware-bound session tokens and blocked out-of-band handoffs.
-
-### Upcoming: [2026-06-14]
-- [ ] **[P0] Metadata Poisoning Guard**: (2026-06-14) UI for reviewing sanitized tool definitions and blocked SDMI instruction fragments.
-- [ ] **[P0] Trust Persistence Monitor**: (2026-06-14) Visual tracker for MHPR trust-lease propagation and MSHE-latency gains.
-- [ ] **[P0] Attention-Locked Shard Viewer**: (2026-06-14) Dashboard for monitoring hardware-protected fragments in the ALCS attention tier.
-- [ ] **[P0] Sovereign Discovery Console**: (2026-06-14) Authorization workspace for hardware-attested SDP validation of capability cards.
-
-### Upcoming: [2026-06-16]
-- [ ] **[P0] Entanglement Shard Monitor**: (2026-06-16) Real-time visualization of cryptographically entangled state fragments.
-- [ ] **[P0] Stylometric Mimicry Dashboard**: (2026-06-16) Security workspace for visualizing stylometric consistency alerts.
-- [ ] **[P1] Speculative Branching Visualizer**: (2026-06-16) Visual tracker for "Shadow Branches" and attention leakage alerts.
-- [ ] **[P0] MRKE Key Rotation Widget**: (2026-06-16) Status indicator for hardware-bound session key rotation.
-
-### Upcoming: [2026-06-15]
-- [ ] **[P0] Intent-Resumption Dashboard**: (2026-06-15) Visualizer for monitoring "Intent-Resumption Token" issuance and handoff latency.
-- [ ] **[P0] Side-Channel Timing Heatmap**: (2026-06-15) Real-time monitor of ASLM timing jitter and blocked shard-collision probes.
-- [ ] **[P1] Attention-Locked Telemetry Viewer**: (2026-06-15) Security UI for reviewing sanitized reasoning traces and attention-mapping redactions.
-- [ ] **[P0] WASM-Hook Safety Reporter**: (2026-06-15) UI for viewing behavioral profiling results for un-attested configuration hooks.
-
-### Upcoming: [2026-06-17]
-- [ ] **[P0] Active Intent Alignment Monitor**: (2026-06-17) Visual indicator for AIA heartbeat status and semantic drift alerts.
-- [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
-- [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
-- [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
+### Upcoming: [2026-06-07]
+- **[P0] RMA Lineage Visualizer**: Visual "Sovereignty Chain" debugger for tracking hierarchical mission receipts and intent lineage.
+- **[P0] CASI Shard Inspector**: Real-time monitor for teammate context shards, highlighting semantic boundaries and pollution alerts.
+- **[P1] CFIB Auction House**: UI for monitoring cross-framework task bidding and capability scores.

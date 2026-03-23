@@ -67,7 +67,6 @@ export function DashboardGrid() {
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [isLoaded, setIsLoaded] = useState(false);
 
     const migrateLayout = (parsed: any): WidgetInstance[] => {
         // Migration Logic
@@ -157,7 +156,6 @@ export function DashboardGrid() {
                  setWidgets(DEFAULT_LAYOUT);
             } finally {
                 setLoading(false);
-                setIsLoaded(true);
             }
         };
 
@@ -170,8 +168,17 @@ export function DashboardGrid() {
 
     // ⚡ BOLT: Debounce API writes to prevent server spam during drag/resize operations
     // Randomized Selection from Top 5 High-Impact Targets
+    const isFirstRun = useRef(true);
     useEffect(() => {
-        if (!isMounted || loading || !isLoaded) return;
+        if (!isMounted || loading) return;
+
+        // Prevent saving the initial empty state if it's the very first mounted render
+        // But we must allow saving if we just loaded/migrated data.
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            // If widgets are empty on first run, it's likely the initial state.
+            return;
+        }
 
         const timer = setTimeout(async () => {
             try {
@@ -190,7 +197,7 @@ export function DashboardGrid() {
         }, 1000); // Increased debounce to 1s for network
 
         return () => clearTimeout(timer);
-    }, [widgets, isMounted, loading, isLoaded]);
+    }, [widgets, isMounted, loading]);
 
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;
