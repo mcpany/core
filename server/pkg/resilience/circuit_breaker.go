@@ -25,8 +25,6 @@ type State int32
 // StateClosed provides documentation for StateClosed.
 // StateOpen provides documentation for StateOpen.
 // StateClosed provides documentation for StateClosed.
-// StateHalfOpen defines the configuration value or constant for StateHalfOpen.
-// StateClosed defines the configuration value or constant for StateClosed.
 const (
 	// StateClosed represents the state where the circuit breaker allows requests to pass through.
 	// Summary: Defines StateClose.

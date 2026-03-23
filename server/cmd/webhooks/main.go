@@ -29,8 +29,6 @@ import (
 // HeaderWebhookID provides documentation for HeaderWebhookID.
 // HeaderWebhookTimestamp provides documentation for HeaderWebhookTimestamp.
 // HeaderWebhookID provides documentation for HeaderWebhookID.
-// HeaderWebhookSignature defines the configuration value or constant for HeaderWebhookSignature.
-// HeaderWebhookID defines the configuration value or constant for HeaderWebhookID.
 const (
 	// HeaderWebhookID is the header name for the webhook ID.
 	// Summary: Defines HeaderWebhookID.

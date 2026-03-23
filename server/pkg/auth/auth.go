@@ -28,8 +28,6 @@ type authContextKey string
 // UserContextKey provides documentation for UserContextKey.
 // ProfileIDContextKey provides documentation for ProfileIDContextKey.
 // UserContextKey provides documentation for UserContextKey.
-// APIKeyContextKey defines the configuration value or constant for APIKeyContextKey.
-// UserContextKey defines the configuration value or constant for UserContextKey.
 const (
 	// UserContextKey is the context key for the user ID.
 	//

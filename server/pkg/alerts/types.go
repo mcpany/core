@@ -31,11 +31,6 @@ type Status string
 // SeverityInfo provides documentation for SeverityInfo.
 // SeverityWarning provides documentation for SeverityWarning.
 // SeverityCritical provides documentation for SeverityCritical.
-// StatusResolved defines the configuration value or constant for StatusResolved.
-// StatusActive defines the configuration value or constant for StatusActive.
-// SeverityInfo defines the configuration value or constant for SeverityInfo.
-// SeverityWarning defines the configuration value or constant for SeverityWarning.
-// SeverityCritical defines the configuration value or constant for SeverityCritical.
 const (
 	// SeverityCritical indicates a critical issue.
 	// Summary: Defines SeverityCritica.

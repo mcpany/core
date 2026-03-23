@@ -24,11 +24,6 @@ import (
 // TypeBoolean provides documentation for TypeBoolean.
 // TypeInteger provides documentation for TypeInteger.
 // TypeNumber provides documentation for TypeNumber.
-// TypeString defines the configuration value or constant for TypeString.
-// TypeObject defines the configuration value or constant for TypeObject.
-// TypeBoolean defines the configuration value or constant for TypeBoolean.
-// TypeInteger defines the configuration value or constant for TypeInteger.
-// TypeNumber defines the configuration value or constant for TypeNumber.
 const (
 	// TypeNumber represents a JSON number type.
 	// Summary: Defines TypeNumber.

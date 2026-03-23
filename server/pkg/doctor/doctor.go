@@ -40,9 +40,6 @@ type Status string
 // StatusError provides documentation for StatusError.
 // StatusWarning provides documentation for StatusWarning.
 // StatusOk provides documentation for StatusOk.
-// StatusSkipped defines the configuration value or constant for StatusSkipped.
-// StatusWarning defines the configuration value or constant for StatusWarning.
-// StatusOk defines the configuration value or constant for StatusOk.
 const (
 	// StatusOk indicates the check passed successfully.
 	// Summary: Defines StatusO.

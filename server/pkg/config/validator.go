@@ -41,8 +41,6 @@ const (
 // Server provides documentation for Server.
 // Worker provides documentation for Worker.
 // Server provides documentation for Server.
-// Client defines the configuration value or constant for Client.
-// Server defines the configuration value or constant for Server.
 const (
 	// Server represents the server binary.
 	// Summary: Defines Serve.
@@ -64,7 +62,6 @@ type AuthValidationContext int
 // AuthValidationContextIncoming Outgoing provides documentation for AuthValidationContextOutgoing.
 // AuthValidationContextIncoming provides documentation for AuthValidationContextIncoming.
 // AuthValidationContextIncoming provides documentation for AuthValidationContextIncoming.
-// AuthValidationContextOutgoing defines the configuration value or constant for AuthValidationContextOutgoing.
 const (
 	// AuthValidationContextIncoming represents incoming authentication (e.g., Users).
 	// Summary: Defines AuthValidationContextIncomin.
@@ -80,7 +77,6 @@ type contextKey string
 // SkipSecretValidationKey FilesystemCheckKey provides documentation for SkipFilesystemCheckKey.
 // SkipSecretValidationKey provides documentation for SkipSecretValidationKey.
 // SkipSecretValidationKey provides documentation for SkipSecretValidationKey.
-// SkipFilesystemCheckKey defines the configuration value or constant for SkipFilesystemCheckKey.
 const (
 	// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
 	// Value should be a boolean.
