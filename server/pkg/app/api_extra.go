@@ -12,6 +12,21 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
+// handleResourceRead handles reading a resource.
+//
+// Summary: Handles reading a resource.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.HandlerFunc: The handler function.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (a *Application) handleResourceRead() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
@@ -42,6 +57,21 @@ func (a *Application) handleResourceRead() http.HandlerFunc {
 	}
 }
 
+// handlePromptExecute handles executing a prompt.
+//
+// Summary: Handles executing a prompt.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.HandlerFunc: The handler function.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (a *Application) handlePromptExecute() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Path: /prompts/{name}/execute
