@@ -2920,14 +2920,14 @@ confirm that reasoning stability and policy consistency are the next frontiers.
 **Strategic Pivot**:
 
 - **Cognitive Entropy Controller (CEC)**: MCP Any will act as the authoritative
-  host for "Entropy-Aware Reasoning," utilizing hardware acceleration to
-  neutralize cumulative intent drift.
+host for "Entropy-Aware Reasoning," utilizing hardware acceleration to
+neutralize cumulative intent drift.
 - **Sovereign Fragment Compressor (SFC)**: Supporting the Gemini CLI HLCC
-  standard, providing hardware-attested, TPM-signed context snapshots for
-  secure cross-framework state transfer.
+standard, providing hardware-attested, TPM-signed context snapshots for
+secure cross-framework state transfer.
 - **Mesh Policy Synchronizer (MPS)**: To neutralize policy drift, we are
-  upgrading the inter-agent bridge to support sub-10ms synchronization of
-  security guardrails across teammates.
+upgrading the inter-agent bridge to support sub-10ms synchronization of
+security guardrails across teammates.
 - **Reasoning Noise-Injection (RNI) Middleware**: To counter CVE-2026-70102,
-  we implement RNI, injecting hardware-attested timing jitter into all
-  inter-agent transport channels.
+we implement RNI, injecting hardware-attested timing jitter into all
+inter-agent transport channels.

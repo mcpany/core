@@ -47,18 +47,20 @@ before re-ingesting the poisoned state.
 ## 4. Design & Architecture
 
 * **System Flow:**
-    ```mermaid
 
-    graph TD
-        MR[Mission Root] -->|Init Mission| ESB[Entangled State Broker]
-        ESB -->|Generate Keys| TPM[Hardware TPM/Enclave]
-        T1[Teammate 1] -->|Request Shard| ESB
-        ESB -->|Issue Entangled Shard| T1
-        T1 -->|Mutate Shard| ESB
-        ESB -->|Verify Lineage| TPM
-        TPM -->|Valid| Commit[Commit Mutation]
-        TPM -->|Invalid| Alert[Trigger Shard Corruption Signal]
-    ```
+```mermaid
+
+graph TD
+MR[Mission Root] -->|Init Mission| ESB[Entangled State Broker]
+ESB -->|Generate Keys| TPM[Hardware TPM/Enclave]
+T1[Teammate 1] -->|Request Shard| ESB
+ESB -->|Issue Entangled Shard| T1
+T1 -->|Mutate Shard| ESB
+ESB -->|Verify Lineage| TPM
+TPM -->|Valid| Commit[Commit Mutation]
+TPM -->|Invalid| Alert[Trigger Shard Corruption Signal]
+
+```
 
 * **APIs / Interfaces:**
     * `POST /v1/entanglement/init`: Initialize mission-bound entanglement keys.

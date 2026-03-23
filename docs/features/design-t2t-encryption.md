@@ -55,19 +55,21 @@ intent scope.
 ## 4. Design & Architecture
 
 *   **System Flow:**
-    ```mermaid
 
-    graph TD
-        AgentA[Claude Teammate] <--> Bridge[T2T Encryption Bridge]
-        AgentB[OpenClaw Teammate] <--> Bridge
-        Bridge <--> STL[Shared Task List (SQLite/Encrypted)]
-        Bridge <--> Mailbox[Inter-Agent Mailbox (Encrypted)]
+```mermaid
 
-        subgraph "Security Layer"
-            Bridge --> VAL[Mailbox Integrity Middleware]
-            VAL --> POL[Mission-Root Policy]
-        end
-    ```
+graph TD
+AgentA[Claude Teammate] <--> Bridge[T2T Encryption Bridge]
+AgentB[OpenClaw Teammate] <--> Bridge
+Bridge <--> STL[Shared Task List (SQLite/Encrypted)]
+Bridge <--> Mailbox[Inter-Agent Mailbox (Encrypted)]
+
+subgraph "Security Layer"
+Bridge --> VAL[Mailbox Integrity Middleware]
+VAL --> POL[Mission-Root Policy]
+end
+
+```
 
 *   **APIs / Interfaces:**
     *   `POST /mailbox/send`: Encrypts and routes a message to another teammate.

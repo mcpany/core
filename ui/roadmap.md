@@ -1164,6 +1164,6 @@ TSJ-injected state synchronization and timing-side-channel mitigation.
 ### Upcoming: [2026-06-18]
 
 - **Entropy Monitor Dashboard**: (P0) Real-time visualization of entropy
-  scores across active swarms. (Added: 2026-06-18)
+scores across active swarms. (Added: 2026-06-18)
 - **Mesh Policy Editor**: (P1) Centralized UI for managing security
-  guardrails across horizontal agent teams. (Added: 2026-06-18)
+guardrails across horizontal agent teams. (Added: 2026-06-18)

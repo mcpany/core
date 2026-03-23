@@ -2491,17 +2491,17 @@ the new **Multi-Modal Behavioral Anchoring** requirement.
 ### Proposed Additions
 
 - **Cognitive Entropy Controller (CEC)**: (P0) Authoritative coordination
-  service for "Entropy-Aware Reasoning," utilizing hardware acceleration.
+service for "Entropy-Aware Reasoning," utilizing hardware acceleration.
 - **Sovereign Fragment Compressor (SFC)**: (P0) Hardware-attested context
-  compression service that produces TPM-signed fragments.
+compression service that produces TPM-signed fragments.
 - **Mesh Policy Synchronizer (MPS)**: (P0) High-speed coordination hub for
-  horizontal meshes that performs sub-10ms synchronization.
+horizontal meshes that performs sub-10ms synchronization.
 - **Reasoning Noise-Injection (RNI) Middleware**: (P0) Security extension
-  that injects hardware-attested timing jitter to neutralize RPE side-channels.
+that injects hardware-attested timing jitter to neutralize RPE side-channels.
 
 ### Priority Shifts
 
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the
-  requirement for mandatory RNI-compliant transport jitter.
+requirement for mandatory RNI-compliant transport jitter.
 - **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Designated
-  as the primary integration point for the MPS.
+as the primary integration point for the MPS.
