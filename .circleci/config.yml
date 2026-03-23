@@ -15,14 +15,18 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Clean Environment
+          name: Environment Diagnostic
           command: |
+            go version
+            go env
+      - run:
+          name: Clean and Setup
+          command: |
+             # Completely purge any existing linter to prevent version mismatch
              sudo rm -f /usr/local/bin/golangci-lint
              rm -rf build/env/bin
              mkdir -p build/env/bin
-      - run:
-          name: Install Python dependencies
-          command: |
+             # Install Python for pre-commit
              sudo apt-get update
              sudo apt-get install -y python3-pip python3-venv
              python3 -m venv venv
@@ -33,28 +37,45 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v26-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-            - v26-lint-
+            - v27-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+            - v27-lint-
       - run:
-          name: Prepare Toolchain
+          name: Build Toolchain and Linter
           command: |
             export GOTOOLCHAIN=go1.26.1
+            export GOPATH=$HOME/go
+            # Force build the linter with the project's Go version (1.26.1)
+            # This is the ONLY way to resolve the Go version mismatch error.
+            echo "Building golangci-lint from source with $(go version)..."
+            go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.5
+            # Verify the linter's build version
+            $GOPATH/bin/golangci-lint version
+            # Run prepare for other tools
             make prepare
       - run:
-          name: Run Lint (Version Locked)
+          name: Run Lint
           command: |
             . venv/bin/activate
             export GOTOOLCHAIN=go1.26.1
             export GOPATH=$HOME/go
-            # We don't rely on PATH for linter anymore, script uses 'go run'
-            go version
-            ./scripts/lint.sh
+            export PATH=$GOPATH/bin:$PWD/build/env/bin:$PATH
+            # Ensure workspace integrity
+            go work sync
+            # Run lint module by module from root to avoid path/recursion issues
+            # We use the freshly built linter in GOPATH
+            for d in server proto k8s/operator; do
+              if [ -d "$d" ]; then
+                echo "Linting module: $d"
+                golangci-lint run --timeout 20m --fix --config server/.golangci.yml "./$d/..."
+              fi
+            done
       - save_cache:
-          key: v26-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+          key: v27-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
             - "venv"
+            - "/home/circleci/go/bin"
 
 workflows:
   version: 2

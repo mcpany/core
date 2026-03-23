@@ -12,21 +12,17 @@ fi
 cd "$PROJECT_ROOT"
 
 echo "==> Running golangci-lint..."
-# Use 'go run' as the primary and ONLY method in CI to guarantee Go 1.26.1 alignment.
-# This eliminates all binary/cache/path issues.
+# Use 'go run' as a fail-safe to guarantee Go 1.26.1 compatibility
 export GOTOOLCHAIN=go1.26.1
-export GOWORK=on
 LINT_VERSION="v1.64.5"
 
-TARGETS=(
-    "./server/..."
-    "./proto/..."
-    "./k8s/operator/..."
-)
-
-echo "    Linting targets: ${TARGETS[*]}"
-echo "    Executing: go run github.com/golangci/golangci-lint/cmd/golangci-lint@${LINT_VERSION} run ..."
-go run github.com/golangci/golangci-lint/cmd/golangci-lint@${LINT_VERSION} run --timeout 20m --fix --config server/.golangci.yml "${TARGETS[@]}"
+# Lint all Go modules in the workspace
+for d in server proto k8s/operator; do
+    if [ -d "$d" ]; then
+        echo "    Linting $d..."
+        go run github.com/golangci/golangci-lint/cmd/golangci-lint@${LINT_VERSION} run --timeout 20m --fix --config server/.golangci.yml "./$d/..."
+    fi
+done
 echo "    golangci-lint OK."
 
 echo "==> Lint complete."
