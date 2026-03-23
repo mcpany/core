@@ -34,7 +34,7 @@ The PBRB Firewall enforces hard limits on "Reasoning Effort" per agentic phase, 
 ## 5. Alternatives Considered
 * **Per-Model Limits**: Insufficient because complex tasks span multiple models and tools.
 
-## 6. Cross-Cleaning Concerns
+## 6. Cross-Cutting Concerns
 * **Security (Zero Trust):** Budgets are cryptographically bound to the Mission Root ID.
 * **Observability:** Real-time budget tracking in the UI roadmap.
 
