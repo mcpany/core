@@ -822,4 +822,4 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Monotonic Handshake Lineage (MHL)**: Hardware-bound lineage tokens for all handshake and session-initiation events. (Added: 2026-06-26)
 
 #### Upcoming (2026-03-21 Evolution)
-* [P0] LOWA HMAC challenge-response.
+* [P0] LOWA HMAC.

@@ -1165,4 +1165,4 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Monotonic Handshake Lineage (MHL)**: We are mandating the use of monotonic counters for all agency-initiation signals. Every handshake must be cryptographically bound to a unique, non-reusable lineage token, ensuring that "Shadow Handshakes" cannot be replayed or reused to create unauthorized mission roots.
 
 ## Strategic Evolution: [2026-03-21]
-Focus on LOWA and AMS middleware.
+Focus on LOWA and AMS.
