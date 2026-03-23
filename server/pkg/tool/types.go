@@ -3081,36 +3081,34 @@ func isShellCommand(cmd string) bool {
 
 // ⚡ BOLT: Prevent per-call slice allocations for interpreter/shell detection
 // Randomized Selection from Top 5 High-Impact Targets
-var globalShells = []string{
-	"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
-	"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
-	"ssh", "scp", "su", "sudo",
-	"busybox", "expect", "watch", "tmux", "screen",
+var globalShells = map[string]struct{}{
+	"sh": {}, "bash": {}, "zsh": {}, "dash": {}, "ash": {}, "ksh": {}, "csh": {}, "tcsh": {}, "fish": {},
+	"pwsh": {}, "powershell": {}, "powershell.exe": {}, "pwsh.exe": {}, "cmd": {}, "cmd.exe": {},
+	"ssh": {}, "scp": {}, "su": {}, "sudo": {},
+	"busybox": {}, "expect": {}, "watch": {}, "tmux": {}, "screen": {},
 }
 
 // ⚡ BOLT: Prevent per-call slice allocations for interpreter/shell detection
 // Randomized Selection from Top 5 High-Impact Targets
-var globalShellScriptExts = []string{
-	".sh", ".bash", ".zsh", ".ash", ".ksh", ".csh", ".tcsh", ".fish",
-	".bat", ".cmd", ".ps1", ".vbs",
+var globalShellScriptExts = map[string]struct{}{
+	".sh": {}, ".bash": {}, ".zsh": {}, ".ash": {}, ".ksh": {}, ".csh": {}, ".tcsh": {}, ".fish": {},
+	".bat": {}, ".cmd": {}, ".ps1": {}, ".vbs": {},
 }
 
 func isShell(cmd string) bool {
 	cmd = strings.TrimSpace(cmd)
 	// True shells and commands that behave like shells (parsing command lines)
 	base := filepath.Base(cmd)
-	for _, shell := range globalShells {
-		if base == shell {
-			return true
-		}
+	if _, ok := globalShells[base]; ok {
+		return true
 	}
+
 	// Check for script extensions that indicate shell execution
 	ext := strings.ToLower(filepath.Ext(base))
-	for _, scriptExt := range globalShellScriptExts {
-		if ext == scriptExt {
-			return true
-		}
+	if _, ok := globalShellScriptExts[ext]; ok {
+		return true
 	}
+
 	return false
 }
 
@@ -4241,11 +4239,11 @@ var globalInterpreters = []string{
 
 // ⚡ BOLT: Prevent per-call slice allocations for interpreter/shell detection
 // Randomized Selection from Top 5 High-Impact Targets
-var globalInterpreterScriptExts = []string{
-	".js", ".mjs", ".ts",
-	".py", ".pyc", ".pyo", ".pyd",
-	".rb", ".pl", ".pm", ".php",
-	".lua", ".r",
+var globalInterpreterScriptExts = map[string]struct{}{
+	".js": {}, ".mjs": {}, ".ts": {},
+	".py": {}, ".pyc": {}, ".pyo": {}, ".pyd": {},
+	".rb": {}, ".pl": {}, ".pm": {}, ".php": {},
+	".lua": {}, ".r": {},
 }
 
 func isInterpreter(command string) bool {
@@ -4258,10 +4256,8 @@ func isInterpreter(command string) bool {
 
 	// Check for script extensions that indicate interpretation
 	ext := strings.ToLower(filepath.Ext(base))
-	for _, scriptExt := range globalInterpreterScriptExts {
-		if ext == scriptExt {
-			return true
-		}
+	if _, ok := globalInterpreterScriptExts[ext]; ok {
+		return true
 	}
 
 	return false
@@ -4464,30 +4460,26 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 
 // ⚡ BOLT: Prevent per-call slice allocations for interpreter/shell detection
 // Randomized Selection from Top 5 High-Impact Targets
-var globalMagickTools = []string{
-	"convert", "mogrify", "identify", "composite", "compare", "stream",
-	"montage", "display", "animate", "import", "conjure", "magick",
+var globalMagickTools = map[string]struct{}{
+	"convert": {}, "mogrify": {}, "identify": {}, "composite": {}, "compare": {}, "stream": {},
+	"montage": {}, "display": {}, "animate": {}, "import": {}, "conjure": {}, "magick": {},
 }
 
 // ⚡ BOLT: Prevent per-call slice allocations for interpreter/shell detection
 // Randomized Selection from Top 5 High-Impact Targets
-var globalFfmpegTools = []string{"ffmpeg", "ffprobe", "ffplay"}
+var globalFfmpegTools = map[string]struct{}{"ffmpeg": {}, "ffprobe": {}, "ffplay": {}}
 
 func isVulnerableToSchemes(command string) bool {
 	base := strings.ToLower(filepath.Base(command))
 
 	// ImageMagick tools
-	for _, tool := range globalMagickTools {
-		if base == tool {
-			return true
-		}
+	if _, ok := globalMagickTools[base]; ok {
+		return true
 	}
 
 	// FFmpeg tools
-	for _, tool := range globalFfmpegTools {
-		if base == tool {
-			return true
-		}
+	if _, ok := globalFfmpegTools[base]; ok {
+		return true
 	}
 
 	// Git
