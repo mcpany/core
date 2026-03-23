@@ -1,1 +1,1 @@
-sed -i 's/it("toggles widget visibility via customization menu", async () => {/it("toggles widget visibility via customization menu", async () => { vi.useFakeTimers({ shouldAdvanceTime: true }); /' ui/src/components/dashboard/dashboard-grid.test.tsx
+sed -i 's/vi.useFakeTimers({ shouldAdvanceTime: true });/vi.useFakeTimers();/' ui/src/components/dashboard/dashboard-grid.test.tsx

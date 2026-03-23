@@ -68,7 +68,7 @@ global.ResizeObserver = class ResizeObserver {
 
 describe("DashboardGrid", () => {
     beforeEach(() => {
-        vi.useFakeTimers({ shouldAdvanceTime: true });
+        vi.useFakeTimers();
         localStorage.clear();
       });
 
@@ -217,7 +217,7 @@ describe("DashboardGrid", () => {
     expect(updated.length).toBeGreaterThan(0);
   });
 
-  it("opens customization menu", async () => {
+  it("opens customization menu", async () => { vi.useRealTimers();
     render(<DashboardGrid />);
     await waitFor(() => {
         expect(screen.getByText("Layout")).toBeInTheDocument();
