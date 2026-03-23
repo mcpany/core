@@ -42,7 +42,7 @@ if [ "$CI" != "true" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
     LINT_ARGS="$LINT_ARGS --fix"
 fi
 
-cd server && "$GOLANGCI_LINT_BIN" run $LINT_ARGS ./...
+cd server && "$GOLANGCI_LINT_BIN" run --concurrency 1 $LINT_ARGS ./...
 cd "$PROJECT_ROOT"
 
 echo "Running pre-commit..."
