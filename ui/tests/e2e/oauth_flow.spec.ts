@@ -4,6 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('OAuth Flow Integration', () => {
   const credentialID = 'cred-oauth-1';
@@ -24,7 +25,8 @@ test.describe('OAuth Flow Integration', () => {
     }
   ];
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
+    await seedGlobalState(request);
     // Increase viewport height for long forms/lists
     await page.setViewportSize({ width: 1280, height: 1000 });
 

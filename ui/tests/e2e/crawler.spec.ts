@@ -4,6 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('UI Crawler', () => {
   test.setTimeout(300000); // Increase timeout to 5 minutes for crawling

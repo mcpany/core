@@ -10,13 +10,13 @@ import (
 	"time"
 
 	"github.com/mcpany/core/server/tests/integration"
-	"github.com/stretchr/testify/require"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/stretchr/testify/require"
 )
 
 func TestHotReload(t *testing.T) {
-	if testing.Short() {//
-		t.Skip("Skipping integration test in short mode")
+	if testing.Short() {
+		// t.Skip("Skipping integration test in short mode")
 	}
 
 	// 1. Initial Config

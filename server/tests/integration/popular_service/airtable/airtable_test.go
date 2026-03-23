@@ -18,13 +18,13 @@ import (
 
 func TestUpstreamService_Airtable(t *testing.T) {
 	if os.Getenv("AIRTABLE_API_TOKEN") == "" {
-		t.Skip("AIRTABLE_API_TOKEN is not set")
+		// t.Skip("AIRTABLE_API_TOKEN is not set")
 	}
 	if os.Getenv("AIRTABLE_BASE_ID") == "" {
-		t.Skip("AIRTABLE_BASE_ID is not set")
+		// t.Skip("AIRTABLE_BASE_ID is not set")
 	}
 	if os.Getenv("AIRTABLE_TABLE_ID") == "" {
-		t.Skip("AIRTABLE_TABLE_ID is not set")
+		// t.Skip("AIRTABLE_TABLE_ID is not set")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)

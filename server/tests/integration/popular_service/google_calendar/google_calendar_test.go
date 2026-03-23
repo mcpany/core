@@ -21,7 +21,7 @@ import (
 func TestUpstreamService_GoogleCalendar(t *testing.T) {
 	// No longer skipping due to missing API Key
 	// if os.Getenv("GOOGLE_API_KEY") == "" {
-		t.Skip("Skipping test because GOOGLE_API_KEY is not set")
+	// 	t.Skip("Skipping test because GOOGLE_API_KEY is not set")
 	// }
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
@@ -74,7 +74,7 @@ func TestUpstreamService_GoogleCalendar(t *testing.T) {
 			Address: proto.String(mockServer.URL), // Point to mock server
 			Tools: []*configv1.ToolDefinition{
 				configv1.ToolDefinition_builder{
-					Name: proto.String("list_events"),
+					Name:   proto.String("list_events"),
 					CallId: proto.String("list_events"),
 				}.Build(),
 			},

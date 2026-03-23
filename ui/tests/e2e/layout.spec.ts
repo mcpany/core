@@ -4,6 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('Layout Tests', () => {
   test('Sidebar Footer should be pinned to the bottom', async ({ page }) => {

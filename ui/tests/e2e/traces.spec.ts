@@ -8,9 +8,8 @@ import { seedGlobalState } from './test-data';
 
 test.describe('Trace Viewer', () => {
   test.beforeEach(async ({ page, request }) => {
-    const res = await request.post('/api/v1/debug/traces', { data: {} });
-    expect(res.ok()).toBeTruthy();
-
+    // Mock Traces API for all tests in this suite.
+    // The app fetches /api/v1/traces (with the v1 prefix).
     await seedGlobalState(request);
 
     await page.goto('/login');

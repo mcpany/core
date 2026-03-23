@@ -4,12 +4,14 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('Credential OAuth Flow E2E', () => {
   const credentialID = 'cred-123';
   const credentials: any[] = [];
 
   test.beforeEach(async ({ page, request }) => {
+    await seedGlobalState(request);
     // Increase viewport height for long forms
     await page.setViewportSize({ width: 1280, height: 1000 });
 

@@ -5,10 +5,12 @@
 
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('System Status Banner', () => {
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
+    await seedGlobalState(request);
     // Reset any previous mocks
     await page.unrouteAll({ behavior: 'ignoreErrors' });
   });

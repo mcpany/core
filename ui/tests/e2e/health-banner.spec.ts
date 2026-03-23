@@ -4,6 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('System Status Banner', () => {
   test('should show connection error when backend is unreachable', async ({ page }) => {

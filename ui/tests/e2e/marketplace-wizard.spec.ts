@@ -5,10 +5,12 @@
 
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('Marketplace Wizard and Service Lifecycle', () => {
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
+    await seedGlobalState(request);
     // Mock API responses
     // Mock Templates API
     const templates: any[] = [

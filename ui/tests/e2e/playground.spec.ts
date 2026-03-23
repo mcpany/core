@@ -4,6 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('Playground Complex Schema Support', () => {
   test('should allow configuring and running a tool with complex nested schema', async ({ page }) => {

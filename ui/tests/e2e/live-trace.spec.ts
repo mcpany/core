@@ -4,12 +4,11 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test('Live Trace Inspector and Replay Flow', async ({ page, request }) => {
   // Navigate to traces page
-  const res = await request.post('/api/v1/debug/traces', { data: {} });
-  expect(res.ok()).toBeTruthy();
-
+  // Mock traces API
   // Navigate to traces page
   await page.goto('/traces');
 

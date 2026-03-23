@@ -4,6 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('Concurrency & Race Conditions', () => {
   test('should handle multiple concurrent user sessions without state verification issues', async ({ browser }) => {

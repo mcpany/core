@@ -4,6 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('Services Feature', () => {
   const services: any[] = [
@@ -49,7 +50,8 @@ test.describe('Services Feature', () => {
     return match ? decodeURIComponent(match[1]) : '';
   };
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
+    await seedGlobalState(request);
     // page.on('request', request => console.log('>>', request.method(), request.url()));
 
     // Mock registration API with dynamic state

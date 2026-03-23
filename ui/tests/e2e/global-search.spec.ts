@@ -5,9 +5,11 @@
 
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('Global Search', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
+    await seedGlobalState(request);
     // We don't need to seed data for these tests as we search for static items
     await page.goto('/');
   });

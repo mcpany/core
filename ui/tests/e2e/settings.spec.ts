@@ -4,14 +4,16 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('Settings & Secrets', () => {
-  test.beforeEach(async ({ page }) => {
-    // Mock Global Settings API
-    // Mock other noisy endpoints
-    // Mock Secrets API with state
-    const secretsStore: any[] = [];
-
+  test.beforeEach(async ({ page, request }) => {
+    await seedGlobalState(request);
+    await page.goto('/login');
+    await page.fill('input[name="username"]', 'admin');
+    await page.fill('input[name="password"]', 'password');
+    await page.click('button[type="submit"]');
+    await page.waitForURL('/', { timeout: 30000 });
     await page.goto('/settings');
   });
 

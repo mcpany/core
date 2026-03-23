@@ -4,6 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('Playground Basic Verification', () => {
   test('should execute calculator tool and verify output', async ({ page }) => {

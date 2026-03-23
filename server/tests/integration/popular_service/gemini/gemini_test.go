@@ -18,7 +18,7 @@ import (
 
 func TestUpstreamService_Gemini(t *testing.T) {
 	if os.Getenv("GEMINI_API_KEY") == "" {
-		t.Skip("Skipping test because GEMINI_API_KEY is not set")
+		// t.Skip("Skipping test because GEMINI_API_KEY is not set")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)

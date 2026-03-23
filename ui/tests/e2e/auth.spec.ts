@@ -4,6 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 // Use a unique ID to avoid collisions
 const TEST_TIMESTAMP = Date.now();

@@ -4,6 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('Marketplace Tests', () => {
   test('Share Config flow should work', async ({ page }) => {

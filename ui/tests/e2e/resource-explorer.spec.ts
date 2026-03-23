@@ -4,6 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from './test-data';
 
 test.describe('Resource Explorer', () => {
   test('should load resources and allow selection', async ({ page }) => {
