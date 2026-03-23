@@ -85,7 +85,9 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let content = result as any;
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if (result && typeof result === 'object' && Array.isArray((result as any).content)) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             content = (result as any).content;
         }
 
