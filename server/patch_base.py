@@ -1,6 +1,6 @@
 import re
 
-filename = 'server/pkg/tool/base.go'
+filename = 'pkg/tool/base.go'
 with open(filename, 'r') as f:
     content = f.read()
 

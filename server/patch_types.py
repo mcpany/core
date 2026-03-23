@@ -1,6 +1,6 @@
 import re
 
-filename = 'server/pkg/tool/types.go'
+filename = 'pkg/tool/types.go'
 with open(filename, 'r') as f:
     content = f.read()
 

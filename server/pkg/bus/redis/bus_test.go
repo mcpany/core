@@ -540,6 +540,7 @@ func TestBus_Subscribe_HandlerPanic(t *testing.T) {
 
 	handlerCalled := make(chan bool, 2)
 
+		time.Sleep(100 * time.Millisecond)
 	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
 		handlerCalled <- true
 		if len(handlerCalled) == 1 {

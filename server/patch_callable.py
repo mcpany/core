@@ -1,6 +1,6 @@
 import re
 
-filename = 'server/pkg/tool/callable.go'
+filename = 'pkg/tool/callable.go'
 with open(filename, 'r') as f:
     content = f.read()
 

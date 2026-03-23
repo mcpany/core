@@ -1,17 +1,17 @@
 import re
 
 files_to_patch = [
-    'server/pkg/tool/types.go',
-    'server/pkg/tool/websocket.go',
-    'server/pkg/tool/webrtc.go',
-    'server/pkg/tool/extra_management_test.go',
-    'server/pkg/tool/fuzzy_test.go',
-    'server/pkg/tool/mock_tool.go',
-    'server/pkg/tool/management_coverage_test.go',
-    'server/pkg/serviceregistry/registry_test.go',
-    'server/pkg/upstream/sql/tool.go',
-    'server/pkg/resource/dynamic_resource_test.go',
-    'server/pkg/upstream/grpc/grpc_test.go'
+    'pkg/tool/types.go',
+    'pkg/tool/websocket.go',
+    'pkg/tool/webrtc.go',
+    'pkg/tool/extra_management_test.go',
+    'pkg/tool/fuzzy_test.go',
+    'pkg/tool/mock_tool.go',
+    'pkg/tool/management_coverage_test.go',
+    'pkg/serviceregistry/registry_test.go',
+    'pkg/upstream/sql/tool.go',
+    'pkg/resource/dynamic_resource_test.go',
+    'pkg/upstream/grpc/grpc_test.go'
 ]
 
 types = ["GRPCTool", "HTTPTool", "MCPTool", "OpenAPITool", "CommandTool", "LocalCommandTool", "WebsocketTool", "WebrtcTool", "mockToolSimple", "MockTool", "mockTool", "Tool", "simpleMockTool"]
