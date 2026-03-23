@@ -27,6 +27,9 @@ type NoOpToolManager struct{}
 //
 // Returns:
 //   - error: Always returns nil.
+// Errors:
+//   - error on AddTool failure.
+//
 func (m *NoOpToolManager) AddTool(_ tool.Tool) error { return nil }
 
 // GetTool implements tool.ManagerInterface.
@@ -94,6 +97,9 @@ func (m *NoOpToolManager) ClearToolsForService(_ string) {}
 // Returns:
 //   - any: Always nil.
 //   - error: Always nil.
+// Errors:
+//   - error on ExecuteTool failure.
+//
 func (m *NoOpToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }

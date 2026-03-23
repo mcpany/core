@@ -32,6 +32,9 @@ type CallableTool struct {
 // Returns:
 //   - *CallableTool: A pointer to the created CallableTool.
 //   - error: An error if creation fails.
+// Errors:
+//   - error on NewCallableTool failure.
+//
 func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.UpstreamServiceConfig, callable Callable, inputSchema, outputSchema *structpb.Struct) (*CallableTool, error) {
 	base, err := newBaseTool(toolDef, serviceConfig, callable, inputSchema, outputSchema)
 	if err != nil {
@@ -51,6 +54,9 @@ func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.U
 // Returns:
 //   - any: The result of the execution.
 //   - error: An error if the operation fails.
+// Errors:
+//   - error on Execute failure.
+//
 func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	return t.callable.Call(ctx, req)
 }

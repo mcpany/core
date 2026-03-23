@@ -195,6 +195,9 @@ func (e *DatadogAuditStore) sendBatch(batch []Entry) {
 // Returns:
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
+// Errors:
+//   - error on Read failure.
+//
 func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for datadog audit store")
 }
@@ -205,6 +208,9 @@ func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 //
 // Returns:
 //   - error: Always nil.
+//
+// Errors:
+//   - error on Close failure.
 //
 // Side Effects:
 //   - Closes internal channels.

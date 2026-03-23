@@ -32,6 +32,9 @@ type DB struct {
 //   - *DB: The database connection.
 //   - error: An error if the database cannot be opened or initialized.
 //
+// Errors:
+//   - error on NewDB failure.
+//
 // Side Effects:
 //   - Creates the database file and directories if they don't exist.
 //   - Initializes the database schema.

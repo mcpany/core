@@ -34,6 +34,9 @@ type DynamicResource struct {
 // Returns:
 //   - *DynamicResource: The initialized dynamic resource.
 //   - error: An error if validation fails.
+// Errors:
+//   - error on NewDynamicResource failure.
+//
 func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*DynamicResource, error) {
 	if def == nil {
 		return nil, fmt.Errorf("resource definition is nil")
@@ -84,6 +87,9 @@ func (r *DynamicResource) Service() string {
 // Returns:
 //   - *mcp.ReadResourceResult: The resource content.
 //   - error: An error if the tool execution fails.
+//
+// Errors:
+//   - error on Read failure.
 //
 // Side Effects:
 //   - Executes the underlying tool, which may have its own side effects.
@@ -148,6 +154,9 @@ func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, er
 //
 // Returns:
 //   - error: Always returns an error indicating not implemented.
+// Errors:
+//   - error on Subscribe failure.
+//
 func (r *DynamicResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to dynamic resources is not yet implemented")
 }

@@ -200,6 +200,9 @@ func (w *responseBuffer) checkBuffer() {
 //   - int: The number of bytes written.
 //   - error: An error if the write fails.
 //
+// Errors:
+//   - error on Write failure.
+//
 // Side Effects:
 //   - Appends to the body buffer if buffering is enabled.
 //   - Writes to the underlying ResponseWriter otherwise.

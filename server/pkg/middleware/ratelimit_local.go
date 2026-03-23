@@ -30,6 +30,9 @@ type LocalLimiter struct {
 //   - bool: True if allowed, false otherwise.
 //   - error: Always nil.
 //
+// Errors:
+//   - error on Allow failure.
+//
 // Side Effects:
 //   - Consumes 1 token from the bucket if allowed.
 func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
@@ -47,6 +50,9 @@ func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 // Returns:
 //   - bool: True if allowed, false otherwise.
 //   - error: Always nil.
+//
+// Errors:
+//   - error on AllowN failure.
 //
 // Side Effects:
 //   - Consumes n tokens from the bucket if allowed.
@@ -103,6 +109,9 @@ func NewLocalStrategy() *LocalStrategy {
 // Returns:
 //   - Limiter: The created LocalLimiter.
 //   - error: Always nil.
+//
+// Errors:
+//   - error on Create failure.
 //
 // Side Effects:
 //   - Sets a minimum burst of 1 if configured lower.

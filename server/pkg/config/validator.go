@@ -535,6 +535,9 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 //
 // Returns:
 //   - (error): An error if validation fails.
+// Errors:
+//   - error on ValidateOrError failure.
+//
 func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(ctx, service)
 }

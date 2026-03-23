@@ -143,6 +143,9 @@ func (w *smartResponseWriter) WriteHeader(code int) {
 // Returns:
 //   - int: The number of bytes written.
 //   - error: An error if the write fails.
+// Errors:
+//   - error on Write failure.
+//
 func (w *smartResponseWriter) Write(b []byte) (int, error) {
 	if !w.committed {
 		w.WriteHeader(http.StatusOK)

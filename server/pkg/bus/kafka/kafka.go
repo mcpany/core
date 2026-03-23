@@ -272,6 +272,9 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 //
 // Returns:
 //   - error: An error if closing fails.
+// Errors:
+//   - error on Close failure.
+//
 func (b *Bus[T]) Close() error {
 	return b.writer.Close()
 }

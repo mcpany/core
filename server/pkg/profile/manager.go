@@ -82,6 +82,9 @@ func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition
 //   - map[string]*configv1.ProfileServiceConfig: Merged service configs.
 //   - map[string]*configv1.SecretValue: Merged secrets.
 //   - error: Error if profile not found or cycle detected.
+// Errors:
+//   - error on ResolveProfile failure.
+//
 func (m *Manager) ResolveProfile(profileName string) (map[string]*configv1.ProfileServiceConfig, map[string]*configv1.SecretValue, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
