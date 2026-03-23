@@ -1,8 +1,5 @@
 const fs = require('fs');
-
-const file = 'ui/tests/e2e/user_management.spec.ts';
-let content = fs.readFileSync(file, 'utf-8');
-
-content = content.replace("const row = page.locator('tr').filter({ hasText: 'test-api-user' });", "const row = page.getByTestId('user-row-test-api-user');");
-
-fs.writeFileSync(file, content);
+const file = 'ui/src/lib/client.ts';
+let code = fs.readFileSync(file, 'utf8');
+code = code.replace(/\.\.\/\.\.\/\.\.\/proto\/api\/v1\/registration/g, "@proto/api/v1/registration");
+fs.writeFileSync(file, code);

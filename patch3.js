@@ -1,11 +1,5 @@
 const fs = require('fs');
-
-const file = 'ui/src/components/users/user-list.tsx';
-let content = fs.readFileSync(file, 'utf-8');
-
-
-content = content.replace(/itemContent=\{\(index, user\) => \( <React.Fragment key=\{user\.id\}>/g, 'itemContent={(index, user) => (');
-content = content.replace(/<\/React\.Fragment>\n                            \)/g, ')');
-
-
-fs.writeFileSync(file, content);
+const file = 'ui/src/lib/client.ts';
+let code = fs.readFileSync(file, 'utf8');
+code = code.replace(/@proto\/api\/v1\/registration/g, "../../../proto/api/v1/registration");
+fs.writeFileSync(file, code);
