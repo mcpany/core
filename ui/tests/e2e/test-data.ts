@@ -4,9 +4,10 @@
  */
 
 import { request, APIRequestContext } from '@playwright/test';
+import { ServiceTemplate } from '../../../proto/config/v1/service_template';
+import { UpstreamServiceConfig } from '../../../proto/config/v1/upstream_service';
+import { User } from '../../../proto/config/v1/user';
 
-// Avoid importing from proto to bypass Playwright module resolution issues with @bufbuild/protobuf/wire
-// Instead, we just pass the raw objects to the REST API, which is completely fine.
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const ECHO_SERVER_BASE_URL = process.env.UI_HTTP_ECHO_BASE_URL || 'http://ui-http-echo-server:5678';
@@ -102,7 +103,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-    ]; // removed map with UpstreamServiceConfig
+    ].map((service) => UpstreamServiceConfig.toJSON(UpstreamServiceConfig.fromJSON(service)));
 
     const templates = [
         {
@@ -159,7 +160,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-    ]; // removed map with ServiceTemplate
+    ].map((template) => ServiceTemplate.toJSON(ServiceTemplate.fromJSON(template)));
 
     const users = [
         {
@@ -174,7 +175,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             roles: ["admin"],
             profile_ids: ["dev", "prod"]
         }
-    ]; // removed map with User
+    ].map((user) => User.toJSON(User.fromJSON(user)));
 
     const seedRequest = {
         upstream_services: services,
