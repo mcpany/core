@@ -15,6 +15,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/prompt"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -191,17 +192,17 @@ func (a *Application) clearData(ctx context.Context, log *slog.Logger) error {
 	}
 
 	// Prompts
-	prompts, err := a.Storage.ListPrompts(ctx)
-	if err != nil {
-		log.Error("Failed to list prompts for clearing", "error", err)
-	} else {
+	if a.PromptManager != nil {
+		prompts := a.PromptManager.ListPrompts()
+		// Since there's no RemovePrompt method, we clear prompts for the seed service ID or globally.
+		// For testing, assuming prompts belong to a seeded service, we might need to clear by service.
+		// We'll extract service IDs from prompts and clear them.
+		serviceIDs := make(map[string]struct{})
 		for _, p := range prompts {
-			err := withRetry(ctx, log, func() error {
-				return a.Storage.DeletePrompt(ctx, p.GetName())
-			})
-			if err != nil {
-				log.Error("Failed to delete prompt", "name", p.GetName(), "error", err)
-			}
+			serviceIDs[p.Service()] = struct{}{}
+		}
+		for serviceID := range serviceIDs {
+			a.PromptManager.ClearPromptsForService(serviceID)
 		}
 	}
 
@@ -286,8 +287,16 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 		if err := protojson.Unmarshal(raw, p); err != nil {
 			return fmt.Errorf("invalid json")
 		}
+
 		err := withRetry(ctx, logging.GetLogger(), func() error {
-			return a.Storage.SavePrompt(ctx, p)
+			promptInstance, err := prompt.NewPromptFromConfig(p, "seed-service")
+			if err != nil {
+				return err
+			}
+			if a.PromptManager != nil {
+				a.PromptManager.AddPrompt(promptInstance)
+			}
+			return nil
 		})
 		if err != nil {
 			return fmt.Errorf("failed to save prompt %s: %w", p.GetName(), err)
