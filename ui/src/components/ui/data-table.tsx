@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronDown, ChevronUp, ChevronsUpDown, Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 
+/**
+ * DataTableProps
+ */
 export interface DataTableProps<TData> {
   data: TData[];
   columns: {
@@ -14,6 +17,9 @@ export interface DataTableProps<TData> {
   searchKey?: keyof TData | string;
 }
 
+/**
+ * DataTable
+ */
 export function DataTable<TData>({ data, columns, searchKey }: DataTableProps<TData>) {
   const [sortConfig, setSortConfig] = React.useState<{ key: string; direction: "asc" | "desc" } | null>(null);
   const [filterText, setFilterText] = React.useState("");
