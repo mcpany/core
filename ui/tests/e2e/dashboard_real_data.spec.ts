@@ -71,6 +71,7 @@ test.describe("Dashboard Real Data", () => {
     const trafficData = await trafficRes.json();
     console.log("DEBUG: Traffic Data:", JSON.stringify(trafficData));
     // Expect at least one point with requests > 0
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const hasData = trafficData.some((p: any) => p.requests > 0);
     expect(hasData).toBeTruthy();
 
