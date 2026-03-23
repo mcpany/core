@@ -10,6 +10,11 @@ executors:
       - image: cimg/go:1.24
     resource_class: medium
 
+  bazel-executor:
+    docker:
+      - image: cimg/base:current
+    resource_class: medium
+
 commands:
   check-skip:
     description: "Check if CI should skip based on changed files"
@@ -28,7 +33,7 @@ commands:
 
 jobs:
   lint:
-    executor: default-executor
+    executor: bazel-executor
     steps:
       - checkout
       - run:
@@ -55,12 +60,18 @@ jobs:
             # make prepare
             echo "Skipping make prepare, using bazel"
       - run:
+          name: Install Bazelisk
+          command: |
+            sudo curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.20.0/bazelisk-linux-amd64 -o /usr/local/bin/bazel
+            sudo chmod +x /usr/local/bin/bazel
+      - run:
           name: Run Lint
           command: |
             . venv/bin/activate
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
             bazel run //:lint
+            bazel test //server/pkg/lint/... //ui:lint //ui:typecheck
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
