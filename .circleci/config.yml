@@ -15,6 +15,13 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Clean and Setup
+          command: |
+             # Purge any pre-installed version conflicts
+             sudo rm -f /usr/local/bin/golangci-lint
+             rm -rf build/env/bin
+             mkdir -p build/env/bin
+      - run:
           name: Install Python dependencies
           command: |
              sudo apt-get update
@@ -27,20 +34,18 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v24-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-            - v24-lint-
+            - v25-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+            - v25-lint-
       - run:
-          name: Install Toolchain
+          name: Install Toolchain and Linter
           command: |
             export GOTOOLCHAIN=go1.26.1
-            # Force cleanup of any old linter binaries
-            rm -rf build/env/bin
-            mkdir -p build/env/bin
-            sudo rm -f /usr/local/bin/golangci-lint
-            # Use GOTOOLCHAIN to build the linter from source
+            export GOPATH=$HOME/go
+            echo "Installing golangci-lint from source with Go 1.26..."
             go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.5
-            # Populate other tools
             make prepare
+            cp $GOPATH/bin/golangci-lint build/env/bin/golangci-lint
+            build/env/bin/golangci-lint version
       - run:
           name: Run Lint
           command: |
@@ -48,13 +53,10 @@ jobs:
             export GOTOOLCHAIN=go1.26.1
             export GOPATH=$HOME/go
             export PATH=$GOPATH/bin:$PWD/build/env/bin:$PATH
-            # Diagnostics
             go version
-            golangci-lint version
-            # Execute version-locked linting script
             ./scripts/lint.sh
       - save_cache:
-          key: v24-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+          key: v25-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
