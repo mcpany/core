@@ -11,21 +11,24 @@ else
 fi
 cd "$PROJECT_ROOT"
 
-echo "==> Running golangci-lint via go run (version locked)..."
-# This is the only reliable way to ensure the linter is built with the correct Go version
+echo "==> Running golangci-lint via go run (guaranteed alignment)..."
 export GOTOOLCHAIN=go1.26.1
-LINT_VERSION="v1.64.5"
-
-# We must use GOWORK=off to avoid the typechecking error about directory being outside module roots,
-# then we run on each module individually.
+# Disable GOWORK for the linter run to isolate module analysis
 export GOWORK=off
 
+LINT_VERSION="v1.64.5"
+LINT_CMD="go run github.com/golangci/golangci-lint/cmd/golangci-lint@${LINT_VERSION}"
+
+# Define absolute path to config
+CONFIG_PATH="$(pwd)/server/.golangci.yml"
+
+# Lint specific modules
 MODULES=("server" "proto" "k8s/operator")
 
 for mod in "${MODULES[@]}"; do
     if [ -d "$mod" ]; then
         echo "    Linting module: $mod"
-        (cd "$mod" && go run github.com/golangci/golangci-lint/cmd/golangci-lint@${LINT_VERSION} run --timeout 20m --fix --config ../server/.golangci.yml ./...)
+        (cd "$mod" && $LINT_CMD run --timeout 20m --fix --config "$CONFIG_PATH" ./...)
     fi
 done
 

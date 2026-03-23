@@ -33,22 +33,23 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v28-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-            - v28-lint-
+            - v29-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+            - v29-lint-
       - run:
-          name: Prepare Toolchain
+          name: Prepare Environment
           command: |
             export GOTOOLCHAIN=go1.26.1
             make prepare
       - run:
-          name: Run Lint
+          name: Run Lint (Atomic Go Run)
           command: |
             . venv/bin/activate
             export GOTOOLCHAIN=go1.26.1
+            export GOWORK=off
             # Run the hardened script
             ./scripts/lint.sh
       - save_cache:
-          key: v28-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+          key: v29-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
