@@ -15,7 +15,6 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/prompt"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -28,7 +27,6 @@ type SeedRequest struct {
 	ProfilesRaw    []json.RawMessage `json:"profiles"`
 	UsersRaw       []json.RawMessage `json:"users"`
 	TemplatesRaw   []json.RawMessage `json:"service_templates"`
-	PromptsRaw     []json.RawMessage `json:"prompts"`
 }
 
 // handleDebugSeed creates a handler to seed the database with data.
@@ -191,21 +189,6 @@ func (a *Application) clearData(ctx context.Context, log *slog.Logger) error {
 		}
 	}
 
-	// Prompts
-	if a.PromptManager != nil {
-		prompts := a.PromptManager.ListPrompts()
-		// Since there's no RemovePrompt method, we clear prompts for the seed service ID or globally.
-		// For testing, assuming prompts belong to a seeded service, we might need to clear by service.
-		// We'll extract service IDs from prompts and clear them.
-		serviceIDs := make(map[string]struct{})
-		for _, p := range prompts {
-			serviceIDs[p.Service()] = struct{}{}
-		}
-		for serviceID := range serviceIDs {
-			a.PromptManager.ClearPromptsForService(serviceID)
-		}
-	}
-
 	return nil
 }
 
@@ -280,26 +263,6 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 		})
 		if err != nil {
 			return fmt.Errorf("failed to save service template %s: %w", t.GetId(), err)
-		}
-	}
-	for _, raw := range req.PromptsRaw {
-		p := configv1.PromptDefinition_builder{}.Build()
-		if err := protojson.Unmarshal(raw, p); err != nil {
-			return fmt.Errorf("invalid json")
-		}
-
-		err := withRetry(ctx, logging.GetLogger(), func() error {
-			promptInstance, err := prompt.NewPromptFromConfig(p, "seed-service")
-			if err != nil {
-				return err
-			}
-			if a.PromptManager != nil {
-				a.PromptManager.AddPrompt(promptInstance)
-			}
-			return nil
-		})
-		if err != nil {
-			return fmt.Errorf("failed to save prompt %s: %w", p.GetName(), err)
 		}
 	}
 	return nil
