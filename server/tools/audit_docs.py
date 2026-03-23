@@ -6,17 +6,11 @@ import os
 import re
 import sys
 
-# Regex patterns
-# Exported function: func Name(...) ...
-FUNC_PATTERN = re.compile(r'^func\s+([A-Z]\w*)\s*\((.*)\)\s*(.*)\{')
-# Exported method: func (r *Receiver) Name(...) ...
-METHOD_PATTERN = re.compile(r'^func\s+\([^)]+\)\s+([A-Z]\w*)\s*\((.*)\)\s*(.*)\{')
-# Exported type: type Name ...
+# Regex patterns for basic matching
+FUNC_BASE_PATTERN = re.compile(r'^func\s+([A-Z]\w*)\s*\((.*)\)\s*([^{]*)?\{')
+METHOD_BASE_PATTERN = re.compile(r'^func\s+\([^)]+\)\s+([A-Z]\w*)\s*\((.*)\)\s*([^{]*)?\{')
 TYPE_PATTERN = re.compile(r'^type\s+([A-Z]\w*)\s+')
-# Exported var/const: var Name ... or const Name ...
 VAR_CONST_PATTERN = re.compile(r'^(var|const)\s+([A-Z]\w*)\s+')
-# Const block entries are harder to parse line-by-line without context,
-# so we'll skip them for now or treat them simply if they are on one line.
 
 def has_summary(doc_lines):
     for line in doc_lines:
@@ -36,6 +30,36 @@ def has_returns(doc_lines):
             return True
     return False
 
+def parse_func_signature(line):
+    m = FUNC_BASE_PATTERN.match(line) or METHOD_BASE_PATTERN.match(line)
+    if not m:
+        return None, None, None
+
+    symbol = m.group(1)
+    rest_of_params = m.group(2)
+    after_params_paren = m.group(3) or ""
+
+    # We need to find the split point between parameters and return types.
+    # The split point is the ')' that matches the first '(' of parameters.
+    depth = 1
+    split_idx = -1
+    for i, c in enumerate(rest_of_params):
+        if c == '(': depth += 1
+        elif c == ')': depth -= 1
+
+        if depth == 0:
+            split_idx = i
+            break
+
+    if split_idx != -1:
+        params = rest_of_params[:split_idx].strip()
+        after_params = rest_of_params[split_idx+1:].strip()
+        total_return = (after_params + " " + after_params_paren).strip()
+        return symbol, params, total_return
+    else:
+        # Simple case: no nested parentheses within parameters
+        return symbol, rest_of_params.strip(), after_params_paren.strip()
+
 def check_file(filepath):
     with open(filepath, 'r') as f:
         lines = f.readlines()
@@ -50,21 +74,13 @@ def check_file(filepath):
         returns_str = ""
 
         # Check patterns
-        m_func = FUNC_PATTERN.match(line)
-        m_method = METHOD_PATTERN.match(line)
         m_type = TYPE_PATTERN.match(line)
         m_var_const = VAR_CONST_PATTERN.match(line)
 
-        if m_func:
-            symbol = m_func.group(1)
-            kind = "func"
-            params_str = m_func.group(2)
-            returns_str = m_func.group(3)
-        elif m_method:
-            symbol = m_method.group(1)
-            kind = "method"
-            params_str = m_method.group(2)
-            returns_str = m_method.group(3)
+        if line.startswith("func "):
+            symbol, params_str, returns_str = parse_func_signature(line)
+            if symbol:
+                kind = "func"
         elif m_type:
             symbol = m_type.group(1)
             kind = "type"
@@ -82,8 +98,7 @@ def check_file(filepath):
                     if not prev.startswith('//go:') and not prev.startswith('// +build'):
                         doc_lines.insert(0, prev)
                 elif prev == '':
-                    # Allow one empty line between doc and function?
-                    # Go conventions say no empty line.
+                    # Go conventions say no empty line between doc and symbol.
                     break
                 else:
                     break
@@ -97,14 +112,13 @@ def check_file(filepath):
                 if not has_summary(doc_lines):
                     reasons.append("Missing 'Summary:'")
 
-                if kind in ("func", "method"):
+                if kind == "func":
                     # Check if parameters exist
                     if params_str and params_str.strip():
                         if not has_parameters(doc_lines):
                             reasons.append("Missing 'Parameters:'")
 
                     # Check if returns exist
-                    # returns_str might be "error" or "(int, error)" or ""
                     if returns_str and returns_str.strip() and returns_str.strip() != "{":
                          if not has_returns(doc_lines):
                             reasons.append("Missing 'Returns:'")

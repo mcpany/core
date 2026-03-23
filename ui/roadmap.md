@@ -1,3 +1,17 @@
+# Copyright 2026 MCP Any Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # UI Roadmap
 
 ## Status: Active Development
@@ -13,7 +27,6 @@
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
-- [ ] **[P0] Premium Tool Execution Timeline**: Implement high-fidelity, Apple-level interactive timeline for tool executions. (Added: 2026-03-21)
 - [ ] **[P0] Config Sandbox Monitor**: Real-time visualization of sandboxed hook execution, logs, and resource limits. (Added: 2026-03-10)
 - [ ] **[P1] Config Drift Alert System**: UI notification and diff viewer for modified project-local configuration files requiring re-attestation. (Added: 2026-03-10)
 - [ ] **[P0] Project Config Attestation Dashboard**: UI for reviewing and approving project-local configuration blocks (hooks/auto-execute). (Added: 2026-03-09)
@@ -198,12 +211,6 @@
 - [ ] **[P0] Local Trust Verification Dashboard**: (2026-04-05) UI for reviewing and signing local MCP server identity claims.
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
-
-#### Upcoming (2026-03-20 Evolution)
-- [ ] **[P0] Mission Manifest Editor**: (2026-03-20) UI for defining and TPM-signing Hardware-Attested Mission Manifests (HAMM).
-- [ ] **[P0] Mailbox Shard Monitor**: (2026-03-20) Real-time visualization of task-bound mailbox shards and coordination throughput.
-- [ ] **[P0] Mission Budget Dashboard**: (2026-03-20) Visual tracker for reasoning effort, token limits, and `maxTurns` consumption per mission.
-- [ ] **[P1] Multi-Channel Inbox Hub**: (2026-03-20) Unified UI for managing and monitoring agent messages across 20+ platform channels.
 
 #### Upcoming (2026-03-17 Evolution)
 - [ ] **[P0] Local Security Violation Monitor**: (2026-03-17) Real-time visualization of blocked loopback requests and origin violations. (Added: 2026-03-17)
@@ -504,7 +511,7 @@
 - [ ] **[P0] Authenticated Discovery Widget**: Security status indicator for masked agent capability cards and A2A auth-gate actions. (Added: 2026-06-01)
 
 #### Upcoming (2026-05-29 Evolution)
-- [x] **[P0] Swarm Anomaly Visualizer**: (Implemented via Multi-Agent Swarm Topology Monitor).
+- [ ] **[P0] Swarm Anomaly Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and CSAD neutralization events. (Added: 2026-05-29)
 - [ ] **[P0] Mesh Command Sovereignty Dashboard**: Visual "Chain of Mesh-Command" tracer for inter-teammate mailbox validation. (Added: 2026-05-29)
 - [ ] **[P0] Teammate Handshake Monitor**: Real-time status indicator for ATH identity exchange in horizontal swarms. (Added: 2026-05-29)
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
@@ -516,107 +523,6 @@
 - [ ] **[P0] Granular Shard Streamer**: Visual monitor for dynamic context fragments streaming between teammates. (Added: 2026-06-02)
 
 #### Upcoming (2026-06-03 Evolution)
-- [ ] **[P0] Attestation Bridge Monitor**: Visual indicator for translated hardware attestation tokens. (Added: 2026-06-03)
-- [ ] **[P0] Shard Lock Visualizer**: Real-time dashboard for monitoring atomic locks and shard ownership. (Added: 2026-06-03)
-- [ ] **[P1] Prefetching Performance Overlay**: Visualization of speculative context hit/miss rates. (Added: 2026-06-03)
-
-### Upcoming: [2026-06-08]
-- [ ] **[P0] ARI Fragment Monitor**: (2026-06-08) Real-time visualization of fragment-level semantic validation events and blocked state-splicing attempts.
-- [ ] **[P0] HAMM Manifest Reviewer**: (2026-06-08) UI for reviewing pre-declared hardware-attested mission manifests before sub-mission execution.
-- [ ] **[P1] Graceful Decay Indicator**: (2026-06-08) Visual status widget for monitoring mission sovereignty decay and re-attestation windows.
-- [ ] **[P0] Fragment Sovereignty Auditor**: (2026-06-08) Security dashboard for verifying ARI-attestation status across the teammate mesh.
-
-### Upcoming: [2026-06-07]
-- **Semantic Shadowing Dashboard**: (P0) A behavioral security workspace for the AID Hub that visualizes stylometric and contextual consistency alerts.
-- **Mission-Locked Execution (MLE) Visualizer**: (P0) Security UI for viewing and auditing cryptographically locked tool calls and their mission-root lineage.
-- **STR-Native Discovery Status**: (P1) Real-time monitor for "Sovereign Tool Registry" behavioral manifests and TPM-attestation events.
-- **Ephemeral Mission Root Monitor**: (P1) Lifecycle manager UI for monitoring the temporal sovereignty of mission-root tokens.
-
-### Upcoming: [2026-06-05]
-- **Intent-Splicing Audit Log**: (P0) Forensic UI for reviewing deconstructed inter-agent messages and splicing attempts.
-- **Capability Accountability Dashboard**: (P0) Real-time tracker for session-bound capabilities and their lineage-aware expiration.
-- **HAIL Lineage Tracer**: (P0) Visual debugger for hardware-attested intent lineage (HAIL), mapping tool calls to root mission intents.
-- **Synthetic Policy Workspace**: (P1) Interactive environment for reviewing and approving mesh-synthesized security policies.
-
-### Upcoming: [2026-06-04]
-- **Speculative Sanitization Dashboard**: Visualization of neutralized speculative poisoned fragments and their sources.
-- **Mission-Root Gravity Status**: Real-time monitoring of "Semantic Drift" and mission-root anchoring across agent teammate shards.
-- **Multi-Hop Trust Persistence Monitor**: Detailed view of hardware-attested trust leases and their propagation across deep swarms.
-
-### Upcoming: [2026-06-06]
-- **Intent-Splicing Audit Log**: (P0) Real-time visualization of semantically deconstructed inter-agent messages and blocked splicing attempts.
-- **CGC Lifecycle Manager**: (P0) Security dashboard for monitoring capability garbage collection and identifying "Ghost Agents."
-- **MRLA Handshake Debugger**: (P0) Forensic UI for visualizing A2A discovery handshakes and mission-root lineage proofs.
-
-### Upcoming: [2026-06-09]
-- **Mesh-Resident Lineage Tracker**: (P0) Visualizer for auditing hardware-attested reasoning chains across multi-hop delegations. (Added: 2026-06-09)
-- **Context Attention Monitor**: (P0) Real-time tracker for CWP-pinned fragments and context-flooding alerts. (Added: 2026-06-09)
-- **Ephemeral Credential Vault**: (P1) UI for managing task-specific JWTs and mission-bound credential lifetimes. (Added: 2026-06-09)
-
-### Upcoming: [2026-06-10]
-- [ ] **[P0] L7 Semantic Inspection Monitor**: (P0) Real-time visualization of high-entropy semantic validation events and REE neutralization. (Added: 2026-06-10)
-- [ ] **[P0] Environment Isolation Dashboard**: (P0) Visual tracker for hardware-attested environment scrubbing and metadata wipe events. (Added: 2026-06-10)
-- [ ] **[P0] Mission-Root Registry Viewer**: (P0) Authoritative UI for reviewing and auditing the hardware-attested Mission-Root Attestation Registry. (Added: 2026-06-10)
-
-### Upcoming: [2026-06-11]
-- [ ] **[P0] ARI Lineage Visualizer**: (P0) Real-time visualization of semantic hash-chains and logic grafting alerts in shared shards. (Added: 2026-06-11)
-- [ ] **[P0] Attention Governance Dashboard**: (P0) Visual tracker for HAAL-locked intent fragments and REE noise levels. (Added: 2026-06-11)
-- [ ] **[P1] DTAI Performance Overlay**: (P1) Performance dashboard for monitoring trace-aware identity verification latency. (Added: 2026-06-11)
-- [ ] **[P0] Reasoning Provenance Inspector**: (P0) Forensic UI for reviewing the hardware-attested reasoning lineage of high-risk actions. (Added: 2026-06-11)
-
-### Upcoming: [2026-06-12]
-- [ ] **[P0] Shadow Coordination Monitor**: (2026-06-12) Real-time visualization of anomalous entropy in non-primary coordination channels.
-- [ ] **[P0] MRA Attestation Dashboard**: (2026-06-12) UI for monitoring hardware-bound semantic hash generation and verification.
-- [ ] **[P1] Attention Gating Visualizer**: (2026-06-12) Dashboard showing real-time gating of subagent fragments based on parent attention levels.
-- [ ] **[P0] Coordination Handshake Debugger**: (2026-06-12) Forensic tool for visualizing hardware-locked handshake sequences.
-
-### Upcoming: [2026-06-13]
-- [ ] **[P0] Shadow Coordination Monitor**: (Re-affirmed P0) Enhanced dashboard for real-time visualization of entropy spikes in T2T transport metadata.
-- [ ] **[P0] Attention Sovereignty Visualizer**: (2026-06-13) Real-time tracker for DAG-gated fragments and HAAL-locked intent segments.
-- [ ] **[P0] Hardware-Locked Coordination Debugger**: (2026-06-13) UI for reviewing hardware-bound session tokens and blocked out-of-band handoffs.
-
-### Upcoming: [2026-06-14]
-- [ ] **[P0] Metadata Poisoning Guard**: (2026-06-14) UI for reviewing sanitized tool definitions and blocked SDMI instruction fragments.
-- [ ] **[P0] Trust Persistence Monitor**: (2026-06-14) Visual tracker for MHPR trust-lease propagation and MSHE-latency gains.
-- [ ] **[P0] Attention-Locked Shard Viewer**: (2026-06-14) Dashboard for monitoring hardware-protected fragments in the ALCS attention tier.
-- [ ] **[P0] Sovereign Discovery Console**: (2026-06-14) Authorization workspace for hardware-attested SDP validation of capability cards.
-
-### Upcoming: [2026-06-16]
-- [ ] **[P0] Entanglement Shard Monitor**: (2026-06-16) Real-time visualization of cryptographically entangled state fragments.
-- [ ] **[P0] Stylometric Mimicry Dashboard**: (2026-06-16) Security workspace for visualizing stylometric consistency alerts.
-- [ ] **[P1] Speculative Branching Visualizer**: (2026-06-16) Visual tracker for "Shadow Branches" and attention leakage alerts.
-- [ ] **[P0] MRKE Key Rotation Widget**: (2026-06-16) Status indicator for hardware-bound session key rotation.
-
-### Upcoming: [2026-06-15]
-- [ ] **[P0] Intent-Resumption Dashboard**: (2026-06-15) Visualizer for monitoring "Intent-Resumption Token" issuance and handoff latency.
-- [ ] **[P0] Side-Channel Timing Heatmap**: (2026-06-15) Real-time monitor of ASLM timing jitter and blocked shard-collision probes.
-- [ ] **[P1] Attention-Locked Telemetry Viewer**: (2026-06-15) Security UI for reviewing sanitized reasoning traces and attention-mapping redactions.
-- [ ] **[P0] WASM-Hook Safety Reporter**: (2026-06-15) UI for viewing behavioral profiling results for un-attested configuration hooks.
-
-### Upcoming: [2026-06-17]
-- [x] **[P0] Active Intent Alignment Monitor**: (2026-06-17) Visual indicator for AIA heartbeat status and semantic drift alerts.
-- [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
-- [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
-- [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
-
-### Upcoming: [2026-06-18]
-- [ ] **[P0] Mission Resumption Status Widget**: (2026-06-18) Real-time monitor for hardware-locked re-attestation events and AMRA session health.
-- [ ] **[P0] Entanglement Privacy Auditor**: (2026-06-18) Security dashboard for reviewing SES-redacted fragments and monologue smearing alerts.
-- [ ] **[P0] Logic Grafting Alert Console**: (2026-06-18) Forensic UI for inspecting the ARI Hub "Reasoning Mainline" and blocked branch proposals.
-- [ ] **[P0] Hardware Monotonic Counter Monitor**: (2026-06-18) Status widget for visualizing mission-root continuity and TPM-attestation provenance.
-
-### Upcoming: [2026-06-19]
-- [ ] **[P1] Visual Attention Dashboard**: (2026-06-19) Heatmap visualization of context fragments (User, System, Injected) driving agent tool-call reasoning.
-- [ ] **[P0] CFIA Signature Reviewer**: (2026-06-19) UI for reviewing and hardware-signing project-local context files.
-- [ ] **[P0] Attention-Locked Tool Trigger Visualization**: (2026-06-19) Real-time alerts and visualization when a high-risk tool call is interdicted by the ALT middleware.
-
-### Upcoming: [2026-06-20]
-- [ ] **[P0] CFIA Attestation Workspace**: (2026-06-20) Security dashboard for reviewed and TPM-signing project-local context files.
-- [ ] **[P1] Visual Attention Heatmap**: (2026-06-20) Advanced visualization of reasoning drivers for high-risk tool calls, supporting the ALT workflow.
-- [ ] **[P1] Reasoning Lineage Inspector**: (2026-06-20) Visual debugger for cryptographically signed "Chains of Reason".
-
-### Upcoming: [2026-06-21]
-- [ ] **[P0] Mission Resumption Manager**: (2026-06-21) UI for monitoring and manually triggering MRCP-mediated mission checkpoints.
-- [ ] **[P0] Mailbox Integrity Auditor**: (2026-06-21) Forensic dashboard for reviewing hardware-attested coordinate messages and MIS-blocked injection attempts.
-- [ ] **[P0] Hardware-Bound Budget Widget**: (2026-06-21) Real-time monitor for ARE v1.7 budget consumption and hardware attestation status.
-- [ ] **[P1] Logic-Grafting Alert Center**: (2026-06-21) Real-time visualization of semantic entropy spikes and blocked logic-grafting events in shared shards.
+- [ ] **[P0] Universal Policy Center**: UI for managing and visualizing reconciled CEL and Rego project policies. (Added: 2026-06-03)
+- [ ] **[P1] Source-Instruction Alert Hub**: Security dashboard for reviewing metadata-hidden prompt overrides detected by SIIG. (Added: 2026-06-03)
+- [ ] **[P0] Task-Bound Identity Monitor**: Visual tracker for hardware-attested identities scoped to specific CRDT task-IDs. (Added: 2026-06-03)
