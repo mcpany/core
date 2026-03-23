@@ -540,6 +540,23 @@ func (t *GRPCTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute initiates a streaming execution against the GRPCTool upstream, forwarding partial updates as they become available.
+//
+// Summary: Executes the request against the upstream in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The lifecycle context governing the asynchronous connection.
+//   - req: *ExecutionRequest. The detailed parameters to forward to the destination service.
+//
+// Returns:
+//   - <-chan any: A channel asynchronously emitting decoded responses or intermediate data.
+//   - error: Returns an error if the upstream rejects the streaming request.
+//
+// Errors:
+//   - Returns "streaming unsupported" if the configured service cannot handle streaming.
+//
+// Side Effects:
+//   - Establishes a long-lived asynchronous socket or thread to pull responses.
 func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -554,6 +571,25 @@ func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
+// Execute processes the incoming execution request and routes it to the underlying GRPCTool upstream, transforming the inputs and capturing the response.
+//
+// Summary: Synchronously routes the execution request to the configured GRPCTool upstream service.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context managing the request lifecycle and potential timeout.
+//   - req: *ExecutionRequest. The detailed request containing input arguments and client context.
+//
+// Returns:
+//   - any: The parsed and transformed response from the upstream service.
+//   - error: Returns an error if the request cannot be routed, the upstream fails, or the response cannot be parsed.
+//
+// Errors:
+//   - Returns "upstream timeout" if the GRPCTool service takes too long to respond.
+//   - Returns "transformation failed" if the inputs or outputs cannot be mapped to the expected format.
+//   - Returns "authentication required" if the upstream service rejects the configured credentials.
+//
+// Side Effects:
+//   - Initiates a network call or process execution targeting the configured GRPCTool upstream.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -891,6 +927,23 @@ func (t *HTTPTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute initiates a streaming execution against the HTTPTool upstream, forwarding partial updates as they become available.
+//
+// Summary: Executes the request against the upstream in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The lifecycle context governing the asynchronous connection.
+//   - req: *ExecutionRequest. The detailed parameters to forward to the destination service.
+//
+// Returns:
+//   - <-chan any: A channel asynchronously emitting decoded responses or intermediate data.
+//   - error: Returns an error if the upstream rejects the streaming request.
+//
+// Errors:
+//   - Returns "streaming unsupported" if the configured service cannot handle streaming.
+//
+// Side Effects:
+//   - Establishes a long-lived asynchronous socket or thread to pull responses.
 func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -905,6 +958,25 @@ func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
+// Execute processes the incoming execution request and routes it to the underlying HTTPTool upstream, transforming the inputs and capturing the response.
+//
+// Summary: Synchronously routes the execution request to the configured HTTPTool upstream service.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context managing the request lifecycle and potential timeout.
+//   - req: *ExecutionRequest. The detailed request containing input arguments and client context.
+//
+// Returns:
+//   - any: The parsed and transformed response from the upstream service.
+//   - error: Returns an error if the request cannot be routed, the upstream fails, or the response cannot be parsed.
+//
+// Errors:
+//   - Returns "upstream timeout" if the HTTPTool service takes too long to respond.
+//   - Returns "transformation failed" if the inputs or outputs cannot be mapped to the expected format.
+//   - Returns "authentication required" if the upstream service rejects the configured credentials.
+//
+// Side Effects:
+//   - Initiates a network call or process execution targeting the configured HTTPTool upstream.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1677,6 +1749,23 @@ func (t *MCPTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute initiates a streaming execution against the MCPTool upstream, forwarding partial updates as they become available.
+//
+// Summary: Executes the request against the upstream in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The lifecycle context governing the asynchronous connection.
+//   - req: *ExecutionRequest. The detailed parameters to forward to the destination service.
+//
+// Returns:
+//   - <-chan any: A channel asynchronously emitting decoded responses or intermediate data.
+//   - error: Returns an error if the upstream rejects the streaming request.
+//
+// Errors:
+//   - Returns "streaming unsupported" if the configured service cannot handle streaming.
+//
+// Side Effects:
+//   - Establishes a long-lived asynchronous socket or thread to pull responses.
 func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -1691,6 +1780,25 @@ func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-c
 	return ch, nil
 }
 
+// Execute processes the incoming execution request and routes it to the underlying MCPTool upstream, transforming the inputs and capturing the response.
+//
+// Summary: Synchronously routes the execution request to the configured MCPTool upstream service.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context managing the request lifecycle and potential timeout.
+//   - req: *ExecutionRequest. The detailed request containing input arguments and client context.
+//
+// Returns:
+//   - any: The parsed and transformed response from the upstream service.
+//   - error: Returns an error if the request cannot be routed, the upstream fails, or the response cannot be parsed.
+//
+// Errors:
+//   - Returns "upstream timeout" if the MCPTool service takes too long to respond.
+//   - Returns "transformation failed" if the inputs or outputs cannot be mapped to the expected format.
+//   - Returns "authentication required" if the upstream service rejects the configured credentials.
+//
+// Side Effects:
+//   - Initiates a network call or process execution targeting the configured MCPTool upstream.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -1997,6 +2105,23 @@ func (t *OpenAPITool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute initiates a streaming execution against the OpenAPITool upstream, forwarding partial updates as they become available.
+//
+// Summary: Executes the request against the upstream in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The lifecycle context governing the asynchronous connection.
+//   - req: *ExecutionRequest. The detailed parameters to forward to the destination service.
+//
+// Returns:
+//   - <-chan any: A channel asynchronously emitting decoded responses or intermediate data.
+//   - error: Returns an error if the upstream rejects the streaming request.
+//
+// Errors:
+//   - Returns "streaming unsupported" if the configured service cannot handle streaming.
+//
+// Side Effects:
+//   - Establishes a long-lived asynchronous socket or thread to pull responses.
 func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -2011,6 +2136,25 @@ func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 	return ch, nil
 }
 
+// Execute processes the incoming execution request and routes it to the underlying OpenAPITool upstream, transforming the inputs and capturing the response.
+//
+// Summary: Synchronously routes the execution request to the configured OpenAPITool upstream service.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context managing the request lifecycle and potential timeout.
+//   - req: *ExecutionRequest. The detailed request containing input arguments and client context.
+//
+// Returns:
+//   - any: The parsed and transformed response from the upstream service.
+//   - error: Returns an error if the request cannot be routed, the upstream fails, or the response cannot be parsed.
+//
+// Errors:
+//   - Returns "upstream timeout" if the OpenAPITool service takes too long to respond.
+//   - Returns "transformation failed" if the inputs or outputs cannot be mapped to the expected format.
+//   - Returns "authentication required" if the upstream service rejects the configured credentials.
+//
+// Side Effects:
+//   - Initiates a network call or process execution targeting the configured OpenAPITool upstream.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2442,6 +2586,23 @@ func (t *LocalCommandTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute initiates a streaming execution against the LocalCommandTool upstream, forwarding partial updates as they become available.
+//
+// Summary: Executes the request against the upstream in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The lifecycle context governing the asynchronous connection.
+//   - req: *ExecutionRequest. The detailed parameters to forward to the destination service.
+//
+// Returns:
+//   - <-chan any: A channel asynchronously emitting decoded responses or intermediate data.
+//   - error: Returns an error if the upstream rejects the streaming request.
+//
+// Errors:
+//   - Returns "streaming unsupported" if the configured service cannot handle streaming.
+//
+// Side Effects:
+//   - Establishes a long-lived asynchronous socket or thread to pull responses.
 func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -2456,6 +2617,25 @@ func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequ
 	return ch, nil
 }
 
+// Execute processes the incoming execution request and routes it to the underlying LocalCommandTool upstream, transforming the inputs and capturing the response.
+//
+// Summary: Synchronously routes the execution request to the configured LocalCommandTool upstream service.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context managing the request lifecycle and potential timeout.
+//   - req: *ExecutionRequest. The detailed request containing input arguments and client context.
+//
+// Returns:
+//   - any: The parsed and transformed response from the upstream service.
+//   - error: Returns an error if the request cannot be routed, the upstream fails, or the response cannot be parsed.
+//
+// Errors:
+//   - Returns "upstream timeout" if the LocalCommandTool service takes too long to respond.
+//   - Returns "transformation failed" if the inputs or outputs cannot be mapped to the expected format.
+//   - Returns "authentication required" if the upstream service rejects the configured credentials.
+//
+// Side Effects:
+//   - Initiates a network call or process execution targeting the configured LocalCommandTool upstream.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2900,6 +3080,23 @@ func (t *CommandTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute initiates a streaming execution against the CommandTool upstream, forwarding partial updates as they become available.
+//
+// Summary: Executes the request against the upstream in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The lifecycle context governing the asynchronous connection.
+//   - req: *ExecutionRequest. The detailed parameters to forward to the destination service.
+//
+// Returns:
+//   - <-chan any: A channel asynchronously emitting decoded responses or intermediate data.
+//   - error: Returns an error if the upstream rejects the streaming request.
+//
+// Errors:
+//   - Returns "streaming unsupported" if the configured service cannot handle streaming.
+//
+// Side Effects:
+//   - Establishes a long-lived asynchronous socket or thread to pull responses.
 func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -2914,6 +3111,25 @@ func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 	return ch, nil
 }
 
+// Execute processes the incoming execution request and routes it to the underlying CommandTool upstream, transforming the inputs and capturing the response.
+//
+// Summary: Synchronously routes the execution request to the configured CommandTool upstream service.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context managing the request lifecycle and potential timeout.
+//   - req: *ExecutionRequest. The detailed request containing input arguments and client context.
+//
+// Returns:
+//   - any: The parsed and transformed response from the upstream service.
+//   - error: Returns an error if the request cannot be routed, the upstream fails, or the response cannot be parsed.
+//
+// Errors:
+//   - Returns "upstream timeout" if the CommandTool service takes too long to respond.
+//   - Returns "transformation failed" if the inputs or outputs cannot be mapped to the expected format.
+//   - Returns "authentication required" if the upstream service rejects the configured credentials.
+//
+// Side Effects:
+//   - Initiates a network call or process execution targeting the configured CommandTool upstream.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError

@@ -126,6 +126,16 @@ const rpc = new GrpcWebImpl(getBaseUrl(), {
 });
 const registrationClient = new RegistrationServiceClientImpl(rpc);
 
+/**
+ * fetchWithAuth wraps the native fetch API to automatically inject the configured Bearer token and handle unified error responses.
+ *
+ * @summary Wraps the native fetch to automatically apply authentication headers.
+ * @param input The request endpoint URL or Request object.
+ * @param init The optional configuration object for the network request.
+ * @returns A promise that resolves to the standard Response object.
+ * @throws Throws an error if the network request fails or the authentication token is rejected.
+ * @sideEffects Initiates an asynchronous network call to the configured API backend.
+ */
 export const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
     // Inject Authorization header from localStorage if available

@@ -12,7 +12,9 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// SubagentStatus defines the structure for AIA heartbeat responses.
+// SubagentStatus defines the structure for AIA heartbeat responses representing the current state and tracking information for a spawned subagent.
+//
+// Summary: Encapsulates the tracking details and operational status of a subagent.
 type SubagentStatus struct {
 	ID            string  `json:"id"`
 	Name          string  `json:"name"`

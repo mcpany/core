@@ -229,6 +229,26 @@ func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<
 	return ch, nil
 }
 
+// Execute connects directly to the downstream relational database, compiles the templated query with safe arguments, and returns the result slice.
+//
+// Summary: Safely compiles and executes a templated SQL query against the downstream database.
+//
+// Parameters:
+//   - ctx: context.Context. The context limiting the execution lifetime of the query transaction.
+//   - req: *tool.ExecutionRequest. The structured arguments to be parameterized within the query text.
+//
+// Returns:
+//   - any: A normalized array of hash maps representing the relational result rows.
+//   - error: Returns an error if the SQL driver fails to compile the query or if the server terminates the connection.
+//
+// Errors:
+//   - Returns "connection refused" if the destination database cluster is not responding.
+//   - Returns "syntax error" if the parameterized statement violates database grammar.
+//   - Returns "timeout" if the query locks or takes longer than the allowed duration.
+//
+// Side Effects:
+//   - Instantiates a dedicated TCP connection to the destination database engine.
+//   - Mutates persistent downstream state if an INSERT, UPDATE, or DELETE query is passed.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

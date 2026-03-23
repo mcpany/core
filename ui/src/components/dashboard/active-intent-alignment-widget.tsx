@@ -20,6 +20,14 @@ interface SubagentStatus {
 
 
 
+/**
+ * ActiveIntentAlignmentWidget displays a metric chart indicating how closely the swarm's actions align with the root user intent.
+ *
+ * @summary Displays a chart tracking the current intent alignment score.
+ * @returns The React component rendering the chart.
+ * @throws None.
+ * @sideEffects Fetches historical alignment data from the backend.
+ */
 export function ActiveIntentAlignmentWidget() {
     const [agents, setAgents] = useState<SubagentStatus[]>([]);
 

@@ -50,6 +50,21 @@ type CFIAMiddleware struct {
 //
 // Side Effects:
 //   - None.
+// NewCFIAMiddleware creates a new CFIAMiddleware instance parameterized by the provided configuration.
+//
+// Summary: Creates a new CFIAMiddleware instance parameterized by the provided configuration.
+//
+// Parameters:
+//   - config: CFIAConfig. The runtime configuration defining strict integrity boundaries.
+//
+// Returns:
+//   - *CFIAMiddleware: The configured integrity assertion middleware object.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewCFIAMiddleware(config CFIAConfig) *CFIAMiddleware {
 	return &CFIAMiddleware{
 		config: config,
@@ -74,6 +89,25 @@ func NewCFIAMiddleware(config CFIAConfig) *CFIAMiddleware {
 // Side Effects:
 //   - Reads the target file from the filesystem.
 //   - Logs validation outcomes (success or failure).
+// Execute enforces context-file integrity before proceeding to the next handler.
+//
+// Summary: Intercepts an execution request to assert invariants before proceeding.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context carrying cross-cutting concerns and cancellation signals.
+//   - req: *tool.ExecutionRequest. The tool payload to be evaluated and subsequently executed.
+//   - next: tool.ExecutionFunc. The subsequent handler in the middleware chain.
+//
+// Returns:
+//   - any: The resulting object emitted by the downstream callable chain.
+//   - error: Returns an error if the integrity assertion fails, preventing downstream execution.
+//
+// Errors:
+//   - Returns "invariant violation" if the context indicates a compromised control flow.
+//   - Returns any errors surfaced by the downstream next.Call invocation.
+//
+// Side Effects:
+//   - Triggers the execution of the next configured middleware or target tool.
 func (m *CFIAMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if !m.config.Enabled {
 		return next(ctx, req)

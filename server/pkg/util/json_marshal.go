@@ -10,6 +10,21 @@ import (
 )
 
 var (
+	// FastJSON implements a specialized parser configuration overriding standard library behavior to optimize encoding speeds while preserving HTML escaping.
+	//
+	// Summary: A globally accessible specialized JSON parser configuration optimizing encoding speed.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - jsoniter.Config: The configured jsoniter options.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	FastJSON = jsoniter.Config{
 		EscapeHTML:             true,
 		SortMapKeys:            false,

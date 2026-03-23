@@ -144,6 +144,23 @@ func (t *WebsocketTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute establishes a continuous streaming connection, passing parsed responses or heartbeats back to the agent client over a channel.
+//
+// Summary: Initiates a progressive streaming transaction with the upstream target.
+//
+// Parameters:
+//   - ctx: context.Context. The lifecycle context specifying execution deadline and timeouts.
+//   - req: *ExecutionRequest. The structural payload sent out to the target endpoint.
+//
+// Returns:
+//   - <-chan any: A read-only event channel where data chunks are incrementally emitted.
+//   - error: Returns an error immediately if the initial handshake is declined.
+//
+// Errors:
+//   - Returns "protocol mismatch" if the destination server actively drops the connection stream.
+//
+// Side Effects:
+//   - Spawns a background listener loop to capture asynchronous frames.
 func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -158,6 +175,24 @@ func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest
 	return ch, nil
 }
 
+// Execute passes a serialized execution payload through an active, long-lived WebSocket connection to a downstream listener, halting until a matching correlation ID responds.
+//
+// Summary: Pushes a serialized payload across a WebSocket pipe and waits for the correlated reply block.
+//
+// Parameters:
+//   - ctx: context.Context. The parent context dictating the connection polling cycle and response deadline.
+//   - req: *ExecutionRequest. The structured dictionary serialized and streamed across the socket.
+//
+// Returns:
+//   - any: The deserialized message packet emitted by the listener on the opposing socket end.
+//   - error: Returns an error if the frame cannot be encoded or the active connection abruptly terminates.
+//
+// Errors:
+//   - Returns "broken pipe" if the TCP link hosting the WebSocket frames collapses.
+//   - Returns "unrecognized response" if the deserialized packet lacks a correct correlation identifier.
+//
+// Side Effects:
+//   - Writes one or more framing bytes directly to the underlying OS networking interface.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

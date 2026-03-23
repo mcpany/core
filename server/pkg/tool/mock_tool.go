@@ -62,6 +62,20 @@ func (m *MockTool) IsStreaming() bool {
 	return false
 }
 
+// StreamExecute intercepts a mock request to emulate the channel-driven asynchronous flow typically used by streaming tools, injecting predefined events into a buffer.
+//
+// Summary: Emulates an asynchronous streaming tool by dispatching synthetic mock results to a channel over time.
+//
+// Parameters:
+//   - ctx: context.Context. The parent context enforcing execution deadlines and testing scope cancellation.
+//   - req: *ExecutionRequest. The synthetic parameters dispatched to the mocked method pipeline.
+//
+// Returns:
+//   - <-chan any: A read-only testing channel where hardcoded sequences of responses are pushed.
+//   - error: Returns the predetermined mock error immediately to simulate an abrupt failure.
+//
+// Side Effects:
+//   - Fires a goroutine filling the mock channel independent of caller execution.
 func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -76,6 +90,23 @@ func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
+// Execute triggers the mock testing pipeline, returning the explicitly configured return payload and appending the invocation to an internal tracker array.
+//
+// Summary: Simulates a synchronous tool invocation to validate client integration.
+//
+// Parameters:
+//   - ctx: context.Context. The context limiting the simulation lifespan and enforcing test state bounds.
+//   - req: *ExecutionRequest. The captured testing payload simulating arbitrary runtime inputs.
+//
+// Returns:
+//   - any: The deterministic object or map explicitly provided during testing setup.
+//   - error: Returns a mock error to test downstream exception handling mechanisms.
+//
+// Errors:
+//   - Returns "mock failure" if the mock builder configured an intentional exception.
+//
+// Side Effects:
+//   - Mutates the internal call history array to record the execution timeline for test assertions.
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)

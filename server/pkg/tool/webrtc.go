@@ -224,6 +224,23 @@ func (t *WebrtcTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute establishes a continuous streaming connection, passing parsed responses or heartbeats back to the agent client over a channel.
+//
+// Summary: Initiates a progressive streaming transaction with the upstream target.
+//
+// Parameters:
+//   - ctx: context.Context. The lifecycle context specifying execution deadline and timeouts.
+//   - req: *ExecutionRequest. The structural payload sent out to the target endpoint.
+//
+// Returns:
+//   - <-chan any: A read-only event channel where data chunks are incrementally emitted.
+//   - error: Returns an error immediately if the initial handshake is declined.
+//
+// Errors:
+//   - Returns "protocol mismatch" if the destination server actively drops the connection stream.
+//
+// Side Effects:
+//   - Spawns a background listener loop to capture asynchronous frames.
 func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -238,6 +255,24 @@ func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (
 	return ch, nil
 }
 
+// Execute routes the formatted request envelope over a negotiated WebRTC data channel, waiting for a correlated message callback to resolve the sequence.
+//
+// Summary: Routes an RPC request via a WebRTC data channel and waits for a paired confirmation.
+//
+// Parameters:
+//   - ctx: context.Context. The context bounding the round-trip WebRTC signal latency.
+//   - req: *ExecutionRequest. The serialized command encoded and delivered across the channel.
+//
+// Returns:
+//   - any: The decoded arbitrary data payload transmitted back across the active data stream.
+//   - error: Returns an error if the peer connection breaks or the sequence drops during transit.
+//
+// Errors:
+//   - Returns "channel closed" if the WebRTC peer abruptly halts the connection loop.
+//   - Returns "timeout" if the confirmation packet never arrives across the network interface.
+//
+// Side Effects:
+//   - Pushes an outbound binary message through the underlying WebRTC library stack.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized

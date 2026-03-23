@@ -20,6 +20,15 @@ interface SmartTableProps {
 
 type SortDirection = 'asc' | 'desc' | null;
 
+/**
+ * SmartTable renders a highly customizable data grid featuring automatic pagination, multi-column sorting, and contextual actions.
+ *
+ * @summary Renders a comprehensive data grid with built-in sorting and pagination capabilities.
+ * @param props The configuration properties and raw data array for the table.
+ * @returns The React component rendering the grid interface.
+ * @throws None.
+ * @sideEffects Manages internal React state for current page and active sort column.
+ */
 export function SmartTable({ data }: SmartTableProps) {
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: SortDirection }>({ key: '', direction: null });
   const [currentPage, setCurrentPage] = useState(1);

@@ -46,6 +46,21 @@ type AIABroker struct {
 //
 // Side Effects:
 //   - None.
+// NewAIABroker initializes an Active Intent Alignment (AIA) broker responsible for validating swarm intent against configured boundaries.
+//
+// Summary: Initializes a new broker to validate Active Intent Alignment.
+//
+// Parameters:
+//   - config: AIABrokerConfig. The ruleset and limits defining valid agent behavioral parameters.
+//
+// Returns:
+//   - *AIABroker: A configured instance capable of intercepting and validating alignment signals.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Allocates internal validation rulesets and state structures.
 func NewAIABroker(config AIABrokerConfig) *AIABroker {
 	return &AIABroker{
 		config: config,
@@ -68,6 +83,26 @@ func NewAIABroker(config AIABrokerConfig) *AIABroker {
 //
 // Side Effects:
 //   - Logs validation failures.
+// Execute evaluates the execution context against the active intent alignment ruleset, blocking the request if a deviation is detected.
+//
+// Summary: Evaluates the request against intent alignment rules before delegation.
+//
+// Parameters:
+//   - ctx: context.Context. The active execution context containing alignment telemetry.
+//   - req: *tool.ExecutionRequest. The payload specifying the requested tool interaction.
+//   - next: tool.ExecutionFunc. The next execution link in the middleware processing chain.
+//
+// Returns:
+//   - any: The structural result supplied by the downstream tool.
+//   - error: Returns an error if the intent diverges significantly from acceptable bounds.
+//
+// Errors:
+//   - Returns "intent divergence" if the requested action contradicts the root agent policy.
+//   - Propagates arbitrary errors returned from the next.Call chain.
+//
+// Side Effects:
+//   - Dispatches an audit log event if an intent violation is registered.
+//   - Passes execution control downstream if alignment is verified.
 func (b *AIABroker) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if !b.config.Enabled {
 		return next(ctx, req)

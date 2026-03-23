@@ -29,6 +29,11 @@ export interface WizardWebhook {
     };
 }
 
+/**
+ * WizardState defines the schema for the configuration wizard's progressive installation flow.
+ *
+ * @summary Defines the internal state tracking for the multi-step installation wizard.
+ */
 export interface WizardState {
     currentStep: WizardStep;
     config: Partial<UpstreamServiceConfig>;

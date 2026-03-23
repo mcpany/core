@@ -5,7 +5,7 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/mcpany/core/ci.yml?branch=main)](https://github.com/mcpany/core/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mcpany/core)](https://goreportcard.com/report/github.com/mcpany/core)
 
-## The Ultimate Developer Entry Point
+## Elevator Pitch
 
 Welcome to **MCP Any**, the definitive Model Context Protocol (MCP) universal adapter designed to streamline and democratize API integration for AI agents.
 
@@ -160,7 +160,7 @@ To work on the frontend dashboard (Next.js):
 ```bash
 cd ui
 npm install
-npm run dev
+npm run dev &
 ```
 
 ## Configuration

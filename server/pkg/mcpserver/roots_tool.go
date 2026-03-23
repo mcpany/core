@@ -148,14 +148,51 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 // Side Effects:
 //   - None.
 
+// IsStreaming evaluates if the legacy RootsTool natively supplies incremental updates to the requesting agent.
+//
+// Summary: Evaluates streaming capabilities for the legacy roots tool implementation.
+//
+// Returns:
+//   - bool: A static boolean representing supported streaming status.
 func (t *RootsTool) IsStreaming() bool {
 	return false
 }
 
+// StreamExecute is an unsupported stub for RootsTool.
+//
+// Summary: Returns nil channels as streaming is not supported.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context controlling the channel lifecycle.
+//   - req: *tool.ExecutionRequest. The payload specifying specific lookup instructions.
+//
+// Returns:
+//   - <-chan any: nil.
+//   - error: nil.
+//
+// Side Effects:
+//   - None.
 func (t *RootsTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	return nil, nil
 }
 
+// Execute prompts the bound client session to immediately evaluate and return its entire exposed directory tree in one atomic block.
+//
+// Summary: Prompts the active client session to return its full accessible directory tree.
+//
+// Parameters:
+//   - ctx: context.Context. The parent context enforcing a timeout on the evaluation.
+//   - _: *tool.ExecutionRequest. Unused legacy parameter for the underlying request.
+//
+// Returns:
+//   - any: The atomic structured response detailing the workspace folders.
+//   - error: Returns an error if the execution stalls or client returns bad data.
+//
+// Errors:
+//   - Returns "session invalid" if the context fails to identify a connected peer.
+//
+// Side Effects:
+//   - Dispatches a synchronous command through the managed client interface.
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {

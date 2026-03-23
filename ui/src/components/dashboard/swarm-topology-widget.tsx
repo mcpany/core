@@ -31,6 +31,14 @@ interface SwarmTopologyData {
     anomalies: string[];
 }
 
+/**
+ * SwarmTopologyWidget visualizes the real-time node connections and communication paths of the agent swarm.
+ *
+ * @summary Visualizes the real-time agent swarm network topology.
+ * @returns The React component rendering the interactive graph.
+ * @throws None.
+ * @sideEffects Subscribes to websocket events for real-time state updates.
+ */
 export function SwarmTopologyWidget() {
     const [data, setData] = useState<SwarmTopologyData | null>(null);
     const [loading, setLoading] = useState(true);
