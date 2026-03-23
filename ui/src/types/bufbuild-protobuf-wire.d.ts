@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare module "@bufbuild/protobuf/wire" {
   export class BinaryReader {
     constructor(bytes: Uint8Array);
