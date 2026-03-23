@@ -77,7 +77,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-05-23]
+## Strategic Evolution: [2026-05-23] (Part 2)
 
 ### Focus: Local Zero-Trust (LOWA) & Peer-to-Peer Agent Orchestration
 
@@ -751,9 +751,9 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-03-14]
+## Strategic Evolution: [2026-03-14] (Part 2)
 
-### Focus: Browser-Origin Validation & Intent-Preserving Context
+### Focus: Browser-Origin Validation & Intent-Preserving Context (Part 2)
 
 **Context**: The OpenClaw security crisis (CVE-2026-25253) reveals that "Local Trust" is a flawed assumption when browser-based attacks can bridge the gap. Simultaneously, the rise of "Context Ghosting" in swarms emphasizes that context compression must be intent-aware to maintain mission stability.
 **Strategic Pivot**:
@@ -796,7 +796,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-03-17]
+## Strategic Evolution: [2026-03-17] (Part 2)
 
 ### Focus: Swarm Messaging Integrity & Verifiable Reward Infrastructure
 
@@ -826,7 +826,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-03-17]
+## Strategic Evolution: [2026-03-17] (Part 3)
 
 ### Focus: Local Zero-Trust & Behavioral Skill Attestation
 
