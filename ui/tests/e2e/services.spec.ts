@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe.skip('Services Feature', () => {
+test.describe('Services Feature', () => {
   const services: any[] = [
     {
         name: "Payment Gateway",
@@ -53,14 +53,50 @@ test.describe.skip('Services Feature', () => {
     // page.on('request', request => console.log('>>', request.method(), request.url()));
 
     // Mock registration API with dynamic state
+    await page.route(url => url.pathname.endsWith('/api/v1/services'), async route => {
+        const method = route.request().method();
+        if (method === 'GET') {
+            await route.fulfill({ json: { services } });
+        } else if (method === 'POST') {
+            const newSvc = route.request().postDataJSON();
+            const created = { ...newSvc, status: 'up', enabled: true };
+            services.push(created);
+            await route.fulfill({ json: created });
+        } else {
+            await route.continue();
+        }
+    });
 
+    await page.route(url => /\/api\/v1\/services\/[^/]+$/.test(url.pathname), async route => {
+        const serviceName = extractLastPathSegment(route.request().url());
+        const service = services.find((candidate) => candidate.name === serviceName);
+        if (!service) {
+            await route.fulfill({ status: 404, json: { error: 'service not found' } });
+            return;
+        }
 
+        await route.fulfill({ json: { service } });
+    });
 
+    await page.route(url => url.pathname.endsWith('/status'), async route => {
+        const serviceName = extractServiceNameFromStatusUrl(route.request().url());
+        const service = services.find((candidate) => candidate.name === serviceName);
+
+        await route.fulfill({
+            json: {
+                tools: service?.tools ?? [],
+            },
+        });
+    });
+
+    await page.route(url => url.pathname.endsWith('/api/v1/dashboard/traffic'), async route => {
+        await route.fulfill({ json: [] });
+    });
 
     await page.goto('/upstream-services');
   });
 
-  test.skip('should list services, allow toggle, and manage services', async ({ page }) => {
+  test('should list services, allow toggle, and manage services', async ({ page }) => {
     await expect(page.locator('h1')).toContainText('Services');
 
     // Verify services are listed
@@ -128,7 +164,7 @@ test.describe.skip('Services Feature', () => {
     await page.getByRole('button', { name: 'Cancel' }).click();
   });
 
-  test.skip('should render schema visualizer in service tools dialog', async ({ page }) => {
+  test('should render schema visualizer in service tools dialog', async ({ page }) => {
     await page.getByRole('link', { name: 'Payment Gateway' }).click();
     await expect(page.getByRole('heading', { name: 'Payment Gateway' })).toBeVisible();
 
@@ -151,7 +187,7 @@ test.describe.skip('Services Feature', () => {
     await expect(typeBadges.first()).toBeVisible();
   });
 
-  test.skip('should navigate to logs from service list', async ({ page }) => {
+  test('should navigate to logs from service list', async ({ page }) => {
     const serviceName = 'Payment Gateway';
     const row = page.locator('tr').filter({ hasText: serviceName });
 

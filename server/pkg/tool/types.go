@@ -518,7 +518,6 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Makes a gRPC call to the upstream service.
 //   - Updates metrics (latency, success/error counts).
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -869,7 +868,6 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Makes an HTTP request to the upstream service.
 //   - Updates metrics.
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -1655,7 +1653,6 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 // Side Effects:
 //   - Makes an MCP call to the upstream service.
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -1975,7 +1972,6 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -2420,7 +2416,6 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Executes a subprocess on the local system.
 //   - Consumes system resources (CPU, memory).
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -2878,7 +2873,6 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Executes a subprocess (potentially inside a container).
 //   - Consumes system resources.
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.

@@ -137,18 +137,6 @@
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
 
-#### Upcoming (2026-06-23 Evolution)
-*   **[P0] Recursive Mission-Root Attestation (RMRA)**: Mandatory hardware-bound re-attestation of sub-process lineage for headless handoffs. (Added: 2026-06-23)
-*   **[P0] Attention-Density Guard (ADG) v2**: Integration of hardware-attested Attention Masks to prioritize mission-critical fragments. (Added: 2026-06-23)
-*   **[P0] Active Intent Sanitizer (AIS)**: Real-time semantic deconstruction of coordination messages crossing multi-channel boundaries. (Added: 2026-06-23)
-*   **[P0] SMM v2 (Stylometric Anchoring)**: Higher-dimensional behavioral anchoring of reasoning traces against the mission-root manifest. (Added: 2026-06-23)
-
-#### Upcoming (2026-06-24 Evolution)
-*   **[P0] Atomic Mission-Resumption (AMR) Gateway**: Hardware-locked resumption of agent states across cold-boots via BSH snapshots. (Added: 2026-06-24)
-*   **[P0] Stylometric Mesh Sovereignty (SMS) Provider**: Behavioral security layer detecting mimicry-based hijacking via real-time stylometry. (Added: 2026-06-24)
-*   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
-*   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
-
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
@@ -788,15 +776,3 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Context-File Integrity Attestation (CFIA)**: (P0) Core security service requiring hardware-attested hash signatures for all project-local natural language context files (e.g., `GEMINI.md`).
 - **Attention-Locked Tooling (ALT)**: (P0) Security middleware that cryptographically locks high-risk tool calls to user-verified reasoning anchors.
 - **Semantic Lineage Provider**: (P1) Advanced extension for the SRM Provider that implements cryptographically signed "Chains of Reason".
-
-### Upcoming: [2026-06-21]
-- **Mission-Root Continuity Provider (MRCP)**: (P0) Resumption hub facilitating hardware-locked reasoning-path persistence across teammate rotations.
-- **Mailbox Injection Shield (MIS)**: (P0) Advanced extension for Mailbox Integrity Middleware providing hardware-attested validation of task-claiming metadata.
-- **Hardware-Attested Budget Enforcement**: (P0) Integration of Gemini CLI ARE v1.7 headers for immutable, hardware-bound reasoning budgets.
-- **Resident Logic-Grafting Interceptor**: (P1) Real-time semantic entropy monitor for horizontal teammate shards to detect unauthorized branch grafting.
-
-### Upcoming: [2026-06-22]
-- **Channel-Bound Session Isolation (CBSI)**: (P0) Security middleware mandating platform-bound cryptographic sovereignty between multi-channel sessions (WhatsApp, Slack, Discord).
-- **Attention-Density Guard (ADG)**: (P0) Cognitive security layer utilizing hardware-bound headers to "pin" mission-critical fragments at the LLM attention layer.
-- **Headless Handoff Continuity (HHC)**: (P0) Orchestration bridge facilitating signed intent transfers for process-based subagent spawning.
-- **Multi-Modal Attention Sanitizer**: (P1) Advanced security extension for the MIB to neutralize attention-eviction probes in non-textual traces.
