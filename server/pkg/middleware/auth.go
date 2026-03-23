@@ -41,14 +41,6 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 					if before, _, found := strings.Cut(r.Params.Name, "."); found {
 						serviceID = before
 					}
-				} else if m, ok := req.(map[string]interface{}); ok {
-					if params, ok := m["params"].(map[string]interface{}); ok {
-						if name, ok := params["name"].(string); ok {
-							if before, _, found := strings.Cut(name, "."); found {
-								serviceID = before
-							}
-						}
-					}
 				}
 			}
 
@@ -59,14 +51,6 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 					// Optimization: Use strings.Cut to avoid allocating a slice.
 					if before, _, found := strings.Cut(r.Params.Name, "."); found {
 						serviceID = before
-					}
-				} else if m, ok := req.(map[string]interface{}); ok {
-					if params, ok := m["params"].(map[string]interface{}); ok {
-						if name, ok := params["name"].(string); ok {
-							if before, _, found := strings.Cut(name, "."); found {
-								serviceID = before
-							}
-						}
 					}
 				}
 			}
