@@ -647,6 +647,6 @@ These features represent the next logical steps for the product, focusing on Ent
 
 #### Upcoming (2026-05-30 Evolution)
 
-* [P0] Intent Hierarchy Enforcer (IHE)
-* [P0] Kernel-Namespace (KNS) Command Runner
-* [P0] Mission Anchor Host (MAH)
+*   [P0] Intent Hierarchy Enforcer (IHE)
+*   [P0] Kernel-Namespace (KNS) Command Runner
+*   [P0] Mission Anchor Host (MAH)

@@ -487,5 +487,5 @@
 
 #### Upcoming (2026-05-30 Evolution)
 
-- [ ] [P0] Mission Anchor Visualization
-- [ ] [P0] IEC/KNS Health Dashboard
+-   [ ] [P0] Mission Anchor Visualization
+-   [ ] [P0] IEC/KNS Health Dashboard
