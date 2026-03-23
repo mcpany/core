@@ -820,3 +820,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Shadow-Handshake Interceptor (SHI)**: Transport-level monitoring to interdict unauthorized agency-initiation signals. (Added: 2026-06-26)
 *   **[P0] Differential Reasoning Validator (DRV)**: Framework-aware sanity checks for state fragments to prevent cross-framework poisoning. (Added: 2026-06-26)
 *   **[P0] Monotonic Handshake Lineage (MHL)**: Hardware-bound lineage tokens for all handshake and session-initiation events. (Added: 2026-06-26)
+
+#### Upcoming (2026-06-28 Evolution)
+*   **[P0] Multi-Signature Skill Attestation (MSSA)**: Mandatory auditor signatures for dynamic tool grafting and high-risk skill installation. (Added: 2026-06-28)
+*   **[P0] CRDT-Native Mailbox Hub**: Implementation of Conflict-Free Replicated Data Types for lock-free horizontal teammate coordination. (Added: 2026-06-28)
+*   **[P1] Causal Intent Chaining**: Identity extension ensuring causal consistency in CRDT-based sharded mailboxes. (Added: 2026-06-28)
+*   **[P1] ZKCP Entropy Analyzer**: Security middleware to detect brute-force schema shadowing attempts in the ZKD proxy. (Added: 2026-06-28)

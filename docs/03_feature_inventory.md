@@ -1501,3 +1501,15 @@
 ### Priority Shifts
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Elevated with mandatory **CFSA** integration to counter mimicry-based hijacking.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SHI** and **MHL** integration for all agency-initiation signals.
+
+## Evolution: [2026-06-28] Updates
+
+### Proposed Additions
+- **Multi-Signature Skill Attestation (MSSA)**: (P0) Authoritative security service requiring cryptographically bound approval tokens from framework and third-party auditors for dynamic tool grafting.
+- **CRDT-Native Mailbox Sharding**: (P0) High-performance coordination architecture utilizing Conflict-Free Replicated Data Types to eliminate teammate mailbox locks.
+- **Causal Intent Chaining Provider**: (P1) Identity extension that cryptographically links task-claiming events to their causal predecessors.
+- **ZKCP Entropy Analyzer**: (P1) Security middleware that monitors discovery-phase proving events for metadata brute-force attempts.
+
+### Priority Shifts
+- **Zero-Knowledge Discovery (ZKD) Proxy**: (Re-affirmed P0) Elevated with the requirement for mandatory **ZKCP-bound auditing** to counter brute-force shadowing.
+- **Lock-Free Sharded Mailbox Hub**: (Evolved to CRDT-Native Mailbox Sharding) Now designated as the primary solution for 10+ teammate horizontal scaling.

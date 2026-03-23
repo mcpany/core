@@ -55,3 +55,11 @@ The Zero-Knowledge Discovery (ZKD) Proxy evolves the discovery process by mandat
 
 ## 7. Evolutionary Changelog
 * **2026-06-27:** Initial Document Creation.
+
+### Update: 2026-06-28 - Neutralizing Schema Shadowing via Entropy Auditing
+**Context:** Today's market sync revealed a new exploit pattern (CVE-2026-101001) where subagents attempt to "brute-force" masked schemas by proposing high-frequency task cards with metadata variations.
+**Architecture Adjustment:**
+* Introducing the **ZKCP Entropy Analyzer** in Section 4.
+* Mandating **ZKCP-bound auditing** for all discovery-phase proving events.
+* Throttling capability-proving requests that exhibit anomalous metadata entropy.
+**Security Impact:** Prevents malicious mapping of masked tool schemas through discovery-phase metadata analysis.
