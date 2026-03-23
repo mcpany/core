@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { JsonView } from "@/components/ui/json-view";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ export function TraceTableViewer({ data }: TraceTableViewerProps) {
         items = data.filter(item => typeof item === "object" && item !== null);
     } else {
         // Sometimes responses wrap the list in a key like 'tools' or 'resources'
-        for (const [key, value] of Object.entries(data as Record<string, unknown>)) {
+        for (const value of Object.values(data as Record<string, unknown>)) {
             if (Array.isArray(value)) {
                 const potentialItems = value.filter(item => typeof item === "object" && item !== null);
                 if (potentialItems.length > 0) {
@@ -70,7 +70,7 @@ export function TraceTableViewer({ data }: TraceTableViewerProps) {
                     </TableHeader>
                     <TableBody>
                         {items.map((row, idx) => (
-                            <TableRow key={idx} className="hover:bg-muted/50">
+                            <TableRow key={row.name ? String(row.name) : (row.id ? String(row.id) : `row-${idx}`)} className="hover:bg-muted/50">
                                 {columns.map(col => {
                                     const val = row[col];
                                     let displayVal = val;
