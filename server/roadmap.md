@@ -151,6 +151,12 @@
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
 *   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
+#### Upcoming (2026-06-27 Evolution)
+*   **[P0] Zero-Knowledge Discovery (ZKD) Proxy**: Authoritative discovery gateway implementing ZK-Capability Proofs for pre-flight masking. (Added: 2026-06-27)
+*   **[P0] CRDT-Native Mailbox Sharding**: Transition to full CRDT-native mailbox shards for lock-free horizontal scaling. (Added: 2026-06-27)
+*   **[P0] Multi-Signature Skill Attestation (MSSA)**: Mandatory auditor attestation for dynamic tool grafting and high-risk skill installation. (Added: 2026-06-27)
+*   **[P1] Reasoning Path Integrity (RPI) Validator**: Support for ARE v1.8 hardware-signed reasoning fragments and semantic hash-chaining. (Added: 2026-06-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
@@ -816,4 +822,7 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Monotonic Handshake Lineage (MHL)**: Hardware-bound lineage tokens for all handshake and session-initiation events. (Added: 2026-06-26)
 
 #### Upcoming (2026-03-21 Evolution)
-* [P0] LOWA HMAC challenge-response.
+*   **[P0] LOWA HMAC Challenge-Response**: Implementation of cryptographically bound handshakes for local WebSocket listeners to neutralize CSWSH. (Added: 2026-03-21)
+*   **[P0] T2T Mailbox Sharding Middleware**: Performance optimization for horizontal teammate meshes, supporting 5+ concurrent agents. (Added: 2026-03-21)
+*   **[P0] Full-Mesh Discovery Auth (v2)**: Advanced "Auth-before-Discovery" protocol requiring mission-root attestation before revealing capabilities. (Added: 2026-03-21)
+*   **[P1] A2A Capability Masking**: Implementation of schema-masking for agent capability cards during the initial handshake. (Added: 2026-03-21)

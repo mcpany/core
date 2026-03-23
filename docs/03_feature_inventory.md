@@ -1478,6 +1478,18 @@
 
 ---
 
+## Evolution: [2026-06-27] Updates
+
+### Proposed Additions
+- **Zero-Knowledge Discovery (ZKD) Proxy**: (P0) Authoritative discovery gateway implementing cryptographic capability masking until a mission-bound handshake is completed.
+- **CRDT-Native Mailbox Sharding**: (P0) High-performance coordination architecture utilizing Conflict-Free Replicated Data Types to eliminate teammate mailbox locks.
+- **Multi-Signature Skill Attestation (MSSA)**: (P0) Security middleware requiring cryptographically bound approval tokens from framework and third-party auditors for dynamic tool grafting.
+- **Reasoning Path Integrity (RPI) Validator**: (P1) Security extension for the SRM Provider that validates hardware-signed internal reasoning steps (ARE v1.8 compliance).
+
+### Priority Shifts
+- **Zero-Knowledge Discovery (ZKD) Proxy**: (Promoted to P0) Critical for satisfying new Gemini CLI v0.43.0 discovery requirements and neutralizing shadow mapping.
+- **CRDT-Native Mailbox Shards**: (Promoted to P0) Designated as the primary solution for the 2s+ coordination stall in high-density horizontal Agent Teams.
+
 ## Evolution: [2026-06-26] Updates
 
 ### Proposed Additions
@@ -1491,4 +1503,13 @@
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SHI** and **MHL** integration for all agency-initiation signals.
 
 ## Evolution: [2026-03-21] Updates
-Proposed: LOWA Pairing (P0), T2T Sharding (P0).
+
+### Proposed Additions
+- **LOWA Challenge-Response Pairing**: (P0) Security extension for the LOWA Gateway using HMAC-based challenge-response pairings to neutralize local replay attacks and cross-site brute-force chains.
+- **T2T Mailbox Sharding Middleware**: (P0) Performance extension for the T2T Encryption Bridge designed to handle horizontal scaling of high-density agent teams (5+ concurrent teammates).
+- **A2A Capability Masking Provider**: (P1) Advanced discovery service that masks specific tool schemas behind generic "Capability Roles" until a hardware-attested session is established.
+- **Full-Mesh Discovery Auth (v2)**: (P0) Upgraded discovery protocol mandating hardware-bound "Proof of Intent" before any Agent Card discovery.
+
+### Priority Shifts
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now designated as a mandatory prerequisite for all "Agent Team" deployments to prevent lateral movement by compromised teammates.
+- **LOWA Gateway**: (Re-affirmed P0) Elevated to "Blocking Prerequisite" for all local loopback listeners following the OpenClaw v2026.3.11 disclosure.
