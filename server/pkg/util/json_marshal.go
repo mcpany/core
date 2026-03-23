@@ -10,6 +10,9 @@ import (
 )
 
 var (
+	// FastJSON is a pre-configured jsoniter instance for fast JSON encoding.
+	//
+	// Summary: FastJSON is a pre-configured jsoniter instance for fast JSON encoding.
 	FastJSON = jsoniter.Config{
 		EscapeHTML:             true,
 		SortMapKeys:            false,

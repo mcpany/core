@@ -140,6 +140,22 @@ type playwrightLocator interface {
 // defaultPlaywrightRunner uses actual playwright-go
 type defaultPlaywrightRunner struct{}
 
+// Run starts the Playwright runner.
+//
+// Summary: Run starts the Playwright runner.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - playwrightImpl: Playwright runner interface.
+//   - error: Error if failed.
+//
+// Errors:
+//   - Returns error if any.
+//
+// Side Effects:
+//   - None.
 func (d *defaultPlaywrightRunner) Run() (playwrightImpl, error) {
 	pw, err := playwright.Run()
 	if err != nil {
@@ -150,13 +166,60 @@ func (d *defaultPlaywrightRunner) Run() (playwrightImpl, error) {
 
 type realPlaywright struct{ pw *playwright.Playwright }
 
+// Stop stops the playwright execution.
+//
+// Summary: Stop stops the playwright execution.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error: An error if it fails to stop.
+//
+// Errors:
+//   - Returns error if any.
+//
+// Side Effects:
+//   - None.
 func (r *realPlaywright) Stop() error { return r.pw.Stop() }
+
+// Chromium returns the Chromium browser type.
+//
+// Summary: Chromium returns the Chromium browser type.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - playwrightBrowserType: The Chromium browser type.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *realPlaywright) Chromium() playwrightBrowserType {
 	return &realBrowserType{r.pw.Chromium}
 }
 
 type realBrowserType struct{ bt playwright.BrowserType }
 
+// Launch launches the browser.
+//
+// Summary: Launch launches the browser.
+//
+// Parameters:
+//   - options: ...playwright.BrowserTypeLaunchOptions. Options.
+//
+// Returns:
+//   - playwrightBrowser: Playwright browser.
+//   - error: Error if it fails.
+//
+// Errors:
+//   - Returns error if any.
+//
+// Side Effects:
+//   - None.
 func (r *realBrowserType) Launch(options ...playwright.BrowserTypeLaunchOptions) (playwrightBrowser, error) {
 	b, err := r.bt.Launch(options...)
 	if err != nil {
@@ -167,7 +230,39 @@ func (r *realBrowserType) Launch(options ...playwright.BrowserTypeLaunchOptions)
 
 type realBrowser struct{ b playwright.Browser }
 
+// Close closes the browser.
+//
+// Summary: Close closes the browser.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error: Error if it fails.
+//
+// Errors:
+//   - Returns error if any.
+//
+// Side Effects:
+//   - None.
 func (r *realBrowser) Close() error { return r.b.Close() }
+
+// NewPage creates a new page in the browser.
+//
+// Summary: NewPage creates a new page in the browser.
+//
+// Parameters:
+//   - options: ...playwright.BrowserNewPageOptions. Options.
+//
+// Returns:
+//   - playwrightPage: The new page.
+//   - error: Error if it fails.
+//
+// Errors:
+//   - Returns error if any.
+//
+// Side Effects:
+//   - None.
 func (r *realBrowser) NewPage(options ...playwright.BrowserNewPageOptions) (playwrightPage, error) {
 	p, err := r.b.NewPage(options...)
 	if err != nil {
@@ -178,15 +273,65 @@ func (r *realBrowser) NewPage(options ...playwright.BrowserNewPageOptions) (play
 
 type realPage struct{ p playwright.Page }
 
+// Goto navigates to a URL.
+//
+// Summary: Goto navigates to a URL.
+//
+// Parameters:
+//   - url: string. URL.
+//   - options: ...playwright.PageGotoOptions. Options.
+//
+// Returns:
+//   - playwright.Response: The response.
+//   - error: Error if it fails.
+//
+// Errors:
+//   - Returns error if any.
+//
+// Side Effects:
+//   - None.
 func (r *realPage) Goto(url string, options ...playwright.PageGotoOptions) (playwright.Response, error) {
 	return r.p.Goto(url, options...)
 }
+
+// Locator finds an element by selector.
+//
+// Summary: Locator finds an element by selector.
+//
+// Parameters:
+//   - selector: string. The selector to find.
+//   - options: ...playwright.PageLocatorOptions. Options.
+//
+// Returns:
+//   - playwrightLocator: The locator for the element.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *realPage) Locator(selector string, options ...playwright.PageLocatorOptions) playwrightLocator {
 	return &realLocator{r.p.Locator(selector, options...)}
 }
 
 type realLocator struct{ l playwright.Locator }
 
+// TextContent gets the text content of the locator element.
+//
+// Summary: TextContent gets the text content of the locator element.
+//
+// Parameters:
+//   - options: ...playwright.LocatorTextContentOptions. Options.
+//
+// Returns:
+//   - string: The text content.
+//   - error: Error if it fails.
+//
+// Errors:
+//   - Returns error if any.
+//
+// Side Effects:
+//   - None.
 func (r *realLocator) TextContent(options ...playwright.LocatorTextContentOptions) (string, error) {
 	return r.l.TextContent(options...)
 }
