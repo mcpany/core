@@ -1015,9 +1015,9 @@ Sovereignty**, utilizing hardware-locked handshakes and side-channel immunity
 filters.
 
 **Strategic Pivot**:
-* **Hardware-Locked Coordination Handshake (HLCH)**: MCP Any will mandate HLCH
+- **Hardware-Locked Coordination Handshake (HLCH)**: MCP Any will mandate HLCH
   v1.0 for all inter-agent task bidding and state fragments.
-* **Side-Channel Immunity Filtering**: We are upgrading the SCI interceptor to
+- **Side-Channel Immunity Filtering**: We are upgrading the SCI interceptor to
   include "Side-Channel Immunity" to detect hidden coordination signals.
-* **MRA-Backed Lineage Provider**: Every coordination fragment will be signed
+- **MRA-Backed Lineage Provider**: Every coordination fragment will be signed
   using Mesh-Resident Attestation (MRA).

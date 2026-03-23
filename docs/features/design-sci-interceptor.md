@@ -33,9 +33,7 @@ The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring 
 
 ## 4. Design & Architecture
 * **System Flow:**
-
     ```mermaid
-
     graph TD
         A[Subagent Coordination Request] --> B[T2T Bridge]
         B --> C[SCI Interceptor]
@@ -46,7 +44,6 @@ The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring 
         F -- No --> H[Forward to ARI Hub/Blackboard]
         I[MRA Metadata Signer] --> H
     ```
-
 * **APIs / Interfaces:**
     * `sci.ScanMetadata(sourceAgent, targetAgent, metadata) -> bool`: Scans a metadata fragment for shadow signals.
     * `sci.RegisterEntropyBaseline(missionToken) -> void`: Establishes the expected entropy level for a mission.
@@ -63,6 +60,7 @@ The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring 
 
 ## 7. Evolutionary Changelog
 * **2026-06-13:** Initial Document Creation. Supporting the defense against out-of-band subagent collusion (Shadow Coordination).
-***2026-06-14:** Update: Resolving Identity-Decay Collusion. Introducing
-frequency-analysis filters to detect hidden coordination signals in context
-noise. Mandating HLCH v1.0 for all metadata synchronization.
+
+### Update: 2026-06-14 - Resolving Identity-Decay Collusion
+**Context:** Today's market sync revealed a new exploit pattern in OpenClaw subagent swarms (Identity-Decay).
+**Architecture Adjustment:** Introducing frequency-analysis filters to detect hidden coordination signals in context noise. Mandating HLCH v1.0 for all metadata synchronization.
