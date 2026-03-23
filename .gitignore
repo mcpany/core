@@ -74,10 +74,3 @@ oauth_env.sh
 AUDIT_REPORT.md
 package.json
 .github/scripts/check-results-and-comment.sh
-node_modules/
-coverage/
-bazel-bin/
-bazel-out/
-bazel-testlogs/
-bazel-mcpany/
-ui/node_modules/

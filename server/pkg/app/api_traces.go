@@ -53,7 +53,15 @@ const (
 	statusError   = "error"
 )
 
-func toSpan(entry audit.Entry) Span {
+func toTrace(entry audit.Entry) *Trace {
+	// Generate deterministic ID based on content to prevent duplicates during history replay
+	data := fmt.Sprintf("%d-%s-%s-%s", entry.Timestamp.UnixNano(), entry.ToolName, entry.UserID, entry.ProfileID)
+	hash := sha256.Sum256([]byte(data))
+	traceID := hex.EncodeToString(hash[:])
+
+	// Span ID can be same or derived
+	spanID := traceID + "-0"
+
 	status := statusSuccess
 	if entry.Error != "" {
 		status = statusError
@@ -70,6 +78,9 @@ func toSpan(entry audit.Entry) Span {
 
 	var output map[string]any
 	if entry.Result != nil {
+		// entry.Result is already an interface{}, but if it's a map/struct it works.
+		// If it's a primitive, we might want to wrap it?
+		// For now assume map or convertible.
 		b, err := json.Marshal(entry.Result)
 		if err == nil {
 			_ = json.Unmarshal(b, &output)
@@ -77,7 +88,7 @@ func toSpan(entry audit.Entry) Span {
 	}
 
 	span := Span{
-		ID:           entry.SpanID,
+		ID:           spanID,
 		Name:         entry.ToolName,
 		Type:         "tool",
 		StartTime:    startTime,
@@ -86,118 +97,15 @@ func toSpan(entry audit.Entry) Span {
 		Input:        input,
 		Output:       output,
 		ErrorMessage: entry.Error,
-		Children:     []Span{}, // initialize explicitly
-	}
-
-	if span.ID == "" {
-		// Fallback if SpanID wasn't set (e.g. older logs or different injection)
-		data := fmt.Sprintf("%d-%s-%s-%s", entry.Timestamp.UnixNano(), entry.ToolName, entry.UserID, entry.ProfileID)
-		hash := sha256.Sum256([]byte(data))
-		traceID := hex.EncodeToString(hash[:])
-		span.ID = traceID + "-0"
-	}
-
-	// Inject mock diff for seeding
-	if entry.ToolName == "code-refactor" {
-		if span.Output != nil && span.Output["diff"] != nil {
-			if span.Input == nil {
-				span.Input = make(map[string]any)
-			}
-			span.Input["mcp.response_diff"] = span.Output["diff"]
-		}
-	}
-
-	return span
-}
-
-func buildTraceTrees(entries []audit.Entry) []*Trace {
-	// 1. Group by TraceID
-	traceGroups := make(map[string][]audit.Entry)
-	for _, entry := range entries {
-		tid := entry.TraceID
-		if tid == "" {
-			// fallback generic trace ID
-			data := fmt.Sprintf("%d-%s-%s-%s", entry.Timestamp.UnixNano(), entry.ToolName, entry.UserID, entry.ProfileID)
-			hash := sha256.Sum256([]byte(data))
-			tid = hex.EncodeToString(hash[:])
-		}
-		traceGroups[tid] = append(traceGroups[tid], entry)
-	}
-
-	var traces []*Trace
-	for tid, groupEntries := range traceGroups {
-		trace := buildSingleTraceTree(tid, groupEntries)
-		if trace != nil {
-			traces = append(traces, trace)
-		}
-	}
-
-	return traces
-}
-
-func buildSingleTraceTree(traceID string, entries []audit.Entry) *Trace {
-	if len(entries) == 0 {
-		return nil
-	}
-
-	// Map to hold all spans by ID
-	spanMap := make(map[string]*Span)
-	var rootEntry *audit.Entry
-	var rootSpan *Span
-
-	for i := range entries {
-		entry := entries[i]
-		span := toSpan(entry)
-		spanMap[span.ID] = &span
-
-		// A span is considered the root if it has no parent, or if its parent isn't in this group.
-		// For now we'll find the explicit root (ParentID == "").
-		if entry.ParentID == "" {
-			if rootEntry == nil || entry.Timestamp.Before(rootEntry.Timestamp) {
-				rootEntry = &entries[i]
-				rootSpan = &span
-			}
-		}
-	}
-
-	// If no explicit root found (no empty ParentID), take the earliest entry
-	if rootSpan == nil {
-		for i := range entries {
-			if rootEntry == nil || entries[i].Timestamp.Before(rootEntry.Timestamp) {
-				rootEntry = &entries[i]
-				s := spanMap[entries[i].SpanID]
-				rootSpan = s
-			}
-		}
-	}
-
-	// Link children to parents
-	for i := range entries {
-		entry := entries[i]
-		if entry.ParentID != "" {
-			if parentSpan, ok := spanMap[entry.ParentID]; ok {
-				childSpan := spanMap[entry.SpanID]
-				parentSpan.Children = append(parentSpan.Children, *childSpan)
-			}
-		}
-	}
-
-	status := rootSpan.Status
-	// if any entry failed, the trace status is failed
-	for _, entry := range entries {
-		if entry.Error != "" {
-			status = statusError
-			break
-		}
 	}
 
 	return &Trace{
 		ID:            traceID,
-		RootSpan:      *spanMap[rootSpan.ID], // use the linked structure from the map
-		Timestamp:     rootEntry.Timestamp.Format(time.RFC3339),
-		TotalDuration: rootEntry.DurationMs,
+		RootSpan:      span,
+		Timestamp:     entry.Timestamp.Format(time.RFC3339),
+		TotalDuration: durationMs,
 		Status:        status,
-		Trigger:       "user",
+		Trigger:       "user", // Default to user for now
 	}
 }
 
