@@ -4583,10 +4583,14 @@ func checkWordSuffix(word []byte, keywords []string, runes []rune, nextIdx int, 
 // bufferPool is a sync.Pool for bytes.Buffer to reduce allocations.
 //
 // Summary: Provides a thread-safe pool of bytes.Buffer objects to minimize heap allocations during tool execution.
-// Parameters: None
-// Returns: A sync.Pool instance.
-// Errors: None
-// Side Effects: Modifies memory allocations.
+// Parameters:
+//   - none
+// Returns:
+//   - sync.Pool: A synchronization pool instance.
+// Errors:
+//   - none
+// Side Effects:
+//   - Modifies memory allocations.
 var bufferPool = sync.Pool{
 	New: func() interface{} {
 		return new(bytes.Buffer)
@@ -4596,11 +4600,14 @@ var bufferPool = sync.Pool{
 // getBuffer returns a bytes.Buffer from the pool.
 //
 // Summary: Retrieves a bytes.Buffer from the shared bufferPool.
-// Parameters: None
+// Parameters:
+//   - none
 // Returns:
 //   - *bytes.Buffer: A pointer to a ready-to-use bytes.Buffer.
-// Errors: None
-// Side Effects: None
+// Errors:
+//   - none
+// Side Effects:
+//   - none
 func getBuffer() *bytes.Buffer {
 	return bufferPool.Get().(*bytes.Buffer)
 }
@@ -4610,8 +4617,10 @@ func getBuffer() *bytes.Buffer {
 // Summary: Resets the provided bytes.Buffer and returns it to the bufferPool for reuse.
 // Parameters:
 //   - buf (*bytes.Buffer): The buffer to return to the pool.
-// Returns: None
-// Errors: None
+// Returns:
+//   - none
+// Errors:
+//   - none
 // Side Effects:
 //   - Clears the contents of the provided buffer.
 func putBuffer(buf *bytes.Buffer) {
