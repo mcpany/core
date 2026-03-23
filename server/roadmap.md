@@ -730,9 +730,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Dynamic Attention Gating (DAG) Middleware**: (P0) Cognitive stability middleware that performs real-time attention-utilization analysis and dynamically prunes noise to prevent mission-root intent eviction. (Added: 2026-06-13)
 - **Hardware-Locked Coordination Handshake**: (Re-affirmed P0) Designated as the primary enforcement point for **Attention Sovereignty** and **Side-Channel Immunity**.
 
-#### Upcoming (2026-06-14 Evolution)
-
-*   **[P0] Attention-Locked Routing Hub (ALRH)**: Authoritative coordination middleware performing real-time attention analysis.
-*   **[P0] MDRA Attestation Bridge**: Unified security service for MDRA-compliant attestation merging.
-*   **[P1] Three-Factor Agency Gateway**: Multi-factor authentication hub for autonomous handoffs.
-*   **[P0] Side-Channel Shield**: gRPC metadata scrubbing for shadow coordination defense.
+### Upcoming: [2026-06-14]
+- **Attention-Locked Routing Hub (ALRH)**: (P0) Authoritative coordination middleware for the ARI Hub performing real-time attention-utilization analysis. (Added: 2026-06-14)
+- **MDRA Attestation Bridge**: (P0) Unified security service for MDRA-compliant attestation merging, ensuring coordination integrity in deep swarms. (Added: 2026-06-14)
+- **Three-Factor Agency Gateway**: (P1) Multi-factor authentication hub for high-risk autonomous task handoffs. (Added: 2026-06-14)
+- **Side-Channel Shield (gRPC Metadata)**: (P0) Advanced security listener for the T2T Bridge that performs metadata scrubbing to block shadow coordination. (Added: 2026-06-14)

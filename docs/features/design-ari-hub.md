@@ -68,7 +68,6 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 **Security Impact:** Prevents subagents from colluding via metadata while appearing to follow the "Reasoning Mainline."
 
 ### Update: 2026-06-14 - Mission-Anchored Attention Sovereignty
-
 **Context:** Today's market sync revealed the emergence of **Attention-Aware Routing (AAR)** and unified **MDRA** tokens.
 **Architecture Adjustment:**
 * Integrating the **Attention-Locked Routing Hub (ALRH)** in Section 4 to support dynamic routing based on specialist attention availability.
