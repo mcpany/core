@@ -54,9 +54,10 @@ jobs:
       - run:
           name: Run Lint
           command: |
+            # Use specific bazelisk binary rather than globally relying on PATH
             npm install -g @bazel/bazelisk
-            bazelisk test //ui:lint //ui:typecheck
-            bazelisk run //:lint
+            npx bazelisk test //ui:lint //ui:typecheck
+            npx bazelisk run //:lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
