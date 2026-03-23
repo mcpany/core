@@ -9,7 +9,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/consts"
+	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
@@ -42,7 +42,7 @@ func (a *Application) handleSystemStatus(w http.ResponseWriter, _ *http.Request)
 		ActiveConnections: activeConns,
 		BoundHTTPPort:     int(a.BoundHTTPPort.Load()),
 		BoundGRPCPort:     int(a.BoundGRPCPort.Load()),
-		Version:           consts.Version,
+		Version:           appconsts.Version,
 		SecurityWarnings:  warnings,
 	}
 
