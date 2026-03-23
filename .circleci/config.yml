@@ -56,6 +56,7 @@ jobs:
           command: |
             # Use specific bazelisk binary rather than globally relying on PATH
             npm install -g @bazel/bazelisk
+            . venv/bin/activate
             npx bazelisk test //ui:lint //ui:typecheck
             npx bazelisk run //:lint
       - save_cache:
