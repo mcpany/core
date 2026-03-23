@@ -1,5 +1,4 @@
 <!-- markdownlint-disable -->
-
 # Strategic Vision: MCP Any
 
 ## Mission Statement
@@ -1024,8 +1023,7 @@ filters.
 - **Side-Channel Immunity Filtering**: We are upgrading the SCI interceptor to
   include "Side-Channel Immunity." This layer will perform real-time frequency
   analysis of context-window updates to detect and block hidden coordination
-  signals embedded in steganographic noise.
+  signals.
 - **MRA-Backed Lineage Provider**: Moving beyond simple hash-chaining, we are
   implementing MRA-backed lineage. Every coordination fragment will be signed
-  using Mesh-Resident Attestation (MRA), providing proof of parentage that
-  survives long-term session decay.
+  using Mesh-Resident Attestation (MRA).

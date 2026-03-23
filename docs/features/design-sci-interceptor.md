@@ -1,5 +1,4 @@
 <!-- markdownlint-disable -->
-
 # Design Doc: Shadow Coordination Interceptor (SCI)
 **Status:** Draft
 **Created:** 2026-06-13
