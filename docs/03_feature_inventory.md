@@ -1501,3 +1501,13 @@
 ### Priority Shifts
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Elevated with mandatory **CFSA** integration to counter mimicry-based hijacking.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SHI** and **MHL** integration for all agency-initiation signals.
+
+## Evolution: [2026-06-28] Updates
+
+### Proposed Additions
+- **MSSG Auditor Sidecars**: (P0) Authoritative analysis components for the MSSG Hub providing real-time, independent behavioral monitoring for high-risk skill grafting.
+- **Latency-Aware Attestation (LAA) Provider**: (P1) Performance-optimizing security service that dynamically scales attestation depth based on mission-root risk and reasoning depth.
+
+### Priority Shifts
+- **Multi-Signature Skill Grafting (MSSG) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Auditor Sidecar** behavioral analysis.
+- **Distributed Trust Lease Broker**: (Re-affirmed P0) Evolving to support the new **LAA-compliant** dynamic lease scaling.

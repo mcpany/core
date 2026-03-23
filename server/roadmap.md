@@ -157,6 +157,10 @@
 *   **[P0] Multi-Signature Skill Attestation (MSSA)**: Mandatory auditor attestation for dynamic tool grafting and high-risk skill installation. (Added: 2026-06-27)
 *   **[P1] Reasoning Path Integrity (RPI) Validator**: Support for ARE v1.8 hardware-signed reasoning fragments and semantic hash-chaining. (Added: 2026-06-27)
 
+#### Upcoming (2026-06-28 Evolution)
+*   **[P0] MSSG Auditor Sidecars**: Integration of independent, sandboxed security auditor agents for real-time skill grafting validation. (Added: 2026-06-28)
+*   **[P1] Latency-Aware Attestation (LAA)**: Dynamic optimization of attestation depth based on mission-root risk to neutralize "Cognitive Stall." (Added: 2026-06-28)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -67,3 +67,11 @@ The "ClawHavoc" crisis demonstrated that open-source agent marketplaces are vuln
 * **Multi-Signature Requirement**: Transitioning from single-provider signing to MSSA. Dynamic skill grafting now requires cryptographically bound approval tokens from both the agent framework and a verified third-party security auditor.
 * **Auditor Sidecars**: Introducing "Auditor Sidecars" in the analysis engine that provide real-time, independent behavioral monitoring for high-risk tools.
 **Security Impact:** Mitigates the risk of "Rug-Pull" supply chain attacks by ensuring no single entity can authorize high-risk tool execution.
+
+### Update: 2026-06-28 - MSSG Auditor Sidecars
+**Context:** Today's market sync confirms the success of Multi-Signature Skill Grafting (MSSG) prototypes, but highlights a need for deeper behavioral analysis during the "Grafting" phase itself.
+**Architecture Adjustment:**
+* Introducing **Auditor Sidecars** in Section 4.
+* Analysis Engine now spawns an independent "Security Auditor" agent in a sibling container for every high-risk skill grafting request.
+* The Sidecar performs real-time, hardware-bound trace analysis of the tool's initiation sequence, providing the second mandatory signature for the MSSG Hub.
+**Security Impact:** Deepens Multi-Signature Skill Attestation (MSSA) by ensuring that the second signature is backed by active, independent behavioral verification rather than just static policy matching.

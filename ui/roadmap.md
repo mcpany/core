@@ -657,3 +657,7 @@
 - [ ] **[P0] CRDT Shard Monitor**: Real-time visualization of lock-free mailbox synchronization and hardware-attested conflict resolution. (Added: 2026-06-27)
 - [ ] **[P0] Auditor Attestation Portal**: Interactive workspace for third-party security auditors to review and sign dynamic skill grafts. (Added: 2026-06-27)
 - [ ] **[P1] Reasoning Path Integrity Viewer**: Visual debugger for hardware-signed RPI fragments and semantic hash-chain integrity. (Added: 2026-06-27)
+
+#### Upcoming (2026-06-28 Evolution)
+- [ ] **[P0] MSSG Sidecar Monitor**: Real-time visualization of sandboxed auditor agent traces and grafting status. (Added: 2026-06-28)
+- [ ] **[P1] Attestation Latency Heatmap**: Visual tracker for cognitive stall events and LAA-optimized attestation paths. (Added: 2026-06-28)
