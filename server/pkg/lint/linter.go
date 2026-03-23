@@ -231,8 +231,8 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 			}
 			if ce := cmd.GetContainerEnvironment(); ce != nil {
 				for k, v := range ce.GetEnv() {
-					checkSecret(v, f("command_line_service."+
-						"container_environment.env[%s]", k), s.GetName())
+					checkSecret(v, fmt.Sprintf("command_line_service."+
+						"container_environment.env[%%s]", k), s.GetName())
 				}
 			}
 		case configv1.UpstreamServiceConfig_McpService_case:
@@ -255,11 +255,6 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 	}
 
 	return results
-}
-
-// f is a shorthand for fmt.Sprintf.
-func f(format string, a ...any) string {
-	return fmt.Sprintf(format, a...)
 }
 
 // checkShellInjection checks for shell injection risks.
