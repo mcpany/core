@@ -299,6 +299,14 @@ func (m *MockStorage) SaveSecret(ctx context.Context, secret *configv1.Secret) e
 	return m.Storage.SaveSecret(ctx, secret)
 }
 
+func (m *MockStorage) SaveMockData(ctx context.Context, id string, data string) error {
+	return m.Storage.SaveMockData(ctx, id, data)
+}
+
+func (m *MockStorage) GetMockData(ctx context.Context, id string) (string, error) {
+	return m.Storage.GetMockData(ctx, id)
+}
+
 func TestHandleCreateService_SaveError(t *testing.T) {
 	app, store := setupApiTestApp()
 	mockStore := &MockStorage{Storage: store, failSave: true}

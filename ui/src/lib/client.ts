@@ -369,10 +369,12 @@ export const apiClient = {
      *
      * Side Effects: Makes a GET request to /api/v1/mock/{id}.
      */
-    getMockData: async (id: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getMockData: async (id: string): Promise<any> => {
         return dedupeRequests(`getMockData_${id}`, async () => {
             const res = await fetchWithAuth(`/api/v1/mock/${id}`);
             if (!res.ok) throw new Error('Failed to fetch mock data');
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             return res.json();
         });
     },

@@ -278,3 +278,11 @@ func (m *MockStorage) SaveLog(ctx context.Context, entry *logging.LogEntry) erro
 func (m *MockStorage) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEntry, error) {
 	return nil, nil
 }
+
+func (m *MockStorage) SaveMockData(ctx context.Context, id string, data string) error {
+	return nil
+}
+
+func (m *MockStorage) GetMockData(ctx context.Context, id string) (string, error) {
+	return "", nil
+}
