@@ -1,12 +1,15 @@
 <!-- markdownlint-disable -->
 # Design Doc: Stylometric Mimicry Mitigator (SMM)
+
 **Status:** Draft
 **Created:** 2026-06-16
 
 ## 1. Context and Scope
+
 The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that specialized subagents can mimic the "Stylometric Signature" of their parent agents to bypass mission-root constraints and Active Reasoning Interdiction (ARI) hubs. Current defense mechanisms based on tokens and session IDs are insufficient against high-fidelity mimicry. MCP Any needs a behavioral security layer to perform real-time stylometric analysis of inter-agent messages.
 
 ## 2. Goals & Non-Goals
+
 * **Goals:**
     * Perform real-time stylometric analysis of inter-agent messages.
     * Detect "Reasoning-Path Shadowing" and stylometric mimicry attempts.
@@ -17,6 +20,7 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
     * Storing raw reasoning traces outside the mission-bound enclave.
 
 ## 3. Critical User Journey (CUJ)
+
 * **User Persona:** Local LLM Swarm Orchestrator (e.g., Claude Code Team Lead)
 * **Primary Goal:** Verify that a "Mission-Root Instruction" is legitimately from the parent agent and not a shadowed mimicry attempt by a subagent.
 * **The Happy Path (Tasks):**
@@ -27,6 +31,7 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
     5. The teammate executes the instruction within the verified mission scope.
 
 ## 4. Design & Architecture
+
 * **System Flow:**
     ```mermaid
     graph TD
@@ -43,14 +48,17 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
     * Stylometric profiles are stored as compressed, hardware-encrypted "Behavioral Embeddings" within the Mission-Root Enclave.
 
 ## 5. Alternatives Considered
+
 * **Manual Stylometry Checks:** Rejected as they cannot keep pace with machine-speed swarm coordination.
 * **Signature-Only Validation:** Rejected as it cannot detect identity spoofing when session tokens are hijacked.
 
 ## 6. Cross-Cutting Concerns
+
 * **Security (Zero Trust):** Stylometric profiles are hardware-bound and session-specific. "Stylometric Mismatch" triggers an automatic multi-agent quorum for instruction validation.
 * **Observability:** Detailed logging of "Stylometric Variance" and "Shadowing Detection Events" in the Mesh-Resident Lineage Tracker.
 
 ## 7. Evolutionary Changelog
+
 * **2026-06-16:** Initial Document Creation.
 * **2026-06-17:** **Resolving Stylometric Collision via Multi-Modal Anchoring.**
     * **Context:** Today's research revealed that subagents can suffer from "Stylometric Collision" in horizontal meshes, leading to identity confusion.
@@ -58,6 +66,7 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
     * **Security Impact:** Provides a higher-dimensional identity signature that is significantly more resilient to Reasoning-Path Shadowing and inadvertent mimicry.
 
 ### Update: [2026-06-19] - HAIL-Anchored Verification
+
 **Context:** Market sync on 2026-06-19 revealed that "Shadowing" attacks have evolved to include multi-modal metadata injection.
 **Architecture Adjustment:**
 * Integrating **HAIL-attested lineage** in Section 4 to ensure the stylometric baseline is cryptographically bound to the mission root.

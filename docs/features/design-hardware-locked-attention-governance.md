@@ -5,9 +5,11 @@
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
+
 As agent swarms become deeper and more autonomous, a new class of exploit has emerged: **Reasoning Entropy Exhaustion (REE)**. In REE, a compromised subagent injects high-entropy "noise" into its reasoning traces, forcing the parent agent's context window to shift and evict the "Mission Root" anchors. MCP Any needs to solve this by providing a hardware-locked mechanism to "pin" critical context fragments at the attention layer of the LLM.
 
 ## 2. Goals & Non-Goals
+
 * **Goals:**
   * Provide a mechanism to cryptographically "pin" mission-critical intent fragments.
   * Utilize hardware-bound (TPM/SEP) headers to signal attention priority to LLM providers.
@@ -17,6 +19,7 @@ As agent swarms become deeper and more autonomous, a new class of exploit has em
   * Providing absolute protection against all forms of context-window limits.
 
 ## 3. Critical User Journey (CUJ)
+
 * **User Persona:** Local LLM Swarm Orchestrator
 * **Primary Goal:** Protect the primary mission objective from being "forgotten" by the lead agent during a complex, multi-agent refactor.
 * **The Happy Path (Tasks):**
@@ -27,6 +30,7 @@ As agent swarms become deeper and more autonomous, a new class of exploit has em
   5. The Lead Agent successfully synthesizes the work while remaining bound to the original mission.
 
 ## 4. Design & Architecture
+
 * **System Flow:**
 
 ```mermaid
@@ -40,18 +44,23 @@ graph TD
     H -- Low Entropy --> I[Context Window]
     D --> I
     H -- High Entropy --> J[Discarded Noise]
+
 ```
 
 ## 5. Alternatives Considered
+
 * **Software-only Pinning**: Rejected because it can be bypassed if the subagent gains control of the local transport.
 
 ## 6. Cross-Cutting Concerns
+
 * **Security (Zero Trust)**: All attention-lock requests must be accompanied by a valid hardware-attested mission token.
 
 ## 7. Evolutionary Changelog
+
 * **2026-06-18:** Initial Document Creation.
 
 ### Update: [2026-06-19] - Attention-Locking and HAIL Integration
+
 **Context:** Today's market sync revealed a new exploit pattern in OpenClaw subagent reasoning mimicry.
 **Architecture Adjustment:**
 * Integrating support for `x-gemini-attention-lock` compatibility in Section 4.

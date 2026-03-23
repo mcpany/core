@@ -5,9 +5,11 @@
 **Created:** [2026-06-19]
 
 ## 1. Context and Scope
+
 The emergence of **Reasoning Path Shadowing** (stylometric mimicry) has exposed a critical gap in multi-agent swarms. In this attack, a malicious specialist agent mimics the "Stylometric Signature" and "Chain-of-Thought" structure of a parent agent to inject instructions that pass standard consistency checks. MCP Any needs to provide **Hardware-Attested Intent Lineage (HAIL)** to cryptographically link every reasoning fragment back to a TPM-signed mission root, ensuring that the "author" of any instruction is non-repudiable and verified.
 
 ## 2. Goals & Non-Goals
+
 * **Goals:**
   * Generate cryptographically signed "Reasoning Fragments" for all inter-agent messages.
   * Link every fragment back to a hardware-attested "Mission Root."
@@ -17,6 +19,7 @@ The emergence of **Reasoning Path Shadowing** (stylometric mimicry) has exposed 
   * Protecting against local-user-initiated intent shifts.
 
 ## 3. Critical User Journey (CUJ)
+
 * **User Persona:** Enterprise Security Architect
 * **Primary Goal:** Verify that all code changes proposed by a multi-agent swarm genuinely originate from the user-authorized mission root.
 * **The Happy Path (Tasks):**
@@ -28,6 +31,7 @@ The emergence of **Reasoning Path Shadowing** (stylometric mimicry) has exposed 
   6. MCP Any blocks the tool call and alerts the user of a lineage violation.
 
 ## 4. Design & Architecture
+
 * **System Flow:**
 
 ```mermaid
@@ -39,14 +43,18 @@ graph TD
     F --> G[Signature Verification]
     G -- Match --> H[Authenticated Instruction]
     G -- Mismatch --> I[Lineage Alert / Block]
+
 ```
 
 ## 5. Alternatives Considered
+
 * **Token-only Lineage**: Rejected because tokens can be "Shadowed" if the model's output is not cryptographically bound to the hardware session.
 
 ## 6. Cross-Cutting Concerns
+
 * **Security (Zero Trust)**: The HAIL Provider is the authoritative root of cognitive trust.
 * **Observability**: The "Lineage Inspector" UI will provide a visual "Chain of Command" for every tool call.
 
 ## 7. Evolutionary Changelog
+
 * **[2026-06-19]:** Initial Document Creation.
