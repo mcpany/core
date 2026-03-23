@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/tokenizer"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/prometheus/client_golang/prometheus"
@@ -47,7 +48,7 @@ func TestPrometheusMetricsMiddleware(t *testing.T) {
 		}
 
 		// Verify Total Counter
-		// We expect mcp_operations_total{method="tools/call", status="success", error_type="none"} to be >= 1
+		// We expect mcp_operations_total{method="tools/call", status="success", error_type="none", user_id="anonymous"} to be >= 1
 		metricName := "mcp_operations_total"
 
 		// Collect metrics
@@ -88,6 +89,57 @@ func TestPrometheusMetricsMiddleware(t *testing.T) {
 		}
 	})
 
+	t.Run("AuthenticatedCase", func(t *testing.T) {
+		handler := middleware(MockMethodHandler(&mcp.CallToolResult{
+			Content: []mcp.Content{
+				&mcp.TextContent{Text: "output"},
+			},
+		}, nil))
+
+		ctx := auth.ContextWithUser(context.Background(), "alice123")
+		_, err := handler(ctx, "tools/call", &mcp.CallToolRequest{})
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+
+		// Verify Total Counter with user_id label
+		metricName := "mcp_operations_total"
+		families, err := prometheus.DefaultGatherer.Gather()
+		if err != nil {
+			t.Fatalf("Failed to gather metrics: %v", err)
+		}
+
+		found := false
+		for _, mf := range families {
+			if mf.GetName() == metricName {
+				for _, m := range mf.GetMetric() {
+					labels := m.GetLabel()
+					matched := true
+					for _, l := range labels {
+						if l.GetName() == "method" && l.GetValue() != "tools/call" {
+							matched = false
+						}
+						if l.GetName() == "status" && l.GetValue() != "success" {
+							matched = false
+						}
+						if l.GetName() == "user_id" && l.GetValue() != "alice123" {
+							matched = false
+						}
+					}
+					if matched {
+						found = true
+						if m.GetCounter().GetValue() < 1 {
+							t.Errorf("Expected counter >= 1, got %v", m.GetCounter().GetValue())
+						}
+					}
+				}
+			}
+		}
+		if !found {
+			t.Errorf("Authenticated metric not found in output")
+		}
+	})
+
 	t.Run("ErrorCase", func(t *testing.T) {
 		expectedErr := errors.New("simulated error")
 		handler := middleware(MockMethodHandler(nil, expectedErr))
@@ -99,10 +151,10 @@ func TestPrometheusMetricsMiddleware(t *testing.T) {
 
 		// Check for error metric
 		output := getMetricsOutput(t)
-		if !strings.Contains(output, `mcp_operations_total{error_type="execution_failed",method="resources/read",status="error"}`) {
+		if !strings.Contains(output, `mcp_operations_total{error_type="execution_failed",method="resources/read",status="error",user_id="anonymous"}`) {
 			// Note: label order in output string is alphabetical
 			// Let's check for substring parts to be safe against reordering if not using a parser
-			if !strings.Contains(output, `mcp_operations_total`) || !strings.Contains(output, `method="resources/read"`) || !strings.Contains(output, `status="error"`) {
+			if !strings.Contains(output, `mcp_operations_total`) || !strings.Contains(output, `method="resources/read"`) || !strings.Contains(output, `status="error"`) || !strings.Contains(output, `user_id="anonymous"`) {
 				t.Errorf("Metric not found in output:\n%s", output)
 			}
 		}

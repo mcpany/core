@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/tokenizer"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -28,7 +29,7 @@ var (
 			// Summary: Defines Bucket.
 			Buckets: prometheus.DefBuckets,
 		},
-		[]string{"method", "status", "error_type"},
+		[]string{"method", "status", "error_type", "user_id"},
 	)
 
 	mcpOperationTotal = prometheus.NewCounterVec(
@@ -38,7 +39,7 @@ var (
 			// Summary: Defines Hel.
 			Help: "Total number of MCP operations.",
 		},
-		[]string{"method", "status", "error_type"},
+		[]string{"method", "status", "error_type", "user_id"},
 	)
 
 	mcpPayloadSizeBytes = prometheus.NewHistogramVec(
@@ -50,7 +51,7 @@ var (
 			// Summary: Defines Bucket.
 			Buckets: prometheus.ExponentialBuckets(100, 10, 6),
 		},
-		[]string{"method", "direction"}, // direction: request, response
+		[]string{"method", "direction", "user_id"}, // direction: request, response
 	)
 
 	mcpOperationTokensTotal = prometheus.NewCounterVec(
@@ -60,7 +61,7 @@ var (
 			// Summary: Defines Hel.
 			Help: "Total number of tokens in MCP operations.",
 		},
-		[]string{"method", "direction", "status"}, // direction: request, response
+		[]string{"method", "direction", "user_id", "status"}, // direction: request, response
 	)
 )
 
@@ -106,6 +107,11 @@ func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 			// Count request tokens
 			reqTokens := estimateRequestTokens(t, req)
 
+			userID := "anonymous"
+			if uid, ok := auth.UserFromContext(ctx); ok && uid != "" {
+				userID = uid
+			}
+
 			result, err := next(ctx, method, req)
 
 			duration := time.Since(start).Seconds()
@@ -133,6 +139,7 @@ func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 				"method":     method,
 				"status":     status,
 				"error_type": errorType,
+				"user_id":    userID,
 			}
 
 			mcpOperationTotal.With(labels).Inc()
@@ -143,6 +150,7 @@ func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 				"method":    method,
 				"direction": "request",
 				"status":    status,
+				"user_id":   userID,
 			}).Add(float64(reqTokens))
 
 			if result != nil {
@@ -151,6 +159,7 @@ func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 					mcpPayloadSizeBytes.With(prometheus.Labels{
 						"method":    method,
 						"direction": "response",
+						"user_id":   userID,
 					}).Observe(float64(size))
 
 					// Count response tokens
@@ -159,6 +168,7 @@ func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 						"method":    method,
 						"direction": "response",
 						"status":    status,
+						"user_id":   userID,
 					}).Add(float64(resTokens))
 				}
 			}
