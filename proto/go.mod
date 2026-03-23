@@ -1,6 +1,6 @@
 module github.com/mcpany/core/proto
 
-go 1.26.1
+go 1.24
 
 require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.28.0
