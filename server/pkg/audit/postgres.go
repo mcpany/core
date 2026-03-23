@@ -27,7 +27,8 @@ type PostgresAuditStore struct {
 // Summary: Initializes a new PostgresAuditStore.
 //
 // Parameters:
-//   - dsn: string. The PostgreSQL connection string..
+//   - None.
+//   - dsn: string. The PostgreSQL connection string.
 //
 // Returns: - error: An error if the operation fails.
 //   - *PostgresAuditStore: The initialized store.
@@ -97,8 +98,9 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 // Summary: Writes a single audit entry with cryptographic chaining.
 //
 // Parameters:
-//   - ctx: context.Context. The request context..
-//   - entry: Entry. The audit entry to write..
+//   - None.
+//   - ctx: context.Context. The request context.
+//   - entry: Entry. The audit entry to write.
 //
 // Returns: - error: An error if the operation fails.
 //   - error: An error if the write fails.
@@ -194,8 +196,9 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 // Summary: Reads audit entries (Not implemented).
 //
 // Parameters:
-//   - _: context.Context. Unused..
-//   - _: Filter. Unused..
+//   - None.
+//   - _: context.Context. Unused.
+//   - _: Filter. Unused.
 //
 // Returns: - error: An error if the operation fails.
 //   - []Entry: Nil.
@@ -207,9 +210,6 @@ func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) 
 // Verify checks the integrity of the audit logs.
 //
 // Summary: Verifies the cryptographic chain of the audit logs.
-//
-// Parameters:
-//   - None.
 //
 // Returns: - error: An error if the operation fails.
 //   - bool: True if the chain is valid, false otherwise.
