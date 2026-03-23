@@ -15,8 +15,13 @@ repos:
     -   id: detect-private-key
         exclude: ^server/tests/tls/
     -   id: end-of-file-fixer
-        exclude: ^server/pkg/upstream/mcp/s1/manifest.json
+        exclude: |
+            (?x)^(
+                server/pkg/upstream/mcp/s1/manifest.json|
+                .github/.*
+            )$
     -   id: trailing-whitespace
+        exclude: ^.github/
 -   repo: local
     hooks:
     -   id: shellcheck

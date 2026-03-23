@@ -13,9 +13,7 @@ build:
 	@bazelisk build //...
 
 lint:
-	@if command -v pre-commit > /dev/null; then \
-		pre-commit run --all-files; \
-	fi
+	@cd server && pre-commit run --all-files
 	@bazelisk run //:lint
 
 test:
