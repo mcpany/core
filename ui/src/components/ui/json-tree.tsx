@@ -8,6 +8,9 @@ import { ChevronDown, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
+/**
+ * Props for the JsonTree component
+ */
 export interface JsonTreeProps {
   data: unknown;
   level?: number;
