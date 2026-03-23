@@ -4,6 +4,3 @@ run:
 
 linters:
   disable-all: true
-  enable:
-    - gofmt
-    - govet
