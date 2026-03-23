@@ -2,37 +2,30 @@ import sys
 
 filename = 'MODULE.bazel'
 with open(filename, 'r') as f:
-    lines = f.readlines()
+    content = f.read()
 
-start_index = -1
-end_index = -1
-for i, line in enumerate(lines):
-    if 'use_repo(' in line and 'go_deps,' in line:
-        start_index = i
-    if start_index != -1 and ')' in line:
-        end_index = i
-        break
-
-if start_index != -1 and end_index != -1:
+# Find use_repo(go_deps, ...)
+import re
+match = re.search(r'use_repo\(\s*go_deps,(.*?)\)', content, re.DOTALL)
+if match:
+    deps_str = match.group(1)
     deps = set()
-    for line in lines[start_index+1:end_index]:
-        dep = line.strip().strip(',').strip('"')
-        if dep:
-            deps.add(dep)
+    for d in re.findall(r'"(.*?)"', deps_str):
+        deps.add(d)
 
+    # Critical removals
     to_remove = ["com_github_mcpany_core", "io_k8s_api", "io_k8s_apimachinery", "io_k8s_sigs_controller_runtime"]
     for r in to_remove:
         if r in deps:
             deps.remove(r)
 
+    # Required additions
     deps.add("com_github_mcpany_core_proto")
     deps.add("org_golang_google_genproto_googleapis_api")
 
     sorted_deps = sorted(list(deps))
-    new_lines = lines[:start_index+1]
-    for d in sorted_deps:
-        new_lines.append(f'    "{d}",\n')
-    new_lines.extend(lines[end_index:])
+    new_deps_str = '\n    ' + ',\n    '.join(f'"{d}"' for d in sorted_deps) + ',\n'
 
+    new_content = content[:match.start(1)] + new_deps_str + content[match.end(1):]
     with open(filename, 'w') as f:
-        f.writelines(new_lines)
+        f.write(new_content)
