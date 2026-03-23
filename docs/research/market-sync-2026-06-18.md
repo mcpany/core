@@ -2,9 +2,9 @@
 
 ## Ecosystem Updates
 - **OpenClaw v2026.4.1**: Addresses CVE-2026-71002 (Context-Window Ghosting).
-- **Gemini CLI v0.33.0**: Introduced "Reasoning Effort" headers.
-- **Claude Code**: Horizontal collaboration via "TeammateTool".
+- **Gemini CLI v0.33.0**: Introduced "Reasoning Effort" headers for compute negotiation.
+- **Claude Code**: Horizontal teammate collaboration via "TeammateTool".
 
-## Pain Points
-- Context-Window Ghosting: Semantic side-channels in interleaved reasoning.
-- Agentic DoS: Recursive loop spend spikes.
+## Strategic Gaps
+- **Attention Sovereignty**: Need for locking context fragments.
+- **Reasoning Budgets**: Need for phase-bound spend control.

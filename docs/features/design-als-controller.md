@@ -3,13 +3,11 @@
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
-Mitigates CVE-2026-71002 (Context-Window Ghosting). Locks critical fragments from subagent shadowing.
+CVE-2026-71002 (Context-Window Ghosting) allows subagents to leak state via semantic side-channels. The ALS Controller locks critical fragments.
 
-## 2. Goals & Non-Goals
-Goals: Fragment sealing, Boundary enforcement.
-
-## 3. CUJ
-Parent locks context -> Interception -> Sanitized view for subagent.
+## 2. Goals
+- Active Fragment Sealing.
+- Semantic Boundary Enforcement.
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.

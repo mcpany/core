@@ -1087,3 +1087,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ## Strategic Evolution: 2026-06-18
 - **Attention Sovereignty**: Enforcing cryptographic locking of context fragments to prevent shadowing.
 - **Reasoning Governance**: Phase-bound token/compute budgeting to neutralize Agentic DoS.
+
+## Strategic Evolution: 2026-06-18
+- **Infrastructure Sovereignty**: Moving towards "Attention Sovereignty" to prevent semantic shadowing in multi-agent swarms.
+- **Budget-Bound Autonomy**: Implementing "Phase-Bound Reasoning Budgets" (PBRB) as core protocol safeguards against Agentic DoS.
