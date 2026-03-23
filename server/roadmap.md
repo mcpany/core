@@ -1,5 +1,4 @@
 <!-- markdownlint-disable -->
-
 # Server Roadmap
 
 ## 1. Top Priorities: The Universal Agent Bus (New Strategic Focus)
@@ -279,8 +278,8 @@ These features represent the next logical steps for the product, focusing on Ent
 
 ### Warning Areas
 
-1. **UI Component Duplication**: Some UI components in `ui/src/components` seem to have overlapping responsibilities (e.g., multiple "detail" views). A UI component audit is recommended.
-2. **Test Coverage gaps**: While core logic is tested, cloud providers (S3/GCS) and some new UI features lack comprehensive integration tests.
+1.  **UI Component Duplication**: Some UI components in `ui/src/components` seem to have overlapping responsibilities (e.g., multiple "detail" views). A UI component audit is recommended.
+2.  **Test Coverage gaps**: While core logic is tested, cloud providers (S3/GCS) and some new UI features lack comprehensive integration tests.
 
 ### Healthy Areas
 
@@ -734,6 +733,9 @@ These features represent the next logical steps for the product, focusing on Ent
 
 ### Upcoming: [2026-06-14]
 
-* **[P0] HLCH Handshake Gateway**: Mandate hardware-locked session attestation for all coordination fragments. (Added: 2026-06-14)
-* **[P0] Side-Channel Immunity Filter**: Frequency-analysis middleware for SCI to detect hidden coordination noise. (Added: 2026-06-14)
-* **[P0] MRA-Backed Lineage Provider**: Hardware-bound collision-resistant semantic hashes for deep reasoning chains. (Added: 2026-06-14)
+- **[P0] HLCH Handshake Gateway**: Mandate hardware-locked session attestation
+  for all coordination fragments. (Added: 2026-06-14)
+- **[P0] Side-Channel Immunity Filter**: Frequency-analysis middleware for SCI to
+  detect hidden coordination noise. (Added: 2026-06-14)
+- **[P0] MRA-Backed Lineage Provider**: Hardware-bound collision-resistant
+  semantic hashes for deep reasoning chains. (Added: 2026-06-14)
