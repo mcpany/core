@@ -1501,3 +1501,14 @@
 ### Priority Shifts
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Elevated with mandatory **CFSA** integration to counter mimicry-based hijacking.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SHI** and **MHL** integration for all agency-initiation signals.
+
+## Evolution: [2026-06-28] Updates
+
+### Proposed Additions
+- **Attention-Density Firewall (ADF) v2**: (P0) High-speed cognitive security middleware utilizing hardware-attested "Attention Masks" to prioritize mission-critical fragments and neutralize noise injection.
+- **ZKD Discovery Hub**: (P0) Authoritative discovery gateway implementing mandatory Zero-Knowledge Capability Proofs (ZKCP) for all remote tool registries, neutralizing pre-flight shadow mapping.
+- **Stylometric Mimicry Mitigator (SMM) v3**: (P0) Behavioral security extension performing multi-modal stylometric anchoring (SVG/Audio) against the mission-root manifest to detect persona mimicry.
+
+### Priority Shifts
+- **Zero-Knowledge Discovery (ZKD) Proxy**: (Evolved to ZKD Discovery Hub) Now designated as a mandatory gateway for all enterprise swarm discovery.
+- **Attention-Density Guard (ADG)**: (Evolved to ADF v2) Elevated with the requirement for mandatory Attention Masking to counter CVE-2026-92002.

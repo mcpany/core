@@ -1163,3 +1163,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Shadow-Handshake Interceptor (SHI)**: To neutralize unauthorized mission-root initiation, we are introducing the SHI. This layer will monitor and interdict all "Agency-Initiation" signals (handshakes, token requests) from subagents, ensuring they are explicitly anchored to a verified, parent-authorized mission scope.
 - **Differential Reasoning Validator (DRV)**: Supporting the stability of heterogeneous swarms, MCP Any will implement the DRV. This service will perform framework-aware sanity checks on state fragments before cross-framework handoffs (e.g., OpenClaw to Claude Code), ensuring they do not contain payloads designed to exploit framework-specific logic bugs.
 - **Monotonic Handshake Lineage (MHL)**: We are mandating the use of monotonic counters for all agency-initiation signals. Every handshake must be cryptographically bound to a unique, non-reusable lineage token, ensuring that "Shadow Handshakes" cannot be replayed or reused to create unauthorized mission roots.
+
+---
+
+## Strategic Evolution: [2026-06-28]
+### Focus: Attention Sovereignty & Zero-Knowledge Capability Discovery
+**Context**: The GA release of OpenClaw 2026.3.1 and the default ZKD mandate in Gemini CLI v0.43.0 confirm that the security of a swarm now depends on **Attentional Priority** and **Metadata-Locked Discovery**. The disclosure of "Attention Eviction" (CVE-2026-92002) and "Schema Shadowing" (CVE-2026-95001) proves that protecting the transport is insufficient; we must now protect the **cognitive focus** of the parent agent and the **invisibility** of tool schemas.
+**Strategic Pivot**:
+- **Attention-Locked Discovery Hub (ALDH)**: MCP Any will evolve to act as the authoritative "Attention Guard." We will implement ALDH, utilizing hardware-attested "Attention Masks" to cryptographically prioritize mission-critical schemas and neutralize high-entropy noise injection designed to evict instructions.
+- **Zero-Knowledge Discovery (ZKD) Hub**: Supporting the Gemini standard, we are upgrading the ZKD Proxy into a full "Discovery Hub." Tool schemas will remain cryptographically masked until a mission-bound, hardware-attested handshake is completed, neutralizing pre-flight shadow mapping.
+- **Subagent Event-Driven Interdiction**: Leveraging OpenClaw's GA event streaming, MCP Any will implement real-time interdiction hooks. Parent agents will be able to reactively revoke subagent capabilities based on reasoning-trace event triggers, neutralizing "Persona Mimicry" before tool execution occurs.
+- **CRDT-Native Mailbox Sharding**: To resolve the scaling ceiling in horizontal Agent Teams, we are transitioning to a lock-free coordination architecture. MCP Any will host CRDT-based teammate mailboxes, ensuring non-blocking task synchronization as swarms scale beyond the current 10-agent lock ceiling.

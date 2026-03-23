@@ -652,6 +652,12 @@
 - [ ] **[P0] Handshake Lineage Inspector**: Forensic UI for visualizing the cryptographically bound lineage of mission-initiation signals. (Added: 2026-06-26)
 - [ ] **[P0] Differential Reasoning Debugger**: Workspace for reviewing cross-framework state handoffs and DRV-redacted payloads. (Added: 2026-06-26)
 
+#### Upcoming (2026-06-28 Evolution)
+- [ ] **[P0] Attention Masking Console**: (2026-06-28) UI for configuring and monitoring hardware-attested attention masks for ALDH.
+- [ ] **[P0] ZKD Capability Proof Viewer**: (2026-06-28) UI for reviewing masked schemas and authorizing ZKCP unmasking.
+- [ ] **[P0] Multi-modal Stylometric Auditor**: (2026-06-28) Visual tracker for multi-modal (SVG/Audio) behavioral identity scores.
+- [ ] **[P1] CRDT Mailbox Visualizer**: (2026-06-28) Real-time dashboard for monitoring lock-free teammate synchronization and conflict resolution.
+
 #### Upcoming (2026-06-27 Evolution)
 - [ ] **[P0] ZK-Discovery Workspace**: UI for reviewing ZK-Capability Proofs and unmasking schemas after mission-handshake. (Added: 2026-06-27)
 - [ ] **[P0] CRDT Shard Monitor**: Real-time visualization of lock-free mailbox synchronization and hardware-attested conflict resolution. (Added: 2026-06-27)

@@ -55,3 +55,9 @@ The Zero-Knowledge Discovery (ZKD) Proxy evolves the discovery process by mandat
 
 ## 7. Evolutionary Changelog
 * **2026-06-27:** Initial Document Creation.
+* **2026-06-28:** Evolved to **ZKD Discovery Hub**.
+    * **Context:** Gemini CLI v0.43.0 GA and OpenClaw 2026.3.1 confirm that schema metadata is a high-risk exfiltration vector.
+    * **Architecture Adjustment:**
+        * Mandatory **Attention Masking (v2.0)** integration: Capability cards now include hardware-attested attention masks to prioritize unmasking for mission-critical intents.
+        * **Schema-Shadowing Mitigation:** Introduction of reputation-bound unmasking, where schemas are only released to mission-roots with an attested "Lineage Score" above a configured threshold.
+    * **Security Impact:** Neutralizes CVE-2026-95001 (Schema Shadowing) and prevents metadata-based attention eviction.

@@ -820,3 +820,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Shadow-Handshake Interceptor (SHI)**: Transport-level monitoring to interdict unauthorized agency-initiation signals. (Added: 2026-06-26)
 *   **[P0] Differential Reasoning Validator (DRV)**: Framework-aware sanity checks for state fragments to prevent cross-framework poisoning. (Added: 2026-06-26)
 *   **[P0] Monotonic Handshake Lineage (MHL)**: Hardware-bound lineage tokens for all handshake and session-initiation events. (Added: 2026-06-26)
+
+#### Upcoming (2026-06-28 Evolution)
+*   **[P0] Attention-Locked Discovery Hub (ALDH)**: Utilize hardware-attested "Attention Masks" to prioritize mission-critical schemas. (Added: 2026-06-28)
+*   **[P0] ZKD Discovery Hub**: Implementation of mandatory Zero-Knowledge Capability Proofs (ZKCP) for remote registries. (Added: 2026-06-28)
+*   **[P0] SMM v3 (Multi-modal Anchoring)**: Behavioral security extension for stylometric anchoring of SVG/Audio traces. (Added: 2026-06-28)
+*   **[P0] CRDT-Native Mailbox Sharding**: Transition to lock-free teammate mailboxes for horizontal scaling. (Added: 2026-06-28)
