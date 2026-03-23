@@ -50,10 +50,3 @@ The emergence of "Reasoning Hijacking" via monologue injection represents a crit
 * Introducing the **Cross-Framework Attestation Translator (CFAT)**.
 * CFAT acts as a middleware that maps Gemini's TPM signatures to SRM-compliant tokens.
 **Security Impact:** Restores "High Trust" status for Gemini-led reasoning traces within OpenClaw-governed swarms.
-
-### Update: 2026-06-27 - Reasoning Path Integrity (RPI)
-**Context:** Today's market sync revealed the adoption of ARE v1.8 headers for hardware-signed internal reasoning steps.
-**Architecture Adjustment:**
-* **RPI Validation**: Evolving the SRM Provider to support RPI validation. We will now verify model-issued, hardware-signed reasoning fragments at each step of the chain-of-thought.
-* **Semantic Hash-Chaining**: Implementing semantic hash-chains that link hardware-signed fragments to the parent mission-root, neutralizing "Attention-Density" exhaustion attacks.
-**Security Impact:** Ensures the "Cognitive Path" remains untampered and non-repudiable across heterogeneous framework handoffs.
