@@ -22,11 +22,13 @@ attention layers using hardware-bound attestation.
     1. Define security shards containing environment constraints.
     2. Attach ALCS attestation to the shards.
     3. Initialize subagents with the locked context.
-    4. Subagents perform recursive tasks while the security shard remains pinned in the attention layer.
+    4. Subagents perform recursive tasks while the security shard remains pinned
+in the attention layer.
 
 ## 4. Design & Architecture
 - **System Flow:**
-    `[Agent Request] -> [ALCS Filter] -> [Hardware Attestation Service] -> [Pinned LLM Context] -> [Response]`
+    `[Agent Request] -> [ALCS Filter] -> [Hardware Attestation Service] ->
+[Pinned LLM Context] -> [Response]`
 - **APIs / Interfaces:**
     - `POST /v1/context/pin`: Pin a specific context fragment.
     - `GET /v1/context/attention-status`: Retrieve current attention layer occupancy metrics.

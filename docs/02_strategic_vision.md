@@ -8,7 +8,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 2. **Zero Trust Security**: Granular, capability-based access control for all tool calls.
 3. **Context Persistence**: Shared state and context inheritance across agent swarms and execution environments.
 
-## Strategic Evolution: [2026-05-23]
+## Strategic Evolution: [2026-05-23] (Identity)
 ### Focus: Federated Swarm Identity & Mission-Root Sovereignty
 **Context**: The emergence of "Intent Leakage" via high-frequency reasoning traces and the persistent "Identity Spoofing" in heterogeneous meshes (Claude Code teammates vs. OpenClaw specialists) confirm that transport-layer security is no longer sufficient. We must now protect the **semantic sovereignty** of the mission intent and provide a **federated, hardware-bound identity** that persists across all connected frameworks.
 **Strategic Pivot**:
@@ -39,7 +39,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-05-23] (Coordination)
+## Strategic Evolution: [2026-05-23] (Identity) (Coordination)
 ### Focus: Local Zero-Trust (LOWA) & Peer-to-Peer Agent Orchestration
 **Context**: The disclosure of "ClawJacked" (CVE-2026-25253) proves that "Implicit Local Trust" for loopback WebSocket traffic is a critical failure point. Simultaneously, the rise of Claude Code's "Agent Teams" signals a shift toward horizontal (mesh) collaboration. The "Universal Agent Bus" must now act as the secure, authenticated bridge for both local control and peer-to-peer teammate communication.
 **Strategic Pivot**:
@@ -469,7 +469,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-03-14]
+## Strategic Evolution: [2026-03-14] (Standardization)
 ### Focus: Browser-Origin Validation & Intent-Preserving Context (Standardization)
 **Context**: The OpenClaw security crisis (CVE-2026-25253) reveals that "Local Trust" is a flawed assumption when browser-based attacks can bridge the gap. Simultaneously, the rise of "Context Ghosting" in swarms emphasizes that context compression must be intent-aware to maintain mission stability.
 **Strategic Pivot**:
