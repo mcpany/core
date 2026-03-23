@@ -663,5 +663,10 @@
 - [ ] **[P0] Multi-Tenant Context Isolation Dashboard**: Visualize state boundaries and isolation status for sharded missions. (Added: 2026-06-28)
 - [ ] **[P1] ODCS Summarization Debugger**: Visualizer for on-demand context compression and intent-preservation scores. (Added: 2026-06-28)
 
+#### Upcoming (2026-06-29 Evolution)
+- [ ] **[P0] Reasoning Lineage Inspector**: UI component for visualizing verified `x-gemini-provenance` reasoning steps. (Added: 2026-06-29)
+- [ ] **[P0] CFIA v2 Signing Workspace**: Interactive UI for human-in-the-loop hashing and hardware-signing of context files. (Added: 2026-06-29)
+- [ ] **[P1] FPIR Lease Monitor**: Dashboard for tracking fast-path identity resumption leases and teammate rotation latency. (Added: 2026-06-29)
+
 #### Upcoming (2026-03-21 Evolution)
 - [ ] [P0] LOWA Challenge Visualizer.
