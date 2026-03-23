@@ -1,3 +1,4 @@
+// Package security provides security tests for command tools.
 package security
 
 import (

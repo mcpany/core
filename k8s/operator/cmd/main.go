@@ -1,8 +1,9 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package main is the entry point for the MCP Operator.
 package main
+
+// Package main is the entry point for the MCP Operator.
 
 import (
 	"flag"
