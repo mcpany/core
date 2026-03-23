@@ -127,6 +127,7 @@ eslint_bin.eslint_test(
     name = "lint",
     args = [
         "src/",
+        "--quiet",
     ],
     chdir = package_name(),
     data = [
