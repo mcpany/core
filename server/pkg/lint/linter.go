@@ -115,7 +115,7 @@ type Linter struct {
 // Summary: Initializes NewLinter operation.
 //
 // Parameters:
-//   - cfg (*configv1.McpAnyServerConfig): The server configuration to be linted.
+//   - cfg: *configv1.McpAnyServerConfig. The server configuration to be linted.
 //
 // Returns:
 //   - *Linter: A new Linter instance initialized with the provided configuration.
@@ -137,7 +137,7 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 // Summary: Executes Run operation.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx: context.Context. The context for the request.
 //
 // Returns:
 //   - []Result: A list of linting findings.
