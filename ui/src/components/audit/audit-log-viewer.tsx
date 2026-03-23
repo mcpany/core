@@ -61,7 +61,7 @@ export function AuditLogViewer() {
     const fetchLogs = useCallback(async () => {
         setLoading(true);
         try {
-            const filters: any = {
+            const filters: Record<string, any> = {
                 limit: 50,
                 offset: 0
             };
@@ -86,7 +86,7 @@ export function AuditLogViewer() {
     const handleExport = async () => {
         setExporting(true);
         try {
-            const filters: any = {};
+            const filters: Record<string, any> = {};
             if (toolName) filters.tool_name = toolName;
             if (userId) filters.user_id = userId;
             if (startDate) filters.start_time = startDate.toISOString();
@@ -109,22 +109,22 @@ export function AuditLogViewer() {
         }
     };
 
-    const parseJsonSafely = (jsonStr: string) => {
+    const parseJsonSafely = useCallback((jsonStr: string) => {
         if (!jsonStr) return null;
         try {
             return JSON.parse(jsonStr);
-        } catch (e) {
+        } catch (_e) {
             return jsonStr;
         }
-    };
+    }, []);
 
     const selectedLogArgs = useMemo(() => {
         return selectedLog ? parseJsonSafely(selectedLog.arguments) : null;
-    }, [selectedLog]);
+    }, [selectedLog, parseJsonSafely]);
 
     const selectedLogResult = useMemo(() => {
         return selectedLog ? parseJsonSafely(selectedLog.result) : null;
-    }, [selectedLog]);
+    }, [selectedLog, parseJsonSafely]);
 
     return (
         <div className="space-y-4 h-full flex flex-col">
@@ -141,6 +141,7 @@ export function AuditLogViewer() {
                                 placeholder="e.g. weather_get"
                                 value={toolName}
                                 onChange={(e) => setToolName(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && fetchLogs()}
                             />
                         </div>
                         <div className="grid gap-2 flex-1 w-full md:w-auto">
@@ -149,6 +150,7 @@ export function AuditLogViewer() {
                                 placeholder="e.g. alice"
                                 value={userId}
                                 onChange={(e) => setUserId(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && fetchLogs()}
                             />
                         </div>
                         <div className="grid gap-2 flex-1 w-full md:w-auto">
@@ -201,7 +203,7 @@ export function AuditLogViewer() {
                             </div>
                         </div>
                         <div className="flex gap-2 w-full md:w-auto mt-4 md:mt-0">
-                            <Button variant="outline" onClick={handleExport} disabled={exporting || loading}>
+                            <Button variant="outline" onClick={handleExport} disabled={exporting}>
                                 {exporting ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
                                 Export CSV
                             </Button>
