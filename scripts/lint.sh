@@ -44,7 +44,7 @@ if [ "$CI" != "true" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
 fi
 
 # Build everything before linting to avoid ast lookup errors
-(cd server && go build -v ./...)
+(cd server && make gen && go build -v ./...)
 
 for pkg in $(cd server && go list ./... | grep -v "/vendor/"); do
     pkg_path=$(echo "$pkg" | sed 's|github.com/mcpany/core/server||')
