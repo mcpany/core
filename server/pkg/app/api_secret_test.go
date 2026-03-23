@@ -12,9 +12,12 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/storage/memory"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
+
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -109,5 +112,40 @@ func TestSecretCRUD(t *testing.T) {
 		s, err := app.Storage.GetSecret(ctx, secretID)
 		require.NoError(t, err)
 		assert.Nil(t, s)
+	})
+}
+
+func TestHandleSecrets_RBAC_Enforcement(t *testing.T) {
+	app, store := setupApiTestApp()
+
+	// Add test secrets
+	secret := configv1.Secret_builder{Id: proto.String("test-secret"), Name: proto.String("test")}.Build()
+	require.NoError(t, store.SaveSecret(context.Background(), secret))
+
+	// Setup handler directly with RBAC middleware simulating api.go
+	handler := app.createAPIHandler(store)
+
+	t.Run("Non-Admin user cannot access /api/v1/secrets", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/secrets", nil)
+		ctx := auth.ContextWithUser(req.Context(), "victim-user")
+		ctx = auth.ContextWithRoles(ctx, []string{"user"})
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusForbidden, w.Code)
+	})
+
+	t.Run("Admin user can access /api/v1/secrets", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/secrets", nil)
+		ctx := auth.ContextWithUser(req.Context(), "admin-user")
+		ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
 	})
 }
