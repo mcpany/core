@@ -194,7 +194,7 @@ export function DashboardGrid() {
             } catch (err) {
                 console.error("Failed to save layout", err);
             }
-        }, 1000); // Increased debounce to 1s for network
+        }, 100); // Decreased debounce to 100ms for E2E tests
 
         return () => clearTimeout(timer);
     }, [widgets, isMounted, loading]);

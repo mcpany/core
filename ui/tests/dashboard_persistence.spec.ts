@@ -6,11 +6,24 @@
 import { test, expect } from '@playwright/test';
 
 test('dashboard layout persistence', async ({ page, request }) => {
+  // Setup: Ensure we have at least one service so the dashboard renders instead of the onboarding hero
+  await request.post('/api/v1/services', {
+      data: {
+          name: "test-service-for-dashboard",
+          url: "http://localhost:8080/test",
+          type: "mcp",
+          headers: {}
+      }
+  });
+
+  // Wait a little bit for the service to be registered and active
+  await page.waitForTimeout(1000);
+
   // 1. Initial Load
   await page.goto('/');
 
   // Wait for loading to finish
-  await expect(page.locator('.animate-spin')).not.toBeVisible();
+  await expect(page.locator('.lucide-loader-circle.animate-spin')).not.toBeVisible();
 
   // If dashboard is empty, we see "Your dashboard is empty"
   // If defaults are loaded, we might see widgets.
@@ -22,8 +35,15 @@ test('dashboard layout persistence', async ({ page, request }) => {
   });
 
   await page.reload();
-  await expect(page.locator('.animate-spin')).not.toBeVisible();
-  await expect(page.getByText('Your dashboard is empty')).toBeVisible();
+  await expect(page.locator('.lucide-loader-circle.animate-spin')).not.toBeVisible();
+
+  // The test environment might not have any services set up, which causes it to render the OnboardingHero instead.
+  // To test the dashboard logic, we bypass it by ensuring `hasServices` logic gets past it if empty.
+  // Since we rely on the backend here, let's make sure it's fully loaded and showing the dashboard.
+  // If it shows OnboardingHero, we'll navigate directly to the empty dashboard grid if possible or handle it.
+
+  // The grid should be visible. We use a more resilient selector.
+  await expect(page.getByText('Add widgets to customize your view.')).toBeVisible();
 
   // 2. Add a widget
   await page.getByRole('button', { name: 'Add Widget' }).first().click();
@@ -42,11 +62,11 @@ test('dashboard layout persistence', async ({ page, request }) => {
 
   // 5. Reload page
   await page.reload();
-  await expect(page.locator('.animate-spin')).not.toBeVisible();
+  await expect(page.locator('.lucide-loader-circle.animate-spin')).not.toBeVisible();
 
   // 6. Verify widget persists
   await expect(page.getByText('Recent Activity').first()).toBeVisible();
-  await expect(page.getByText('Your dashboard is empty')).not.toBeVisible();
+  await expect(page.getByText('Add widgets to customize your view.')).not.toBeVisible();
 
   // 7. Verify API state
   const response = await request.get('/api/v1/user/preferences');
