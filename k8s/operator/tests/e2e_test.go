@@ -335,7 +335,7 @@ func waitForPort(t *testing.T, ctx context.Context, addr string, timeout time.Du
 		case <-ticker.C:
 			conn, err := net.DialTimeout("tcp", addr, 500*time.Millisecond)
 			if err == nil {
-				conn.Close()
+				_ = conn.Close()
 				t.Logf("Successfully connected to %s", addr)
 				return nil
 			}
@@ -353,6 +353,6 @@ func getFreePort() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	defer l.Close()
+	defer func() { _ = l.Close() }()
 	return l.Addr().(*net.TCPAddr).Port, nil
 }
