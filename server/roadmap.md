@@ -107,7 +107,9 @@
 
 #### Upcoming (2026-03-22 Evolution)
 *   **[P0] Premium Tool Execution Timeline**: (2026-03-21) Blueprint for high-fidelity interactive timeline.
-*   **[P0] UACO Agentic SLA Middleware**: Enforcement of resource contracts (token budget, reasoning time) during task delegation. (Added: 2026-03-22)
+*   **[P0] UACO Agentic SLA Middleware**: Enforcement of hardware-attested resource contracts (token budget, reasoning time) during task delegation. (Added: 2026-03-22)
+*   **[P0] Lock-Free Mesh Coordination**: CRDT-based mailbox synchronization to eliminate "Mailbox Lock" bottlenecks in horizontal swarms. (Added: 2026-03-22)
+*   **[P0] ARL (Attestation Revocation List) Provider**: Real-time, hardware-bound capability revocation service to neutralize "Trust Lease" vulnerabilities. (Added: 2026-03-22)
 *   **[P0] Ghost Shell Execution Mode**: Isolated profiling environment for behavioral analysis of un-attested hooks. (Added: 2026-03-22)
 *   **[P1] Federated Policy Synchronizer**: Secure bus for synchronizing security guardrails across multiple MCP Any instances. (Added: 2026-03-22)
 
