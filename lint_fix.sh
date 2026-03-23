@@ -1,3 +1,0 @@
-#!/bin/bash
-cd server
-golangci-lint run --timeout 20m --fix ./cmd/... ./pkg/... ./tests/... ./examples/...
