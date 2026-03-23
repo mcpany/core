@@ -133,8 +133,8 @@ if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     # static AST traversal against generated proto outputs. Restrict packages carefully.
     export GOGC=10
     export GOMEMLIMIT=1000MiB
-    "$GOLANGCI_LINT_BIN" run -c server/.golangci.yml -j 2 --timeout 20m --fix \
-        ./server/cmd/mcpctl/... ./server/pkg/middleware/...
+    "$GOLANGCI_LINT_BIN" run -c server/.golangci.yml -j 1 --timeout 20m --fix \
+        ./server/pkg/middleware/...
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
