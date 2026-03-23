@@ -149,6 +149,11 @@
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
 *   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Pre-Trust Config-Loading Isolation (PTCLI)**: Authoritative configuration quarantine preventing ingestion of repository-level settings until explicit user attestation. (Added: 2026-06-25)
+*   **[P0] A2A Model Armor Proxy**: Transparent security tier for A2A agents providing automated input/output sanitization and header injection. (Added: 2026-06-25)
+*   **[P1] OpenShell Interop Bridge**: Infrastructure for bridging policy-based NVIDIA OpenShell agents into the UACO coordination bus. (Added: 2026-06-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

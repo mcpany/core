@@ -1461,3 +1461,14 @@
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Pre-Trust Config-Loading Isolation (PTCLI)**: (P0) Authoritative configuration quarantine that prevents the ingestion of repository-level settings until explicit hardware-bound user attestation.
+- **A2A Model Armor Proxy**: (P0) Transparent security tier for A2A agents providing automated, policy-based input/output sanitization and security header injection.
+- **OpenShell Interop Bridge**: (P1) Infrastructure for bridging policy-based NVIDIA OpenShell agents into the UACO coordination bus.
+
+### Priority Shifts
+- **ContextEngine Lifecycle Adapter**: (Re-affirmed P0) Now elevated with mandatory support for OpenClaw v2026.3.7-native hooks.
+- **Pre-Flight Sandbox Validator**: (Re-affirmed P0) Designated as the primary integration point for **PTCLI** isolation.

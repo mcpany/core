@@ -49,3 +49,9 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+
+### Update: 2026-06-25 - Integration with PTCLI for Pre-Flight Sovereignty
+**Context:** Today's market sync revealed that "Pre-Flight" configuration loading is a primary vector for identity spoofing during mission resumption.
+**Architecture Adjustment:** * Mandatory verification of the **PTCLI** attestation status before releasing any "Frontier Shards" for resumption.
+* Introduction of "Environment Hash Binding": The AMR snapshot now includes a hardware-attested hash of the project-local configuration environment.
+**Security Impact:** Prevents "Rug Pull" resumption where an agent is resumed into a previously safe mission that has been modified with malicious project-local hooks during the downtime.

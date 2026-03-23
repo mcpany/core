@@ -627,6 +627,11 @@
 - [ ] **[P0] Headless Handoff Continuity Tracker**: (2026-06-22) Visual hierarchical tracer for signed intent transfers across process boundaries.
 - [ ] **[P1] Multi-Modal Attention Probe Alert**: (2026-06-22) Security UI for inspecting blocked attention-eviction attempts in non-textual reasoning traces.
 
+### Upcoming: [2026-06-25]
+- [ ] **[P0] Pre-Trust Config Reviewer**: (2026-06-25) Visual diff viewer for quarantined repository settings with hardware-attestation triggers.
+- [ ] **[P0] Model Armor Status Hub**: (2026-06-25) Security dashboard for monitoring A2A proxy sanitization events and blocked content.
+- [ ] **[P1] OpenShell Coordination Viewer**: (2026-06-25) Visualization of NVIDIA OpenShell "claws" and their mission-root policy alignment.
+
 ### Upcoming: [2026-06-23]
 - [ ] **[P0] Attention Masking Interface**: UI for configuring and monitoring ADG v2 hardware-attested attention masks. (Added: 2026-06-23)
 - [ ] **[P0] Mission-Root Lineage Visualizer**: Enhanced visualizer for RMRA-compliant headless mission chains. (Added: 2026-06-23)
