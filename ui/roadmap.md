@@ -485,8 +485,7 @@
 - [ ] **[P0] Teammate Handshake Monitor**: Real-time status indicator for ATH identity exchange in horizontal swarms. (Added: 2026-05-29)
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
 
-#### Upcoming (2026-05-30 Evolution)
-- [ ] **[P0] Mission Anchor Visualization**: Real-time display of pinned
-      context anchors across the swarm.
-- [ ] **[P0] IEC/KNS Health Dashboard**: Visualization of micro-VM resource
-      usage and PoI (Proof-of-Isolation) status for tool execution.
+#### Upcoming: Infrastructure Evolution Expansion [2026-05-30]
+
+-   [ ] **[P0] Mission Anchor Visualization**: Real-time display of anchors.
+-   [ ] **[P0] IEC/KNS Health Dashboard**: Visualization of micro-VM usage.

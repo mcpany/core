@@ -46,16 +46,11 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 ## 7. Evolutionary Changelog
 * **2026-05-29:** Initial Document Creation.
 
-### Update: 2026-05-30 - Intent Hierarchy Integration
+### Update: Intent Hierarchy Integration (2026-05-30)
 
-**Context**: Today's research identified "Context Shadowing" where subagents
-override system instructions via the Shared Blackboard.
+**Context**: Research identified "Context Shadowing" vulnerabilities.
 
 **Architecture Adjustment**:
 
-* Integrating the **Intent Hierarchy Enforcer (IHE)** into the CSAD Pattern
-  Matcher to neutralize fragment injection.
-* Implementing **KNS Command Runner** for all CSAD-triggered diagnostic tools.
-
-**Security Impact**: Prevents subversion of swarm-wide monitoring by
-compromised agents.
+*   Integrating the **Intent Hierarchy Enforcer (IHE)** into Pattern Matcher.
+*   Implementing **KNS Command Runner** for all CSAD-triggered tools.
