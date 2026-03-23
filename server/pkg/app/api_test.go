@@ -322,12 +322,34 @@ func TestHandleTools_Detailed(t *testing.T) {
 	app, _ := setupApiTestApp()
 	handler := app.handleTools()
 
-	req := httptest.NewRequest(http.MethodGet, "/tools", nil)
-	w := httptest.NewRecorder()
-	handler.ServeHTTP(w, req)
-	if w.Code != http.StatusOK {
-		t.Errorf("Expected 200 OK, got %d", w.Code)
-	}
+	t.Run("GET tools", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/tools", nil)
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected 200 OK, got %d", w.Code)
+		}
+	})
+
+	t.Run("PUT tools - missing name", func(t *testing.T) {
+		reqBody := `{"disable": true}`
+		req := httptest.NewRequest(http.MethodPut, "/tools", bytes.NewReader([]byte(reqBody)))
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("Expected 400 Bad Request, got %d", w.Code)
+		}
+	})
+
+	t.Run("PUT tools - tool not found", func(t *testing.T) {
+		reqBody := `{"name": "non_existent_tool", "disable": true}`
+		req := httptest.NewRequest(http.MethodPut, "/tools", bytes.NewReader([]byte(reqBody)))
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
+		if w.Code != http.StatusNotFound {
+			t.Errorf("Expected 404 Not Found, got %d", w.Code)
+		}
+	})
 }
 
 func TestHandlePrompts_Detailed(t *testing.T) {
