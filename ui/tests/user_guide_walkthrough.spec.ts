@@ -37,7 +37,7 @@ test.describe('User Guide Walkthrough', () => {
     // Check for dialog opens
     await addButton.click();
     await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByText('New Service')).toBeVisible();
+    await expect(page.getByText('Select Service Template')).toBeVisible();
 
     // Close it
     await page.keyboard.press('Escape');
