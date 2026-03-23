@@ -6,7 +6,20 @@ package appconsts
 const (
 	// Name is the name of the MCP Any server. This is used in help messages and
 	// other user-facing output.
-	// Summary: Defines Name.
+	//
+	// Summary: Defines the official, user-facing name of the MCP Any application.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - string: The name of the application ("mcpany")
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	Name = "mcpany"
 )
 

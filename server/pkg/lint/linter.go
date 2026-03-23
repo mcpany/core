@@ -23,13 +23,54 @@ type Severity int
 
 const (
 	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
-	// Summary: Defines Erro.
+	//
+	// Summary: Defines the severity level for critical linting errors.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - Severity: the error severity value
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	Error Severity = iota
+
 	// Warning indicates a potential issue or best practice violation that should be addressed.
-	// Summary: Defines Warnin.
+	//
+	// Summary: Defines the severity level for non-critical warnings.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - Severity: the warning severity value
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	Warning
+
 	// Info indicates a suggestion or informational message for optimization or clarity.
-	// Summary: Defines Inf.
+	//
+	// Summary: Defines the severity level for informational linting notes.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - Severity: the info severity value
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	Info
 )
 

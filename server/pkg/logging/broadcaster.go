@@ -21,7 +21,20 @@ type Broadcaster struct {
 
 var (
 	// GlobalBroadcaster is the shared broadcaster instance for logs.
-	// Summary: Defines GlobalBroadcaster.
+	//
+	// Summary: Defines the application-wide broadcaster for real-time log event streaming.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - *Broadcaster: The global broadcaster instance
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	GlobalBroadcaster = NewBroadcaster()
 )
 

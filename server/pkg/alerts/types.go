@@ -17,23 +17,105 @@ type Status string
 
 const (
 	// SeverityCritical indicates a critical issue.
-	// Summary: Defines SeverityCritica.
+	//
+	// Summary: Designates an alert as critical, requiring immediate attention.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - Severity: the critical severity value
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	SeverityCritical Severity = "critical"
+
 	// SeverityWarning indicates a warning.
-	// Summary: Defines SeverityWarnin.
+	//
+	// Summary: Designates an alert as a warning, requiring eventual review.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - Severity: the warning severity value
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	SeverityWarning Severity = "warning"
+
 	// SeverityInfo indicates an informational alert.
-	// Summary: Defines SeverityInf.
+	//
+	// Summary: Designates an alert as informational, requiring no action.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - Severity: the info severity value
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	SeverityInfo Severity = "info"
 
 	// StatusActive indicates the alert is currently active.
-	// Summary: Defines StatusActiv.
+	//
+	// Summary: Marks an alert as currently firing and unresolved.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - Status: the active status value
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	StatusActive Status = "active"
+
 	// StatusAcknowledged indicates the alert has been acknowledged.
-	// Summary: Defines StatusAcknowledge.
+	//
+	// Summary: Marks an alert as acknowledged by a user but not yet resolved.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - Status: the acknowledged status value
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	StatusAcknowledged Status = "acknowledged"
+
 	// StatusResolved indicates the alert has been resolved.
-	// Summary: Defines StatusResolve.
+	//
+	// Summary: Marks an alert as fully resolved and no longer active.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - Status: the resolved status value
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	StatusResolved Status = "resolved"
 )
 

@@ -36,13 +36,54 @@ const (
 
 const (
 	// Server represents the server binary.
-	// Summary: Defines Serve.
+	//
+	// Summary: Identifies the validation context as the core server component.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - BinaryType: the server context
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	Server BinaryType = iota
+
 	// Worker represents the worker binary.
-	// Summary: Defines Worke.
+	//
+	// Summary: Identifies the validation context as a background worker component.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - BinaryType: the worker context
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	Worker
+
 	// Client represents the client binary.
-	// Summary: Defines Clien.
+	//
+	// Summary: Identifies the validation context as a client application.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - BinaryType: the client context
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	Client
 )
 

@@ -48,7 +48,20 @@ const (
 	redactedPlaceholder = "[REDACTED]"
 
 	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
-	// Summary: Defines HealthStatusUnhealthy.
+	//
+	// Summary: Defines the string status returned when an upstream service healthcheck fails.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - string: "unhealthy"
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	HealthStatusUnhealthy = "unhealthy"
 
 	gitCommand = "git"
@@ -307,19 +320,70 @@ type Action int
 const (
 	// ActionAllow indicates that the action is allowed to proceed.
 	//
-	// Summary: Allow action.
+	// Summary: Signals that a pre-call or post-call hook has allowed the operation to continue.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - Action: The allowed action state
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	ActionAllow Action = 0
+
 	// ActionDeny indicates that the action is denied and should be blocked.
 	//
-	// Summary: Deny action.
+	// Summary: Signals that a hook has blocked the operation due to policy violation or error.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - Action: The denied action state
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	ActionDeny Action = 1
+
 	// ActionSaveCache indicates that the result should be saved to the cache.
 	//
-	// Summary: Save to cache action.
+	// Summary: Directs the engine to persist the operation's result in the cache.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - Action: The save cache action state
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	ActionSaveCache Action = 2
+
 	// ActionDeleteCache indicates that the associated cache entry should be invalidated.
 	//
-	// Summary: Delete from cache action.
+	// Summary: Directs the engine to remove the operation's result from the cache.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - Action: The delete cache action state
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	ActionDeleteCache Action = 3
 )
 
@@ -554,6 +618,23 @@ func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
+// Execute evaluates and invokes the gRPC upstream endpoint.
+//
+// Summary: Adapts the MCP request to the gRPC protocol and triggers the execution.
+//
+// Parameters:
+//   - ctx: context.Context
+//   - req: *ExecutionRequest
+//
+// Returns:
+//   - any: result
+//   - error: error
+//
+// Errors:
+//   - any error from upstream
+//
+// Side Effects:
+//   - Makes an external gRPC call
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -905,6 +986,23 @@ func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
+// Execute evaluates and invokes the HTTP upstream endpoint.
+//
+// Summary: Adapts the MCP request to the HTTP protocol and triggers the execution.
+//
+// Parameters:
+//   - ctx: context.Context
+//   - req: *ExecutionRequest
+//
+// Returns:
+//   - any: result
+//   - error: error
+//
+// Errors:
+//   - any error from upstream
+//
+// Side Effects:
+//   - Makes an external HTTP call
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1691,6 +1789,23 @@ func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-c
 	return ch, nil
 }
 
+// Execute evaluates and invokes the MCP upstream endpoint.
+//
+// Summary: Adapts the MCP request to the MCP protocol and triggers the execution.
+//
+// Parameters:
+//   - ctx: context.Context
+//   - req: *ExecutionRequest
+//
+// Returns:
+//   - any: result
+//   - error: error
+//
+// Errors:
+//   - any error from upstream
+//
+// Side Effects:
+//   - Makes an external MCP call
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -2011,6 +2126,23 @@ func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 	return ch, nil
 }
 
+// Execute evaluates and invokes the OpenAPI upstream endpoint.
+//
+// Summary: Adapts the MCP request to the OpenAPI protocol and triggers the execution.
+//
+// Parameters:
+//   - ctx: context.Context
+//   - req: *ExecutionRequest
+//
+// Returns:
+//   - any: result
+//   - error: error
+//
+// Errors:
+//   - any error from upstream
+//
+// Side Effects:
+//   - Makes an external OpenAPI call
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2456,6 +2588,23 @@ func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequ
 	return ch, nil
 }
 
+// Execute evaluates and invokes the local command upstream endpoint.
+//
+// Summary: Adapts the MCP request to the local command protocol and triggers the execution.
+//
+// Parameters:
+//   - ctx: context.Context
+//   - req: *ExecutionRequest
+//
+// Returns:
+//   - any: result
+//   - error: error
+//
+// Errors:
+//   - any error from command
+//
+// Side Effects:
+//   - Runs local command
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2914,6 +3063,23 @@ func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 	return ch, nil
 }
 
+// Execute evaluates and invokes the command upstream endpoint.
+//
+// Summary: Adapts the MCP request to the command protocol and triggers the execution.
+//
+// Parameters:
+//   - ctx: context.Context
+//   - req: *ExecutionRequest
+//
+// Returns:
+//   - any: result
+//   - error: error
+//
+// Errors:
+//   - any error from command
+//
+// Side Effects:
+//   - Runs local command
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError

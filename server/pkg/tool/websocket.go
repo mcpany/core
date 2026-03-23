@@ -158,6 +158,23 @@ func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest
 	return ch, nil
 }
 
+// Execute evaluates and invokes the WebSocket upstream endpoint.
+//
+// Summary: Adapts the MCP request to the WebSocket protocol and triggers the execution.
+//
+// Parameters:
+//   - ctx: context.Context
+//   - req: *ExecutionRequest
+//
+// Returns:
+//   - any: result
+//   - error: error
+//
+// Errors:
+//   - any error from upstream
+//
+// Side Effects:
+//   - Makes an external WS call
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

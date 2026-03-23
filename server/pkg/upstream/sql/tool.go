@@ -229,6 +229,23 @@ func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<
 	return ch, nil
 }
 
+// Execute evaluates and invokes the SQL upstream endpoint.
+//
+// Summary: Adapts the MCP request to the SQL protocol and triggers the execution.
+//
+// Parameters:
+//   - ctx: context.Context
+//   - req: *ExecutionRequest
+//
+// Returns:
+//   - any: result
+//   - error: error
+//
+// Errors:
+//   - any error from upstream
+//
+// Side Effects:
+//   - Executes a query on database
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

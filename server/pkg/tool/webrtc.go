@@ -238,6 +238,23 @@ func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (
 	return ch, nil
 }
 
+// Execute evaluates and invokes the WebRTC upstream endpoint.
+//
+// Summary: Adapts the MCP request to the WebRTC protocol and triggers the execution.
+//
+// Parameters:
+//   - ctx: context.Context
+//   - req: *ExecutionRequest
+//
+// Returns:
+//   - any: result
+//   - error: error
+//
+// Errors:
+//   - any error from upstream
+//
+// Side Effects:
+//   - Makes an external WebRTC call
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized

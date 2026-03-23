@@ -32,16 +32,71 @@ type Status string
 
 const (
 	// StatusOk indicates the check passed successfully.
-	// Summary: Defines StatusO.
+	//
+	// Summary: Defines the status string for a successful health check.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - Status: "OK"
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	StatusOk Status = "OK"
+
 	// StatusWarning indicates a partial failure or non-critical issue that should be investigated.
-	// Summary: Defines StatusWarnin.
+	//
+	// Summary: Defines the status string for a health check that passes with warnings.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - Status: "WARNING"
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	StatusWarning Status = "WARNING"
+
 	// StatusError indicates a critical failure that prevents the service from functioning correctly.
-	// Summary: Defines StatusErro.
+	//
+	// Summary: Defines the status string for a completely failed health check.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - Status: "ERROR"
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	StatusError Status = "ERROR"
+
 	// StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
-	// Summary: Defines StatusSkippe.
+	//
+	// Summary: Defines the status string for a bypassed health check.
+	//
+	// Parameters:
+	//   - none
+	//
+	// Returns:
+	//   - Status: "SKIPPED"
+	//
+	// Errors:
+	//   - none
+	//
+	// Side Effects:
+	//   - none
 	StatusSkipped Status = "SKIPPED"
 )
 

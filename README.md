@@ -5,9 +5,9 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/mcpany/core/ci.yml?branch=main)](https://github.com/mcpany/core/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mcpany/core)](https://goreportcard.com/report/github.com/mcpany/core)
 
-## The Ultimate Developer Entry Point
+## Welcome to MCP Any
 
-Welcome to **MCP Any**, the definitive Model Context Protocol (MCP) universal adapter designed to streamline and democratize API integration for AI agents.
+**MCP Any** is the definitive Model Context Protocol (MCP) universal adapter designed to streamline and democratize API integration for AI agents.
 
 Our mission is to eliminate "binary fatigue" by ensuring you never have to write another single-purpose MCP server. With MCP Any, your existing infrastructure—whether REST, gRPC, OpenAPI, or local Command-line scripts—becomes instantly discoverable and operable by AI through elegant, configuration-driven policies.
 
@@ -88,7 +88,7 @@ Follow these steps to get up and running with MCP Any immediately.
 *   `bazelisk` (for build automation)
 *   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
 
-### One-Shot Setup
+### Quick Start
 
 The exact commands to clone, install dependencies, and run the app:
 
@@ -96,7 +96,7 @@ The exact commands to clone, install dependencies, and run the app:
 git clone https://github.com/mcpany/core.git
 cd core
 bazelisk build //...
-# Run the built binary appropriately based on Bazel output
+bazel-bin/server/cmd/server/server_/server
 ```
 
 ### Hello World
@@ -128,7 +128,7 @@ We adhere to a strict development workflow to ensure code quality and maintainab
 ### Testing
 Run all unit and integration tests to ensure code correctness. We practice proactive testing and continuous integration.
 ```bash
-bazelisk test //...
+make test
 ```
 
 ### Linting
