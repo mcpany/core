@@ -754,8 +754,10 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
 
-### Upcoming: [2026-06-18]
-- **Intent-Boundary Telemetry (IBT) Hub**: (P0) Authoritative security service for sub-millisecond visibility into inter-intent traversals and detection of "Boundary Smearing" (Added: 2026-06-18).
-- **Cognitive Proof-of-Work (CPoW) Gateway**: (P0) Resource protection middleware mandating hardware-attested computational proof for high-intensity reasoning requests (Added: 2026-06-18).
-- **Dynamic Context Reshuffling (DCR) Middleware**: (P1) Attention window optimizer re-prioritizing context fragments based on real-time reasoning path shifts (Added: 2026-06-18).
-- **Active Fragment Garbage Collection (AF-GC)**: (P0) Mandatory lifecycle service for sharded meshes purging orphaned state fragments upon mission-root shifts (Added: 2026-06-18).
+### Upcoming (2026-06-18 Sync)
+- Implement IBT Hub for OpenClaw integration.
+- Deploy CPoW Gateway for local execution security.
+
+### Upcoming (2026-06-18 Sync)
+- Implement IBT Hub for OpenClaw integration.
+- Deploy CPoW Gateway for local execution security.

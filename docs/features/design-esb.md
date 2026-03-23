@@ -61,7 +61,10 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
     * **Architecture Adjustment:** Introducing **Temporal Shard Jitter (TSJ) Injection** in Section 4. The ESB will now inject hardware-attested timing jitter into state synchronization for non-primary mission-root requests.
     * **Security Impact:** Mitigates the risk of subagents mapping mission-root constraints via high-frequency latency monitoring.
 
-### Update: 2026-06-18 - Mitigating Fragment-Ghosting
-**Context:** Market research identified a "Fragment-Ghosting" exploit where orphaned state fragments are re-ingested by unauthorized agents.
-**Architecture Adjustment:** Introducing an **Active Fragment Garbage Collection (AF-GC)** cycle to the ESB state-machine. State shards will now be explicitly revoked and purged upon mission-root rotation.
-**Security Impact:** Prevents cross-shard data leakage during rapid orchestration shifts.
+### Update: 2026-06-18 - Fragment Lifecycle Management
+**Context:** Market shifts identified "Fragment-Ghosting" as a critical resource drain.
+**Architecture Adjustment:** Integrated AF-GC (Active Fragment Garbage Collection) into the State Broker to proactively release tool-locks from orphaned agent fragments.
+
+### Update: 2026-06-18 - Fragment Lifecycle Management
+**Context:** Market shifts identified "Fragment-Ghosting" as a critical resource drain.
+**Architecture Adjustment:** Integrated AF-GC (Active Fragment Garbage Collection) into the State Broker to proactively release tool-locks from orphaned agent fragments.

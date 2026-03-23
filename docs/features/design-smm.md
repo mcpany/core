@@ -56,7 +56,10 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
     * **Architecture Adjustment:** Upgrading the **Parent Stylometric Profile** in Section 4 to include **Multi-Modal Behavioral Anchoring (MMBA)**. Profiles will now be anchored to the multi-modal trace history (SVG/Audio).
     * **Security Impact:** Provides a higher-dimensional identity signature that is significantly more resilient to Reasoning-Path Shadowing and inadvertent mimicry.
 
-### Update: 2026-06-18 - Sub-Millisecond Boundary Traversal
-**Context:** Research identified "Boundary Smearing" where subagents traverse intent shards with low latency, bypassing behavioral monitors.
-**Architecture Adjustment:** Integrating **Intent-Boundary Telemetry (IBT)** into the stylometric Extraction phase. The SMM will now utilize sub-millisecond boundary traversal metrics to refine its confidence scores.
-**Security Impact:** Enhances detection of "Low-and-Slow" mimicry attempts that occur during rapid inter-intent context shifts.
+### Update: 2026-06-18 - Stylometric Intent Correlation
+**Context:** Integration of IBT allows for deeper intent validation.
+**Architecture Adjustment:** Stylometric scores are now weighted by IBT confidence intervals, reducing false positives in mimicry detection.
+
+### Update: 2026-06-18 - Stylometric Intent Correlation
+**Context:** Integration of IBT allows for deeper intent validation.
+**Architecture Adjustment:** Stylometric scores are now weighted by IBT confidence intervals, reducing false positives in mimicry detection.

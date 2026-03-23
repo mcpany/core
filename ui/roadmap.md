@@ -592,8 +592,10 @@
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
 
-### Upcoming: [2026-06-18]
-- [ ] **[P0] Intent-Boundary Telemetry Monitor**: (2026-06-18) Real-time visualization of inter-intent traversals and boundary smearing alerts.
-- [ ] **[P0] CPoW Attestation Widget**: (2026-06-18) Status indicator for hardware-attested computational proof for high-intensity requests.
-- [ ] **[P1] Context Reshuffling Timeline**: (2026-06-18) Visual tracker for DCR-driven context re-prioritization events.
-- [ ] **[P0] Fragment GC Activity Log**: (2026-06-18) Real-time log of AF-GC purged orphaned fragments and mission-root rotation events.
+### Upcoming (2026-06-18 Sync)
+- Cognitive Proof-of-Work (CPoW) validation UI.
+- Intent-Boundary Telemetry (IBT) visualizer.
+
+### Upcoming (2026-06-18 Sync)
+- Cognitive Proof-of-Work (CPoW) validation UI.
+- Intent-Boundary Telemetry (IBT) visualizer.

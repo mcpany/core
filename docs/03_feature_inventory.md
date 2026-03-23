@@ -1361,8 +1361,12 @@
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
 
-## Grooming Update: 2026-06-18
-- [P0] **Intent-Boundary Telemetry (IBT) Hub**: Real-time visibility and alerting for intent-shard traversals.
-- [P0] **Cognitive Proof-of-Work (CPoW) Gateway**: Middleware for protecting reasoning compute budgets.
-- [P1] **Dynamic Context Reshuffling (DCR) Middleware**: Real-time attention-window optimizer for teammate coordination.
-- [P0] **Active Fragment Garbage Collection (AF-GC)**: Shard-lifecycle service to mitigate fragment-ghosting vulnerabilities.
+## Grooming: 2026-06-18
+- **[NEW] IBT Hub (P0):** Intent-Boundary Telemetry aggregator for OpenClaw-compatible observability.
+- **[NEW] CPoW Gateway (P0):** Gatekeeper for high-risk tools requiring cognitive validation.
+- **[NEW] Active Fragment Garbage Collection (AF-GC) (P1):** Mitigates "Fragment-Ghosting" by reaping stale tool-locks.
+
+## Grooming: 2026-06-18
+- **[NEW] IBT Hub (P0):** Intent-Boundary Telemetry aggregator for OpenClaw-compatible observability.
+- **[NEW] CPoW Gateway (P0):** Gatekeeper for high-risk tools requiring cognitive validation.
+- **[NEW] Active Fragment Garbage Collection (AF-GC) (P1):** Mitigates "Fragment-Ghosting" by reaping stale tool-locks.
