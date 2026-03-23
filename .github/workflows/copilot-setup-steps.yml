@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Bazel
-        uses: bazel-contrib/setup-bazel@0.85.0
+        uses: bazel-contrib/setup-bazel@0.9.1
         with:
           bazelisk-cache: true
           # Store build cache per workflow.
