@@ -34,6 +34,13 @@ func init() {
 	utilruntime.Must(mcpv1alpha1.AddToScheme(scheme))
 }
 
+// main is the entry point for the MCP Operator.
+//
+// Summary: Main entry point for the operator application.
+//
+// Side Effects:
+//   - Configures and starts the Kubernetes controller manager.
+//   - Connects to the Kubernetes cluster and watches resources.
 func main() {
 	var metricsAddr string
 	var enableLeaderElection bool

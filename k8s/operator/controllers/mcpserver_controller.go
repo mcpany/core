@@ -21,6 +21,8 @@ import (
 )
 
 // MCPServerReconciler reconciles a MCPServer object.
+//
+// Summary: Controller for managing MCPServer custom resources.
 type MCPServerReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
@@ -33,6 +35,20 @@ type MCPServerReconciler struct {
 //+kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop.
+//
+// Summary: Synchronizes the actual state of MCPServer with the desired state.
+//
+// Parameters:
+//   - ctx (context.Context): Context for the request.
+//   - req (ctrl.Request): Reconciliation request for a specific object.
+//
+// Returns:
+//   - ctrl.Result: Reconciliation result indicating whether to requeue.
+//   - error: Error if synchronization fails.
+//
+// Side Effects:
+//   - Creates or updates Kubernetes Deployment and Service resources.
+//   - Updates the status of the MCPServer resource.
 func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
@@ -62,7 +78,7 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	}
 
 	size := mcpServer.Spec.Replicas
-	if *found.Spec.Replicas != *size {
+	if found.Spec.Replicas == nil || *found.Spec.Replicas != *size {
 		found.Spec.Replicas = size
 		err = r.Update(ctx, found)
 		if err != nil {
@@ -99,6 +115,14 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 }
 
 // deploymentForMCPServer creates a Deployment for a MCPServer.
+//
+// Summary: Generates a Deployment manifest based on the MCPServer spec.
+//
+// Parameters:
+//   - m (*mcpv1alpha1.MCPServer): The MCPServer custom resource.
+//
+// Returns:
+//   - *appsv1.Deployment: The generated Deployment resource.
 func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *appsv1.Deployment {
 	ls := labelsForMCPServer(m.Name)
 	replicas := m.Spec.Replicas
@@ -152,6 +176,14 @@ func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *
 }
 
 // serviceForMCPServer creates a Service for a MCPServer.
+//
+// Summary: Generates a Service manifest based on the MCPServer spec.
+//
+// Parameters:
+//   - m (*mcpv1alpha1.MCPServer): The MCPServer custom resource.
+//
+// Returns:
+//   - *corev1.Service: The generated Service resource.
 func (r *MCPServerReconciler) serviceForMCPServer(m *mcpv1alpha1.MCPServer) *corev1.Service {
 	ls := labelsForMCPServer(m.Name)
 	svc := &corev1.Service{
@@ -175,11 +207,27 @@ func (r *MCPServerReconciler) serviceForMCPServer(m *mcpv1alpha1.MCPServer) *cor
 }
 
 // labelsForMCPServer returns labels for a MCPServer.
+//
+// Summary: Generates selector labels for the operator.
+//
+// Parameters:
+//   - name (string): Name of the resource.
+//
+// Returns:
+//   - map[string]string: Labels for selection.
 func labelsForMCPServer(name string) map[string]string {
 	return map[string]string{"app": "mcp-server", "mcp_cr": name}
 }
 
 // SetupWithManager sets up the controller with the Manager.
+//
+// Summary: Configures the controller to be managed by the given manager.
+//
+// Parameters:
+//   - mgr (ctrl.Manager): Manager for the controller.
+//
+// Returns:
+//   - error: Error if setup fails.
 func (r *MCPServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&mcpv1alpha1.MCPServer{}).

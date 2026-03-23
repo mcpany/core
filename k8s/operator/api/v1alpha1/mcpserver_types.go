@@ -8,6 +8,8 @@ import (
 )
 
 // MCPServerSpec defines the desired state of MCPServer.
+//
+// Summary: Desired configuration for an MCPServer instance.
 type MCPServerSpec struct {
 	Image       string `json:"image"`
 	Replicas    *int32 `json:"replicas"`
@@ -16,6 +18,8 @@ type MCPServerSpec struct {
 }
 
 // MCPServerStatus defines the observed state of MCPServer.
+//
+// Summary: Real-time observed status of an MCPServer instance.
 type MCPServerStatus struct {
 	AvailableReplicas int32 `json:"availableReplicas"`
 }
@@ -24,16 +28,21 @@ type MCPServerStatus struct {
 //+kubebuilder:subresource:status
 
 // MCPServer is the Schema for the mcpservers API.
+//
+// Summary: Top-level custom resource object representing an MCPServer.
 type MCPServer struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              MCPServerSpec   `json:"spec,omitempty"`
-	Status            MCPServerStatus `json:"status,omitempty"`
+
+	Spec   MCPServerSpec   `json:"spec,omitempty"`
+	Status MCPServerStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 
 // MCPServerList contains a list of MCPServer.
+//
+// Summary: List of MCPServer resources.
 type MCPServerList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
