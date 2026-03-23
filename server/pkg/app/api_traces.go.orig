@@ -263,7 +263,7 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 				argsBytes, _ := json.Marshal(span.Input)
 				durationMs := span.EndTime - span.StartTime
 				entry := audit.Entry{
-					Timestamp:  time.UnixMilli(span.StartTime),
+					Timestamp:  time.Unix(0, span.StartTime*int64(time.Millisecond)),
 					ToolName:   span.Name,
 					DurationMs: durationMs,
 					Duration:   (time.Duration(durationMs) * time.Millisecond).String(),
