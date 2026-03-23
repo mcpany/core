@@ -262,10 +262,11 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 			writeSpans = func(span Span, parentID string) {
 				argsBytes, _ := json.Marshal(span.Input)
 				durationMs := span.EndTime - span.StartTime
+				// Fix lint error: Avoid unnecessary conversion from int64 to int64 by ensuring explicit int64 cast
 				entry := audit.Entry{
-					Timestamp:  time.Unix(0, span.StartTime*int64(time.Millisecond)),
+					Timestamp:  time.Unix(0, int64(span.StartTime)*int64(time.Millisecond)),
 					ToolName:   span.Name,
-					DurationMs: durationMs,
+					DurationMs: int64(durationMs),
 					Duration:   (time.Duration(durationMs) * time.Millisecond).String(),
 					TraceID:    trace.ID,
 					SpanID:     span.ID,
