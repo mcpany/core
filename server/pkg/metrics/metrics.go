@@ -39,7 +39,7 @@ var initOnce sync.Once
 
 // Initialize prepares the metrics system with a Prometheus sink.
 //
-// Summary: Initializes the global metrics collector.
+// Summary: Initializes the system.
 //
 // Parameters: None.
 //
@@ -53,10 +53,8 @@ func Initialize() error {
 			err = sinkErr
 			return
 		}
-
 		conf := armonmetrics.DefaultConfig("mcpany")
 		conf.EnableHostname = false
-
 		if _, globalErr := armonmetrics.NewGlobal(conf, sink); globalErr != nil {
 			err = globalErr
 			return
@@ -89,17 +87,14 @@ func Handler() http.Handler {
 func StartServer(addr string) error {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", Handler())
-
 	var lc net.ListenConfig
 	ln, err := lc.Listen(context.Background(), "tcp", addr)
 	if err != nil {
 		return err
 	}
-
 	if tcpAddr, ok := ln.Addr().(*net.TCPAddr); ok {
 		fmt.Printf("Metrics server listening on port %d\n", tcpAddr.Port)
 	}
-
 	server := &http.Server{
 		Handler:           mux,
 		ReadHeaderTimeout: 3 * time.Second,
@@ -110,9 +105,9 @@ func StartServer(addr string) error {
 	return server.Serve(ln)
 }
 
-// SetGauge sets the value of a gauge.
+// SetGauge sets a gauge value.
 //
-// Summary: Sets a gauge value.
+// Summary: Sets a gauge.
 //
 // Parameters:
 //   - name (string): Metric name.
@@ -121,9 +116,7 @@ func StartServer(addr string) error {
 func SetGauge(name string, val float32, labels ...string) {
 	var metricLabels []armonmetrics.Label
 	if len(labels) > 0 {
-		metricLabels = []armonmetrics.Label{
-			{Name: "service_name", Value: labels[0]},
-		}
+		metricLabels = []armonmetrics.Label{{Name: "service_name", Value: labels[0]}}
 	}
 	armonmetrics.SetGaugeWithLabels([]string{name}, val, metricLabels)
 }
