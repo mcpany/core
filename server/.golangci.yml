@@ -4,6 +4,7 @@
 run:
   timeout: 5m
   tests: false
+  concurrency: 1
 
 linters:
   enable:
@@ -41,6 +42,12 @@ issues:
     - vendor
     - node_modules
     - .cache
+    - proto
+    - \.cache
+    - bazel-bin
+    - bazel-out
+    - bazel-testlogs
+    - bazel-app
   exclude-rules:
     - path: "_test.go"
       linters:
@@ -51,6 +58,7 @@ issues:
       text: "var-naming: avoid meaningless package names"
   skip-files:
     - '.*\.pb\.go$'
+    - '.*\.pb\.gw\.go$'
     - lll
     - funlen
     - wsl
