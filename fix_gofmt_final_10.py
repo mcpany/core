@@ -83,11 +83,16 @@ with open("ui/tests/e2e/settings.spec.ts", "r") as f:
 with open("ui/tests/e2e/settings.spec.ts", "w") as f:
     f.write(content)
 
-# Fix un-skipping comments
-with open("ui/tests/e2e.spec.ts", "r") as f:
+# Fix test data types
+with open("ui/tests/e2e/test-data.ts", "r") as f:
     content = f.read()
-    content = content.replace("// We skip checking error details as it depends on runtime health check timing", "await expect(userService.locator('text=Healthy').or(userService.locator('text=Unhealthy'))).toBeVisible({ timeout: 15000 });")
-with open("ui/tests/e2e.spec.ts", "w") as f:
+    content = content.replace("import { ServiceTemplate } from '../../../proto/config/v1/service_template';", "// import { ServiceTemplate } from '../../../proto/config/v1/service_template';")
+    content = content.replace("import { UpstreamServiceConfig } from '../../../proto/config/v1/upstream_service';", "// import { UpstreamServiceConfig } from '../../../proto/config/v1/upstream_service';")
+    content = content.replace("import { User } from '../../../proto/config/v1/user';", "// import { User } from '../../../proto/config/v1/user';")
+    content = content.replace("].map((service) => UpstreamServiceConfig.toJSON(UpstreamServiceConfig.fromJSON(service)));", "] as any;")
+    content = content.replace("].map((template) => ServiceTemplate.toJSON(ServiceTemplate.fromJSON(template)));", "] as any;")
+    content = content.replace("].map((user) => User.toJSON(User.fromJSON(user)));", "] as any;")
+with open("ui/tests/e2e/test-data.ts", "w") as f:
     f.write(content)
 
 # Fix backend skips
@@ -112,10 +117,30 @@ for file in server_files:
     content = content.replace('\t// t.SkipNow()\n', '')
     content = content.replace('\t// t.Skip("Skipping flaky cat facts test due to rate limiting issues")\n', '')
     content = content.replace('\t// t.SkipNow() // Removed skip\n', '')
+    content = content.replace('\t\tt.Skip("Skipping test, no drinks found in response")\n', '')
+    content = content.replace('\t\tt.Skip("Skipping test, no meals found in response")\n', '')
+    content = content.replace('\tt.SkipNow()\n', '')
+    content = content.replace('\tt.Skip("Skipping flaky cat facts test due to rate limiting issues")\n', '')
+
 
     # Check for empty ifs left by skip removal
     content = re.sub(r'if _, ok := .*?\[".*?"\]\.\(string\); ok \{\s*\}', '', content)
     content = re.sub(r'if .*?\[".*?"\] == nil \{\s*\}', '', content)
 
+    # Check `TestUpstreamService_Genderize(t *testing.T) { //` -> `TestUpstreamService_Genderize(t *testing.T) {`
+    content = re.sub(r'\(t \*testing\.T\)\s*{\s*//\s*\n\s*t\.SkipNow\(\)', r'(t *testing.T) {\n', content)
+    content = re.sub(r'\(t \*testing\.T\)\s*{\s*//\s*\n', r'(t *testing.T) {\n', content)
+
+    # Clean up util imports
+    if "pkg/util" in content and "util." not in content:
+        content = content.replace('\t"github.com/mcpany/core/server/pkg/util"\n', '')
+
     with open(file, "w") as f:
         f.write(content)
+
+# Fix un-skipping comments
+with open("ui/tests/e2e.spec.ts", "r") as f:
+    content = f.read()
+    content = content.replace("// We skip checking error details as it depends on runtime health check timing", "await expect(userService.locator('text=Healthy').or(userService.locator('text=Unhealthy'))).toBeVisible({ timeout: 15000 });")
+with open("ui/tests/e2e.spec.ts", "w") as f:
+    f.write(content)

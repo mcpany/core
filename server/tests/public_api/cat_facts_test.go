@@ -20,7 +20,6 @@ import (
 )
 
 func TestUpstreamService_CatFacts(t *testing.T) {
-	//
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
