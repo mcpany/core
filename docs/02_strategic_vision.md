@@ -1163,3 +1163,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Shadow-Handshake Interceptor (SHI)**: To neutralize unauthorized mission-root initiation, we are introducing the SHI. This layer will monitor and interdict all "Agency-Initiation" signals (handshakes, token requests) from subagents, ensuring they are explicitly anchored to a verified, parent-authorized mission scope.
 - **Differential Reasoning Validator (DRV)**: Supporting the stability of heterogeneous swarms, MCP Any will implement the DRV. This service will perform framework-aware sanity checks on state fragments before cross-framework handoffs (e.g., OpenClaw to Claude Code), ensuring they do not contain payloads designed to exploit framework-specific logic bugs.
 - **Monotonic Handshake Lineage (MHL)**: We are mandating the use of monotonic counters for all agency-initiation signals. Every handshake must be cryptographically bound to a unique, non-reusable lineage token, ensuring that "Shadow Handshakes" cannot be replayed or reused to create unauthorized mission roots.
+
+---
+
+## Strategic Evolution: [2026-06-28]
+### Focus: Trust Cascading & Reasoning-Aware Attention Firewalls
+**Context**: Today's discovery of the Trust Cascade Protocol (TCP) and the emergence of Attention-Locked Reasoning Budgets (ALRB) confirm that swarm infrastructure must move beyond "Point-to-Point" attestation to "Lineage-Aware Trust Propagation." Simultaneously, multi-modal smuggling via CSS/SVG animations (CVE-2026-10102) proves that semantic sanitization must now account for non-textual reasoning drivers.
+**Strategic Pivot**:
+- **Trust Cascade Relay (TCR)**: MCP Any will evolve to support TCP, implementing a "Trust Relay" that allows hardware-attested parent identities to issue ephemeral, mission-bound trust fragments to subagents. This neutralizes "Cognitive Stall" in deep swarms by eliminating redundant handshakes while maintaining absolute sovereignty.
+- **Attention-Locked Reasoning Budget (ALRB)**: We are mandating ALRB for all high-trust sessions. Subagent reasoning budgets will be cryptographically locked to verified mission anchors, ensuring that token consumption is always tied to intent-aligned reasoning and preventing "Attention-Density" exhaustion.
+- **Multi-Modal Animation Sanitizer (MMAS)**: We are upgrading the Structural Metadata Sanitizer to include MMAS. This layer will perform real-time deconstruction of SVG/CSS animations in tool metadata to detect and block "Invisible Instruction Smuggling" before it reaches the reasoning engine.
+- **Fragment Replay Guard (FRG)**: To counter CVE-2026-11043, MCP Any will implement FRG, utilizing monotonic counters and session-bound nonces for all trust fragments to prevent unauthorized sub-mission spawning.

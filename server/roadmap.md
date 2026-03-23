@@ -820,3 +820,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Shadow-Handshake Interceptor (SHI)**: Transport-level monitoring to interdict unauthorized agency-initiation signals. (Added: 2026-06-26)
 *   **[P0] Differential Reasoning Validator (DRV)**: Framework-aware sanity checks for state fragments to prevent cross-framework poisoning. (Added: 2026-06-26)
 *   **[P0] Monotonic Handshake Lineage (MHL)**: Hardware-bound lineage tokens for all handshake and session-initiation events. (Added: 2026-06-26)
+
+#### Upcoming (2026-06-28 Evolution)
+*   **[P0] Trust Cascade Relay (TCR)**: Implement ephemeral trust fragment propagation for low-latency deep delegations. (Added: 2026-06-28)
+*   **[P0] Attention-Locked Reasoning Budget (ALRB)**: Cryptographically bind reasoning effort to mission anchors to prevent noise-driven exhaustion. (Added: 2026-06-28)
+*   **[P0] Multi-Modal Animation Sanitizer (MMAS)**: Extension for Structural Metadata Sanitizer to block instruction smuggling in CSS/SVG animations. (Added: 2026-06-28)
+*   **[P1] Fragment Replay Guard (FRG)**: Monotonic counter enforcement for ephemeral trust fragments to prevent unauthorized reuse. (Added: 2026-06-28)

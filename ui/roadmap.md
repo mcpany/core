@@ -657,3 +657,8 @@
 - [ ] **[P0] CRDT Shard Monitor**: Real-time visualization of lock-free mailbox synchronization and hardware-attested conflict resolution. (Added: 2026-06-27)
 - [ ] **[P0] Auditor Attestation Portal**: Interactive workspace for third-party security auditors to review and sign dynamic skill grafts. (Added: 2026-06-27)
 - [ ] **[P1] Reasoning Path Integrity Viewer**: Visual debugger for hardware-signed RPI fragments and semantic hash-chain integrity. (Added: 2026-06-27)
+
+#### Upcoming (2026-06-28 Evolution)
+- [ ] **[P0] Trust Tree Visualizer**: Visual dashboard for monitoring hardware-attested trust cascades and fragment lineages. (Added: 2026-06-28)
+- [ ] **[P0] Reasoning-Density Heatmap**: Real-time visualization of agent attention anchors and budget consumption levels. (Added: 2026-06-28)
+- [ ] **[P0] Animation Sanitization Log**: Security hub for reviewing deconstructed CSS/SVG metadata and blocked smuggling attempts. (Added: 2026-06-28)

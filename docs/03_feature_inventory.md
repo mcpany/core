@@ -1501,3 +1501,15 @@
 ### Priority Shifts
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Elevated with mandatory **CFSA** integration to counter mimicry-based hijacking.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SHI** and **MHL** integration for all agency-initiation signals.
+
+## Evolution: [2026-06-28] Updates
+
+### Proposed Additions
+- **Trust Cascade Relay (TCR)**: (P0) Authoritative trust-propagation service implementing the TCP standard to neutralize cognitive stall in deep swarms.
+- **Attention-Locked Reasoning Budget (ALRB)**: (P0) Resource management middleware cryptographically binding reasoning effort to verified mission anchors.
+- **Multi-Modal Animation Sanitizer (MMAS)**: (P0) Advanced extension for the Structural Metadata Sanitizer to detect instruction smuggling in SVG/CSS animations.
+- **Trust Fragment Replay Guard (FRG)**: (P1) Security service for the TCR enforcing monotonic counters for ephemeral trust fragments.
+
+### Priority Shifts
+- **Structural Metadata Sanitizer (SMS)**: (Re-affirmed P0) Elevated with mandatory **MMAS** integration to counter CVE-2026-10102.
+- **Reasoning Path Integrity (RPI) Validator**: (Re-affirmed P1) Evolving to support **TCP-compliant** lineage validation.
