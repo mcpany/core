@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, ChevronDown, Info, HelpCircle } from "lucide-react";
+import { Plus, Trash2, ChevronRight, ChevronDown, Info, HelpCircle, GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
     Collapsible,
@@ -41,29 +41,30 @@ export interface Schema {
     required?: string[];
     anyOf?: Schema[];
     oneOf?: Schema[];
-    enum?: unknown[];
-    default?: unknown;
+    enum?: any[];
+    default?: any;
     format?: string;
     title?: string;
-    [key: string]: unknown;
+    [key: string]: any;
 }
 
 interface UniversalSchemaFormProps {
     schema: Schema;
-    value: unknown;
-    onChange: (value: unknown) => void;
+    value: any;
+    onChange: (value: any) => void;
     errors?: Record<string, string>;
 }
 
 interface SchemaFieldProps {
     path: string;
     schema: Schema;
-    value: unknown;
-    onChange: (path: string, value: unknown) => void;
+    value: any;
+    onChange: (path: string, value: any) => void;
     errors?: Record<string, string>;
     required?: boolean;
     label?: string;
     level?: number;
+    isLast?: boolean;
 }
 
 /**
@@ -122,7 +123,7 @@ function FieldLabel({ label, required, description, error, className, htmlFor }:
 /**
  * Recursive Schema Field Component
  */
-function SchemaField({ path, schema, value, onChange, errors, required, label, level = 0 }: SchemaFieldProps) {
+function SchemaField({ path, schema, value, onChange, errors, required, label, level = 0, isLast }: SchemaFieldProps) {
     let type = schema?.type;
     // Normalize type array (e.g., ["string", "null"] -> "string")
     if (Array.isArray(type)) {
@@ -145,12 +146,12 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                 let bestIdx = 0;
                 let maxMatch = -1;
 
-                options.forEach((opt: Schema, idx: number) => {
+                options.forEach((opt: any, idx: number) => {
                     if (!opt.properties) return;
                     const keys = Object.keys(value as object);
                     let matches = 0;
                     keys.forEach(k => {
-                        if (k in opt.properties!) matches++;
+                        if (k in opt.properties) matches++;
                     });
 
                     if (matches > maxMatch) {
@@ -182,7 +183,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                             <SelectValue placeholder="Select Type" />
                         </SelectTrigger>
                         <SelectContent>
-                            {options.map((opt: Schema, idx: number) => (
+                            {options.map((opt: any, idx: number) => (
                                 <SelectItem key={idx} value={String(idx)} className="text-xs">
                                     {opt.title || opt.description || `Option ${idx + 1}`}
                                 </SelectItem>
@@ -212,8 +213,8 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                         <SelectValue placeholder="Select option..." />
                     </SelectTrigger>
                     <SelectContent>
-                        {schema?.enum.map((val: unknown) => (
-                            <SelectItem key={String(val)} value={String(val)}>{String(val)}</SelectItem>
+                        {schema?.enum.map((val: string) => (
+                            <SelectItem key={val} value={val}>{val}</SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
@@ -233,7 +234,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                         id={path}
                         value={(value as string) || undefined}
                         onChange={(v) => onChange(path, v || "")}
-                        accept={schema.contentMediaType as string | undefined}
+                        accept={schema.contentMediaType}
                         className={cn(hasError && "border-destructive ring-destructive/20")}
                     />
                 </div>
@@ -252,7 +253,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                         id={path}
                         value={(value as string) || ""}
                         onChange={(e) => onChange(path, e.target.value)}
-                        placeholder={(schema.default as string) || ((schema.examples as unknown[])?.[0] as string) || "Enter text"}
+                        placeholder={schema.default || schema.examples?.[0] || "Enter text"}
                         className={cn("min-h-[80px]", hasError && "border-destructive focus-visible:ring-destructive/20")}
                     />
                 ) : (
@@ -261,7 +262,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                         type={isPassword ? "password" : "text"}
                         value={(value as string) || ""}
                         onChange={(e) => onChange(path, e.target.value)}
-                        placeholder={(schema.default as string) || ((schema.examples as unknown[])?.[0] as string) || "Enter text"}
+                        placeholder={schema.default || schema.examples?.[0] || "Enter text"}
                         className={cn(hasError && "border-destructive focus-visible:ring-destructive/20")}
                     />
                 )}
@@ -279,7 +280,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                     step={type === "integer" ? "1" : "any"}
                     value={(value as number) || ""}
                     onChange={(e) => onChange(path, e.target.value === "" ? undefined : Number(e.target.value))}
-                    placeholder={schema.default !== undefined ? String(schema.default) : "0"}
+                    placeholder={schema.default ? String(schema.default) : "0"}
                     className={cn(hasError && "border-destructive focus-visible:ring-destructive/20")}
                 />
             </div>

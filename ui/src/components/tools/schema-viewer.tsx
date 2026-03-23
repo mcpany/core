@@ -23,10 +23,10 @@ export interface Schema {
   anyOf?: Schema[];
   oneOf?: Schema[];
   allOf?: Schema[];
-  enum?: unknown[];
-  default?: unknown;
+  enum?: any[];
+  default?: any;
   format?: string;
-  [key: string]: unknown;
+  [key: string]: any;
 }
 
 interface SchemaViewerProps {
