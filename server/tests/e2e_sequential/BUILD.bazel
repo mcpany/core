@@ -12,9 +12,9 @@ go_test(
         "strict_mode_test.go",
     ],
     deps = [
-        "//server/tests/integration",
         "//server/tests/framework",
-        "@com_github_stretchr_testify//require",
+        "//server/tests/integration",
         "@com_github_modelcontextprotocol_go_sdk//mcp",
+        "@com_github_stretchr_testify//require",
     ],
 )
