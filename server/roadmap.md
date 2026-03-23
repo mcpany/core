@@ -1,11 +1,11 @@
 # Server Roadmap
 
 ## 1. Top Priorities: The Universal Agent Bus (New Strategic Focus)
-*   **[Security] Policy Firewall Engine:** Implement Rego/CEL based hooking for tool calls.
-*   **[Security] Granular Scopes:** implement capability-based token system (`fs:read:/tmp`).
-*   **[Comms] Recursive Context Protocol:** Standardize headers for Subagent inheritance.
-*   **[State] Shared Key-Value Store:** Embedded SQLite "Blackboard" tool for agents.
-*   **[Security] HITL Middleware:** Suspension protocol for user approval flows.
+*   **[Security] Policy Firewall Engine**: Implement Rego/CEL based hooking for tool calls.
+*   **[Security] Granular Scopes**: implement capability-based token system (`fs:read:/tmp`).
+*   **[Comms] Recursive Context Protocol**: Standardize headers for Subagent inheritance.
+*   **[State] Shared Key-Value Store**: Embedded SQLite "Blackboard" tool for agents.
+*   **[Security] HITL Middleware**: Suspension protocol for user approval flows.
 
 ## 2. Updated Roadmap
 
@@ -273,7 +273,7 @@ These features represent the next logical steps for the product, focusing on Ent
 
 ### Critical Areas (Refactoring Needed)
 
-*   **one at this time.*
+*   **one at this time.
 
 ### Warning Areas
 
@@ -692,7 +692,7 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Synthetic Policy Synthesizer**: Experimental mesh-local policy generation service backed by hardware attestation (Added: [2026-06-18]).
 
 #### Upcoming ([2026-06-04] Evolution)
-*   **Pre-Commit Speculative Sanitizer (PCSS)**: Mandatory security middleware for the Speculative Execution Guard to neutralize "Speculative Fragment Poisoning."
+*   **Pre-Commit Speculative Sanitizer (PCSS)**: Mandatory security middleware for the Speculative Execution Guard to neutralize "Speculative Fragment Poisoning."**
 *   **Mission-Root Gravity (MRG) Middleware**: Advanced extension for Live Context Sharding to prevent "Semantic Drift" in granular meshes.
 *   **Multi-Hop Persistence Relay (MHPR)**: Performance-optimizing security service for the LFTA Trust Lease Manager to support persistent hardware-attested trust across multiple delegation hops.
 *   **Sub-Millisecond ARL Synchronizer**: High-speed listener for the LFTA ARL Middleware to support ARL v3.0 synchronization in sub-100ms intervals.
@@ -728,7 +728,7 @@ These features represent the next logical steps for the product, focusing on Ent
 #### Upcoming ([2026-06-13] Evolution)
 *   **[P0] Shadow Coordination Interceptor (SCI)**: Authoritative transport-level security service for the T2T Bridge that monitors metadata and state-tags to neutralize out-of-band collusion (Added: [2026-06-13]).
 *   **[P0] Dynamic Attention Gating (DAG) Middleware**: Cognitive stability middleware that performs real-time attention-utilization analysis and dynamically prunes noise to prevent mission-root intent eviction (Added: [2026-06-13]).
-*   **Hardware-Locked Coordination Handshake**: (Re-affirmed P0) Designated as the primary enforcement point for **Attention Sovereignty** and **Side-Channel Immunity**.
+*   **Hardware-Locked Coordination Handshake**: (Re-affirmed P0) Designated as the primary enforcement point for **Attention Sovereignty**: and **Side-Channel Immunity**.
 
 #### Upcoming ([2026-06-14] Evolution)
 *   **[P0] Structural Metadata Sanitizer (SMS)**: Real-time semantic deconstruction of discovery metadata to neutralize SDMI instructions (Added: [2026-06-14]).
