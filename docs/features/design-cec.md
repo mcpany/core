@@ -1,3 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 # Design Doc: Cognitive Entropy Controller (CEC)
 
 **Status:** Draft
@@ -5,9 +8,9 @@
 
 ## 1. Context and Scope
 
-As agent swarms grow deeper, they become susceptible to **Cognitive
-Entropy**hallucinatory drift or cumulative intent poisoning. The CEC provides
-real-time monitoring and governance of this entropy.
+As agent swarms grow deeper, they become susceptible to Cognitive Entropy-
+hallucinatory drift or cumulative intent poisoning. The CEC provides real-time
+monitoring and governance of this entropy.
 
 ## 2. Goals & Non-Goals
 
@@ -23,7 +26,8 @@ real-time monitoring and governance of this entropy.
 
 * **User Persona:** Swarm Security Architect.
 * **Primary Goal:** Prevent a deep swarm from diverging into unauthorized
-reasoning paths.
+  paths.
+
 * **The Happy Path (Tasks):**
     1. Define an "Entropy Budget" for the mission.
     2. CEC intercepts traces and calculates scores.
@@ -32,14 +36,13 @@ reasoning paths.
 
 ## 4. Design & Architecture
 
-* **System Flow:** `Sub-Agent` -> `SRM Provider` -> `CEC` -> `Policy Engine` ->
-`Mission Root`
+* **System Flow:** `Sub-Agent` -> `SRM` -> `CEC` -> `Policy` -> `Mission Root`
 * **APIs / Interfaces:** `POST /v1/entropy/policy`, `GET /v1/entropy/score`
 * **Data Storage/State:** Scores stored in `Shared KV Store (Blackboard)`.
 
 ## 5. Alternatives Considered
 
-* **Centralized LLM Monitoring:** Rejected due to token cost/latency.
+* **Centralized LLM Monitoring:** Rejected due to token cost and latency.
 
 ## 6. Cross-Cutting Concerns
 

@@ -1,78 +1,52 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 # Design Doc: Active Intent Alignment (AIA) Broker
 
 **Status:** Draft
-**Created:** 2026-03-19
+**Created:** 2026-06-18
 
 ## 1. Context and Scope
 
-As AI agent swarms become more autonomous and specialized, the risk of "Intent
-Drift" increases. Specialist agents, while cryptographically verified, may begin
-to diverge from the mission-root intent during long-running reasoning chains.
-The AIA Broker provides a mechanism for continuous semantic verification of
-agent reasoning traces against the primary mission intent.
+The AIA Broker ensures that specialist agent reasoning remains mission-
+anchored
+by issuing hardware-attested heartbeats.
 
 ## 2. Goals & Non-Goals
 
 * **Goals:**
-    * Implement a hardware-attested "Alignment Heartbeat" for specialist agents.
-    * Provide real-time semantic comparison between subagent traces and mission-
-      root manifests.
-
-    * Enable automated interdiction/revocation of capabilities upon detected
-      drift.
-
+    * Periodically verify specialist alignment with mission-root intent.
+    * Neutralize cumulative drift in valid reasoning chains.
 * **Non-Goals:**
-    * It will not attempt to rewrite agent reasoning traces.
-    * It will not manage agent resource budgets (handled by RBF).
+    * Replacing real-time entropy monitoring (handled by CEC).
 
 ## 3. Critical User Journey (CUJ)
 
-* **User Persona:** Security-conscious Enterprise Swarm Orchestrator
-* **Primary Goal:** Ensure that a specialized "Code Auditor" subagent does not
-  diverge into "Code Generation" during a security review mission.
-
+* **User Persona:** Lead Systems Architect.
+* **Primary Goal:** Ensure multi-hop delegations remain within intent bounds.
 * **The Happy Path (Tasks):**
-    1. Orchestrator spawns a swarm with a signed Mission Root intent.
-    2. AIA Broker establishes an "Alignment Anchor" for the mission.
-3. Subagents periodically submit reasoning fragments to the AIA Broker for
-heartbeat attestation.
+    1. Parent agent delegates task to specialist via AIA Broker.
+    2. AIA Broker attaches a hardware-attested alignment heartbeat
+       requirement.
 
-4. AIA Broker verifies semantic alignment and issues a signed "Alignment Token."
-    5. Tool calls require a valid, recent Alignment Token to proceed.
+    3. Specialist provides periodic alignment proofs during reasoning.
+    4. Broker validates proofs against mission-root signature.
 
 ## 4. Design & Architecture
 
-* **System Flow:**
-Subagent -> Reasoning Fragment -> AIA Broker -> [Semantic Similarity Engine] ->
-[Mission Manifest] -> Alignment Token -> Tool Gateway.
-
-* **APIs / Interfaces:**
-    * `POST /v1/align/heartbeat`: Submits a reasoning trace for alignment
-      verification.
-
-    * `GET /v1/align/status`: Retrieves the current alignment score for a
-      session.
-
-* **Data Storage/State:**
-Uses the Shared KV Store (Blackboard) to persist Mission Root manifests and
-session alignment history.
+* **System Flow:** `Specialist` -> `AIA Proof` -> `Broker` -> `Attestation`
+* **APIs / Interfaces:** `POST /v1/intent/align`, `GET /v1/intent/status`
+* **Data Storage/State:** Proofs persisted in session state metadata.
 
 ## 5. Alternatives Considered
 
-* **Binary Handshake Only:** Rejected because it doesn't account for drift
-  *after* the initial delegation.
-
-* **Full Context Monitoring:** Rejected due to high token overhead and latency;
-  heartbeats provide a sampled, more efficient approach.
+* **Manual Review:** Rejected for machine-speed swarms.
 
 ## 6. Cross-Cutting Concerns
 
-* **Security (Zero Trust):** All heartbeats must be hardware-attested (SRM/TPM)
-  to prevent spoofing.
-
-* **Observability:** Alignment scores are exported to the Unified Telemetry
-  Bridge for real-time monitoring.
+* **Security:** Cryptographically binds proof to specific mission fragments.
+* **Observability:** Metrics on alignment success rates.
 
 ## 7. Evolutionary Changelog
 
-* **2026-03-19:** Initial Document Creation.
+* **2026-06-18:** Initial Document Creation.
