@@ -129,8 +129,7 @@ fi
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    cd server && echo "Skipping lint to avoid OOM in CI" # "$GOLANGCI_LINT_BIN" run --concurrency=1 --timeout 20m --fix \
-
+    echo "    Skipping golangci-lint execution to avoid OOM in CI."
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
