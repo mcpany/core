@@ -1,5 +1,4 @@
 # Design Doc: ContextEngine Plugin Adapter
-
 **Status:** Draft
 **Created:** 2026-04-25
 

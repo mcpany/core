@@ -1,5 +1,4 @@
 # Design Doc: Deterministic Absence Proof (DAP) Provider
-
 **Status:** Draft
 **Created:** 2026-04-22
 

@@ -701,12 +701,6 @@ These features represent the next logical steps for the product, focusing on Ent
 
 #### Upcoming (2026-04-23 Evolution)
 
-*   **[P0] OpenClaw ContextEngine Adapter**: Implementation of lifecycle hooks for external context management (Added: 2026-04-23).
-
-*   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
-
-*   **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-generated UI fragments (Added: 2026-04-23).
-
 #### Upcoming (2026-05-09 Evolution)
 
 *   **[P0] Pluggable Context Sovereignty Provider**: Implementation of Sovereignty-Aware Memory Shards for the OpenClaw ContextEngine. (Added: 2026-05-09)
@@ -714,6 +708,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Continuous Lifecycle Attestation (CLA) Middleware**: Background polling for "Absence Manifests" to prevent post-boot config injection. (Added: 2026-05-09)
 
 *   **[P1] Asynchronous RL Telemetry Collector**: Multi-agent rollout collection for OpenClaw-RL training synchronization. (Added: 2026-05-09)
+
+*   **[P0] OpenClaw ContextEngine Adapter**: Implementation of lifecycle hooks for external context management (Added: 2026-04-23).
+
+*   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
+
+*   **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-generated UI fragments (Added: 2026-04-23).
 
 #### Upcoming (2026-05-02 Evolution)
 

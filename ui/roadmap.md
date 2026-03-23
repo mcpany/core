@@ -507,6 +507,12 @@
 
 #### Upcoming (2026-04-23 Evolution)
 
+#### Upcoming (2026-05-09 Evolution)
+
+- [ ] **[P0] Context Sovereignty Dashboard**: Visualization of cryptographically bound memory shards and mission-root alignment. (Added: 2026-05-09)
+
+- [ ] **[P0] Continuous Attestation Monitor**: Real-time tracker for CLA polling and "Absence Manifest" re-verification status. (Added: 2026-05-09)
+
 - [ ] **[P0] A2UI Secure Component Host**: Sandboxed rendering for agent-generated interactive fragments (Added: 2026-04-23).
 
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
@@ -624,14 +630,6 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
-
-#### Upcoming (2026-05-09 Evolution)
-
-- [ ] **[P0] Context Sovereignty Dashboard**: Visualization of cryptographically bound memory shards and mission-root alignment. (Added: 2026-05-09)
-
-- [ ] **[P0] Continuous Attestation Monitor**: Real-time tracker for CLA polling and "Absence Manifest" re-verification status. (Added: 2026-05-09)
-
-- [ ] **[P1] Asynchronous RL Rollout View**: Live feed of multi-agent rollout collection for OpenClaw-RL synchronization. (Added: 2026-05-09)
 
 #### Upcoming (2026-05-08 Evolution)
 

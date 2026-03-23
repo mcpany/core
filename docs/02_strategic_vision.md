@@ -59,7 +59,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: The "ClawJacked" (CVE-2026-25253) exploit proves that implicit local trust is a catastrophic failure point when browser-based attackers can bridge to agent control planes. Simultaneously, the persistent "Memory Smearing" pain point confirms that shared state without reasoning-aware isolation leads to swarm divergence and knowledge loss.
 **Strategic Pivot**:
 
-- **Mandatory Origin-Locked Connectivity**: MCP Any will transition from optional to mandatory browser-origin and session-token binding for all local listeners. This ensures that only verified local applications--not malicious websites--can command the Universal Agent Bus.
+- **Mandatory Origin-Locked Connectivity**: MCP Any will transition from optional to mandatory browser-origin and session-token binding for all local listeners. This ensures that only verified local applications—not malicious websites—can command the Universal Agent Bus.
 
 - **Intent-Sealed Reasoning Shards**: We are evolving RAMS into a default "Sealed Shard" model for the Blackboard. MCP Any will provide cryptographically isolated memory regions for every subagent, ensuring that "Intent Drift" or a compromised agent cannot pollute or exfiltrate state from siblings.
 
@@ -242,7 +242,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ### Focus: Cognitive Sovereignty & Negative Trust Architectures
 
-**Context**: The emergence of "Cognitive Sovereignty" within the Sovereign Agent Collective and the discovery of "Replay-as-Delegation" attacks signal a move toward more granular, non-repudiable agent agency. Security must now account for "Negative Trust"--proving the absolute absence of malicious configurations--while ensuring subagents maintain reasoning privacy from their parents.
+**Context**: The emergence of "Cognitive Sovereignty" within the Sovereign Agent Collective and the discovery of "Replay-as-Delegation" attacks signal a move toward more granular, non-repudiable agent agency. Security must now account for "Negative Trust"—proving the absolute absence of malicious configurations—while ensuring subagents maintain reasoning privacy from their parents.
 **Strategic Pivot**:
 
 - **Cognitive Sovereignty Hub**: MCP Any will evolve to support "Encrypted Monologue" storage. This ensures that a specialized subagent's internal reasoning remains private and immutable, accessible only to the subagent and the user via the A2UI Gateway, preventing parent-agent "Reasoning Hijacking."
@@ -481,6 +481,21 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Prompt Path Protection**: Introducing a "Content Validation Middleware" that scans tool outputs and retrieved data for malicious instructions (Indirect Prompt Injection) before they are re-ingested by the agent.
 
 - **Swarm Integrity Monitoring**: Moving from individual agent security to "Swarm Security," where the collective behavior of a multi-agent system is monitored for anomalies that might indicate a compromised specialist agent.
+
+---
+
+## Strategic Evolution: [2026-03-14]
+
+### Focus: Browser-Origin Validation & Intent-Preserving Context
+
+**Context**: The OpenClaw security crisis (CVE-2026-25253) reveals that "Local Trust" is a flawed assumption when browser-based attacks can bridge the gap. Simultaneously, the rise of "Context Ghosting" in swarms emphasizes that context compression must be intent-aware to maintain mission stability.
+**Strategic Pivot**:
+
+- **Zero-Trust Browser Origin Validation**: MCP Any will implement mandatory `Origin` and `Sec-Fetch-Site` header verification for all local API/WebSocket endpoints. This ensures that only authorized local applications (not malicious websites) can communicate with the gateway.
+
+- **Intent-Preserving Context Lifecycle**: Our Context Bridge will evolve to support "Intent-Scoped" summaries. Instead of generic compression, it will use the parent agent's verified intent to guide the summarization process, ensuring critical goals are never "ghosted."
+
+- **Optimized Swarm mTLS**: Introducing a lightweight "Session-Bound" mTLS implementation for A2A communications, reducing handshake overhead while maintaining cryptographic isolation between agents.
 
 ---
 
