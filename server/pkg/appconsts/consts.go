@@ -3,7 +3,6 @@
 
 package appconsts
 
-// Name provides documentation for Name.
 const (
 	// Name is the name of the MCP Any server. This is used in help messages and
 	// other user-facing output.

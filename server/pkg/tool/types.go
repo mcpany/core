@@ -43,7 +43,6 @@ import (
 	"google.golang.org/protobuf/types/dynamicpb"
 )
 
-// HealthStatusUnhealthy provides documentation for HealthStatusUnhealthy.
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
@@ -263,16 +262,6 @@ type Callable interface {
 // Summary: Enumeration of possible hook actions.
 type Action int
 
-// ActionSaveCache Deny llow DeleteCache provides documentation for ActionDeleteCache.
-// ActionSaveCache provides documentation for ActionSaveCache.
-// ActionDeny provides documentation for ActionDeny.
-// ActionAllow provides documentation for ActionAllow.
-// ActionSaveCache provides documentation for ActionSaveCache.
-// ActionDeny provides documentation for ActionDeny.
-// ActionAllow provides documentation for ActionAllow.
-// ActionSaveCache provides documentation for ActionSaveCache.
-// ActionDeny provides documentation for ActionDeny.
-// ActionAllow provides documentation for ActionAllow.
 const (
 	// ActionAllow indicates that the action is allowed to proceed.
 	//

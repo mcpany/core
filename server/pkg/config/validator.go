@@ -34,13 +34,6 @@ const (
 	schemeHTTPS = "https"
 )
 
-// Worker Server Client provides documentation for Client.
-// Worker provides documentation for Worker.
-// Server provides documentation for Server.
-// Worker provides documentation for Worker.
-// Server provides documentation for Server.
-// Worker provides documentation for Worker.
-// Server provides documentation for Server.
 const (
 	// Server represents the server binary.
 	// Summary: Defines Serve.
@@ -58,10 +51,6 @@ const (
 // Summary: Enumeration of authentication validation contexts.
 type AuthValidationContext int
 
-// AuthValidationContextIncoming provides documentation for AuthValidationContextIncoming.
-// AuthValidationContextIncoming Outgoing provides documentation for AuthValidationContextOutgoing.
-// AuthValidationContextIncoming provides documentation for AuthValidationContextIncoming.
-// AuthValidationContextIncoming provides documentation for AuthValidationContextIncoming.
 const (
 	// AuthValidationContextIncoming represents incoming authentication (e.g., Users).
 	// Summary: Defines AuthValidationContextIncomin.
@@ -72,11 +61,7 @@ const (
 )
 
 type contextKey string
-// SkipSecretValidationKey provides documentation for SkipSecretValidationKey.
 
-// SkipSecretValidationKey FilesystemCheckKey provides documentation for SkipFilesystemCheckKey.
-// SkipSecretValidationKey provides documentation for SkipSecretValidationKey.
-// SkipSecretValidationKey provides documentation for SkipSecretValidationKey.
 const (
 	// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
 	// Value should be a boolean.

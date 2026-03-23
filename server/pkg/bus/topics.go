@@ -3,28 +3,6 @@
 
 package bus
 
-// ToolExecutionRequestTopic ServiceGetResultTopic questTopic ListResultTopic questTopic gistrationResultTopic questTopic lExecutionResultTopic provides documentation for ToolExecutionResultTopic.
-// ToolExecutionRequestTopic provides documentation for ToolExecutionRequestTopic.
-// ServiceGetResultTopic provides documentation for ServiceGetResultTopic.
-// ServiceGetRequestTopic provides documentation for ServiceGetRequestTopic.
-// ServiceListResultTopic provides documentation for ServiceListResultTopic.
-// ServiceListRequestTopic provides documentation for ServiceListRequestTopic.
-// ServiceRegistrationResultTopic provides documentation for ServiceRegistrationResultTopic.
-// ServiceRegistrationRequestTopic provides documentation for ServiceRegistrationRequestTopic.
-// ToolExecutionRequestTopic provides documentation for ToolExecutionRequestTopic.
-// ServiceGetResultTopic provides documentation for ServiceGetResultTopic.
-// ServiceGetRequestTopic provides documentation for ServiceGetRequestTopic.
-// ServiceListResultTopic provides documentation for ServiceListResultTopic.
-// ServiceListRequestTopic provides documentation for ServiceListRequestTopic.
-// ServiceRegistrationResultTopic provides documentation for ServiceRegistrationResultTopic.
-// ServiceRegistrationRequestTopic provides documentation for ServiceRegistrationRequestTopic.
-// ToolExecutionRequestTopic provides documentation for ToolExecutionRequestTopic.
-// ServiceGetResultTopic provides documentation for ServiceGetResultTopic.
-// ServiceGetRequestTopic provides documentation for ServiceGetRequestTopic.
-// ServiceListResultTopic provides documentation for ServiceListResultTopic.
-// ServiceListRequestTopic provides documentation for ServiceListRequestTopic.
-// ServiceRegistrationResultTopic provides documentation for ServiceRegistrationResultTopic.
-// ServiceRegistrationRequestTopic provides documentation for ServiceRegistrationRequestTopic.
 const (
 	// ServiceRegistrationRequestTopic defines the NATS subject for publishing service registration requests.
 	// Summary: Defines ServiceRegistrationRequestTopic.

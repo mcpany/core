@@ -22,13 +22,6 @@ import (
 	webhook "github.com/standard-webhooks/standard-webhooks/libraries/go"
 )
 
-// HeaderWebhookTimestamp ID Signature provides documentation for HeaderWebhookSignature.
-// HeaderWebhookTimestamp provides documentation for HeaderWebhookTimestamp.
-// HeaderWebhookID provides documentation for HeaderWebhookID.
-// HeaderWebhookTimestamp provides documentation for HeaderWebhookTimestamp.
-// HeaderWebhookID provides documentation for HeaderWebhookID.
-// HeaderWebhookTimestamp provides documentation for HeaderWebhookTimestamp.
-// HeaderWebhookID provides documentation for HeaderWebhookID.
 const (
 	// HeaderWebhookID is the header name for the webhook ID.
 	// Summary: Defines HeaderWebhookID.

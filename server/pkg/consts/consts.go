@@ -4,64 +4,6 @@
 // Package consts defines common constants used across the application.
 package consts
 
-// DefaultMaxHTTPResponseBytes CommandOutputBytes indPort NotificationResourcesListChanged PromptsListChanged MethodResourcesSubscribe ad List PromptsGet List ToolsList Call NameServiceSeparator DefaultOriginAllow hCallbackPath MethodConfigureCache HeaderMcpSessionID ContentTypeTextEventStream ApplicationJSON xtKeyRemoteAddr provides documentation for ContextKeyRemoteAddr.
-// DefaultMaxHTTPResponseBytes provides documentation for DefaultMaxHTTPResponseBytes.
-// DefaultMaxCommandOutputBytes provides documentation for DefaultMaxCommandOutputBytes.
-// DefaultBindPort provides documentation for DefaultBindPort.
-// NotificationResourcesListChanged provides documentation for NotificationResourcesListChanged.
-// NotificationPromptsListChanged provides documentation for NotificationPromptsListChanged.
-// MethodResourcesSubscribe provides documentation for MethodResourcesSubscribe.
-// MethodResourcesRead provides documentation for MethodResourcesRead.
-// MethodResourcesList provides documentation for MethodResourcesList.
-// MethodPromptsGet provides documentation for MethodPromptsGet.
-// MethodPromptsList provides documentation for MethodPromptsList.
-// MethodToolsList provides documentation for MethodToolsList.
-// MethodToolsCall provides documentation for MethodToolsCall.
-// ToolNameServiceSeparator provides documentation for ToolNameServiceSeparator.
-// DefaultOriginAllow provides documentation for DefaultOriginAllow.
-// OauthCallbackPath provides documentation for OauthCallbackPath.
-// MethodConfigureCache provides documentation for MethodConfigureCache.
-// HeaderMcpSessionID provides documentation for HeaderMcpSessionID.
-// ContentTypeTextEventStream provides documentation for ContentTypeTextEventStream.
-// ContentTypeApplicationJSON provides documentation for ContentTypeApplicationJSON.
-// DefaultMaxHTTPResponseBytes provides documentation for DefaultMaxHTTPResponseBytes.
-// DefaultMaxCommandOutputBytes provides documentation for DefaultMaxCommandOutputBytes.
-// DefaultBindPort provides documentation for DefaultBindPort.
-// NotificationResourcesListChanged provides documentation for NotificationResourcesListChanged.
-// NotificationPromptsListChanged provides documentation for NotificationPromptsListChanged.
-// MethodResourcesSubscribe provides documentation for MethodResourcesSubscribe.
-// MethodResourcesRead provides documentation for MethodResourcesRead.
-// MethodResourcesList provides documentation for MethodResourcesList.
-// MethodPromptsGet provides documentation for MethodPromptsGet.
-// MethodPromptsList provides documentation for MethodPromptsList.
-// MethodToolsList provides documentation for MethodToolsList.
-// MethodToolsCall provides documentation for MethodToolsCall.
-// ToolNameServiceSeparator provides documentation for ToolNameServiceSeparator.
-// DefaultOriginAllow provides documentation for DefaultOriginAllow.
-// OauthCallbackPath provides documentation for OauthCallbackPath.
-// MethodConfigureCache provides documentation for MethodConfigureCache.
-// HeaderMcpSessionID provides documentation for HeaderMcpSessionID.
-// ContentTypeTextEventStream provides documentation for ContentTypeTextEventStream.
-// ContentTypeApplicationJSON provides documentation for ContentTypeApplicationJSON.
-// DefaultMaxHTTPResponseBytes provides documentation for DefaultMaxHTTPResponseBytes.
-// DefaultMaxCommandOutputBytes provides documentation for DefaultMaxCommandOutputBytes.
-// DefaultBindPort provides documentation for DefaultBindPort.
-// NotificationResourcesListChanged provides documentation for NotificationResourcesListChanged.
-// NotificationPromptsListChanged provides documentation for NotificationPromptsListChanged.
-// MethodResourcesSubscribe provides documentation for MethodResourcesSubscribe.
-// MethodResourcesRead provides documentation for MethodResourcesRead.
-// MethodResourcesList provides documentation for MethodResourcesList.
-// MethodPromptsGet provides documentation for MethodPromptsGet.
-// MethodPromptsList provides documentation for MethodPromptsList.
-// MethodToolsList provides documentation for MethodToolsList.
-// MethodToolsCall provides documentation for MethodToolsCall.
-// ToolNameServiceSeparator provides documentation for ToolNameServiceSeparator.
-// DefaultOriginAllow provides documentation for DefaultOriginAllow.
-// OauthCallbackPath provides documentation for OauthCallbackPath.
-// MethodConfigureCache provides documentation for MethodConfigureCache.
-// HeaderMcpSessionID provides documentation for HeaderMcpSessionID.
-// ContentTypeTextEventStream provides documentation for ContentTypeTextEventStream.
-// ContentTypeApplicationJSON provides documentation for ContentTypeApplicationJSON.
 const (
 	// ContentTypeApplicationJSON defines the standard "application/json" content type.
 	// Summary: Defines ContentTypeApplicationJSON.
@@ -116,8 +58,6 @@ const (
 	NotificationResourcesListChanged = "notifications/resources/list_changed"
 	// DefaultBindPort is the default port for the server to bind to.
 	// Summary: Defines DefaultBindPort.
-	// CommandStatusError provides documentation for CommandStatusError.
-	// CommandStatusSuccess provides documentation for CommandStatusSuccess.
 	DefaultBindPort = 8070
 	// DefaultMaxCommandOutputBytes is the default maximum size of the command output (stdout + stderr) in bytes.
 	// 10MB should be enough for most use cases while preventing OOM.
@@ -134,11 +74,6 @@ const (
 	ContextKeyRemoteAddr = "remote_addr"
 )
 
-// CommandStatusError ccess Timeout provides documentation for CommandStatusTimeout.
-// CommandStatusError provides documentation for CommandStatusError.
-// CommandStatusSuccess provides documentation for CommandStatusSuccess.
-// CommandStatusError provides documentation for CommandStatusError.
-// CommandStatusSuccess provides documentation for CommandStatusSuccess.
 const (
 	// CommandStatusSuccess represents the status for a successful command execution.
 	// Summary: Defines CommandStatusSuccess.

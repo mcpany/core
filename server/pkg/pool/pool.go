@@ -17,10 +17,6 @@ import (
 	"github.com/samber/lo"
 )
 
-// ErrPoolClosed Full provides documentation for ErrPoolFull.
-// ErrPoolClosed provides documentation for ErrPoolClosed.
-// ErrPoolClosed provides documentation for ErrPoolClosed.
-// ErrPoolClosed provides documentation for ErrPoolClosed.
 var (
 	// ErrPoolClosed is returned when an operation is attempted on a closed pool.
 	// Summary: Defines ErrPoolClosed.

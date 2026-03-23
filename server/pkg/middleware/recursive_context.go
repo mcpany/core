@@ -249,7 +249,6 @@ func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 // Summary: Represents a RecursiveContextKeyType.
 type RecursiveContextKeyType string
 
-// RecursiveContextDataKey provides documentation for RecursiveContextDataKey.
 const (
 	// RecursiveContextDataKey is the key used to store the recursive context data in the request context.
 	// Summary: Defines RecursiveContextDataKe.

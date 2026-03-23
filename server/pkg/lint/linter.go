@@ -21,13 +21,6 @@ import (
 // Summary: Represents a Severity.
 type Severity int
 
-// Warning Error Info provides documentation for Info.
-// Warning provides documentation for Warning.
-// Error provides documentation for Error.
-// Warning provides documentation for Warning.
-// Error provides documentation for Error.
-// Warning provides documentation for Warning.
-// Error provides documentation for Error.
 const (
 	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
 	// Summary: Defines Erro.

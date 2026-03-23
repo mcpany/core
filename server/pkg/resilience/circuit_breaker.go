@@ -18,13 +18,6 @@ import (
 // Summary: Represents a State.
 type State int32
 
-// StateOpen Closed HalfOpen provides documentation for StateHalfOpen.
-// StateOpen provides documentation for StateOpen.
-// StateClosed provides documentation for StateClosed.
-// StateOpen provides documentation for StateOpen.
-// StateClosed provides documentation for StateClosed.
-// StateOpen provides documentation for StateOpen.
-// StateClosed provides documentation for StateClosed.
 const (
 	// StateClosed represents the state where the circuit breaker allows requests to pass through.
 	// Summary: Defines StateClose.

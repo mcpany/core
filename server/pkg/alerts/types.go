@@ -15,22 +15,6 @@ type Severity string
 // Summary: Represents a Status.
 type Status string
 
-// StatusAcknowledged ive rityInfo Warning Critical usResolved provides documentation for StatusResolved.
-// StatusAcknowledged provides documentation for StatusAcknowledged.
-// StatusActive provides documentation for StatusActive.
-// SeverityInfo provides documentation for SeverityInfo.
-// SeverityWarning provides documentation for SeverityWarning.
-// SeverityCritical provides documentation for SeverityCritical.
-// StatusAcknowledged provides documentation for StatusAcknowledged.
-// StatusActive provides documentation for StatusActive.
-// SeverityInfo provides documentation for SeverityInfo.
-// SeverityWarning provides documentation for SeverityWarning.
-// SeverityCritical provides documentation for SeverityCritical.
-// StatusAcknowledged provides documentation for StatusAcknowledged.
-// StatusActive provides documentation for StatusActive.
-// SeverityInfo provides documentation for SeverityInfo.
-// SeverityWarning provides documentation for SeverityWarning.
-// SeverityCritical provides documentation for SeverityCritical.
 const (
 	// SeverityCritical indicates a critical issue.
 	// Summary: Defines SeverityCritica.

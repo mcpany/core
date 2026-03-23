@@ -30,16 +30,6 @@ import (
 // Summary: Represents a Status.
 type Status string
 
-// StatusError Warning Ok ipped provides documentation for StatusSkipped.
-// StatusError provides documentation for StatusError.
-// StatusWarning provides documentation for StatusWarning.
-// StatusOk provides documentation for StatusOk.
-// StatusError provides documentation for StatusError.
-// StatusWarning provides documentation for StatusWarning.
-// StatusOk provides documentation for StatusOk.
-// StatusError provides documentation for StatusError.
-// StatusWarning provides documentation for StatusWarning.
-// StatusOk provides documentation for StatusOk.
 const (
 	// StatusOk indicates the check passed successfully.
 	// Summary: Defines StatusO.
