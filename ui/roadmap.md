@@ -647,8 +647,16 @@
 - [ ] **[P0] Lineage Provenance Inspector**: Forensic UI for reviewing monotonic counters and cryptographically signed mission chains. (Added: 2026-06-25)
 - [ ] **[P1] Lock-Free Coordination Debugger**: Visualizer for CRDT-based mailbox shard synchronization and conflict resolution. (Added: 2026-06-25)
 
+#### Upcoming (2026-06-26 Evolution)
+- [ ] **[P0] Stylometric Alignment Dashboard**: Visual tracker for real-time stylometric consistency scores and mimicry alerts. (Added: 2026-06-26)
+- [ ] **[P0] Handshake Lineage Inspector**: Forensic UI for visualizing the cryptographically bound lineage of mission-initiation signals. (Added: 2026-06-26)
+- [ ] **[P0] Differential Reasoning Debugger**: Workspace for reviewing cross-framework state handoffs and DRV-redacted payloads. (Added: 2026-06-26)
+
+#### Upcoming (2026-06-27 Evolution)
+- [ ] **[P0] ZK-Discovery Workspace**: UI for reviewing ZK-Capability Proofs and unmasking schemas after mission-handshake. (Added: 2026-06-27)
+- [ ] **[P0] CRDT Shard Monitor**: Real-time visualization of lock-free mailbox synchronization and hardware-attested conflict resolution. (Added: 2026-06-27)
+- [ ] **[P0] Auditor Attestation Portal**: Interactive workspace for third-party security auditors to review and sign dynamic skill grafts. (Added: 2026-06-27)
+- [ ] **[P1] Reasoning Path Integrity Viewer**: Visual debugger for hardware-signed RPI fragments and semantic hash-chain integrity. (Added: 2026-06-27)
+
 #### Upcoming (2026-06-02 Evolution)
-- [ ] **[P0] Reasoning Sovereignty Dashboard**: (2026-06-02) Visual monitor for ARP validation status and TPM-signed reasoning monologues.
-- [ ] **[P0] Spectral Side-Channel Map**: (2026-06-02) Real-time visualization of "Reasoning Jitter" effectiveness and timing-noise injection.
-- [ ] **[P0] CSS Shard Streaming Monitor**: (2026-06-02) Dashboard for tracking granular shard delivery and identifying Shard Splicing attempts.
-- [ ] **[P0] AVQ Quorum Workspace**: (2026-06-02) Interactive interface for monitoring multi-agent autonomous task verification and ARP signatures.
+- [ ] [P0] AVQ Hub
