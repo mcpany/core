@@ -140,7 +140,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 			OpenapiService: nil,
 		}.Build()
 		expectedKey, _ := util.SanitizeServiceName("test-service")
-		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything()).Return().Once()
+		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
 		_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "openapi service config is nil")
@@ -154,7 +154,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 			}.Build(),
 		}.Build()
 		expectedKey, _ := util.SanitizeServiceName("test-service")
-		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything()).Return().Once()
+		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
 		_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "OpenAPI spec content is missing")
@@ -168,7 +168,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 			}.Build(),
 		}.Build()
 		expectedKey, _ := util.SanitizeServiceName("test-service")
-		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything()).Return().Once()
+		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
 		_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to parse OpenAPI spec")
@@ -207,9 +207,9 @@ func TestOpenAPIUpstream_Register_SpecUrl(t *testing.T) {
 	}.Build()
 
 	expectedKey, _ := util.SanitizeServiceName("test-service-url")
-	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything()).Return().Once()
-	mockToolManager.On("GetTool", mock.Anything()).Return(nil, false)
-	mockToolManager.On("AddTool", mock.Anything()).Return(nil)
+	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
+	mockToolManager.On("GetTool", mock.Anything).Return(nil, false)
+	mockToolManager.On("AddTool", mock.Anything).Return(nil)
 
 	// Register should fetch spec from URL
 	_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
@@ -230,7 +230,7 @@ func TestOpenAPIUpstream_Register_InvalidSpecUrl(t *testing.T) {
 	}.Build()
 
 	expectedKey, _ := util.SanitizeServiceName("test-service-invalid-spec-url")
-	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything()).Return().Once()
+	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
 
 	// Register should fail because spec_url is invalid scheme (file://) and thus content is missing
 	_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
@@ -261,7 +261,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 
 	t.Run("invalid underlying method FQN", func(t *testing.T) {
 		mockToolManager := new(MockToolManager)
-		mockToolManager.On("GetTool", mock.Anything()).Return(nil, false)
+		mockToolManager.On("GetTool", mock.Anything).Return(nil, false)
 		pbTools := []*v1.Tool{
 			v1.Tool_builder{
 				Name:                proto.String("test-tool"),
@@ -274,7 +274,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 
 	t.Run("path not found in spec", func(t *testing.T) {
 		mockToolManager := new(MockToolManager)
-		mockToolManager.On("GetTool", mock.Anything()).Return(nil, false)
+		mockToolManager.On("GetTool", mock.Anything).Return(nil, false)
 		pbTools := []*v1.Tool{
 			v1.Tool_builder{
 				Name:                proto.String("test-tool"),
@@ -288,7 +288,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 
 	t.Run("operation not found for method", func(t *testing.T) {
 		mockToolManager := new(MockToolManager)
-		mockToolManager.On("GetTool", mock.Anything()).Return(nil, false)
+		mockToolManager.On("GetTool", mock.Anything).Return(nil, false)
 		pbTools := []*v1.Tool{
 			v1.Tool_builder{
 				Name:                proto.String("test-tool"),
@@ -305,7 +305,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 
 	t.Run("add tool fails", func(t *testing.T) {
 		mockToolManager := new(MockToolManager)
-		mockToolManager.On("GetTool", mock.Anything()).Return(nil, false)
+		mockToolManager.On("GetTool", mock.Anything).Return(nil, false)
 		pbTools := []*v1.Tool{
 			v1.Tool_builder{
 				Name:                proto.String("test-tool"),
@@ -317,7 +317,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 			Get: &openapi3.Operation{},
 		})
 
-		mockToolManager.On("AddTool", mock.Anything()).Return(fmt.Errorf("failed to add tool")).Once()
+		mockToolManager.On("AddTool", mock.Anything).Return(fmt.Errorf("failed to add tool")).Once()
 		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, nil, false, doc, serviceConfig)
 		assert.Equal(t, 0, count)
 		mockToolManager.AssertExpectations(t)
@@ -350,9 +350,9 @@ func TestOpenAPIUpstream_Register_Cache(t *testing.T) {
 	}.Build()
 
 	expectedKey, _ := util.SanitizeServiceName("test-service")
-	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything()).Twice()
-	mockToolManager.On("GetTool", mock.Anything()).Return(nil, false)
-	mockToolManager.On("AddTool", mock.Anything()).Return(nil)
+	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Twice()
+	mockToolManager.On("GetTool", mock.Anything).Return(nil, false)
+	mockToolManager.On("AddTool", mock.Anything).Return(nil)
 
 	// First registration, should parse and cache
 	_, _, _, err := u.Register(ctx, config, mockToolManager, nil, nil, false)
@@ -415,19 +415,19 @@ paths:
 	}.Build()
 
 	expectedKey, _ := util.SanitizeServiceName("test-service")
-	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything()).Return()
-	mockToolManager.On("GetTool", mock.Anything()).Return(nil, false)
+	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return()
+	mockToolManager.On("GetTool", mock.Anything).Return(nil, false)
 
 	// Expect AddTool to be called and capture the tool
 	var addedTool tool.Tool
-	mockToolManager.On("AddTool", mock.Anything()).Run(func(args mock.Arguments) {
+	mockToolManager.On("AddTool", mock.Anything).Run(func(args mock.Arguments) {
 		addedTool = args.Get(0).(tool.Tool)
 	}).Return(nil)
 
 	_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 	assert.NoError(t, err)
 
-	mockToolManager.AssertCalled(t, "AddTool", mock.Anything())
+	mockToolManager.AssertCalled(t, "AddTool", mock.Anything)
 	require.NotNil(t, addedTool)
 
 	// Verify the input schema

@@ -69,7 +69,7 @@ func TestHandleAuditExport_Mock(t *testing.T) {
 				Result:     "success",
 			},
 		}
-		mockStore.On("Read", mock.Anything(), mock.Anything()).Return(entries, nil).Once()
+		mockStore.On("Read", mock.Anything, mock.Anything).Return(entries, nil).Once()
 
 		req := httptest.NewRequest(http.MethodGet, "/audit/export", nil)
 		w := httptest.NewRecorder()
@@ -87,7 +87,7 @@ func TestHandleAuditExport_Mock(t *testing.T) {
 	})
 
 	t.Run("StoreError", func(t *testing.T) {
-		mockStore.On("Read", mock.Anything(), mock.Anything()).Return([]audit.Entry{}, assert.AnError).Once()
+		mockStore.On("Read", mock.Anything, mock.Anything).Return([]audit.Entry{}, assert.AnError).Once()
 
 		req := httptest.NewRequest(http.MethodGet, "/audit/export", nil)
 		w := httptest.NewRecorder()

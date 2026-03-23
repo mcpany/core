@@ -173,7 +173,7 @@ func TestRegisterDynamicResources_Detailed(t *testing.T) {
 		}.Build()
 
 		mockToolManager.On("GetTool", "test-service.myTool").Return(new(MockTool), true)
-		mockResourceManager.On("AddResource", mock.Anything()).Return()
+		mockResourceManager.On("AddResource", mock.Anything).Return()
 
 		u.registerDynamicResources(serviceID, grpcService, mockResourceManager, mockToolManager)
 
@@ -207,8 +207,8 @@ func TestRegisterDynamicResources_Detailed(t *testing.T) {
 
 		u.registerDynamicResources(serviceID, grpcService, mockResourceManager, mockToolManager)
 
-		mockToolManager.AssertNotCalled(t, "GetTool", mock.Anything())
-		mockResourceManager.AssertNotCalled(t, "AddResource", mock.Anything())
+		mockToolManager.AssertNotCalled(t, "GetTool", mock.Anything)
+		mockResourceManager.AssertNotCalled(t, "AddResource", mock.Anything)
 	})
 
 	t.Run("tool not found for call ID", func(t *testing.T) {
@@ -233,8 +233,8 @@ func TestRegisterDynamicResources_Detailed(t *testing.T) {
 
 		u.registerDynamicResources(serviceID, grpcService, mockResourceManager, mockToolManager)
 
-		mockToolManager.AssertNotCalled(t, "GetTool", mock.Anything())
-		mockResourceManager.AssertNotCalled(t, "AddResource", mock.Anything())
+		mockToolManager.AssertNotCalled(t, "GetTool", mock.Anything)
+		mockResourceManager.AssertNotCalled(t, "AddResource", mock.Anything)
 	})
 
 	t.Run("tool not found in manager", func(t *testing.T) {
@@ -265,7 +265,7 @@ func TestRegisterDynamicResources_Detailed(t *testing.T) {
 		u.registerDynamicResources(serviceID, grpcService, mockResourceManager, mockToolManager)
 
 		mockToolManager.AssertExpectations(t)
-		mockResourceManager.AssertNotCalled(t, "AddResource", mock.Anything())
+		mockResourceManager.AssertNotCalled(t, "AddResource", mock.Anything)
 	})
 
 	t.Run("invalid dynamic definition (missing grpc call)", func(t *testing.T) {
@@ -285,8 +285,8 @@ func TestRegisterDynamicResources_Detailed(t *testing.T) {
 
 		u.registerDynamicResources(serviceID, grpcService, mockResourceManager, mockToolManager)
 
-		mockToolManager.AssertNotCalled(t, "GetTool", mock.Anything())
-		mockResourceManager.AssertNotCalled(t, "AddResource", mock.Anything())
+		mockToolManager.AssertNotCalled(t, "GetTool", mock.Anything)
+		mockResourceManager.AssertNotCalled(t, "AddResource", mock.Anything)
 	})
 
 	t.Run("new dynamic resource failure", func(t *testing.T) {
@@ -317,6 +317,6 @@ func TestRegisterDynamicResources_Detailed(t *testing.T) {
 
 		u.registerDynamicResources(serviceID, grpcService, mockResourceManager, mockToolManager)
 
-		mockResourceManager.AssertNotCalled(t, "AddResource", mock.Anything())
+		mockResourceManager.AssertNotCalled(t, "AddResource", mock.Anything)
 	})
 }

@@ -101,7 +101,7 @@ func TestDynamicResource_Read(t *testing.T) {
 
 	t.Run("string result", func(t *testing.T) {
 		mockTool := new(MockTool)
-		mockTool.On("Execute", mock.Anything(), mock.Anything()).Return("test-content", nil)
+		mockTool.On("Execute", mock.Anything, mock.Anything).Return("test-content", nil)
 		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
 		dr, _ := NewDynamicResource(def, mockTool)
 		result, err := dr.Read(context.Background())
@@ -113,7 +113,7 @@ func TestDynamicResource_Read(t *testing.T) {
 
 	t.Run("byte slice result", func(t *testing.T) {
 		mockTool := new(MockTool)
-		mockTool.On("Execute", mock.Anything(), mock.Anything()).Return([]byte("test-content"), nil)
+		mockTool.On("Execute", mock.Anything, mock.Anything).Return([]byte("test-content"), nil)
 		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
 		dr, _ := NewDynamicResource(def, mockTool)
 		result, err := dr.Read(context.Background())
@@ -126,7 +126,7 @@ func TestDynamicResource_Read(t *testing.T) {
 	t.Run("map result", func(t *testing.T) {
 		mockTool := new(MockTool)
 		mapResult := map[string]interface{}{"key": "value"}
-		mockTool.On("Execute", mock.Anything(), mock.Anything()).Return(mapResult, nil)
+		mockTool.On("Execute", mock.Anything, mock.Anything).Return(mapResult, nil)
 		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
 		dr, _ := NewDynamicResource(def, mockTool)
 		result, err := dr.Read(context.Background())
@@ -139,7 +139,7 @@ func TestDynamicResource_Read(t *testing.T) {
 
 	t.Run("unsupported result type", func(t *testing.T) {
 		mockTool := new(MockTool)
-		mockTool.On("Execute", mock.Anything(), mock.Anything()).Return(123, nil)
+		mockTool.On("Execute", mock.Anything, mock.Anything).Return(123, nil)
 		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
 		dr, _ := NewDynamicResource(def, mockTool)
 		_, err := dr.Read(context.Background())
@@ -149,7 +149,7 @@ func TestDynamicResource_Read(t *testing.T) {
 
 	t.Run("execution error", func(t *testing.T) {
 		mockTool := new(MockTool)
-		mockTool.On("Execute", mock.Anything(), mock.Anything()).Return(nil, errors.New("execution failed"))
+		mockTool.On("Execute", mock.Anything, mock.Anything).Return(nil, errors.New("execution failed"))
 		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
 		dr, _ := NewDynamicResource(def, mockTool)
 		_, err := dr.Read(context.Background())
@@ -162,7 +162,7 @@ func TestDynamicResource_Read(t *testing.T) {
 		// valid map but with a cyclic or unsupported value to trigger json.Marshal error
 		// Using a channel which is not marshalable
 		mapResult := map[string]interface{}{"key": make(chan int)}
-		mockTool.On("Execute", mock.Anything(), mock.Anything()).Return(mapResult, nil)
+		mockTool.On("Execute", mock.Anything, mock.Anything).Return(mapResult, nil)
 		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
 		dr, _ := NewDynamicResource(def, mockTool)
 		_, err := dr.Read(context.Background())
@@ -177,7 +177,7 @@ func TestDynamicResource_Read(t *testing.T) {
 		}.Build()
 
 		mockTool := new(MockTool)
-		mockTool.On("Execute", mock.Anything(), mock.Anything()).Return("{}", nil)
+		mockTool.On("Execute", mock.Anything, mock.Anything).Return("{}", nil)
 		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
 		dr, _ := NewDynamicResource(defWithMime, mockTool)
 		result, err := dr.Read(context.Background())

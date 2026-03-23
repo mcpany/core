@@ -209,7 +209,7 @@ func TestService_SetMCPServer(t *testing.T) {
 	service := prompt.NewService(mockPromptManager)
 	server := &mcp.Server{}
 
-	mockPromptManager.On("SetMCPServer", mock.Anything()).Return()
+	mockPromptManager.On("SetMCPServer", mock.Anything).Return()
 
 	service.SetMCPServer(server)
 

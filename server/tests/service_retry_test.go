@@ -66,9 +66,9 @@ func TestServiceRetry(t *testing.T) {
 	}.Build()
 
 	mockStore := new(MockStorage)
-	mockStore.On("Load", mock.Anything()).Return(config, nil)
-	mockStore.On("ListServices", mock.Anything()).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything()).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("Load", mock.Anything).Return(config, nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
 	mockStore.On("Close").Return(nil)
 
 	a := app.NewApplication()

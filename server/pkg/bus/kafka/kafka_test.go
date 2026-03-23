@@ -93,12 +93,12 @@ func TestSubscribe(t *testing.T) {
 
 	// Setup mock reader behavior
 	// First call returns message
-	mockReader.On("ReadMessage", mock.Anything()).Return(kafkago.Message{
+	mockReader.On("ReadMessage", mock.Anything).Return(kafkago.Message{
 		Value: payload,
 	}, nil).Once()
 
 	// Second call returns error to stop loop
-	mockReader.On("ReadMessage", mock.Anything()).Return(kafkago.Message{}, fmt.Errorf("stop")).Once()
+	mockReader.On("ReadMessage", mock.Anything).Return(kafkago.Message{}, fmt.Errorf("stop")).Once()
 
 	mockReader.On("Close").Return(nil)
 
@@ -139,7 +139,7 @@ func TestSubscribeOnce(t *testing.T) {
 	payload, _ := json.Marshal(msg)
 
 	// ReadMessage called once
-	mockReader.On("ReadMessage", mock.Anything()).Return(kafkago.Message{
+	mockReader.On("ReadMessage", mock.Anything).Return(kafkago.Message{
 		Value: payload,
 	}, nil).Once()
 
@@ -148,7 +148,7 @@ func TestSubscribeOnce(t *testing.T) {
 	// unsubscribe calls reader.Close().
 	// ReadMessage might return error then.
 
-	mockReader.On("ReadMessage", mock.Anything()).Return(kafkago.Message{}, fmt.Errorf("closed")).Maybe()
+	mockReader.On("ReadMessage", mock.Anything).Return(kafkago.Message{}, fmt.Errorf("closed")).Maybe()
 
 	mockReader.On("Close").Return(nil)
 

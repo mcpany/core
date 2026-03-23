@@ -50,7 +50,7 @@ func TestRootsTool_Execute(t *testing.T) {
 			},
 		}
 
-		mockSession.On("ListRoots", mock.Anything()).Return(expectedRoots, nil)
+		mockSession.On("ListRoots", mock.Anything).Return(expectedRoots, nil)
 
 		// Create a context with the mock session
 		ctx = tool.NewContextWithSession(ctx, mockSession)
@@ -78,7 +78,7 @@ func TestRootsTool_Execute(t *testing.T) {
 		ctx := context.Background()
 
 		mockSession := new(MockSession)
-		mockSession.On("ListRoots", mock.Anything()).Return((*mcp.ListRootsResult)(nil), errors.New("list error"))
+		mockSession.On("ListRoots", mock.Anything).Return((*mcp.ListRootsResult)(nil), errors.New("list error"))
 
 		ctx = tool.NewContextWithSession(ctx, mockSession)
 

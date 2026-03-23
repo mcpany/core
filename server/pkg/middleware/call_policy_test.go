@@ -95,7 +95,7 @@ func TestCallPolicyMiddleware(t *testing.T) {
 			CompiledPolicies: compiledPolicies,
 		}
 
-		mockToolManager.On("GetTool", mock.Anything()).Return(mockTool, true)
+		mockToolManager.On("GetTool", mock.Anything).Return(mockTool, true)
 		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo, true)
 
 		return cpMiddleware, mockToolManager, mockTool
