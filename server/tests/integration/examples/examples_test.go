@@ -43,13 +43,6 @@ func TestExampleConfigs(t *testing.T) {
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
 			t.Logf("Failed to build stdio example binary (continuing, but validation might fail): %v", err)
-			t.Log("Mocking binary due to build failure")
-			errMkdir := os.MkdirAll(filepath.Dir(stdioBinPath), 0755)
-			require.NoError(t, errMkdir)
-			mockCmd := exec.Command("touch", stdioBinPath)
-			mockCmd.Run()
-			mockCmd = exec.Command("chmod", "+x", stdioBinPath)
-			mockCmd.Run()
 		}
 	}
 

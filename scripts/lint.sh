@@ -37,19 +37,13 @@ fi
 export GOGC=10
 export GOMEMLIMIT=256MiB
 
-# Avoid parallel execution per package to avoid out of memory
-LINT_ARGS="--concurrency 1 --timeout 30m"
+LINT_ARGS="--timeout 20m"
 if [ "$CI" != "true" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
     LINT_ARGS="$LINT_ARGS --fix"
 fi
 
-for pkg in $(cd server && go list ./...); do
-    pkg_path=$(echo $pkg | sed 's|github.com/mcpany/core/server||')
-    if [ "$pkg_path" != "" ] && [ -d "server$pkg_path" ]; then
-        echo "Linting server$pkg_path"
-        "$GOLANGCI_LINT_BIN" run $LINT_ARGS ./server$pkg_path || exit 1
-    fi
-done
+cd server && "$GOLANGCI_LINT_BIN" run $LINT_ARGS ./...
+cd "$PROJECT_ROOT"
 
 echo "Running pre-commit..."
 if command -v pre-commit >/dev/null 2>&1; then
