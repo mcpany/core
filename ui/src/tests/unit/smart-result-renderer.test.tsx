@@ -65,21 +65,17 @@ describe('SmartResultRenderer', () => {
         expect(screen.getByText('ABC')).toBeDefined();
     });
 
-    it('renders Properties view for non-array object data', () => {
+    it('renders Raw JSON for non-array data', () => {
         const data = { id: 1, name: 'Alice' };
         render(<SmartResultRenderer result={data} />);
-
-        // Should have Properties button
-        const propButton = screen.getByRole('button', { name: /Properties/i });
-        expect(propButton).toBeDefined();
-
-        // Should render key-value structure instead of array table
-        // We can check if `table` element exists (since it uses Table under the hood for properties)
-        // But it won't have standard column headers like a smart table.
-        // So we can check if "id" and "1" appear as cells.
-        expect(screen.getByText('id')).toBeDefined();
-        expect(screen.getByText('1')).toBeDefined();
-        expect(screen.getByText('name')).toBeDefined();
-        expect(screen.getByText('Alice')).toBeDefined();
+        // Table headers should not exist
+        // If it renders raw JSON, "name" might appear in the JSON string!
+        // So checking existence of "name" is ambiguous.
+        // Check for specific Raw View elements like the Copy button or SyntaxHighlighter structure.
+        // Or check that it does NOT render table structure.
+        // But "name" inside JSON string vs "name" inside th.
+        // We can check if `table` element exists.
+        const table = screen.queryByRole('table');
+        expect(table).toBeNull();
     });
 });

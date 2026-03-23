@@ -12,6 +12,8 @@ import (
 
 // CallableTool implements the Tool interface for a tool that is executed by a
 // Callable.
+//
+// Summary: Represents a CallableTool.
 type CallableTool struct {
 	*baseTool
 }
@@ -61,4 +63,44 @@ func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any,
 //   - Callable: The underlying callable.
 func (t *CallableTool) Callable() Callable {
 	return t.callable
+}
+
+// IsStreaming returns true if the underlying callable supports streaming.
+//
+// Summary: Checks if the tool supports streaming execution.
+//
+// Returns:
+//   - bool: True if streaming is supported.
+func (t *CallableTool) IsStreaming() bool {
+	_, ok := t.callable.(StreamingCallable)
+	return ok
+}
+
+// StreamExecute handles the streaming execution of the tool.
+//
+// Summary: Executes the underlying callable in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *ExecutionRequest. The request object containing parameters.
+//
+// Returns:
+//   - <-chan any: A channel that emits streaming results.
+//   - error: An error if the operation fails or streaming is not supported.
+func (t *CallableTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+	if sc, ok := t.callable.(StreamingCallable); ok {
+		return sc.StreamCall(ctx, req)
+	}
+	// Fallback to non-streaming execution and push to a single-item channel
+	ch := make(chan any, 1)
+	go func() {
+		defer close(ch)
+		res, err := t.Execute(ctx, req)
+		if err != nil {
+			ch <- err
+		} else {
+			ch <- res
+		}
+	}()
+	return ch, nil
 }

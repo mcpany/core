@@ -17,6 +17,6 @@ test.describe('Services Verification', () => {
 
     // 3. Verify Sheet/Dialog Opens
     await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByText('New Service')).toBeVisible();
+    await expect(page.getByText('Select Service Template')).toBeVisible();
   });
 });

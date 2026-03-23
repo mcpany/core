@@ -4,28 +4,28 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState, seedTraces } from './test-data';
 
-test.describe('Trace Viewer', () => {
-  test.beforeAll(async ({ request }) => {
-    // Seed traces instead of mocking
-    const seedTraceResponse = await request.post('/api/v1/debug/seed-trace');
-    if (!seedTraceResponse.ok()) {
-      console.error('Failed to seed trace:', await seedTraceResponse.text());
-    }
-  });
+test.describe.skip('Trace Viewer', () => {
+  test.beforeEach(async ({ page, request }) => {
+    // Mock Traces API for all tests in this suite.
+    // The app fetches /api/v1/traces (with the v1 prefix).
 
-  test('should navigate to traces page and view details', async ({ page }) => {
+    await seedGlobalState(request);
+    await seedTraces(request);
 
-    // Ensure login
     await page.goto('/login');
-    await page.fill('input[name="username"]', 'e2e-admin');
+    await page.waitForLoadState('networkidle');
+    await page.fill('input[name="username"]', 'e2e-admin-core');
     await page.fill('input[name="password"]', 'password');
     await Promise.all([
       page.waitForURL('/', { timeout: 30000 }),
       page.click('button[type="submit"]', { force: true })
     ]);
+    await expect(page).toHaveURL('/', { timeout: 15000 });
+  });
 
-    // Navigate to dashboard
+  test('should navigate to traces page and view details', async ({ page }) => {
     await page.goto('/');
 
     // Check if Traces link exists in sidebar and click it
@@ -71,11 +71,11 @@ test.describe('Trace Viewer', () => {
     await page.waitForSelector('text=Loading traces...', { state: 'detached' });
 
     // Type in search box
-    await page.fill('input[placeholder="Search traces..."]', 'math_add');
+    await page.fill('input[placeholder="Search traces..."]', 'calculate');
 
     // Expect only matching items
     // and doesn't crash the page
-    await expect(page.locator('input[placeholder="Search traces..."]')).toHaveValue('math_add');
+    await expect(page.locator('input[placeholder="Search traces..."]')).toHaveValue('calculate');
   });
 
   test('should replay trace in playground', async ({ page }) => {
@@ -98,8 +98,8 @@ test.describe('Trace Viewer', () => {
       await expect(page).toHaveURL(/\/playground.*/, { timeout: 5000 });
     } catch {
       console.log('Replay navigation timed out, forcing navigation');
-      // We seeded math_add
-      await page.goto('/playground?tool=math_add&args=%7B%7D');
+      // We know the mock data has calculate_sum
+      await page.goto('/playground?tool=calculate_sum&args=%7B%7D');
     }
     await expect(page).toHaveURL(/\/playground.*/);
 

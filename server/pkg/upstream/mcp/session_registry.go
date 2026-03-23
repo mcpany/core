@@ -12,6 +12,8 @@ import (
 
 // SessionRegistry manages the mapping between upstream MCP sessions and downstream tool sessions.
 // This allows requests from upstream (like sampling) to be routed to the correct downstream client.
+//
+// Summary: Represents a SessionRegistry.
 type SessionRegistry struct {
 	mu       sync.RWMutex
 	sessions map[mcp.Session]tool.Session
@@ -21,6 +23,20 @@ type SessionRegistry struct {
 //
 // Returns:
 //   - *SessionRegistry: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewSessionRegistry operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -41,6 +57,20 @@ func NewSessionRegistry() *SessionRegistry {
 //
 // Side Effects:
 //   - None.
+//
+// Summary: Executes Register operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSession tool.Session) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -54,6 +84,20 @@ func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSessio
 //
 // Returns:
 //   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Unregister operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -71,6 +115,20 @@ func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 // Returns:
 //   - tool.Session: The result.
 //   - bool: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Retrieves Get operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

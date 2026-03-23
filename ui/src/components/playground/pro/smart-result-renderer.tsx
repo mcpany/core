@@ -8,7 +8,7 @@
 import { useState, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Code, Table as TableIcon, Image as ImageIcon, FileText, List } from "lucide-react";
+import { Code, Table as TableIcon, Image as ImageIcon, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 import { unwrapMcpResult } from "@/lib/mcp-unwrap";
 
@@ -33,7 +33,7 @@ interface McpContent {
  * falling back to a raw JSON view.
  */
 export function SmartResultRenderer({ result }: SmartResultRendererProps) {
-    const [userViewMode, setUserViewMode] = useState<"smart" | "raw" | "rich" | "properties" | null>(null);
+    const [userViewMode, setUserViewMode] = useState<"smart" | "raw" | "rich" | null>(null);
 
     // 1. Shared unwrapping logic
     const unwrappedContent = useMemo(() => {
@@ -117,44 +117,17 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
         return null;
     }, [fullyUnwrapped, unwrappedContent, mcpContent]);
 
-    // 4. Identify Single Object Data for Properties View
-    const objectData = useMemo(() => {
-        // If it's an object but not an array and not MCP content, we can show it as properties
-        if (fullyUnwrapped && typeof fullyUnwrapped === 'object' && !Array.isArray(fullyUnwrapped) && !mcpContent) {
-            return fullyUnwrapped;
-        }
-
-        // Try unwrapped content
-        if (unwrappedContent && typeof unwrappedContent === 'object' && !Array.isArray(unwrappedContent) && !mcpContent) {
-            return unwrappedContent;
-        }
-
-        // Fallback for single item text MCP content that parses to object
-        if (mcpContent && mcpContent.length === 1 && mcpContent[0].text) {
-            try {
-                const parsed = JSON.parse(mcpContent[0].text);
-                if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-                    return parsed;
-                }
-            } catch (e) {}
-        }
-
-        return null;
-    }, [fullyUnwrapped, unwrappedContent, mcpContent]);
-
     const activeView = useMemo(() => {
         // User override
         if (userViewMode === 'smart' && tableData) return 'smart';
         if (userViewMode === 'rich' && mcpContent) return 'rich';
-        if (userViewMode === 'properties' && objectData) return 'properties';
         if (userViewMode === 'raw') return 'raw';
 
         // Auto defaults (if user mode invalid or null)
         if (tableData) return 'smart';
-        if (objectData) return 'properties';
         if (mcpContent) return 'rich';
         return 'raw';
-    }, [userViewMode, tableData, mcpContent, objectData]);
+    }, [userViewMode, tableData, mcpContent]);
 
     const renderRaw = () => (
         <JsonView data={result} maxHeight={400} />
@@ -169,7 +142,17 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                     <div key={idx} className="flex flex-col gap-2">
                         {item.type === 'text' && (
                             <div className="whitespace-pre-wrap font-mono text-sm bg-muted/30 p-3 rounded-md border border-white/5">
-                                {item.text}
+                                {(() => {
+                                    try {
+                                        if (item.text) {
+                                            const parsed = JSON.parse(item.text);
+                                            if (typeof parsed === 'object' && parsed !== null) {
+                                                return <JsonView data={parsed} maxHeight={400} />;
+                                            }
+                                        }
+                                    } catch (e) {}
+                                    return item.text;
+                                })()}
                             </div>
                         )}
                         {item.type === 'image' && item.data && (
@@ -192,42 +175,6 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                         )}
                     </div>
                 ))}
-            </div>
-        );
-    };
-
-    const renderPropertiesTable = () => {
-        if (!objectData) return null;
-
-        const entries = Object.entries(objectData);
-
-        return (
-            <div className="rounded-md border max-h-[400px] overflow-auto bg-card">
-                <Table>
-                    <TableBody>
-                        {entries.map(([key, value], idx) => {
-                            let displayVal = value;
-                            if (typeof value === 'object' && value !== null) {
-                                displayVal = JSON.stringify(value);
-                            } else if (typeof value === 'boolean') {
-                                displayVal = value ? "true" : "false";
-                            } else if (value === null) {
-                                displayVal = "null";
-                            }
-
-                            return (
-                                <TableRow key={idx} className="hover:bg-muted/50 border-b last:border-b-0">
-                                    <TableCell className="w-1/3 py-2 px-3 align-top font-medium text-xs text-muted-foreground border-r bg-muted/10">
-                                        {key}
-                                    </TableCell>
-                                    <TableCell className="py-2 px-3 text-xs whitespace-pre-wrap font-mono break-words">
-                                        {String(displayVal ?? "")}
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
             </div>
         );
     };
@@ -297,16 +244,6 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                             <TableIcon className="size-3" /> Table
                         </Button>
                      )}
-                     {objectData && (
-                        <Button
-                            variant={activeView === "properties" ? "secondary" : "ghost"}
-                            size="sm"
-                            className="h-6 px-2 text-[10px] gap-1"
-                            onClick={() => setUserViewMode("properties")}
-                        >
-                            <List className="size-3" /> Properties
-                        </Button>
-                     )}
                      {mcpContent && (
                         <Button
                             variant={activeView === "rich" ? "secondary" : "ghost"}
@@ -329,7 +266,6 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
             </div>
 
             {activeView === 'smart' && renderSmartTable()}
-            {activeView === 'properties' && renderPropertiesTable()}
             {activeView === 'rich' && renderRich()}
             {activeView === 'raw' && renderRaw()}
         </div>
