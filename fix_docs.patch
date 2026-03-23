@@ -1,0 +1,15 @@
+--- ui/src/mocks/proto/mock-proto.ts
++++ ui/src/mocks/proto/mock-proto.ts
+@@ -45,8 +45,11 @@
+     }
+ }
+
++/** CallPolicyRule mock */
+ export interface CallPolicyRule {
+ }
++/** ExportPolicy mock */
+ export interface ExportPolicy {
+ }
++/** ExportRule mock */
+ export interface ExportRule {
+ }
