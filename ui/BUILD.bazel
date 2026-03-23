@@ -17,7 +17,7 @@ load("@npm//ui:vitest/package_json.bzl", vitest_bin = "bin")
 # Scale both frontend and backend deployments independently in Kubernetes.
 # ---------------------------------------------------------------------------
 load("@rules_oci//oci:defs.bzl", "oci_image", "oci_image_index", "oci_load", "oci_push")
-load("@rules_pkg//pkg:mappings.bzl", "pkg_files", "strip_prefix")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 load("//ui:playwright_tests.bzl", "define_playwright_tests")
 load("//ui:vitest_tests.bzl", "define_vitest_tests")
@@ -162,7 +162,7 @@ pkg_files(
 # prune dev-only packages.
 pkg_files(
     name = "ui_node_modules_files",
-    srcs = ["package.json"],
+    srcs = [":node_modules"],
     prefix = "/app/node_modules",
 )
 
