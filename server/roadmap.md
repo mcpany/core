@@ -645,8 +645,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Atomic Teammate Handshake (ATH) Gateway**: Mandatory identity exchange before teammate task delegation in horizontal teams. (Added: 2026-05-29)
 *   **[P0] Mesh-Bound Context Sovereignty Bridge**: Semantic fragment analysis across teammate boundaries for horizontal team stability. (Added: 2026-05-29)
 
-
 #### Upcoming: Infrastructure Evolution Expansion (2026-05-30)
-*   **[P0] Intent Hierarchy Enforcer (IHE)**: Mandatory priority-based state.
-*   **[P0] Kernel-Namespace (KNS) Command Runner**: High-performance isolation.
-*   **[P0] Mission Anchor Host (MAH)**: Orchestration service for pinned anchors.
+
+* [P0] Intent Hierarchy Enforcer (IHE): Mandatory priority-based state.
+* [P0] Kernel-Namespace (KNS) Command Runner: High-performance isolation.
+* [P0] Mission Anchor Host (MAH): Orchestration service for pinned anchors.

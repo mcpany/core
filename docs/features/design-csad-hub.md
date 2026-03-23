@@ -46,11 +46,11 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 ## 7. Evolutionary Changelog
 * **2026-05-29:** Initial Document Creation.
 
-
 ### Update: 2026-05-30 - Intent Hierarchy Integration
 
 **Context**: Research identified "Context Shadowing" vulnerabilities.
 
 **Architecture Adjustment**:
+
 * Integrating the **Intent Hierarchy Enforcer (IHE)** into Pattern Matcher.
 * Implementing **KNS Command Runner** for all CSAD-triggered tools.
