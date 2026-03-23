@@ -32,16 +32,16 @@ mutation.
 * **Primary Goal:** Share high-frequency state fragments between 5 specialized
 teammates without risking mission-root contamination.
 * **The Happy Path (Tasks):**
-    1. The Mission-Root agent initializes a new mission scope with the ESB.
-    2. The ESB generates hardware-attested "Entanglement Keys" bound to the
+1. The Mission-Root agent initializes a new mission scope with the ESB.
+2. The ESB generates hardware-attested "Entanglement Keys" bound to the
 mission-root TPM.
-    3. Teammates request state shards from the ESB, receiving cryptographically
+3. Teammates request state shards from the ESB, receiving cryptographically
 entangled fragments.
-    4. A subagent attempts to mutate a shard outside its authorized intent
+4. A subagent attempts to mutate a shard outside its authorized intent
 branch.
-    5. The ESB detects the mutation via hardware-bound integrity checks and
+5. The ESB detects the mutation via hardware-bound integrity checks and
 triggers a "Shard Corruption" signal.
-    6. The parent reasoning engine automatically rolls back the mission branch
+6. The parent reasoning engine automatically rolls back the mission branch
 before re-ingesting the poisoned state.
 
 ## 4. Design & Architecture

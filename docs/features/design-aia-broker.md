@@ -25,10 +25,10 @@ by issuing hardware-attested heartbeats.
 * **User Persona:** Lead Systems Architect.
 * **Primary Goal:** Ensure multi-hop delegations remain within intent bounds.
 * **The Happy Path (Tasks):**
-    1. Parent agent delegates task to specialist via AIA Broker.
-    2. AIA Broker attaches a hardware-attested alignment heartbeat requirement.
-    3. Specialist provides periodic alignment proofs during reasoning.
-    4. Broker validates proofs against mission-root signature.
+1. Parent agent delegates task to specialist via AIA Broker.
+2. AIA Broker attaches a hardware-attested alignment heartbeat requirement.
+3. Specialist provides periodic alignment proofs during reasoning.
+4. Broker validates proofs against mission-root signature.
 
 ## 4. Design & Architecture
 

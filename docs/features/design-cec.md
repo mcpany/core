@@ -28,10 +28,10 @@ monitoring and governance of this entropy.
 * **User Persona:** Swarm Security Architect.
 * **Primary Goal:** Prevent a deep swarm from diverging into unauthorized paths.
 * **The Happy Path (Tasks):**
-    1. Define an "Entropy Budget" for the mission.
-    2. CEC intercepts traces and calculates scores.
-    3. Detects budget violation on unauthorized side-tasks.
-    4. Forcefully terminates sub-agent session.
+1. Define an "Entropy Budget" for the mission.
+2. CEC intercepts traces and calculates scores.
+3. Detects budget violation on unauthorized side-tasks.
+4. Forcefully terminates sub-agent session.
 
 ## 4. Design & Architecture
 

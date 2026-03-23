@@ -580,10 +580,10 @@ responses to prevent "Context Bloat" and reduce token usage.
 
 ### Warning Areas
 
-1.  **UI Component Duplication**: Some UI components in `ui/src/components`
+1. **UI Component Duplication**: Some UI components in `ui/src/components`
 seem to have overlapping responsibilities (e.g., multiple "detail" views). A UI
 component audit is recommended.
-2.  **Test Coverage gaps**: While core logic is tested, cloud providers
+2. **Test Coverage gaps**: While core logic is tested, cloud providers
 (S3/GCS) and some new UI features lack comprehensive integration tests.
 
 ### Healthy Areas

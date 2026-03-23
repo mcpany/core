@@ -39,17 +39,17 @@ Code lead + 2 OpenClaw subagents).
 Claude lead to an OpenClaw specialist and monitor its progress via the Shared
 Task List.
 *   **The Happy Path (Tasks):**
-    1.  The User initializes an Agent Team via MCP Any.
-    2.  MCP Any establishes a T2T Encryption Bus for the session.
-    3.  The Claude Code lead teammate posts a "Database Migration" task to the
+1. The User initializes an Agent Team via MCP Any.
+2. MCP Any establishes a T2T Encryption Bus for the session.
+3. The Claude Code lead teammate posts a "Database Migration" task to the
 Shared Task List.
-    4.  The OpenClaw specialist teammate sees the task and "claims" it.
-    5.  The OpenClaw agent sends a direct mailbox message to the Claude lead
+4. The OpenClaw specialist teammate sees the task and "claims" it.
+5. The OpenClaw agent sends a direct mailbox message to the Claude lead
 requesting the schema.
-    6.  The T2T Bridge encrypts the message using the lead's public key.
-    7.  The Claude lead receives and decrypts the message, then responds with
+6. The T2T Bridge encrypts the message using the lead's public key.
+7. The Claude lead receives and decrypts the message, then responds with
 the schema.
-    8.  The T2T Bridge validates that the exchange is within the "Mission Root"
+8. The T2T Bridge validates that the exchange is within the "Mission Root"
 intent scope.
 
 ## 4. Design & Architecture
