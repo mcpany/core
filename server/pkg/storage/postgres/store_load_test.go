@@ -8,7 +8,6 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -16,7 +15,7 @@ import (
 
 func TestStore_Load(t *testing.T) {
 	t.Run("Happy Path", func(t *testing.T) {
-			db, mock, err := sqlmock.New()
+		db, mock, err := sqlmock.New()
 		require.NoError(t, err)
 		defer db.Close()
 
@@ -62,7 +61,7 @@ func TestStore_Load(t *testing.T) {
 	})
 
 	t.Run("Query Error", func(t *testing.T) {
-			db, mock, err := sqlmock.New()
+		db, mock, err := sqlmock.New()
 		require.NoError(t, err)
 		defer db.Close()
 
@@ -87,7 +86,7 @@ func TestStore_Load(t *testing.T) {
 	})
 
 	t.Run("Scan Error - Invalid JSON", func(t *testing.T) {
-			db, mock, err := sqlmock.New()
+		db, mock, err := sqlmock.New()
 		require.NoError(t, err)
 		defer db.Close()
 
@@ -113,7 +112,7 @@ func TestStore_Load(t *testing.T) {
 	})
 
 	t.Run("Settings Not Found", func(t *testing.T) {
-			db, mock, err := sqlmock.New()
+		db, mock, err := sqlmock.New()
 		require.NoError(t, err)
 		defer db.Close()
 
