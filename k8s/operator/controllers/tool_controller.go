@@ -16,8 +16,6 @@ import (
 )
 
 // ToolReconciler reconciles a Tool object.
-//
-// Summary: Controller for managing Tool custom resources.
 type ToolReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
@@ -28,30 +26,12 @@ type ToolReconciler struct {
 // +kubebuilder:rbac:groups=mcpany.mcp.so,resources=tools/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop.
-//
-// Summary: Synchronizes the actual state of Tool with the desired state.
-//
-// Parameters:
-//   - ctx (context.Context): Context for the request.
-//   - req (ctrl.Request): Reconciliation request for a specific object.
-//
-// Returns:
-//   - ctrl.Result: Reconciliation result indicating whether to requeue.
-//   - error: Error if synchronization fails.
 func (r *ToolReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 	return ctrl.Result{}, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
-//
-// Summary: Configures the controller to be managed by the given manager.
-//
-// Parameters:
-//   - mgr (ctrl.Manager): Manager for the controller.
-//
-// Returns:
-//   - error: Error if setup fails.
 func (r *ToolReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&mcpanyv1alpha1.Tool{}).
