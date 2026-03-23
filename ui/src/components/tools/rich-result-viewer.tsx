@@ -18,10 +18,9 @@ import { FileJson, Table as TableIcon, Terminal, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { unwrapMcpResult, deepParseJson } from "@/lib/mcp-unwrap";
 
 interface RichResultViewerProps {
-  result: unknown;
+  result: any;
 }
 
 interface TextContent {
@@ -90,21 +89,39 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
   const [content, isExtracted] = useMemo(() => {
     if (!result) return [result, false];
 
-    // Start by unwrapping standard MCP/Call structures
-    const unwrapped = unwrapMcpResult(result);
-    const fullyParsed = deepParseJson(unwrapped);
+    // Handle Command Execution Result (stdout contains JSON)
+    if (
+      typeof result === "object" &&
+      "stdout" in result &&
+      typeof result.stdout === "string"
+    ) {
+      try {
+        // Only treat as extracted if parsing succeeds
+        const parsed = JSON.parse(result.stdout);
+        return [parsed, true];
+      } catch {
+        return [result, false];
+      }
+    }
 
-    // If the result was extracted/parsed compared to original, mark it as extracted
-    const wasExtracted = JSON.stringify(fullyParsed) !== JSON.stringify(result);
-
-    return [fullyParsed, wasExtracted];
+    // Handle raw string that is JSON
+    if (typeof result === "string") {
+      try {
+        const parsed = JSON.parse(result);
+        return [parsed, true];
+      } catch {
+        return [result, false];
+      }
+    }
+    return [result, false];
   }, [result]);
 
   const mcpContent = useMemo<McpContent[] | null>(() => {
-    // If content is an array and matches MCP types
     if (Array.isArray(content)) {
       const isValidArray = content.every(
-        (/* eslint-disable-next-line @typescript-eslint/no-explicit-any */ item: any) =>
+        (
+          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */ item: any,
+        ) =>
           (item.type === "text" && typeof item.text === "string") ||
           (item.type === "image" &&
             typeof item.data === "string" &&
@@ -114,20 +131,37 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return content as McpContent[];
       }
     }
+
+    if (
+      content &&
+      typeof content === "object" &&
+      Array.isArray(content.content)
+    ) {
+      // Check if it looks like MCP content
+      const isValid = content.content.every(
+        (
+          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */ item: any,
+        ) =>
+          (item.type === "text" && typeof item.text === "string") ||
+          (item.type === "image" &&
+            typeof item.data === "string" &&
+            typeof item.mimeType === "string"),
+      );
+      if (isValid) {
+        return content.content;
+      }
+    }
     return null;
   }, [content]);
 
   const isTableEligible = useMemo(() => {
-    // Directly check if content is an array of objects
-    if (Array.isArray(content) && content.length > 0) {
-      const isTable = content.every(
-        (/* eslint-disable-next-line @typescript-eslint/no-explicit-any */ item: any) => typeof item === "object" && item !== null,
-      );
-      // Ensure it's not just an array of MCP image content (which we want to render rich)
-      const isRichMcp = mcpContent && mcpContent.some((c) => c.type !== "text");
-      if (isTable && !isRichMcp) return true;
-    }
-    return false;
+    return (
+      !mcpContent &&
+      Array.isArray(content) &&
+      content.length > 0 &&
+      typeof content[0] === "object" &&
+      content[0] !== null
+    );
   }, [content, mcpContent]);
 
   // Get columns for table
@@ -136,15 +170,23 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     // aggregate all keys from all objects to handle sparse data
     const keys = new Set<string>();
     // Limit rows scanned for columns to avoid perf issues on huge datasets
-    content.slice(0, 50).forEach((/* eslint-disable-next-line @typescript-eslint/no-explicit-any */ item: any) => {
-      if (typeof item === "object" && item !== null) {
-        Object.keys(item).forEach((k) => keys.add(k));
-      }
-    });
+    content
+      .slice(0, 50)
+      .forEach(
+        (
+          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */ item: any,
+        ) => {
+          if (typeof item === "object" && item !== null) {
+            Object.keys(item).forEach((k) => keys.add(k));
+          }
+        },
+      );
     return Array.from(keys);
   }, [content, isTableEligible]);
 
-  const renderCell = (/* eslint-disable-next-line @typescript-eslint/no-explicit-any */ value: any) => {
+  const renderCell = (
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */ value: any,
+  ) => {
     if (value === null || value === undefined)
       return <span className="text-muted-foreground">-</span>;
     if (typeof value === "object")
@@ -226,15 +268,20 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {content.map(( /* eslint-disable-next-line @typescript-eslint/no-explicit-any */ row: any, i: number) => (
-                  <TableRow key={i}>
-                    {columns.map((col) => (
-                      <TableCell key={col} className="py-2">
-                        {renderCell(row[col])}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
+                {content.map(
+                  (
+                    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */ row: any,
+                    i: number,
+                  ) => (
+                    <TableRow key={i}>
+                      {columns.map((col) => (
+                        <TableCell key={col} className="py-2">
+                          {renderCell(row[col])}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ),
+                )}
               </TableBody>
             </Table>
           </ScrollArea>

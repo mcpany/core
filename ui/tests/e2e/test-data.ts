@@ -11,9 +11,9 @@ const ECHO_SERVER_BASE_URL =
   process.env.UI_HTTP_ECHO_BASE_URL || "http://ui-http-echo-server:5678";
 const HEADERS = { "X-API-Key": API_KEY, "Content-Type": "application/json" };
 
-export const seedGlobalState = async (_requestContext?: APIRequestContext) => {
+export const seedGlobalState = async (requestContext?: APIRequestContext) => {
   const context =
-    _requestContext || (await request.newContext({ baseURL: BASE_URL }));
+    requestContext || (await request.newContext({ baseURL: BASE_URL }));
 
   const services = [
     {
@@ -207,15 +207,15 @@ export const seedGlobalState = async (_requestContext?: APIRequestContext) => {
       throw new Error(`Failed to seed global state: ${res.status()} ${text}`);
     }
     console.log("Global state seeded successfully.");
-  } catch (_e) {
+  } catch (e) {
     console.log(`Failed to seed global state: ${e}`);
     throw e;
   }
 };
 
-export const seedTraffic = async (_requestContext?: APIRequestContext) => {
+export const seedTraffic = async (requestContext?: APIRequestContext) => {
   const context =
-    _requestContext || (await request.newContext({ baseURL: BASE_URL }));
+    requestContext || (await request.newContext({ baseURL: BASE_URL }));
   const points = [
     { timestamp: new Date().toISOString(), requests: 100, errors: 2 },
   ];
@@ -224,7 +224,7 @@ export const seedTraffic = async (_requestContext?: APIRequestContext) => {
       data: points,
       headers: HEADERS,
     });
-  } catch (_e) {
+  } catch (e) {
     console.log(`Failed to seed traffic: ${e}`);
   }
 };
@@ -232,12 +232,12 @@ export const seedTraffic = async (_requestContext?: APIRequestContext) => {
 // Backward compatibility wrappers to ensure other tests don't break
 export const seedServices = async (_requestContext?: APIRequestContext) => {
   // Calling seedGlobalState ensures services are present.
-  await seedGlobalState(requestContext);
+  await seedGlobalState(_requestContext);
 };
 
 export const seedUser = async (
   _requestContext: APIRequestContext | undefined,
-  _username: string,
+  username: string,
 ) => {
   // We create a specific user if requested, in addition to the core user.
   const context =
@@ -267,7 +267,7 @@ export const seedUser = async (
       // If this is called AFTER seedGlobalState, it adds a user.
       console.log(`Failed to create user ${username}: ${res.status()}`);
     }
-  } catch (_e) {
+  } catch (e) {
     console.log(`Error seeding user ${username}: ${e}`);
   }
 };
@@ -333,7 +333,7 @@ export const seedCollection = async (
         `seedCollection: POST /api/v1/collections => ${res.status()} ${text}`,
       );
     }
-  } catch (_e) {
+  } catch (e) {
     console.log(`seedCollection failed: ${e}`);
   }
 };
