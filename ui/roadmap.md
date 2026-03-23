@@ -571,7 +571,5 @@
 
 #### Upcoming (2026-06-14 Evolution)
 
-- [ ] **[P0] Sovereignty Monitor**: Dashboard for hardware-locked handshake
-  status and blocked side-channel signals. (Added: 2026-06-14)
-- [ ] **[P1] Identity-Decay Alerting**: Real-time visualization of stylometric
-  mimicry detected by the IDA service. (Added: 2026-06-14)
+- [ ] **[P0] Sovereignty Monitor**: Dashboard for hardware-locked handshake status and blocked side-channel signals. (Added: 2026-06-14)
+- [ ] **[P1] Identity-Decay Alerting**: Real-time visualization of stylometric mimicry detected by the IDA service. (Added: 2026-06-14)
