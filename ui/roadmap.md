@@ -647,5 +647,10 @@
 - [ ] **[P0] Lineage Provenance Inspector**: Forensic UI for reviewing monotonic counters and cryptographically signed mission chains. (Added: 2026-06-25)
 - [ ] **[P1] Lock-Free Coordination Debugger**: Visualizer for CRDT-based mailbox shard synchronization and conflict resolution. (Added: 2026-06-25)
 
+#### Upcoming (2026-06-26 Evolution)
+- [ ] **[P0] Stylometric Alignment Dashboard**: Visual tracker for real-time stylometric consistency scores and mimicry alerts. (Added: 2026-06-26)
+- [ ] **[P0] Handshake Lineage Inspector**: Forensic UI for visualizing the cryptographically bound lineage of mission-initiation signals. (Added: 2026-06-26)
+- [ ] **[P0] Differential Reasoning Debugger**: Workspace for reviewing cross-framework state handoffs and DRV-redacted payloads. (Added: 2026-06-26)
+
 #### Upcoming (2026-03-21 Evolution)
 - [ ] [P0] LOWA Challenge Visualizer.
