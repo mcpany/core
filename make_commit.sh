@@ -1,3 +1,0 @@
-cd /app
-git add server/pkg/util/net.go server/pkg/app/server_test.go
-git commit -m "fix(tests): resolve address already in use errors in parallel test runs" -m "This fixes flaky tests caused by port reuse races in parallel execution. It modifies the ListenWithRetry to use a much higher max retry count and a short, fixed backoff instead of an exponential backoff which caused tests to time out. It also modifies the server_test.go tests to no longer artificially bind port 0 and release it, but rather just pass '127.0.0.1:0' for tests where the exact port isn't needed, and dynamically gets the port directly."
