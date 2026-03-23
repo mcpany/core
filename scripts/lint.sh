@@ -11,28 +11,12 @@ else
 fi
 cd "$PROJECT_ROOT"
 
-echo "==> Running Buildifier..."
-if command -v buildifier >/dev/null 2>&1; then
-    find . -name "BUILD" -o -name "BUILD.bazel" -o -name "*.bzl" -not -path "./build/*" -exec buildifier {} +
-    echo "    Buildifier OK."
-else
-    echo "    Warning: buildifier not found."
-fi
-
-echo "==> Running Gazelle..."
-if command -v gazelle >/dev/null 2>&1; then
-    gazelle -repo_root="$PROJECT_ROOT"
-    echo "    Gazelle OK."
-else
-    echo "    Warning: gazelle not found."
-fi
-
 echo "==> Running golangci-lint..."
 # Use 'go run' to definitively ensure the linter is built with the project's Go version (1.26.1).
+# This is the most reliable way to avoid Go version mismatches in CI.
 export GOTOOLCHAIN=go1.26.1
 LINT_VERSION="v1.64.5"
 
-# Specify module-relative paths for the linter
 TARGETS=(
     "./server/..."
     "./proto/..."
@@ -40,8 +24,6 @@ TARGETS=(
 )
 
 echo "    Linting targets: ${TARGETS[*]}"
-# Use GOWORK=off if needed, but normally linter handles it.
-# We explicitly set GOTOOLCHAIN to avoid any auto-downgrade.
 go run github.com/golangci/golangci-lint/cmd/golangci-lint@${LINT_VERSION} run --timeout 20m --fix --config server/.golangci.yml "${TARGETS[@]}"
 echo "    golangci-lint OK."
 

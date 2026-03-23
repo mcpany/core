@@ -15,12 +15,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Clean Environment
-          command: |
-             sudo rm -f /usr/local/bin/golangci-lint
-             rm -rf build/env/bin
-             mkdir -p build/env/bin
-      - run:
           name: Install Python dependencies
           command: |
              sudo apt-get update
@@ -33,12 +27,19 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v23-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-            - v23-lint-
+            - v24-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+            - v24-lint-
       - run:
           name: Install Toolchain
           command: |
             export GOTOOLCHAIN=go1.26.1
+            # Force cleanup of any old linter binaries
+            rm -rf build/env/bin
+            mkdir -p build/env/bin
+            sudo rm -f /usr/local/bin/golangci-lint
+            # Use GOTOOLCHAIN to build the linter from source
+            go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.5
+            # Populate other tools
             make prepare
       - run:
           name: Run Lint
@@ -49,9 +50,11 @@ jobs:
             export PATH=$GOPATH/bin:$PWD/build/env/bin:$PATH
             # Diagnostics
             go version
+            golangci-lint version
+            # Execute version-locked linting script
             ./scripts/lint.sh
       - save_cache:
-          key: v23-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+          key: v24-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
