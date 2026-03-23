@@ -59,7 +59,7 @@ jobs:
             export PATH=$PWD/build/env/bin:$PATH
             make lint
       - save_cache:
-          key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+          key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}-v2
           paths:
             - "build/env/bin"
             - "build/.cache"
