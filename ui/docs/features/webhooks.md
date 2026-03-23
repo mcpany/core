@@ -1,6 +1,6 @@
 # Webhooks
 
-**Status:** Config-Driven (UI Planned)
+**Status:** Implemented
 
 ## Goal
 

@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/webhooks"
@@ -83,5 +84,25 @@ func TestHandleWebhookDetail(t *testing.T) {
 	}
 	if _, ok := app.WebhooksManager.GetWebhook("wh-123"); ok {
 		t.Errorf("DELETE expected webhook to be gone")
+	}
+
+	// Test PATCH
+	app.WebhooksManager.AddWebhook(&webhooks.WebhookConfig{ID: "wh-456", URL: "http://patch-test.com", Active: false})
+	reqBody := `{"active": true}`
+	req = httptest.NewRequest("PATCH", "/webhooks/wh-456", strings.NewReader(reqBody))
+	req.Header.Set("Content-Type", "application/json")
+	rr = httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("PATCH expected 200, got %d", rr.Code)
+	}
+
+	var patched webhooks.WebhookConfig
+	if err := json.Unmarshal(rr.Body.Bytes(), &patched); err != nil {
+		t.Fatalf("Failed to decode patched webhook: %v", err)
+	}
+	if !patched.Active {
+		t.Errorf("PATCH expected webhook to be active")
 	}
 }

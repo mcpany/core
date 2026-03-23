@@ -87,7 +87,7 @@ Returns the status of auto-discovery providers.
 
 #### `ListAuditLogs`
 
-Returns audit logs matching the filter.
+Returns audit logs matching the filter. Note that `start_time` and `end_time` should be passed as ISO 8601 strings in gRPC (and `RFC3339` encoded strings via HTTP queries).
 
 - **Request**: `ListAuditLogsRequest` containing filters (`start_time`, `end_time`, `tool_name`, `user_id`, `profile_id`, `limit`, `offset`).
 - **Response**: `ListAuditLogsResponse` containing a list of `entries`.

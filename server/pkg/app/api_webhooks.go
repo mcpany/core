@@ -61,6 +61,25 @@ func (a *Application) handleWebhookDetail() http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(wh)
+		case http.MethodPatch:
+			wh, ok := a.WebhooksManager.GetWebhook(id)
+			if !ok {
+				http.NotFound(w, r)
+				return
+			}
+			var update struct {
+				Active *bool `json:"active"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
+				http.Error(w, "invalid request body", http.StatusBadRequest)
+				return
+			}
+			if update.Active != nil {
+				wh.Active = *update.Active
+				a.WebhooksManager.AddWebhook(wh)
+			}
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(wh)
 		case http.MethodDelete:
 			a.WebhooksManager.DeleteWebhook(id)
 			w.WriteHeader(http.StatusNoContent)
