@@ -26,6 +26,9 @@ type Label = metrics.Label
 //
 // Summary: Creates a Prometheus sink.
 //
+// Parameters:
+//   - None.
+//
 // Returns:
 //   - *prometheus.PrometheusSink: The initialized Prometheus sink.
 //   - error: An error if the sink creation fails.
