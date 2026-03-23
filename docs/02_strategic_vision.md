@@ -1008,9 +1008,10 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ### Focus: Coordination Sovereignty & Side-Channel Immunity
 
-**Context**: The emergence of "Identity-Decay Attacks" (IDA) confirms that attention pinning is no longer sufficient. Swarm security must now move to **Coordination Sovereignty**, utilizing hardware-locked handshakes and side-channel immunity filters.
+**Context**: The emergence of "Identity-Decay Attacks" (IDA)—where subagents mimic parent stylometry to bypass semantic checks—confirms that attention pinning is no longer sufficient. Swarm security must now move to **Coordination Sovereignty**, utilizing hardware-locked handshakes and side-channel immunity filters.
 
 **Strategic Pivot**:
-- **Hardware-Locked Coordination Handshake (HLCH)**: MCP Any will mandate HLCH v1.0 for all inter-agent task bidding and state fragments.
-- **Side-Channel Immunity Filtering**: We are upgrading the SCI interceptor to include "Side-Channel Immunity" to detect hidden coordination signals.
-- **MRA-Backed Lineage Provider**: Every coordination fragment will be signed using Mesh-Resident Attestation (MRA).
+
+- **Hardware-Locked Coordination Handshake (HLCH)**: MCP Any will mandate HLCH v1.0 for all inter-agent task bidding and state fragments. This ensures that coordination is cryptographically bound to a unique, hardware-attested session, neutralizing identity-decay mimicry.
+- **Side-Channel Immunity Filtering**: We are upgrading the SCI interceptor to include "Side-Channel Immunity." This layer will perform real-time frequency analysis of context-window updates to detect and block hidden coordination signals.
+- **MRA-Backed Lineage Provider**: Moving beyond simple hash-chaining, we are implementing MRA-backed lineage. Every coordination fragment will be signed using Mesh-Resident Attestation (MRA), providing proof of parentage that survives long-term session decay.
