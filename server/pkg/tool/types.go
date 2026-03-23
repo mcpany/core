@@ -3068,6 +3068,9 @@ func prettyPrint(input []byte, contentType string) string {
 		encoder := xml.NewEncoder(&buf)
 		encoder.Indent("", "  ")
 
+		currentTag := ""
+		_ = currentTag // appease unused variable linter if it flags this
+
 		// Attempt to decode and re-encode to format
 		for {
 			token, err := decoder.Token()
@@ -3089,8 +3092,13 @@ func prettyPrint(input []byte, contentType string) string {
 					}
 				}
 				token = t
+				currentTag = t.Name.Local
 			case xml.EndElement:
+				currentTag = ""
 			case xml.CharData:
+				if currentTag != "" && util.IsSensitiveKey(currentTag) {
+					token = xml.CharData([]byte(redactedPlaceholder))
+				}
 			}
 
 			if err := encoder.EncodeToken(token); err != nil {
