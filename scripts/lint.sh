@@ -124,12 +124,15 @@ fi
 echo "==> Running golangci-lint..."
 if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
     GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
+    if [[ -z "$GOLANGCI_LINT_BIN" && -x "/app/build/env/bin/golangci-lint" ]]; then
+        GOLANGCI_LINT_BIN="/app/build/env/bin/golangci-lint"
+    fi
 fi
 # No longer fall back to build/env/bin/ (local make-managed path) since this
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    export GOGC=off && export GOMEMLIMIT=1500MiB && export GOMAXPROCS=2 && "$GOLANGCI_LINT_BIN" run --concurrency 1 --timeout 20m --fix \
+    export GOGC=10 && export GOMAXPROCS=2 && "$GOLANGCI_LINT_BIN" run --concurrency 1 --timeout 20m --fix \
         ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
     echo "    golangci-lint OK."
 else
