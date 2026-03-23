@@ -37,42 +37,48 @@ export function SwarmTopologyWidget() {
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        // Mock data generator since we don't have the backend endpoint hooked up in this isolated UI component yet
-        // In a real scenario, this would fetch from /api/v1/mock/swarm-topology
-        const generateMockData = (): SwarmTopologyData => {
-            const nodes: SwarmNode[] = [
-                { id: 'n1', label: 'Primary Orchestrator', type: 'validator', status: 'locked', x: 50, y: 50 },
-                { id: 'n2', label: 'Research Agent', type: 'agent', status: 'active', x: 20, y: 30 },
-                { id: 'n3', label: 'Tool Exec', type: 'service', status: 'idle', x: 20, y: 70 },
-                { id: 'n4', label: 'Synthesizer', type: 'agent', status: 'active', x: 80, y: 50 },
-                { id: 'n5', label: 'Rogue Node', type: 'agent', status: 'stall', x: 80, y: 20 },
-            ];
+        let isMounted = true;
+        let timeoutId: NodeJS.Timeout;
 
-            const edges: SwarmEdge[] = [
-                { source: 'n2', target: 'n1', status: 'healthy', hash: '0x1A4' },
-                { source: 'n1', target: 'n3', status: 'healthy', hash: '0x2B9' },
-                { source: 'n1', target: 'n4', status: 'healthy', hash: '0x3C1' },
-                { source: 'n5', target: 'n1', status: 'blocked', hash: 'INVALID_GRAFT' },
-            ];
-
-            return {
-                nodes,
-                edges,
-                anomalies: ['ARI Hub: Logic Graft Blocked from Rogue Node (n5)']
-            };
+        const fetchData = async () => {
+            try {
+                const res = await apiClient.getMockData('swarm-topology');
+                if (isMounted) {
+                    setData(res);
+                }
+            } catch (err) {
+                console.error("Failed to fetch swarm topology", err);
+                if (isMounted && !data) {
+                    // Fallback to empty state on first load failure
+                    setData({ nodes: [], edges: [], anomalies: [] });
+                }
+            } finally {
+                if (isMounted) setLoading(false);
+            }
         };
 
-        const interval = setInterval(() => {
-            // Simulate dynamic updates
-            setData(generateMockData());
-            setLoading(false);
-        }, 3000);
+        const loop = async () => {
+            if (!isMounted) return;
+            if (document.hidden) {
+                timeoutId = setTimeout(loop, 1000);
+                return;
+            }
+            await fetchData();
+            if (isMounted) {
+                timeoutId = setTimeout(loop, 3000);
+            }
+        };
 
-        // Initial load
-        setData(generateMockData());
-        setLoading(false);
+        fetchData().then(() => {
+            if (isMounted) {
+                timeoutId = setTimeout(loop, 3000);
+            }
+        });
 
-        return () => clearInterval(interval);
+        return () => {
+            isMounted = false;
+            clearTimeout(timeoutId);
+        };
     }, []);
 
     if (loading) {

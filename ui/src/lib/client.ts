@@ -361,6 +361,23 @@ export const apiClient = {
     // Services (Migrated to gRPC)
 
     /**
+     * Fetch mock data.
+     *
+     * @param id - The ID of the mock data.
+     * @returns The mock data JSON string.
+     * @throws {Error} If fetching mock data fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/mock/{id}.
+     */
+    getMockData: async (id: string) => {
+        return dedupeRequests(`getMockData_${id}`, async () => {
+            const res = await fetchWithAuth(`/api/v1/mock/${id}`);
+            if (!res.ok) throw new Error('Failed to fetch mock data');
+            return res.json();
+        });
+    },
+
+    /**
      * Lists all registered upstream services.
      *
      * Summary: Fetches the list of all configured upstream services from the backend.
