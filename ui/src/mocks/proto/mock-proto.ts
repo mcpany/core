@@ -6,12 +6,12 @@
 /**
  * Mock class for GrpcWebImpl used in tests.
  */
-export class GrpcWebImpl { }
+export class GrpcWebImpl {}
 
 /**
  * Mock class for RegistrationServiceClientImpl used in tests.
  */
-export class RegistrationServiceClientImpl { }
+export class RegistrationServiceClientImpl {}
 
 /**
  * Mock constant for HttpUpstreamService used in tests.
