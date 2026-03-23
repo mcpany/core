@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/armon/go-metrics"
+	armonmetrics "github.com/armon/go-metrics"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -34,14 +34,14 @@ func TestStartServer(t *testing.T) {
 
 func TestMetricsCollection(t *testing.T) {
 	// Initialize the metrics system with an in-memory sink
-	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
-	conf := metrics.DefaultConfig("mcpany")
+	sink := armonmetrics.NewInmemSink(time.Second, 5*time.Second)
+	conf := armonmetrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
-	m, err := metrics.New(conf, sink)
+	m, err := armonmetrics.New(conf, sink)
 	require.NoError(t, err)
 
 	// Record some metrics
-	m.SetGaugeWithLabels([]string{"my_gauge"}, 123, []metrics.Label{{Name: "service_name", Value: "label1"}})
+	m.SetGaugeWithLabels([]string{"my_gauge"}, 123, []armonmetrics.Label{{Name: "service_name", Value: "label1"}})
 	m.IncrCounter([]string{"my_counter"}, 1)
 	m.MeasureSince([]string{"my_histogram"}, time.Now().Add(-1*time.Second))
 
@@ -55,17 +55,17 @@ func TestMetricsCollection(t *testing.T) {
 
 func TestSetGauge(t *testing.T) {
 	// Re-init global to be safe or just call SetGauge.
-	// SetGauge uses metrics.Global(), so we need to ensure it's set.
+	// SetGauge uses armonmetrics.Global(), so we need to ensure it's set.
 	// It is set by Initialize() or manually.
-	// metrics.NewGlobal above sets it.
+	// armonmetrics.NewGlobal above sets it.
 	// But tests run in parallel? No, t.Parallel() not called.
 	// However, TestMetricsCollection sets NewGlobal.
 	// We should probably setup NewGlobal in this test too or reuse.
 
-	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
-	conf := metrics.DefaultConfig("mcpany")
+	sink := armonmetrics.NewInmemSink(time.Second, 5*time.Second)
+	conf := armonmetrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
-	_, err := metrics.NewGlobal(conf, sink)
+	_, err := armonmetrics.NewGlobal(conf, sink)
 	require.NoError(t, err)
 
 	assert.NotPanics(t, func() {
@@ -80,10 +80,10 @@ func TestSetGauge(t *testing.T) {
 }
 
 func TestMeasureSince(t *testing.T) {
-	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
-	conf := metrics.DefaultConfig("mcpany")
+	sink := armonmetrics.NewInmemSink(time.Second, 5*time.Second)
+	conf := armonmetrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
-	_, err := metrics.NewGlobal(conf, sink)
+	_, err := armonmetrics.NewGlobal(conf, sink)
 	require.NoError(t, err)
 
 	assert.NotPanics(t, func() {
@@ -92,10 +92,10 @@ func TestMeasureSince(t *testing.T) {
 }
 
 func TestIncrCounter(t *testing.T) {
-	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
-	conf := metrics.DefaultConfig("mcpany")
+	sink := armonmetrics.NewInmemSink(time.Second, 5*time.Second)
+	conf := armonmetrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
-	_, err := metrics.NewGlobal(conf, sink)
+	_, err := armonmetrics.NewGlobal(conf, sink)
 	require.NoError(t, err)
 
 	assert.NotPanics(t, func() {
@@ -128,10 +128,10 @@ func TestStartServer_Error(t *testing.T) {
 
 func TestMetricsWrappers(t *testing.T) {
 	// Initialize to ensure sink is set up (though it might be already by other tests or init)
-	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
-	conf := metrics.DefaultConfig("mcpany")
+	sink := armonmetrics.NewInmemSink(time.Second, 5*time.Second)
+	conf := armonmetrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
-	_, err := metrics.NewGlobal(conf, sink)
+	_, err := armonmetrics.NewGlobal(conf, sink)
 	require.NoError(t, err)
 
 	t.Run("IncrCounterWithLabels", func(t *testing.T) {
