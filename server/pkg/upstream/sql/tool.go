@@ -229,6 +229,15 @@ func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<
 	return ch, nil
 }
 
+// Execute executes the SQL tool.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*tool.ExecutionRequest): The execution request.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

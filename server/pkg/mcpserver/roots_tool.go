@@ -148,14 +148,36 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 // Side Effects:
 //   - None.
 
+// IsStreaming checks if the tool supports streaming execution.
+//
+// Returns:
+//   - bool: Always false for RootsTool.
 func (t *RootsTool) IsStreaming() bool {
 	return false
 }
 
+// StreamExecute handles the streaming execution of the tool.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The execution request payload.
+//
+// Returns:
+//   - <-chan any: A channel for streamed results (always nil).
+//   - error: An error if streaming fails (always nil).
 func (t *RootsTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	return nil, nil
 }
 
+// Execute executes the roots tool.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - _ (*tool.ExecutionRequest): The execution request payload.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {

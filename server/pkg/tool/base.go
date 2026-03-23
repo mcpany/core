@@ -97,6 +97,10 @@ func (t *baseTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return nil, nil // Should be implemented by embedding struct if supported
 }
 
+// GetCacheConfig returns the cache configuration for the tool.
+//
+// Returns:
+//   - *configv1.CacheConfig: Always returns nil.
 func (t *baseTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }
