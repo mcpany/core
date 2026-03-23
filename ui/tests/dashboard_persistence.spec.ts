@@ -23,7 +23,7 @@ test('dashboard layout persistence', async ({ page, request }) => {
   await page.goto('/');
 
   // Wait for loading to finish
-  await expect(page.locator('.lucide-loader-circle.animate-spin')).not.toBeVisible();
+  await expect(page.locator('.lucide-loader-circle.animate-spin').first()).not.toBeVisible();
 
   // If dashboard is empty, we see "Your dashboard is empty"
   // If defaults are loaded, we might see widgets.
@@ -35,7 +35,7 @@ test('dashboard layout persistence', async ({ page, request }) => {
   });
 
   await page.reload();
-  await expect(page.locator('.lucide-loader-circle.animate-spin')).not.toBeVisible();
+  await expect(page.locator('.lucide-loader-circle.animate-spin').first()).not.toBeVisible();
 
   // The test environment might not have any services set up, which causes it to render the OnboardingHero instead.
   // To test the dashboard logic, we bypass it by ensuring `hasServices` logic gets past it if empty.
@@ -43,7 +43,7 @@ test('dashboard layout persistence', async ({ page, request }) => {
   // If it shows OnboardingHero, we'll navigate directly to the empty dashboard grid if possible or handle it.
 
   // The grid should be visible. We use a more resilient selector.
-  await expect(page.getByText('Add widgets to customize your view.')).toBeVisible();
+  await expect(page.getByText('Your dashboard is empty')).toBeVisible();
 
   // 2. Add a widget
   await page.getByRole('button', { name: 'Add Widget' }).first().click();
@@ -62,11 +62,11 @@ test('dashboard layout persistence', async ({ page, request }) => {
 
   // 5. Reload page
   await page.reload();
-  await expect(page.locator('.lucide-loader-circle.animate-spin')).not.toBeVisible();
+  await expect(page.locator('.lucide-loader-circle.animate-spin').first()).not.toBeVisible();
 
   // 6. Verify widget persists
   await expect(page.getByText('Recent Activity').first()).toBeVisible();
-  await expect(page.getByText('Add widgets to customize your view.')).not.toBeVisible();
+  await expect(page.getByText('Your dashboard is empty')).not.toBeVisible();
 
   // 7. Verify API state
   const response = await request.get('/api/v1/user/preferences');
