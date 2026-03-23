@@ -19,7 +19,7 @@ import (
 // Returns:
 //   - *cobra.Command: The configured init command.
 func newInitCmd() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "init",
 		Short: "Interactively generate a basic config.yaml",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -62,11 +62,20 @@ upstream_services:
       address: %s
 `, serviceName, address)
 
-			if err := os.WriteFile("config.yaml", []byte(configContent), 0644); err != nil {
-				return fmt.Errorf("failed to write config.yaml: %w", err)
+			outputFile, err := cmd.Flags().GetString("output")
+			if err != nil {
+				outputFile = "config.yaml"
+			}
+
+			if err := os.WriteFile(outputFile, []byte(configContent), 0644); err != nil {
+				return fmt.Errorf("failed to write %s: %w", outputFile, err)
 			}
 			_, err = fmt.Fprintln(cmd.OutOrStdout(), "Successfully generated config.yaml!")
 			return err
 		},
 	}
+
+	cmd.Flags().StringP("output", "o", "config.yaml", "Output file path")
+
+	return cmd
 }

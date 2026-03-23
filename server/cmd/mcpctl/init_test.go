@@ -14,14 +14,7 @@ import (
 
 func TestInitCmd(t *testing.T) {
 	tempDir := t.TempDir()
-	origDir, err := os.Getwd()
-	require.NoError(t, err)
-	defer func() {
-		_ = os.Chdir(origDir)
-	}()
-
-	err = os.Chdir(tempDir)
-	require.NoError(t, err)
+	configPath := tempDir + "/config.yaml"
 
 	cmd := newInitCmd()
 	var out bytes.Buffer
@@ -32,14 +25,14 @@ func TestInitCmd(t *testing.T) {
 	cmd.SetOut(&out)
 	cmd.SetErr(&out)
 	cmd.SetIn(&in)
+	cmd.SetArgs([]string{"--output", configPath})
 
-	err = cmd.Execute()
+	err := cmd.Execute()
 	require.NoError(t, err)
 
 	output := out.String()
 	assert.Contains(t, output, "Successfully generated config.yaml!")
 
-	configPath := "config.yaml"
 	assert.FileExists(t, configPath)
 
 	content, err := os.ReadFile(configPath)
@@ -50,14 +43,7 @@ func TestInitCmd(t *testing.T) {
 
 func TestInitCmd_Defaults(t *testing.T) {
 	tempDir := t.TempDir()
-	origDir, err := os.Getwd()
-	require.NoError(t, err)
-	defer func() {
-		_ = os.Chdir(origDir)
-	}()
-
-	err = os.Chdir(tempDir)
-	require.NoError(t, err)
+	configPath := tempDir + "/config.yaml"
 
 	cmd := newInitCmd()
 	var out bytes.Buffer
@@ -68,11 +54,12 @@ func TestInitCmd_Defaults(t *testing.T) {
 	cmd.SetOut(&out)
 	cmd.SetErr(&out)
 	cmd.SetIn(&in)
+	cmd.SetArgs([]string{"--output", configPath})
 
-	err = cmd.Execute()
+	err := cmd.Execute()
 	require.NoError(t, err)
 
-	content, err := os.ReadFile("config.yaml")
+	content, err := os.ReadFile(configPath)
 	require.NoError(t, err)
 	assert.Contains(t, string(content), "name: my-service")
 	assert.Contains(t, string(content), "address: https://api.example.com")
