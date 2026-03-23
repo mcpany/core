@@ -57,6 +57,9 @@ jobs:
             . venv/bin/activate
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
+            export GOMAXPROCS=2
+            export GOGC=50
+            export GOLANGCI_LINT_CACHE=/tmp/golangci-lint
             make lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
