@@ -146,7 +146,6 @@ echo "Starting MCP Any backend on 127.0.0.1:${backend_port}"
   MCPANY_ALLOW_LOOPBACK_RESOURCES=true \
   MCPANY_ADMIN_INIT_USERNAME=e2e-admin \
   MCPANY_ADMIN_INIT_PASSWORD=password \
-  MCPANY_AUDIT_ENABLED=true \
   "$server_bin" run \
     --config-path="$config_path" \
     --mcp-listen-address="127.0.0.1:${backend_port}" \
