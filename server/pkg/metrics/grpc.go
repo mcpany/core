@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package metrics provides gRPC interceptors for metrics.
-package mcpmetrics
+package metrics
 
 import (
 	"context"

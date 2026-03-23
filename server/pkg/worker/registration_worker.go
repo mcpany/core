@@ -14,7 +14,7 @@ import (
 
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/mcpmetrics"
+	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/util"
 )

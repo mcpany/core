@@ -17,7 +17,7 @@ go_library(
         "//proto/config/v1:config",
         "//server/pkg/command",
         "//server/pkg/logging",
-        "//server/pkg/mcpmetrics",
+        "//server/pkg/metrics",
         "//server/pkg/util",
         "@com_github_alexliesenfeld_health//:health",
         "@com_github_coder_websocket//:websocket",

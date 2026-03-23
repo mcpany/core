@@ -39,7 +39,7 @@ import (
 	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/mcpserver"
-	"github.com/mcpany/core/server/pkg/mcpmetrics"
+	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/profile"

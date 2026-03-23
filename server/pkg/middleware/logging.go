@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/mcpmetrics"
+	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 

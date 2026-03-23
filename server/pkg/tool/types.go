@@ -30,7 +30,7 @@ import (
 	"github.com/mcpany/core/server/pkg/command"
 	"github.com/mcpany/core/server/pkg/consts"
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/mcpmetrics"
+	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/resilience"
 	"github.com/mcpany/core/server/pkg/transformer"

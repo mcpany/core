@@ -15,7 +15,7 @@ go_library(
     deps = [
         "//server/pkg/bus",
         "//server/pkg/logging",
-        "//server/pkg/mcpmetrics",
+        "//server/pkg/metrics",
         "//server/pkg/serviceregistry",
         "//server/pkg/tool",
         "//server/pkg/util",

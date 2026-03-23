@@ -63,7 +63,7 @@ go_library(
         "//server/pkg/consts",
         "//server/pkg/llm",
         "//server/pkg/logging",
-        "//server/pkg/mcpmetrics",
+        "//server/pkg/metrics",
         "//server/pkg/resilience",
         "//server/pkg/tokenizer",
         "//server/pkg/tool",

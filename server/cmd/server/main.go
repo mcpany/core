@@ -22,7 +22,7 @@ import (
 	"github.com/mcpany/core/server/pkg/doctor"
 	"github.com/mcpany/core/server/pkg/lint"
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/mcpmetrics"
+	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/update"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
@@ -113,7 +113,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				return err
 			}
 
-			if err := mcpmetrics.Initialize(); err != nil {
+			if err := metrics.Initialize(); err != nil {
 				logging.GetLogger().Error("Failed to initialize metrics", "error", err)
 				os.Exit(1)
 			}
@@ -185,7 +185,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			if metricsListenAddress := cfg.MetricsListenAddress(); metricsListenAddress != "" {
 				go func() {
 					log.Info("Starting metrics server", "address", metricsListenAddress)
-					if err := mcpmetrics.StartServer(metricsListenAddress); err != nil {
+					if err := metrics.StartServer(metricsListenAddress); err != nil {
 						log.Error("Metrics server failed", "error", err)
 					}
 				}()

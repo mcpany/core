@@ -15,7 +15,7 @@ go_library(
         "//proto/config/v1:config",
         "//proto/mcp_router/v1:mcp_router",
         "//server/pkg/logging",
-        "//server/pkg/mcpmetrics",
+        "//server/pkg/metrics",
         "//server/pkg/prompt",
         "//server/pkg/resource",
         "//server/pkg/tool",

@@ -314,3 +314,5 @@ require (
 )
 
 replace github.com/mcpany/core/proto => ../proto
+
+replace github.com/armon/go-metrics => github.com/armon/go-metrics v0.4.1
