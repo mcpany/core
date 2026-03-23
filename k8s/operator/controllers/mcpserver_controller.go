@@ -1,7 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package controllers provides the controller logic.
+// Package controllers provides the controller logic for the MCP Operator.
 package controllers
 
 import (
@@ -20,6 +20,7 @@ import (
 	mcpv1alpha1 "github.com/mcpany/core/k8s/operator/api/v1alpha1"
 )
 
+// MCPServerReconciler reconciles a MCPServer object.
 type MCPServerReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
@@ -31,6 +32,8 @@ type MCPServerReconciler struct {
 //+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
 
+// Reconcile is part of the main kubernetes reconciliation loop which aims to
+// move the current state of the cluster closer to the desired state.
 func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
@@ -96,6 +99,7 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	return ctrl.Result{}, nil
 }
 
+// deploymentForMCPServer creates a Deployment for a MCPServer.
 func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *appsv1.Deployment {
 	ls := labelsForMCPServer(m.Name)
 	replicas := m.Spec.Replicas
@@ -148,6 +152,7 @@ func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *
 	return dep
 }
 
+// serviceForMCPServer creates a Service for a MCPServer.
 func (r *MCPServerReconciler) serviceForMCPServer(m *mcpv1alpha1.MCPServer) *corev1.Service {
 	ls := labelsForMCPServer(m.Name)
 	svc := &corev1.Service{
@@ -170,10 +175,12 @@ func (r *MCPServerReconciler) serviceForMCPServer(m *mcpv1alpha1.MCPServer) *cor
 	return svc
 }
 
+// labelsForMCPServer returns labels for a MCPServer.
 func labelsForMCPServer(name string) map[string]string {
 	return map[string]string{"app": "mcp-server", "mcp_cr": name}
 }
 
+// SetupWithManager sets up the controller with the Manager.
 func (r *MCPServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&mcpv1alpha1.MCPServer{}).

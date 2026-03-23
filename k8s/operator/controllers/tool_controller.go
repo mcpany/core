@@ -1,7 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package controllers provides the controller logic.
+// Package controllers provides the controller logic for the MCP Operator.
 package controllers
 
 import (
@@ -15,6 +15,7 @@ import (
 	mcpanyv1alpha1 "github.com/mcpany/core/k8s/operator/api/v1alpha1"
 )
 
+// ToolReconciler reconciles a Tool object.
 type ToolReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
@@ -24,11 +25,13 @@ type ToolReconciler struct {
 // +kubebuilder:rbac:groups=mcpany.mcp.so,resources=tools/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=mcpany.mcp.so,resources=tools/finalizers,verbs=update
 
+// Reconcile is part of the main kubernetes reconciliation loop.
 func (r *ToolReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 	return ctrl.Result{}, nil
 }
 
+// SetupWithManager sets up the controller with the Manager.
 func (r *ToolReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&mcpanyv1alpha1.Tool{}).
