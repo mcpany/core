@@ -130,19 +130,20 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return !mcpContent && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
     }, [content, mcpContent]);
 
-    // Get columns for table
-    const columns = useMemo(() => {
-        if (!isTableEligible) return [];
-        // aggregate all keys from all objects to handle sparse data
-        const keys = new Set<string>();
-        // Limit rows scanned for columns to avoid perf issues on huge datasets
-        content.slice(0, 50).forEach((item: any) => {
-            if (typeof item === 'object' && item !== null) {
-                Object.keys(item).forEach(k => keys.add(k));
-            }
-        });
-        return Array.from(keys);
-    }, [content, isTableEligible]);
+    const objectAsTableData = useMemo(() => {
+        if (!mcpContent && !Array.isArray(content) && typeof content === 'object' && content !== null && Object.keys(content).length > 0) {
+            return Object.entries(content).map(([key, value]) => ({ Key: key, Value: value }));
+        }
+        return null;
+    }, [content, mcpContent]);
+
+    const tableData = useMemo(() => {
+        if (isTableEligible) return content;
+        if (objectAsTableData) return objectAsTableData;
+        return null;
+    }, [isTableEligible, objectAsTableData, content]);
+
+    const hasTable = isTableEligible || objectAsTableData !== null;
 
     const renderCell = (value: any) => {
         if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
@@ -151,7 +152,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return <span className="truncate max-w-[300px] block" title={String(value)}>{String(value)}</span>;
     }
 
-    const defaultTab = mcpContent ? "rendered" : (isTableEligible ? "table" : "json");
+    const defaultTab = mcpContent ? "rendered" : (hasTable ? "table" : "json");
 
     return (
         <Tabs defaultValue={defaultTab} className="w-full">
@@ -162,7 +163,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                             <FileText className="h-4 w-4" /> Rendered
                         </TabsTrigger>
                     )}
-                    {isTableEligible && (
+                    {hasTable && (
                         <TabsTrigger value="table" className="flex items-center gap-2">
                             <TableIcon className="h-4 w-4" /> Table
                         </TabsTrigger>
@@ -186,10 +187,10 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                 </TabsContent>
             )}
 
-            {isTableEligible && (
+            {hasTable && (
                 <TabsContent value="table" className="border rounded-md">
                     <div className="h-[400px]">
-                        <SmartTable data={content} />
+                        <SmartTable data={tableData} />
                     </div>
                 </TabsContent>
             )}
