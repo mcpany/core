@@ -144,6 +144,9 @@ type defaultPlaywrightRunner struct{}
 //
 // Summary: Starts playwright.
 //
+// Parameters:
+//   None.
+//
 // Returns:
 //   - playwrightImpl: The playwright instance.
 //   - error: An error if starting fails.
