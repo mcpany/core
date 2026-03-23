@@ -1,9 +1,8 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package v1alpha1
-
 // Package v1alpha1 contains API Schema definitions for the v1alpha1 API group.
+package v1alpha1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
