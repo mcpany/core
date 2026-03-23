@@ -87,9 +87,8 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
               {
                 role: 0, // USER
                 content: {
-                  text: {
-                    text: "What is {{a}} + {{b}}?",
-                  },
+                  type: "text",
+                  text: "What is {{a}} + {{b}}?",
                 },
               },
             ],

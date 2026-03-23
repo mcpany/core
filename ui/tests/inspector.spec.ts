@@ -48,7 +48,7 @@ test.describe('Inspector Page', () => {
     // InspectorTable without depending on proxy-level WS tunnelling.
     let wsSend: ((data: string) => void) | null = null;
     await page.routeWebSocket('**/api/v1/ws/traces', (ws: any) => {
-      wsSend = (data: string) => ws.send(data);
+      wsSend = (data: string) => { ws.send(data); };
     });
 
     // Navigate to the Inspector page
@@ -67,8 +67,8 @@ test.describe('Inspector Page', () => {
 
     // After the POST succeeds, inject the trace into the active WebSocket
     // connection.
-    if (wsSend) {
-      wsSend(JSON.stringify(MOCK_TRACE));
+    if (wsSend !== null) {
+      (wsSend as any)(JSON.stringify(MOCK_TRACE));
     }
 
     // Wait briefly to allow React state to update based on WebSocket message

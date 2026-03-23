@@ -59,8 +59,8 @@ test.describe("Prompts Workbench", () => {
       );
 
       // Let's test the execution and RichResultViewer
-      const aInput = page.locator('input[name="a"]');
-      const bInput = page.locator('input[name="b"]');
+      const aInput = page.locator('#a');
+      const bInput = page.locator('#b');
       await expect(aInput).toBeVisible();
       await expect(bInput).toBeVisible();
       await aInput.fill("5");
