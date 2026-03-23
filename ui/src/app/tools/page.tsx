@@ -193,14 +193,17 @@ export default function ToolsPage() {
 
   // Grouping logic
   const groupedTools = React.useMemo(() => {
-    // ⚡ BOLT: Optimized O(N*M) grouping by pre-computing a service map for O(1) lookups
-    // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
-    const serviceMap = new Map(services.map(s => [s.id, s.name]));
+    // ⚡ BOLT: Prevented O(N*M) loop inside reduce by creating an O(1) lookup map for services.
+    // Randomized Selection from Top 5 High-Impact Targets (Algorithmic / Render Waste)
+    const servicesMap = groupBy === "service"
+      ? new Map(services.map(s => [s.id, s]))
+      : new Map();
 
     return filteredTools.reduce((acc, tool) => {
       let key = "Other";
       if (groupBy === "service") {
-        key = tool.serviceId ? (serviceMap.get(tool.serviceId) || tool.serviceId) : "Unknown Service";
+        const service = servicesMap.get(tool.serviceId);
+        key = service ? service.name : tool.serviceId || "Unknown Service";
       } else if (groupBy === "category") {
         key = tool.tags && tool.tags.length > 0 ? tool.tags[0] : "Uncategorized";
       }
