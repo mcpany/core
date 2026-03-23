@@ -107,7 +107,9 @@
 
 #### Upcoming (2026-03-22 Evolution)
 *   **[P0] Premium Tool Execution Timeline**: (2026-03-21) Blueprint for high-fidelity interactive timeline.
-*   **[P0] UACO Agentic SLA Middleware**: Enforcement of resource contracts (token budget, reasoning time) during task delegation. (Added: 2026-03-22)
+*   **[P0] UACO Agentic SLA Middleware**: Enforcement of hardware-attested resource contracts (token budget, reasoning time) during task delegation. (Added: 2026-03-22)
+*   **[P0] Lock-Free Mesh Coordination**: CRDT-based mailbox synchronization to eliminate "Mailbox Lock" bottlenecks in horizontal swarms. (Added: 2026-03-22)
+*   **[P0] ARL (Attestation Revocation List) Provider**: Real-time, hardware-bound capability revocation service to neutralize "Trust Lease" vulnerabilities. (Added: 2026-03-22)
 *   **[P0] Ghost Shell Execution Mode**: Isolated profiling environment for behavioral analysis of un-attested hooks. (Added: 2026-03-22)
 *   **[P1] Federated Policy Synchronizer**: Secure bus for synchronizing security guardrails across multiple MCP Any instances. (Added: 2026-03-22)
 
@@ -800,3 +802,15 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Density Guard (ADG)**: (P0) Cognitive security layer utilizing hardware-bound headers to "pin" mission-critical fragments at the LLM attention layer.
 - **Headless Handoff Continuity (HHC)**: (P0) Orchestration bridge facilitating signed intent transfers for process-based subagent spawning.
 - **Multi-Modal Attention Sanitizer**: (P1) Advanced security extension for the MIB to neutralize attention-eviction probes in non-textual traces.
+
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Attention-Density Firewall (ADF)**: Sub-millisecond entropy analysis middleware to block context-eviction noise. (Added: 2026-06-25)
+*   **[P0] Hardware-Locked Environment Sovereignty (HLES)**: Secure, kernel-bound memory for hardware-attested identity tokens. (Added: 2026-06-25)
+*   **[P0] Monotonic Mission Lineage (MML) Provider**: Identity extension for TPM-signed monotonic counters for reasoning provenance. (Added: 2026-06-25)
+*   **[P1] CRDT-Native Mailbox Shards**: Lock-free horizontal coordination using Conflict-Free Replicated Data Types. (Added: 2026-06-25)
+
+#### Upcoming (2026-06-26 Evolution)
+*   **[P0] Cross-Framework Stylometric Arbiter (CFSA)**: Real-time behavioral analysis of reasoning traces to prevent mimicry-based hijacking. (Added: 2026-06-26)
+*   **[P0] Shadow-Handshake Interceptor (SHI)**: Transport-level monitoring to interdict unauthorized agency-initiation signals. (Added: 2026-06-26)
+*   **[P0] Differential Reasoning Validator (DRV)**: Framework-aware sanity checks for state fragments to prevent cross-framework poisoning. (Added: 2026-06-26)
+*   **[P0] Monotonic Handshake Lineage (MHL)**: Hardware-bound lineage tokens for all handshake and session-initiation events. (Added: 2026-06-26)
