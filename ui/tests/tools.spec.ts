@@ -98,15 +98,17 @@ test.describe('Tool Exploration', () => {
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Change grouping to "service"
-        // Wait for the exact text rendered by the component ("No Grouping") to become fully
-        // visible and attached to the DOM before interacting with it to bypass hydration flakiness.
-        const groupByTrigger = page.getByText('No Grouping', { exact: true });
-        await groupByTrigger.waitFor({ state: 'visible', timeout: 10000 });
-        await groupByTrigger.click();
+        // Target the Select trigger via its highly specific Tailwind width class
+        // which uniquely identifies the "Group By" combobox (.w-[180px]) versus the
+        // "Filter by Service" combobox (.w-[200px]), and force the click event.
+        const groupByTrigger = page.locator('button.w-\\[180px\\]');
+        await groupByTrigger.waitFor({ state: 'attached', timeout: 10000 });
+        await groupByTrigger.click({ force: true });
 
-        const option = page.getByText('Group by Service', { exact: true });
-        await option.waitFor({ state: 'visible', timeout: 5000 });
-        await option.click();
+        // Once the portal opens, click the option
+        const option = page.locator('[role="option"]:has-text("Group by Service")');
+        await option.waitFor({ state: 'attached', timeout: 5000 });
+        await option.click({ force: true });
 
         // Verify that the Payment Gateway service grouping header is visible
         // We use a regex because the AccordionTrigger button's accessible name includes the tool count badge (e.g. "Payment Gateway 1")
