@@ -1,0 +1,8 @@
+# docs/features/BUILD.bazel
+filegroup(
+    name = "docs",
+    srcs = [
+        "design-msve.md",
+    ],
+    visibility = ["//visibility:public"],
+)
