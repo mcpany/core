@@ -113,4 +113,41 @@ describe('ServiceList', () => {
         expect(screen.queryByText('Export')).not.toBeInTheDocument();
         expect(screen.queryByText('Delete')).not.toBeInTheDocument();
     });
+
+    it('renders bulk actions when services are selected', async () => {
+        const user = userEvent.setup();
+        const onBulkToggle = vi.fn();
+        const onBulkDelete = vi.fn();
+
+        render(
+            <TooltipProvider>
+                <ServiceHealthProvider>
+                    <ServiceList
+                        services={[mockService, { ...mockService, id: 'test-2', name: 'service-2' } as any]}
+                        onBulkToggle={onBulkToggle}
+                        onBulkDelete={onBulkDelete}
+                    />
+                </ServiceHealthProvider>
+            </TooltipProvider>
+        );
+
+        // Check select all
+        const selectAllCheckbox = screen.getByLabelText('Select all');
+        await user.click(selectAllCheckbox);
+
+        // Bulk actions should be visible
+        expect(screen.getByText('2 selected')).toBeInTheDocument();
+        expect(screen.getByText('Enable')).toBeInTheDocument();
+        expect(screen.getByText('Disable')).toBeInTheDocument();
+        expect(screen.getByText('Delete')).toBeInTheDocument();
+
+        // Click Disable
+        await user.click(screen.getByText('Disable'));
+        expect(onBulkToggle).toHaveBeenCalledWith(['test-service', 'service-2'], false);
+
+        // Click Delete
+        await user.click(selectAllCheckbox); // Reselect all
+        await user.click(screen.getByText('Delete'));
+        expect(onBulkDelete).toHaveBeenCalledWith(['test-service', 'service-2']);
+    });
 });
