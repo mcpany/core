@@ -109,92 +109,8 @@ func (b *Provider) ToolDefinition() map[string]interface{} {
 	}
 }
 
-// playwrightRunner abstracts playwright execution so we can inject a mock for hermetic testing.
-type playwrightRunner interface {
-	Run() (playwrightImpl, error)
-}
-
-type playwrightImpl interface {
-	Stop() error
-	Chromium() playwrightBrowserType
-}
-
-type playwrightBrowserType interface {
-	Launch(options ...playwright.BrowserTypeLaunchOptions) (playwrightBrowser, error)
-}
-
-type playwrightBrowser interface {
-	Close() error
-	NewPage(options ...playwright.BrowserNewPageOptions) (playwrightPage, error)
-}
-
-type playwrightPage interface {
-	Goto(url string, options ...playwright.PageGotoOptions) (playwright.Response, error)
-	Locator(selector string, options ...playwright.PageLocatorOptions) playwrightLocator
-}
-
-type playwrightLocator interface {
-	TextContent(options ...playwright.LocatorTextContentOptions) (string, error)
-}
-
-// defaultPlaywrightRunner uses actual playwright-go
-type defaultPlaywrightRunner struct{}
-
-func (d *defaultPlaywrightRunner) Run() (playwrightImpl, error) {
-	pw, err := playwright.Run()
-	if err != nil {
-		return nil, err
-	}
-	return &realPlaywright{pw}, nil
-}
-
-type realPlaywright struct{ pw *playwright.Playwright }
-
-func (r *realPlaywright) Stop() error { return r.pw.Stop() }
-func (r *realPlaywright) Chromium() playwrightBrowserType {
-	return &realBrowserType{r.pw.Chromium}
-}
-
-type realBrowserType struct{ bt playwright.BrowserType }
-
-func (r *realBrowserType) Launch(options ...playwright.BrowserTypeLaunchOptions) (playwrightBrowser, error) {
-	b, err := r.bt.Launch(options...)
-	if err != nil {
-		return nil, err
-	}
-	return &realBrowser{b}, nil
-}
-
-type realBrowser struct{ b playwright.Browser }
-
-func (r *realBrowser) Close() error { return r.b.Close() }
-func (r *realBrowser) NewPage(options ...playwright.BrowserNewPageOptions) (playwrightPage, error) {
-	p, err := r.b.NewPage(options...)
-	if err != nil {
-		return nil, err
-	}
-	return &realPage{p}, nil
-}
-
-type realPage struct{ p playwright.Page }
-
-func (r *realPage) Goto(url string, options ...playwright.PageGotoOptions) (playwright.Response, error) {
-	return r.p.Goto(url, options...)
-}
-func (r *realPage) Locator(selector string, options ...playwright.PageLocatorOptions) playwrightLocator {
-	return &realLocator{r.p.Locator(selector, options...)}
-}
-
-type realLocator struct{ l playwright.Locator }
-
-func (r *realLocator) TextContent(options ...playwright.LocatorTextContentOptions) (string, error) {
-	return r.l.TextContent(options...)
-}
-
 // playwrightFetcher is the production PageFetcher that uses playwright-go.
-type playwrightFetcher struct{
-	runner playwrightRunner
-}
+type playwrightFetcher struct{}
 
 // FetchText fetches the text content of a URL using playwright.
 //
@@ -214,12 +130,7 @@ type playwrightFetcher struct{
 // Side Effects:
 //   - None.
 func (f *playwrightFetcher) FetchText(_ context.Context, url string) (string, error) {
-	r := f.runner
-	if r == nil {
-		r = &defaultPlaywrightRunner{}
-	}
-
-	pw, err := r.Run()
+	pw, err := playwright.Run()
 	if err != nil {
 		return "", fmt.Errorf("could not start playwright: %w", err)
 	}
@@ -229,7 +140,7 @@ func (f *playwrightFetcher) FetchText(_ context.Context, url string) (string, er
 		}
 	}()
 
-	browser, err := pw.Chromium().Launch(playwright.BrowserTypeLaunchOptions{
+	browser, err := pw.Chromium.Launch(playwright.BrowserTypeLaunchOptions{
 		Headless: playwright.Bool(true),
 	})
 	if err != nil {
