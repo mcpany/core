@@ -1144,17 +1144,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-27]
-### Focus: Zero-Knowledge Discovery & Lock-Free Swarm Orchestration
-**Context**: The emergence of "Zero-Knowledge Capability Proofs" (ZKCP) in Gemini CLI and the critical "Mailbox Lock" bottlenecks in high-density Claude Code teams confirm that the "Universal Agent Bus" must move from simple bridging to **Privacy-Preserving Discovery** and **Lock-Free Mesh Governance**. Simultaneously, the "ClawHub" supply-chain compromise proves that tool safety now requires **Multi-Signature Auditor Attestation**.
-**Strategic Pivot**:
-- **Zero-Knowledge Discovery (ZKD) Proxy**: MCP Any will evolve to act as the authoritative "ZK-Discovery Broker." We will implement ZKD, allowing agents to prove skill possession without revealing sensitive tool schemas until a mission-bound, hardware-attested handshake is completed, neutralizing pre-flight shadow mapping.
-- **CRDT-Native Mailbox Sharding**: To resolve the coordination stall in horizontal Agent Teams, we are transitioning to a lock-free coordination architecture. MCP Any will host Conflict-Free Replicated Data Type (CRDT) shards for teammate mailboxes, ensuring non-blocking performance as swarms scale beyond 10+ teammates.
-- **Multi-Signature Skill Attestation (MSSA)**: Supporting the "Audit-before-Execution" model, we are mandating MSSA. Dynamic tool grafting will require cryptographically bound approval tokens from both the agent framework and a verified third-party security auditor, neutralizing "Rug-Pull" supply chain attacks.
-- **Reasoning Path Integrity (RPI) Validator**: Leveraging Gemini's ARE v1.8 standard, MCP Any will evolve to support RPI. We will provide the infrastructure to validate hardware-signed internal reasoning steps, ensuring that the "Chain-of-Thought" remains untampered across heterogeneous framework handoffs.
-
----
-
 ## Strategic Evolution: [2026-06-26]
 ### Focus: Stylometric Identity & Shadow-Handshake Interdiction
 **Context**: The emergence of "Semantic Stylometry Spoofing" and the discovery of "Shadow Handshakes" (unauthorized mission-root initiation) reveal that hardware-attestation alone is no longer enough to secure autonomous swarms. We must now protect the **behavioral sovereignty** of the agent and ensure that the **initiation of agency** is as strictly governed as its execution. Simultaneously, the risk of "Cross-Framework State Poisoning" demands framework-aware sanity checks during state handoffs.

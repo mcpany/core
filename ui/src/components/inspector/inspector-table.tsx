@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { TraceDetail } from "@/components/traces/trace-detail";
-import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database, ChevronRight, ChevronDown, Cpu, MessageSquare } from "lucide-react";
+import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database, ChevronRight, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { TableVirtuoso } from "react-virtuoso";
@@ -66,8 +66,6 @@ function TypeIcon({ type, className }: { type: string, className?: string }) {
         case 'tool': return <Terminal className={className} />;
         case 'service': return <Globe className={className} />;
         case 'resource': return <Database className={className} />;
-        case 'core': return <Cpu className={className} />;
-        case 'prompt': return <MessageSquare className={className} />;
         default: return <Clock className={className} />;
     }
 }
