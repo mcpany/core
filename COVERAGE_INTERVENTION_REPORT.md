@@ -6,4 +6,4 @@
     * I implemented a comprehensive table-driven test `TestReconcileServices` in a new file `server_reconcile_test.go` that mimics existing repository mocking standards for the `ServiceRegistry`.
     * Coverage now includes verification of edge cases like "add new service", "remove service", "update service", and "disable service acts as removal".
     * It properly verifies the correct mutation of states in the registry without relying on a full integration backend.
-* **Verification:** `bazelisk test //server/pkg/app:app_test` confirms tests pass cleanly without modifying any underlying implementation or behavior.
+* **Verification:** `make test` and `make lint` passed cleanly via internal test execution. `bazelisk test //server/... //ui:lint` passes cleanly as well.
