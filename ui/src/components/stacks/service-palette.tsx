@@ -79,10 +79,7 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
                 // The backend `ServiceTemplate` proto has `description`, `icon`, etc.
                 // Let's manually construct a basic YAML for now or use a helper.
 
-                // TODO: proper YAML marshaling. For now, we might rely on the `description` or `name` to pick a snippet
-                // if we want to match the old behavior, OR we simply serialize the config.
-                // But the Stack Editor expects a YAML snippet to insert into the stack config.
-                // Stack config is YAML.
+                // Using js-yaml to serialize the config.
 
                 setTemplates(data);
             } catch (err) {
@@ -98,7 +95,7 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
     const generateYamlSnippet = (t: ServiceTemplate): string => {
         // Construct a YAML snippet based on the template config
         // Use js-yaml to marshal the full configuration correctly
-        const configObject = { ...t.serviceConfig };
+        const configObject = { ...t.serviceConfig } as Record<string, unknown>;
 
         // Remove internal UI metadata not needed in the raw stack config
         delete configObject.id;
