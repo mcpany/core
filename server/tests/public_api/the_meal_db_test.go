@@ -90,7 +90,6 @@ func TestUpstreamService_TheMealDB(t *testing.T) {
 	require.NoError(t, err)
 	for _, tool := range listToolsResult.Tools {
 		t.Logf("Discovered tool from MCPANY: %s", tool.Name)
-	}
 
 	serviceID, _ := util.SanitizeServiceName(theMealDBServiceID)
 	sanitizedToolName, _ := util.SanitizeToolName("searchMeal")
@@ -111,8 +110,6 @@ func TestUpstreamService_TheMealDB(t *testing.T) {
 	err = json.Unmarshal([]byte(textContent.Text), &theMealDBResponse)
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
-	}
-	}
 	meals, ok := theMealDBResponse["meals"].([]interface{})
 	require.True(t, ok, "The meals should be an array")
 	require.True(t, len(meals) > 0, "The response should contain at least one meal")
@@ -120,4 +117,5 @@ func TestUpstreamService_TheMealDB(t *testing.T) {
 	t.Logf("SUCCESS: Received correct data for arrabiata: %s", textContent.Text)
 
 	t.Log("INFO: E2E Test Scenario for TheMealDB Server Completed Successfully!")
+}
 }
