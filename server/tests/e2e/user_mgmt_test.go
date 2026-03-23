@@ -147,6 +147,7 @@ global_settings:
 				ParamName:         proto.String("X-API-Key"),
 				VerificationValue: proto.String("secret-key"),
 			}.Build(),
+
 		}.Build(),
 		ProfileIds: []string{"profile-1"},
 		Roles:      []string{"viewer"},

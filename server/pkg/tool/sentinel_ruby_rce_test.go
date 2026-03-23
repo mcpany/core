@@ -21,14 +21,14 @@ func TestRubySystemSpace(t *testing.T) {
 	if err == nil {
 		t.Fatalf("Vulnerability confirmed: 'system \"id\"' passed validation in Single Quote context (Ruby). Error was nil.")
 	} else {
-		t.Logf("Blocked with error: %v", err)
-	}
+        t.Logf("Blocked with error: %v", err)
+    }
 
 	valPerl := `system "id"`
 	errPerl := checkForShellInjection(valPerl, template, "{{val}}", "perl", false)
 	if errPerl == nil {
 		t.Fatalf("Vulnerability confirmed: 'system \"id\"' passed validation in Single Quote context (Perl). Error was nil.")
 	} else {
-		t.Logf("Blocked with error: %v", errPerl)
-	}
+        t.Logf("Blocked with error: %v", errPerl)
+    }
 }

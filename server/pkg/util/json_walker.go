@@ -16,6 +16,7 @@ var jsonWalkerBufferPool = sync.Pool{
 	},
 }
 
+
 // WalkJSONStrings visits every string value in the JSON input.
 //
 // Summary: Walks through a JSON bytes slice and applies a visitor function to all string values.

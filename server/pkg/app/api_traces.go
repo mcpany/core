@@ -270,65 +270,131 @@ func generateMockAuditEntries() []audit.Entry {
 	traceID := fmt.Sprintf("trace-seed-%d", rand.Intn(10000)) //nolint:gosec // Testing only
 
 	rootArgs, _ := json.Marshal(map[string]any{
-		"query":   "Analyze Q3 financial report",
-		"context": "user-session-123",
+		"issue_id": "INC-8492",
+		"description": "Database latency spike in eu-west-1",
 	})
-	child1Args, _ := json.Marshal(map[string]any{
-		"query": "Q3 2024 financials",
+
+	slackArgs, _ := json.Marshal(map[string]any{
+		"channel": "#incident-response",
+		"message": "Investigating INC-8492: Database latency spike in eu-west-1",
 	})
-	child2Args, _ := json.Marshal(map[string]any{
-		"files": []string{"data_q3.xlsx"},
+
+	queryArgs, _ := json.Marshal(map[string]any{
+		"query": "SELECT avg(latency) FROM metrics WHERE service='db-primary' AND region='eu-west-1' AND time > now() - 1h",
+	})
+
+	getLogsArgs, _ := json.Marshal(map[string]any{
+		"service": "db-primary",
+		"level": "ERROR",
+		"limit": 100,
+	})
+
+	analyzeArgs, _ := json.Marshal(map[string]any{
+		"logs_context": "Found 45 deadlock errors in the last 15 minutes.",
+		"metrics_context": "Average latency is 1450ms, p99 is 4500ms.",
+	})
+
+	jiraArgs, _ := json.Marshal(map[string]any{
+		"issue_id": "INC-8492",
+		"status": "In Progress",
+		"comment": "Root cause identified as deadlocks. Applying mitigation plan.",
 	})
 
 	entries := []audit.Entry{
 		{
-			Timestamp: now,
-			ToolName:  "orchestrator-task",
-			UserID:    "system",
-			ProfileID: "default",
-			TraceID:   traceID,
-			SpanID:    traceID + "-0",
-			ParentID:  "",
-			Arguments: json.RawMessage(rootArgs),
+			Timestamp:  now,
+			ToolName:   "incident-triage-agent",
+			UserID:     "admin-user",
+			ProfileID:  "prod-incident-profile",
+			TraceID:    traceID,
+			SpanID:     traceID + "-0",
+			ParentID:   "",
+			Arguments:  json.RawMessage(rootArgs),
 			Result: map[string]any{
-				"summary":    "Revenue up 15%",
-				"confidence": 0.98,
+				"status": "mitigated",
+				"resolution_time_ms": 4250,
+				"confidence": 0.95,
 			},
-			Duration:   "1250ms",
-			DurationMs: 1250,
+			Duration:   "4250ms",
+			DurationMs: 4250,
 		},
 		{
-			Timestamp: now.Add(50 * time.Millisecond),
-			ToolName:  "search-tool",
-			UserID:    "system",
-			ProfileID: "default",
-			TraceID:   traceID,
-			SpanID:    traceID + "-1",
-			ParentID:  traceID + "-0",
-			Arguments: json.RawMessage(child1Args),
+			Timestamp:  now.Add(100 * time.Millisecond),
+			ToolName:   "slack-notify",
+			UserID:     "admin-user",
+			ProfileID:  "prod-incident-profile",
+			TraceID:    traceID,
+			SpanID:     traceID + "-1",
+			ParentID:   traceID + "-0",
+			Arguments:  json.RawMessage(slackArgs),
 			Result: map[string]any{
-				"results": []string{"report_q3.pdf", "data_q3.xlsx"},
+				"message_ts": "1672531200.000100",
+				"delivered": true,
+			},
+			Duration:   "150ms",
+			DurationMs: 150,
+		},
+		{
+			Timestamp:  now.Add(300 * time.Millisecond),
+			ToolName:   "query-metrics",
+			UserID:     "admin-user",
+			ProfileID:  "prod-incident-profile",
+			TraceID:    traceID,
+			SpanID:     traceID + "-2",
+			ParentID:   traceID + "-0",
+			Arguments:  json.RawMessage(queryArgs),
+			Result: map[string]any{
+				"avg_latency_ms": 1450,
+				"p99_latency_ms": 4500,
+				"status": "critical",
+			},
+			Duration:   "850ms",
+			DurationMs: 850,
+		},
+		{
+			Timestamp:  now.Add(1200 * time.Millisecond),
+			ToolName:   "fetch-logs",
+			UserID:     "admin-user",
+			ProfileID:  "prod-incident-profile",
+			TraceID:    traceID,
+			SpanID:     traceID + "-3",
+			ParentID:   traceID + "-0",
+			Arguments:  json.RawMessage(getLogsArgs),
+			Error:      "Timeout exceeding 2000ms while fetching logs from Elasticsearch cluster",
+			Duration:   "2000ms",
+			DurationMs: 2000,
+		},
+		{
+			Timestamp:  now.Add(3250 * time.Millisecond),
+			ToolName:   "analyze-incident-data",
+			UserID:     "admin-user",
+			ProfileID:  "prod-incident-profile",
+			TraceID:    traceID,
+			SpanID:     traceID + "-4",
+			ParentID:   traceID + "-0",
+			Arguments:  json.RawMessage(analyzeArgs),
+			Result: map[string]any{
+				"root_cause": "Deadlock in inventory_updates table",
+				"recommended_action": "Kill blocked transactions and restart connection pool",
+			},
+			Duration:   "500ms",
+			DurationMs: 500,
+		},
+		{
+			Timestamp:  now.Add(3800 * time.Millisecond),
+			ToolName:   "jira-update",
+			UserID:     "admin-user",
+			ProfileID:  "prod-incident-profile",
+			TraceID:    traceID,
+			SpanID:     traceID + "-5",
+			ParentID:   traceID + "-0",
+			Arguments:  json.RawMessage(jiraArgs),
+			Result: map[string]any{
+				"success": true,
+				"issue_url": "https://jira.example.com/browse/INC-8492",
 			},
 			Duration:   "400ms",
 			DurationMs: 400,
-		},
-		{
-			Timestamp: now.Add(500 * time.Millisecond),
-			ToolName:  "data-analyzer",
-			UserID:    "system",
-			ProfileID: "default",
-			TraceID:   traceID,
-			SpanID:    traceID + "-2",
-			ParentID:  traceID + "-0",
-			Arguments: json.RawMessage(child2Args),
-			Result: map[string]any{
-				"analysis": "Growth detected",
-				"metrics": map[string]any{
-					"revenue": 1.15,
-				},
-			},
-			Duration:   "700ms",
-			DurationMs: 700,
 		},
 	}
 	return entries

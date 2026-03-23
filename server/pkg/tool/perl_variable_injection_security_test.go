@@ -46,12 +46,12 @@ func TestLocalCommandTool_Perl_UnquotedArrayInjection(t *testing.T) {
 	if err != nil {
 		t.Logf("Error: %v", err)
 		if assert.Contains(t, err.Error(), "injection detected") {
-			// Validation worked (Secure).
-			t.Log("Perl unquoted array injection correctly blocked.")
-		} else {
-			t.Logf("Validation passed (vulnerable), but execution failed: %v", err)
-			t.Fail()
-		}
+             // Validation worked (Secure).
+			 t.Log("Perl unquoted array injection correctly blocked.")
+        } else {
+             t.Logf("Validation passed (vulnerable), but execution failed: %v", err)
+             t.Fail()
+        }
 	} else {
 		// Validation passed (vulnerable)
 		t.Log("Perl unquoted array injection payload was NOT blocked! (Execution succeeded)")
@@ -74,7 +74,7 @@ func TestLocalCommandTool_Ruby_UnquotedVariableInjection(t *testing.T) {
 	}.Build()
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id-ruby-unquoted")
 
-	payload := "@foo"
+    payload := "@foo"
 
 	req := &ExecutionRequest{
 		ToolName: "test-tool-ruby-unquoted",
@@ -90,12 +90,12 @@ func TestLocalCommandTool_Ruby_UnquotedVariableInjection(t *testing.T) {
 	if err != nil {
 		t.Logf("Error: %v", err)
 		if assert.Contains(t, err.Error(), "injection detected") {
-			// Validation worked (Secure).
-			t.Log("Ruby unquoted variable injection correctly blocked.")
-		} else {
-			t.Logf("Validation passed (vulnerable), but execution failed: %v", err)
-			t.Fail()
-		}
+             // Validation worked (Secure).
+			 t.Log("Ruby unquoted variable injection correctly blocked.")
+        } else {
+             t.Logf("Validation passed (vulnerable), but execution failed: %v", err)
+             t.Fail()
+        }
 	} else {
 		// Validation passed (vulnerable)
 		t.Log("Ruby unquoted variable injection payload was NOT blocked! (Execution succeeded)")
@@ -135,12 +135,12 @@ func TestLocalCommandTool_Perl_DoubleQuoteArrayInjection(t *testing.T) {
 	if err != nil {
 		t.Logf("Error: %v", err)
 		if assert.Contains(t, err.Error(), "injection detected") {
-			// Validation worked (Secure).
-			t.Log("Perl double quoted array injection correctly blocked.")
-		} else {
-			t.Logf("Validation passed (vulnerable), but execution failed: %v", err)
-			t.Fail()
-		}
+             // Validation worked (Secure).
+			 t.Log("Perl double quoted array injection correctly blocked.")
+        } else {
+             t.Logf("Validation passed (vulnerable), but execution failed: %v", err)
+             t.Fail()
+        }
 	} else {
 		// Validation passed (vulnerable)
 		t.Log("Perl double quoted array injection payload was NOT blocked! (Execution succeeded)")
@@ -180,12 +180,12 @@ func TestLocalCommandTool_Ruby_DoubleQuoteInstanceInjection(t *testing.T) {
 	if err != nil {
 		t.Logf("Error: %v", err)
 		if assert.Contains(t, err.Error(), "injection detected") {
-			// Validation worked (Secure).
-			t.Log("Ruby instance variable injection correctly blocked.")
-		} else {
-			t.Logf("Validation passed (vulnerable), but execution failed: %v", err)
-			t.Fail()
-		}
+             // Validation worked (Secure).
+			 t.Log("Ruby instance variable injection correctly blocked.")
+        } else {
+             t.Logf("Validation passed (vulnerable), but execution failed: %v", err)
+             t.Fail()
+        }
 	} else {
 		// Validation passed (vulnerable)
 		t.Log("Ruby instance variable injection payload was NOT blocked! (Execution succeeded)")

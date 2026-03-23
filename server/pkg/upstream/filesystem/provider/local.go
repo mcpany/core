@@ -27,7 +27,7 @@ type LocalProvider struct {
 // Parameters:
 //   - _ (*configv1.OsFs): The parameter.
 //   - rootPaths (map[string]string): The parameter.
-//   - (allowedPaths): The parameter.
+//   -  (allowedPaths): The parameter.
 //   - deniedPaths ([]string): The parameter.
 //   - symlinkMode (configv1.FilesystemUpstreamService_SymlinkMode): The parameter.
 //

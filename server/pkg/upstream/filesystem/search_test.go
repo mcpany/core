@@ -111,8 +111,8 @@ func TestSearchFiles_Exclusion(t *testing.T) {
 	require.NoError(t, afero.WriteFile(fs, filepath.Join(rootDir, "ignore.me"), []byte("match me"), 0644))
 
 	res, err := toolDef.Handler(context.Background(), map[string]interface{}{
-		"path":             rootDir,
-		"pattern":          "match",
+		"path":    rootDir,
+		"pattern": "match",
 		"exclude_patterns": []interface{}{"*.log", "ignore.*"},
 	})
 	require.NoError(t, err)

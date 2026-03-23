@@ -28,6 +28,7 @@ func TestValidate_InvalidJsonSchema(t *testing.T) {
 	})
 	assert.NoError(t, err)
 
+
 	name := "test-service"
 	address := "http://example.com"
 

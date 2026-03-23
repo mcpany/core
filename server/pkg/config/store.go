@@ -39,11 +39,11 @@ type Engine interface {
 	// Summary: Parses bytes into a protobuf message.
 	//
 	// Parameters:
-	//   - b ([]byte): The raw bytes to parse.
-	//   - v (proto.Message): The destination protobuf message.
+//   - b ([]byte): The raw bytes to parse.
+//   - v (proto.Message): The destination protobuf message.
 	//
 	// Returns:
-	//   - (error): An error if parsing fails.
+//   - (error): An error if parsing fails.
 	Unmarshal(b []byte, v proto.Message) error
 }
 
