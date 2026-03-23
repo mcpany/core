@@ -50,7 +50,7 @@
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory DCG to counter CVE-2026-39102.
 - **`TeammateTool` Orchestration Adapter**: (Re-affirmed P0) Evolving to support ANB-native task auctions.
 
-## Evolution: [2026-05-23] Updates
+## Evolution: [2026-05-23] Updates (Consolidation)
 
 ### Proposed Additions
 - **Local-Only WebSocket Auth (LOWA) Gateway**: (P0) A mandatory security layer for all local listeners that enforces session-bound authentication to neutralize "ClawJacked" style brute-force attacks.
@@ -717,7 +717,7 @@
 
 ---
 
-## Evolution: [2026-03-14] Updates
+## Evolution: [2026-03-14] Updates (Core)
 
 ### Proposed Additions
 - **Same-Origin Policy (SOP) Enforcer for MCP**: (P0) Middleware that validates `Origin` and `Sec-Fetch-Site` headers for all local requests to prevent cross-site hijacking (CVE-2026-25253).
@@ -760,7 +760,7 @@
 
 ---
 
-## Evolution: [2026-03-17] Updates
+## Evolution: [2026-03-17] Updates (Core)
 
 ### Proposed Additions
 - **Local-Loopback Rate Limiter**: (P0) Mandatory rate limiting for all `127.0.0.1` and `::1` connections to prevent brute-force attacks on gateway credentials.
