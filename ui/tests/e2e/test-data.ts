@@ -279,34 +279,34 @@ export const seedUser = async (
   }
 };
 
-export const cleanupServices = async (requestContext?: APIRequestContext) => {
+export const cleanupServices = async (_requestContext?: APIRequestContext) => {
   // No-op
 };
 
 export const cleanupUser = async (
-  requestContext: APIRequestContext | undefined,
-  username: string,
+  _requestContext: APIRequestContext | undefined,
+  _username: string,
 ) => {
   // No-op
 };
 
-export const seedProfiles = async (requestContext?: APIRequestContext) => {
+export const seedProfiles = async (_requestContext?: APIRequestContext) => {
   // Included in seedGlobalState (empty profiles list currently, but we can add if needed)
 };
 
-export const cleanupProfiles = async (requestContext?: APIRequestContext) => {
+export const cleanupProfiles = async (_requestContext?: APIRequestContext) => {
   // No-op
 };
 
-export const seedPrompts = async (requestContext?: APIRequestContext) => {
+export const seedPrompts = async (_requestContext?: APIRequestContext) => {
   // No-op
 };
 
-export const cleanupPrompts = async (requestContext?: APIRequestContext) => {
+export const cleanupPrompts = async (_requestContext?: APIRequestContext) => {
   // No-op
 };
 
-export const seedWebhooks = async (requestContext?: APIRequestContext) => {
+export const seedWebhooks = async (_requestContext?: APIRequestContext) => {
   // No-op
 };
 
@@ -364,7 +364,7 @@ export const cleanupCollection = async (
     requestContext || (await request.newContext({ baseURL: BASE_URL }));
   try {
     await context.delete(`/api/v1/collections/${name}`, { headers: HEADERS });
-  } catch (e) {
+  } catch (_e) {
     // Ignore cleanup errors (collection may not exist)
   }
 };
