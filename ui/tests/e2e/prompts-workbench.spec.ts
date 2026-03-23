@@ -4,16 +4,11 @@
  */
 
 import { test, expect } from "@playwright/test";
-import {
-  seedPrompts,
-  cleanupPrompts,
-  seedUser,
-  cleanupUser,
-} from "./test-data";
+import { seedGlobalState, seedUser, cleanupUser } from "./test-data";
 
 test.describe("Prompts Workbench", () => {
   test.beforeEach(async ({ page, request }) => {
-    await seedPrompts(request);
+    await seedGlobalState(request);
     await seedUser(request, "e2e-admin-prompts");
 
     // Login
@@ -27,7 +22,6 @@ test.describe("Prompts Workbench", () => {
   });
 
   test.afterEach(async ({ request }) => {
-    await cleanupPrompts(request);
     await cleanupUser(request, "e2e-admin-prompts");
   });
 
@@ -63,6 +57,26 @@ test.describe("Prompts Workbench", () => {
       await expect(page.getByTestId("prompt-details")).toContainText(
         "Configuration",
       );
+
+      // Let's test the execution and RichResultViewer
+      const aInput = page.locator('input[name="a"]');
+      const bInput = page.locator('input[name="b"]');
+      await expect(aInput).toBeVisible();
+      await expect(bInput).toBeVisible();
+      await aInput.fill("5");
+      await bInput.fill("3");
+
+      const generateBtn = page.getByRole("button", { name: "Generate" });
+      await generateBtn.click();
+
+      // Wait for the result to appear
+      // With RichResultViewer, we verify the JSON or rendered view tabs exist
+      await expect(page.getByRole("tab", { name: "JSON" })).toBeVisible({
+        timeout: 10000,
+      });
+
+      // Check if text constructed using the template appears
+      await expect(page.getByText("What is 5 + 3?")).toBeVisible();
     } else {
       await expect(noPrompts).toBeVisible();
     }
