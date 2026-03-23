@@ -187,6 +187,8 @@ type StandardMiddlewares struct {
 	Audit            *AuditMiddleware
 	GlobalRateLimit  *GlobalRateLimitMiddleware
 	ContextOptimizer *ContextOptimizer
+	GranularScopes *GranularScopesMiddleware
+	LazyMCP          *LazyMCPMiddleware
 	Debugger         *Debugger
 	SmartRecovery    *SmartRecoveryMiddleware
 	RecursiveContext *RecursiveContextManager
@@ -517,6 +519,8 @@ func InitStandardMiddlewares(
 		Audit:            audit,
 		GlobalRateLimit:  globalRateLimit,
 		ContextOptimizer: contextOptimizer,
+		GranularScopes:   nil,
+		LazyMCP:          nil,
 		Debugger:         debugger,
 		SmartRecovery:    smartRecovery,
 		RecursiveContext: recursiveContext,
