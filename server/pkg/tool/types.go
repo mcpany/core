@@ -540,6 +540,23 @@ func (t *GRPCTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute streams the execution of a gRPC call.
+//
+// Summary: Executes a gRPC streaming call using the provided execution request.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The request containing inputs for the gRPC call.
+//
+// Returns:
+//   - <-chan any: The channel emitting stream data.
+//   - error: An error if the execution or request transformation fails.
+//
+// Errors:
+//   - Returns an error if the context is invalid or the gRPC call fails.
+//
+// Side Effects:
+//   - Executes an external gRPC call.
 func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -554,6 +571,23 @@ func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
+// Execute performs a unary gRPC call based on the tool's definition.
+//
+// Summary: Executes a gRPC unary call using the provided execution request.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The request containing inputs for the gRPC call.
+//
+// Returns:
+//   - any: The response from the gRPC call.
+//   - error: An error if the execution or request transformation fails.
+//
+// Errors:
+//   - Returns an error if the context is invalid or the gRPC call fails.
+//
+// Side Effects:
+//   - Executes an external gRPC call.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -891,6 +925,23 @@ func (t *HTTPTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute executes an HTTP request that returns a stream.
+//
+// Summary: Sends an HTTP request and returns a stream of the response.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The execution request containing inputs.
+//
+// Returns:
+//   - <-chan any: The channel emitting stream data.
+//   - error: An error if the HTTP request creation or execution fails.
+//
+// Errors:
+//   - Returns an error if the request fails or connection cannot be established.
+//
+// Side Effects:
+//   - Makes an external HTTP call.
 func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -905,6 +956,23 @@ func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
+// Execute executes an HTTP request based on the tool's configuration.
+//
+// Summary: Sends an HTTP request and returns the response.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The execution request containing inputs.
+//
+// Returns:
+//   - any: The HTTP response body.
+//   - error: An error if the HTTP request creation or execution fails.
+//
+// Errors:
+//   - Returns an error if the request fails or connection cannot be established.
+//
+// Side Effects:
+//   - Makes an external HTTP call.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1677,6 +1745,24 @@ func (t *MCPTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute forwards the stream execution request to the upstream MCP session.
+//
+// Summary: Calls a streaming tool on a connected MCP session.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The request to forward.
+//
+// Returns:
+//   - <-chan any: The channel emitting stream data.
+//   - error: An error if the session is missing or the call fails.
+//
+// Errors:
+//   - Returns an error if no active MCP session exists.
+//   - Returns an error if the upstream MCP call fails.
+//
+// Side Effects:
+//   - Sends a call tool request to the upstream MCP server.
 func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -1691,6 +1777,24 @@ func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-c
 	return ch, nil
 }
 
+// Execute forwards the execution request to the upstream MCP session.
+//
+// Summary: Calls a tool on a connected MCP session.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The request to forward.
+//
+// Returns:
+//   - any: The result of the MCP tool execution.
+//   - error: An error if the session is missing or the call fails.
+//
+// Errors:
+//   - Returns an error if no active MCP session exists.
+//   - Returns an error if the upstream MCP call fails.
+//
+// Side Effects:
+//   - Sends a call tool request to the upstream MCP server.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -1997,6 +2101,23 @@ func (t *OpenAPITool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute performs an OpenAPI based HTTP stream request.
+//
+// Summary: Executes a streaming API call defined by the OpenAPI schema.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The request parameters.
+//
+// Returns:
+//   - <-chan any: The channel emitting stream data.
+//   - error: An error if the API call or parameter construction fails.
+//
+// Errors:
+//   - Returns an error if request generation or the underlying call fails.
+//
+// Side Effects:
+//   - Makes an external HTTP call.
 func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -2011,6 +2132,23 @@ func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 	return ch, nil
 }
 
+// Execute performs an OpenAPI based HTTP request.
+//
+// Summary: Executes an API call defined by the OpenAPI schema.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The request parameters.
+//
+// Returns:
+//   - any: The API response.
+//   - error: An error if the API call or parameter construction fails.
+//
+// Errors:
+//   - Returns an error if request generation or the underlying call fails.
+//
+// Side Effects:
+//   - Makes an external HTTP call.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2442,6 +2580,23 @@ func (t *LocalCommandTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute runs a local command specified by the tool configuration and streams output.
+//
+// Summary: Executes a local command with the given parameters and streams output.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The request containing command arguments.
+//
+// Returns:
+//   - <-chan any: The channel emitting stream data.
+//   - error: An error if the command execution fails.
+//
+// Errors:
+//   - Returns an error if command preparation or execution fails.
+//
+// Side Effects:
+//   - Executes a command on the local system.
 func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -2456,6 +2611,23 @@ func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequ
 	return ch, nil
 }
 
+// Execute runs a local command specified by the tool configuration.
+//
+// Summary: Executes a local command with the given parameters.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The request containing command arguments.
+//
+// Returns:
+//   - any: The output of the command.
+//   - error: An error if the command execution fails.
+//
+// Errors:
+//   - Returns an error if command preparation or execution fails.
+//
+// Side Effects:
+//   - Executes a command on the local system.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2900,6 +3072,23 @@ func (t *CommandTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute streams the execution of a remote or containerized command.
+//
+// Summary: Executes a streaming command securely based on the tool's definition.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The request containing command inputs.
+//
+// Returns:
+//   - <-chan any: The channel emitting stream data.
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns an error if command initialization or execution fails.
+//
+// Side Effects:
+//   - Executes a command potentially modifying state.
 func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -2914,6 +3103,23 @@ func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 	return ch, nil
 }
 
+// Execute runs a remote or containerized command.
+//
+// Summary: Executes a command securely based on the tool's definition.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The request containing command inputs.
+//
+// Returns:
+//   - any: The command output.
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns an error if command initialization or execution fails.
+//
+// Side Effects:
+//   - Executes a command potentially modifying state.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError

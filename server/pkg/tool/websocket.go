@@ -144,6 +144,23 @@ func (t *WebsocketTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute sends a message over an active WebSocket connection and streams response.
+//
+// Summary: Dispatches a message through a WebSocket and streams response.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The request with payload data.
+//
+// Returns:
+//   - <-chan any: The channel emitting stream data.
+//   - error: An error if the WebSocket fails.
+//
+// Errors:
+//   - Returns an error if the WebSocket connection is missing or broken.
+//
+// Side Effects:
+//   - Sends data over a WebSocket connection.
 func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -158,6 +175,23 @@ func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest
 	return ch, nil
 }
 
+// Execute sends a message over an active WebSocket connection.
+//
+// Summary: Dispatches a message through a WebSocket.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The request with payload data.
+//
+// Returns:
+//   - any: The received response.
+//   - error: An error if the WebSocket fails.
+//
+// Errors:
+//   - Returns an error if the WebSocket connection is missing or broken.
+//
+// Side Effects:
+//   - Sends data over a WebSocket connection.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

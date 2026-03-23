@@ -9,6 +9,21 @@ import (
 	"sync"
 )
 
+// FastJSON provides an optimized jsoniter configuration for fast marshaling.
+//
+// Summary: A globally configured jsoniter instance for performant JSON operations.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var (
 	FastJSON = jsoniter.Config{
 		EscapeHTML:             true,

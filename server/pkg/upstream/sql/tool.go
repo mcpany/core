@@ -215,6 +215,23 @@ func (t *Tool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute runs a parameterized SQL query and streams results.
+//
+// Summary: Executes a SQL query against the configured database and streams results.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*tool.ExecutionRequest): The execution request with query parameters.
+//
+// Returns:
+//   - <-chan any: The channel emitting stream data.
+//   - error: An error if the query execution fails.
+//
+// Errors:
+//   - Returns an error if the query fails or parameters are invalid.
+//
+// Side Effects:
+//   - Executes a database query (potentially mutating data).
 func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -229,6 +246,23 @@ func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<
 	return ch, nil
 }
 
+// Execute runs a parameterized SQL query.
+//
+// Summary: Executes a SQL query against the configured database.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*tool.ExecutionRequest): The execution request with query parameters.
+//
+// Returns:
+//   - any: The query results.
+//   - error: An error if the query execution fails.
+//
+// Errors:
+//   - Returns an error if the query fails or parameters are invalid.
+//
+// Side Effects:
+//   - Executes a database query (potentially mutating data).
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

@@ -7,6 +7,7 @@
 
 ## The Ultimate Developer Entry Point
 
+### Project Identity
 Welcome to **MCP Any**, the definitive Model Context Protocol (MCP) universal adapter designed to streamline and democratize API integration for AI agents.
 
 Our mission is to eliminate "binary fatigue" by ensuring you never have to write another single-purpose MCP server. With MCP Any, your existing infrastructure—whether REST, gRPC, OpenAPI, or local Command-line scripts—becomes instantly discoverable and operable by AI through elegant, configuration-driven policies.
@@ -88,7 +89,7 @@ Follow these steps to get up and running with MCP Any immediately.
 *   `bazelisk` (for build automation)
 *   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
 
-### One-Shot Setup
+### Quick Start
 
 The exact commands to clone, install dependencies, and run the app:
 
@@ -121,14 +122,14 @@ Ask your agent:
 
 The agent will use the `get_weather` tool exposed by MCP Any (configured in `config.minimal.yaml`) to fetch the simulated data.
 
-## Development
+## Developer Workflow
 
 We adhere to a strict development workflow to ensure code quality and maintainability.
 
 ### Testing
 Run all unit and integration tests to ensure code correctness. We practice proactive testing and continuous integration.
 ```bash
-bazelisk test //...
+make test
 ```
 
 ### Linting
@@ -146,7 +147,7 @@ make lint
 ### Building
 Compile the server binary and UI assets.
 ```bash
-bazelisk build //...
+make build
 ```
 
 ### Code Generation

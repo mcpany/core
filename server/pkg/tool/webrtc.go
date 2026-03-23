@@ -224,6 +224,23 @@ func (t *WebrtcTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute triggers a WebRTC message to a connected peer and streams the response.
+//
+// Summary: Sends a WebRTC message and streams the response.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The request containing message data.
+//
+// Returns:
+//   - <-chan any: The channel emitting stream data.
+//   - error: An error if sending fails or no connection exists.
+//
+// Errors:
+//   - Returns an error if no WebRTC connection is available or the send fails.
+//
+// Side Effects:
+//   - Sends data over a WebRTC connection.
 func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -238,6 +255,23 @@ func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (
 	return ch, nil
 }
 
+// Execute triggers a WebRTC message to a connected peer.
+//
+// Summary: Sends a WebRTC message using the active connection.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The request containing message data.
+//
+// Returns:
+//   - any: The response from the peer.
+//   - error: An error if sending fails or no connection exists.
+//
+// Errors:
+//   - Returns an error if no WebRTC connection is available or the send fails.
+//
+// Side Effects:
+//   - Sends data over a WebRTC connection.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized
