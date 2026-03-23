@@ -170,8 +170,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 name: "wizard_seed_service",
                 command_line_service: {
                     command: "echo"
-                },
-                wizard_metadata: "seeded-via-e2e-fixtures"
+                }
             }
         }
     ].map((template) => ServiceTemplate.toJSON(ServiceTemplate.fromJSON(template)));

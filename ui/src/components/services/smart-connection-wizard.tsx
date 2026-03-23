@@ -90,7 +90,7 @@ export function SmartConnectionWizard({ template, onCancel, onComplete }: SmartC
       <CardHeader className="px-0">
         <div className="flex items-center gap-2">
             <div className="p-2 bg-primary/10 rounded-md">
-                {Icon ? <Icon className="w-6 h-6 text-primary" /> : null}
+                {typeof Icon === "string" ? null : Icon ? <Icon className="w-6 h-6 text-primary" /> : null}
             </div>
             <div>
                 <CardTitle>{template.name}</CardTitle>

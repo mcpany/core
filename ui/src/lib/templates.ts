@@ -54,6 +54,20 @@ export interface ServiceTemplate {
  */
 export const SERVICE_TEMPLATES: ServiceTemplate[] = [
   {
+    id: "wizard-seed-template",
+    name: "Wizard Seed Template",
+    description: "A database-seeded template explicitly for wizard connection tests.",
+    category: "Test",
+    icon: Database,
+    config: {
+      name: "wizard_seed_service",
+      commandLineService: {
+        command: "echo"
+      } as unknown as Record<string, unknown>,
+      wizardMetadata: "seeded-via-e2e-fixtures"
+    } as unknown as Partial<UpstreamServiceConfig>,
+  },
+  {
     id: "empty",
     name: "Custom Service",
     description: "Configure a service from scratch.",

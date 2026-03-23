@@ -66,7 +66,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
   const [selectedTemplate, setSelectedTemplate] = useState<ServiceTemplate | null>(null);
   const [templateConfigValues, setTemplateConfigValues] = useState<Record<string, string>>({});
   const [isValidating, setIsValidating] = useState(false);
-  const [validationResult, setValidationResult] = useState<{valid: boolean, message: string} | null>(null);
+  const [validationResult, setValidationResult] = useState<{valid: boolean, error?: string, message?: string} | null>(null);
   const [showDiff, setShowDiff] = useState(false);
   const [pendingConfig, setPendingConfig] = useState<UpstreamServiceConfig | null>(null);
   const [hasPotentialSecrets, setHasPotentialSecrets] = useState(false);
@@ -696,7 +696,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                             {validationResult.valid ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
                             <span className="font-semibold">{validationResult.valid ? "Valid Configuration" : "Validation Failed"}</span>
                         </div>
-                        <p className="mt-1 ml-6">{validationResult.message}</p>
+                        <p className="mt-1 ml-6">{validationResult.message || validationResult.error}</p>
                     </div>
                 )}
 

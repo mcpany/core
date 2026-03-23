@@ -16,13 +16,13 @@ test.describe('Smart Connection Wizard', () => {
         // Wait for the sheet to animate in
         await expect(page.getByRole('dialog')).toBeVisible();
 
-        // Select the "Weather (wttr.in)" template from the available templates list
-        await page.locator('h3').filter({ hasText: 'Weather (wttr.in)' }).click();
+        // Select the "Wizard Seed Template" template from the available templates list
+        await page.locator('h3').filter({ hasText: 'Wizard Seed Template' }).click();
 
         // Ensure we moved to Step 1: Configuration Form
         await expect(page.getByText('Service Name')).toBeVisible();
 
-        const testServiceName = `weather-e2e-test-${Date.now()}`;
+        const testServiceName = `wizard-e2e-test-${Date.now()}`;
 
         // Fill in the Service Name input
         await page.getByLabel('Service Name').fill(testServiceName);

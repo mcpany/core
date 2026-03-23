@@ -109,9 +109,6 @@ message UpstreamServiceConfig {
   // Provenance information for the service (attestation, signature).
   // @inject_tag: yaml:"-"
   ServiceProvenance provenance = 39 [json_name = "provenance"];
-
-  // Metadata associated with the wizard connection state.
-  string wizard_metadata = 99 [json_name = "wizard_metadata"];
 }
 
 // ServiceProvenance defines the security attestation for a service.

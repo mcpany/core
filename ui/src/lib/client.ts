@@ -773,7 +773,7 @@ export const apiClient = {
      * Side Effects: Makes a POST request to /api/v1/services/validate.
      */
     // Validates a service and discovers tools for the wizard before saving.
-    validateService: async (config: UpstreamServiceConfig) => {
+    validateService: async (config: UpstreamServiceConfig): Promise<{ valid: boolean, error?: string, message?: string, errors?: unknown, discoveredTools?: ToolDefinition[] }> => {
         // Map camelCase (UI) to snake_case (Server REST)
         const payload: any = {
             id: config.id,

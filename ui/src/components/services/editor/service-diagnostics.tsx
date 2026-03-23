@@ -55,7 +55,7 @@ export function ServiceDiagnostics({ service }: ServiceDiagnosticsProps) {
             } else {
                 configCheck.status = "error";
                 configCheck.message = "Configuration is invalid.";
-                configCheck.details = validation.errors?.join("\n");
+                configCheck.details = Array.isArray(validation.errors) ? validation.errors.join("\n") : (validation.message || validation.error);
             }
         } catch (e: any) {
             configCheck.status = "error";

@@ -21,6 +21,9 @@ service AdminService {
   // ClearCache clears all cached data in the server.
   rpc ClearCache(ClearCacheRequest) returns (ClearCacheResponse);
 
+  // Validates an upstream service configuration and discovers its tools.
+  rpc ValidateService(ValidateServiceRequest) returns (ValidateServiceResponse);
+
   // ListServices returns all registered services.
   rpc ListServices(ListServicesRequest) returns (ListServicesResponse);
 
@@ -261,4 +264,17 @@ message AuditLogEntry {
   string span_id = 11;
   // The parent span ID associated with this execution.
   string parent_id = 12;
+}
+
+
+// ValidateServiceRequest validates a service configuration.
+message ValidateServiceRequest {
+  mcpany.config.v1.UpstreamServiceConfig config = 1;
+}
+
+// ValidateServiceResponse contains validation results and discovered tools.
+message ValidateServiceResponse {
+  bool valid = 1;
+  string error = 2;
+  repeated mcpany.mcp_router.v1.Tool discovered_tools = 3 [json_name = "discovered_tools"];
 }
