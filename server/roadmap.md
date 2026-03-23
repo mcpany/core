@@ -782,9 +782,3 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Mailbox Injection Shield (MIS)**: (P0) Advanced extension for Mailbox Integrity Middleware providing hardware-attested validation of task-claiming metadata.
 - **Hardware-Attested Budget Enforcement**: (P0) Integration of Gemini CLI ARE v1.7 headers for immutable, hardware-bound reasoning budgets.
 - **Resident Logic-Grafting Interceptor**: (P1) Real-time semantic entropy monitor for horizontal teammate shards to detect unauthorized branch grafting.
-
-### Upcoming: [2026-06-22]
-- **Channel-Bound Session Isolation (CBSI)**: (P0) Security middleware mandating platform-bound cryptographic sovereignty between multi-channel sessions (WhatsApp, Slack, Discord).
-- **Attention-Density Guard (ADG)**: (P0) Cognitive security layer utilizing hardware-bound headers to "pin" mission-critical fragments at the LLM attention layer.
-- **Headless Handoff Continuity (HHC)**: (P0) Orchestration bridge facilitating signed intent transfers for process-based subagent spawning.
-- **Multi-Modal Attention Sanitizer**: (P1) Advanced security extension for the MIB to neutralize attention-eviction probes in non-textual traces.

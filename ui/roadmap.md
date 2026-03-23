@@ -620,9 +620,3 @@
 - [ ] **[P0] Mailbox Integrity Auditor**: (2026-06-21) Forensic dashboard for reviewing hardware-attested coordinate messages and MIS-blocked injection attempts.
 - [ ] **[P0] Hardware-Bound Budget Widget**: (2026-06-21) Real-time monitor for ARE v1.7 budget consumption and hardware attestation status.
 - [ ] **[P1] Logic-Grafting Alert Center**: (2026-06-21) Real-time visualization of semantic entropy spikes and blocked logic-grafting events in shared shards.
-
-### Upcoming: [2026-06-22]
-- [ ] **[P0] Multi-Channel Sovereignty Dashboard**: (2026-06-22) Real-time visualization of platform-bound isolation status and blocked cross-channel probes.
-- [ ] **[P0] Attention-Locking Visualizer**: (2026-06-22) Dashboard for monitoring mission-root "pinning" status and attention-density alerts.
-- [ ] **[P0] Headless Handoff Continuity Tracker**: (2026-06-22) Visual hierarchical tracer for signed intent transfers across process boundaries.
-- [ ] **[P1] Multi-Modal Attention Probe Alert**: (2026-06-22) Security UI for inspecting blocked attention-eviction attempts in non-textual reasoning traces.
