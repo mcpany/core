@@ -595,15 +595,3 @@
 ### Upcoming (2026-06-18 Sync)
 - Cognitive Proof-of-Work (CPoW) validation UI.
 - Intent-Boundary Telemetry (IBT) visualizer.
-
-### Upcoming (2026-06-18 Sync)
-- Cognitive Proof-of-Work (CPoW) validation UI.
-- Intent-Boundary Telemetry (IBT) visualizer.
-
-### Upcoming (2026-06-18 Sync)
-- Cognitive Proof-of-Work (CPoW) validation UI.
-- Intent-Boundary Telemetry (IBT) visualizer.
-
-### Upcoming (2026-06-18 Sync)
-- Cognitive Proof-of-Work (CPoW) validation UI.
-- Intent-Boundary Telemetry (IBT) visualizer.

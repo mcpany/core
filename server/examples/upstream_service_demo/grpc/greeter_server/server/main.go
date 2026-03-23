@@ -32,13 +32,6 @@ type server struct {
 // Parameters:
 //   - ctx (context.Context): The context.
 //   - in (*pb.HelloRequest): The request.
-//
-// Summary: Executes SayHello operation.
-//
-// Parameters:
-//   - ctx (context.Context): The context.
-//   - in (*pb.HelloRequest): The request.
-//
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	log.Printf("Received: %v", in.GetName())
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil

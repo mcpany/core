@@ -32,9 +32,6 @@ type Label = metrics.Label
 //
 // Parameters:
 //   - None.
-//
-// Parameters:
-//   - None.
 func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
 	return prometheus.NewPrometheusSink()
 }

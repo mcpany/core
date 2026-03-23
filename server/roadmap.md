@@ -757,15 +757,3 @@ These features represent the next logical steps for the product, focusing on Ent
 ### Upcoming (2026-06-18 Sync)
 - Implement IBT Hub for OpenClaw integration.
 - Deploy CPoW Gateway for local execution security.
-
-### Upcoming (2026-06-18 Sync)
-- Implement IBT Hub for OpenClaw integration.
-- Deploy CPoW Gateway for local execution security.
-
-### Upcoming (2026-06-18 Sync)
-- Implement IBT Hub for OpenClaw integration.
-- Deploy CPoW Gateway for local execution security.
-
-### Upcoming (2026-06-18 Sync)
-- Implement IBT Hub for OpenClaw integration.
-- Deploy CPoW Gateway for local execution security.

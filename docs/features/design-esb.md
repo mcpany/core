@@ -64,15 +64,3 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
 ### Update: 2026-06-18 - Fragment Lifecycle Management
 **Context:** Market shifts identified "Fragment-Ghosting" as a critical resource drain.
 **Architecture Adjustment:** Integrated AF-GC (Active Fragment Garbage Collection) into the State Broker to proactively release tool-locks from orphaned agent fragments.
-
-### Update: 2026-06-18 - Fragment Lifecycle Management
-**Context:** Market shifts identified "Fragment-Ghosting" as a critical resource drain.
-**Architecture Adjustment:** Integrated AF-GC (Active Fragment Garbage Collection) into the State Broker to proactively release tool-locks from orphaned agent fragments.
-
-### Update: 2026-06-18 - Fragment Lifecycle Management
-**Context:** Market shifts identified "Fragment-Ghosting" as a critical resource drain.
-**Architecture Adjustment:** Integrated AF-GC (Active Fragment Garbage Collection) into the State Broker to proactively release tool-locks from orphaned agent fragments.
-
-### Update: 2026-06-18 - Fragment Lifecycle Management
-**Context:** Market shifts identified "Fragment-Ghosting" as a critical resource drain.
-**Architecture Adjustment:** Integrated AF-GC (Active Fragment Garbage Collection) into the State Broker to proactively release tool-locks from orphaned agent fragments.
