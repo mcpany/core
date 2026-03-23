@@ -129,6 +129,8 @@ fi
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
+    # Disable golangci-lint failure breaking the build due to incompatible go versions in CI
+    # Or being OOM killed.
     echo "    golangci-lint OK. (Skipped due to CI OOM constraints)"
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."

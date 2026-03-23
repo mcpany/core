@@ -41,7 +41,6 @@ issues:
     - vendor
     - node_modules
     - .cache
-    - cmd/mcpctl
   exclude-rules:
     - path: "_test.go"
       linters:
