@@ -8,7 +8,7 @@
 
 - **OpenClaw**: Released Cognitive Entropy Guard (CEG) to monitor reasoning
   traces for high-entropy injections designed to bypass mission-root
-constraints.
+  constraints.
 - **Gemini CLI**: Introduced Hardware-Locked Context Compression (HLCC) for
   TPM-signed state snapshots that persist across framework handoffs.
 - **Claude Code**: Launched Teammate-Aware Policy Synchronization (TAPS) for

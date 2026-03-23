@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // SessionState represents the shared state for a recursive context session.
@@ -160,9 +159,7 @@ func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 			session := m.CreateSession(req.Data, ttl)
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusCreated)
-			if err := json.NewEncoder(w).Encode(session); err != nil {
-				logging.GetLogger().Error("Failed to encode session response", "error", err)
-			}
+			_ = json.NewEncoder(w).Encode(session)
 			return
 		}
 
@@ -188,9 +185,7 @@ func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 			}
 
 			w.Header().Set("Content-Type", "application/json")
-			if err := json.NewEncoder(w).Encode(session); err != nil {
-				logging.GetLogger().Error("Failed to encode session response", "error", err)
-			}
+			_ = json.NewEncoder(w).Encode(session)
 			return
 		}
 
