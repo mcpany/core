@@ -53,7 +53,7 @@ jobs:
           command: npm install -g @bazel/bazelisk
       - run:
           name: Run Lint
-          command: bazelisk run //:lint || true
+          command: bazelisk run //:lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
