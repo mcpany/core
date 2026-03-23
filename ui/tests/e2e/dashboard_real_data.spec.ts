@@ -124,6 +124,7 @@ test.describe('Dashboard Real Data', () => {
         // 1.67 rps approx.
         await expect(page.getByTestId('metric-card-Avg Throughput').first().getByText(/1\.6\d rps/)).toBeVisible();
 
+
         // 4. Verify charts existence (roughly)
         await expect(page.locator('.recharts-surface').first()).toBeVisible({ timeout: 30000 });
     });

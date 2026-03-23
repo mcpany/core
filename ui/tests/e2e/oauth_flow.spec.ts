@@ -34,12 +34,56 @@ test.describe('OAuth Flow Integration', () => {
 
     page.on('console', msg => console.log('BROWSER LOG:', msg.text()));
 
+    await page.route('**/api/v1/credentials', async route => {
+      console.log(`Mocking list credentials, token: ${!!credentials[0].token}`);
+      await route.fulfill({
+        json: { credentials }
+      });
+    });
+
+    await page.route((url) => url.pathname.includes('/auth/oauth/'), async route => {
+      const urlStr = route.request().url();
+      if (urlStr.includes('/initiate')) {
+        const origin = new URL(page.url()).origin;
+        await route.fulfill({
+          json: {
+            authorization_url: `${origin}/auth/callback?code=mock_code&state=test_state_123`,
+            state: 'test_state_123'
+          }
+        });
+      } else if (urlStr.includes('/callback')) {
+        callbackCalled = true;
+        // UPDATE credentials to have a token
+        credentials[0].token = { accessToken: 'mock-token' };
+        await route.fulfill({ json: { status: 'success' } });
+      } else {
+        await route.continue();
+      }
+    });
+
     // Mock service create
+    await page.route('**/api/v1/services', async route => {
+        if (route.request().method() === 'POST') {
+             await route.fulfill({ json: { id: 'test-service' } });
+        } else {
+            await route.continue();
+        }
+    });
 
     // Mock templates list for marketplace
+    await page.route('**/api/v1/registration/templates', async route => {
+        await route.fulfill({ json: { templates: [] } });
+    });
 
     // Mock template create/save
-      });
+    await page.route('**/api/v1/templates', async route => {
+      if (route.request().method() === 'POST') {
+        await route.fulfill({ json: { id: 'test-template' } });
+      } else {
+        await route.continue();
+      }
+    });
+  });
 
   test('should complete the OAuth flow via Auth Wizard', async ({ page }) => {
     await page.goto('/marketplace');

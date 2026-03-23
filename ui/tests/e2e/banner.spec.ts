@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
 import { test, expect } from '@playwright/test';
 
 test.describe('System Status Banner', () => {
@@ -14,6 +15,13 @@ test.describe('System Status Banner', () => {
 
   test('should not be visible when system is healthy', async ({ page }) => {
     // Mock healthy doctor response
+    await page.route('**/doctor', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ status: 'healthy', checks: {} })
+      });
+    });
 
     await page.goto('/');
     await expect(page.locator('div[role="alert"]').filter({ hasText: 'System Status' })).not.toBeVisible();
@@ -23,6 +31,9 @@ test.describe('System Status Banner', () => {
 
   test('should show connection error when backend is unreachable', async ({ page }) => {
      // Mock network error
+     await page.route('**/doctor', async route => {
+       await route.abort('failed');
+     });
 
      await page.goto('/');
      await expect(page.getByText('Connection Error')).toBeVisible();
@@ -30,6 +41,21 @@ test.describe('System Status Banner', () => {
   });
 
   test('should show configuration error when config check fails', async ({ page }) => {
+    await page.route('**/doctor', async route => {
+      await route.fulfill({
+        status: 200, // The endpoint might still return 200 even if checks fail, or 503. The frontend handles the body.
+        contentType: 'application/json',
+        body: JSON.stringify({
+          status: 'degraded',
+          checks: {
+            configuration: {
+              status: 'error',
+              message: 'Invalid YAML syntax in config.yaml'
+            }
+          }
+        })
+      });
+    });
 
     await page.goto('/');
     await expect(page.getByText('Configuration Error')).toBeVisible();
@@ -37,6 +63,22 @@ test.describe('System Status Banner', () => {
   });
 
   test('should show configuration error with diff', async ({ page }) => {
+    await page.route('**/doctor', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          status: 'degraded',
+          checks: {
+            configuration: {
+              status: 'error',
+              message: 'Invalid YAML syntax',
+              diff: '--- old\n+++ new\n@@ -1,1 +1,1 @@\n-valid\n+invalid'
+            }
+          }
+        })
+      });
+    });
 
     await page.goto('/');
     await expect(page.getByText('Configuration Error')).toBeVisible();
@@ -48,6 +90,25 @@ test.describe('System Status Banner', () => {
   });
 
   test('should show degraded status for other check failures', async ({ page }) => {
+    await page.route('**/doctor', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          status: 'degraded',
+          checks: {
+            database: {
+              status: 'error',
+              message: 'Connection timeout'
+            },
+            cache: {
+                status: 'error',
+                message: 'Redis unavailable'
+            }
+          }
+        })
+      });
+    });
 
     await page.goto('/');
     const banner = page.locator('div[role="alert"]').filter({ hasText: 'System Status: Degraded' });

@@ -30,7 +30,27 @@ test.describe('Credential OAuth Flow E2E', () => {
 
     // We keep the OAuth mocking because we cannot easily integrate with real providers in this environment
     // But CRUD operations for credentials now go to the real backend.
-      });
+    await page.route((url) => url.pathname.includes('/auth/oauth/'), async route => {
+        const urlStr = route.request().url();
+        console.log(`OAuth mock hit for ${urlStr}`);
+        if (urlStr.includes('/initiate')) {
+            const origin = new URL(page.url()).origin;
+            await route.fulfill({
+                json: {
+                    authorization_url: `${origin}/auth/callback?code=mock-code&state=xyz`,
+                    state: 'xyz'
+                }
+            });
+        } else if (urlStr.includes('/callback')) {
+            // Find credential and update token
+            const cred = credentials.find(c => c.id === credentialID);
+            if (cred) cred.token = { accessToken: 'mock-token' };
+            await route.fulfill({ json: { status: 'success' } });
+        } else {
+            await route.continue();
+        }
+    });
+  });
 
   test('should create oauth credential and connect', async ({ page }) => {
     await page.goto('/credentials');
