@@ -54,7 +54,6 @@ go_deps.gazelle_override(
     build_file_generation = "off",
     path = "github.com/grpc-ecosystem/grpc-gateway/v2",
 )
-
 go_deps.module_override(
     patch_strip = 1,
     patches = [
