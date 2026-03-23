@@ -1163,3 +1163,11 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Shadow-Handshake Interceptor (SHI)**: To neutralize unauthorized mission-root initiation, we are introducing the SHI. This layer will monitor and interdict all "Agency-Initiation" signals (handshakes, token requests) from subagents, ensuring they are explicitly anchored to a verified, parent-authorized mission scope.
 - **Differential Reasoning Validator (DRV)**: Supporting the stability of heterogeneous swarms, MCP Any will implement the DRV. This service will perform framework-aware sanity checks on state fragments before cross-framework handoffs (e.g., OpenClaw to Claude Code), ensuring they do not contain payloads designed to exploit framework-specific logic bugs.
 - **Monotonic Handshake Lineage (MHL)**: We are mandating the use of monotonic counters for all agency-initiation signals. Every handshake must be cryptographically bound to a unique, non-reusable lineage token, ensuring that "Shadow Handshakes" cannot be replayed or reused to create unauthorized mission roots.
+
+## Strategic Evolution: [2026-06-28]
+### Focus: Blind Discovery & CRDT-Native Sovereignty
+**Context**: The emergence of "Blind Handshakes" in Gemini CLI and the coordination stall in high-density horizontal teams prove that the next frontier of the Universal Agent Bus is **Privacy-Preserving Discovery** and **Lock-Free State Reconciliation**.
+**Strategic Pivot**:
+- **Zero-Knowledge Discovery (ZKD)**: MCP Any will evolve to mandate ZK-Capability Proofs for all agent-to-agent tool discovery. This ensures that agent skills remain cryptographically masked until a hardware-bound mission handshake is completed, neutralizing discovery shadowing.
+- **CRDT-Native Mailbox Sharding**: To resolve coordination bottlenecks as horizontal Agent Teams scale, we are transitioning to a lock-free architecture using Conflict-Free Replicated Data Types (CRDTs). This allows teammates to synchronize state without global coordination locks, ensuring sub-millisecond response times.
+- **Sovereign Traceability Attestation**: Supporting the OpenClaw standard, we are implementing "Sovereign Traces." Every tool call will be accompanied by a hardware-attested, hash-chained lineage that proves its origin from the mission root, neutralizing "Ghost Fragment" re-injection attacks.

@@ -657,3 +657,8 @@
 - [ ] **[P0] CRDT Shard Monitor**: Real-time visualization of lock-free mailbox synchronization and hardware-attested conflict resolution. (Added: 2026-06-27)
 - [ ] **[P0] Auditor Attestation Portal**: Interactive workspace for third-party security auditors to review and sign dynamic skill grafts. (Added: 2026-06-27)
 - [ ] **[P1] Reasoning Path Integrity Viewer**: Visual debugger for hardware-signed RPI fragments and semantic hash-chain integrity. (Added: 2026-06-27)
+
+#### Upcoming (2026-06-28 Evolution)
+- [ ] **[P0] ZK-Capability Proof Viewer**: UI for visualizing and approving blind discovery handshakes. (Added: 2026-06-28)
+- [ ] **[P0] CRDT Shard Health Monitor**: Real-time visualization of lock-free teammate synchronization and conflict resolution metrics. (Added: 2026-06-28)
+- [ ] **[P0] Sovereign Trace Lineage Inspector**: Forensic UI for auditing hardware-attested "Sovereign Trace" chains back to the mission root. (Added: 2026-06-28)

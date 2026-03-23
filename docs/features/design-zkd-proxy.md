@@ -55,3 +55,10 @@ The Zero-Knowledge Discovery (ZKD) Proxy evolves the discovery process by mandat
 
 ## 7. Evolutionary Changelog
 * **2026-06-27:** Initial Document Creation.
+### Update: 2026-06-28 - Aligning with Gemini Blind Handshakes
+**Context:** Today's market sync revealed Gemini CLI v0.44.0 has standardized "Blind Handshakes," confirming that capability masking is the new baseline for secure agent discovery.
+**Architecture Adjustment:**
+*   Upgrading ZKD Proxy to support "Blind Proofs."
+*   Mandating ZK-Capability verification before any tool card metadata is decrypted.
+*   Integrating with the Sovereign Traceability Validator to ensure proofs are bound to active mission-roots.
+**Security Impact:** Prevents pre-flight environment mapping and discovery shadowing by malicious subagents.

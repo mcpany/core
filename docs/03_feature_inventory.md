@@ -1501,3 +1501,14 @@
 ### Priority Shifts
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Elevated with mandatory **CFSA** integration to counter mimicry-based hijacking.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SHI** and **MHL** integration for all agency-initiation signals.
+
+## Evolution: [2026-06-28] Updates
+
+### Proposed Additions
+- **Blind Handshake Provider**: (P0) Advanced discovery service implementing ZK-Capability Proofs to verify agent skills without exposing underlying tool schemas.
+- **CRDT-Native Mailbox Sharding**: (P0) Core scaling service utilizing Conflict-Free Replicated Data Types for non-blocking horizontal Agent Team coordination.
+- **Sovereign Traceability Validator**: (P0) Security middleware that verifies hardware-attested, hash-chained lineage for all inter-agent state handoffs.
+
+### Priority Shifts
+- **Zero-Knowledge Discovery (ZKD) Proxy**: (Re-affirmed P0) Elevated to mandatory for all enterprise swarms to counter discovery shadowing.
+- **Lock-Free Sharded Mailbox Hub**: (Re-affirmed P0) Designated as the primary infrastructure for resolving Agent Team coordination stalls.
