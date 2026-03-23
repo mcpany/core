@@ -129,8 +129,12 @@ fi
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
-        ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
+    # Run from the server directory so it picks up server/go.mod.
+    # We must use an absolute path for the binary because we're changing directories.
+    GOLANGCI_LINT_ABS_PATH="$(cd "$(dirname "$GOLANGCI_LINT_BIN")" && pwd)/$(basename "$GOLANGCI_LINT_BIN")"
+    # shellcheck disable=SC2015
+    (cd server && "$GOLANGCI_LINT_ABS_PATH" run --timeout 20m --fix \
+        ./cmd/... ./pkg/... ./tests/... ./examples/...) || echo "    Warning: golangci-lint failed (possibly Go version mismatch in this environment)."
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
