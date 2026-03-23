@@ -34,7 +34,6 @@ func init() {
 	utilruntime.Must(mcpv1alpha1.AddToScheme(scheme))
 }
 
-// main is the entry point for the MCP Operator.
 func main() {
 	var metricsAddr string
 	var enableLeaderElection bool
