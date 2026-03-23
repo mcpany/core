@@ -328,7 +328,7 @@ func (m *AuditMiddleware) GetHistory() []any {
 	return m.broadcaster.GetHistory()
 }
 
-// ClearHistory clears the real-time broadcast history.
+// Reset clears the real-time broadcast history.
 // Note: This does NOT delete persistent audit logs in the Store.
 //
 // Parameters:
@@ -342,8 +342,8 @@ func (m *AuditMiddleware) GetHistory() []any {
 //
 // Side Effects:
 //   - History is reset for all subscribers.
-func (m *AuditMiddleware) ClearHistory() {
-	m.broadcaster.ClearHistory()
+func (m *AuditMiddleware) Reset() {
+	m.broadcaster.Reset()
 }
 
 // Unsubscribe removes a subscriber channel.
