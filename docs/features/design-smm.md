@@ -63,3 +63,11 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
 ### Update: 2026-06-18 - Stylometric Intent Correlation
 **Context:** Integration of IBT allows for deeper intent validation.
 **Architecture Adjustment:** Stylometric scores are now weighted by IBT confidence intervals, reducing false positives in mimicry detection.
+
+### Update: 2026-06-18 - Stylometric Intent Correlation
+**Context:** Integration of IBT allows for deeper intent validation.
+**Architecture Adjustment:** Stylometric scores are now weighted by IBT confidence intervals, reducing false positives in mimicry detection.
+
+### Update: 2026-06-18 - Stylometric Intent Correlation
+**Context:** Integration of IBT allows for deeper intent validation.
+**Architecture Adjustment:** Stylometric scores are now weighted by IBT confidence intervals, reducing false positives in mimicry detection.

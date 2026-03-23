@@ -1370,3 +1370,13 @@
 - **[NEW] IBT Hub (P0):** Intent-Boundary Telemetry aggregator for OpenClaw-compatible observability.
 - **[NEW] CPoW Gateway (P0):** Gatekeeper for high-risk tools requiring cognitive validation.
 - **[NEW] Active Fragment Garbage Collection (AF-GC) (P1):** Mitigates "Fragment-Ghosting" by reaping stale tool-locks.
+
+## Grooming: 2026-06-18
+- **[NEW] IBT Hub (P0):** Intent-Boundary Telemetry aggregator for OpenClaw-compatible observability.
+- **[NEW] CPoW Gateway (P0):** Gatekeeper for high-risk tools requiring cognitive validation.
+- **[NEW] Active Fragment Garbage Collection (AF-GC) (P1):** Mitigates "Fragment-Ghosting" by reaping stale tool-locks.
+
+## Grooming: 2026-06-18
+- **[NEW] IBT Hub (P0):** Intent-Boundary Telemetry aggregator for OpenClaw-compatible observability.
+- **[NEW] CPoW Gateway (P0):** Gatekeeper for high-risk tools requiring cognitive validation.
+- **[NEW] Active Fragment Garbage Collection (AF-GC) (P1):** Mitigates "Fragment-Ghosting" by reaping stale tool-locks.
