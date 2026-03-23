@@ -148,14 +148,64 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 // Side Effects:
 //   - None.
 
+// IsStreaming indicates whether the roots tool supports streaming execution.
+//
+// Summary: Indicates streaming support for the roots tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: Always returns false as the roots tool does not stream.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *RootsTool) IsStreaming() bool {
 	return false
 }
 
+// StreamExecute executes the roots tool in a streaming manner.
+//
+// Summary: Executes the roots tool in a streaming manner.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*tool.ExecutionRequest): The execution request parameters.
+//
+// Returns:
+//   - <-chan any: A channel emitting execution results. Always nil for this tool.
+//   - error: Always nil for this tool as streaming is unsupported.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *RootsTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	return nil, nil
 }
 
+// Execute retrieves the list of client-provided roots via the active session.
+//
+// Summary: Retrieves the list of client-provided roots via the active session.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*tool.ExecutionRequest): The execution request parameters (ignored).
+//
+// Returns:
+//   - any: The roots result fetched from the client.
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns an error if no active session is available in the context.
+//   - Returns an error if listing roots via the session fails.
+//
+// Side Effects:
+//   - Communicates with the client to list roots.
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {

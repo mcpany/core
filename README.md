@@ -5,7 +5,7 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/mcpany/core/ci.yml?branch=main)](https://github.com/mcpany/core/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mcpany/core)](https://goreportcard.com/report/github.com/mcpany/core)
 
-## The Ultimate Developer Entry Point
+## Project Identity
 
 Welcome to **MCP Any**, the definitive Model Context Protocol (MCP) universal adapter designed to streamline and democratize API integration for AI agents.
 
@@ -16,6 +16,91 @@ Our mission is to eliminate "binary fatigue" by ensuring you never have to write
 - **Universal Compatibility:** Out-of-the-box support for HTTP/REST, gRPC via reflection, OpenAPI specs, and secure command execution.
 - **Enterprise Security:** Built-in authentication proxying, strict rate limiting, Data Loss Prevention (DLP) middleware, and comprehensive audit logs.
 - **Deploy Anywhere:** Run it locally, as a containerized central gateway, or as a Kubernetes sidecar.
+
+## Quick Start
+
+Follow these steps to get up and running with MCP Any immediately.
+
+### Prerequisites
+
+*   [Go 1.23+](https://go.dev/doc/install) (for building from source)
+*   `bazelisk` (for build automation)
+*   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
+
+### One-Shot Setup
+
+The exact commands to clone, install dependencies, and run the app:
+
+```bash
+git clone https://github.com/mcpany/core.git
+cd core
+bazelisk build //...
+# Run the built binary appropriately based on Bazel output
+```
+
+### Hello World
+
+Once the server is running, you can verify its health and connect a client.
+
+**Verify Health:**
+```bash
+curl http://localhost:50050/health
+```
+
+**Connect an AI Client:**
+To connect an AI client (like Claude Desktop or Gemini CLI):
+```bash
+# Example assuming you have a compatible client
+gemini mcp add --transport http --trust mcpany http://localhost:50050
+```
+
+**Try it out:**
+Ask your agent:
+> "What is the weather?"
+
+The agent will use the `get_weather` tool exposed by MCP Any (configured in `config.minimal.yaml`) to fetch the simulated data.
+
+## Developer Workflow
+
+We adhere to a strict development workflow to ensure code quality and maintainability.
+
+### Testing
+Run all unit and integration tests to ensure code correctness. We practice proactive testing and continuous integration.
+```bash
+bazelisk test //...
+```
+
+### Linting
+We enforce **100% documentation coverage** and strict style guides.
+*   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards. We require structured docstrings (Summary, Parameters, Returns, Errors, Side Effects) for all public APIs.
+*   **Protocol:** We check for breaking changes in `.proto` files.
+
+See [AGENTS.md](server/AGENTS.md) for detailed coding and documentation guidelines.
+
+To run linters:
+```bash
+make lint
+```
+
+### Building
+Compile the server binary and UI assets.
+```bash
+bazelisk build //...
+```
+
+### Code Generation
+Regenerate Protocol Buffers and other auto-generated files if you modify `.proto` definitions.
+```bash
+make gen
+```
+
+### UI Development
+To work on the frontend dashboard (Next.js):
+```bash
+cd ui
+npm install
+npm run dev
+```
 
 ## Architecture
 
@@ -77,91 +162,6 @@ graph TD
 *   **Adapter Pattern**: The `Upstream` interface abstracts away the complexity of different backend protocols, providing a uniform interface for the Core Server.
 *   **Configuration as Code**: Services and capabilities are defined declaratively in YAML/JSON, enabling version control and CI/CD for your agent capabilities.
 *   **Gateway/Sidecar**: Deployable as a central gateway or a Kubernetes sidecar for maximum flexibility.
-
-## Getting Started
-
-Follow these steps to get up and running with MCP Any immediately.
-
-### Prerequisites
-
-*   [Go 1.23+](https://go.dev/doc/install) (for building from source)
-*   `bazelisk` (for build automation)
-*   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
-
-### One-Shot Setup
-
-The exact commands to clone, install dependencies, and run the app:
-
-```bash
-git clone https://github.com/mcpany/core.git
-cd core
-bazelisk build //...
-# Run the built binary appropriately based on Bazel output
-```
-
-### Hello World
-
-Once the server is running, you can verify its health and connect a client.
-
-**Verify Health:**
-```bash
-curl http://localhost:50050/health
-```
-
-**Connect an AI Client:**
-To connect an AI client (like Claude Desktop or Gemini CLI):
-```bash
-# Example assuming you have a compatible client
-gemini mcp add --transport http --trust mcpany http://localhost:50050
-```
-
-**Try it out:**
-Ask your agent:
-> "What is the weather?"
-
-The agent will use the `get_weather` tool exposed by MCP Any (configured in `config.minimal.yaml`) to fetch the simulated data.
-
-## Development
-
-We adhere to a strict development workflow to ensure code quality and maintainability.
-
-### Testing
-Run all unit and integration tests to ensure code correctness. We practice proactive testing and continuous integration.
-```bash
-bazelisk test //...
-```
-
-### Linting
-We enforce **100% documentation coverage** and strict style guides.
-*   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards. We require structured docstrings (Summary, Parameters, Returns, Errors, Side Effects) for all public APIs.
-*   **Protocol:** We check for breaking changes in `.proto` files.
-
-See [AGENTS.md](server/AGENTS.md) for detailed coding and documentation guidelines.
-
-To run linters:
-```bash
-make lint
-```
-
-### Building
-Compile the server binary and UI assets.
-```bash
-bazelisk build //...
-```
-
-### Code Generation
-Regenerate Protocol Buffers and other auto-generated files if you modify `.proto` definitions.
-```bash
-make gen
-```
-
-### UI Development
-To work on the frontend dashboard (Next.js):
-```bash
-cd ui
-npm install
-npm run dev
-```
 
 ## Configuration
 

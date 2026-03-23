@@ -10,6 +10,21 @@ import (
 )
 
 var (
+	// FastJSON provides a high-performance, frozen JSON configuration.
+	//
+	// Summary: A frozen jsoniter configuration optimized for speed.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - jsoniter.API: The frozen JSON iterator API.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	FastJSON = jsoniter.Config{
 		EscapeHTML:             true,
 		SortMapKeys:            false,
