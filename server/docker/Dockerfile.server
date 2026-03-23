@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # Stage 1: Build the Go binary
-FROM mirror.gcr.io/library/golang:1.24 AS builder
+FROM mirror.gcr.io/library/golang:1.26 AS builder
 # Set working directory
 WORKDIR /app
 
@@ -41,35 +41,19 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build -o /server cmd/server/main.go
 
-# Stage 2: Create the small runtime image
-FROM mirror.gcr.io/library/debian:bookworm-slim
+# Stage 2: Create the minimal distroless runtime image
+FROM gcr.io/distroless/base-debian12:nonroot
 WORKDIR /app
 
-# Create a non-root user
-RUN addgroup --system --gid 1001 mcpany && \
-    adduser --system --uid 1001 --gid 1001 --no-create-home mcpany
-
-# Install runtime dependencies
-RUN apt-get update && apt-get install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
-
 # Copy the binary from the builder stage
-# Copy the binary from the builder stage
-COPY --from=builder --chown=mcpany:mcpany /server /app/server
-# Copy curl from the builder stage to be used in healthchecks
-# COPY --from=builder /usr/bin/curl /usr/bin/curl
+COPY --from=builder --chown=65532:65532 /server /app/server
 
 # Copy proto files for runtime usage
-COPY --from=builder --chown=mcpany:mcpany /app/proto /app/proto
-
-# Ensure /app is owned by the non-root user
-RUN chown mcpany:mcpany /app
+COPY --from=builder --chown=65532:65532 /app/proto /app/proto
 
 # Expose the ports the server listens on
 EXPOSE 50050
 EXPOSE 50051
-
-# Switch to non-root user
-USER mcpany
 
 # Set the entrypoint to run the server
 ENTRYPOINT ["/app/server"]

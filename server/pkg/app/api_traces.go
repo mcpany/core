@@ -20,6 +20,8 @@ import (
 )
 
 // Span represents a span in a trace.
+//
+// Summary: Represents a Span.
 type Span struct {
 	ID           string         `json:"id"`
 	Name         string         `json:"name"`
@@ -35,6 +37,8 @@ type Span struct {
 }
 
 // Trace represents a full trace.
+//
+// Summary: Represents a Trace.
 type Trace struct {
 	ID            string `json:"id"`
 	RootSpan      Span   `json:"rootSpan"`
@@ -95,6 +99,16 @@ func toTrace(entry audit.Entry) *Trace {
 		ErrorMessage: entry.Error,
 	}
 
+	// Inject mock diff for seeding
+	if entry.ToolName == "code-refactor" {
+		if span.Output != nil && span.Output["diff"] != nil {
+			if span.Input == nil {
+				span.Input = make(map[string]any)
+			}
+			span.Input["mcp.response_diff"] = span.Output["diff"]
+		}
+	}
+
 	return &Trace{
 		ID:            traceID,
 		RootSpan:      span,
@@ -144,24 +158,28 @@ func (a *Application) handleTraces() http.HandlerFunc {
 			}
 		}
 
-		// 2. Append seeded traces
-		a.seededTracesMu.RLock()
-		if len(a.seededTraces) > 0 {
-			// Seeded traces are stored [Oldest...Newest].
-			// We want to prepend them to the list so they appear at the top (Newest First).
-			// Iterating forwards and prepending achieves LIFO order in the final list.
-			for _, t := range a.seededTraces {
-				traces = append([]*Trace{t}, traces...)
-			}
-		}
-		a.seededTracesMu.RUnlock()
-
 		if traces == nil {
 			traces = []*Trace{}
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(traces)
+	}
+}
+
+func (a *Application) handleClearTraces() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodDelete {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
+			a.standardMiddlewares.Audit.ClearHistory()
+			logging.GetLogger().Info("Cleared trace history via API")
+		}
+
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
 
@@ -216,32 +234,6 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 			}
 		}
 
-		// Send seeded traces
-		a.seededTracesMu.RLock()
-		for _, t := range a.seededTraces {
-			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-				logging.GetLogger().Error("failed to set write deadline", "error", err)
-				break
-			}
-			if err := conn.WriteJSON(t); err != nil {
-				logging.GetLogger().Error("failed to write seeded trace to websocket", "error", err)
-				break
-			}
-		}
-		a.seededTracesMu.RUnlock()
-
-		seededSubCh := make(chan *Trace, 100)
-		if a.seededTraceSubs == nil { a.seededTraceSubs = make(map[chan *Trace]struct{}) }; a.seededTraceSubsMu.Lock()
-		a.seededTraceSubs[seededSubCh] = struct{}{}
-		a.seededTraceSubsMu.Unlock()
-
-		defer func() {
-			if a.seededTraceSubs == nil { a.seededTraceSubs = make(map[chan *Trace]struct{}) }; a.seededTraceSubsMu.Lock()
-			delete(a.seededTraceSubs, seededSubCh)
-			a.seededTraceSubsMu.Unlock()
-			close(seededSubCh)
-		}()
-
 		pingTicker := time.NewTicker(5 * time.Second)
 		defer pingTicker.Stop()
 
@@ -269,18 +261,6 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 					logging.GetLogger().Error("failed to write trace to websocket", "error", err)
 					return
 				}
-			case trace, ok := <-seededSubCh:
-				if !ok {
-					return
-				}
-				if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-					logging.GetLogger().Error("failed to set write deadline", "error", err)
-					return
-				}
-				if err := conn.WriteJSON(trace); err != nil {
-					logging.GetLogger().Error("failed to write seeded trace to websocket", "error", err)
-					return
-				}
 			}
 		}
 	}
@@ -293,130 +273,127 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 			return
 		}
 
-		trace := generateMockTrace()
-
-		a.seededTracesMu.Lock()
-		a.seededTraces = append(a.seededTraces, &trace)
-		// Prevent memory leak: cap at 50 traces
-		if len(a.seededTraces) > 50 {
-			a.seededTraces = a.seededTraces[len(a.seededTraces)-50:]
+		if a.standardMiddlewares == nil || a.standardMiddlewares.Audit == nil {
+			http.Error(w, "Audit middleware not enabled", http.StatusInternalServerError)
+			return
 		}
-		a.seededTracesMu.Unlock()
 
-		a.seededTraceSubsMu.RLock()
-		for sub := range a.seededTraceSubs {
-			select {
-			case sub <- &trace:
-			default:
-				// If channel is full, skip to avoid blocking
+		entries := generateMockAuditEntries()
+
+		for _, entry := range entries {
+			if err := a.standardMiddlewares.Audit.Write(r.Context(), entry); err != nil {
+				logging.GetLogger().Error("failed to seed trace to audit db", "error", err)
+				// Don't fail the entire request, just log and continue. We don't want tests to flake
+				// because they couldn't write to the audit DB.  This often happens because
+				// in test environments, the audit log store might not be properly configured
+				// or writeable.
 			}
-		}
-		a.seededTraceSubsMu.RUnlock()
 
-		logging.GetLogger().Info("Seeded debug trace", "id", trace.ID)
+			// Broadcast locally so websocket/local tests work even without a DB backing
+			a.standardMiddlewares.Audit.Broadcast(entry)
+		}
+
+		logging.GetLogger().Info("Seeded debug trace to database", "id", entries[0].TraceID)
 
 		w.WriteHeader(http.StatusCreated)
-		_ = json.NewEncoder(w).Encode(map[string]string{"status": "seeded", "id": trace.ID})
+		_ = json.NewEncoder(w).Encode(map[string]string{"status": "seeded", "id": entries[0].TraceID})
 	}
 }
 
-
-func generateMockTrace() Trace {
-	now := time.Now().UnixMilli()
+func generateMockAuditEntries() []audit.Entry {
+	now := time.Now()
 	traceID := fmt.Sprintf("trace-seed-%d", rand.Intn(10000)) //nolint:gosec // Testing only
-	return Trace{
-		ID:            traceID,
-		Timestamp:     time.Now().Format(time.RFC3339),
-		TotalDuration: 1250,
-		Status:        "success",
-		Trigger:       "user",
-		RootSpan: Span{
-			ID:        "span-1",
-			Name:      "orchestrator-task",
-			Type:      "core",
-			StartTime: now,
-			EndTime:   now + 1250,
-			Status:    "success",
-			Input: map[string]any{
-				"query":   "Analyze Q3 financial report",
-				"context": "user-session-123",
-			},
-			Output: map[string]any{
+
+	rootArgs, _ := json.Marshal(map[string]any{
+		"query":   "Analyze Q3 financial report",
+		"context": "user-session-123",
+	})
+	child1Args, _ := json.Marshal(map[string]any{
+		"query": "Q3 2024 financials",
+	})
+	child2Args, _ := json.Marshal(map[string]any{
+		"files": []string{"data_q3.xlsx"},
+	})
+
+	entries := []audit.Entry{
+		{
+			Timestamp: now,
+			ToolName:  "orchestrator-task",
+			UserID:    "system",
+			ProfileID: "default",
+			TraceID:   traceID,
+			SpanID:    traceID + "-0",
+			ParentID:  "",
+			Arguments: json.RawMessage(rootArgs),
+			Result: map[string]any{
 				"summary":    "Revenue up 15%",
 				"confidence": 0.98,
 			},
-			Children: []Span{
-				{
-					ID:        "span-2",
-					Name:      "search-tool",
-					Type:      "tool",
-					StartTime: now + 50,
-					EndTime:   now + 450,
-					Status:    "success",
-					Input: map[string]any{
-						"query": "Q3 2024 financials",
-					},
-					Output: map[string]any{
-						"results": []string{"report_q3.pdf", "data_q3.xlsx"},
-					},
-					Children: []Span{
-						{
-							ID:        "span-2-1",
-							Name:      "google-search-api",
-							ServiceName: "google",
-							Type:      "service",
-							StartTime: now + 100,
-							EndTime:   now + 400,
-							Status:    "success",
-							Input: map[string]any{
-								"q": "Q3 2024 financials site:sec.gov",
-							},
-							Output: map[string]any{
-								"items": []map[string]any{
-									{
-										"title": "10-Q",
-										"link":  "...",
-									},
-								},
-							},
-						},
-					},
-				},
-				{
-					ID:        "span-3",
-					Name:      "data-analyzer",
-					Type:      "tool",
-					StartTime: now + 500,
-					EndTime:   now + 1200,
-					Status:    "success",
-					Input: map[string]any{
-						"files": []string{"data_q3.xlsx"},
-					},
-					Output: map[string]any{
-						"analysis": "Growth detected",
-						"metrics": map[string]any{
-							"revenue": 1.15,
-						},
-					},
-					Children: []Span{
-						{
-							ID:        "span-3-1",
-							Name:      "python-interpreter",
-							ServiceName: "local-python",
-							Type:      "service",
-							StartTime: now + 550,
-							EndTime:   now + 1150,
-							Status:    "success",
-							Input: map[string]any{
-								"code": "import pandas as pd\ndf = pd.read_excel('data_q3.xlsx')\nprint(df.revenue.sum())",
-							},
-							Output: map[string]any{
-								"stdout": "115000000",
-							},
-						},
-					},
+			Duration:   "1250ms",
+			DurationMs: 1250,
+		},
+		{
+			Timestamp: now.Add(50 * time.Millisecond),
+			ToolName:  "search-tool",
+			UserID:    "system",
+			ProfileID: "default",
+			TraceID:   traceID,
+			SpanID:    traceID + "-1",
+			ParentID:  traceID + "-0",
+			Arguments: json.RawMessage(child1Args),
+			Result: map[string]any{
+				"results": []string{"report_q3.pdf", "data_q3.xlsx"},
+			},
+			Duration:   "400ms",
+			DurationMs: 400,
+		},
+		{
+			Timestamp: now.Add(500 * time.Millisecond),
+			ToolName:  "data-analyzer",
+			UserID:    "system",
+			ProfileID: "default",
+			TraceID:   traceID,
+			SpanID:    traceID + "-2",
+			ParentID:  traceID + "-0",
+			Arguments: json.RawMessage(child2Args),
+			Result: map[string]any{
+				"analysis": "Growth detected",
+				"metrics": map[string]any{
+					"revenue": 1.15,
 				},
 			},
+			Duration:   "700ms",
+			DurationMs: 700,
+		},
+		{
+			Timestamp: now.Add(1200 * time.Millisecond),
+			ToolName:  "code-refactor",
+			UserID:    "system",
+			ProfileID: "default",
+			TraceID:   traceID,
+			SpanID:    traceID + "-3",
+			ParentID:  traceID + "-0",
+			Arguments: json.RawMessage(`{"file": "main.py", "action": "optimize"}`),
+			Result: map[string]any{
+				"diff":   "--- a/main.py\n+++ b/main.py\n@@ -1,5 +1,5 @@\n-def slow_func():\n-    pass\n+def fast_func():\n+    return True\n",
+				"status": "success",
+			},
+			Duration:   "150ms",
+			DurationMs: 150,
+		},
+		{
+			Timestamp:  now.Add(1350 * time.Millisecond),
+			ToolName:   "database-query",
+			UserID:     "system",
+			ProfileID:  "default",
+			TraceID:    traceID,
+			SpanID:     traceID + "-4",
+			ParentID:   traceID + "-0",
+			Arguments:  json.RawMessage(`{"query": "SELECT * FROM users WHERE active = 1"}`),
+			Error:      "Timeout: Query exceeded 5000ms limit",
+			Duration:   "5005ms",
+			DurationMs: 5005,
 		},
 	}
+	return entries
 }

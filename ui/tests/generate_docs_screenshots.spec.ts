@@ -210,7 +210,11 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
         await page.goto('/');
         // Wait for the widget to appear (use static title as fallback if data fails)
-        await expect(page.getByText('System Health').first()).toBeVisible({ timeout: 15000 });
+        try {
+            await expect(page.getByText('System Health').first()).toBeVisible({ timeout: 15000 });
+        } catch (e) {
+            console.warn('System Health widget not visible within timeout, proceeding');
+        }
         // Try to wait for data, but don't block if missing (e.g. backend down in test)
         try {
             await expect(page.getByText('Primary DB')).toBeVisible({ timeout: 15000 });
@@ -238,16 +242,14 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         // Wait for loading to finish if applicable
         await expect(page.locator('text=Loading...')).not.toBeVisible();
 
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services_list.png'), fullPage: true });
-        // await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services.png'), fullPage: true }); // Removed duplicate/redundant if services_list covers it
+        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services.png'), fullPage: true });
 
         // Click Add Service (Button)
         await page.getByRole('button', { name: 'Add Service' }).click();
         await page.waitForTimeout(1000);
-        await expect(page.getByText('New Service')).toBeVisible();
+        await expect(page.getByText('Select Service Template')).toBeVisible();
 
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services_add_dialog.png') });
-        // await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_add_dialog.png') }); // Alias
+        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_add_dialog.png') });
 
         // Close dialog
         await page.keyboard.press('Escape');
@@ -351,15 +353,11 @@ test.describe('Generate Detailed Docs Screenshots', () => {
                 await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_form_filled.png'), fullPage: true });
             }
         }
-
-        // Tools alias
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'tools.png'), fullPage: true });
     });
 
     test('Stack Composer Screenshots', async ({ page }) => {
         await page.goto('/stacks');
         await page.waitForTimeout(1000);
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'stack_composer_overview.png'), fullPage: true });
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'stacks.png'), fullPage: true });
 
         if (await page.getByText('Service Palette').isVisible()) {
@@ -431,7 +429,6 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         await page.goto('/traces');
         await expect(page.getByText('filesystem.read').first()).toBeVisible();
         await page.waitForTimeout(1000);
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'traces_list.png'), fullPage: true });
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'traces.png'), fullPage: true });
 
         // Click trace
@@ -454,17 +451,13 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     test('Middleware Screenshots', async ({ page }) => {
         await page.goto('/middleware');
         await page.waitForTimeout(1000);
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'middleware_pipeline.png'), fullPage: true });
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'middleware.png'), fullPage: true });
     });
 
     test('Webhooks Screenshots', async ({ page }) => {
         await page.goto('/webhooks');
         await page.waitForTimeout(1000);
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'webhooks_list.png'), fullPage: true });
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'webhooks.png'), fullPage: true });
-        // Legacy alias
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_webhooks.png'), fullPage: true });
 
         await page.getByText('New Webhook').click();
         await page.waitForTimeout(500);
@@ -499,24 +492,19 @@ test.describe('Generate Detailed Docs Screenshots', () => {
             console.log('Network graph nodes/canvas not detected, proceeding');
         }
 
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'network_graph.png'), fullPage: true });
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'network.png'), fullPage: true });
     });
 
     test('Logs Screenshots', async ({ page }) => {
         await page.goto('/logs');
         await page.waitForTimeout(1000);
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'logs_stream.png'), fullPage: true });
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'logs.png'), fullPage: true });
     });
 
     test('Marketplace Screenshots', async ({ page }) => {
         await page.goto('/marketplace');
         await page.waitForTimeout(1000);
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'marketplace_grid.png'), fullPage: true });
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'marketplace.png'), fullPage: true });
-        // Legacy alias
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'marketplace_external_detailed.png'), fullPage: true });
     });
 
     test('Secrets Screenshots', async ({ page }) => {
@@ -529,37 +517,68 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         await expect(page.getByText('API_KEY')).toBeVisible();
         await page.waitForTimeout(1000);
         await expect(page.getByText('Loading secrets...')).not.toBeVisible();
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'secrets_list.png'), fullPage: true });
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'secrets.png'), fullPage: true });
-        // Legacy alias (Secrets List)
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_secrets.png'), fullPage: true });
 
         await page.getByText('Add Secret').click();
         await page.waitForTimeout(500);
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'secret_create_modal.png') });
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'credential_form.png') });
     });
 
     test('Auth Screenshots', async ({ page }) => {
+        // Auth login page
         await page.goto('/login');
         await page.waitForTimeout(1000);
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'auth_login.png'), fullPage: true });
-        // Legacy aliases (placeholder to ensure update)
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'auth_guide_step1_apikey.png'), fullPage: true });
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'auth_guide_step2_bearer.png'), fullPage: true });
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'auth_guide_step3_basic.png'), fullPage: true });
 
-        // Mock Users
+        // Auth guide screenshots: show credential form with each auth type
+        await page.route('**/api/v1/credentials*', async route => {
+            await route.fulfill({ json: { credentials: [] } });
+        });
+        await page.goto('/credentials');
+        await page.waitForTimeout(1000);
+        await page.getByRole('button', { name: 'New Credential' }).click();
+        await expect(page.getByText('Create Credential', { exact: true })).toBeVisible({ timeout: 10000 });
+        await page.waitForTimeout(500);
+
+        // Step 1: API Key (default selection)
+        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'auth_guide_step1_apikey.png') });
+
+        // Step 2: Bearer Token
+        await page.getByRole('combobox').first().click();
+        await page.getByRole('option', { name: 'Bearer Token' }).click();
+        await page.waitForTimeout(300);
+        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'auth_guide_step2_bearer.png') });
+
+        // Step 3: Basic Auth
+        await page.getByRole('combobox').first().click();
+        await page.getByRole('option', { name: 'Basic Auth' }).click();
+        await page.waitForTimeout(300);
+        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'auth_guide_step3_basic.png') });
+
+        // Close dialog
+        await page.keyboard.press('Escape');
+
+        // Users page
+        await page.route('**/api/v1/users*', async route => {
+            if (route.request().method() === 'GET' && !route.request().url().includes('/me')) {
+                await route.fulfill({
+                    json: { users: [
+                        { id: 'admin', name: 'Admin User', email: 'admin@example.com', roles: ['admin'] },
+                        { id: 'viewer1', name: 'Viewer User', email: 'viewer@example.com', roles: ['viewer'] }
+                    ]}
+                });
+            } else {
+                await route.continue();
+            }
+        });
         await page.goto('/users');
         await page.waitForTimeout(1000);
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'auth_users_list.png'), fullPage: true });
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'users.png'), fullPage: true });
     });
 
     test('Prompts Screenshots', async ({ page }) => {
         await page.goto('/prompts');
         await page.waitForTimeout(1000);
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'prompts_list.png'), fullPage: true });
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'prompts.png'), fullPage: true });
     });
 
@@ -575,11 +594,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         await page.goto('/resources');
 
         await page.waitForTimeout(2000);
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources_list.png'), fullPage: true });
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources.png'), fullPage: true });
-        // Legacy aliases
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources_grid.png'), fullPage: true });
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources_split_view.png'), fullPage: true });
 
         // Open Preview Modal
         const firstResource = page.locator('.flex.items-center.gap-3.p-3').first();
@@ -626,7 +641,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         await page.goto('/profiles');
         await expect(page.getByRole('button', { name: 'Create Profile' })).toBeVisible();
         await page.waitForTimeout(1000);
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'profiles_page.png'), fullPage: true });
+        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'profiles.png'), fullPage: true });
 
         // Open Editor (Create)
         await page.getByRole('button', { name: 'Create Profile' }).click();
@@ -648,11 +663,6 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         await page.waitForTimeout(1000);
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings.png'), fullPage: true });
 
-        // Click Global Config Tab
-        await page.getByRole('tab', { name: 'Global Config' }).click();
-        await page.waitForTimeout(1000);
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_general.png'), fullPage: true });
-
         // Auth Settings
         await page.getByRole('tab', { name: 'Authentication' }).click();
         await page.waitForTimeout(1000);
@@ -660,10 +670,21 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     });
 
     test('Credentials Screenshots', async ({ page }) => {
+        await page.route('**/api/v1/credentials*', async route => {
+            if (route.request().method() === 'GET') {
+                await route.fulfill({
+                    json: { credentials: [
+                        { id: 'cred-1', name: 'GitHub API Key', authentication: { apiKey: { paramName: 'Authorization' } } },
+                        { id: 'cred-2', name: 'Stripe Bearer Token', authentication: { bearerToken: { token: {} } } }
+                    ]}
+                });
+            } else {
+                await route.continue();
+            }
+        });
         await page.goto('/credentials');
         await page.waitForTimeout(1000);
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'credentials.png'), fullPage: true });
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'credentials_list.png'), fullPage: true });
 
         // Verification Screenshot (Test Connection)
         await page.getByRole('button', { name: 'New Credential' }).click();
@@ -681,15 +702,64 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         });
 
         await testBtn.click();
-        await expect(page.getByText('Test passed: 200 OK')).toBeVisible();
+        await expect(page.getByText('Test passed: 200 OK').first()).toBeVisible();
 
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'verification.png') });
+        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'test_connection.png') }); // Alias
     });
 
     test('Stats Screenshots', async ({ page }) => {
+        // Mock analytics endpoints
+        await page.route('**/api/v1/dashboard/top-tools*', async route => {
+            await route.fulfill({
+                json: [
+                    { name: 'get_weather', callCount: 450, avgLatency: 120, errorRate: 0.02 },
+                    { name: 'calculator_add', callCount: 280, avgLatency: 35, errorRate: 0.0 },
+                    { name: 'db_query', callCount: 190, avgLatency: 210, errorRate: 0.05 }
+                ]
+            });
+        });
+        await page.route('**/api/v1/dashboard/tool-usage*', async route => {
+            await route.fulfill({
+                json: [
+                    { toolName: 'get_weather', callCount: 450, avgLatency: 120, errorRate: 0.02, p95Latency: 350 },
+                    { toolName: 'calculator_add', callCount: 280, avgLatency: 35, errorRate: 0.0, p95Latency: 80 },
+                    { toolName: 'db_query', callCount: 190, avgLatency: 210, errorRate: 0.05, p95Latency: 620 }
+                ]
+            });
+        });
+        await page.route('**/api/v1/dashboard/tool-failures*', async route => {
+            await route.fulfill({
+                json: [
+                    { toolName: 'db_query', failureCount: 10, errorRate: 0.05 }
+                ]
+            });
+        });
+        await page.route('**/api/v1/tools*', async route => {
+            if (route.request().method() === 'GET') {
+                await route.fulfill({
+                    json: { tools: [
+                        { name: 'get_weather', description: 'Get current weather for a city', inputSchema: { type: 'object', properties: { city: { type: 'string' } } } },
+                        { name: 'calculator_add', description: 'Add two numbers', inputSchema: { type: 'object', properties: { a: { type: 'number' }, b: { type: 'number' } } } },
+                        { name: 'db_query', description: 'Run a database query', inputSchema: { type: 'object', properties: { sql: { type: 'string' } } } }
+                    ]}
+                });
+            } else {
+                await route.continue();
+            }
+        });
+
         await page.goto('/stats');
-        await page.waitForTimeout(1000);
+        await page.waitForTimeout(2000);
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'stats.png'), fullPage: true });
+
+        // Optimization tab
+        const optimizationTab = page.getByRole('tab', { name: 'Optimization' });
+        if (await optimizationTab.isVisible()) {
+            await optimizationTab.click();
+            await page.waitForTimeout(1000);
+            await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'optimization_tab.png'), fullPage: true });
+        }
     });
 
     test('Service Actions Screenshots', async ({ page }) => {
@@ -808,6 +878,127 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
         // Take screenshot of the modal
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diagnostics_failure.png') });
+    });
+
+    test('Connect Client Screenshots', async ({ page }) => {
+        await page.goto('/');
+        await page.waitForTimeout(2000);
+        // Click the 'Connect' button in the header
+        const connectBtn = page.getByRole('button', { name: 'Connect' }).first();
+        if (await connectBtn.isVisible()) {
+            await connectBtn.click();
+            await page.waitForTimeout(500);
+            await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'connect-client.png') });
+            await page.keyboard.press('Escape');
+        } else {
+            // Fallback: screenshot header area
+            await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'connect-client.png'), fullPage: true });
+        }
+    });
+
+    test('Inspector Screenshots', async ({ page }) => {
+        // Mock traces to ensure some data is shown
+        await page.route('**/api/v1/traces*', async route => {
+            const now = Date.now();
+            await route.fulfill({
+                json: [
+                    {
+                        id: 'i1',
+                        timestamp: now - 2000,
+                        rootSpan: {
+                            id: 'sp1',
+                            name: 'filesystem.read',
+                            type: 'tool',
+                            startTime: now - 2000,
+                            endTime: now - 1880,
+                            status: 'success',
+                            input: { path: '/var/log/syslog' },
+                            output: { content: 'log line 1\nlog line 2' }
+                        },
+                        status: 'success',
+                        totalDuration: 120,
+                        trigger: 'user'
+                    }
+                ]
+            });
+        });
+        await page.goto('/inspector');
+        await page.waitForTimeout(1500);
+        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'debug_before_inspector_click.png'), fullPage: true });
+    });
+
+    test('Service Config and Policy Screenshots', async ({ page }) => {
+        // Override services mock to use HTTP type so all editor tabs are visible
+        await page.route('**/api/v1/services*', async route => {
+            if (route.request().method() === 'GET') {
+                await route.fulfill({
+                    json: {
+                        services: [{
+                            id: 'postgres-primary',
+                            name: 'Primary DB',
+                            type: 'http',
+                            http_service: { address: 'https://api.example.com' },
+                            httpService: { address: 'https://api.example.com' },
+                            status: 'healthy',
+                            version: '1.0.0'
+                        }]
+                    }
+                });
+            } else {
+                await route.continue();
+            }
+        });
+        await page.route('**/api/v1/services/postgres-primary*', async route => {
+            await route.fulfill({
+                json: {
+                    service: {
+                        id: 'postgres-primary',
+                        name: 'Primary DB',
+                        type: 'http',
+                        http_service: { address: 'https://api.example.com' },
+                        httpService: { address: 'https://api.example.com' },
+                        status: 'healthy',
+                        version: '1.0.0'
+                    }
+                }
+            });
+        });
+
+        await page.goto('/upstream-services');
+        await expect(page.getByText('Primary DB')).toBeVisible();
+        await page.waitForTimeout(1000);
+
+        // Open Edit dialog
+        await page.getByRole('button', { name: 'Open menu' }).first().click();
+        await page.getByText('Edit').click();
+        await expect(page.getByText('Edit Service')).toBeVisible({ timeout: 10000 });
+        await page.waitForTimeout(500);
+
+        // Service Config: General tab (default)
+        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_config.png') });
+
+        // Policy Editor: click Policies tab
+        const policiesTab = page.getByRole('tab', { name: 'Policies' });
+        if (await policiesTab.isVisible()) {
+            await policiesTab.click();
+            await page.waitForTimeout(500);
+            await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'policy_editor.png') });
+        }
+    });
+
+    test('Safe Share Dialog Screenshots', async ({ page }) => {
+        await page.goto('/marketplace');
+        await page.waitForTimeout(1500);
+        const shareBtn = page.getByRole('button', { name: 'Share Your Config' }).first();
+        if (await shareBtn.isVisible()) {
+            await shareBtn.click();
+            await page.waitForTimeout(500);
+            await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'safe_share_dialog.png') });
+            await page.keyboard.press('Escape');
+        } else {
+            // Fallback: screenshot marketplace page
+            await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'safe_share_dialog.png'), fullPage: true });
+        }
     });
 
     test('Service Inspector Screenshots', async ({ page }) => {

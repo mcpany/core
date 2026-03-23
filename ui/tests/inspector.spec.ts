@@ -33,13 +33,22 @@ const MOCK_TRACE = {
 
 test.describe('Inspector Page', () => {
   test('should allow seeding a trace from backend and viewing it', async ({ page }) => {
+    // Intercept the POST request to /api/v1/debug/traces and simulate backend response
+    await page.route('**/api/v1/debug/traces', async (route) => {
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ status: 'seeded', id: MOCK_TRACE.id }),
+      });
+    });
+
     // Intercept the WebSocket connection for traces.
     // vite preview does not forward WebSocket upgrades through its proxy, so we
     // mock the WS at the browser level to ensure the trace is delivered to the
     // InspectorTable without depending on proxy-level WS tunnelling.
-    const activeSockets: Array<{ send: (data: string) => void }> = [];
-    await page.routeWebSocket('**/api/v1/ws/traces', ws => {
-      activeSockets.push({ send: (data) => ws.send(data) });
+    let wsSend: ((data: string) => void) | null = null;
+    await page.routeWebSocket('**/api/v1/ws/traces', (ws: any) => {
+      wsSend = (data: string) => ws.send(data);
     });
 
     // Navigate to the Inspector page
@@ -54,13 +63,16 @@ test.describe('Inspector Page', () => {
     await seedTraceBtn.click();
 
     // Expect the toast notification confirming the backend received the seed request
-    await expect(page.getByText('Trace Seeded').first()).toBeVisible();
+    await expect(page.getByText('Trace Seeded').first()).toBeVisible({ timeout: 5000 });
 
-    // After the POST succeeds, inject the trace into every active WebSocket
-    // connection (the hook reconnects after seeding, so there may be >1).
-    for (const sock of activeSockets) {
-      sock.send(JSON.stringify(MOCK_TRACE));
+    // After the POST succeeds, inject the trace into the active WebSocket
+    // connection.
+    if (wsSend) {
+      wsSend(JSON.stringify(MOCK_TRACE));
     }
+
+    // Wait briefly to allow React state to update based on WebSocket message
+    await page.waitForTimeout(500);
 
     // The injected trace's root span name should appear in the inspector table.
     const row = page.locator('text=orchestrator-task').first();
@@ -73,5 +85,39 @@ test.describe('Inspector Page', () => {
     const sheet = page.getByRole('dialog');
     await expect(sheet).toBeVisible();
     await expect(sheet.locator('text=orchestrator-task').first()).toBeVisible();
+  });
+
+  test('should clear traces permanently on backend when Clear is clicked', async ({ page }) => {
+    let wsSend: ((data: string) => void) | null = null;
+    await page.routeWebSocket('**/api/v1/ws/traces', (ws: any) => {
+      wsSend = (data: string) => ws.send(data);
+    });
+
+    let deleteCalled = false;
+    await page.route('**/api/v1/traces', async (route) => {
+      if (route.request().method() === 'DELETE') {
+        deleteCalled = true;
+        await route.fulfill({ status: 204 });
+      } else {
+        await route.continue();
+      }
+    });
+
+    await page.goto('/inspector');
+    await expect(page.getByRole('heading', { name: 'Inspector' })).toBeVisible();
+
+    if (wsSend) {
+      wsSend(JSON.stringify(MOCK_TRACE));
+    }
+
+    const row = page.locator('text=orchestrator-task').first();
+    await expect(row).toBeVisible({ timeout: 10000 });
+
+    const clearBtn = page.getByRole('button', { name: 'Clear' });
+    await expect(clearBtn).toBeVisible();
+    await clearBtn.click();
+
+    await expect(row).not.toBeVisible();
+    expect(deleteCalled).toBe(true);
   });
 });

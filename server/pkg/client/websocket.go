@@ -12,6 +12,8 @@ import (
 
 // WebsocketClientWrapper wraps a *websocket.Conn to adapt it for use in a
 // connection pool, implementing the pool.ClosableClient interface.
+//
+// Summary: Represents a WebsocketClientWrapper.
 type WebsocketClientWrapper struct {
 	Conn *websocket.Conn
 }
@@ -29,6 +31,20 @@ type WebsocketClientWrapper struct {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Checks IsHealthy operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 	// Send a ping to check the connection.
 	// A short deadline is used to prevent blocking.
@@ -49,6 +65,20 @@ func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes Close operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (w *WebsocketClientWrapper) Close() error {
 	return w.Conn.Close()
 }

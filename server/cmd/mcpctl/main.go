@@ -17,6 +17,8 @@ import (
 
 // Version is the version of the mcpctl CLI.
 // It is set at build time via -ldflags.
+//
+// Summary: Represents Version.
 var Version = "dev"
 
 // main is the entry point for the mcpctl CLI.
