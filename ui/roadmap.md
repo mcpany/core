@@ -648,7 +648,4 @@
 - [ ] **[P1] Lock-Free Coordination Debugger**: Visualizer for CRDT-based mailbox shard synchronization and conflict resolution. (Added: 2026-06-25)
 
 #### Upcoming (2026-03-21 Evolution)
-- [ ] **[P0] LOWA Challenge Visualizer**: Real-time monitor of HMAC-based pairing requests and CSWSH violation attempts. (Added: 2026-03-21)
-- [ ] **[P0] T2T Mailbox Mesh Map**: Interactive graph visualization of teammate-to-teammate communication shards and state alignment. (Added: 2026-03-21)
-- [ ] **[P0] A2A Capability Masking Interface**: Management console for configuring schema masks and "Auth-before-Discovery" rules. (Added: 2026-03-21)
-- [ ] **[P1] Shared Task List Real-time Diff**: Visual diff engine for synchronizing the Blackboard across multiple parallel teammates. (Added: 2026-03-21)
+- [ ] [P0] LOWA Challenge Visualizer.

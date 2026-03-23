@@ -1477,13 +1477,4 @@
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to support mandatory **MML-compliant** monotonic attestation.
 
 ## Evolution: [2026-03-21] Updates
-
-### Proposed Additions
-- **LOWA Challenge-Response Pairing**: (P0) Security extension for the LOWA Gateway using HMAC-based challenge-response pairings to neutralize local replay attacks and cross-site brute-force chains.
-- **T2T Mailbox Sharding Middleware**: (P0) Performance extension for the T2T Encryption Bridge designed to handle horizontal scaling of high-density agent teams (5+ concurrent teammates).
-- **A2A Capability Masking Provider**: (P1) Advanced discovery service that masks specific tool schemas behind generic "Capability Roles" until a hardware-attested session is established.
-- **Full-Mesh Discovery Auth (v2)**: (P0) Upgraded discovery protocol mandating hardware-bound "Proof of Intent" before any Agent Card discovery.
-
-### Priority Shifts
-- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now designated as a mandatory prerequisite for all "Agent Team" deployments to prevent lateral movement by compromised teammates.
-- **LOWA Gateway**: (Re-affirmed P0) Elevated to "Blocking Prerequisite" for all local loopback listeners following the OpenClaw v2026.3.11 disclosure.
+Proposed additions for LOWA and T2T.

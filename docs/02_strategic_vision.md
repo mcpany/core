@@ -1143,10 +1143,4 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Lock-Free Sharded Mailbox Hub**: We are accelerating the transition to a lock-free coordination architecture. MCP Any will host CRDT-based, task-bound mailbox shards to eliminate the performance ceiling observed in high-density horizontal swarms.
 
 ## Strategic Evolution: [2026-03-21]
-### Focus: Local Zero-Trust (LOWA) & Asynchronous Mailbox Sharding
-**Context**: Recent security fixes in OpenClaw and scaling bottlenecks in Claude Code "Agent Teams" reveal that the Universal Agent Bus must evolve from passive connectivity to active security brokerage and sharded coordination.
-**Strategic Pivot**:
-- **Local-Only WebSocket Auth (LOWA)**: MCP Any will mandate session-bound HMAC challenge-response authentication for all local loopback listeners to neutralize CSWSH vulnerabilities.
-- **Asynchronous Mailbox Sharding (AMS)**: To scale horizontal teammate coordination, we will implement sharded mailbox middleware, eliminating the "Mailbox Lock" latency observed in high-density swarms.
-- **Reasoning-Budget Firewall (RBF)**: We will enforce hardware-attested, intent-scoped ARE budgets to prevent "Reasoning-Budget Hijacking" and ensure resource sovereignty.
-- **Authenticated A2A Discovery Broker**: Discovery will transition to a privileged, "Auth-Before-Discovery" model, where agent capabilities are only revealed to verified peers.
+Focus on LOWA and AMS.
