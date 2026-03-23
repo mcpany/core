@@ -1,0 +1,8 @@
+issues:
+  exclude-rules:
+    - path: 'server/.*'
+      linters:
+        - typecheck
+        - unused
+run:
+  tests: false
