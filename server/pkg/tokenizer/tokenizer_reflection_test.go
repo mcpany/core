@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Structs for testing reflection
+// Structs for testing reflection.
 type TestStruct struct {
 	Name string
 	Val  int
@@ -104,10 +104,10 @@ func TestWordTokenizer_ReflectionCoverage(t *testing.T) {
 	})
 }
 
-// MockTokenizer for generic reflection path
+// MockTokenizer for generic reflection path.
 type MockReflectTokenizer struct{}
 
-func (m *MockReflectTokenizer) CountTokens(text string) (int, error) {
+func (m *MockReflectTokenizer) CountTokens(_ string) (int, error) {
 	return 1, nil
 }
 

@@ -9,6 +9,7 @@ import (
 	"testing"
 )
 
+//nolint:gocyclo // Test function with table driven tests
 func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 	st := NewSimpleTokenizer()
 	wt := NewWordTokenizer()
