@@ -120,8 +120,8 @@ func StartServer(addr string) error {
 // Parameters:
 //   - name: string. The name of the gauge.
 //   - val: float32. The value to set.
-//   - labels: ..string. A list of labels to apply to the gauge.
-func SetGauge(name string, val float32, labels ..string) {
+//   - labels: ...string. A list of labels to apply to the gauge.
+func SetGauge(name string, val float32, labels ...string) {
 	var metricLabels []metrics.Label
 	if len(labels) > 0 {
 		metricLabels = []metrics.Label{
