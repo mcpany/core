@@ -301,12 +301,12 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
 
           const config = constructConfig(values);
           const response = await apiClient.validateService(config);
-          setValidationResult({ valid: response.valid, message: response.message });
+          setValidationResult({ valid: response.valid, message: response.message || response.error });
 
           if (response.valid) {
-              toast({ title: "Validation Successful", description: response.message });
+              toast({ title: "Validation Successful", description: response.message || "Valid" });
           } else {
-              toast({ variant: "destructive", title: "Validation Failed", description: response.message });
+              toast({ variant: "destructive", title: "Validation Failed", description: response.message || response.error });
           }
       } catch (error: any) {
           toast({ variant: "destructive", title: "Validation Error", description: error.message });
