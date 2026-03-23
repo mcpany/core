@@ -297,7 +297,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                                   </div>
                               )}
                           </div>
-                          {output && (
+                          {output !== null && output !== undefined && (
                               <div className="flex items-center gap-2">
                                   <Button
                                       variant="ghost"
@@ -326,7 +326,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                           )}
                       </div>
                       <div className="flex-1 overflow-y-auto p-4">
-                          {output ? (
+                          {output !== null && output !== undefined ? (
                               <RichResultViewer result={output} />
                           ) : (
                               <div className="h-full flex flex-col items-center justify-center text-muted-foreground space-y-2 opacity-50">
