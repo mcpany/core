@@ -15,10 +15,8 @@ import (
 )
 
 func TestStore_Load(t *testing.T) {
-	t.Parallel()
 	t.Run("Happy Path", func(t *testing.T) {
-		t.Parallel()
-		db, mock, err := sqlmock.New()
+			db, mock, err := sqlmock.New()
 		require.NoError(t, err)
 		defer db.Close()
 
@@ -64,8 +62,7 @@ func TestStore_Load(t *testing.T) {
 	})
 
 	t.Run("Query Error", func(t *testing.T) {
-		t.Parallel()
-		db, mock, err := sqlmock.New()
+			db, mock, err := sqlmock.New()
 		require.NoError(t, err)
 		defer db.Close()
 
@@ -90,8 +87,7 @@ func TestStore_Load(t *testing.T) {
 	})
 
 	t.Run("Scan Error - Invalid JSON", func(t *testing.T) {
-		t.Parallel()
-		db, mock, err := sqlmock.New()
+			db, mock, err := sqlmock.New()
 		require.NoError(t, err)
 		defer db.Close()
 
@@ -117,8 +113,7 @@ func TestStore_Load(t *testing.T) {
 	})
 
 	t.Run("Settings Not Found", func(t *testing.T) {
-		t.Parallel()
-		db, mock, err := sqlmock.New()
+			db, mock, err := sqlmock.New()
 		require.NoError(t, err)
 		defer db.Close()
 
