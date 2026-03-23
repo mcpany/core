@@ -39,6 +39,8 @@ type CFIAMiddleware struct {
 
 // NewCFIAMiddleware creates a new CFIAMiddleware instance.
 //
+// Summary: Creates a new Context-File Integrity Attestation middleware instance.
+//
 // Parameters:
 //   - config (CFIAConfig): The configuration settings.
 //
@@ -57,6 +59,8 @@ func NewCFIAMiddleware(config CFIAConfig) *CFIAMiddleware {
 }
 
 // Execute enforces context-file integrity before proceeding to the next handler.
+//
+// Summary: Executes the Context-File Integrity Attestation check on the request.
 //
 // Parameters:
 //   - ctx (context.Context): The execution context.
