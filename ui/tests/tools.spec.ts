@@ -98,22 +98,17 @@ test.describe('Tool Exploration', () => {
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Change grouping to "service"
-        // Use native Javascript evaluation to bypass Playwright's click actionability
-        // checks on the Radix Select component, which can flake during hydration.
-        await page.waitForTimeout(500);
+        // Locate the precise trigger container using the unique lucide-layers SVG icon,
+        // wait for it, and then forcefully click the associated combobox button.
+        const selectContainer = page.locator('div.flex').filter({ has: page.locator('svg.lucide-layers') });
+        const trigger = selectContainer.getByRole('combobox');
+        await trigger.waitFor({ state: 'visible', timeout: 10000 });
+        await trigger.click({ force: true });
 
-        await page.evaluate(() => {
-            const btn = document.querySelector('button[role="combobox"]') as HTMLButtonElement;
-            if (btn) btn.click();
-        });
-
-        await page.waitForSelector('[role="option"]', { timeout: 10000 });
-
-        await page.evaluate(() => {
-            const options = Array.from(document.querySelectorAll('[role="option"]')) as HTMLElement[];
-            const target = options.find(o => o.textContent?.includes('Group by Service'));
-            if (target) target.click();
-        });
+        // Once the portal opens, find the corresponding option and click it
+        const option = page.getByRole('option', { name: 'Group by Service' });
+        await option.waitFor({ state: 'visible', timeout: 5000 });
+        await option.click({ force: true });
 
         // Verify that the Payment Gateway service grouping header is visible
         // We use a regex because the AccordionTrigger button's accessible name includes the tool count badge (e.g. "Payment Gateway 1")
