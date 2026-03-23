@@ -46,7 +46,7 @@ test.describe('Inspector Page', () => {
     // vite preview does not forward WebSocket upgrades through its proxy, so we
     // mock the WS at the browser level to ensure the trace is delivered to the
     // InspectorTable without depending on proxy-level WS tunnelling.
-    let wsSend: ((data: string) => void) | null = null;
+    let wsSend: any = null;
     await page.routeWebSocket('**/api/v1/ws/traces', (ws: any) => {
       wsSend = (data: string) => ws.send(data);
     });
@@ -67,7 +67,7 @@ test.describe('Inspector Page', () => {
 
     // After the POST succeeds, inject the trace into the active WebSocket
     // connection.
-    if (wsSend) {
+    if (typeof wsSend === 'function') {
       wsSend(JSON.stringify(MOCK_TRACE));
     }
 
@@ -88,7 +88,7 @@ test.describe('Inspector Page', () => {
   });
 
   test('should clear traces permanently on backend when Clear is clicked', async ({ page }) => {
-    let wsSend: ((data: string) => void) | null = null;
+    let wsSend: any = null;
     await page.routeWebSocket('**/api/v1/ws/traces', (ws: any) => {
       wsSend = (data: string) => ws.send(data);
     });
@@ -106,7 +106,7 @@ test.describe('Inspector Page', () => {
     await page.goto('/inspector');
     await expect(page.getByRole('heading', { name: 'Inspector' })).toBeVisible();
 
-    if (wsSend) {
+    if (typeof wsSend === 'function') {
       wsSend(JSON.stringify(MOCK_TRACE));
     }
 
