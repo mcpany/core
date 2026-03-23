@@ -10,16 +10,16 @@ A "Truth Reconciliation Audit" was performed on the MCP Any project to verify pe
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `server/docs/features/health-checks.md` | Aligned | Verified codebase | `server/pkg/health/health.go` implements HTTP, gRPC, WS, CLI, FS checks |
-| `server/docs/features/dynamic_registration.md` | Aligned | Verified codebase | `server/pkg/upstream/graphql/graphql.go` handles dynamic tool discovery |
-| `server/docs/features/dlp.md` | Aligned | Verified codebase | `server/pkg/middleware/dlp.go` implements regex-based redaction |
-| `server/docs/features/security.md` | Aligned | Verified codebase | `server/pkg/app/server.go` enforces Sentinel Security Mode; `server/pkg/tool/management.go` checks tool integrity |
-| `server/docs/features/audit_logging.md` | Aligned | Verified codebase | `server/pkg/logging/audit.go` and providers handle structured logs and Webhooks |
-| `ui/docs/features/services.md` | Aligned | Verified codebase | `ui/src/components/services/service-list.tsx` manages upstream configs |
-| `ui/docs/features/playground.md` | Aligned | Verified codebase | `ui/src/components/playground/schema-form.tsx` supports Native File Uploads (`type="file"`) |
-| `ui/docs/features/marketplace.md` | Aligned | Verified codebase | `ui/src/components/share-collection-dialog.tsx` supports "Unsafe Export" secrets handling |
-| `ui/docs/features/dashboard.md` | Aligned | Verified codebase | `ui/src/components/stats/analytics-dashboard.tsx` supports customizable Portainer-style widget grid |
-| `ui/docs/features/middleware.md` | Aligned | Verified codebase | `ui/src/components/middleware/pipeline-visualizer.test.tsx` validates reorder logic |
+| `ui/docs/features/tool_analytics.md` | Aligned | Verified codebase | `ui/src/components/stats/analytics-dashboard.tsx` implements Tool Analytics |
+| `server/docs/prompt_workbench.md` | Aligned | Verified codebase | `ui/src/components/prompts/prompt-workbench.tsx` implements Prompt Workbench |
+| `server/docs/features.md` | Aligned | Verified codebase | Index document is up-to-date with features |
+| `ui/docs/features/stack-composer.md` | Aligned | Verified codebase | `ui/src/components/stacks/stack-editor.tsx` implements Stack Composer |
+| `server/docs/features/wasm.md` | Aligned | Verified codebase | `server/pkg/wasm/runtime.go` implements WASM Runtime |
+| `server/docs/features/sampling.md` | Aligned | Verified codebase | `server/pkg/tool/sampling.go` implements MCP Sampling |
+| `server/docs/features/audit_logging.md` | Aligned | Verified codebase | `server/pkg/middleware/audit.go` implements Datadog, Webhook, and Splunk Audit logging |
+| `server/docs/feature/merge_strategy.md` | Aligned | Verified codebase | `proto/config/v1/tool.proto` and `config.proto` implement MergeStrategy |
+| `server/docs/verify.md` | Aligned | Verified codebase | Verification result doc |
+| `ui/docs/features/test_connection.md` | Aligned | Verified codebase | `ui/src/components/diagnostics/connection-diagnostic.tsx` implements Diagnostics tool |
 
 ## 3. Remediation Log
 
