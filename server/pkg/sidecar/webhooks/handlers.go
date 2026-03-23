@@ -416,7 +416,10 @@ func (h *SummarizeHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	// Add summarization logic here (e.g. truncate and append [SUMMARIZED])
 	// For now, it's just a placeholder implementation
 	respData := map[string]any{"summary": "Summarized content"}
-	_ = respEvent.SetData("application/json", respData)
+	if err := respEvent.SetData("application/json", respData); err != nil {
+		http.Error(w, "Failed to set response data", http.StatusInternalServerError)
+		return
+	}
 
 	respBytes, _ := json.Marshal(respEvent)
 	w.Header().Set("Content-Type", "application/json")
