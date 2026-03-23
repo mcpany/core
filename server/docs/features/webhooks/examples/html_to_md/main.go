@@ -13,14 +13,18 @@ import (
 	"github.com/google/uuid"
 )
 
-// WebhookRequest matches the data payload sent by mcpany
+// WebhookRequest matches the data payload sent by mcpany.
+//
+// Summary: Represents a webhook request.
 type WebhookRequest struct {
 	Kind     int            `json:"kind"` // 1=PreCall, 2=PostCall
 	ToolName string         `json:"tool_name"`
 	Result   any            `json:"result"`
 }
 
-// WebhookResponse matches the expected response data
+// WebhookResponse matches the expected response data.
+//
+// Summary: Represents a webhook response.
 type WebhookResponse struct {
 	ReplacementObject any `json:"replacement_object,omitempty"`
 }
@@ -116,4 +120,6 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // StatusOK represents the HTTP 200 OK status code.
+//
+// Summary: Defines the OK status code.
 const StatusOK = 200
