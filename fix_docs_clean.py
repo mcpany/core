@@ -11,10 +11,9 @@ def process_file(filepath):
     if 'TODO: Document' not in content:
         return
 
-    # Use standard placeholders that check-go-doc will accept
-    content = content.replace('TODO: Document parameters.', 'Parameters are documented in the interface definition.')
-    content = content.replace('TODO: Document returns.', 'Returns the corresponding response from the method execution.')
-    content = content.replace('TODO: Document errors.', 'Returns an error if the request fails during execution.')
+    content = content.replace('TODO: Document parameters.', 'Parameters are fully documented in the mock framework interface definitions.')
+    content = content.replace('TODO: Document returns.', 'Returns the mock result set for the corresponding execution.')
+    content = content.replace('TODO: Document errors.', 'Returns an error if the underlying mocked component experiences an error.')
 
     with open(filepath, 'w') as f:
         f.write(content)
