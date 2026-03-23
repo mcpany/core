@@ -1,6 +1,0 @@
-run:
-  tests: false
-linters:
-  disable:
-    - unused
-    - typecheck
