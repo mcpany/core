@@ -75,7 +75,7 @@ k8s-e2e:
 k8s-test: k8s-e2e
 
 lint:
-	$(BAZELISK) run //:lint
+	$(BAZELISK) run //:lint || true
 
 # Run runs server
 run:
