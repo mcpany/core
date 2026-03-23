@@ -50,3 +50,10 @@ The MMBA Provider anchors an agent's behavioral profile to its multi-modal trace
 * **2026-06-18:** Update: Teammate-to-Teammate (T2T) Stylometric Verification.
   - **Context:** Today's market sync revealed the need for active T2T behavioral anchoring in horizontal meshes.
   - **Architecture Adjustment:** Upgrading the `ValidateIdentity` interface to support peer-to-peer verification within sharded mailbox environments.
+
+### Update: 2026-06-18 - Integrating Attention Sovereignty
+**Context:** Context-Window Ghosting vulnerabilities require behavioral profiles to include "Attention-Utilization" baselines.
+**Architecture Adjustment:**
+*   Adding "Entropy-Mapping" to Section 4 for monitoring anomalous context access patterns.
+*   Binding behavioral signatures to ALS-Locked fragments.
+**Security Impact:** Allows early detection of "Ghosting Recovery" attacks by monitoring sub-token access latencies.

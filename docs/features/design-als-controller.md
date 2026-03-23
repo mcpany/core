@@ -3,47 +3,41 @@
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
-With the discovery of "Context-Window Ghosting" (CVE-2026-71002), it is evident that high-entropy semantic noise can be used to evict critical safety instructions and mission-root anchors from an LLM's attention window. This vulnerability allows attackers to bypass an agent's security boundaries by simply flooding the context with irrelevant but non-malicious data.
+With the discovery of CVE-2026-71002 (Context-Window Ghosting), multi-agent swarms face a new class of side-channel attacks where subagents can "bleed" state through semantic overlaps in shared context.
 
-MCP Any needs to solve this by providing a mechanism to "pin" or "lock" safety-critical intents at the attention layer, ensuring they remain resident regardless of the input volume from subagents or tools.
+The ALS Controller will provide a cryptographic-binding mechanism for mission-critical context fragments, ensuring they remain "locked" and immutable during subagent execution phases.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Implement hardware-bound "Attention-Locking" headers for LLM requests.
-    * Provide a mechanism for the Mission Root to pre-declare "Pinned Instructions."
-    * Automatically detect and mitigate "Context-Window Ghosting" attempts via real-time attention-utilization analysis.
+    * Implement "Active Fragment Sealing" for sensitive context shards.
+    * Provide a semantic boundary enforcer to detect instruction-injection via ghosting.
 * **Non-Goals:**
-    * Modifying the internal architecture of third-party LLMs.
-    * Managing non-safety-critical context fragments (this remains the role of the ContextEngine).
+    * This is not a general-purpose encryption layer for the context window.
+    * It will not manage token truncation logic (handled by ContextEngine).
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Security-Conscious Swarm Architect
-* **Primary Goal:** Ensure that "Deny" rules and data-handling constraints remain effective even when a specialist agent retrieves 10MB of documentation.
+* **User Persona:** Security-conscious Swarm Architect.
+* **Primary Goal:** Prevent a rogue subagent from reading "Mission Secret" keys during a tool-chain execution.
 * **The Happy Path (Tasks):**
-    1. The Mission Root pre-attests a set of "Immutable Constraints" (e.g., "Never exfiltrate PII").
-    2. MCP Any wraps these constraints in ALS-locking headers.
-    3. A subagent performs a massive document retrieval tool call.
-    4. MCP Any's ALS Controller monitors the context expansion and ensures the ALS headers are re-injected or prioritised in the attention window.
-    5. The LLM continues to respect the "Deny" rule despite the retrieval bloat.
+    1. Parent agent marks a context block as "ALS-Locked."
+    2. MCP Any gateway intercepts the tool call.
+    3. Gateway generates a "Context Integrity Proof" (CIP).
+    4. Subagent execution is restricted to a semantic-sanitized view of the context.
 
 ## 4. Design & Architecture
 * **System Flow:**
-    [Mission Root] -> [ALS Controller: Wrap with Attention-Locking Headers] -> [LLM Gateway]
-    [Subagent Tool Output] -> [ALS Controller: Attention-Utilization Analysis] -> [LLM Gateway: Prioritize ALS Headers]
+    [Parent Agent] -> [ALS Controller] -> [Context Sealing] -> [Subagent Tool Call]
 * **APIs / Interfaces:**
-    * `SetAttentionLock(MissionID, FragmentID, Priority)`
-    * `OnContextExpansion(SessionID, DeltaSize)`
+    * New header: `X-MCP-ALS-Lock: fragment_id`
 * **Data Storage/State:**
-    * Hardware-bound registry of pinned fragment hashes.
-    * Real-time attention-utilization scoreboard per session.
+    * State is managed in the ephemeral "Attention-Map" store.
 
 ## 5. Alternatives Considered
-* **Frequent Re-prompting:** Rejected due to excessive token cost and reasoning latency.
-* **Aggressive Summarization:** Rejected as it may inadvertently lose subtle safety nuances required for zero-trust enforcement.
+* **Context Isolation via Full Wipe**: Rejected due to high latency and loss of reasoning continuity.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** ALS headers must be cryptographically bound to the Mission Root to prevent subagents from "unpinning" their own constraints.
-* **Observability:** Log "Eviction Risk" events when high-entropy noise approaches the attention limit.
+* **Security (Zero Trust):** ALS-Locked fragments are never visible to agents without the corresponding Mission Token.
+* **Observability:** Log "Ghosting Attempts" as P1 security alerts.
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.

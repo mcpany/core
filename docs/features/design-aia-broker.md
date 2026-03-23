@@ -50,3 +50,10 @@ The AIA Broker provides a mechanism for hardware-attested "Alignment Heartbeats,
 * **2026-06-18:** Update: Resolving "Context-Window Ghosting" in Alignment Checks.
   - **Context:** Today's research on CVE-2026-71002 revealed that alignment checks themselves can be "ghosted" if the trace is too large.
   - **Architecture Adjustment:** Integrating ALS (Attention-Locked Sovereignty) into the AIA heartbeat verification loop to ensure the "Mission Root" anchor remains resident during semantic analysis.
+
+### Update: 2026-06-18 - Resolving Multi-Modal Trace History
+**Context:** Today's research into TeammateTool (Claude Code) reveals a need for multi-modal reasoning alignment.
+**Architecture Adjustment:**
+*   Extending Section 4 to include "Stylometric Attestation" for image-based reasoning traces (SVG/CSS maps).
+*   Implementing "Alignment Heartbeats" to synchronize reasoning state between disparate teammate frameworks.
+**Security Impact:** Prevents "Stylometric Spoofing" where a rogue agent mimics the parent reasoning pattern to bypass ALS-Locks.

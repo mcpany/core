@@ -3,46 +3,40 @@
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
-Modern agentic swarms often suffer from "Resource Phase-Exhaustion," where a complex discovery phase consumes the majority of the reasoning budget (tokens/compute), leaving the agent with insufficient resources for the actual execution or verification phases. This often leads to "Mission Abandonment" or "Hallucinatory Shortcuts" at the most critical moment.
+Agentic DoS (Denial of Spend) is an emerging threat where non-convergent reasoning loops in autonomous swarms exhaust API budgets.
 
-The PBRB Firewall evolves the Reasoning-Budget Firewall (RBF) to be phase-aware, allowing users to partition budgets for Discovery, Planning, and Execution.
+The PBRB Firewall enforces hard limits on "Reasoning Effort" per agentic phase, preventing recursive loops from scaling indefinitely without human intervention.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Implement tiered budgeting for Discovery, Planning, and Execution phases.
-    * Support hardware-attested budget roll-over or lockout.
-    * Provide real-time telemetry for budget consumption per phase.
+    * Enforce token and ARE (Average Reasoning Effort) budgets per session.
+    * Provide a suspension-of-autonomy signal when budgets are exceeded.
 * **Non-Goals:**
-    * Predicting the exact cost of a mission branch (budgets are limits, not guarantees).
-    * Modifying upstream model pricing or billing.
+    * It will not optimize the reasoning itself, only monitor its consumption.
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Enterprise Resource Administrator
-* **Primary Goal:** Prevent a fleet of coding agents from "spinning their wheels" in the discovery phase and exhausting the department's token budget.
+* **User Persona:** DevOps Engineer managing agent costs.
+* **Primary Goal:** Cap reasoning costs at $5.00 per high-level task.
 * **The Happy Path (Tasks):**
-    1. Administrator defines a Mission Profile with a $1.00 Discovery cap and a $5.00 Execution cap.
-    2. Agent starts the mission; MCP Any monitors ARE headers to identify the "Discovery" phase.
-    3. If the agent exceeds $1.00 in Discovery, MCP Any triggers a "Phase-Halt" signal, requiring user re-attestation or mission refinement.
-    4. Upon successful transition to "Planning," a new budget bucket is activated.
+    1. User sets a Reasoning Budget for the swarm.
+    2. PBRB Firewall tracks token usage and reasoning-depth.
+    3. Firewall triggers HITL Middleware if budget hits 90%.
+    4. User either expands budget or terminates the loop.
 
 ## 4. Design & Architecture
 * **System Flow:**
-    [Agent Request: Discovery Phase] -> [PBRB Firewall: Check Discovery Bucket] -> [Upstream LLM]
-    [LLM Response: Usage Metrics] -> [PBRB Firewall: Update Phase Totals]
+    [Agent Call] -> [PBRB Counter] -> [Budget Validation] -> [Execution]
 * **APIs / Interfaces:**
-    * `InitializePhaseBudget(MissionID, {Discovery: X, Planning: Y, Execution: Z})`
-    * `TransitionPhase(MissionID, TargetPhase)`
+    * `POST /v1/governance/budget`
 * **Data Storage/State:**
-    * Redis/SQLite store for mission-bound phase accumulators.
-    * Hardware-attested budget manifests.
+    * Budget counters stored in the Shared KV Store (Redis-backed).
 
 ## 5. Alternatives Considered
-* **Global Mission Budget:** Rejected as it fails to prevent "front-loading" of costs in non-critical phases.
-* **Manual HITL Gating:** Rejected due to the high latency and human overhead in deep swarms.
+* **Per-Model Limits**: Insufficient because complex tasks span multiple models and tools.
 
-## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** Phase transitions must be attested by the parent agent or Mission Root to prevent "Phase Spoofing."
-* **Observability:** Dashboard visualization of "Reasoning Efficiency" per phase.
+## 6. Cross-Cleaning Concerns
+* **Security (Zero Trust):** Budgets are cryptographically bound to the Mission Root ID.
+* **Observability:** Real-time budget tracking in the UI roadmap.
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.

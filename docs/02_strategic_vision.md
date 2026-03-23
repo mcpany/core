@@ -1055,3 +1055,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Multi-Modal Behavioral Attestation (MMBA)**: Supporting the sovereignty of the teammate mesh, we are introducing MMBA. This anchors the agent's stylometric profile to its multi-modal trace history (SVG/Audio), providing a higher-dimensional identity signature that is resilient to reasoning-path shadowing.
 - **Reasoning-Aware Garbage Collection (R-GC)**: To neutralize "Speculative Overload," MCP Any will implement R-GC for the Speculative Branching Guard. This service automatically purges speculative context fragments that exhibit high reasoning entropy but low mission utility, preventing cognitive stall in deep swarms.
 - **Temporal Shard Jitter (TSJ) Injection**: To counter CVE-2026-62001, we are upgrading the ESB to include TSJ Injection. This layer will inject hardware-attested timing jitter into entangled state synchronization for non-primary mission-root requests, ensuring absolute temporal isolation in sharded meshes.
+
+## Strategic Evolution: 2026-06-18
+- **Infrastructure Sovereignty**: Transitioning from passive adapter to active enforcement of "Attention Sovereignty." We must design a layer that locks attention-critical fragments from being evicted or shadowed by subagents.
+- **Budget-Bound Autonomy**: Integration of "Phase-Bound Reasoning Budgets" (PBRB) as a core protocol feature to prevent Agentic DoS and ensure economic predictability in swarms.
