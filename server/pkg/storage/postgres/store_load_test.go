@@ -19,8 +19,6 @@ import (
 
 // TestStore_Load tests the Load method of the PostgreSQL store.
 //
-// Summary: Validates that the store correctly loads and parses all server configuration from the database.
-//
 // Parameters:
 //   - t (*testing.T): The testing context.
 //
@@ -48,7 +46,8 @@ func TestStore_Load(t *testing.T) {
 			Id:   proto.String("service-1"),
 			Name: proto.String("Service One"),
 		}
-		svcBytes, _ := opts.Marshal(svc)
+		svcBytes, err = opts.Marshal(svc)
+		require.NoError(t, err)
 		mock.ExpectQuery("SELECT config_json FROM upstream_services").
 			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(svcBytes))
 
@@ -57,7 +56,8 @@ func TestStore_Load(t *testing.T) {
 			Id:    proto.String("user-1"),
 			Roles: []string{"admin"},
 		}
-		userBytes, _ := opts.Marshal(user)
+		userBytes, err = opts.Marshal(user)
+		require.NoError(t, err)
 		mock.ExpectQuery("SELECT config_json FROM users").
 			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(userBytes))
 
@@ -65,7 +65,8 @@ func TestStore_Load(t *testing.T) {
 		settings := &configv1.GlobalSettings{
 			InstanceId: proto.String("instance-1"),
 		}
-		settingsBytes, _ := opts.Marshal(settings)
+		settingsBytes, err = opts.Marshal(settings)
+		require.NoError(t, err)
 		mock.ExpectQuery("SELECT config_json FROM settings WHERE id = \\$1").
 			WithArgs("global").
 			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(settingsBytes))
@@ -75,7 +76,8 @@ func TestStore_Load(t *testing.T) {
 			Id:   proto.String("collection-1"),
 			Name: proto.String("Collection One"),
 		}
-		collBytes, _ := opts.Marshal(coll)
+		collBytes, err = opts.Marshal(coll)
+		require.NoError(t, err)
 		mock.ExpectQuery("SELECT config_json FROM service_collections").
 			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(collBytes))
 
@@ -84,7 +86,8 @@ func TestStore_Load(t *testing.T) {
 			Id:   proto.String("profile-1"),
 			Name: proto.String("Profile One"),
 		}
-		profileBytes, _ := opts.Marshal(profile)
+		profileBytes, err = opts.Marshal(profile)
+		require.NoError(t, err)
 		mock.ExpectQuery("SELECT config_json FROM profiles").
 			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(profileBytes))
 
