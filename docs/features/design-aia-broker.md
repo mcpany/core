@@ -95,3 +95,7 @@ The AIA Broker provides a mechanism for hardware-attested "Alignment Heartbeats,
 *   Extending Section 4 to include "Stylometric Attestation" for image-based reasoning traces (SVG/CSS maps).
 *   Implementing "Alignment Heartbeats" to synchronize reasoning state between disparate teammate frameworks.
 **Security Impact:** Prevents "Stylometric Spoofing" where a rogue agent mimics the parent reasoning pattern to bypass ALS-Locks.
+
+### Update: 2026-06-18 - Resolving Multi-Modal Trace History
+**Context:** Research into horizontal teammates requires image-based reasoning traces.
+**Changelog:** Added Stylometric Attestation and Alignment Heartbeats.

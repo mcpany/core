@@ -458,3 +458,7 @@ These features represent the next logical steps for the product, focusing on Ent
 - **[P0] ALS Controller:** Implementation of Attention-Locked Sovereignty (ALS) for context window protection. (Target: Q3 2026)
 - **[P0] PBRB Firewall:** Development of Phase-Bound Reasoning Budget (PBRB) monitoring for token-spend governance. (Target: Q3 2026)
 - **[P1] MRHA Bridge:** Multi-modal reasoning alignment relay for cross-agent stylometric attestation.
+
+### Update: 2026-06-18 - Strategic Infrastructure Alignment
+- [P0] ALS Controller implementation for context window protection.
+- [P0] PBRB Firewall for token-spend governance.

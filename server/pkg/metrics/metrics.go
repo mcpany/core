@@ -17,95 +17,84 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-// Label is an alias for armonmetrics.Label. It represents a key-value pair for labeling metrics.
+// Label is an alias for armonmetrics.Label.
 //
 // Summary: Represents a Label.
 type Label = armonmetrics.Label
 
-// NewPrometheusSink creates a new Prometheus sink for metrics collection.
+// NewPrometheusSink creates a new Prometheus sink.
 //
 // Summary: Creates a Prometheus sink.
 //
-// Parameters:
-//   - None.
+// Parameters: None.
 //
 // Returns:
-//   - *prometheus.PrometheusSink: The initialized Prometheus sink.
-//   - error: An error if the sink creation fails.
+//   - *prometheus.PrometheusSink: The sink.
+//   - error: Error if any.
 func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
 	return prometheus.NewPrometheusSink()
 }
 
 var initOnce sync.Once
 
-// Initialize prepares the metrics system with a Prometheus sink.
+// Initialize prepares the metrics system.
 //
-// Summary: Initializes the global metrics collector.
+// Summary: Initializes the system.
 //
-// Parameters:
-//   - None.
+// Parameters: None.
 //
 // Returns:
-//   - error: An error if the initialization fails.
+//   - error: Error if any.
 func Initialize() error {
 	var err error
 	initOnce.Do(func() {
-		// Create a Prometheus sink
-		var sink *prometheus.PrometheusSink
-		sink, err = NewPrometheusSink()
-		if err != nil {
+		sink, sinkErr := NewPrometheusSink()
+		if sinkErr != nil {
+			err = sinkErr
 			return
 		}
-
-		// Create a metrics configuration
 		conf := armonmetrics.DefaultConfig("mcpany")
 		conf.EnableHostname = false
-
-		// Initialize the metrics system
-		if _, err = armonmetrics.NewGlobal(conf, sink); err != nil {
+		if _, globalErr := armonmetrics.NewGlobal(conf, sink); globalErr != nil {
+			err = globalErr
 			return
 		}
 	})
 	return err
 }
 
-// Handler returns an http.Handler for the /metrics endpoint.
+// Handler returns the metrics handler.
 //
-// Summary: Retrieves the metrics HTTP handler.
+// Summary: Returns the metrics HTTP handler.
 //
-// Parameters:
-//   - None.
+// Parameters: None.
 //
 // Returns:
-//   - http.Handler: An http.Handler that serves the Prometheus metrics.
+//   - http.Handler: The handler.
 func Handler() http.Handler {
 	return promhttp.Handler()
 }
 
-// StartServer starts an HTTP server to expose the metrics.
+// StartServer starts the HTTP server.
 //
 // Summary: Starts the metrics server.
 //
 // Parameters:
-//   - addr: string. The address to listen on (e.g., ":8080").
+//   - addr (string): The address to listen on.
 //
 // Returns:
-//   - error: An error if the server fails to start.
+//   - error: Error if any.
 func StartServer(addr string) error {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", Handler())
-
 	var lc net.ListenConfig
 	ln, err := lc.Listen(context.Background(), "tcp", addr)
 	if err != nil {
 		return err
 	}
-
 	if tcpAddr, ok := ln.Addr().(*net.TCPAddr); ok {
-		// Log to stdout so E2E tests can parse the dynamically assigned port
 		fmt.Printf("Metrics server listening on port %d\n", tcpAddr.Port)
 	}
-
 	server := &http.Server{
 		Handler:           mux,
 		ReadHeaderTimeout: 3 * time.Second,
@@ -116,89 +105,87 @@ func StartServer(addr string) error {
 	return server.Serve(ln)
 }
 
-// SetGauge sets the value of a gauge.
+// SetGauge sets a gauge.
 //
-// Summary: Sets a gauge metric.
+// Summary: Sets a gauge value.
 //
 // Parameters:
-//   - name: string. The name of the gauge.
-//   - val: float32. The value to set.
-//   - labels: ...string. A list of labels to apply to the gauge.
+//   - name (string): Metric name.
+//   - val (float32): Value.
+//   - labels (...string): Labels.
 func SetGauge(name string, val float32, labels ...string) {
 	var metricLabels []armonmetrics.Label
 	if len(labels) > 0 {
-		metricLabels = []armonmetrics.Label{
-			{Name: "service_name", Value: labels[0]},
-		}
+		metricLabels = []armonmetrics.Label{{Name: "service_name", Value: labels[0]}}
 	}
 	armonmetrics.SetGaugeWithLabels([]string{name}, val, metricLabels)
 }
 
 // IncrCounter increments a counter.
 //
-// Summary: Increments a counter metric.
+// Summary: Increments a counter.
 //
 // Parameters:
-//   - name: []string. The name of the counter (as a path).
-//   - val: float32. The amount to increment.
+//   - name ([]string): Metric path.
+//   - val (float32): Increment amount.
 func IncrCounter(name []string, val float32) {
 	armonmetrics.IncrCounter(name, val)
 }
 
-// IncrCounterWithLabels increments a counter with labels.
+// IncrCounterWithLabels increments a labeled counter.
 //
-// Summary: Increments a labeled counter metric.
+// Summary: Increments a labeled counter.
 //
 // Parameters:
-//   - name: []string. The name of the counter (as a path).
-//   - val: float32. The amount to increment.
-//   - labels: []armonmetrics.Label. The labels to apply.
+//   - name ([]string): Metric path.
+//   - val (float32): Increment amount.
+//   - labels ([]armonmetrics.Label): Labels.
 func IncrCounterWithLabels(name []string, val float32, labels []armonmetrics.Label) {
 	armonmetrics.IncrCounterWithLabels(name, val, labels)
 }
 
-// MeasureSince measures the time since a given start time and records it.
+// MeasureSince measures duration.
 //
-// Summary: Records latency metric.
+// Summary: Records latency.
 //
 // Parameters:
-//   - name: []string. The name of the metric (as a path).
-//   - start: time.Time. The start time.
+//   - name ([]string): Metric path.
+//   - start (time.Time): Start time.
 func MeasureSince(name []string, start time.Time) {
 	armonmetrics.MeasureSince(name, start)
 }
 
-// MeasureSinceWithLabels measures the time since a given start time and records it with labels.
+// MeasureSinceWithLabels measures labeled duration.
 //
-// Summary: Records labeled latency metric.
+// Summary: Records labeled latency.
 //
 // Parameters:
-//   - name: []string. The name of the metric (as a path).
-//   - start: time.Time. The start time.
-//   - labels: []armonmetrics.Label. The labels to apply.
+//   - name ([]string): Metric path.
+//   - start (time.Time): Start time.
+//   - labels ([]armonmetrics.Label): Labels.
 func MeasureSinceWithLabels(name []string, start time.Time, labels []armonmetrics.Label) {
 	armonmetrics.MeasureSinceWithLabels(name, start, labels)
 }
 
-// AddSample adds a sample to a histogram/summary.
+// AddSample adds a sample.
 //
-// Summary: Adds a sample to a metric.
+// Summary: Adds a sample to a histogram.
 //
 // Parameters:
-//   - name: []string. The name of the metric (as a path).
-//   - val: float32. The value to sample.
+//   - name ([]string): Metric path.
+//   - val (float32): Sample value.
 func AddSample(name []string, val float32) {
 	armonmetrics.AddSample(name, val)
 }
 
-// AddSampleWithLabels adds a sample to a histogram/summary with labels.
+// AddSampleWithLabels adds a labeled sample.
 //
-// Summary: Adds a labeled sample to a metric.
+// Summary: Adds a labeled sample.
 //
 // Parameters:
-//   - name: []string. The name of the metric (as a path).
-//   - val: float32. The value to sample.
-//   - labels: []armonmetrics.Label. The labels to apply.
+//   - name ([]string): Metric path.
+//   - val (float32): Sample value.
+//   - labels ([]armonmetrics.Label): Labels.
 func AddSampleWithLabels(name []string, val float32, labels []armonmetrics.Label) {
 	armonmetrics.AddSampleWithLabels(name, val, labels)
 }

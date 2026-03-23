@@ -95,3 +95,7 @@ The MMBA Provider anchors an agent's behavioral profile to its multi-modal trace
 *   Adding "Entropy-Mapping" to Section 4 for monitoring anomalous context access patterns.
 *   Binding behavioral signatures to ALS-Locked fragments.
 **Security Impact:** Allows early detection of "Ghosting Recovery" attacks by monitoring sub-token access latencies.
+
+### Update: 2026-06-18 - Integrating Attention Sovereignty
+**Context:** Ghosting vulnerabilities require behavioral attention profiles.
+**Changelog:** Added Entropy-Mapping and ALS-fragment binding.
