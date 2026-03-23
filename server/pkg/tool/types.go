@@ -3754,7 +3754,7 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 	return nil
 }
 
-//nolint:gocyclo
+//nolint:gocyclo,gocognit,funlen
 func checkUnquotedKeywords(val string, keywords []string) error {
 	inSingle := false
 	inDouble := false
