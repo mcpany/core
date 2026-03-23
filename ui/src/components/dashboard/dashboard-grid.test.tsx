@@ -68,7 +68,7 @@ global.ResizeObserver = class ResizeObserver {
 
 describe("DashboardGrid", () => {
     beforeEach(() => {
-        vi.useFakeTimers();
+        vi.useFakeTimers({ shouldAdvanceTime: true });
         localStorage.clear();
       });
 
