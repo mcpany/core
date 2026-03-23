@@ -362,7 +362,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Browser-Origin Validation & Intent-Preserving Context
 **Context**: The OpenClaw security crisis (CVE-2026-25253) reveals that "Local Trust" is a flawed assumption when browser-based attacks can bridge the gap. Simultaneously, the rise of "Context Ghosting" in swarms emphasizes that context compression must be intent-aware to maintain mission stability.
 **Strategic Pivot**:
-- **Zero-Trust Browser Origin Validation**: MCP Any will implement mandatory `Origin` and `Sec-Fetch-Site header verification for all local API/WebSocket endpoints. This ensures that only authorized local applications (not malicious websites) can communicate with the gateway.
+- **Zero-Trust Browser Origin Validation**: MCP Any will implement mandatory `Origin` and `Sec-Fetch-Site` header verification for all local API/WebSocket endpoints. This ensures that only authorized local applications (not malicious websites) can communicate with the gateway.
 - **Intent-Preserving Context Lifecycle**: Our Context Bridge will evolve to support "Intent-Scoped" summaries. Instead of generic compression, it will use the parent agent's verified intent to guide the summarization process, ensuring critical goals are never "ghosted."
 - **Optimized Swarm mTLS**: Introducing a lightweight "Session-Bound" mTLS implementation for A2A communications, reducing handshake overhead while maintaining cryptographic isolation between agents.
 
