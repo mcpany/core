@@ -52,10 +52,8 @@ func TestHandleCollectionApply(t *testing.T) {
 
 				svc := configv1.UpstreamServiceConfig_builder{
 					Name: proto.String("safe-service"),
-					ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-						HttpService: httpUpstream,
-					},
 				}.Build()
+				svc.SetHttpService(httpUpstream)
 
 				col := configv1.Collection_builder{
 					Name: proto.String("safe-collection"),
@@ -83,17 +81,13 @@ func TestHandleCollectionApply(t *testing.T) {
 				}.Build()
 
 				mcpUpstream := configv1.McpUpstreamService_builder{
-					ConnectionType: &configv1.McpUpstreamService_StdioConnection_{
-						StdioConnection: stdioConn,
-					},
 				}.Build()
+				mcpUpstream.SetStdioConnection(stdioConn)
 
 				svc := configv1.UpstreamServiceConfig_builder{
 					Name: proto.String("unsafe-service"),
-					ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-						McpService: mcpUpstream,
-					},
 				}.Build()
+				svc.SetMcpService(mcpUpstream)
 
 				col := configv1.Collection_builder{
 					Name: proto.String("unsafe-collection"),
@@ -123,17 +117,13 @@ func TestHandleCollectionApply(t *testing.T) {
 				}.Build()
 
 				mcpUpstream := configv1.McpUpstreamService_builder{
-					ConnectionType: &configv1.McpUpstreamService_StdioConnection_{
-						StdioConnection: stdioConn,
-					},
 				}.Build()
+				mcpUpstream.SetStdioConnection(stdioConn)
 
 				svc := configv1.UpstreamServiceConfig_builder{
 					Name: proto.String("unsafe-blocked-service"),
-					ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-						McpService: mcpUpstream,
-					},
 				}.Build()
+				svc.SetMcpService(mcpUpstream)
 
 				col := configv1.Collection_builder{
 					Name: proto.String("unsafe-blocked-collection"),
