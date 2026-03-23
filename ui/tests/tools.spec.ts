@@ -98,15 +98,15 @@ test.describe('Tool Exploration', () => {
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Change grouping to "service"
-        // Use keyboard navigation starting from a highly-reliable input element.
-        // Bypassing Playwright's click actionability and finding Shadcn Select triggers via DOM
-        // can flake due to hydration or portals. Tabbing from the search input is 100% reliable.
-        await page.getByPlaceholder('Search tools...').focus();
-        await page.keyboard.press('Tab'); // Move focus to the 'Group By' combobox
-        await page.keyboard.press('Enter'); // Open the dropdown portal
-        await page.waitForTimeout(500); // Wait for the portal animation
-        await page.keyboard.press('ArrowDown'); // Move from 'none' to 'service'
-        await page.keyboard.press('Enter'); // Select the active option
+        // Wait for the exact text rendered by the component ("No Grouping") to become fully
+        // visible and attached to the DOM before interacting with it to bypass hydration flakiness.
+        const groupByTrigger = page.getByText('No Grouping', { exact: true });
+        await groupByTrigger.waitFor({ state: 'visible', timeout: 10000 });
+        await groupByTrigger.click();
+
+        const option = page.getByText('Group by Service', { exact: true });
+        await option.waitFor({ state: 'visible', timeout: 5000 });
+        await option.click();
 
         // Verify that the Payment Gateway service grouping header is visible
         // We use a regex because the AccordionTrigger button's accessible name includes the tool count badge (e.g. "Payment Gateway 1")
