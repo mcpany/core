@@ -7,7 +7,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// ToolSpec defines the desired state of Tool
+// ToolSpec defines the desired state of Tool.
 type ToolSpec struct {
 	Name        string   `json:"name"`
 	Description string   `json:"description"`
@@ -15,14 +15,14 @@ type ToolSpec struct {
 	Args        []string `json:"args"`
 }
 
-// ToolStatus defines the observed state of Tool
+// ToolStatus defines the observed state of Tool.
 type ToolStatus struct {
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
-// Tool is the Schema for the tools API
+// Tool is the Schema for the tools API.
 type Tool struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -32,7 +32,7 @@ type Tool struct {
 
 //+kubebuilder:object:root=true
 
-// ToolList contains a list of Tool
+// ToolList contains a list of Tool.
 type ToolList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
