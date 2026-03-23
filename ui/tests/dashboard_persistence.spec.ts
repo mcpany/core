@@ -31,9 +31,9 @@ test('dashboard layout persistence', async ({ page, request }) => {
   try {
       const removeButtons = await page.getByRole('button', { name: /Remove Widget/i }).all();
       for (const btn of removeButtons) {
-          try { await btn.click({ timeout: 1000 }); } catch(e) {}
+          try { await btn.click({ timeout: 1000 }); } catch(_e) {}
       }
-  } catch(e) {}
+  } catch(_e) {}
 
   await page.waitForTimeout(1000); // Give time for the layout re-render to complete
 
@@ -46,7 +46,7 @@ test('dashboard layout persistence', async ({ page, request }) => {
       const addWidgetBtn = page.getByRole('button', { name: /Add Widget/i }).first();
       await addWidgetBtn.waitFor({state: 'visible', timeout: 5000});
       await addWidgetBtn.click({ force: true });
-  } catch(e) {
+  } catch(_e) {
       // Fallback
       const addFallback = page.locator('button').filter({ hasText: 'Add Widget' }).first();
       await addFallback.click({ force: true });
@@ -92,27 +92,13 @@ test('dashboard layout persistence', async ({ page, request }) => {
   await page.waitForTimeout(5000);
 
   // We may need to poll the API if debounce is still occurring
-  let data;
-  let success = false;
   for (let i = 0; i < 10; i++) {
       try {
-          const response = await request.get('/api/v1/user/preferences');
-          if (response.ok()) {
-              data = await response.json();
-              // Check the actual object layout structure matching to determine truth
-              const layoutStr = data['dashboard-layout'];
-              if (layoutStr && typeof layoutStr === 'string' && layoutStr.includes('Recent Activity')) {
-                  success = true;
-                  break;
-              } else if (layoutStr && Array.isArray(layoutStr) && JSON.stringify(layoutStr).includes('Recent Activity')) {
-                  success = true;
-                  break;
-              }
-          }
-      } catch (e) {
-          // If the backend fails to connect just keep polling
+          await request.get('/api/v1/user/preferences');
+      } catch (_e) {
+          // Ignore
       }
-      await page.waitForTimeout(2000);
+      await page.waitForTimeout(1000);
   }
 
   // We cannot robustly wait for backend DB writes on every Playwright runner since the
@@ -124,8 +110,8 @@ test('dashboard layout persistence', async ({ page, request }) => {
   try {
       const removeButtons = await page.getByRole('button', { name: /Remove Widget/i }).all();
       for (const btn of removeButtons) {
-          try { await btn.click({ timeout: 1000 }); } catch(e) {}
+          try { await btn.click({ timeout: 1000 }); } catch(_e) {}
       }
       await page.waitForTimeout(500);
-  } catch(e) {}
+  } catch(_e) {}
 });
