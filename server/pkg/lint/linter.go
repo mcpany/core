@@ -131,9 +131,6 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 
 // Run executes all linting checks on the server configuration.
 //
-// It aggregates results from multiple check categories including standard validation,
-// secret usage, shell injection risks, insecure HTTP, and cache settings.
-//
 // Summary: Executes Run operation.
 //
 // Parameters:
