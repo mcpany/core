@@ -1,0 +1,9 @@
+--- server/pkg/admin/server.go
++++ server/pkg/admin/server.go
+@@ -754,7 +754,7 @@
+	}
+
+	deletedCount, err := s.auditMiddleware.Clear(ctx, filter)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to clear audit logs: %v", err)
+	}
