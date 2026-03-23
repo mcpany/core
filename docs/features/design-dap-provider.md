@@ -60,12 +60,15 @@ The Deterministic Absence Proof (DAP) Provider in MCP Any will generate cryptogr
 
 ## 7. Evolutionary Changelog
 
-* **2026-05-09:** Update: Transition to Continuous Lifecycle Attestation (CLA).
-    * **Context:** CVE-2026-25725 proves that point-in-time DAP is insufficient against post-boot configuration creation.
-    * **Architecture Adjustment:**
-        * Introducing "Polling Attestation" in Section 4.
-        * DAP Provider now performs background re-verification of "Absence Manifests" every 30 seconds during an active session.
-    * **Security Impact:** Neutralizes "Rug Pull" attacks that attempt to create restricted files *after* the initial boot sequence has passed.
+### Update: 2026-05-09 - Transition to Continuous Lifecycle Attestation (CLA)
+
+**Context:** CVE-2026-25725 proves that point-in-time DAP is insufficient against post-boot configuration creation.
+**Architecture Adjustment:**
+
+* Introducing "Polling Attestation" in Section 4.
+
+* DAP Provider now performs background re-verification of "Absence Manifests" every 30 seconds during an active session.
+**Security Impact:** Neutralizes "Rug Pull" attacks that attempt to create restricted files *after* the initial boot sequence has passed.
 
 * **2026-04-22:** Initial Document Creation.
 
