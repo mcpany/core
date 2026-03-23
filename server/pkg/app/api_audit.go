@@ -77,6 +77,45 @@ func (a *Application) handleAuditLogs(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (a *Application) handleAuditLogsClear(w http.ResponseWriter, r *http.Request) {
+	filter := audit.Filter{}
+	if start := r.URL.Query().Get("start_time"); start != "" {
+		if t, err := time.Parse(time.RFC3339, start); err == nil {
+			filter.StartTime = &t
+		}
+	}
+	if end := r.URL.Query().Get("end_time"); end != "" {
+		if t, err := time.Parse(time.RFC3339, end); err == nil {
+			filter.EndTime = &t
+		}
+	}
+	filter.ToolName = r.URL.Query().Get("tool_name")
+	filter.UserID = r.URL.Query().Get("user_id")
+	filter.ProfileID = r.URL.Query().Get("profile_id")
+
+	// Get the audit store from standard middlewares
+	if a.standardMiddlewares == nil || a.standardMiddlewares.Audit == nil {
+		http.Error(w, "Audit store not configured", http.StatusServiceUnavailable)
+		return
+	}
+
+	deletedCount, err := a.standardMiddlewares.Audit.Clear(r.Context(), filter)
+	if err != nil {
+		http.Error(w, "Failed to clear audit logs: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	// Match the protobuf ClearAuditLogsResponse shape
+	resp := map[string]any{
+		"deletedCount": deletedCount,
+	}
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
+}
+
 func (a *Application) handleAuditExport(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)

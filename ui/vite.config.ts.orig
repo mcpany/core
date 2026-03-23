@@ -19,7 +19,7 @@ const protoPath = fs.existsSync(localProto)
   ? localProto
   : fs.existsSync(bazelBinProto)
     ? bazelBinProto
-    : rootProto;
+    : path.resolve(__dirname, "./src/mocks/proto");
 
 // Resolve the @bufbuild/protobuf/wire sub-path (needed by generated proto files)
 const bufbuildWirePath = path.join(

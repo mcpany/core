@@ -56,6 +56,16 @@ export default defineConfig({
         __dirname,
         "node_modules/browser-headers/dist/browser-headers.umd.js"
       ),
+      "@proto/api/v1/registration": path.resolve(__dirname, "./src/mocks/proto/mock-proto.ts"),
+      "@proto/config/v1/upstream_service": path.resolve(__dirname, "./src/mocks/proto/mock-proto.ts"),
+      "@proto/config/v1/user": path.resolve(__dirname, "./src/mocks/proto/mock-proto.ts"),
+      "@proto/config/v1/provider": path.resolve(__dirname, "./src/mocks/proto/mock-proto.ts"),
+      "@proto/config/v1/config": path.resolve(__dirname, "./src/mocks/proto/mock-proto.ts"),
+      "@proto/config/v1/tool": path.resolve(__dirname, "./src/mocks/proto/mock-proto.ts"),
+      "@proto/config/v1/resource": path.resolve(__dirname, "./src/mocks/proto/mock-proto.ts"),
+      "@proto/config/v1/prompt": path.resolve(__dirname, "./src/mocks/proto/mock-proto.ts"),
+      "@proto/config/v1/auth": path.resolve(__dirname, "./src/mocks/proto/mock-proto.ts"),
+      "@proto/mcp_router/v1/mcp_router": path.resolve(__dirname, "./src/mocks/proto/mock-proto.ts"),
       // 'long' (required by ts-proto generated code) points to the UMD build
       "long": path.join(__dirname, "node_modules/long/umd/index.js"),
     },
