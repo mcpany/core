@@ -800,3 +800,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Attention-Density Guard (ADG)**: (P0) Cognitive security layer utilizing hardware-bound headers to "pin" mission-critical fragments at the LLM attention layer.
 - **Headless Handoff Continuity (HHC)**: (P0) Orchestration bridge facilitating signed intent transfers for process-based subagent spawning.
 - **Multi-Modal Attention Sanitizer**: (P1) Advanced security extension for the MIB to neutralize attention-eviction probes in non-textual traces.
+
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Attention-Density Firewall (ADF)**: Sub-millisecond entropy analysis middleware to block context-eviction noise. (Added: 2026-06-25)
+*   **[P0] Hardware-Locked Environment Sovereignty (HLES)**: Secure, kernel-bound memory for hardware-attested identity tokens. (Added: 2026-06-25)
+*   **[P0] Monotonic Mission Lineage (MML) Provider**: Identity extension for TPM-signed monotonic counters for reasoning provenance. (Added: 2026-06-25)
+*   **[P1] CRDT-Native Mailbox Shards**: Lock-free horizontal coordination using Conflict-Free Replicated Data Types. (Added: 2026-06-25)

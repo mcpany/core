@@ -61,3 +61,11 @@ The **Mission-Root Continuity Provider (MRCP)** is an infrastructure layer for M
 
 ## 7. Evolutionary Changelog
 *   **2026-06-21:** Initial Document Creation.
+
+### Update: 2026-06-25 - Monotonic Lineage Attestation
+**Context:** Today's market sync revealed "Snapshot Corruption" risks in AMR and "Identity Leakage via Process Environment."
+**Architecture Adjustment:**
+*   Integrating **Monotonic Mission Lineage (MML)** into the resumption flow.
+*   Resumption tokens now require a TPM-signed monotonic counter to prevent replay and leakage.
+*   Deprecating plain environment variables for identity transport in favor of kernel-bound HLES buffers.
+**Security Impact:** Prevents subagents from "squatting" on stale resumption tokens and ensures environmental sovereignty for headless handoffs.
