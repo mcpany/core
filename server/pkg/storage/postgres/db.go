@@ -178,6 +178,13 @@ func initSchema(db *sql.DB) error {
 		created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 	);
 	CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp);
+
+	CREATE TABLE IF NOT EXISTS mock_data (
+		id TEXT PRIMARY KEY,
+		data_json TEXT NOT NULL,
+		created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+		updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+	);
 	`
 	_, err := db.ExecContext(context.Background(), query)
 	if err != nil {

@@ -37,6 +37,7 @@ type Store struct {
 	credentials        map[string]*configv1.Credential
 	serviceTemplates   map[string]*configv1.ServiceTemplate
 	logs               []*logging.LogEntry
+	mockData           map[string]string
 }
 
 // NewStore creates a new memory store.
@@ -59,6 +60,7 @@ func NewStore() *Store {
 		credentials:        make(map[string]*configv1.Credential),
 		serviceTemplates:   make(map[string]*configv1.ServiceTemplate),
 		logs:               make([]*logging.LogEntry, 0),
+		mockData:           make(map[string]string),
 	}
 }
 
@@ -80,6 +82,50 @@ func (s *Store) SaveLog(_ context.Context, entry *logging.LogEntry) error {
 	defer s.mu.Unlock()
 	s.logs = append(s.logs, entry)
 	return nil
+}
+
+// SaveMockData saves mock data.
+//
+// Summary: Persists mock data.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - id (string): The mock data ID.
+//   - data (string): The JSON data.
+//
+// Returns:
+//   - error: An error if saving fails.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - Persists the mock data to the memory.
+func (s *Store) SaveMockData(ctx context.Context, id string, data string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.mockData[id] = data
+	return nil
+}
+
+// GetMockData retrieves mock data by ID.
+//
+// Summary: Retrieves mock data.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - id (string): The mock data ID.
+//
+// Returns:
+//   - string: The JSON data.
+//   - error: An error if retrieval fails.
+//
+// Errors:
+//   - None
+func (s *Store) GetMockData(ctx context.Context, id string) (string, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.mockData[id], nil
 }
 
 // GetRecentLogs retrieves recent log entries.

@@ -864,6 +864,65 @@ func (s *Store) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
 	return nil
 }
 
+// SaveMockData saves a mock JSON response.
+//
+// Summary: Persists mock data.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - id (string): The mock data ID.
+//   - data (string): The JSON data.
+//
+// Returns:
+//   - error: An error if saving fails.
+//
+// Errors:
+//   - Returns an error if storage write fails.
+//
+// Side Effects:
+//   - Persists the mock data to the database.
+func (s *Store) SaveMockData(ctx context.Context, id string, data string) error {
+	query := `
+	INSERT INTO mock_data (id, data_json)
+	VALUES ($1, $2)
+	ON CONFLICT(id) DO UPDATE SET
+		data_json = EXCLUDED.data_json,
+		updated_at = CURRENT_TIMESTAMP
+	`
+	_, err := s.db.ExecContext(ctx, query, id, data)
+	if err != nil {
+		return fmt.Errorf("failed to save mock data: %w", err)
+	}
+	return nil
+}
+
+// GetMockData retrieves mock JSON response by ID.
+//
+// Summary: Retrieves mock data.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - id (string): The mock data ID.
+//
+// Returns:
+//   - string: The JSON data.
+//   - error: An error if retrieval fails.
+//
+// Errors:
+//   - Returns an error if storage read fails.
+func (s *Store) GetMockData(ctx context.Context, id string) (string, error) {
+	query := `SELECT data_json FROM mock_data WHERE id = $1`
+	var data string
+	err := s.db.QueryRowContext(ctx, query, id).Scan(&data)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", nil // or some default empty JSON
+		}
+		return "", fmt.Errorf("failed to get mock data: %w", err)
+	}
+	return data, nil
+}
+
 // GetRecentLogs retrieves recent log entries.
 //
 // Summary: Retrieves recent log entries.

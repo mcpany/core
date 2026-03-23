@@ -662,4 +662,39 @@ type Storage interface {
 	// Errors:
 	//   - Returns an error if storage read fails.
 	GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEntry, error)
+
+	// SaveMockData saves a mock JSON response.
+	//
+	// Summary: Persists mock data.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//   - id (string): The mock data ID.
+	//   - data (string): The JSON data.
+	//
+	// Returns:
+	//   - error: An error if saving fails.
+	//
+	// Errors:
+	//   - Returns an error if storage write fails.
+	//
+	// Side Effects:
+	//   - Persists the mock data to the underlying storage.
+	SaveMockData(ctx context.Context, id string, data string) error
+
+	// GetMockData retrieves mock JSON response by ID.
+	//
+	// Summary: Retrieves mock data.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//   - id (string): The mock data ID.
+	//
+	// Returns:
+	//   - string: The JSON data.
+	//   - error: An error if retrieval fails.
+	//
+	// Errors:
+	//   - Returns an error if storage read fails.
+	GetMockData(ctx context.Context, id string) (string, error)
 }
