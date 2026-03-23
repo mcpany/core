@@ -59,7 +59,7 @@ interface AuditLogEntry {
  */
 export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
   const [input, setInput] = useState("{}");
-  const [output, setOutput] = useState<any>(null);
+  const [output, setOutput] = useState<unknown>(null);
   const [loading, setLoading] = useState(false);
   const [isDryRun, setIsDryRun] = useState(false);
   const [lastRunStats, setLastRunStats] = useState<{ inputTokens: number, outputTokens: number, cost: number } | null>(null);
@@ -146,12 +146,13 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
       setLastRunStats({ inputTokens, outputTokens, cost });
 
       setTimeout(fetchMetrics, 500);
-    } catch (e: any) {
-      setOutput({ error: e.message || String(e) });
+    } catch (e: unknown) {
+      const errMessage = e instanceof Error ? e.message : String(e);
+      setOutput({ error: errMessage });
 
       // Estimate error tokens
       const inputTokens = estimateTokens(input);
-      const outputTokens = estimateTokens(e.message || String(e));
+      const outputTokens = estimateTokens(errMessage);
       const totalTokens = inputTokens + outputTokens;
 
       setLastRunStats({ inputTokens, outputTokens, cost: calculateCost(totalTokens) });
@@ -318,8 +319,8 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                                   >
                                       <Download className="h-3.5 w-3.5" />
                                   </Button>
-                                  <Badge variant={output.isError || output.error ? "destructive" : "outline"} className={cn("text-[10px]", output.isError || output.error ? "" : "text-green-600 border-green-200 bg-green-50")}>
-                                      {output.isError || output.error ? "Failed" : "Success"}
+                                  <Badge variant={(output as Record<string, unknown>).isError || (output as Record<string, unknown>).error ? "destructive" : "outline"} className={cn("text-[10px]", (output as Record<string, unknown>).isError || (output as Record<string, unknown>).error ? "" : "text-green-600 border-green-200 bg-green-50")}>
+                                      {(output as Record<string, unknown>).isError || (output as Record<string, unknown>).error ? "Failed" : "Success"}
                                   </Badge>
                               </div>
                           )}
