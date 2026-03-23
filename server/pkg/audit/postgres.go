@@ -27,7 +27,7 @@ type PostgresAuditStore struct {
 // Summary: Initializes a new PostgresAuditStore.
 //
 // Parameters:
-//   - dsn: string. The PostgreSQL connection string.
+//   - dsn: string. The PostgreSQL connection string..
 //
 // Returns:
 //   - *PostgresAuditStore: The initialized store.
@@ -97,8 +97,8 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 // Summary: Writes a single audit entry with cryptographic chaining.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - entry: Entry. The audit entry to write.
+//   - ctx: context.Context. The request context..
+//   - entry: Entry. The audit entry to write..
 //
 // Returns:
 //   - error: An error if the write fails.
@@ -194,8 +194,8 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 // Summary: Reads audit entries (Not implemented).
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - _: Filter. Unused.
+//   - _: context.Context. Unused..
+//   - _: Filter. Unused..
 //
 // Returns:
 //   - []Entry: Nil.

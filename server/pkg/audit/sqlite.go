@@ -30,7 +30,7 @@ type SQLiteAuditStore struct {
 // Summary: Initializes a new SQLiteAuditStore.
 //
 // Parameters:
-//   - path: string. The file path to the SQLite database.
+//   - path: string. The file path to the SQLite database..
 //
 // Returns:
 //   - *SQLiteAuditStore: The initialized store.
@@ -163,8 +163,8 @@ func ensureColumn(db *sql.DB, colName string) error {
 // Summary: Writes a single audit entry with cryptographic hash chaining.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - entry: Entry. The audit entry to write.
+//   - ctx: context.Context. The request context..
+//   - entry: Entry. The audit entry to write..
 //
 // Returns:
 //   - error: An error if the write fails.
@@ -233,8 +233,8 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 // Summary: Retrieves audit entries matching the specified filter criteria.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - filter: Filter. The filtering criteria (time range, tool name, user ID, etc.).
+//   - ctx: context.Context. The request context..
+//   - filter: Filter. The filtering criteria (time range, tool name, user ID, etc.)..
 //
 // Returns:
 //   - []Entry: A slice of matching audit entries.
