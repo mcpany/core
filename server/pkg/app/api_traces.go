@@ -243,45 +243,15 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 			return
 		}
 
-		// Initialize an in-memory audit store just for debug seeding if the primary one is missing
-		// This ensures E2E tests that don't load the full Audit middleware config can still test traces
-		var targetStore audit.Store
-		var targetMiddleware *middleware.AuditMiddleware
-
-		if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
-			targetMiddleware = a.standardMiddlewares.Audit
-			// We can't access m.store directly since it's unexported, but Write() works
-		} else {
-			// Create a temporary store to unblock testing
-			if a.standardMiddlewares == nil {
-				a.standardMiddlewares = &middleware.StandardMiddlewares{}
-			}
-			tempAudit, err := middleware.NewAuditMiddleware(nil)
-			if err == nil {
-				memStore, _ := audit.NewFileAuditStore("") // Stdout or an in-memory mock if we had one
-				tempAudit.SetStore(memStore)
-				a.standardMiddlewares.Audit = tempAudit
-				targetMiddleware = tempAudit
-			}
-		}
-
-		if targetMiddleware == nil {
-			http.Error(w, "Audit middleware not enabled and failed to create fallback", http.StatusInternalServerError)
+		if a.standardMiddlewares == nil || a.standardMiddlewares.Audit == nil {
+			http.Error(w, "Audit middleware not enabled", http.StatusInternalServerError)
 			return
 		}
 
-		// Because SetStore might fail if file path validation fails on "", let's just make sure
-		// if the default store is nil, we bypass it for E2E by writing to the broadcaster directly if possible,
-		// or we require the tests to use a proper minimal config (which we did by adding it to config.minimal.yaml).
 		entries := generateMockAuditEntries()
 
 		for _, entry := range entries {
-			// Write attempts to write to store and broadcasts.
-			// If store is nil (which happens if config has no path), Write returns an error.
-			// Let's bypass the strict store requirement for debug seeds by ignoring the error
-			// if it's "audit store not initialized", since it still broadcasts.
-			err := targetMiddleware.Write(r.Context(), entry)
-			if err != nil && err.Error() != "audit store not initialized" {
+			if err := a.standardMiddlewares.Audit.Write(r.Context(), entry); err != nil {
 				logging.GetLogger().Error("failed to seed trace to audit db", "error", err)
 				http.Error(w, "Failed to seed trace", http.StatusInternalServerError)
 				return
