@@ -71,7 +71,6 @@ func (t *baseTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: Always returns nil.
-//
 // IsStreaming returns true if the tool supports streaming execution.
 //
 // Summary: Checks if the tool supports streaming execution.
