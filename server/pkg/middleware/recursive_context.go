@@ -217,7 +217,8 @@ func (m *RecursiveContextManager) HandleContext(next http.Handler) http.Handler 
 		id := r.Header.Get("X-MCP-Parent-Context-ID")
 		if id != "" {
 			if session, exists := m.GetSession(id); exists {
-				ctx := context.WithValue(r.Context(), RecursiveContextDataKey, session.Data)
+				ctx := context.WithValue(r.Context(),
+					RecursiveContextDataKey, session.Data)
 				r = r.WithContext(ctx)
 			}
 		}

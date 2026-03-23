@@ -12,7 +12,8 @@ Strategic Evolution.
 
 | Document Name | Status | Evidence |
 |---------------|--------|----------|
-| `server/pkg/middleware/recursive_context.go` | Implemented | P0 Roadmap Debt Resolved. |
+| `server/pkg/middleware/recursive_context.go` | Implemented | P0 Roadmap Debt
+Resolved. |
 | `docs/features/design-cec.md` | Created | Strategic Entropy control. |
 | `docs/features/design-aia-broker.md` | Created | Active Intent Alignment. |
 
