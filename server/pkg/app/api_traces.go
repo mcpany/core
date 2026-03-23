@@ -320,56 +320,6 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 	}
 }
 
-// handleDebugDeleteTraces deletes the specified mock traces from memory.
-//
-// Summary: Deletes mock traces used for UI debugging.
-//
-// Returns:
-//   - (http.HandlerFunc): The HTTP handler function.
-//
-// Errors:
-//   - Returns 405 if the method is not DELETE.
-//   - Returns 400 if the request body cannot be parsed.
-//
-// Side Effects:
-//   - Mutates the server's seededTraces array.
-func (a *Application) handleDebugDeleteTraces() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodDelete {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
-
-		var req struct {
-			IDs []string `json:"ids"`
-		}
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		idSet := make(map[string]bool)
-		for _, id := range req.IDs {
-			idSet[id] = true
-		}
-
-		a.seededTracesMu.Lock()
-		newTraces := make([]*Trace, 0, len(a.seededTraces))
-		for _, trace := range a.seededTraces {
-			if !idSet[trace.ID] {
-				newTraces = append(newTraces, trace)
-			}
-		}
-		deletedCount := len(a.seededTraces) - len(newTraces)
-		a.seededTraces = newTraces
-		a.seededTracesMu.Unlock()
-
-		logging.GetLogger().Info("Deleted debug traces", "count", deletedCount)
-
-		w.WriteHeader(http.StatusOK)
-		_ = json.NewEncoder(w).Encode(map[string]any{"status": "deleted", "count": deletedCount})
-	}
-}
 
 func generateMockTrace() Trace {
 	now := time.Now().UnixMilli()
