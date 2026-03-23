@@ -15,9 +15,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Clean and Setup
+          name: Clean Environment
           command: |
-             # Purge any pre-installed version conflicts
              sudo rm -f /usr/local/bin/golangci-lint
              rm -rf build/env/bin
              mkdir -p build/env/bin
@@ -34,34 +33,28 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v25-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-            - v25-lint-
+            - v26-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+            - v26-lint-
       - run:
-          name: Install Toolchain and Linter
+          name: Prepare Toolchain
           command: |
             export GOTOOLCHAIN=go1.26.1
-            export GOPATH=$HOME/go
-            echo "Installing golangci-lint from source with Go 1.26..."
-            go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.5
             make prepare
-            cp $GOPATH/bin/golangci-lint build/env/bin/golangci-lint
-            build/env/bin/golangci-lint version
       - run:
-          name: Run Lint
+          name: Run Lint (Version Locked)
           command: |
             . venv/bin/activate
             export GOTOOLCHAIN=go1.26.1
             export GOPATH=$HOME/go
-            export PATH=$GOPATH/bin:$PWD/build/env/bin:$PATH
+            # We don't rely on PATH for linter anymore, script uses 'go run'
             go version
             ./scripts/lint.sh
       - save_cache:
-          key: v25-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+          key: v26-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
             - "venv"
-            - "/home/circleci/go/bin"
 
 workflows:
   version: 2
