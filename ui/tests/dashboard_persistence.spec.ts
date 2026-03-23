@@ -35,7 +35,17 @@ test('dashboard layout persistence', async ({ page, request }) => {
   await page.getByText('Recent Activity').first().click();
 
   // 3. Verify widget added
-  await expect(page.getByText('Recent Activity').first()).toBeVisible();
+  const widgetContainer = page.locator('.group\\/widget').filter({ hasText: 'Recent Activity' });
+  await expect(widgetContainer).toBeVisible();
+  await expect(widgetContainer).toHaveClass(/transition-all/);
+  await expect(widgetContainer).toHaveClass(/duration-300/);
+
+  // Resize widget
+  await widgetContainer.locator('button', { has: page.locator('.lucide-more-horizontal') }).click();
+  await page.getByText('Size').click();
+  await page.getByText('Full Width').click();
+
+  await expect(widgetContainer).toHaveClass(/col-span-12/);
 
   // 4. Wait for debounce save (1s + buffer)
   await page.waitForTimeout(4000);
@@ -44,8 +54,10 @@ test('dashboard layout persistence', async ({ page, request }) => {
   await page.reload();
   await expect(page.locator('.lucide-loader-circle.animate-spin').first()).not.toBeVisible();
 
-  // 6. Verify widget persists
-  await expect(page.getByText('Recent Activity').first()).toBeVisible();
+  // 6. Verify widget persists with new size
+  const reloadedWidget = page.locator('.group\\/widget').filter({ hasText: 'Recent Activity' });
+  await expect(reloadedWidget).toBeVisible();
+  await expect(reloadedWidget).toHaveClass(/col-span-12/);
   await expect(page.getByText('Your dashboard is empty')).not.toBeVisible();
 
   // 7. Verify API state
@@ -54,4 +66,5 @@ test('dashboard layout persistence', async ({ page, request }) => {
   const data = await response.json();
   expect(data['dashboard-layout']).toBeDefined();
   expect(data['dashboard-layout']).toContain('Recent Activity');
+  expect(data['dashboard-layout']).toContain('full');
 });
