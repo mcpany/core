@@ -28,18 +28,14 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 		{"Bool true", true},
 		{"Bool false", false},
 		{"Nil", nil},
-		{"Float64", 123.456},
-		{"Float64 Sci", 1.23e10},
-
-		// Slices
-		{"Slice Int", []int{1, 2, 3, 10000, -123}},
-		{"Slice Int64", []int64{1, 2, 3, 10000000000, -123}},
-		{"Slice Bool", []bool{true, false, true}},
-		{"Slice Float64", []float64{1.1, 2.2, 3.3, 1.23e5}},
-		{"Slice String", []string{"hello", "world", "fast", "path"}},
-
-		// Maps
-		{"Map String String", map[string]string{"key1": "val1", "key2": "val2"}},
+		{"Float64", 3.14159},
+		{"Float64_Sci", 1.23e10},
+		{"Slice_Int", []int{1, 2, 3, -4, math.MaxInt}},
+		{"Slice_Int64", []int64{1, -2, math.MaxInt64}},
+		{"Slice_Bool", []bool{true, false, true}},
+		{"Slice_Float64", []float64{1.1, -2.2, 3.3e-5}},
+		{"Slice_String", []string{"hello", "world", "this is a longer string"}},
+		{"Map_String_String", map[string]string{"key1": "value1", "key2": "value2"}},
 	}
 
 	for _, tt := range tests {
@@ -49,10 +45,23 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 				t.Fatalf("CountTokensInValue failed: %v", err)
 			}
 
-			// Validate correctness
-			// We can compare against manual calculation or reflect-based fallback (if we could force it)
-			// But since we can't easily force fallback, let's verify logic.
+			// We need to mirror the logic from SimpleTokenizer
+			// For basic types, it defaults to length/4 for string-like reps, but we use fast paths.
+			// For consistency test, we can just ensure it doesn't panic and returns > 0 where expected.
+			if got < 1 && tt.input != nil && tt.input != "" {
+				// slices might evaluate to 0 if empty
+				if reflect.TypeOf(tt.input).Kind() == reflect.Slice && reflect.ValueOf(tt.input).Len() == 0 {
+					return
+				}
+				// maps might evaluate to 0 if empty
+				if reflect.TypeOf(tt.input).Kind() == reflect.Map && reflect.ValueOf(tt.input).Len() == 0 {
+					return
+				}
+				// Otherwise should be >= 1
+				t.Errorf("Expected >= 1 tokens, got %d", got)
+			}
 
+			// For specific types, we can assert exactly against simpleTokenize*
 			var want int
 			switch v := tt.input.(type) {
 			case int:
@@ -106,7 +115,9 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 			}
 
 			primCount := int(wt.Factor)
-			if primCount < 1 { primCount = 1 }
+			if primCount < 1 {
+				primCount = 1
+			}
 
 			var want int
 			switch v := tt.input.(type) {
@@ -114,23 +125,33 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 				want = primCount
 			case []int:
 				want = int(float64(len(v)) * wt.Factor)
-				if want < 1 && len(v) > 0 { want = 1 }
+				if want < 1 && len(v) > 0 {
+					want = 1
+				}
 			case []int64:
 				want = int(float64(len(v)) * wt.Factor)
-				if want < 1 && len(v) > 0 { want = 1 }
+				if want < 1 && len(v) > 0 {
+					want = 1
+				}
 			case []float64:
 				want = int(float64(len(v)) * wt.Factor)
-				if want < 1 && len(v) > 0 { want = 1 }
+				if want < 1 && len(v) > 0 {
+					want = 1
+				}
 			case []bool:
 				want = int(float64(len(v)) * wt.Factor)
-				if want < 1 && len(v) > 0 { want = 1 }
+				if want < 1 && len(v) > 0 {
+					want = 1
+				}
 			case []string:
 				var words int
 				for _, x := range v {
 					words += countWords(x)
 				}
 				want = int(float64(words) * wt.Factor)
-				if want < 1 && words > 0 { want = 1 }
+				if want < 1 && words > 0 {
+					want = 1
+				}
 			case map[string]string:
 				var words int
 				for k, v := range v {
@@ -138,7 +159,9 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 					words += countWords(v)
 				}
 				want = int(float64(words) * wt.Factor)
-				if want < 1 && words > 0 { want = 1 }
+				if want < 1 && words > 0 {
+					want = 1
+				}
 			}
 
 			if got != want {
