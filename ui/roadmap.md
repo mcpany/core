@@ -589,7 +589,3 @@
 ### Upcoming: 2026-06-18 - Strategic Monitoring
 - **[P0] ALS Status Dashboard**: Real-time visualization of Attention-Locked fragments.
 - **[P0] PBRB Budget Tracker**: Live view of reasoning budget consumption.
-
-### Upcoming: 2026-06-18 - Strategic Monitoring
-- [P0] ALS Status Dashboard
-- [P0] PBRB Budget Tracker

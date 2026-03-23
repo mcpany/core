@@ -450,9 +450,5 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Deterministic Recovery Bridge (DSR)**: Standardized mapping of subagent exit codes to automated PLSS rollbacks. (Added: 2026-05-02)
 
 ### Update: 2026-06-18 - Strategic Infrastructure Alignment
-- **[P0] ALS Controller**: implementation for context window protection.
+- **[P0] ALS Controller**: Context window protection implementation.
 - **[P0] PBRB Firewall**: Token-spend governance and economic safeguards.
-
-### Update: 2026-06-18 - Strategic Infrastructure Alignment
-- [P0] ALS Controller implementation for context window protection.
-- [P0] PBRB Firewall for token-spend governance.

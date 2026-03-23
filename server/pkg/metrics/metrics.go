@@ -55,7 +55,7 @@ func Initialize() error {
 		}
 		conf := armonmetrics.DefaultConfig("mcpany")
 		conf.EnableHostname = false
-		if _, globalErr := armonmetrics.NewGlobal(conf, sink); globalErr != nil {
+		if _, globalErr := armonmetrics.NewGlobal(conf, sink); err != nil {
 			err = globalErr
 			return
 		}
@@ -105,9 +105,9 @@ func StartServer(addr string) error {
 	return server.Serve(ln)
 }
 
-// SetGauge sets a gauge value.
+// SetGauge sets a gauge.
 //
-// Summary: Sets a gauge.
+// Summary: Sets a gauge value.
 //
 // Parameters:
 //   - name (string): Metric name.
@@ -127,7 +127,7 @@ func SetGauge(name string, val float32, labels ...string) {
 //
 // Parameters:
 //   - name ([]string): Metric path.
-//   - val (float32): Amount.
+//   - val (float32): Increment amount.
 func IncrCounter(name []string, val float32) {
 	armonmetrics.IncrCounter(name, val)
 }
@@ -138,15 +138,15 @@ func IncrCounter(name []string, val float32) {
 //
 // Parameters:
 //   - name ([]string): Metric path.
-//   - val (float32): Amount.
+//   - val (float32): Increment amount.
 //   - labels ([]armonmetrics.Label): Labels.
 func IncrCounterWithLabels(name []string, val float32, labels []armonmetrics.Label) {
 	armonmetrics.IncrCounterWithLabels(name, val, labels)
 }
 
-// MeasureSince measures duration.
+// MeasureSince records a latency.
 //
-// Summary: Records latency.
+// Summary: Records latency since start.
 //
 // Parameters:
 //   - name ([]string): Metric path.
@@ -155,9 +155,9 @@ func MeasureSince(name []string, start time.Time) {
 	armonmetrics.MeasureSince(name, start)
 }
 
-// MeasureSinceWithLabels measures labeled duration.
+// MeasureSinceWithLabels records a labeled latency.
 //
-// Summary: Records labeled latency.
+// Summary: Records labeled latency since start.
 //
 // Parameters:
 //   - name ([]string): Metric path.
