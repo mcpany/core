@@ -113,7 +113,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				return err
 			}
 
-			if err := metrics.Initialize(); err != nil {
+			if err := mcpmetrics.Initialize(); err != nil {
 				logging.GetLogger().Error("Failed to initialize metrics", "error", err)
 				os.Exit(1)
 			}
@@ -185,7 +185,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			if metricsListenAddress := cfg.MetricsListenAddress(); metricsListenAddress != "" {
 				go func() {
 					log.Info("Starting metrics server", "address", metricsListenAddress)
-					if err := metrics.StartServer(metricsListenAddress); err != nil {
+					if err := mcpmetrics.StartServer(metricsListenAddress); err != nil {
 						log.Error("Metrics server failed", "error", err)
 					}
 				}()

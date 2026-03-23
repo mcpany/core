@@ -9,7 +9,7 @@ go_library(
         "grpc.go",
         "metrics.go",
     ],
-    importpath = "github.com/mcpany/core/server/pkg/mcpmetrics",
+    importpath = "github.com/mcpany/core/server/pkg/metrics",
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_armon_go_metrics//:go-metrics",

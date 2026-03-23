@@ -753,3 +753,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+
+### Update: 2026-06-18 - Strategic Infrastructure Alignment
+- **[P0] ALS Controller:** Implementation of Attention-Locked Sovereignty (ALS) for context window protection. (Target: Q3 2026)
+- **[P0] PBRB Firewall:** Development of Phase-Bound Reasoning Budget (PBRB) monitoring for token-spend governance. (Target: Q3 2026)
+- **[P1] MRHA Bridge:** Multi-modal reasoning alignment relay for cross-agent stylometric attestation.
