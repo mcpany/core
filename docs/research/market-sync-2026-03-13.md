@@ -15,6 +15,6 @@ Security researchers are identifying "Prompt Paths" (indirect prompt injection) 
 The industry is moving from "Solo AI" to "Agentic Swarms" -- coordinated multi-agent systems where specialized agents (Architect, Specialist, Critic) work together. This confirms our pivot towards **A2A Interop** and the need for **Stateful A2A Mesh** architectures to handle machine-speed communication without human latency.
 
 ## Autonomous Agent Pain Points
-- **Context Management Fatigue**: Developers are struggling with "token limits vs. context retention" trade-offs, making the OpenClaw ContextEngine highly attractive.
+- **Context Management Fatigue**: Developers are struggling with "token lim -- its vs. context retention" trade-offs, making the OpenClaw ContextEngine highly attractive.
 - **Indirect Injection Visibility**: There is currently no easy way to visualize or intercept "malicious instructions" embedded in legitimate data streams.
 - **Swarm Orchestration Complexity**: Managing state and handoffs between 10+ specialized agents remains a significant engineering hurdle.

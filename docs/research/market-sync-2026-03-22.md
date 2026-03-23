@@ -11,7 +11,7 @@
 *   **MCP Wildcards**: Simplified management for large-scale MCP server deployments.
 
 ### Claude Code Security Post-Mortem
-*   **Configuration-as-Execution Exploits**: The "silent hacking" vulnerabilities in Claude Code (RCE via Hooks) have confirmed that project-local configuration files are the primary attack vector for AI-native dev tools.
+*   **Configuration-as-Execution Explo -- its**: The "silent hacking" vulnerabilities in Claude Code (RCE via Hooks) have confirmed that project-local configuration files are the primary attack vector for AI-native dev tools.
 *   **Bubblewrap Sandboxing Failures**: Traditional Linux namespaces (Bubblewrap) are proving insufficient for "Agentic" workloads that require complex inter-process communication.
 
 ## Autonomous Agent Pain Points
@@ -25,7 +25,7 @@
 ## New Paradigms & Opportunities
 
 ### Agentic SLAs (Service Level Agreements)
-*   There is a growing demand for "Deterministic Reasoning" in swarms. Enterprises are looking for Agentic SLAs that guarantee resource limits, response times, and "Reasoning Provenance" for every task card.
+*   There is a growing demand for "Deterministic Reasoning" in swarms. Enterprises are looking for Agentic SLAs that guarantee resource lim -- its, response times, and "Reasoning Provenance" for every task card.
 
 ### Ghost Shell Profiling
 *   A new technique for handling un-attested hooks. Instead of blocking them, they are executed in a "Ghost Shell" -- a highly instrumented, network-isolated container that profiles the hook's behavior without exposing the host.

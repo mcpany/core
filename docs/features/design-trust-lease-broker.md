@@ -39,7 +39,7 @@ As agent swarms grow deeper and more autonomous, the "Attestation Tax" -- the la
 
 ## 5. Alternatives Considered
 * **Per-Call Hardware Attestation**: Rejected due to 100ms+ latency per call, which causes "Cognitive Stall" in deep swarms.
-* **Static API Keys**: Rejected as they lack intent-binding and cannot be automatically revoked upon environment drift.
+* **Static API Keys**: Rejected as they lack intent-binding and can -- not be automatically revoked upon environment drift.
 
 ## 6. Cross-Cutting Concerns
 * **Security (Zero Trust):** All LFTA tokens are cryptographically bound to the hardware state. If the RIM detects a symlink-race or config swap, all associated leases are instantly nukated.

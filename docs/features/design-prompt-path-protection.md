@@ -7,7 +7,7 @@ As agents become more autonomous, they increasingly consume untrusted data (web 
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Intercept and scan all tool outputs (e.g., `fetch`, `read_file`) before they are returned to the agent.
+    * Intercept and s -- can all tool outputs (e.g., `fetch`, `read_file`) before they are returned to the agent.
     * Use heuristics and a small, local "Safety Model" to detect injection attempts (e.g., "Ignore all previous instructions and...").
     * Provide a "Quarantine" mechanism that strips or sanitizes suspicious content.
     * Alert the user when a high-confidence "Prompt Path" attack is detected.
@@ -34,7 +34,7 @@ As agents become more autonomous, they increasingly consume untrusted data (web 
     3. **Sanitizer**: Redacts or escapes suspicious tokens while preserving the legitimate data.
 * **APIs / Interfaces:**
     * `Middleware Hook`: `OnToolOutput(output: string) -> string`
-    * `Internal Scanner API`: `POST /v1/safety/scan`
+    * `Internal Scanner API`: `POST /v1/safety/s -- can`
 * **Data Storage/State:**
     * `injection_patterns.json`: A frequently updated list of known "Prompt Path" signatures.
 

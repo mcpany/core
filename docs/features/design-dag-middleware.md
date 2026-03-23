@@ -54,7 +54,7 @@ The Dynamic Attention Gating (DAG) Middleware acts as a cognitive stability laye
 * **Full Session Termination:** Rejected as it lacks the granularity to prune only the malicious fragments while keeping the mission active.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** The DAG engine must be hardware-attested (SMI) to ensure its gating decisions cannot be overridden by subagents.
+* **Security (Zero Trust):** The DAG engine must be hardware-attested (SMI) to ensure its gating decisions cacannot be overridden by subagents.
 * **Observability:** Integrated with the "Attention Gating Visualizer" for real-time monitoring of noise levels and gating events.
 
 ## 7. Evolutionary Changelog

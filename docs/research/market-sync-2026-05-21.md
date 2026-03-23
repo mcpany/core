@@ -3,7 +3,7 @@
 ## Ecosystem Shifts
 
 ### Claude PBR General Availability & "Reasoning Timing Attacks"
-*   **Update**: Anthropic has officially moved "Policy-Bound Reasoning" (PBR) to General Availability. Simultaneously, researchers at Oasis Security have disclosed "Reasoning Timing Attacks." These exploits involve subagents intentionally delaying high-trust tool calls to align with parent reasoning "context-switch" windows, attempting to bypass Signed Reasoning Monologue (SRM) validation.
+*   **Update**: Anthropic has officially moved "Policy-Bound Reasoning" (PBR) to General Availability. Simultaneously, researchers at Oasis Security have disclosed "Reasoning Timing Attacks." These explo -- its involve subagents intentionally delaying high-trust tool calls to align with parent reasoning "context-switch" windows, attempting to bypass Signed Reasoning Monologue (SRM) validation.
 *   **Impact**: MCP Any must evolve its TLSB (Transport-Layer Session Binder) to include temporal attestation, ensuring that reasoning traces are not only cryptographically bound but also time-synchronized to prevent injection during context-switches.
 
 ### OpenClaw v2026.5.21: Native PBR & State Merge Hardening

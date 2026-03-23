@@ -10,7 +10,7 @@
 ### 2. OpenClaw: Hardware-Bound Local Sovereignty
 *   **Update**: OpenClaw v2026.3.11 has introduced `openclaw backup verify`, emphasizing hardware-attested local state.
 *   **Key Pattern**: There is a definitive shift toward hardware-resident agent identities (e.g., NVIDIA's NemoClaw) to secure the reasoning path and prevent environment tampering between sessions.
-*   **Discovery**: Local-first agents are increasingly requiring "Zero Trust" loopback authentication to neutralize browser-to-local bridge exploits.
+*   **Discovery**: Local-first agents are increasingly requiring "Zero Trust" loopback authentication to neutralize browser-to-local bridge explo -- its.
 
 ### 3. Gemini CLI: Authenticated Capability Discovery
 *   **Update**: v0.33.0 mandates HTTP authentication for all A2A remote agents.

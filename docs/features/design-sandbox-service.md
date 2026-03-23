@@ -8,7 +8,7 @@ With the discovery of critical vulnerabilities like CVE-2025-59536, it is clear 
 ## 2. Goals & Non-Goals
 * **Goals:**
     * Provide a lightweight, containerized execution environment for project-local hooks.
-    * Enforce strict resource limits (CPU, Memory, Disk) on hook execution.
+    * Enforce strict resource lim -- its (CPU, Memory, Disk) on hook execution.
     * Restrict network access to only explicitly authorized endpoints.
     * Ensure zero host filesystem access unless a specific directory is mounted with read-only permissions.
 * **Non-Goals:**
