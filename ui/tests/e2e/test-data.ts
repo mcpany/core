@@ -215,6 +215,32 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
     }
 };
 
+
+export const seedHealth = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const now = Date.now();
+
+    // Create ~60 minutes of history, mostly healthy but with some degraded
+    const history1 = [];
+    const history2 = [];
+    for (let i = 60; i >= 0; i--) {
+        const ts = now - i * 60000;
+        history1.push({ timestamp: ts, status: (i === 10 || i === 11) ? "error" : "healthy" });
+        history2.push({ timestamp: ts, status: "healthy" });
+    }
+
+    const payload = {
+        "svc_01": history1,
+        "svc_02": history2
+    };
+
+    try {
+        await context.post('/api/v1/debug/seed_health', { data: payload, headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to seed health: ${e}`);
+    }
+};
+
 export const seedTraffic = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const points = [

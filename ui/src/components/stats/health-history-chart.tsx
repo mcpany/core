@@ -5,7 +5,7 @@
 
 
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiClient } from "@/lib/client";
@@ -23,67 +23,104 @@ interface HealthPoint {
  */
 export function HealthHistoryChart() {
     const [data, setData] = useState<HealthPoint[]>([]);
-    const [loading, setLoading] = useState(true);
+
 
     useEffect(() => {
+
         const fetchData = async () => {
             try {
-                // In a real app, this would be a dedicated history endpoint.
-                // For this implementation, we simulate 24 hours of data based on
-                // the current status and some randomized historical noise.
-                const [status, traffic] = await Promise.all([
-                    apiClient.getDoctorStatus(),
-                    apiClient.getDashboardTraffic()
-                ]);
+                // Fetch real health data from the dashboard/health endpoint
+                const healthData = await apiClient.getDashboardHealth();
 
                 const points: HealthPoint[] = [];
+                const historyMap = healthData.history || {};
 
-                // Use traffic history to infer historical health
-                // If we have errors in a given interval (minute), we can mark it as degraded or error.
-                // Traffic history is minute-by-minute (last 60 mins)
-                // We want to show 24 hours?
-                // The backend now returns last 60 minutes of data.
-                // The UI expects 24 hours?
-                // "Displays server uptime history over the last 24 hours." description says so.
-                // But our backend now only returns 60 minutes.
-                // Let's adjust the chart to show available history (60 mins) or whatever backend returns.
-                // If backend returns 60 points, we show 60 points.
+                // Collect all points to find min and max time
+                let minTime = Infinity;
+                let maxTime = -Infinity;
+                const allPoints: { timestamp: number, status: string }[] = [];
 
-                if (traffic && traffic.length > 0) {
-                     for (const t of traffic) {
-                        let pointStatus: HealthPoint["status"] = "ok";
-                        let uptime = 100;
-
-                        // Simple heuristic: if errors > 0, degraded. If errors > 50% of requests, error.
-                        const reqs = t.requests || t.total || 0;
-                        const errs = t.errors || 0;
-
-                        if (errs > 0) {
-                            if (reqs > 0 && (errs / reqs) > 0.1) { // >10% error rate
-                                pointStatus = "degraded";
-                                uptime = 80;
+                Object.values(historyMap).forEach((serviceHistory) => {
+                    if (Array.isArray(serviceHistory)) {
+                        serviceHistory.forEach((point) => {
+                            if (point && point.timestamp) {
+                                minTime = Math.min(minTime, point.timestamp);
+                                maxTime = Math.max(maxTime, point.timestamp);
+                                allPoints.push(point);
                             }
-                             if (reqs > 0 && (errs / reqs) > 0.5) { // >50% error rate
-                                pointStatus = "error";
-                                uptime = 0;
+                        });
+                    }
+                });
+
+                if (allPoints.length === 0) {
+                    setData([]);
+                    return;
+                }
+
+                // Bucket the timestamps into chunks (e.g. 60 buckets)
+                const buckets = 60;
+                let timeSpan = maxTime - minTime;
+
+                // If the timespan is too small (e.g. 0), use a default 1-minute bucket length
+                if (timeSpan <= 0) {
+                    timeSpan = 60000;
+                    maxTime = minTime + timeSpan;
+                }
+                const bucketSize = timeSpan / buckets;
+
+                const bucketData: Record<number, { up: number, total: number }> = {};
+                for (let i = 0; i < buckets; i++) {
+                    bucketData[i] = { up: 0, total: 0 };
+                }
+
+                Object.values(historyMap).forEach((serviceHistory) => {
+                    if (Array.isArray(serviceHistory)) {
+                        serviceHistory.forEach((point) => {
+                            if (point && point.timestamp) {
+                                let bIndex = Math.floor((point.timestamp - minTime) / bucketSize);
+                                bIndex = Math.min(Math.max(bIndex, 0), buckets - 1); // clamp to avoid out-of-bounds
+                                bucketData[bIndex].total += 1;
+                                // Assume healthy if status is "healthy", "up", "ok", etc.
+                                if (["healthy", "up", "ok", "serving"].includes(point.status.toLowerCase())) {
+                                    bucketData[bIndex].up += 1;
+                                }
                             }
-                        }
+                        });
+                    }
+                });
+
+                // Convert buckets back to array
+                for (let i = 0; i < buckets; i++) {
+                    const bucket = bucketData[i];
+                    // Create a time label for the bucket
+                    const time = new Date(minTime + i * bucketSize).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    if (bucket && bucket.total > 0) {
+                        const uptimeRatio = bucket.up / bucket.total;
+                        let status: HealthPoint["status"] = "ok";
+                        if (uptimeRatio < 0.5) status = "error";
+                        else if (uptimeRatio < 1.0) status = "degraded";
 
                         points.push({
-                            time: t.time,
-                            status: pointStatus,
-                            uptime: uptime
+                            time,
+                            status,
+                            uptime: Math.round(uptimeRatio * 100)
                         });
-                     }
-                } else {
-                     // Fallback to showing just current status if no history
-                     // Or just empty
+                    } else {
+                        // If no data in bucket, fill with previous state or 100% ok
+                        points.push({
+                            time,
+                            status: "ok",
+                            uptime: 100
+                        });
+                    }
                 }
+
                 setData(points);
             } catch (error) {
                 console.error("Failed to fetch health history", error);
             } finally {
-                setLoading(false);
+
             }
         };
 

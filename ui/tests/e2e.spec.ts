@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 import path from 'path';
-import { seedGlobalState, seedTraffic, seedWebhooks } from './e2e/test-data';
+import { seedGlobalState, seedTraffic, seedWebhooks, seedHealth } from './e2e/test-data';
 
 const DATE = new Date().toISOString().split('T')[0];
 // Use test-results directory which is writable in CI
@@ -20,6 +20,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     // Seed auxiliary data
     await seedTraffic(request);
     await seedWebhooks(request);
+    await seedHealth(request);
 
     // Login before each test
     await page.goto('/login');
@@ -132,3 +133,19 @@ test.describe('MCP Any UI E2E Tests', () => {
   });
 
 });
+
+  test('Verify dashboard health history chart', async ({ page }) => {
+    await page.goto('/');
+
+    // Ensure System Health widget is visible
+    const systemHealthCard = page.getByText('System Uptime').first();
+    if (!(await systemHealthCard.isVisible())) {
+      await page.getByTestId('add-widget-trigger').first().click();
+      await page.getByText('Metrics Overview').first().click();
+      await expect(systemHealthCard).toBeVisible({ timeout: 30000 });
+    }
+
+    await page.waitForTimeout(2000); // Wait for chart animation
+    await page.screenshot({ path: '/home/jules/verification/verification.png', fullPage: true });
+    await page.waitForTimeout(1000); // Leave a second in video
+  });
