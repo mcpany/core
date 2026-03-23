@@ -14,18 +14,6 @@ import (
 // This allows requests from upstream (like sampling) to be routed to the correct downstream client.
 //
 // Summary: Represents a SessionRegistry.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type SessionRegistry struct {
 	mu       sync.RWMutex
 	sessions map[mcp.Session]tool.Session

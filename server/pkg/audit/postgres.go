@@ -17,18 +17,6 @@ import (
 // PostgresAuditStore writes audit logs to a PostgreSQL database.
 //
 // Summary: Stores audit log entries in a PostgreSQL database with tamper-evident hashing.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type PostgresAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -212,12 +200,6 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 // Returns:
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
@@ -236,9 +218,6 @@ func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) 
 //
 // Side Effects:
 //   - Reads all rows from the audit_logs table.
-//
-// Parameters:
-//   - None.
 func (s *PostgresAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -311,12 +290,6 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 //
 // Side Effects:
 //   - Closes the DB connection.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
 func (s *PostgresAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

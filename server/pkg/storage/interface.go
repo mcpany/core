@@ -14,18 +14,6 @@ import (
 // Storage defines the interface for persisting configuration.
 //
 // Summary: Interface for backend storage operations.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Storage interface {
 	// Load retrieves the full server configuration.
 	//

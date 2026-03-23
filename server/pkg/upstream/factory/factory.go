@@ -27,18 +27,6 @@ import (
 // instances.
 //
 // Summary: Interface for creating upstream services.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Factory interface {
 	// NewUpstream creates a new upstream service instance based on the provided
 	// configuration.
@@ -59,18 +47,6 @@ type Factory interface {
 // configuration.
 //
 // Summary: Concrete factory for creating upstream services.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type UpstreamServiceFactory struct {
 	poolManager    *pool.Manager
 	globalSettings *configv1.GlobalSettings
@@ -87,12 +63,6 @@ type UpstreamServiceFactory struct {
 //
 // Returns:
 //   - Factory: A new Factory instance.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *configv1.GlobalSettings) Factory {
 	return &UpstreamServiceFactory{
 		poolManager:    poolManager,
@@ -111,12 +81,6 @@ func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *config
 // Returns:
 //   - upstream.Upstream: A new upstream service instance.
 //   - error: An error if the service type is unknown.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
 	if config == nil {
 		return nil, fmt.Errorf("upstream service config cannot be nil")

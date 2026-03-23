@@ -12,35 +12,11 @@ import (
 // Deprecated: Use BuiltinServiceTemplates instead.
 //
 // Summary: Represents a BuiltinTemplates.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 var BuiltinTemplates []*configv1.UpstreamServiceConfig
 
 // BuiltinServiceTemplates contains the rich seed configurations for the UI wizard.
 //
 // Summary: Represents a BuiltinServiceTemplates.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 var BuiltinServiceTemplates []*configv1.ServiceTemplate
 
 func init() {

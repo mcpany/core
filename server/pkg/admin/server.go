@@ -30,18 +30,6 @@ import (
 // Server implements the AdminServiceServer interface.
 //
 // Summary: Represents a Server.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Server struct {
 	pb.UnimplementedAdminServiceServer
 	cache            *middleware.CachingMiddleware

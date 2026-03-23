@@ -14,18 +14,6 @@ import (
 // ResilienceMiddleware provides circuit breaker and retry functionality for tool executions.
 //
 // Summary: Middleware that wraps tool executions with circuit breakers, retries, and timeouts.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ResilienceMiddleware struct {
 	toolManager tool.ManagerInterface
 	managers    sync.Map // map[string]*resilience.Manager (serviceID -> Manager)
@@ -40,12 +28,6 @@ type ResilienceMiddleware struct {
 //
 // Returns:
 //   - *ResilienceMiddleware: The initialized middleware.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddleware {
 	return &ResilienceMiddleware{
 		toolManager: toolManager,
@@ -69,9 +51,6 @@ func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddl
 //   - Checks circuit breaker state.
 //   - May retry the execution on failure.
 //   - Records success/failure to update circuit breaker stats.
-//
-// Errors:
-//   - None.
 func (m *ResilienceMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

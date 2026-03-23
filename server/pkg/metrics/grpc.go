@@ -21,18 +21,6 @@ var (
 // It can optionally wrap another stats.Handler (e.g., OpenTelemetry).
 //
 // Summary: Represents a GrpcStatsHandler.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type GrpcStatsHandler struct {
 	Wrapped stats.Handler
 }

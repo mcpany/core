@@ -33,18 +33,6 @@ import (
 // service configuration.
 //
 // Summary: Represents a Upstream.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Upstream struct {
 	mu      sync.Mutex
 	checker health.Checker

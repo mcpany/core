@@ -43,18 +43,6 @@ var (
 //   - Path (string): The path to the file or directory within the repository.
 //   - Ref (string): The branch, tag, or commit hash.
 //   - URLType (string): The type of URL (tree or blob).
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type GitHub struct {
 	Owner         string
 	Repo          string
@@ -169,18 +157,6 @@ func (g *GitHub) ToRawContentURL() string {
 //   - Type (string): The type of content (e.g., "file", "dir").
 //   - HTMLURL (string): The URL to view the content on GitHub.
 //   - DownloadURL (string): The URL to download the content (only for files).
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Content struct {
 	Name        string `json:"name"`
 	Type        string `json:"type"`

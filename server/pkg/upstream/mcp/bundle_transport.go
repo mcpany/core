@@ -59,18 +59,6 @@ func (e *transportError) Error() string {
 // running inside a Docker container from a bundle. It supports mounts and environment variables.
 //
 // Summary: Represents a BundleDockerTransport.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type BundleDockerTransport struct {
 	Image      string
 	Command    string

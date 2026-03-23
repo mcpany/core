@@ -19,18 +19,6 @@ import (
 // Store implements config.Store using PostgreSQL.
 //
 // Summary: PostgreSQL storage implementation.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Store struct {
 	db *DB
 }
@@ -46,9 +34,6 @@ type Store struct {
 //   - *Store: A pointer to a new Store.
 //
 // Side Effects:
-//   - None.
-//
-// Errors:
 //   - None.
 func NewStore(db *DB) *Store {
 	return &Store{db: db}
@@ -66,9 +51,6 @@ func NewStore(db *DB) *Store {
 //
 // Side Effects:
 //   - Closes the connection to PostgreSQL.
-//
-// Parameters:
-//   - None.
 func (s *Store) Close() error {
 	return s.db.Close()
 }
@@ -83,12 +65,6 @@ func (s *Store) Close() error {
 //   - bool: True always for DB store.
 //
 // Side Effects:
-//   - None.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
 //   - None.
 func (s *Store) HasConfigSources() bool {
 	return true
@@ -369,9 +345,6 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 // Errors:
 //   - Returns nil, nil if service is not found.
 //   - Returns an error if database query fails.
-//
-// Side Effects:
-//   - None.
 func (s *Store) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
 	query := "SELECT config_json FROM upstream_services WHERE name = $1"
 	row := s.db.QueryRowContext(ctx, query, name)
@@ -404,9 +377,6 @@ func (s *Store) GetService(ctx context.Context, name string) (*configv1.Upstream
 //
 // Errors:
 //   - Returns an error if database query fails.
-//
-// Side Effects:
-//   - None.
 func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	query := "SELECT config_json FROM upstream_services"
 	rows, err := s.db.QueryContext(ctx, query)
@@ -474,9 +444,6 @@ func (s *Store) DeleteService(ctx context.Context, name string) error {
 // Errors:
 //   - Returns nil, nil if settings are not found.
 //   - Returns an error if database query fails.
-//
-// Side Effects:
-//   - None.
 func (s *Store) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings, error) {
 	query := "SELECT config_json FROM global_settings WHERE id = 1"
 	row := s.db.QueryRowContext(ctx, query)
@@ -588,9 +555,6 @@ func (s *Store) CreateUser(ctx context.Context, user *configv1.User) error {
 // Errors:
 //   - Returns nil, nil if user is not found.
 //   - Returns an error if database query fails.
-//
-// Side Effects:
-//   - None.
 func (s *Store) GetUser(ctx context.Context, id string) (*configv1.User, error) {
 	query := "SELECT config_json FROM users WHERE id = $1"
 	row := s.db.QueryRowContext(ctx, query, id)
@@ -623,9 +587,6 @@ func (s *Store) GetUser(ctx context.Context, id string) (*configv1.User, error) 
 //
 // Errors:
 //   - Returns an error if database query fails.
-//
-// Side Effects:
-//   - None.
 func (s *Store) ListUsers(ctx context.Context) ([]*configv1.User, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM users")
 	if err != nil {
@@ -742,9 +703,6 @@ func (s *Store) DeleteUser(ctx context.Context, id string) error {
 //
 // Errors:
 //   - Returns an error if database query fails.
-//
-// Side Effects:
-//   - None.
 func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM secrets")
 	if err != nil {
@@ -786,9 +744,6 @@ func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
 // Errors:
 //   - Returns nil, nil if secret is not found.
 //   - Returns an error if database query fails.
-//
-// Side Effects:
-//   - None.
 func (s *Store) GetSecret(ctx context.Context, id string) (*configv1.Secret, error) {
 	query := "SELECT config_json FROM secrets WHERE id = $1"
 	row := s.db.QueryRowContext(ctx, query, id)
@@ -923,9 +878,6 @@ func (s *Store) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
 //
 // Errors:
 //   - Returns an error if storage read fails.
-//
-// Side Effects:
-//   - None.
 func (s *Store) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEntry, error) {
 	query := `
     SELECT id, timestamp, level, source, message, metadata_json
@@ -987,9 +939,6 @@ func (s *Store) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEnt
 //
 // Errors:
 //   - Returns an error if database query fails.
-//
-// Side Effects:
-//   - None.
 func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM profile_definitions")
 	if err != nil {
@@ -1031,9 +980,6 @@ func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition
 // Errors:
 //   - Returns nil, nil if profile is not found.
 //   - Returns an error if database query fails.
-//
-// Side Effects:
-//   - None.
 func (s *Store) GetProfile(ctx context.Context, name string) (*configv1.ProfileDefinition, error) {
 	query := "SELECT config_json FROM profile_definitions WHERE name = $1"
 	row := s.db.QueryRowContext(ctx, query, name)
@@ -1135,9 +1081,6 @@ func (s *Store) DeleteProfile(ctx context.Context, name string) error {
 //
 // Errors:
 //   - Returns an error if database query fails.
-//
-// Side Effects:
-//   - None.
 func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collection, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
 	if err != nil {
@@ -1179,9 +1122,6 @@ func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collect
 // Errors:
 //   - Returns nil, nil if collection is not found.
 //   - Returns an error if database query fails.
-//
-// Side Effects:
-//   - None.
 func (s *Store) GetServiceCollection(ctx context.Context, name string) (*configv1.Collection, error) {
 	query := "SELECT config_json FROM service_collections WHERE name = $1"
 	row := s.db.QueryRowContext(ctx, query, name)
@@ -1328,9 +1268,6 @@ func (s *Store) SaveToken(ctx context.Context, token *configv1.UserToken) error 
 // Errors:
 //   - Returns nil, nil if token is not found.
 //   - Returns an error if database query fails.
-//
-// Side Effects:
-//   - None.
 func (s *Store) GetToken(ctx context.Context, userID, serviceID string) (*configv1.UserToken, error) {
 	query := "SELECT config_json FROM user_tokens WHERE user_id = $1 AND service_id = $2"
 	row := s.db.QueryRowContext(ctx, query, userID, serviceID)
@@ -1390,9 +1327,6 @@ func (s *Store) DeleteToken(ctx context.Context, userID, serviceID string) error
 //
 // Errors:
 //   - Returns an error if database query fails.
-//
-// Side Effects:
-//   - None.
 func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM credentials")
 	if err != nil {
@@ -1434,9 +1368,6 @@ func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, er
 // Errors:
 //   - Returns nil, nil if credential is not found.
 //   - Returns an error if database query fails.
-//
-// Side Effects:
-//   - None.
 func (s *Store) GetCredential(ctx context.Context, id string) (*configv1.Credential, error) {
 	query := "SELECT config_json FROM credentials WHERE id = $1"
 	row := s.db.QueryRowContext(ctx, query, id)

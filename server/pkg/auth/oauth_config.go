@@ -8,18 +8,6 @@ package auth
 // JWTs against an OIDC provider.
 //
 // Summary: Represents a OAuth2Config.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type OAuth2Config struct {
 	// IssuerURL is the URL of the OIDC provider's issuer. This is used to
 	// fetch the provider's public keys for token validation.

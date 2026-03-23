@@ -17,18 +17,6 @@ import (
 // Tokens) presented in the HTTP Authorization header.
 //
 // Summary: Represents a OAuth2Authenticator.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type OAuth2Authenticator struct {
 	verifier  *oidc.IDTokenVerifier
 	audiences []string

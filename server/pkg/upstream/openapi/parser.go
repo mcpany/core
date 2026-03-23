@@ -26,18 +26,6 @@ const (
 // specification, such as metadata, server details, and the defined paths.
 //
 // Summary: Represents a ParsedOpenAPIData.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ParsedOpenAPIData struct {
 	Info    openapi3.Info
 	Servers openapi3.Servers
@@ -48,18 +36,6 @@ type ParsedOpenAPIData struct {
 // reference to its corresponding openapi3.PathItem.
 //
 // Summary: Represents a PathItem.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type PathItem struct {
 	PathRef *openapi3.PathItem
 }
@@ -69,18 +45,6 @@ type PathItem struct {
 // endpoint into an executable tool.
 //
 // Summary: Represents a McpOperation.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type McpOperation struct {
 	OperationID string
 	Summary     string

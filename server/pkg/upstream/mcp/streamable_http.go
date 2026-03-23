@@ -45,18 +45,6 @@ var (
 // to be injected.
 //
 // Summary: Represents a ClientSession.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ClientSession interface {
 	// ListTools lists the tools available in the session.
 	//
@@ -212,18 +200,6 @@ func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transp
 // effectively acting as a proxy or aggregator.
 //
 // Summary: Represents a Upstream.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Upstream struct {
 	sessionRegistry *SessionRegistry
 	// BundleBaseDir is the directory where bundles are extracted.
@@ -1590,18 +1566,6 @@ func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 // StreamableHTTP implements the mcp.Transport interface for HTTP connections.
 //
 // Summary: Represents a StreamableHTTP.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type StreamableHTTP struct {
 	// Address is the HTTP address of the MCP service.
 	Address string

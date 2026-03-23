@@ -21,18 +21,6 @@ import (
 //
 // Fields:
 //   - Reader (*bufio.Reader): The reader to use for user input.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Generator struct {
 	Reader *bufio.Reader
 }
@@ -183,18 +171,6 @@ const httpServiceTemplate = `upstreamServices:
 //   - Description (string): A human-readable description of the service operation.
 //   - Method (string): The HTTP method to use (e.g., "GET", "POST").
 //   - EndpointPath (string): The path of the endpoint (e.g., "/api/v1/users").
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type HTTPServiceData struct {
 	Name         string
 	Address      string
@@ -269,18 +245,6 @@ const grpcServiceTemplate = `upstreamServices:
 //   - Name (string): The name of the service.
 //   - Address (string): The address of the gRPC service (host:port).
 //   - ReflectionEnabled (bool): Indicates whether gRPC reflection should be enabled.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type GRPCServiceData struct {
 	Name              string
 	Address           string
@@ -334,18 +298,6 @@ const openapiServiceTemplate = `upstreamServices:
 // Fields:
 //   - Name (string): The name of the service.
 //   - SpecPath (string): The path or URL to the OpenAPI specification file.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type OpenAPIServiceData struct {
 	Name     string
 	SpecPath string
@@ -397,18 +349,6 @@ const graphqlServiceTemplate = `upstreamServices:
 //   - Address (string): The URL of the GraphQL endpoint.
 //   - CallName (string): The name of the GraphQL query or mutation to expose.
 //   - SelectionSet (string): The GraphQL selection set for the operation.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type GraphQLServiceData struct {
 	Name         string
 	Address      string

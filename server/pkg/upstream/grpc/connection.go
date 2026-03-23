@@ -19,18 +19,6 @@ import (
 // scenarios.
 //
 // Summary: Represents a ConnectionFactory.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ConnectionFactory struct {
 	dialer func(context.Context, string) (net.Conn, error)
 }

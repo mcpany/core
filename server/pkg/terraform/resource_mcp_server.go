@@ -8,18 +8,6 @@ package terraform
 // This would map to hashicorp/terraform-plugin-sdk in a real provider.
 //
 // Summary: Represents a ResourceMCPServer.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ResourceMCPServer struct {
 	Name    string
 	Port    int

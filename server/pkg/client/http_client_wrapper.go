@@ -18,18 +18,6 @@ import (
 // and reuse them where appropriate.
 //
 // Summary: Represents a HTTPClientWrapper.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type HTTPClientWrapper struct {
 	*http.Client
 	config *configv1.UpstreamServiceConfig

@@ -16,18 +16,6 @@ import (
 // OllamaEmbeddingProvider implements EmbeddingProvider for Ollama.
 //
 // Summary: Provides an interface to generate text embeddings using the Ollama API.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type OllamaEmbeddingProvider struct {
 	baseURL string
 	model   string
@@ -47,9 +35,6 @@ type OllamaEmbeddingProvider struct {
 //
 // Side Effects:
 //   - Sets default values for baseURL and model if not provided.
-//
-// Errors:
-//   - None.
 func NewOllamaEmbeddingProvider(baseURL, model string) *OllamaEmbeddingProvider {
 	if baseURL == "" {
 		baseURL = "http://localhost:11434"

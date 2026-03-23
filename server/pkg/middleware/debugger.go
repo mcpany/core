@@ -19,18 +19,6 @@ import (
 // DebugEntry represents a captured HTTP request/response.
 //
 // Summary: Data structure holding details of a captured HTTP transaction.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type DebugEntry struct {
 	ID              string        `json:"id"`
 	TraceID         string        `json:"trace_id"`
@@ -50,18 +38,6 @@ type DebugEntry struct {
 // Debugger monitors and records traffic for inspection.
 //
 // Summary: Middleware that captures recent HTTP traffic for debugging purposes.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Debugger struct {
 	ring        *ring.Ring
 	mu          sync.RWMutex
@@ -83,9 +59,6 @@ type Debugger struct {
 //
 // Side Effects:
 //   - Starts a background goroutine to process debug entries.
-//
-// Errors:
-//   - None.
 func NewDebugger(size int) *Debugger {
 	d := &Debugger{
 		ring:        ring.New(size),
@@ -164,9 +137,6 @@ type bodyLogWriter struct {
 // Side Effects:
 //   - Writes to the underlying http.ResponseWriter.
 //   - Writes to the internal buffer for logging, truncating if necessary.
-//
-// Errors:
-//   - None.
 func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	if !w.wroteHeader {
 		w.WriteHeader(http.StatusOK)
@@ -197,12 +167,6 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 // Side Effects:
 //   - Sets the status code on the writer.
 //   - Writes the header to the underlying http.ResponseWriter.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
 func (w *bodyLogWriter) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return
@@ -233,9 +197,6 @@ type readCloserWrapper struct {
 //   - Generates trace and span IDs if missing.
 //   - Captures request and response bodies (truncated).
 //   - Sends debug entries to the ingress channel.
-//
-// Errors:
-//   - None.
 func (d *Debugger) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -364,12 +325,6 @@ func isTextContent(contentType string) bool {
 //
 // Side Effects:
 //   - Acquires a read lock on the ring buffer.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
 func (d *Debugger) Entries() []DebugEntry {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -392,12 +347,6 @@ func (d *Debugger) Entries() []DebugEntry {
 //
 // Side Effects:
 //   - Encodes the entries to JSON and writes to the response.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
 func (d *Debugger) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

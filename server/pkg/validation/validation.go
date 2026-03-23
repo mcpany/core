@@ -26,12 +26,6 @@ import (
 //
 // Returns:
 //   - error: An error if validation fails.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func IsValidBindAddress(s string) error {
 	_, port, err := net.SplitHostPort(s)
 	if err != nil {
@@ -80,12 +74,6 @@ func IsValidBindAddress(s string) error {
 //   - error: An error if the path is insecure.
 //
 // IsSecurePath is a variable to allow mocking in tests.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 var IsSecurePath = func(path string) error {
 	// ⚡ BOLT: Fast path to avoid expensive string splitting for safe paths.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -113,18 +101,6 @@ var IsSecurePath = func(path string) error {
 // path traversal sequences. It strictly disallows absolute paths and drive letters.
 //
 // Summary: Checks if a path is secure and relative.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 var IsSecureRelativePath = func(path string) error {
 	// 1. Basic security check (no ..)
 	if err := IsSecurePath(path); err != nil {
@@ -168,15 +144,6 @@ var (
 //
 // Parameters:
 //   - paths: []string. The list of allowed paths.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func SetAllowedPaths(paths []string) {
 	allowedPaths = paths
 }
@@ -190,18 +157,6 @@ func SetAllowedPaths(paths []string) {
 // - Private keys (id_rsa, id_dsa, *.pem, *.key)
 //
 // Summary: Checks for sensitive file patterns.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 var IsSensitivePath = func(path string) error {
 	base := filepath.Base(path)
 	baseLower := strings.ToLower(base)
@@ -249,18 +204,6 @@ var IsSensitivePath = func(path string) error {
 // It is a variable to allow mocking in tests.
 //
 // Summary: Checks if a path is within allowed directories.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 var IsAllowedPath = func(path string) error {
 	// 1. Basic security check (no .. in the path string itself)
 	if err := IsSecurePath(path); err != nil {
@@ -386,12 +329,6 @@ var allowedOpaqueSchemes = map[string]bool{
 //
 // Returns:
 //   - bool: True if valid.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func IsValidURL(s string) bool {
 	if len(s) > 2048 || strings.TrimSpace(s) != s {
 		return false
@@ -447,12 +384,6 @@ func IsValidURL(s string) bool {
 //
 // Returns:
 //   - error: An error if validation fails.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 	if def == nil {
 		return fmt.Errorf("http call definition cannot be nil")
@@ -479,18 +410,6 @@ func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 // FileExists checks if a file exists at the given path.
 //
 // Summary: Checks file existence.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 var FileExists = func(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return err

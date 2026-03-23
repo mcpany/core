@@ -117,12 +117,6 @@ func init() {
 //
 // Returns:
 //   - []byte: The redacted JSON output.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func RedactJSON(input []byte) []byte {
 	// Check if input looks like JSON object or array.
 	// We skip whitespace and comments to find the first significant character.
@@ -154,12 +148,6 @@ func RedactJSON(input []byte) []byte {
 //
 // Returns:
 //   - map[string]interface{}: The potentially redacted map.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func RedactMap(m map[string]interface{}) map[string]interface{} {
 	redacted, changed := redactMapMaybe(m)
 	if changed {
@@ -275,12 +263,6 @@ var sensitiveKeys = []string{
 //
 // Returns:
 //   - bool: True if the key is considered sensitive, false otherwise.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func IsSensitiveKey(key string) bool {
 	// Use the optimized byte-based scanner for keys as well.
 	// Avoid allocation using zero-copy conversion.
@@ -518,12 +500,6 @@ var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
 //
 // Returns:
 //   - string: The redacted DSN string.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func RedactDSN(dsn string) string {
 	u, err := url.Parse(dsn)
 	if err == nil && u.User != nil {
@@ -630,18 +606,6 @@ func RedactDSN(dsn string) string {
 // It is optimized to pre-process the list of secrets once and reuse the configuration.
 //
 // Summary: Optimized text redactor for known secrets.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type SecretRedactor struct {
 	replacer *strings.Replacer
 }
@@ -656,12 +620,6 @@ type SecretRedactor struct {
 //
 // Returns:
 //   - *SecretRedactor: The configured redactor.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewSecretRedactor(secrets []string) *SecretRedactor {
 	// ⚡ BOLT: Optimization - Pre-compile the replacer for reuse.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -706,12 +664,6 @@ func NewSecretRedactor(secrets []string) *SecretRedactor {
 //
 // Returns:
 //   - string: The redacted text.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (r *SecretRedactor) Redact(text string) string {
 	if text == "" || r.replacer == nil {
 		return text
@@ -729,12 +681,6 @@ func (r *SecretRedactor) Redact(text string) string {
 //
 // Returns:
 //   - string: The redacted text.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func RedactSecrets(text string, secrets []string) string {
 	// Use the new struct-based implementation for consistency.
 	return NewSecretRedactor(secrets).Redact(text)

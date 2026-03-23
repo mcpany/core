@@ -18,18 +18,6 @@ import (
 // requiring a real browser installation.
 //
 // Summary: Represents a PageFetcher.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type PageFetcher interface {
 	// FetchText retrieves the text content of a URL.
 	//
@@ -54,18 +42,6 @@ type PageFetcher interface {
 // Provider implements a basic browser automation tool.
 //
 // Summary: Tool provider for browsing web pages.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Provider struct {
 	fetcher PageFetcher // nil → default playwrightFetcher
 }
@@ -76,15 +52,6 @@ type Provider struct {
 //
 // Returns:
 //   - *Provider: The initialized provider.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewProvider() *Provider {
 	return &Provider{}
 }
@@ -104,9 +71,6 @@ func NewProvider() *Provider {
 // Errors:
 //   - Returns "url is required" if url is empty.
 //   - Returns "failed to start playwright" or "failed to launch browser" if the browser fails to start.
-//
-// Side Effects:
-//   - None.
 func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 	if url == "" {
 		return "", fmt.Errorf("url is required")
@@ -128,15 +92,6 @@ func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 //
 // Returns:
 //   - map[string]interface{}: The JSON schema definition of the tool.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (b *Provider) ToolDefinition() map[string]interface{} {
 	return map[string]interface{}{
 		"name":        "browse_page",

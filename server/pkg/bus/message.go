@@ -15,18 +15,6 @@ import (
 // requests and their corresponding responses.
 //
 // Summary: Represents a Message.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Message interface {
 	// CorrelationID returns the unique identifier used to correlate messages.
 	//
@@ -43,18 +31,6 @@ type Message interface {
 // structs to provide a common mechanism for message tracking.
 //
 // Summary: Represents a BaseMessage.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type BaseMessage struct {
 	CID string `json:"cid"`
 }
@@ -126,18 +102,6 @@ func (m *BaseMessage) SetCorrelationID(id string) {
 // configuration and the context for the request.
 //
 // Summary: Represents a ServiceRegistrationRequest.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ServiceRegistrationRequest struct {
 	BaseMessage
 	Context context.Context
@@ -150,18 +114,6 @@ type ServiceRegistrationRequest struct {
 // discovered, or an error if the registration failed.
 //
 // Summary: Represents a ServiceRegistrationResult.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ServiceRegistrationResult struct {
 	BaseMessage
 	ServiceKey          string
@@ -175,18 +127,6 @@ type ServiceRegistrationResult struct {
 // its inputs in raw JSON format.
 //
 // Summary: Represents a ToolExecutionRequest.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ToolExecutionRequest struct {
 	BaseMessage
 	Context    context.Context
@@ -199,18 +139,6 @@ type ToolExecutionRequest struct {
 // JSON format, or an error if the execution failed.
 //
 // Summary: Represents a ToolExecutionResult.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ToolExecutionResult struct {
 	BaseMessage
 	Result json.RawMessage
@@ -221,18 +149,6 @@ type ToolExecutionResult struct {
 // registered services.
 //
 // Summary: Represents a ServiceListRequest.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ServiceListRequest struct {
 	BaseMessage
 }
@@ -241,18 +157,6 @@ type ServiceListRequest struct {
 // ServiceListRequest. It contains a list of all registered services.
 //
 // Summary: Represents a ServiceListResult.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ServiceListResult struct {
 	BaseMessage
 	Services []*configv1.UpstreamServiceConfig
@@ -262,18 +166,6 @@ type ServiceListResult struct {
 // ServiceGetRequest is a message sent to the bus to request a specific service.
 //
 // Summary: Represents a ServiceGetRequest.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ServiceGetRequest struct {
 	BaseMessage
 	ServiceName string
@@ -282,18 +174,6 @@ type ServiceGetRequest struct {
 // ServiceGetResult is a message published in response to a ServiceGetRequest.
 //
 // Summary: Represents a ServiceGetResult.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ServiceGetResult struct {
 	BaseMessage
 	Service *configv1.UpstreamServiceConfig

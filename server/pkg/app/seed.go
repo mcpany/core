@@ -22,18 +22,6 @@ import (
 // We use json.RawMessage to manually unmarshal using protojson, ensuring correct Protobuf handling.
 //
 // Summary: Represents a SeedRequest.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type SeedRequest struct {
 	ServicesRaw    []json.RawMessage `json:"upstream_services"`
 	CredentialsRaw []json.RawMessage `json:"credentials"`

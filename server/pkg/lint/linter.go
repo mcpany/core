@@ -19,18 +19,6 @@ import (
 // It is used to categorize findings based on their impact and urgency.
 //
 // Summary: Represents a Severity.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Severity int
 
 const (
@@ -83,18 +71,6 @@ func (s Severity) String() string {
 // It encapsulates all details about a detected issue, including its severity, location, and description.
 //
 // Summary: Represents a Result.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -143,18 +119,6 @@ func (r Result) String() string {
 // It holds the configuration to be analyzed and provides methods to execute various checks.
 //
 // Summary: Represents a Linter.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }

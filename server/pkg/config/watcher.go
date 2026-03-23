@@ -25,18 +25,6 @@ import (
 //   - done (chan bool): Channel to signal shutdown.
 //   - mu (sync.Mutex): Mutex to protect concurrent access.
 //   - timer (*time.Timer): Timer for debouncing reload events.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Watcher struct {
 	watcher *fsnotify.Watcher
 	done    chan bool

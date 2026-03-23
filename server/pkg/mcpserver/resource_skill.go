@@ -26,18 +26,6 @@ import (
 // as MCP resources, making them accessible to clients.
 //
 // Summary: Represents a SkillResource.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type SkillResource struct {
 	skill     *skill.Skill
 	assetPath string // Relative path to asset. If empty, represents the main SKILL.md

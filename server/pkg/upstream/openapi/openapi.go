@@ -36,18 +36,6 @@ import (
 // available operations, and registers them as tools.
 //
 // Summary: Represents a OpenAPIUpstream.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type OpenAPIUpstream struct { //nolint:revive
 	openapiCache *ttlcache.Cache[string, *openapi3.T]
 	httpClients  map[string]*http.Client

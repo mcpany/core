@@ -21,18 +21,6 @@ import (
 // capturing stderr to provide better error messages on failure.
 //
 // Summary: Represents a StdioTransport.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type StdioTransport struct {
 	Command *exec.Cmd
 }

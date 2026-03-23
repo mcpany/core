@@ -27,18 +27,6 @@ import (
 // ErrServiceAlreadyRegistered is returned when attempting to register a service that is already active.
 //
 // Summary: Represents a ErrServiceAlreadyRegistered.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 var ErrServiceAlreadyRegistered = errors.New("service already registered")
 
 // ServiceRegistryInterface defines the interface for a service registry.
@@ -47,18 +35,6 @@ var ErrServiceAlreadyRegistered = errors.New("service already registered")
 // and their associated capabilities (tools, resources, prompts).
 //
 // Summary: Represents a ServiceRegistryInterface.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
 	//
@@ -131,18 +107,6 @@ type ServiceRegistryInterface interface { //nolint:revive
 // with tool, prompt, and resource managers.
 //
 // Summary: Represents a ServiceRegistry.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig

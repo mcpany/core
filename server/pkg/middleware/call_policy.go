@@ -16,18 +16,6 @@ import (
 // based on tool name and arguments.
 //
 // Summary: Middleware that evaluates and enforces security policies for tool executions.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type CallPolicyMiddleware struct {
 	toolManager tool.ManagerInterface
 }
@@ -41,12 +29,6 @@ type CallPolicyMiddleware struct {
 //
 // Returns:
 //   - *CallPolicyMiddleware: The initialized middleware.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
 	return &CallPolicyMiddleware{
 		toolManager: toolManager,

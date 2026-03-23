@@ -18,18 +18,6 @@ import (
 // fetched dynamically by executing a tool.
 //
 // Summary: Represents a DynamicResource.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type DynamicResource struct {
 	resource *mcp.Resource
 	tool     tool.Tool
@@ -46,12 +34,6 @@ type DynamicResource struct {
 // Returns:
 //   - *DynamicResource: The initialized dynamic resource.
 //   - error: An error if validation fails.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*DynamicResource, error) {
 	if def == nil {
 		return nil, fmt.Errorf("resource definition is nil")
@@ -78,15 +60,6 @@ func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*Dynamic
 //
 // Returns:
 //   - *mcp.Resource: The MCP resource definition.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (r *DynamicResource) Resource() *mcp.Resource {
 	return r.resource
 }
@@ -97,15 +70,6 @@ func (r *DynamicResource) Resource() *mcp.Resource {
 //
 // Returns:
 //   - string: The service ID.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (r *DynamicResource) Service() string {
 	return r.tool.Tool().GetServiceId()
 }
@@ -123,9 +87,6 @@ func (r *DynamicResource) Service() string {
 //
 // Side Effects:
 //   - Executes the underlying tool, which may have its own side effects.
-//
-// Errors:
-//   - None.
 func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	// For now, we'll just execute the tool with no inputs.
 	// In the future, we may need to pass inputs to the tool.
@@ -187,12 +148,6 @@ func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, er
 //
 // Returns:
 //   - error: Always returns an error indicating not implemented.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (r *DynamicResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to dynamic resources is not yet implemented")
 }

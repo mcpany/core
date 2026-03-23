@@ -25,12 +25,6 @@ import (
 //
 // Returns:
 //   - bool: True if the environment variable is allowed, false otherwise.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func IsEnvVarAllowed(name string) bool {
 	// 1. Check Allowlist
 	allowedEnv := os.Getenv("MCPANY_ALLOWED_ENV")

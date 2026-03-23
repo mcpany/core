@@ -14,18 +14,6 @@ import (
 // ErrResourceNotFound is returned when a requested resource cannot be found.
 //
 // Summary: Represents a ErrResourceNotFound.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 var ErrResourceNotFound = errors.New("resource not found")
 
 // Resource defines the interface for a resource that can be managed by the Manager.
@@ -34,18 +22,6 @@ var ErrResourceNotFound = errors.New("resource not found")
 //
 // A resource represents a data source (e.g., a file, a database record) that can be
 // read by an MCP client.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Resource interface {
 	// Resource returns the MCP representation of the resource, which includes its metadata.
 	//
@@ -85,18 +61,6 @@ type Resource interface {
 //
 // It provides methods for adding, removing, listing, and retrieving resources, as well
 // as managing callbacks for list changes.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ManagerInterface interface {
 	// GetResource retrieves a resource by its URI.
 	//
@@ -157,18 +121,6 @@ type ManagerInterface interface {
 //
 // It manages the lifecycle and retrieval of resources, providing thread-safe access
 // and efficient listing via caching.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Manager struct {
 	mu                sync.RWMutex
 	resources         map[string]Resource
@@ -182,15 +134,6 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A new Manager instance.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		resources: make(map[string]Resource),
@@ -207,12 +150,6 @@ func NewManager() *Manager {
 // Returns:
 //   - Resource: The resource instance.
 //   - bool: True if found, false otherwise.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (rm *Manager) GetResource(uri string) (Resource, bool) {
 	rm.mu.RLock()
 	defer rm.mu.RUnlock()
@@ -235,9 +172,6 @@ func (rm *Manager) GetResource(uri string) (Resource, bool) {
 //   - Updates the internal resource storage.
 //   - Invalidates the list cache.
 //   - Triggers the on-change callback if registered.
-//
-// Errors:
-//   - None.
 func (rm *Manager) AddResource(resource Resource) {
 	var callback func()
 	rm.mu.Lock()
@@ -266,9 +200,6 @@ func (rm *Manager) AddResource(resource Resource) {
 //   - Updates the internal resource storage.
 //   - Invalidates the list cache.
 //   - Triggers the on-change callback if registered.
-//
-// Errors:
-//   - None.
 func (rm *Manager) RemoveResource(uri string) {
 	var callback func()
 	rm.mu.Lock()
@@ -293,15 +224,6 @@ func (rm *Manager) RemoveResource(uri string) {
 //
 // Returns:
 //   - []Resource: A slice of currently registered resources.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (rm *Manager) ListResources() []Resource {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Remove).
@@ -350,12 +272,6 @@ func (rm *Manager) ListResources() []Resource {
 // Returns:
 //
 //	None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (rm *Manager) OnListChanged(f func()) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()
@@ -372,12 +288,6 @@ func (rm *Manager) OnListChanged(f func()) {
 //
 // Returns:
 //   - error: An error if resource not found or subscription fails.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 	resource, ok := rm.GetResource(uri)
 	if !ok {
@@ -401,9 +311,6 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 //   - Removes matching resources from storage.
 //   - Invalidates the list cache.
 //   - Triggers the on-change callback.
-//
-// Errors:
-//   - None.
 func (rm *Manager) ClearResourcesForService(serviceID string) {
 	var callback func()
 	rm.mu.Lock()

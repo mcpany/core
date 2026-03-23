@@ -18,18 +18,6 @@ import (
 // and an in-memory cache for fast search.
 //
 // Summary: A hybrid vector store that uses SQLite for persistence and an in-memory structure for search.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type SQLiteVectorStore struct {
 	memoryStore *SimpleVectorStore
 	db          *sql.DB
@@ -263,12 +251,6 @@ func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float3
 //   - any: The best matching result data.
 //   - float32: The similarity score (0-1).
 //   - bool: True if a match was found.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool) {
 	return s.memoryStore.Search(ctx, key, query)
 }
@@ -284,12 +266,6 @@ func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []floa
 // Side Effects:
 //   - Removes items from memory.
 //   - Deletes rows from SQLite database.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
 func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 	s.memoryStore.Prune(ctx, key)
 
@@ -303,15 +279,6 @@ func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 //
 // Returns:
 //   - error: An error if closing fails.
-//
-// Parameters:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (s *SQLiteVectorStore) Close() error {
 	return s.db.Close()
 }

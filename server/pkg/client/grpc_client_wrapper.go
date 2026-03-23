@@ -17,18 +17,6 @@ import (
 // It is used to allow for mocking of the gRPC client in tests.
 //
 // Summary: Represents a Conn.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Conn interface {
 	grpc.ClientConnInterface
 	// Close closes the connection to the server.
@@ -46,18 +34,6 @@ type Conn interface {
 // connection pool, which can improve performance by reusing connections.
 //
 // Summary: Represents a GrpcClientWrapper.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type GrpcClientWrapper struct {
 	Conn
 	config *configv1.UpstreamServiceConfig

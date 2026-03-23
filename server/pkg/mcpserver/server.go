@@ -53,15 +53,6 @@ var fastJSON = jsoniter.Config{
 //   - When set, this function is called synchronously during Server() access.
 //
 // Summary: Represents a AddReceivingMiddlewareHook.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
 var AddReceivingMiddlewareHook func(name string)
 
 // Server is the core of the MCP Any application.
@@ -71,18 +62,6 @@ var AddReceivingMiddlewareHook func(name string)
 // handlers and communicates with backend workers via an event bus.
 //
 // Summary: Represents a Server.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Server struct {
 	server          *mcp.Server
 	router          *Router
@@ -1397,18 +1376,6 @@ func (l LazyRedact) LogValue() slog.Value {
 // and lazily computes the string representation only when logging is enabled.
 //
 // Summary: Represents a LazyLogResult.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type LazyLogResult struct {
 	Value any
 }

@@ -30,18 +30,6 @@ import (
 // (Model Context Protocol) annotations within a set of protobuf files.
 //
 // Summary: Represents ParsedMcpAnnotations.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ParsedMcpAnnotations struct {
 	Tools     []McpTool
 	Prompts   []McpPrompt
@@ -52,18 +40,6 @@ type ParsedMcpAnnotations struct {
 // annotated as an MCP tool.
 //
 // Summary: Represents McpTool.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type McpTool struct {
 	Name            string
 	Description     string
@@ -84,18 +60,6 @@ type McpTool struct {
 // description, type, and whether it is repeated.
 //
 // Summary: Represents McpField.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type McpField struct {
 	Name        string
 	Description string
@@ -447,18 +411,6 @@ func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, erro
 // been annotated as an MCP prompt.
 //
 // Summary: Represents McpPrompt.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type McpPrompt struct {
 	Name           string
 	Description    string
@@ -474,18 +426,6 @@ type McpPrompt struct {
 // resource.
 //
 // Summary: Represents McpResource.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type McpResource struct {
 	Name        string
 	Description string

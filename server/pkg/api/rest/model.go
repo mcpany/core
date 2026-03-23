@@ -9,15 +9,6 @@ package rest
 //
 // Parameters:
 //   - Content (string): The raw YAML/JSON content of the configuration file.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ValidateConfigRequest struct {
 	// Content is the raw YAML/JSON content of the configuration file.
 	Content string `json:"content"`
@@ -30,15 +21,6 @@ type ValidateConfigRequest struct {
 // Parameters:
 //   - Valid (bool): Indicates whether the configuration is valid.
 //   - Errors ([]string): A list of validation errors, if any.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ValidateConfigResponse struct {
 	// Valid indicates whether the configuration is valid.
 	Valid bool `json:"valid"`
@@ -53,15 +35,6 @@ type ValidateConfigResponse struct {
 // Parameters:
 //   - Valid (bool): True if the configuration is valid.
 //   - Errors ([]string): A list of error messages if validation failed.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ValidationResult struct {
 	// Valid is true if the configuration is valid.
 	Valid bool

@@ -15,18 +15,6 @@ import (
 // Fields:
 //   - Err: error. The original error that occurred.
 //   - Suggestion: string. A human-readable suggestion on how to resolve the error.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ActionableError struct {
 	Err        error
 	Suggestion string
@@ -109,9 +97,6 @@ func (e *ActionableError) Unwrap() error {
 //   - error: The wrapped error.
 //
 // Side Effects:
-//   - None.
-//
-// Errors:
 //   - None.
 func WrapActionableError(context string, err error) error {
 	if err == nil {

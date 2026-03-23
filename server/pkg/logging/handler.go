@@ -17,18 +17,6 @@ import (
 // It matches the frontend expectation.
 //
 // Summary: Represents a LogEntry.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type LogEntry struct {
 	ID        string         `json:"id"`
 	Timestamp string         `json:"timestamp"`
@@ -41,18 +29,6 @@ type LogEntry struct {
 // BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
 //
 // Summary: Represents a BroadcastHandler.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type BroadcastHandler struct {
 	broadcaster *Broadcaster
 	attrs       []slog.Attr
@@ -318,18 +294,6 @@ func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
 // TeeHandler is a slog.Handler that writes to multiple handlers.
 //
 // Summary: Represents a TeeHandler.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type TeeHandler struct {
 	handlers []slog.Handler
 }

@@ -42,18 +42,6 @@ import (
 // for them. It also manages a connection pool and a cache for reflection data.
 //
 // Summary: Represents a Upstream.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Upstream struct {
 	poolManager     *pool.Manager
 	reflectionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]

@@ -20,18 +20,6 @@ import (
 // appropriate managers.
 //
 // Summary: Represents a Upstream.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Upstream interface {
 	// Shutdown gracefully terminates the upstream service.
 	//
@@ -85,18 +73,6 @@ type Upstream interface {
 // runtime health status.
 //
 // Summary: Represents a HealthChecker.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type HealthChecker interface {
 	// CheckHealth performs a health check on the upstream service.
 	//

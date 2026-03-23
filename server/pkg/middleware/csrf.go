@@ -16,18 +16,6 @@ import (
 // CSRFMiddleware protects against Cross-Site Request Forgery attacks.
 //
 // Summary: Middleware that blocks unauthorized cross-origin requests.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type CSRFMiddleware struct {
 	allowedOrigins map[string]bool
 	mu             sync.RWMutex
@@ -45,9 +33,6 @@ type CSRFMiddleware struct {
 //
 // Side Effects:
 //   - Populates the internal allowed origins map.
-//
-// Errors:
-//   - None.
 func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 	m := &CSRFMiddleware{
 		allowedOrigins: make(map[string]bool),
@@ -65,12 +50,6 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 //
 // Side Effects:
 //   - Replaces the existing allowed origins map in a thread-safe manner.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
 func (m *CSRFMiddleware) Update(origins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -94,9 +73,6 @@ func (m *CSRFMiddleware) Update(origins []string) {
 //   - Inspects Method, Headers, Origin, and Referer of incoming requests.
 //   - Blocks requests with 403 Forbidden if validation fails.
 //   - Logs warnings for blocked requests.
-//
-// Errors:
-//   - None.
 func (m *CSRFMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 1. Safe Methods are always allowed

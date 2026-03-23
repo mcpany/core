@@ -18,18 +18,6 @@ import (
 // HTTPRateLimitMiddleware provides global rate limiting for HTTP endpoints.
 //
 // Summary: Middleware for rate limiting HTTP requests based on IP address.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type HTTPRateLimitMiddleware struct {
 	limiters   *ttlcache.Cache[string, *rate.Limiter]
 	rps        rate.Limit
@@ -51,12 +39,6 @@ type HTTPRateLimitOption func(*HTTPRateLimitMiddleware)
 //
 // Returns:
 //   - HTTPRateLimitOption: The configuration option.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func WithTrustProxy(trust bool) HTTPRateLimitOption {
 	return func(m *HTTPRateLimitMiddleware) {
 		m.trustProxy = trust
@@ -74,12 +56,6 @@ func WithTrustProxy(trust bool) HTTPRateLimitOption {
 //
 // Returns:
 //   - *HTTPRateLimitMiddleware: The initialized middleware instance.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOption) *HTTPRateLimitMiddleware {
 	// ⚡ BOLT: Prevented unbounded memory growth by enforcing a capacity limit on the rate limiter cache.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -111,12 +87,6 @@ func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOpt
 //
 // Returns:
 //   - http.Handler: The wrapped handler.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip := util.ExtractIP(r.RemoteAddr)

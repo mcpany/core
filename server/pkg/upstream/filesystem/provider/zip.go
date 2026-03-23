@@ -18,18 +18,6 @@ import (
 // ZipProvider provides access to files within a zip archive.
 //
 // Summary: Represents a ZipProvider.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ZipProvider struct {
 	fs     afero.Fs
 	closer *os.File

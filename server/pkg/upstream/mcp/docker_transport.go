@@ -49,18 +49,6 @@ var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
 // running inside a Docker container. It manages the container lifecycle.
 //
 // Summary: Represents a DockerTransport.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type DockerTransport struct {
 	StdioConfig *configv1.McpStdioConnection
 }

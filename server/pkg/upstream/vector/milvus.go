@@ -17,18 +17,6 @@ import (
 // MilvusClient implements VectorClient for Milvus.
 //
 // Summary: Represents a MilvusClient.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type MilvusClient struct {
 	config *configv1.MilvusVectorDB
 	client client.Client
