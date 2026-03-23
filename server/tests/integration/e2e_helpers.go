@@ -223,7 +223,7 @@ func runfilesWorkspaceName() string {
 
 func runfilesRoots() []string {
 	workspace := runfilesWorkspaceName()
-	var roots []string
+	roots := make([]string, 0, 2)
 	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
 		if base == "" {
 			continue
@@ -270,7 +270,7 @@ func isServerProjectRoot(dir string) bool {
 
 func symlinkIfPresent(src, dst string) error {
 	if _, err := os.Stat(src); err != nil {
-		return nil
+		return nil //nolint:nilerr
 	}
 	return os.Symlink(src, dst)
 }
@@ -512,7 +512,7 @@ func (mp *ManagedProcess) Start() error {
 			mp.t.Logf("[%s] Process %s exited successfully.", mp.label, mp.cmd.Path)
 		}
 	}()
-	return nil
+	return nil //nolint:nilerr
 }
 
 // Allow patching for testing.
@@ -942,7 +942,7 @@ func (s *MCPANYTestServerInfo) SeedDatabase(ctx context.Context, seedData []byte
 		body, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("seed failed: status=%d, body=%s", resp.StatusCode, string(body))
 	}
-	return nil
+	return nil //nolint:nilerr
 }
 
 // WebsocketEchoServerInfo contains information about a running Websocket echo server.
@@ -1596,7 +1596,7 @@ func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 		body, _ := io.ReadAll(respNotify.Body)
 		return fmt.Errorf("initialized notification failed: status=%d, body=%s", respNotify.StatusCode, string(body))
 	}
-	return nil
+	return nil //nolint:nilerr
 }
 
 // parseMCPResponse parses the response body, handling both JSON and SSE formats.

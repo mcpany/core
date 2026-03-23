@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mcpany/core/server/pkg/consts"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -86,7 +87,7 @@ func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeM
 // Side Effects:
 //   - None.
 func (m *A2ABridgeMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
-	if method != "tools/call" {
+	if method != consts.MethodToolsCall {
 		return next(ctx, method, req)
 	}
 

@@ -93,7 +93,7 @@ func (t *baseTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
-func (t *baseTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+func (t *baseTool) StreamExecute(_ context.Context, _ *ExecutionRequest) (<-chan any, error) {
 	return nil, nil // Should be implemented by embedding struct if supported
 }
 

@@ -44,7 +44,7 @@ var currentAIAStatus = []SubagentStatus{
 //
 // Side Effects:
 //   - None.
-func (a *Application) handleActiveIntentAlignment() http.HandlerFunc {
+func (a *Application) handleActiveIntentAlignment() http.HandlerFunc { //nolint:revive
 	return func(w http.ResponseWriter, r *http.Request) {
 		log := logging.GetLogger()
 
