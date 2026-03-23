@@ -1,10 +1,10 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Summary: Package lint provides configuration analysis tools.
-//
 // Package lint provides functionality for analyzing configuration files
 // to detect potential security issues and best practice violations.
+//
+// Summary: Package lint provides configuration analysis tools.
 package lint
 
 import (
@@ -16,35 +16,35 @@ import (
 	"github.com/mcpany/core/server/pkg/config"
 )
 
-// Summary: Represents a Severity level.
-//
 // Severity indicates the importance of a linting result.
 //
-// It is used to categorize findings based on their impact and urgency.
+// Summary: Represents a Severity level.
 type Severity int
 
 const (
-	// Summary: Defines the Error severity level.
-	//
 	// Error indicates a critical issue that must be fixed.
+	//
+	// Summary: Defines the Error severity level.
 	Error Severity = iota
-	// Summary: Defines the Warning severity level.
-	//
 	// Warning indicates a potential issue or best practice violation.
-	Warning
-	// Summary: Defines the Info severity level.
 	//
+	// Summary: Defines the Warning severity level.
+	Warning
 	// Info indicates a suggestion or informational message.
+	//
+	// Summary: Defines the Info severity level.
 	Info
 )
 
+// String returns the string representation of the severity.
+//
 // Summary: Executes String operation.
 //
 // Parameters:
 //   - s: Severity. The severity level to convert.
 //
 // Returns:
-//   - string: The string representation.
+//   - string: The string representation (e.g., "ERROR").
 //
 // Errors:
 //   - None.
@@ -64,11 +64,9 @@ func (s Severity) String() string {
 	}
 }
 
-// Summary: Represents a linting finding.
-//
 // Result represents a single linting finding.
 //
-// It encapsulates details about a detected issue.
+// Summary: Represents a linting finding.
 type Result struct {
 	// Severity indicates how critical the finding is.
 	Severity Severity
@@ -80,6 +78,8 @@ type Result struct {
 	Path string
 }
 
+// String returns the human-readable representation of the result.
+//
 // Summary: Executes String operation.
 //
 // Parameters:
@@ -105,13 +105,15 @@ func (r Result) String() string {
 	return fmt.Sprintf("[%s]%s%s: %s", r.Severity, serviceStr, pathStr, r.Message)
 }
 
-// Summary: Represents a configuration linter.
-//
 // Linter performs static analysis on the configuration.
+//
+// Summary: Represents a configuration linter.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
 
+// NewLinter creates a new Linter instance.
+//
 // Summary: Initializes NewLinter operation.
 //
 // Parameters:
@@ -129,6 +131,8 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
 
+// Run executes all configured linting checks.
+//
 // Summary: Executes Run operation.
 //
 // Parameters:
@@ -163,6 +167,8 @@ func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	return results, nil
 }
 
+// checkPlainTextSecrets checks for secrets stored in plain text.
+//
 // Summary: Executes checkPlainTextSecrets operation.
 //
 // Parameters:
@@ -247,6 +253,8 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 	return results
 }
 
+// checkShellInjection checks for shell injection risks.
+//
 // Summary: Executes checkShellInjection operation.
 //
 // Parameters:
@@ -295,6 +303,8 @@ func (l *Linter) checkShellInjection() []Result {
 	return results
 }
 
+// checkInsecureHTTP checks for insecure HTTP connections.
+//
 // Summary: Executes checkInsecureHTTP operation.
 //
 // Parameters:
@@ -302,7 +312,6 @@ func (l *Linter) checkShellInjection() []Result {
 //
 // Returns:
 //   - []Result: A slice of findings.
-//   - error: Encounters a fatal issue.
 //
 // Errors:
 //   - None.
@@ -347,6 +356,8 @@ func (l *Linter) checkInsecureHTTP() []Result {
 	return results
 }
 
+// checkCacheSettings checks for cache settings.
+//
 // Summary: Executes checkCacheSettings operation.
 //
 // Parameters:
@@ -354,7 +365,6 @@ func (l *Linter) checkInsecureHTTP() []Result {
 //
 // Returns:
 //   - []Result: A slice of findings.
-//   - error: Encounters a fatal issue.
 //
 // Errors:
 //   - None.
