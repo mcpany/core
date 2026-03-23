@@ -853,5 +853,5 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 **Strategic Pivot**:
 
-*   **Enforced Intent Hierarchies (EIH)**: Lineage Priority for state fragments.
-*   **Kernel-Namespace (KNS) Tool Isolation**: Neutralizing RCE via namespaces.
+- **EIH**: Enforced Intent Hierarchies for state fragments.
+- **KNS**: Kernel-Namespace Tool Isolation for security.
