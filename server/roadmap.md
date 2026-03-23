@@ -157,6 +157,11 @@
 *   **[P0] Multi-Signature Skill Attestation (MSSA)**: Mandatory auditor attestation for dynamic tool grafting and high-risk skill installation. (Added: 2026-06-27)
 *   **[P1] Reasoning Path Integrity (RPI) Validator**: Support for ARE v1.8 hardware-signed reasoning fragments and semantic hash-chaining. (Added: 2026-06-27)
 
+#### Upcoming (2026-06-28 Evolution)
+*   **[P0] Multi-Signature Skill Grafting (MSSG) Hub**: Authoritative broker for federated skill integrity requiring framework and auditor tokens. (Added: 2026-06-28)
+*   **[P0] Stylometric Sovereignty Monitor (SSM)**: Behavioral security middleware for detecting reasoning-persona mimicry and PBR bypasses. (Added: 2026-06-28)
+*   **[P0] Headless Mission Resumption (HMR)**: Hardware-locked binary checkpointing for sub-100ms cold-boot mission recovery. (Added: 2026-06-28)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

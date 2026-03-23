@@ -1490,6 +1490,18 @@
 - **Zero-Knowledge Discovery (ZKD) Proxy**: (Promoted to P0) Critical for satisfying new Gemini CLI v0.43.0 discovery requirements and neutralizing shadow mapping.
 - **CRDT-Native Mailbox Shards**: (Promoted to P0) Designated as the primary solution for the 2s+ coordination stall in high-density horizontal Agent Teams.
 
+## Evolution: [2026-06-28] Updates
+
+### Proposed Additions
+- **Multi-Signature Skill Grafting (MSSG) Hub**: (P0) Authoritative broker for federated skill integrity, requiring approval tokens from both framework and independent auditor agents.
+- **Stylometric Sovereignty Monitor (SSM)**: (P0) Behavioral security middleware performing real-time analysis of reasoning monologues to detect persona-shadowing mimicry.
+- **CRDT-Native Mailbox Sharding (CNMS)**: (Re-affirmed P0) Elevated with the requirement for mandatory sub-millisecond task synchronization in 10+ member meshes.
+- **Headless Mission Resumption (HMR) Provider**: (P0) Lifecycle management service providing hardware-locked binary checkpoints for mission state resumption.
+
+### Priority Shifts
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Evolving to support the new **CNMS-compliant** mailbox sharding architecture.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Designated as the primary enforcement point for **HMR-compliant** mission checkpoints.
+
 ## Evolution: [2026-06-26] Updates
 
 ### Proposed Additions
