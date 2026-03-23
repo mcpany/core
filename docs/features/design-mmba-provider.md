@@ -83,3 +83,8 @@ The MMBA Provider anchors an agent's behavioral profile to its multi-modal trace
 **Context:** Ghosting vulnerabilities require attention-utilization baselines.
 **Architecture Adjustment:** Entropy-Mapping, Behavioral signatures for ALS fragments.
 **Security Impact:** Early detection of ghosting recovery.
+
+### Update: 2026-06-18 - Integrating Attention Sovereignty
+**Context:** Context-Window Ghosting requires behavioral profiles to include "Attention-Utilization" baselines.
+**Architecture Adjustment:** Adding "Entropy-Mapping" for monitoring anomalous context access patterns.
+**Security Impact:** Allows early detection of "Ghosting Recovery" attacks.
