@@ -13,7 +13,6 @@ import (
 )
 
 func TestInitCmd(t *testing.T) {
-	// Change working directory to a temporary directory so config.yaml is generated there.
 	tempDir := t.TempDir()
 	origDir, err := os.Getwd()
 	require.NoError(t, err)
@@ -28,7 +27,6 @@ func TestInitCmd(t *testing.T) {
 	var out bytes.Buffer
 	var in bytes.Buffer
 
-	// Simulate user typing "test-svc\nhttps://test.com\n"
 	in.WriteString("test-svc\nhttps://test.com\n")
 
 	cmd.SetOut(&out)
@@ -65,7 +63,6 @@ func TestInitCmd_Defaults(t *testing.T) {
 	var out bytes.Buffer
 	var in bytes.Buffer
 
-	// Empty inputs should trigger defaults
 	in.WriteString("\n\n")
 
 	cmd.SetOut(&out)

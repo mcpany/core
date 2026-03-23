@@ -25,7 +25,11 @@ func newInitCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			reader := bufio.NewReader(cmd.InOrStdin())
 
-			fmt.Fprint(cmd.OutOrStdout(), "Enter the name of your first service (e.g., my-service): ")
+			_, err := fmt.Fprint(cmd.OutOrStdout(), "Enter the name of your first service (e.g., my-service): ")
+			if err != nil {
+				return err
+			}
+
 			serviceName, err := reader.ReadString('\n')
 			if err != nil {
 				return err
@@ -35,7 +39,11 @@ func newInitCmd() *cobra.Command {
 				serviceName = "my-service"
 			}
 
-			fmt.Fprint(cmd.OutOrStdout(), "Enter the upstream HTTP address (e.g., https://api.example.com): ")
+			_, err = fmt.Fprint(cmd.OutOrStdout(), "Enter the upstream HTTP address (e.g., https://api.example.com): ")
+			if err != nil {
+				return err
+			}
+
 			address, err := reader.ReadString('\n')
 			if err != nil {
 				return err
