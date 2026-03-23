@@ -31,8 +31,6 @@ import (
 //
 // It discovers and registers tools based on a list of commands defined in the
 // service configuration.
-//
-// Summary: Represents a Upstream.
 type Upstream struct {
 	mu      sync.Mutex
 	checker health.Checker
@@ -48,20 +46,6 @@ type Upstream struct {
 //
 // Side Effects:
 //   - Stops the health checker.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -76,20 +60,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Returns:
 //   - upstream.Upstream: A new instance of the command upstream.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -117,20 +87,6 @@ func NewUpstream() upstream.Upstream {
 // Side Effects:
 //   - Starts a health checker for the service.
 //   - Registers tools and prompts with their respective managers.
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

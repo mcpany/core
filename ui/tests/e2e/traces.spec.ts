@@ -4,28 +4,48 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedGlobalState, seedTraces } from './test-data';
 
-test.describe.skip('Trace Viewer', () => {
-  test.beforeEach(async ({ page, request }) => {
+test.describe('Trace Viewer', () => {
+  test.beforeEach(async ({ page }) => {
     // Mock Traces API for all tests in this suite.
     // The app fetches /api/v1/traces (with the v1 prefix).
+    await page.route('**/api/v1/traces', async route => {
+      await route.fulfill({
+        json: [
+          {
+            id: 'trace-1',
+            rootSpan: {
+              id: 'span-1',
+              name: 'calculate_sum',
+              serviceName: 'Math',
+              type: 'tool',
+              status: 'success',
+              startTime: Date.now() - 150,
+              endTime: Date.now(),
+              children: [],
+            },
+            timestamp: new Date().toISOString(),
+            totalDuration: 150,
+            status: 'success',
+            trigger: 'user'
+          }
+        ]
+      });
+    });
+  });
 
-    await seedGlobalState(request);
-    await seedTraces(request);
+  test('should navigate to traces page and view details', async ({ page }) => {
 
+    // Ensure login
     await page.goto('/login');
-    await page.waitForLoadState('networkidle');
-    await page.fill('input[name="username"]', 'e2e-admin-core');
+    await page.fill('input[name="username"]', 'e2e-admin');
     await page.fill('input[name="password"]', 'password');
     await Promise.all([
       page.waitForURL('/', { timeout: 30000 }),
       page.click('button[type="submit"]', { force: true })
     ]);
-    await expect(page).toHaveURL('/', { timeout: 15000 });
-  });
 
-  test('should navigate to traces page and view details', async ({ page }) => {
+    // Navigate to dashboard
     await page.goto('/');
 
     // Check if Traces link exists in sidebar and click it

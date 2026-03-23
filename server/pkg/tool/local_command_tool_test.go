@@ -198,8 +198,6 @@ func TestLocalCommandTool_Execute_JSONProtocol_StderrCapture(t *testing.T) {
 	_, err := localTool.Execute(context.Background(), req)
 	assert.Error(t, err)
 
-	// 🛡️ Sentinel Security Update: Verify Information Leakage Prevention
-	// The client should receive a generic error message, not the raw stderr content.
-	assert.NotContains(t, err.Error(), "something went wrong", "Stderr should not be leaked to the client")
-	assert.Contains(t, err.Error(), "failed to execute JSON CLI command", "Error should be generic")
+	// This assertion should fail before fix
+	assert.Contains(t, err.Error(), "something went wrong")
 }

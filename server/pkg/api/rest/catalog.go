@@ -30,12 +30,10 @@ type CatalogServer struct {
 //   - (*CatalogServer): The initialized server instance.
 //
 // Errors:
-//
-//	None.
+//   None.
 //
 // Side Effects:
-//
-//	None.
+//   None.
 func NewCatalogServer(manager *catalog.Manager) *CatalogServer {
 	return &CatalogServer{manager: manager}
 }

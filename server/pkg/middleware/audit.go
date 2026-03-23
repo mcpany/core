@@ -300,25 +300,10 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 	}
 }
 
-// ClearHistory clears the audit history from the broadcaster.
-//
-// Summary: Clears the audit history.
-//
-// Side Effects:
-//   - Clears the history in the broadcaster.
-func (m *AuditMiddleware) ClearHistory() {
-	if m.broadcaster != nil {
-		m.broadcaster.ClearHistory()
-	}
-}
-
 // SubscribeWithHistory returns a channel that will receive broadcast messages,
 // and the current history of messages.
 //
 // Summary: Subscribes to audit events with history.
-//
-// Parameters:
-//   - None.
 //
 // Returns:
 //   - chan any: A channel receiving new audit entries.
@@ -413,20 +398,6 @@ func (m *AuditMiddleware) Close() error {
 //
 // Errors:
 //   - Returns an error if the audit store is not initialized.
-//
-// Summary: Updates Write operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
 	m.mu.RLock()
 	store := m.store

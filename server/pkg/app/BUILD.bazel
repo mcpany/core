@@ -8,7 +8,6 @@ go_library(
     srcs = [
         "api.go",
         "api_alerts.go",
-        "api_alignment.go",
         "api_audit.go",
         "api_auth.go",
         "api_credential.go",
@@ -103,7 +102,6 @@ go_library(
         "@org_golang_google_grpc//status",
         "@org_golang_google_protobuf//encoding/protojson",
         "@org_golang_google_protobuf//proto",
-        "@org_golang_google_protobuf//reflect/protoreflect",
     ],
 )
 
@@ -113,7 +111,6 @@ go_test(
         "api_alerts_test.go",
         "api_audit_test.go",
         "api_auth_test.go",
-        "api_collection_apply_test.go",
         "api_credential_test.go",
         "api_discovery_test.go",
         "api_handlers_extra_test.go",

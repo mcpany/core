@@ -19,18 +19,15 @@ import (
 
 func TestUpstreamService_MCP_Stdio_WithSetupCommandsInDocker(t *testing.T) {
 	if !integration.IsDockerSocketAccessible() {
-		t.Skip("Docker socket not accessible, skipping test")
+		// t.Skip("Docker socket not accessible, skipping test")
 	}
 	if os.Getenv("CI") != "" {
-		t.Skip("Skipping Docker-in-Docker test in CI environment")
+		// t.Skip("Skipping Docker-in-Docker test in CI environment")
 	}
-
-	integration.EnsureCowsayServerImageLoaded(t)
 
 	testCase := &framework.E2ETestCase{
 		Name:                "cowsay server (Stdio via Docker with setup)",
 		UpstreamServiceType: "stdio",
-		RegistrationMethods: []framework.RegistrationMethod{framework.GRPCRegistration},
 		BuildUpstream:       framework.BuildStdioDockerServer,
 		RegisterUpstream:    framework.RegisterStdioDockerService,
 		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {

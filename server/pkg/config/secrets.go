@@ -17,12 +17,10 @@ import (
 //   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to modify.
 //
 // Returns:
-//
-//	None.
+//   None.
 //
 // Errors:
-//
-//	None.
+//   None.
 //
 // Side Effects:
 //   - Modifies the provided service configuration in place.
@@ -38,12 +36,10 @@ func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 //   - profile (*configv1.ProfileDefinition): The profile definition to modify.
 //
 // Returns:
-//
-//	None.
+//   None.
 //
 // Errors:
-//
-//	None.
+//   None.
 //
 // Side Effects:
 //   - Modifies the provided profile definition in place.
@@ -59,12 +55,10 @@ func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 //   - collection (*configv1.Collection): The service collection to modify.
 //
 // Returns:
-//
-//	None.
+//   None.
 //
 // Errors:
-//
-//	None.
+//   None.
 //
 // Side Effects:
 //   - Modifies the provided service collection in place.
@@ -80,12 +74,10 @@ func StripSecretsFromCollection(collection *configv1.Collection) {
 //   - auth (*configv1.Authentication): The authentication configuration to modify.
 //
 // Returns:
-//
-//	None.
+//   None.
 //
 // Errors:
-//
-//	None.
+//   None.
 //
 // Side Effects:
 //   - Modifies the provided authentication configuration in place.
@@ -102,12 +94,10 @@ func StripSecretsFromAuth(auth *configv1.Authentication) {
 //   - secrets (map[string]*configv1.SecretValue): The resolved secret values map.
 //
 // Returns:
-//
-//	None.
+//   None.
 //
 // Errors:
-//
-//	None.
+//   None.
 //
 // Side Effects:
 //   - Modifies the provided service configuration in place.

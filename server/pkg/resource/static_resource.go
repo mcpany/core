@@ -17,8 +17,6 @@ import (
 
 // StaticResource implements the Resource interface for resources that are
 // defined statically in the configuration (e.g. pointing to a URL).
-//
-// Summary: Represents a StaticResource.
 type StaticResource struct {
 	resource      *mcp.Resource
 	serviceID     string

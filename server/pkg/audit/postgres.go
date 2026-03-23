@@ -208,9 +208,6 @@ func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) 
 //
 // Summary: Verifies the cryptographic chain of the audit logs.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - bool: True if the chain is valid, false otherwise.
 //   - error: An error if verification logic fails (e.g. database error) or integrity is compromised.

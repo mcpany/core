@@ -65,14 +65,15 @@ test.describe('HTTP Tool Editor - Live Preview', () => {
     // Go back to Preview
     await page.getByRole('tab', { name: 'Test & Preview' }).click();
 
-    await expect(previewCard).toContainText('/echo');
-    await expect(previewCard).toContainText('id');
+    // Verify Substitution Placeholder
+    await expect(previewCard.getByText('/echo/{{id}}')).toBeVisible();
 
     // Type Argument
     const argsInput = page.getByLabel('Test Arguments (JSON)');
     await argsInput.fill('{\n  "id": "123"\n}');
 
-    await expect(previewCard).toContainText('/echo');
+    // Verify Substitution Result
+    await expect(page.getByText('/echo/123')).toBeVisible();
 
     // Now Save and Test Execution
     // Close Tool Editor

@@ -5,9 +5,8 @@
 
 
 
-import { useEffect, useState, memo, useCallback } from "react";
+import { useEffect, useState, memo } from "react";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
-import { usePolling } from "@/hooks/use-polling";
 import {
   Users,
   Activity,
@@ -103,22 +102,37 @@ export const MetricsOverview = memo(function MetricsOverview() {
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const { serviceId } = useDashboard();
 
-  const fetchMetrics = useCallback(async () => {
-    try {
-      const data = await apiClient.getDashboardMetrics(serviceId);
-      setMetrics(data);
-    } catch (error) {
-      console.error("Failed to fetch metrics", error);
-    }
-  }, [serviceId]);
-
   useEffect(() => {
+    async function fetchMetrics() {
+      try {
+        const data = await apiClient.getDashboardMetrics(serviceId);
+        setMetrics(data);
+      } catch (error) {
+        console.error("Failed to fetch metrics", error);
+      }
+    }
     fetchMetrics();
-  }, [fetchMetrics]);
+    // Poll every 5 seconds for real-time updates
+    const interval = setInterval(() => {
+      // ⚡ Bolt Optimization: Pause polling when tab is not visible to save bandwidth
+      if (!document.hidden) {
+        fetchMetrics();
+      }
+    }, 5000);
 
-  // ⚡ BOLT: [Render Optimization] Use usePolling hook instead of raw setInterval
-  // Randomized Selection from Top 5 High-Impact Targets
-  usePolling(fetchMetrics, 5000);
+    // ⚡ Bolt Optimization: Refresh immediately when tab becomes visible
+    const onVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchMetrics();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [serviceId]);
 
   return (
     <div className="space-y-4">

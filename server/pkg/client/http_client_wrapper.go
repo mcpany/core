@@ -8,16 +8,14 @@ import (
 	"net/http"
 
 	"github.com/alexliesenfeld/health"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	healthChecker "github.com/mcpany/core/server/pkg/health"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 // HTTPClientWrapper wraps an `*http.Client` to adapt it to the
 // `pool.ClosableClient` interface. This allows HTTP clients to be managed by a
 // connection pool, which can help control the number of concurrent connections
 // and reuse them where appropriate.
-//
-// Summary: Represents a HTTPClientWrapper.
 type HTTPClientWrapper struct {
 	*http.Client
 	config *configv1.UpstreamServiceConfig
@@ -40,20 +38,6 @@ type HTTPClientWrapper struct {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Initializes NewHTTPClientWrapper operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceConfig, checker health.Checker) *HTTPClientWrapper {
 	// If no checker is provided, create a new one (backward compatibility or standalone usage).
 	if checker == nil {
@@ -79,20 +63,6 @@ func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceC
 //
 // Side Effects:
 //   - None
-//
-// Summary: Checks IsHealthy operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.checker == nil {
 		return true // No health check configured, assume healthy.
@@ -113,20 +83,6 @@ func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (w *HTTPClientWrapper) Close() error {
 	return nil
 }

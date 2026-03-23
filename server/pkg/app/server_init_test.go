@@ -13,7 +13,6 @@ import (
 	"github.com/mcpany/core/server/pkg/util/passhash"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"google.golang.org/protobuf/proto"
 )
 
 // MockStore implements storage.Storage for testing
@@ -300,7 +299,7 @@ func TestInitializeDatabase_Empty(t *testing.T) {
 	mockStore.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
 	mockStore.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
 
-	err := app.initializeDatabase(context.Background(), mockStore, nil)
+	err := app.initializeDatabase(context.Background(), mockStore)
 	assert.NoError(t, err)
 
 	mockStore.AssertExpectations(t)
@@ -312,27 +311,9 @@ func TestInitializeDatabase_AlreadyInitialized(t *testing.T) {
 
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{{}}, nil)
 
-	err := app.initializeDatabase(context.Background(), mockStore, nil)
+	err := app.initializeDatabase(context.Background(), mockStore)
 	assert.NoError(t, err)
 
-	mockStore.AssertNotCalled(t, "SaveGlobalSettings")
-	mockStore.AssertNotCalled(t, "SaveService")
-}
-
-func TestInitializeDatabase_SkipsWhenConfigProvidesGlobalSettings(t *testing.T) {
-	mockStore := new(MockStore)
-	app := &Application{}
-
-	cfg := configv1.McpAnyServerConfig_builder{
-		GlobalSettings: configv1.GlobalSettings_builder{
-			ApiKey: proto.String("demo-key"),
-		}.Build(),
-	}.Build()
-
-	err := app.initializeDatabase(context.Background(), mockStore, cfg)
-	assert.NoError(t, err)
-
-	mockStore.AssertNotCalled(t, "ListServices")
 	mockStore.AssertNotCalled(t, "SaveGlobalSettings")
 	mockStore.AssertNotCalled(t, "SaveService")
 }
@@ -343,7 +324,7 @@ func TestInitializeDatabase_NotStorage(t *testing.T) {
 
 	simpleMock.On("Load", mock.Anything).Return(&configv1.McpAnyServerConfig{}, nil)
 
-	err := app.initializeDatabase(context.Background(), simpleMock, nil)
+	err := app.initializeDatabase(context.Background(), simpleMock)
 	assert.NoError(t, err)
 }
 
@@ -374,7 +355,7 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 
 		mockSimpleStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), errors.New("load error"))
 
-		err := app.initializeDatabase(context.Background(), mockSimpleStore, nil)
+		err := app.initializeDatabase(context.Background(), mockSimpleStore)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "load error")
 	})
@@ -385,7 +366,7 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 
 		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), errors.New("list services error"))
 
-		err := app.initializeDatabase(context.Background(), mockStore, nil)
+		err := app.initializeDatabase(context.Background(), mockStore)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "list services error")
 	})
@@ -398,7 +379,7 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 		mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
 		mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(errors.New("save global error"))
 
-		err := app.initializeDatabase(context.Background(), mockStore, nil)
+		err := app.initializeDatabase(context.Background(), mockStore)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to save default global settings")
 	})
@@ -412,7 +393,7 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 		mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
 		mockStore.On("SaveService", mock.Anything, mock.Anything).Return(errors.New("save service error"))
 
-		err := app.initializeDatabase(context.Background(), mockStore, nil)
+		err := app.initializeDatabase(context.Background(), mockStore)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to save default weather service")
 	})

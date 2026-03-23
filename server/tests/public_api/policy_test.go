@@ -18,58 +18,43 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// mockMCPServerBinary returns the path to the mock_mcp_server binary.
-// Under Bazel it resolves from runfiles; otherwise it falls back to building from source.
-func mockMCPServerBinary(t *testing.T) string {
-	t.Helper()
-	workspace := os.Getenv("TEST_WORKSPACE")
-	if workspace == "" {
-		workspace = "_main"
-	}
-	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
-		if base == "" {
-			continue
-		}
-		for _, suffix := range []string{"mock_mcp_server_/mock_mcp_server", "mock_mcp_server"} {
-			candidate := filepath.Join(base, workspace, "server", "cmd", "mock_mcp_server", suffix)
-			if _, err := os.Stat(candidate); err == nil {
-				return candidate
-			}
-		}
-	}
-	// Fall back to building from source
-	root := integration.ProjectRoot(t)
-	outBin := filepath.Join(t.TempDir(), "mock_mcp_server")
-	cmd := exec.Command("go", "build", "-o", outBin, "./cmd/mock_mcp_server") //nolint:gosec
-	cmd.Dir = root
-	require.NoError(t, cmd.Run(), "Failed to build mock_mcp_server")
-	return outBin
-}
-
 func TestCallPolicy_Enforcement(t *testing.T) {
-	mockBin := mockMCPServerBinary(t)
+	nodePath, err := exec.LookPath("node")
+	if err != nil {
+		t.Skipf("Skipping call policy public API test: node not found in PATH: %v", err)
+	}
+
+	// We use the "chrome" config structure (command_line) but use @modelcontextprotocol/server-filesystem
+	// This ensures we have a real MCP server that supports stdio.
+
+	// Path to the filesystem server script
+	fsServerPath, _ := filepath.Abs("../integration/upstream/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js")
+	if _, err := os.Stat(fsServerPath); err != nil {
+		t.Skipf("Skipping call policy public API test: filesystem MCP server not available at %s: %v", fsServerPath, err)
+	}
 
 	// Case 1: Deny All
 	// We configure a policy that DENIES everything by default.
-	// The mock MCP server exposes list_directory and read_file tools.
+	// We use the filesystem server, so it should expose tools like list_directory.
 	configDenyAll := fmt.Sprintf(`
 upstream_services:
   - id: "deny-service"
     name: "deny-service"
     mcp_service:
       stdio_connection:
-        command: %q
+		command: %q
+        args: ["%s", "."]
     call_policies:
       - default_action: DENY
         rules: []
     auto_discover_tool: true
-`, mockBin)
+`, nodePath, fsServerPath)
 
 	t.Run("DenyAll", func(t *testing.T) {
 		serverInfo := integration.StartMCPANYServerWithConfig(t, "PolicyDenyAll", configDenyAll)
 		defer serverInfo.CleanupFunc()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
 		client := mcp.NewClient(&mcp.Implementation{Name: "test-client", Version: "1.0"}, nil)
@@ -92,7 +77,7 @@ upstream_services:
 				}
 			}
 			return false
-		}, 20*time.Second, 250*time.Millisecond, "Timed out waiting for tools")
+		}, 10*time.Second, 100*time.Millisecond, "Timed out waiting for tools")
 
 		// Try to call it - should be DENIED
 		_, err = cs.CallTool(ctx, &mcp.CallToolParams{
@@ -113,16 +98,17 @@ upstream_services:
     name: "fs-service"
     mcp_service:
       stdio_connection:
-        command: %q
+		command: %q
+        args: ["%s", "."]
     call_policies:
       - default_action: ALLOW
         rules:
           - action: DENY
             name_regex: "read_file"
     auto_discover_tool: true
-`, mockBin)
-	t.Run("MockMCP_Policy", func(t *testing.T) {
-		serverInfo := integration.StartMCPANYServerWithConfig(t, "PolicyTestMock", configFs)
+`, nodePath, fsServerPath)
+	t.Run("Filesystem_Policy", func(t *testing.T) {
+		serverInfo := integration.StartMCPANYServerWithConfig(t, "PolicyTestFs", configFs)
 		defer serverInfo.CleanupFunc()
 
 		ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
@@ -150,7 +136,7 @@ upstream_services:
 				}
 			}
 			return readFileTool != "" && listDirTool != ""
-		}, 30*time.Second, 1*time.Second, "Timed out waiting for mock MCP tools")
+		}, 30*time.Second, 1*time.Second, "Timed out waiting for fs tools")
 
 		t.Logf("Found tools: %s, %s", readFileTool, listDirTool)
 
@@ -167,7 +153,7 @@ upstream_services:
 		_, err = cs.CallTool(ctx, &mcp.CallToolParams{
 			Name: readFileTool,
 			Arguments: map[string]interface{}{
-				"path": "go.mod",
+				"path": "go.mod", // valid file
 			},
 		})
 		assert.Error(t, err, "read_file should be denied")

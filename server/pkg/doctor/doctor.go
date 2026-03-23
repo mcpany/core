@@ -26,30 +26,22 @@ import (
 // Status represents the status of a check.
 //
 // It is an enumerated string type used to indicate the outcome of a health or connectivity check.
-//
-// Summary: Represents a Status.
 type Status string
 
 const (
 	// StatusOk indicates the check passed successfully.
-	// Summary: Defines StatusO.
 	StatusOk Status = "OK"
 	// StatusWarning indicates a partial failure or non-critical issue that should be investigated.
-	// Summary: Defines StatusWarnin.
 	StatusWarning Status = "WARNING"
 	// StatusError indicates a critical failure that prevents the service from functioning correctly.
-	// Summary: Defines StatusErro.
 	StatusError Status = "ERROR"
 	// StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
-	// Summary: Defines StatusSkippe.
 	StatusSkipped Status = "SKIPPED"
 )
 
 // CheckResult represents the result of a single service check.
 //
 // It aggregates the status, any message, and potential error encountered during the check.
-//
-// Summary: Represents a CheckResult.
 type CheckResult struct {
 	// ServiceName is the name of the service being checked.
 	ServiceName string
@@ -75,20 +67,6 @@ type CheckResult struct {
 //
 // Side Effects:
 //   - Performs network I/O to connect to upstream services.
-//
-// Summary: Executes RunChecks operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
 	// Using 'services' variable to support existing loop
 	services := config.GetUpstreamServices()
@@ -127,20 +105,6 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 //
 // Side Effects:
 //   - Performs network I/O to connect to the upstream service.
-//
-// Summary: Executes CheckService operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) CheckResult {
 	// 5 second timeout for checks
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
