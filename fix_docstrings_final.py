@@ -1,4 +1,54 @@
-// Copyright 2025 Author(s) of MCP Any
+import re
+import os
+
+path = "server/pkg/lint/linter.go"
+with open(path, "r") as f:
+    content = f.read()
+
+def fix_block(match):
+    block = match.group(0)
+    # Check sections: Parameters, Returns, Errors, Side Effects
+    sections = ["Parameters", "Returns", "Errors", "Side Effects"]
+    for s in sections:
+        if f"// {s}:" not in block:
+            # Insert before the next section or the end
+            # This is tricky with regex. Let's do it simply.
+            pass
+    return block
+
+# Standard block structure:
+# // Summary: ...
+# //
+# // Parameters:
+# //   - ...
+# //
+# // Returns:
+# //   - ...
+# //
+# // Errors:
+# //   - ...
+# //
+# // Side Effects:
+# //   - ...
+
+def get_standard_block(summary, params=["None."], returns=["None."], errors=["None."], side_effects=["None."]):
+    res = [f"// Summary: {summary}"]
+    res.append("//")
+    res.append("// Parameters:")
+    for p in params: res.append(f"//   - {p}")
+    res.append("//")
+    res.append("// Returns:")
+    for r in returns: res.append(f"//   - {r}")
+    res.append("//")
+    res.append("// Errors:")
+    for e in errors: res.append(f"//   - {e}")
+    res.append("//")
+    res.append("// Side Effects:")
+    for s in side_effects: res.append(f"//   - {s}")
+    return "\n".join(res) + "\n"
+
+# Manually rebuild linter.go with perfect blocks
+new_content = """// Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 // Summary: Package lint provides configuration analysis tools.
@@ -38,21 +88,11 @@ const (
 	Info
 )
 
-// Summary: Executes String operation.
-//
-// Parameters:
-//   - s: Severity. The severity level to convert.
-//
-// Returns:
-//   - string: The string representation.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-func (s Severity) String() string {
-	switch s {
+"""
+
+new_content += get_standard_block("Executes String operation.", returns=["string: The string representation (e.g., \"ERROR\")."])
+new_content += "func (s Severity) String() string {\n"
+new_content += """	switch s {
 	case Error:
 		return "ERROR"
 	case Warning:
@@ -80,21 +120,11 @@ type Result struct {
 	Path string
 }
 
-// Summary: Executes String operation.
-//
-// Parameters:
-//   - r: Result. The result instance to format.
-//
-// Returns:
-//   - string: A formatted string containing result details.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-func (r Result) String() string {
-	pathStr := ""
+"""
+
+new_content += get_standard_block("Executes String operation.", returns=["string: A formatted string containing result details."])
+new_content += "func (r Result) String() string {\n"
+new_content += """	pathStr := ""
 	if r.Path != "" {
 		pathStr = fmt.Sprintf(" at %s", r.Path)
 	}
@@ -112,39 +142,18 @@ type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
 
-// Summary: Initializes NewLinter operation.
-//
-// Parameters:
-//   - cfg: *configv1.McpAnyServerConfig. The configuration to analyze.
-//
-// Returns:
-//   - *Linter: A new Linter instance.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
-	return &Linter{cfg: cfg}
+"""
+
+new_content += get_standard_block("Initializes NewLinter operation.", params=["cfg (*configv1.McpAnyServerConfig): The configuration to analyze."], returns=["*Linter: A new Linter instance."])
+new_content += "func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {\n"
+new_content += """	return &Linter{cfg: cfg}
 }
 
-// Summary: Executes Run operation.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the operation.
-//
-// Returns:
-//   - []Result: A slice of linting findings.
-//   - error: Encounters a fatal issue.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-func (l *Linter) Run(ctx context.Context) ([]Result, error) {
-	results := make([]Result, 0, 10)
+"""
+
+new_content += get_standard_block("Executes Run operation.", params=["ctx (context.Context): The context for the operation."], returns=["[]Result: A slice of linting findings.", "error: Encounters a fatal issue."])
+new_content += "func (l *Linter) Run(ctx context.Context) ([]Result, error) {\n"
+new_content += """	results := make([]Result, 0, 10)
 
 	validationErrors := config.Validate(ctx, l.cfg, config.Server)
 	for _, err := range validationErrors {
@@ -163,21 +172,11 @@ func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	return results, nil
 }
 
-// Summary: Executes checkPlainTextSecrets operation.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - []Result: A slice of findings.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-func (l *Linter) checkPlainTextSecrets() []Result {
-	var results []Result
+"""
+
+new_content += get_standard_block("Executes checkPlainTextSecrets operation.", returns=["[]Result: A slice of findings."])
+new_content += "func (l *Linter) checkPlainTextSecrets() []Result {\n"
+new_content += """	var results []Result
 
 	checkSecret := func(sv *configv1.SecretValue, path, serviceName string) {
 		if sv == nil {
@@ -247,21 +246,11 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 	return results
 }
 
-// Summary: Executes checkShellInjection operation.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - []Result: A slice of findings.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-func (l *Linter) checkShellInjection() []Result {
-	var results []Result
+"""
+
+new_content += get_standard_block("Executes checkShellInjection operation.", returns=["[]Result: A slice of findings."])
+new_content += "func (l *Linter) checkShellInjection() []Result {\n"
+new_content += """	var results []Result
 	shellRiskPatterns := []string{"sh -c", "bash -c", "cmd /c", "powershell -c"}
 
 	for _, s := range l.cfg.GetUpstreamServices() {
@@ -295,22 +284,11 @@ func (l *Linter) checkShellInjection() []Result {
 	return results
 }
 
-// Summary: Executes checkInsecureHTTP operation.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - []Result: A slice of findings.
-//   - error: Encounters a fatal issue.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-func (l *Linter) checkInsecureHTTP() []Result {
-	var results []Result
+"""
+
+new_content += get_standard_block("Executes checkInsecureHTTP operation.", returns=["[]Result: A slice of findings."])
+new_content += "func (l *Linter) checkInsecureHTTP() []Result {\n"
+new_content += """	var results []Result
 	for _, s := range l.cfg.GetUpstreamServices() {
 		checkInsecure := func(url, path string) {
 			if url != "" && strings.HasPrefix(strings.ToLower(url), "http://") {
@@ -347,22 +325,11 @@ func (l *Linter) checkInsecureHTTP() []Result {
 	return results
 }
 
-// Summary: Executes checkCacheSettings operation.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - []Result: A slice of findings.
-//   - error: Encounters a fatal issue.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-func (l *Linter) checkCacheSettings() []Result {
-	var results []Result
+"""
+
+new_content += get_standard_block("Executes checkCacheSettings operation.", returns=["[]Result: A slice of findings."])
+new_content += "func (l *Linter) checkCacheSettings() []Result {\n"
+new_content += """	var results []Result
 	for _, s := range l.cfg.GetUpstreamServices() {
 		if s.GetCache() == nil {
 			continue
@@ -381,3 +348,7 @@ func (l *Linter) checkCacheSettings() []Result {
 	}
 	return results
 }
+"""
+
+with open(path, "w") as f:
+    f.write(new_content)
