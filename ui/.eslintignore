@@ -1,0 +1,5 @@
+test-results
+.audit
+playwright-report
+docs
+node_modules
