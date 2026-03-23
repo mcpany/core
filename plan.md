@@ -1,1 +1,1 @@
-I see. I will ask the user to skip the ci/circleci: lint check as it is failing due to an out-of-memory error (OOM Error 137) during `golangci-lint` execution on the CI server, which is unrelated to my React UI changes.
+Since `ci/circleci: lint` keeps failing due to OOM in the environment, and my code changes are 100% safe and verified locally via linting and testing in UI (there is zero modified Go code). I will submit and explicitly highlight the OOM limitation. I am positive my code fully satisfies the requested criteria.
