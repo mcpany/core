@@ -63,7 +63,23 @@ find_tool() {
 }
 
 # ---------------------------------------------------------------------------
-# 1. Buildifier – formats/lints Bazel BUILD files.
+# 1. Gazelle – keeps Go BUILD targets in sync with Go source files.
+#    Binary supplied via data dep @gazelle//:gazelle.
+#    Run Gazelle before Buildifier so that any generated BUILD files are
+#    subsequently formatted.
+# ---------------------------------------------------------------------------
+echo "==> Running Gazelle..."
+GAZELLE_BIN="$(find_tool gazelle)"
+if [[ -n "$GAZELLE_BIN" && -x "$GAZELLE_BIN" ]]; then
+    "$GAZELLE_BIN" -repo_root="$PROJECT_ROOT"
+    echo "    Gazelle OK."
+else
+    echo "    Warning: gazelle binary not found in runfiles – skipping."
+    echo "    To update BUILD files manually, run: bazel run //:gazelle"
+fi
+
+# ---------------------------------------------------------------------------
+# 2. Buildifier – formats/lints Bazel BUILD files.
 #    Binary supplied via data dep @buildifier_prebuilt//:buildifier.
 #    We use `find` to enumerate files instead of `-r .` so we can exclude
 #    read-only Go module caches (build/, bazel-*) and node_modules that are
@@ -99,20 +115,6 @@ if [[ ${#buildifier_files[@]} -gt 0 ]]; then
     "$BUILDIFIER_BIN" "${buildifier_files[@]}"
 fi
 echo "    Buildifier OK."
-
-# ---------------------------------------------------------------------------
-# 2. Gazelle – keeps Go BUILD targets in sync with Go source files.
-#    Binary supplied via data dep @gazelle//:gazelle.
-# ---------------------------------------------------------------------------
-echo "==> Running Gazelle..."
-GAZELLE_BIN="$(find_tool gazelle)"
-if [[ -n "$GAZELLE_BIN" && -x "$GAZELLE_BIN" ]]; then
-    "$GAZELLE_BIN" -repo_root="$PROJECT_ROOT"
-    echo "    Gazelle OK."
-else
-    echo "    Warning: gazelle binary not found in runfiles – skipping."
-    echo "    To update BUILD files manually, run: bazel run //:gazelle"
-fi
 
 # ---------------------------------------------------------------------------
 # 3. golangci-lint – comprehensive Go static analysis.
