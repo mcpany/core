@@ -229,55 +229,6 @@ func TestMarkdownHandler_Errors(t *testing.T) {
 	})
 }
 
-func TestSummarizeHandler(t *testing.T) {
-	handler := &SummarizeHandler{}
-
-	t.Run("ValidCloudEvent", func(t *testing.T) {
-		event := cloudevents.NewEvent()
-		event.SetID("123")
-		event.SetSource("test-source")
-		event.SetType("test-type")
-		_ = event.SetData(cloudevents.ApplicationJSON, map[string]any{"inputs": "test data"})
-
-		b, err := json.Marshal(event)
-		assert.NoError(t, err)
-		req, _ := http.NewRequest(http.MethodPost, "/", bytes.NewBuffer(b))
-		req.Header.Set("Content-Type", "application/cloudevents+json")
-		rr := httptest.NewRecorder()
-
-		handler.Handle(rr, req)
-
-		assert.Equal(t, http.StatusOK, rr.Code)
-
-		var respEvent cloudevents.Event
-		err = json.Unmarshal(rr.Body.Bytes(), &respEvent)
-		assert.NoError(t, err)
-
-		var data map[string]any
-		err = respEvent.DataAs(&data)
-		assert.NoError(t, err)
-		assert.Equal(t, "Summarized content", data["summary"])
-	})
-
-	t.Run("InvalidMethod", func(t *testing.T) {
-		req, _ := http.NewRequest(http.MethodGet, "/", nil)
-		rr := httptest.NewRecorder()
-
-		handler.Handle(rr, req)
-
-		assert.Equal(t, http.StatusMethodNotAllowed, rr.Code)
-	})
-
-	t.Run("InvalidCloudEvent", func(t *testing.T) {
-		req, _ := http.NewRequest(http.MethodPost, "/", bytes.NewBuffer([]byte("invalid")))
-		rr := httptest.NewRecorder()
-
-		handler.Handle(rr, req)
-
-		assert.Equal(t, http.StatusBadRequest, rr.Code)
-	})
-}
-
 func TestTruncateHandler_Errors(t *testing.T) {
 	handler := &TruncateHandler{}
 

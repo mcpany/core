@@ -71,9 +71,8 @@ func main() {
 	reg.Register("/markdown", &webhooks.MarkdownHandler{})
 	reg.Register("/truncate", &webhooks.TruncateHandler{})
 	reg.Register("/paginate", &webhooks.PaginateHandler{})
-	reg.Register("/summarize", &webhooks.SummarizeHandler{})
 
-	log.Printf("Registered handlers: /markdown, /truncate, /paginate, /summarize")
+	log.Printf("Registered handlers: /markdown, /truncate, /paginate")
 
 	// Main handler with routing logic
 	handler := func(w http.ResponseWriter, r *http.Request) {
