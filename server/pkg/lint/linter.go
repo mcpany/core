@@ -18,9 +18,9 @@ import (
 
 // Severity indicates the importance of a linting result.
 //
-// It is used to categorize findings based on their impact and urgency.
-//
 // Summary: Represents a Severity level.
+//
+// It is used to categorize findings based on their impact and urgency.
 type Severity int
 
 const (
@@ -40,6 +40,8 @@ const (
 
 // String returns the string representation of the severity.
 //
+// Summary: Executes String operation.
+//
 // Parameters:
 //   - s: Severity. The severity level to convert.
 //
@@ -51,8 +53,6 @@ const (
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes String operation.
 func (s Severity) String() string {
 	switch s {
 	case Error:
@@ -68,9 +68,9 @@ func (s Severity) String() string {
 
 // Result represents a single linting finding.
 //
-// It encapsulates details about a detected issue.
-//
 // Summary: Represents a linting finding.
+//
+// It encapsulates details about a detected issue.
 type Result struct {
 	// Severity indicates how critical the finding is.
 	Severity Severity
@@ -84,6 +84,8 @@ type Result struct {
 
 // String returns the human-readable representation of the result.
 //
+// Summary: Executes String operation.
+//
 // Parameters:
 //   - r: Result. The result instance to format.
 //
@@ -95,8 +97,6 @@ type Result struct {
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes String operation.
 func (r Result) String() string {
 	pathStr := ""
 	if r.Path != "" {
@@ -118,6 +118,8 @@ type Linter struct {
 
 // NewLinter creates a new Linter instance.
 //
+// Summary: Initializes NewLinter operation.
+//
 // Parameters:
 //   - cfg: *configv1.McpAnyServerConfig. The configuration to analyze.
 //
@@ -129,13 +131,13 @@ type Linter struct {
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Initializes NewLinter operation.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
 
 // Run executes all configured linting checks.
+//
+// Summary: Executes Run operation.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the operation.
@@ -149,8 +151,6 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes Run operation.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	results := make([]Result, 0, 10)
 
@@ -173,6 +173,8 @@ func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 
 // checkPlainTextSecrets checks for secrets stored in plain text.
 //
+// Summary: Executes checkPlainTextSecrets operation.
+//
 // Parameters:
 //   - None.
 //
@@ -184,8 +186,6 @@ func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes checkPlainTextSecrets operation.
 func (l *Linter) checkPlainTextSecrets() []Result {
 	var results []Result
 
@@ -231,7 +231,7 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 			}
 			if ce := cmd.GetContainerEnvironment(); ce != nil {
 				for k, v := range ce.GetEnv() {
-					checkSecret(v, fmt.Sprintf("command_line_service."+
+					checkSecret(v, f("command_line_service."+
 						"container_environment.env[%s]", k), s.GetName())
 				}
 			}
@@ -257,7 +257,14 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 	return results
 }
 
+// f is a shorthand for fmt.Sprintf.
+func f(format string, a ...any) string {
+	return fmt.Sprintf(format, a...)
+}
+
 // checkShellInjection checks for shell injection risks.
+//
+// Summary: Executes checkShellInjection operation.
 //
 // Parameters:
 //   - None.
@@ -270,8 +277,6 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes checkShellInjection operation.
 func (l *Linter) checkShellInjection() []Result {
 	var results []Result
 	shellRiskPatterns := []string{"sh -c", "bash -c", "cmd /c", "powershell -c"}
@@ -309,6 +314,8 @@ func (l *Linter) checkShellInjection() []Result {
 
 // checkInsecureHTTP checks for insecure HTTP connections.
 //
+// Summary: Executes checkInsecureHTTP operation.
+//
 // Parameters:
 //   - None.
 //
@@ -320,8 +327,6 @@ func (l *Linter) checkShellInjection() []Result {
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes checkInsecureHTTP operation.
 func (l *Linter) checkInsecureHTTP() []Result {
 	var results []Result
 	for _, s := range l.cfg.GetUpstreamServices() {
@@ -362,6 +367,8 @@ func (l *Linter) checkInsecureHTTP() []Result {
 
 // checkCacheSettings checks for cache settings.
 //
+// Summary: Executes checkCacheSettings operation.
+//
 // Parameters:
 //   - None.
 //
@@ -373,8 +380,6 @@ func (l *Linter) checkInsecureHTTP() []Result {
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes checkCacheSettings operation.
 func (l *Linter) checkCacheSettings() []Result {
 	var results []Result
 	for _, s := range l.cfg.GetUpstreamServices() {
