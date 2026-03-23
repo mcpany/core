@@ -1,0 +1,3 @@
+#!/bin/bash
+go test -coverprofile=coverage.out ./pkg/...
+go tool cover -func=coverage.out | grep "total:"
