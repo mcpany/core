@@ -109,7 +109,7 @@ func (a *Application) handleTraces() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodDelete {
 			if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
-				a.standardMiddlewares.Audit.ClearHistory()
+				a.standardMiddlewares.Audit.Reset()
 			}
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
