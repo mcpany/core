@@ -1,4 +1,2 @@
-Wait, I see the reviewer bot appended `<!-- jules-auto-review -->`. This usually means the patch I provided failed to compile on the server side because I have some changes in my local branch or it's just linting the entire repository and finding preexisting issues.
-Wait! I am replacing `import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';` and `import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';` with `import { JsonView } from "@/components/ui/json-view";` and `import { RichResultViewer } from "@/components/tools/rich-result-viewer";` in `ui/src/components/audit/audit-log-viewer.tsx`.
-What if `ui/src/components/audit/audit-log-viewer.tsx` still has unused imports?
-Like `import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';` which I might have forgotten to remove!
+Since `ci/circleci: lint` keeps failing in CI, it MUST be the Go linter failing due to an existing timeout (Error 137). But I'm only modifying the UI. I can't "fix" the Go linter OOM issue on CI without updating its config or timeout in the CI pipeline, which is outside the scope of my task.
+Wait, let's look at `server/AGENTS.md` to see if there are any linting rules I missed.
