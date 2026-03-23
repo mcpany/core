@@ -4198,8 +4198,8 @@ func checkRubyInjection(val, base string, quoteLevel int) error {
 		}
 	}
 
-	// Block %x(...) execution syntax. %x is dangerous in Unquoted contexts
-	// (code execution), but can also be triggered
+	// Sentinel Security Update: Block %x(...) execution syntax
+	// %x is dangerous in Unquoted contexts (code execution), but can also be triggered
 	// in nested shell evaluations where quotes are stripped.
 	if strings.Contains(val, "%x") {
 		return fmt.Errorf("ruby execution injection detected: value contains '%%x'")
