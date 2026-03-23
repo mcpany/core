@@ -51,7 +51,15 @@ type Provider struct {
 // Summary: Initializes a new browser provider.
 //
 // Returns:
-//   - *Provider: The initialized provider.
+//   - *Provider: The initialized provider.// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewProvider() *Provider {
 	return &Provider{}
 }
@@ -70,7 +78,9 @@ func NewProvider() *Provider {
 //
 // Errors:
 //   - Returns "url is required" if url is empty.
-//   - Returns "failed to start playwright" or "failed to launch browser" if the browser fails to start.
+//   - Returns "failed to start playwright" or "failed to launch browser" if the browser fails to start.// Side Effects:
+//   - None.
+
 func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 	if url == "" {
 		return "", fmt.Errorf("url is required")
@@ -91,7 +101,15 @@ func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 // Summary: Defines the metadata for the browse_page tool.
 //
 // Returns:
-//   - map[string]interface{}: The JSON schema definition of the tool.
+//   - map[string]interface{}: The JSON schema definition of the tool.// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (b *Provider) ToolDefinition() map[string]interface{} {
 	return map[string]interface{}{
 		"name":        "browse_page",
@@ -149,7 +167,12 @@ type defaultPlaywrightRunner struct{}
 //   - error: An error if starting fails.
 //
 // Errors:
-//   - Returns error if any.
+//   - Returns error if any.// Parameters:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (d *defaultPlaywrightRunner) Run() (playwrightImpl, error) {
 	pw, err := playwright.Run()
 	if err != nil {
@@ -168,7 +191,12 @@ type realPlaywright struct{ pw *playwright.Playwright }
 //   - error: An error if stopping fails.
 //
 // Errors:
-//   - Returns error if any.
+//   - Returns error if any.// Parameters:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (r *realPlaywright) Stop() error { return r.pw.Stop() }
 
 // Chromium returns the chromium browser type.
@@ -176,7 +204,15 @@ func (r *realPlaywright) Stop() error { return r.pw.Stop() }
 // Summary: Returns chromium browser type.
 //
 // Returns:
-//   - playwrightBrowserType: The chromium browser type.
+//   - playwrightBrowserType: The chromium browser type.// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (r *realPlaywright) Chromium() playwrightBrowserType {
 	return &realBrowserType{r.pw.Chromium}
 }
@@ -195,7 +231,9 @@ type realBrowserType struct{ bt playwright.BrowserType }
 //   - error: An error if launching fails.
 //
 // Errors:
-//   - Returns error if any.
+//   - Returns error if any.// Side Effects:
+//   - None.
+
 func (r *realBrowserType) Launch(options ...playwright.BrowserTypeLaunchOptions) (playwrightBrowser, error) {
 	b, err := r.bt.Launch(options...)
 	if err != nil {
@@ -214,7 +252,12 @@ type realBrowser struct{ b playwright.Browser }
 //   - error: An error if closing fails.
 //
 // Errors:
-//   - Returns error if any.
+//   - Returns error if any.// Parameters:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (r *realBrowser) Close() error { return r.b.Close() }
 
 // NewPage creates a new page in the browser.
@@ -229,7 +272,9 @@ func (r *realBrowser) Close() error { return r.b.Close() }
 //   - error: An error if creating fails.
 //
 // Errors:
-//   - Returns error if any.
+//   - Returns error if any.// Side Effects:
+//   - None.
+
 func (r *realBrowser) NewPage(options ...playwright.BrowserNewPageOptions) (playwrightPage, error) {
 	p, err := r.b.NewPage(options...)
 	if err != nil {
@@ -253,7 +298,9 @@ type realPage struct{ p playwright.Page }
 //   - error: An error if navigation fails.
 //
 // Errors:
-//   - Returns error if any.
+//   - Returns error if any.// Side Effects:
+//   - None.
+
 func (r *realPage) Goto(url string, options ...playwright.PageGotoOptions) (playwright.Response, error) {
 	return r.p.Goto(url, options...)
 }
@@ -267,7 +314,12 @@ func (r *realPage) Goto(url string, options ...playwright.PageGotoOptions) (play
 //   - options: ...playwright.PageLocatorOptions. Options for the locator.
 //
 // Returns:
-//   - playwrightLocator: The new locator.
+//   - playwrightLocator: The new locator.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (r *realPage) Locator(selector string, options ...playwright.PageLocatorOptions) playwrightLocator {
 	return &realLocator{r.p.Locator(selector, options...)}
 }
@@ -286,7 +338,9 @@ type realLocator struct{ l playwright.Locator }
 //   - error: An error if retrieval fails.
 //
 // Errors:
-//   - Returns error if any.
+//   - Returns error if any.// Side Effects:
+//   - None.
+
 func (r *realLocator) TextContent(options ...playwright.LocatorTextContentOptions) (string, error) {
 	return r.l.TextContent(options...)
 }

@@ -38,7 +38,12 @@ type HTTPRateLimitOption func(*HTTPRateLimitMiddleware)
 //   - trust: bool. Whether to trust the proxy headers.
 //
 // Returns:
-//   - HTTPRateLimitOption: The configuration option.
+//   - HTTPRateLimitOption: The configuration option.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func WithTrustProxy(trust bool) HTTPRateLimitOption {
 	return func(m *HTTPRateLimitMiddleware) {
 		m.trustProxy = trust
@@ -55,7 +60,12 @@ func WithTrustProxy(trust bool) HTTPRateLimitOption {
 //   - opts: ...HTTPRateLimitOption. Optional configuration options.
 //
 // Returns:
-//   - *HTTPRateLimitMiddleware: The initialized middleware instance.
+//   - *HTTPRateLimitMiddleware: The initialized middleware instance.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOption) *HTTPRateLimitMiddleware {
 	// ⚡ BOLT: Prevented unbounded memory growth by enforcing a capacity limit on the rate limiter cache.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -86,7 +96,12 @@ func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOpt
 //   - next: http.Handler. The next handler in the chain.
 //
 // Returns:
-//   - http.Handler: The wrapped handler.
+//   - http.Handler: The wrapped handler.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip := util.ExtractIP(r.RemoteAddr)

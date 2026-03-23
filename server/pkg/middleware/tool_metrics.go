@@ -101,7 +101,10 @@ type ToolMetricsMiddleware struct {
 //   - *ToolMetricsMiddleware: A new instance of ToolMetricsMiddleware with metrics registered.
 //
 // Side Effects:
-//   - Registers Prometheus metrics (globally, once).
+//   - Registers Prometheus metrics (globally, once).// Errors:
+//   - None.
+//
+
 func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	registerMetricsOnce.Do(func() {
 		// Register metrics with the default registry (which server/pkg/metrics also uses/exposes)
@@ -135,7 +138,10 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 //
 // Side Effects:
 //   - Updates Prometheus counters, histograms, and gauges.
-//   - Measures execution duration.
+//   - Measures execution duration.// Errors:
+//   - None.
+//
+
 func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	// Get Service ID if possible (from context or tool)
 	var serviceID string

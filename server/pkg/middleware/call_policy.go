@@ -28,7 +28,12 @@ type CallPolicyMiddleware struct {
 //   - toolManager: tool.ManagerInterface. The tool manager to access tool and service information.
 //
 // Returns:
-//   - *CallPolicyMiddleware: The initialized middleware.
+//   - *CallPolicyMiddleware: The initialized middleware.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
 	return &CallPolicyMiddleware{
 		toolManager: toolManager,

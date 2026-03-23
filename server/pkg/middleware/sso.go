@@ -31,7 +31,10 @@ type SSOConfig struct {
 // Side Effects:
 //   - Inspects headers for authentication information.
 //   - Aborts the request with 401 Unauthorized if authentication is missing or invalid.
-//   - Sets "UserID" in the context on successful authentication.
+//   - Sets "UserID" in the context on successful authentication.// Errors:
+//   - None.
+//
+
 func SSOMiddleware(config SSOConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !config.Enabled {

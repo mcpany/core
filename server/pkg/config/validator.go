@@ -128,7 +128,12 @@ func (e *ValidationError) Error() string {
 //   - binaryType (BinaryType): The type of binary (server, worker) which might affect validation rules.
 //
 // Returns:
-//   - ([]ValidationError): A slice of ValidationErrors, which will be empty if the configuration is valid.
+//   - ([]ValidationError): A slice of ValidationErrors, which will be empty if the configuration is valid.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
 	serviceNames := make(map[string]bool)
@@ -534,7 +539,12 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 //   - service (*configv1.UpstreamServiceConfig): The upstream service configuration to validate.
 //
 // Returns:
-//   - (error): An error if validation fails.
+//   - (error): An error if validation fails.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(ctx, service)
 }

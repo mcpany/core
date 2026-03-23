@@ -15,7 +15,13 @@ import (
 //   - map[string]CheckResult: A map of check names to their results.
 //
 // Side Effects:
-//   - Reads environment variables.
+//   - Reads environment variables.// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+
 func CheckAuth() map[string]CheckResult {
 	results := make(map[string]CheckResult)
 

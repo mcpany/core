@@ -25,7 +25,10 @@ import (
 // Side Effects:
 //   - Extracts session ID from context or request.
 //   - Records duration, success/error status, and response size.
-//   - Calls m.RecordActivity to persist metrics.
+//   - Calls m.RecordActivity to persist metrics.// Errors:
+//   - None.
+//
+
 func (m *Manager) Middleware(next mcp.MethodHandler) mcp.MethodHandler {
 	return func(
 		ctx context.Context,

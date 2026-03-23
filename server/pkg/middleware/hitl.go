@@ -39,7 +39,12 @@ type HITLMiddleware struct {
 //   - config: HITLConfig. The configuration for the HITL middleware.
 //
 // Returns:
-//   - *HITLMiddleware: The initialized middleware.
+//   - *HITLMiddleware: The initialized middleware.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewHITLMiddleware(config HITLConfig) *HITLMiddleware {
 	return &HITLMiddleware{
 		config: config,

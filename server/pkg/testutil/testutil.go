@@ -26,7 +26,10 @@ import (
 //   - *pool.Manager: The initialized pool manager.
 //
 // Side Effects:
-//   - Registers "test-service" in the manager.
+//   - Registers "test-service" in the manager.// Errors:
+//   - None.
+//
+
 func NewTestPoolManager(t *testing.T) *pool.Manager {
 	t.Helper()
 	pm := pool.NewManager()
@@ -63,7 +66,10 @@ type MockAuthenticator struct {
 //   - error: The error from AuthenticateFunc.
 //
 // Side Effects:
-//   - Invokes the injected AuthenticateFunc.
+//   - Invokes the injected AuthenticateFunc.// Errors:
+//   - None.
+//
+
 func (m *MockAuthenticator) Authenticate(req *http.Request) error {
 	if m.AuthenticateFunc != nil {
 		return m.AuthenticateFunc(req)

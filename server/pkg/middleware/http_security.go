@@ -16,7 +16,12 @@ import (
 //   - next: http.Handler. The next handler in the chain.
 //
 // Returns:
-//   - http.Handler: The wrapped handler that sets security headers.
+//   - http.Handler: The wrapped handler that sets security headers.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")

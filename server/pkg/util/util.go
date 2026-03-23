@@ -53,7 +53,10 @@ import (
 //   - error: An error if the sanitization fails (e.g., if ids is empty).
 //
 // Side Effects:
+//   - None.// Errors:
 //   - None.
+//
+
 func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, reqHashLength int) (string, error) {
 	if len(ids) == 0 {
 		return "", nil
@@ -221,7 +224,10 @@ func isValidChar(c byte) bool {
 //   - error: An error if sanitization fails.
 //
 // Side Effects:
+//   - None.// Errors:
 //   - None.
+//
+
 func SanitizeServiceName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
@@ -241,7 +247,10 @@ func SanitizeServiceName(name string) (string, error) {
 //   - error: An error if sanitization fails.
 //
 // Side Effects:
+//   - None.// Errors:
 //   - None.
+//
+
 func SanitizeToolName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
@@ -297,7 +306,10 @@ const TrueStr = "true"
 //   - string: A string representation of the UUID (e.g., "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx").
 //
 // Side Effects:
-//   - Generates random data.
+//   - Generates random data.// Errors:
+//   - None.
+//
+
 func GenerateUUID() string {
 	return uuid.New().String()
 }
@@ -317,7 +329,10 @@ func GenerateUUID() string {
 //   - err (error): An error if parsing fails.
 //
 // Side Effects:
+//   - None.// Errors:
 //   - None.
+//
+
 func ParseToolName(toolName string) (service, bareToolName string, err error) {
 	parts := strings.SplitN(toolName, consts.ToolNameServiceSeparator, 2)
 	if len(parts) == 2 {
@@ -340,7 +355,10 @@ func ParseToolName(toolName string) (service, bareToolName string, err error) {
 //   - string: The sanitized string.
 //
 // Side Effects:
+//   - None.// Errors:
 //   - None.
+//
+
 func SanitizeOperationID(input string) string {
 	// Fast path: check if valid without allocating
 	isClean := true
@@ -418,7 +436,10 @@ func stringToBytes(s string) []byte {
 //   - string: The resulting string.
 //
 // Side Effects:
+//   - None.// Errors:
 //   - None.
+//
+
 func BytesToString(b []byte) string {
 	return unsafe.String(unsafe.SliceData(b), len(b))
 }
@@ -437,7 +458,10 @@ func BytesToString(b []byte) string {
 //   - []string: The arguments for the command (e.g., [] or ["docker"]).
 //
 // Side Effects:
-//   - Reads environment variable USE_SUDO_FOR_DOCKER.
+//   - Reads environment variable USE_SUDO_FOR_DOCKER.// Errors:
+//   - None.
+//
+
 func GetDockerCommand() (string, []string) {
 	const dockerCmd = "docker"
 	if os.Getenv("USE_SUDO_FOR_DOCKER") == TrueStr {
@@ -460,7 +484,10 @@ func GetDockerCommand() (string, []string) {
 //   - string: The URL path with placeholders replaced.
 //
 // Side Effects:
+//   - None.// Errors:
 //   - None.
+//
+
 func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParams map[string]bool) string {
 	return replacePlaceholders(urlPath, params, noEscapeParams, url.PathEscape)
 }
@@ -479,7 +506,10 @@ func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParam
 //   - string: The URL query string with placeholders replaced.
 //
 // Side Effects:
+//   - None.// Errors:
 //   - None.
+//
+
 func ReplaceURLQuery(urlQuery string, params map[string]interface{}, noEscapeParams map[string]bool) string {
 	return replacePlaceholders(urlQuery, params, noEscapeParams, url.QueryEscape)
 }
@@ -533,7 +563,10 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 //   - bool: True if the value is nil or a nil pointer, false otherwise.
 //
 // Side Effects:
+//   - None.// Errors:
 //   - None.
+//
+
 func IsNil(i any) bool {
 	if i == nil {
 		return true
@@ -563,7 +596,10 @@ func IsNil(i any) bool {
 //   - string: The string representation of the value.
 //
 // Side Effects:
+//   - None.// Errors:
 //   - None.
+//
+
 func ToString(v any) string {
 	return toStringRecursive(v, 0)
 }
@@ -671,7 +707,10 @@ func toStringRecursive(v any, depth int) string {
 //   - float64: A random float64 value.
 //
 // Side Effects:
-//   - Generates random data.
+//   - Generates random data.// Errors:
+//   - None.
+//
+
 func RandomFloat64() float64 {
 	return rand.Float64() //nolint:gosec // Weak random is sufficient for jitter
 }
@@ -689,7 +728,10 @@ func RandomFloat64() float64 {
 //   - string: The sanitized filename.
 //
 // Side Effects:
+//   - None.// Errors:
 //   - None.
+//
+
 func SanitizeFilename(filename string) string {
 	// 1. Base name only
 	filename = filepath.Base(filename)

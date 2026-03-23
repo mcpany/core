@@ -97,7 +97,10 @@ func (e *ActionableError) Unwrap() error {
 //   - error: The wrapped error.
 //
 // Side Effects:
+//   - None.// Errors:
 //   - None.
+//
+
 func WrapActionableError(context string, err error) error {
 	if err == nil {
 		return nil

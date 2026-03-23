@@ -85,7 +85,15 @@ type SafeDialer struct {
 // By default, it blocks all non-public IP addresses (loopback, private, link-local).
 //
 // Returns:
-//   - (*SafeDialer): A new SafeDialer instance with restrictive defaults.
+//   - (*SafeDialer): A new SafeDialer instance with restrictive defaults.// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewSafeDialer() *SafeDialer {
 	return &SafeDialer{
 		AllowLoopback:  false,
@@ -107,7 +115,12 @@ func NewSafeDialer() *SafeDialer {
 //
 // Returns:
 //   - (net.Conn): The established connection.
-//   - (error): An error if resolution fails, all resolved IPs are blocked by policy, or the connection fails.
+//   - (error): An error if resolution fails, all resolved IPs are blocked by policy, or the connection fails.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -181,7 +194,12 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 //
 // Returns:
 //   - (net.Conn): The established connection.
-//   - (error): An error if the connection is blocked by policy or fails.
+//   - (error): An error if the connection is blocked by policy or fails.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }
@@ -198,7 +216,15 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //   - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: Set to "true" to allow private network connections.
 //
 // Returns:
-//   - (*http.Client): A configured HTTP client.
+//   - (*http.Client): A configured HTTP client.// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
@@ -233,7 +259,12 @@ func NewSafeHTTPClient() *http.Client {
 //   - address (string): The target address (URL or host:port).
 //
 // Returns:
-//   - (error): nil if the connection succeeded, or an error if it failed.
+//   - (error): nil if the connection succeeded, or an error if it failed.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func CheckConnection(ctx context.Context, address string) error {
 	var target string
 	if strings.Contains(address, "://") {
@@ -307,7 +338,12 @@ func CheckConnection(ctx context.Context, address string) error {
 //
 // Returns:
 //   - (net.Listener): The successfully bound listener.
-//   - (error): An error if binding fails after all retries.
+//   - (error): An error if binding fails after all retries.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func ListenWithRetry(ctx context.Context, network, address string) (net.Listener, error) {
 	var lis net.Listener
 	var err error

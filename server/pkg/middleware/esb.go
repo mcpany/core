@@ -34,7 +34,12 @@ type ESBMiddleware struct {
 // Returns:
 //   - (*ESBMiddleware): The newly created middleware.
 //
-// Summary: Creates a new ESBMiddleware.
+// Summary: Creates a new ESBMiddleware.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewESBMiddleware(config *configv1.Middleware) *ESBMiddleware {
 	enabled := true
 	if config != nil {
@@ -58,7 +63,12 @@ func NewESBMiddleware(config *configv1.Middleware) *ESBMiddleware {
 //   - (mcp.Result): The result of the request execution.
 //   - (error): An error if the request fails validation or execution.
 //
-// Summary: Executes the ESB middleware logic.
+// Summary: Executes the ESB middleware logic.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (m *ESBMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	if !m.enabled {
 		return next(ctx, method, req)

@@ -170,7 +170,10 @@ func ensureColumn(db *sql.DB, colName string) error {
 //   - error: An error if the write fails.
 //
 // Side Effects:
-//   - Inserts a row into the audit_logs table.
+//   - Inserts a row into the audit_logs table.// Errors:
+//   - None.
+//
+
 func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -241,7 +244,10 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 //   - error: An error if the query fails.
 //
 // Side Effects:
-//   - Executes a SELECT query on the database.
+//   - Executes a SELECT query on the database.// Errors:
+//   - None.
+//
+
 func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -382,7 +388,13 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 //   - error: An error if closing fails.
 //
 // Side Effects:
-//   - Closes the DB connection.
+//   - Closes the DB connection.// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

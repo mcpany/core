@@ -27,7 +27,12 @@ var jsonWalkerBufferPool = sync.Pool{
 //   - visitor: func(raw []byte) ([]byte, bool). A function that takes the raw string bytes (including quotes) and returns a replacement and a modified flag.
 //
 // Returns:
-//   - []byte: The potentially modified JSON output.
+//   - []byte: The potentially modified JSON output.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
 	var outPtr *[]byte
 	var out []byte
@@ -138,7 +143,12 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 //   - visitor: func(raw []byte) ([]byte, bool). A function that takes the raw string bytes and returns a replacement and a modified flag.
 //
 // Returns:
-//   - []byte: The potentially modified JSON output.
+//   - []byte: The potentially modified JSON output.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func WalkStandardJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
 	var outPtr *[]byte
 	var out []byte

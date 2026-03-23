@@ -32,7 +32,10 @@ type CSRFMiddleware struct {
 //   - *CSRFMiddleware: The initialized middleware.
 //
 // Side Effects:
-//   - Populates the internal allowed origins map.
+//   - Populates the internal allowed origins map.// Errors:
+//   - None.
+//
+
 func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 	m := &CSRFMiddleware{
 		allowedOrigins: make(map[string]bool),
@@ -49,7 +52,13 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 //   - origins: []string. The new list of allowed origins.
 //
 // Side Effects:
-//   - Replaces the existing allowed origins map in a thread-safe manner.
+//   - Replaces the existing allowed origins map in a thread-safe manner.// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+
 func (m *CSRFMiddleware) Update(origins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -72,7 +81,10 @@ func (m *CSRFMiddleware) Update(origins []string) {
 // Side Effects:
 //   - Inspects Method, Headers, Origin, and Referer of incoming requests.
 //   - Blocks requests with 403 Forbidden if validation fails.
-//   - Logs warnings for blocked requests.
+//   - Logs warnings for blocked requests.// Errors:
+//   - None.
+//
+
 func (m *CSRFMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 1. Safe Methods are always allowed

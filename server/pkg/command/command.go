@@ -76,7 +76,10 @@ type Executor interface {
 //   - Executor: A new Executor instance.
 //
 // Side Effects:
-//   - May initialize a Docker client.
+//   - May initialize a Docker client.// Errors:
+//   - None.
+//
+
 func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 	if containerEnv != nil && containerEnv.GetImage() != "" {
 		return newDockerExecutor(containerEnv)
@@ -95,7 +98,10 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 //   - Executor: A new local Executor instance.
 //
 // Side Effects:
+//   - None.// Errors:
 //   - None.
+//
+
 func NewLocalExecutor() Executor {
 	return &localExecutor{}
 }
@@ -120,7 +126,10 @@ type localExecutor struct{}
 //   - error: An error if the operation fails.
 //
 // Side Effects:
-//   - Spawns a subprocess.
+//   - Spawns a subprocess.// Errors:
+//   - None.
+//
+
 func (e *localExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	if workingDir != "" {
 		if err := validation.IsAllowedPath(workingDir); err != nil {
@@ -185,7 +194,10 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 //   - error: An error if the operation fails.
 //
 // Side Effects:
-//   - Spawns a subprocess.
+//   - Spawns a subprocess.// Errors:
+//   - None.
+//
+
 func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	if workingDir != "" {
 		if err := validation.IsAllowedPath(workingDir); err != nil {
@@ -271,7 +283,10 @@ func newDockerExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 //   - error: An error if the operation fails.
 //
 // Side Effects:
-//   - Creates and starts a Docker container.
+//   - Creates and starts a Docker container.// Errors:
+//   - None.
+//
+
 func (e *dockerExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
 	cli, err := e.clientFactory()
@@ -408,7 +423,10 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 //   - error: An error if the operation fails.
 //
 // Side Effects:
-//   - Creates and starts a Docker container.
+//   - Creates and starts a Docker container.// Errors:
+//   - None.
+//
+
 func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
 	cli, err := e.clientFactory()
@@ -540,7 +558,10 @@ type closeWriter struct {
 //   - error: An error if the write fails.
 //
 // Side Effects:
-//   - Writes to the network connection.
+//   - Writes to the network connection.// Errors:
+//   - None.
+//
+
 func (c *closeWriter) Write(p []byte) (n int, err error) {
 	return c.conn.Write(p)
 }
@@ -556,7 +577,10 @@ func (c *closeWriter) Write(p []byte) (n int, err error) {
 //   - error: An error if closing fails.
 //
 // Side Effects:
-//   - Closes the connection writer.
+//   - Closes the connection writer.// Errors:
+//   - None.
+//
+
 func (c *closeWriter) Close() error {
 	if cw, ok := c.conn.(interface{ CloseWrite() error }); ok {
 		return cw.CloseWrite()

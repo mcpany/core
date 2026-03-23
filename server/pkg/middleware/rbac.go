@@ -23,7 +23,15 @@ type RBACMiddleware struct {
 // Summary: Initializes the RBAC middleware.
 //
 // Returns:
-//   - *RBACMiddleware: The initialized middleware.
+//   - *RBACMiddleware: The initialized middleware.// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewRBACMiddleware() *RBACMiddleware {
 	return &RBACMiddleware{
 		enforcer: auth.NewRBACEnforcer(),
@@ -38,7 +46,12 @@ func NewRBACMiddleware() *RBACMiddleware {
 //   - role: string. The required role.
 //
 // Returns:
-//   - func(http.Handler) http.Handler: The middleware function.
+//   - func(http.Handler) http.Handler: The middleware function.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -69,7 +82,12 @@ func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handle
 //   - roles: ...string. The list of allowed roles.
 //
 // Returns:
-//   - func(http.Handler) http.Handler: The middleware function.
+//   - func(http.Handler) http.Handler: The middleware function.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -102,7 +120,12 @@ func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http
 //   - policy: func(user *configv1.User) bool. The policy function to evaluate.
 //
 // Returns:
-//   - func(http.Handler) http.Handler: The middleware function.
+//   - func(http.Handler) http.Handler: The middleware function.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (m *RBACMiddleware) EnforcePolicy(_ func(user *configv1.User) bool) func(http.Handler) http.Handler {
 	return func(_ http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {

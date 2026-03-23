@@ -27,7 +27,15 @@ type RedisStrategy struct {
 // Summary: Initializes a new RedisStrategy.
 //
 // Returns:
-//   - *RedisStrategy: The initialized strategy.
+//   - *RedisStrategy: The initialized strategy.// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewRedisStrategy() *RedisStrategy {
 	return &RedisStrategy{}
 }

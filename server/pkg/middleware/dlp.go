@@ -20,7 +20,12 @@ import (
 //   - log (*slog.Logger): The logger for reporting errors.
 //
 // Returns:
-//   - mcp.Middleware: The configured middleware function.
+//   - mcp.Middleware: The configured middleware function.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware {
 	redactor := NewRedactor(config, log)
 	if redactor == nil {

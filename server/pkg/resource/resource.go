@@ -133,7 +133,15 @@ type Manager struct {
 // Summary: Creates a new resource manager.
 //
 // Returns:
-//   - *Manager: A new Manager instance.
+//   - *Manager: A new Manager instance.// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewManager() *Manager {
 	return &Manager{
 		resources: make(map[string]Resource),
@@ -149,7 +157,12 @@ func NewManager() *Manager {
 //
 // Returns:
 //   - Resource: The resource instance.
-//   - bool: True if found, false otherwise.
+//   - bool: True if found, false otherwise.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (rm *Manager) GetResource(uri string) (Resource, bool) {
 	rm.mu.RLock()
 	defer rm.mu.RUnlock()
@@ -171,7 +184,10 @@ func (rm *Manager) GetResource(uri string) (Resource, bool) {
 // Side Effects:
 //   - Updates the internal resource storage.
 //   - Invalidates the list cache.
-//   - Triggers the on-change callback if registered.
+//   - Triggers the on-change callback if registered.// Errors:
+//   - None.
+//
+
 func (rm *Manager) AddResource(resource Resource) {
 	var callback func()
 	rm.mu.Lock()
@@ -199,7 +215,10 @@ func (rm *Manager) AddResource(resource Resource) {
 // Side Effects:
 //   - Updates the internal resource storage.
 //   - Invalidates the list cache.
-//   - Triggers the on-change callback if registered.
+//   - Triggers the on-change callback if registered.// Errors:
+//   - None.
+//
+
 func (rm *Manager) RemoveResource(uri string) {
 	var callback func()
 	rm.mu.Lock()
@@ -223,7 +242,15 @@ func (rm *Manager) RemoveResource(uri string) {
 // for frequent calls.
 //
 // Returns:
-//   - []Resource: A slice of currently registered resources.
+//   - []Resource: A slice of currently registered resources.// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (rm *Manager) ListResources() []Resource {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Remove).
@@ -271,7 +298,12 @@ func (rm *Manager) ListResources() []Resource {
 //
 // Returns:
 //
-//	None.
+//	None.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (rm *Manager) OnListChanged(f func()) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()
@@ -287,7 +319,12 @@ func (rm *Manager) OnListChanged(f func()) {
 //   - uri: string. The URI of the resource.
 //
 // Returns:
-//   - error: An error if resource not found or subscription fails.
+//   - error: An error if resource not found or subscription fails.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 	resource, ok := rm.GetResource(uri)
 	if !ok {
@@ -310,7 +347,10 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 // Side Effects:
 //   - Removes matching resources from storage.
 //   - Invalidates the list cache.
-//   - Triggers the on-change callback.
+//   - Triggers the on-change callback.// Errors:
+//   - None.
+//
+
 func (rm *Manager) ClearResourcesForService(serviceID string) {
 	var callback func()
 	rm.mu.Lock()

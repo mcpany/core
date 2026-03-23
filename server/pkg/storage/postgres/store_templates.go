@@ -26,7 +26,10 @@ import (
 //   - error: An error if the database operation fails.
 //
 // Side Effects:
-//   - Executes a SELECT query.
+//   - Executes a SELECT query.// Errors:
+//   - None.
+//
+
 func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_templates")
 	if err != nil {
@@ -66,7 +69,10 @@ func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTe
 //   - error: An error if the query fails.
 //
 // Side Effects:
-//   - Executes a SELECT query.
+//   - Executes a SELECT query.// Errors:
+//   - None.
+//
+
 func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
 	query := "SELECT config_json FROM service_templates WHERE id = $1"
 	row := s.db.QueryRowContext(ctx, query, id)

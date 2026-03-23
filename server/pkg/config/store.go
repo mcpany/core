@@ -97,7 +97,12 @@ type ConfigurableEngine interface {
 //
 // Returns:
 //   - (Engine): An initialized Engine implementation.
-//   - (error): An error if the file extension is not supported.
+//   - (error): An error if the file extension is not supported.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -799,7 +804,12 @@ func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 //   - paths ([]string): The list of paths to scan.
 //
 // Returns:
-//   - (*FileStore): A new instance of FileStore.
+//   - (*FileStore): A new instance of FileStore.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths}
 }
@@ -813,7 +823,12 @@ func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 //   - paths ([]string): The list of paths to scan.
 //
 // Returns:
-//   - (*FileStore): A new instance of FileStore.
+//   - (*FileStore): A new instance of FileStore.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths, skipErrors: true}
 }
@@ -858,7 +873,12 @@ func (s *FileStore) HasConfigSources() bool {
 //
 // Returns:
 //   - (*configv1.McpAnyServerConfig): The merged configuration.
-//   - (error): An error if loading or merging fails.
+//   - (error): An error if loading or merging fails.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	filePaths, err := s.collectFilePaths()
 	if err != nil {
@@ -1355,7 +1375,12 @@ type MultiStore struct {
 //   - stores: ...Store. The stores to aggregate.
 //
 // Returns:
-//   - *MultiStore: A new instance of MultiStore.
+//   - *MultiStore: A new instance of MultiStore.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewMultiStore(stores ...Store) *MultiStore {
 	return &MultiStore{stores: stores}
 }
@@ -1369,7 +1394,12 @@ func NewMultiStore(stores ...Store) *MultiStore {
 //
 // Returns:
 //   - *configv1.McpAnyServerConfig: The merged configuration.
-//   - error: An error if loading fails.
+//   - error: An error if loading fails.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
 	for _, s := range ms.stores {

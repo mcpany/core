@@ -56,7 +56,10 @@ type CircuitBreaker struct {
 //   - *CircuitBreaker: A new CircuitBreaker instance.
 //
 // Side Effects:
+//   - None.// Errors:
 //   - None.
+//
+
 func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	return &CircuitBreaker{
 		config: config,
@@ -79,7 +82,10 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 //
 // Side Effects:
 //   - May change the state of the circuit breaker.
-//   - Executes the provided function.
+//   - Executes the provided function.// Errors:
+//   - None.
+//
+
 func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context) error) error {
 	originState := StateClosed
 
@@ -247,7 +253,10 @@ type CircuitBreakerOpenError struct{}
 //   - string: The error message.
 //
 // Side Effects:
+//   - None.// Errors:
 //   - None.
+//
+
 func (e *CircuitBreakerOpenError) Error() string {
 	return "circuit breaker is open"
 }

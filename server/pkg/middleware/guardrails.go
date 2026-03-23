@@ -27,7 +27,12 @@ type GuardrailsConfig struct {
 //   - config: GuardrailsConfig. The configuration for blocking patterns.
 //
 // Returns:
-//   - gin.HandlerFunc: The Gin middleware handler.
+//   - gin.HandlerFunc: The Gin middleware handler.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewGuardrailsMiddleware(config GuardrailsConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Only check POST requests (likely prompt submissions)

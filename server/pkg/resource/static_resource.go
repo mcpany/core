@@ -35,7 +35,12 @@ type StaticResource struct {
 //   - serviceID: string. The ID of the service owning the resource.
 //
 // Returns:
-//   - *StaticResource: The initialized static resource.
+//   - *StaticResource: The initialized static resource.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *StaticResource {
 	return &StaticResource{
 		resource: &mcp.Resource{
@@ -56,7 +61,15 @@ func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *Stat
 // Summary: Retrieves the MCP resource metadata.
 //
 // Returns:
-//   - *mcp.Resource: The MCP resource definition.
+//   - *mcp.Resource: The MCP resource definition.// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (r *StaticResource) Resource() *mcp.Resource {
 	return r.resource
 }
@@ -66,7 +79,15 @@ func (r *StaticResource) Resource() *mcp.Resource {
 // Summary: Retrieves the service ID.
 //
 // Returns:
-//   - string: The service ID.
+//   - string: The service ID.// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (r *StaticResource) Service() string {
 	return r.serviceID
 }
@@ -83,7 +104,10 @@ func (r *StaticResource) Service() string {
 //   - error: An error if fetching fails.
 //
 // Side Effects:
-//   - Performs an HTTP GET request to the resource URI (if not inline content).
+//   - Performs an HTTP GET request to the resource URI (if not inline content).// Errors:
+//   - None.
+//
+
 func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	if r.staticContent != nil {
 		var blob []byte
@@ -173,7 +197,12 @@ func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, err
 //   - _: context.Context. Unused.
 //
 // Returns:
-//   - error: Always returns an error indicating not implemented.
+//   - error: Always returns an error indicating not implemented.// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (r *StaticResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to static resources is not yet implemented")
 }
