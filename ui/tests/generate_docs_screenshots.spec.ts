@@ -702,7 +702,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         });
 
         await testBtn.click();
-        await expect(page.getByText('Test passed: 200 OK')).toBeVisible();
+        await expect(page.getByText('Test passed: 200 OK').first()).toBeVisible();
 
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'verification.png') });
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'test_connection.png') }); // Alias

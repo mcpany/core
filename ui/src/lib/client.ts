@@ -349,6 +349,15 @@ const getMetadata = () => {
  * API Client for interacting with the MCP Any server.
  */
 export const apiClient = {
+    /**
+     * Retrieves the current active intent alignment status.
+     * @returns A promise that resolves to an array of SubagentStatus.
+     */
+    getActiveIntentAlignment: async () => {
+        const res = await fetchWithAuth('/api/v1/alignment/status');
+        if (!res.ok) throw new Error('Failed to fetch intent alignment status');
+        return res.json();
+    },
     // Services (Migrated to gRPC)
 
     /**

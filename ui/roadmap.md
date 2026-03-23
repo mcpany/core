@@ -504,7 +504,7 @@
 - [ ] **[P0] Authenticated Discovery Widget**: Security status indicator for masked agent capability cards and A2A auth-gate actions. (Added: 2026-06-01)
 
 #### Upcoming (2026-05-29 Evolution)
-- [ ] **[P0] Swarm Anomaly Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and CSAD neutralization events. (Added: 2026-05-29)
+- [x] **[P0] Swarm Anomaly Visualizer**: (Implemented via Multi-Agent Swarm Topology Monitor).
 - [ ] **[P0] Mesh Command Sovereignty Dashboard**: Visual "Chain of Mesh-Command" tracer for inter-teammate mailbox validation. (Added: 2026-05-29)
 - [ ] **[P0] Teammate Handshake Monitor**: Real-time status indicator for ATH identity exchange in horizontal swarms. (Added: 2026-05-29)
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
@@ -594,7 +594,7 @@
 - [ ] **[P0] WASM-Hook Safety Reporter**: (2026-06-15) UI for viewing behavioral profiling results for un-attested configuration hooks.
 
 ### Upcoming: [2026-06-17]
-- [ ] **[P0] Active Intent Alignment Monitor**: (2026-06-17) Visual indicator for AIA heartbeat status and semantic drift alerts.
+- [x] **[P0] Active Intent Alignment Monitor**: (2026-06-17) Visual indicator for AIA heartbeat status and semantic drift alerts.
 - [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
@@ -604,3 +604,37 @@
 - [ ] **[P0] Entanglement Privacy Auditor**: (2026-06-18) Security dashboard for reviewing SES-redacted fragments and monologue smearing alerts.
 - [ ] **[P0] Logic Grafting Alert Console**: (2026-06-18) Forensic UI for inspecting the ARI Hub "Reasoning Mainline" and blocked branch proposals.
 - [ ] **[P0] Hardware Monotonic Counter Monitor**: (2026-06-18) Status widget for visualizing mission-root continuity and TPM-attestation provenance.
+
+### Upcoming: [2026-06-19]
+- [ ] **[P1] Visual Attention Dashboard**: (2026-06-19) Heatmap visualization of context fragments (User, System, Injected) driving agent tool-call reasoning.
+- [ ] **[P0] CFIA Signature Reviewer**: (2026-06-19) UI for reviewing and hardware-signing project-local context files.
+- [ ] **[P0] Attention-Locked Tool Trigger Visualization**: (2026-06-19) Real-time alerts and visualization when a high-risk tool call is interdicted by the ALT middleware.
+
+### Upcoming: [2026-06-20]
+- [ ] **[P0] CFIA Attestation Workspace**: (2026-06-20) Security dashboard for reviewed and TPM-signing project-local context files.
+- [ ] **[P1] Visual Attention Heatmap**: (2026-06-20) Advanced visualization of reasoning drivers for high-risk tool calls, supporting the ALT workflow.
+- [ ] **[P1] Reasoning Lineage Inspector**: (2026-06-20) Visual debugger for cryptographically signed "Chains of Reason".
+
+### Upcoming: [2026-06-21]
+- [ ] **[P0] Mission Resumption Manager**: (2026-06-21) UI for monitoring and manually triggering MRCP-mediated mission checkpoints.
+- [ ] **[P0] Mailbox Integrity Auditor**: (2026-06-21) Forensic dashboard for reviewing hardware-attested coordinate messages and MIS-blocked injection attempts.
+- [ ] **[P0] Hardware-Bound Budget Widget**: (2026-06-21) Real-time monitor for ARE v1.7 budget consumption and hardware attestation status.
+- [ ] **[P1] Logic-Grafting Alert Center**: (2026-06-21) Real-time visualization of semantic entropy spikes and blocked logic-grafting events in shared shards.
+
+### Upcoming: [2026-06-22]
+- [ ] **[P0] Multi-Channel Sovereignty Dashboard**: (2026-06-22) Real-time visualization of platform-bound isolation status and blocked cross-channel probes.
+- [ ] **[P0] Attention-Locking Visualizer**: (2026-06-22) Dashboard for monitoring mission-root "pinning" status and attention-density alerts.
+- [ ] **[P0] Headless Handoff Continuity Tracker**: (2026-06-22) Visual hierarchical tracer for signed intent transfers across process boundaries.
+- [ ] **[P1] Multi-Modal Attention Probe Alert**: (2026-06-22) Security UI for inspecting blocked attention-eviction attempts in non-textual reasoning traces.
+
+### Upcoming: [2026-06-23]
+- [ ] **[P0] Attention Masking Interface**: UI for configuring and monitoring ADG v2 hardware-attested attention masks. (Added: 2026-06-23)
+- [ ] **[P0] Mission-Root Lineage Visualizer**: Enhanced visualizer for RMRA-compliant headless mission chains. (Added: 2026-06-23)
+- [ ] **[P0] Cross-Channel Sanitization Log**: Security dashboard for reviewing AIS-redacted coordination messages. (Added: 2026-06-23)
+- [ ] **[P0] Behavioral Anchoring Monitor**: Real-time visualization of stylometric consistency scores vs. mission-root manifest. (Added: 2026-06-23)
+
+### Upcoming: [2026-06-24]
+- [ ] **[P0] Mission Resumption Manager**: (2026-06-24) UI for monitoring and manually triggering AMR-mediated mission recovery checkpoints.
+- [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
+- [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
+- [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
