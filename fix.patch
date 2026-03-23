@@ -1,0 +1,6 @@
+--- server/pkg/sidecar/webhooks/handlers.go
++++ server/pkg/sidecar/webhooks/handlers.go
+@@ -423,2 +423,2 @@
+	w.WriteHeader(http.StatusOK)
+-	w.Write(respBytes)
++	_, _ = w.Write(respBytes)
