@@ -61,36 +61,6 @@ describe('SchemaVisualizer', () => {
         expect(screen.getByText('*')).toBeInTheDocument();
     });
 
-    it('renders enum and default values nicely', () => {
-        const schema = {
-            type: 'object',
-            properties: {
-                role: {
-                    type: 'string',
-                    description: 'The user role',
-                    enum: ['admin', 'user', 'guest'],
-                    default: 'guest',
-                },
-            },
-        };
-
-        render(<SchemaVisualizer schema={schema} />);
-
-        // Properties
-        expect(screen.getByText('role')).toBeInTheDocument();
-        expect(screen.getByText('The user role')).toBeInTheDocument();
-
-        // Check enum
-        expect(screen.getByText('Allowed values:')).toBeInTheDocument();
-        expect(screen.getByText('admin')).toBeInTheDocument();
-        expect(screen.getByText('user')).toBeInTheDocument();
-        // Since 'guest' is both an enum and default, it might appear twice or in different contexts.
-        expect(screen.getAllByText('guest').length).toBeGreaterThan(0);
-
-        // Check default
-        expect(screen.getByText('Default:')).toBeInTheDocument();
-    });
-
     it('renders nested objects', () => {
         const schema = {
             type: 'object',
@@ -134,5 +104,29 @@ describe('SchemaVisualizer', () => {
         // Array items usually rendered with name "items" in our component for the expanded view
         expect(screen.getByText('items')).toBeInTheDocument();
         expect(screen.getByText('A tag')).toBeInTheDocument();
+    });
+
+    it('renders enum and default values nicely', () => {
+        const schema = {
+            type: 'object',
+            properties: {
+                status: {
+                    type: 'string',
+                    enum: ['active', 'inactive', 'pending'],
+                    default: 'active',
+                },
+            },
+        };
+
+        render(<SchemaVisualizer schema={schema} />);
+
+        expect(screen.getByText('status')).toBeInTheDocument();
+        expect(screen.getByText('Allowed values:')).toBeInTheDocument();
+        expect(screen.getAllByText('active')[0]).toBeInTheDocument();
+        expect(screen.getByText('inactive')).toBeInTheDocument();
+        expect(screen.getByText('pending')).toBeInTheDocument();
+        expect(screen.getByText('Default:')).toBeInTheDocument();
+        // Default "active" is rendered as a separate span as well
+        expect(screen.getAllByText('active').length).toBe(2);
     });
 });
