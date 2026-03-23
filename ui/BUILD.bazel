@@ -17,7 +17,7 @@ load("@npm//ui:vitest/package_json.bzl", vitest_bin = "bin")
 # Scale both frontend and backend deployments independently in Kubernetes.
 # ---------------------------------------------------------------------------
 load("@rules_oci//oci:defs.bzl", "oci_image", "oci_image_index", "oci_load", "oci_push")
-load("@rules_pkg//pkg:mappings.bzl", "pkg_files", "strip_prefix")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 load("//ui:playwright_tests.bzl", "define_playwright_tests")
 load("//ui:vitest_tests.bzl", "define_vitest_tests")
@@ -164,9 +164,6 @@ pkg_files(
     name = "ui_node_modules_files",
     srcs = [":node_modules"],
     prefix = "/app/node_modules",
-    include_runfiles = True,
-    strip_prefix = strip_prefix.from_pkg(),
-    renames = {"node_modules/.aspect_rules_js/@babel+runtime@7.28.6/node_modules/@babel/runtime": ".babel_runtime_ignore_me"},
 )
 
 # Static config files required by `vite preview` at runtime.
