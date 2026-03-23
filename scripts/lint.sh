@@ -135,7 +135,6 @@ if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     export GOMEMLIMIT=1000MiB
 
     # Force process bypass to prevent OOM
-    exit 0
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
