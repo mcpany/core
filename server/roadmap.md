@@ -149,6 +149,11 @@
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
 *   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
+#### Upcoming (2026-06-25 Evolution)
+*   **[P0] Asynchronous Mailbox Sharding (AMS) Middleware**: Scaling service for horizontal teammate meshes that hosts task-bound mailbox shards to eliminate coordination locks. (Added: 2026-06-25)
+*   **[P0] Deceptive Context Attestation (DCA) Provider**: Core security service requiring hardware-attested hash signatures for project-local context files. (Added: 2026-06-25)
+*   **[P1] Event-Driven Reasoning Snapshots**: Upgrade for AMR Gateway to trigger hardware-locked context checkpoints during high-entropy reasoning events. (Added: 2026-06-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

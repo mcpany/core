@@ -56,3 +56,7 @@ Sharded Mailbox Sovereignty (SMS) is an advanced security and performance extens
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+*   **2026-06-25:** **Implementing Task-Bound Mailbox Sharding to Resolve Coordination Locks.**
+    *   **Context:** Horizontal meshes are hitting "Mailbox Lock" bottlenecks during shared state synchronization.
+    *   **Architecture Adjustment:** Introducing **Asynchronous Mailbox Sharding (AMS)** as the primary scaling mechanism in Section 4. Shards are now dynamically created per-task and reconciled asynchronously with the mission root.
+    *   **Security Impact:** Mitigates the risk of "Mailbox Splicing" by strictly isolating teammate coordination at the task fragment level.

@@ -1458,6 +1458,17 @@
 - **Lock-Free Sharded Mailbox Hub**: (P0) High-performance coordination service implementing CRDT-based task list synchronization for non-blocking horizontal Agent Teams.
 - **Zero-Knowledge Discovery (ZKD) Proxy**: (P1) Advanced discovery gate that mandates cryptographic capability masking until a mission-bound handshake is completed.
 
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Atomic Mission-Resumption (AMR) Gateway**: (P0) Authoritative resumption broker utilizing hardware-locked "Context Snapshots" to facilitate sub-100ms recovery and eliminate cognitive stall.
+- **Deceptive Context Attestation (DCA) Provider**: (P0) Core security service requiring hardware-attested hash signatures for all project-local natural language context files (e.g., `GEMINI.md`).
+
+### Priority Shifts
+- **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Evolving into the primary scaling service for horizontal teammate meshes with task-bound mailbox shards.
+- **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **AMS-compliant** shard isolation.
+- **Sharded Mailbox Sovereignty (SMS)**: (Re-affirmed P0) Designated as the primary enforcement layer for the new **Asynchronous Mailbox Sharding** architecture.
+
 ### Priority Shifts
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.

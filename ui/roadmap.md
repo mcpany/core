@@ -638,3 +638,8 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+### Upcoming: [2026-06-25]
+- [ ] **[P0] Mailbox Shard Auditor**: (2026-06-25) Security dashboard for monitoring task-bound shards and fragmented state isolation in horizontal meshes.
+- [ ] **[P0] Deceptive Context Shield**: (2026-06-25) Authorization UI for hardware-attested signing of project-local context files.
+- [ ] **[P1] Reasoning Entropy Heatmap**: (2026-06-25) Advanced visualization for event-driven AMR snapshots, highlighting high-entropy reasoning triggers.

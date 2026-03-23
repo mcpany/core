@@ -49,3 +49,7 @@ The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mecha
 
 ## 7. Evolutionary Changelog
 * **2026-06-24:** Initial Document Creation.
+* **2026-06-25:** **Resolving Cognitive Stall via Hardware-Locked Context Snapshots.**
+    *   **Context:** Market analysis confirms that "Cold Boot" latency is the primary barrier to multi-day agent missions.
+    *   **Architecture Adjustment:** Mandating the use of TPM-bound "Frontier Shards" in Section 4. Transitioning from periodic to event-driven snapshotting (triggered by high-entropy tool calls).
+    *   **Security Impact:** Prevents "Resumption Hijacking" by ensuring that only the original mission-root authority can unlock a resumption token.
