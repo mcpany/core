@@ -1757,7 +1757,7 @@ and some new UI features lack comprehensive integration tests.
 
 #### Upcoming (2026-05-30 Infrastructure Evolution Expansion)
 
-* **[P0] Intent Hierarchy Enforcer (IHE)**: Mandatory priority-based state.
-* **[P0] Kernel-Namespace (KNS) Command Runner**: High-performance isolation.
-* **[P0] Mission Anchor Host (MAH)**: Orchestration service for pinned anchors.
-* **[P1] Zero-Knowledge Capability Masker**: Advanced discovery component.
+*   **[P0] Intent Hierarchy Enforcer (IHE)**: Mandatory priority-based state.
+*   **[P0] Kernel-Namespace (KNS) Command Runner**: High-performance isolation.
+*   **[P0] Mission Anchor Host (MAH)**: Orchestration service for pinned anchors.
+*   **[P1] Zero-Knowledge Capability Masker**: Advanced discovery component.
