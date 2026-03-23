@@ -55,6 +55,9 @@ jobs:
           name: Run Lint
           command: |
             . venv/bin/activate
+            cd server
+            go mod tidy
+            cd ..
             bazelisk run //:lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
