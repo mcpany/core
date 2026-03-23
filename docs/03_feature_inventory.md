@@ -1364,9 +1364,4 @@
 ### Strategic Additions: 2026-06-18
 - **[P0] ALS Controller**: Attention-Locked Sovereignty for context protection.
 - **[P0] PBRB Firewall**: Phase-bound reasoning budget monitoring.
-- **[P1] T2T Stylometric Relay**: Stylometric identity attestation for horizontal teammates.
-
-### Strategic Additions: 2026-06-18
-- **[P0] ALS Controller**: Attention-Locked Sovereignty for context protection.
-- **[P0] PBRB Firewall**: Phase-bound reasoning budget monitoring.
-- **[P1] T2T Stylometric Relay**: Stylometric identity attestation for horizontal teammates.
+- **[P1] T2T Stylometric Relay**: Identity verification for horizontal teammates.

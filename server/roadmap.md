@@ -452,3 +452,7 @@ These features represent the next logical steps for the product, focusing on Ent
 ### Update: 2026-06-18 - Strategic Infrastructure Alignment
 - **[P0] ALS Controller**: implementation for context window protection.
 - **[P0] PBRB Firewall**: Token-spend governance and economic safeguards.
+
+### Update: 2026-06-18 - Strategic Infrastructure Alignment
+- [P0] ALS Controller implementation for context window protection.
+- [P0] PBRB Firewall for token-spend governance.

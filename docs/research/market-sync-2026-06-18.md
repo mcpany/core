@@ -6,5 +6,5 @@
 - **Claude Code**: Horizontal collaboration via "TeammateTool" with stylometric attestation.
 
 ## Strategic Gaps
-- **Attention Sovereignty**: Need for cryptographic locking of context shards.
+- **Attention Sovereignty**: Need for locking context fragments.
 - **Reasoning Budgets**: Need for phase-bound spend control.
