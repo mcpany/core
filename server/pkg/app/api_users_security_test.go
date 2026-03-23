@@ -117,7 +117,7 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 		// Attacker bypasses URL check by using their own URL but updating the admin in the JSON body
 		payload := map[string]interface{}{
 			"user": map[string]interface{}{
-				"id": "admin-user",
+				"id":    "admin-user",
 				"roles": []string{"user"}, // we try to demote admin to user
 			},
 		}
