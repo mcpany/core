@@ -44,6 +44,22 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 		}
 	})
 
+	t.Run("OpenClaw_UnsupportedCapability", func(t *testing.T) {
+		taskOCUnsupported := &interop.Task{
+			ID:        "task-oc-unsup",
+			Framework: "OpenClaw",
+			Intent:    "unsupported_intent",
+			Payload:   map[string]string{"data": "test"},
+		}
+
+		_, err := hub.RouteTask(ctx, taskOCUnsupported)
+		if err == nil {
+			t.Error("Expected error for unsupported OpenClaw capability, got nil")
+		} else if err.Error() != "OpenClaw does not support capability: unsupported_intent" {
+			t.Errorf("Unexpected error message: %v", err)
+		}
+	})
+
 	// 3. CrewAI Task: Role Delegation
 	t.Run("CrewAI_RoleDelegation", func(t *testing.T) {
 		task2 := &interop.Task{
@@ -67,6 +83,38 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 		}
 	})
 
+	t.Run("CrewAI_DefaultRole", func(t *testing.T) {
+		taskCAIDefaultRole := &interop.Task{
+			ID:        "task-cai-003",
+			Framework: "CrewAI",
+			Intent:    "task_delegation",
+		}
+
+		res, err := hub.RouteTask(ctx, taskCAIDefaultRole)
+		if err != nil {
+			t.Fatalf("Failed to execute CrewAI task: %v", err)
+		}
+
+		if res.Telemetry["delegated_role"] != "generalist" {
+			t.Errorf("Expected CrewAI delegated_role to be 'generalist', got '%s'", res.Telemetry["delegated_role"])
+		}
+	})
+
+	t.Run("CrewAI_UnsupportedCapability", func(t *testing.T) {
+		taskCAIUnsupported := &interop.Task{
+			ID:        "task-cai-unsup",
+			Framework: "CrewAI",
+			Intent:    "unsupported_intent",
+		}
+
+		_, err := hub.RouteTask(ctx, taskCAIUnsupported)
+		if err == nil {
+			t.Error("Expected error for unsupported CrewAI capability, got nil")
+		} else if err.Error() != "CrewAI does not support capability: unsupported_intent" {
+			t.Errorf("Unexpected error message: %v", err)
+		}
+	})
+
 	// 4. AutoGen Task: Subagent Checkpoint
 	t.Run("AutoGen_SubagentCheckpoint", func(t *testing.T) {
 		task3 := &interop.Task{
@@ -87,6 +135,21 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 
 		if res3.Telemetry["history_length"] == "0" {
 			t.Errorf("Expected AutoGen chat history to increment, history_length is 0")
+		}
+	})
+
+	t.Run("AutoGen_UnsupportedCapability", func(t *testing.T) {
+		taskAGUnsupported := &interop.Task{
+			ID:        "task-ag-unsup",
+			Framework: "AutoGen",
+			Intent:    "unsupported_intent",
+		}
+
+		_, err := hub.RouteTask(ctx, taskAGUnsupported)
+		if err == nil {
+			t.Error("Expected error for unsupported AutoGen capability, got nil")
+		} else if err.Error() != "AutoGen does not support capability: unsupported_intent" {
+			t.Errorf("Unexpected error message: %v", err)
 		}
 	})
 
