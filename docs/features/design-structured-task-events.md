@@ -38,14 +38,14 @@ As AI agent swarms evolve from simple tool-calling chains to complex, long-runni
     *   `GET /mission/:id/timeline`: Retrieve the standardized event stream for a mission.
 *   **Data Storage/State:**
     *   Events are stored in a dedicated, append-only table in the internal SQLite database.
-    *   Each event is cryptographically linked to the parent `MissionRoot` and the agent's `IdentityToken`.
+    *   Each event is cryptographically linked to the parent `MissionRoot` and the agent’s `IdentityToken`.
 
 ## 5. Alternatives Considered
 *   **Framework-Specific Adapters**: Rejected due to high maintenance overhead and lack of cross-framework standardization.
 *   **Generic Webhook Bridge**: Rejected because it lacks the semantic validation and mission-linking required for secure agent swarms.
 
 ## 6. Cross-Cutting Concerns
-*   **Security (Zero Trust):** All completion events must be signed by the agent's identity token. MCP Any verifies that the agent had the authorized "Intent-Scope" to complete the specified task.
+*   **Security (Zero Trust):** All completion events must be signed by the agent’s identity token. MCP Any verifies that the agent had the authorized "Intent-Scope" to complete the specified task.
 *   **Observability:** Integrated with the "Reasoning Effort Visualizer" to correlate completion latency with reported cognitive effort.
 
 ## 7. Evolutionary Changelog

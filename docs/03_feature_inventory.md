@@ -6,7 +6,7 @@
 ### Proposed Additions
 - **Adaptive Reasoning Balancer**: (P1) Resource management middleware that interprets reasoning-effort signals (e.g., `x-gemini-reasoning-effort`) to dynamically allocate token and compute budgets.
 - **Structured Task Event Bridge**: (P0) Authoritative infrastructure for routing and persisting standardized `task_completion` events across disparate agent frameworks.
-- **Zero-Hallucination Security Kernel**: (P0) A transport-layer enforcement engine for deterministic deny-rules that operates independently of the agent's reasoning state.
+- **Zero-Hallucination Security Kernel**: (P0) A transport-layer enforcement engine for deterministic deny-rules that operates independently of the agent’s reasoning state.
 
 ### Priority Shifts
 - **Deterministic Permission Guard (DPG)**: (Promoted to P0) Designated as a critical "HDS" (Hardened Deterministic Safety) component to address production CLI bypass vulnerabilities.

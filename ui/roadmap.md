@@ -348,12 +348,12 @@
 - [ ] **[P0] A2A Session Persistence Dashboard**: Real-time monitor for tracking token refresh and session health in long-running reasoning chains. (Added: 2026-04-25)
 - [ ] **[P0] DAP Enforcement Status Widget**: Security indicator for mandatory Deterministic Absence Proof compliance during agent boot. (Added: 2026-04-25)
 
-#### Upcoming (2026-04-24 Evolution)
 #### Upcoming (2026-05-09 Evolution)
 - [ ] **[P0] Structured Task Event Timeline**: Visual mission timeline showing standardized `task_completion` events from heterogeneous swarms. (Added: 2026-05-09)
 - [ ] **[P0] Zero-Hallucination Policy Debugger**: Tool for verifying transport-layer deny-rules and auditing DPG/HDS enforcement status. (Added: 2026-05-09)
 - [ ] **[P1] Reasoning Effort Visualizer**: Real-time graph correlating token usage with agent-reported reasoning effort signals. (Added: 2026-05-09)
 
+#### Upcoming (2026-04-24 Evolution)
 - [ ] **[P0] A2A Handshake Status Monitor**: Real-time visualization of authenticated inter-agent handshakes and auth failures. (Added: 2026-04-24)
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)

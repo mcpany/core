@@ -501,12 +501,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Session Persistence Middleware**: Core security service for managing token refresh and trust persistence in deep reasoning chains. (Added: 2026-04-25)
 *   **[P0] DAP Enforcement for Pre-Flight Validator**: Mandatory enforcement of Deterministic Absence Proofs as a prerequisite for all agent boots. (Added: 2026-04-25)
 
-#### Upcoming (2026-04-24 Evolution)
 #### Upcoming (2026-05-09 Evolution)
 - [ ] **[P0] Structured Task Event Bridge**: Authoritative infrastructure for routing and persisting standardized `task_completion` events across disparate agent frameworks. (Added: 2026-05-09)
 - [ ] **[P0] Zero-Hallucination Security Kernel**: Transport-layer enforcement engine for deterministic deny-rules independent of reasoning state. (Added: 2026-05-09)
 - [ ] **[P1] Adaptive Reasoning Balancer**: Resource management middleware for dynamic token and compute budget allocation based on reasoning signals. (Added: 2026-05-09)
 
+#### Upcoming (2026-04-24 Evolution)
 *   **[P0] A2A Authenticated Handshake Provider**: Implementation of Gemini CLI v0.33.0 style HTTP authentication for all agent-to-agent remote communications. (Added: 2026-04-24)
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
