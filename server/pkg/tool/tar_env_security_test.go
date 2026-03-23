@@ -18,7 +18,7 @@ import (
 
 func TestTarEnvInjection_Protection(t *testing.T) {
 	// This test ensures that TAR_OPTIONS injection via environment variables is prevented
-	// either by argument injection checks or by the tool itself rejecting invalid options.
+    // either by argument injection checks or by the tool itself rejecting invalid options.
 
 	// Setup a dummy file to tar
 	err := os.WriteFile("testfile.txt", []byte("data"), 0644)
@@ -63,8 +63,8 @@ func TestTarEnvInjection_Protection(t *testing.T) {
 	// Execute
 	_, _ = localTool.Execute(context.Background(), req)
 
-	// We expect failure (tar complaining) or blocking.
-	// In any case, pwned must not exist.
+    // We expect failure (tar complaining) or blocking.
+    // In any case, pwned must not exist.
 
 	// Check if pwned file was created
 	_, err = os.Stat("pwned")

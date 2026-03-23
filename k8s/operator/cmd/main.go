@@ -22,7 +22,6 @@ import (
 	mcpv1alpha1 "github.com/mcpany/core/k8s/operator/api/v1alpha1"
 	"github.com/mcpany/core/k8s/operator/controllers"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
-	//+kubebuilder:scaffold:imports
 )
 
 var (
@@ -32,14 +31,10 @@ var (
 
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
-
 	utilruntime.Must(mcpv1alpha1.AddToScheme(scheme))
-	//+kubebuilder:scaffold:scheme
 }
 
 // main is the entry point for the MCP Operator.
-//
-// Summary: Entry point for the application.
 func main() {
 	var metricsAddr string
 	var enableLeaderElection bool
@@ -76,7 +71,6 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "MCPServer")
 		os.Exit(1)
 	}
-	//+kubebuilder:scaffold:builder
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
 		setupLog.Error(err, "unable to set up health check")

@@ -20,7 +20,7 @@ import (
 	mcpv1alpha1 "github.com/mcpany/core/k8s/operator/api/v1alpha1"
 )
 
-// MCPServerReconciler reconciles a MCPServer object
+// MCPServerReconciler reconciles a MCPServer object.
 type MCPServerReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
@@ -32,13 +32,10 @@ type MCPServerReconciler struct {
 //+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
 
-// Reconcile is part of the main kubernetes reconciliation loop which aims to
-// move the current state of the cluster closer to the desired state.
-// It creates or updates the Deployment and Service for the MCPServer.
+// Reconcile is part of the main kubernetes reconciliation loop.
 func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
-	// Fetch the MCPServer instance
 	mcpServer := &mcpv1alpha1.MCPServer{}
 	err := r.Get(ctx, req.NamespacedName, mcpServer)
 	if err != nil {
@@ -48,7 +45,6 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, err
 	}
 
-	// 1. Check if the Deployment already exists
 	found := &appsv1.Deployment{}
 	err = r.Get(ctx, types.NamespacedName{Name: mcpServer.Name, Namespace: mcpServer.Namespace}, found)
 	if err != nil && errors.IsNotFound(err) {
@@ -65,7 +61,6 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, err
 	}
 
-	// 2. Ensure the deployment size matches the spec
 	size := mcpServer.Spec.Replicas
 	if *found.Spec.Replicas != *size {
 		found.Spec.Replicas = size
@@ -76,7 +71,6 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{Requeue: true}, nil
 	}
 
-	// 3. Check if the Service already exists
 	foundService := &corev1.Service{}
 	err = r.Get(ctx, types.NamespacedName{Name: mcpServer.Name, Namespace: mcpServer.Namespace}, foundService)
 	if err != nil && errors.IsNotFound(err) {
@@ -93,7 +87,6 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, err
 	}
 
-	// 4. Update the MCPServer status
 	if mcpServer.Status.AvailableReplicas != found.Status.AvailableReplicas {
 		mcpServer.Status.AvailableReplicas = found.Status.AvailableReplicas
 		err := r.Status().Update(ctx, mcpServer)
@@ -105,7 +98,7 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	return ctrl.Result{}, nil
 }
 
-// deploymentForMCPServer creates a new Deployment for the MCPServer resource.
+// deploymentForMCPServer creates a Deployment for MCPServer.
 func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *appsv1.Deployment {
 	ls := labelsForMCPServer(m.Name)
 	replicas := m.Spec.Replicas
@@ -158,7 +151,7 @@ func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *
 	return dep
 }
 
-// serviceForMCPServer creates a new Service for the MCPServer resource.
+// serviceForMCPServer creates a Service for MCPServer.
 func (r *MCPServerReconciler) serviceForMCPServer(m *mcpv1alpha1.MCPServer) *corev1.Service {
 	ls := labelsForMCPServer(m.Name)
 	svc := &corev1.Service{
@@ -181,12 +174,12 @@ func (r *MCPServerReconciler) serviceForMCPServer(m *mcpv1alpha1.MCPServer) *cor
 	return svc
 }
 
-// labelsForMCPServer returns the labels for selecting the resources
+// labelsForMCPServer returns selection labels.
 func labelsForMCPServer(name string) map[string]string {
 	return map[string]string{"app": "mcp-server", "mcp_cr": name}
 }
 
-// SetupWithManager sets up the controller with the Manager.
+// SetupWithManager sets up the controller.
 func (r *MCPServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&mcpv1alpha1.MCPServer{}).

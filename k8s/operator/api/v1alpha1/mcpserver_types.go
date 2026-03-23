@@ -3,8 +3,6 @@
 
 package v1alpha1
 
-// Package v1alpha1 provides the v1alpha1 logic.
-
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )

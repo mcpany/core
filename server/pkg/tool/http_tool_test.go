@@ -67,6 +67,7 @@ func setupHTTPToolTest(t *testing.T, handler http.Handler, callDefinition *confi
 
 func TestHTTPTool_Execute_InputTransformation(t *testing.T) {
 
+
 	expectedBody := `name=test&age=30`
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body, err := io.ReadAll(r.Body)
@@ -99,6 +100,7 @@ func TestHTTPTool_Execute_InputTransformation(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_OutputTransformation_XML(t *testing.T) {
+
 
 	xmlResponse := `<user><id>123</id><name>Test</name></user>`
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -133,6 +135,7 @@ func TestHTTPTool_Execute_OutputTransformation_XML(t *testing.T) {
 
 func TestHTTPTool_Execute_OutputTransformation_Text(t *testing.T) {
 
+
 	textResponse := "User: test-user, Role: admin"
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")
@@ -166,6 +169,7 @@ func TestHTTPTool_Execute_OutputTransformation_Text(t *testing.T) {
 
 func TestHTTPTool_Execute_NoTransformation(t *testing.T) {
 
+
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "test", r.URL.Query().Get("param"))
 		w.WriteHeader(http.StatusOK)
@@ -197,6 +201,7 @@ func TestHTTPTool_Execute_NoTransformation(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_Errors(t *testing.T) {
+
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -523,6 +528,7 @@ func TestHTTPTool_Execute_ErrorBodyRedaction(t *testing.T) {
 
 func TestHTTPTool_Execute_InputTransformation_Webhook(t *testing.T) {
 
+
 	webhookServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/cloudevents+json")
 		responseEvent := `{
@@ -565,6 +571,7 @@ func TestHTTPTool_Execute_InputTransformation_Webhook(t *testing.T) {
 
 func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
 
+
 	rawBytesResponse := []byte{0xDE, 0xAD, 0xBE, 0xEF}
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/octet-stream")
@@ -592,6 +599,7 @@ func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_OutputTransformation_JQ(t *testing.T) {
+
 
 	jsonResponse := `{"users": [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]}`
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -623,6 +631,7 @@ func TestHTTPTool_Execute_OutputTransformation_JQ(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_PathParameterEncoding(t *testing.T) {
+
 
 	pathHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		expectedPath := "/users/test%2Fuser"
@@ -663,6 +672,7 @@ func TestHTTPTool_Execute_PathParameterEncoding(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_WithRetry(t *testing.T) {
+
 
 	t.Run("retry_succeeds", func(t *testing.T) {
 
@@ -818,6 +828,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 
 func TestHTTPTool_Execute_ConsecutiveCalls(t *testing.T) {
 
+
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		id := r.URL.Query().Get("id")
 		w.WriteHeader(http.StatusOK)
@@ -869,6 +880,7 @@ func TestHTTPTool_Execute_ConsecutiveCalls(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_LargeFloatParameter(t *testing.T) {
+
 
 	// Handler expects a large number in the path
 	// 2^63 = 9.223372036854776e+18
@@ -922,6 +934,7 @@ func TestHTTPTool_Execute_LargeFloatParameter(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_StripsUndefinedParameters(t *testing.T) {
+
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body, err := io.ReadAll(r.Body)

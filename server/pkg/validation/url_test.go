@@ -4,10 +4,10 @@
 package validation
 
 import (
+	"strings"
 	"context"
 	"net"
 	"os"
-	"strings"
 	"testing"
 )
 

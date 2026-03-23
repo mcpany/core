@@ -5,8 +5,8 @@ package tool
 
 import (
 	"context"
-	"encoding/json"
 	"testing"
+	"encoding/json"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
@@ -24,7 +24,7 @@ func TestLocalCommandTool_RCE_Verification(t *testing.T) {
 		},
 		Calls: map[string]*configv1.CommandLineCallDefinition{
 			"call-id": configv1.CommandLineCallDefinition_builder{
-				Id:   proto.String("call-id"),
+				Id: proto.String("call-id"),
 				Args: []string{"{{text}}"},
 				Parameters: []*configv1.CommandLineParameterMapping{
 					configv1.CommandLineParameterMapping_builder{

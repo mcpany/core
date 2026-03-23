@@ -23,8 +23,8 @@ func TestJQEnvLeakage(t *testing.T) {
 
 	// Setup call definition
 	// jq -n '{{input}}'
-	// We rely on the fact that if we pass unquoted argument, it is not wrapped in quotes by the code,
-	// but checks are applied assuming it is unquoted.
+    // We rely on the fact that if we pass unquoted argument, it is not wrapped in quotes by the code,
+    // but checks are applied assuming it is unquoted.
 	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"-n", "{{input}}"},
 		Parameters: []*configv1.CommandLineParameterMapping{

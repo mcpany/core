@@ -55,9 +55,9 @@ func TestGetLoggerBeforeInit(t *testing.T) {
 
 	if !found {
 		t.Log("Reproduction successful: Log message not found in broadcaster because Init was skipped")
-		// Mark failed so I can see it fail before fix
-		t.Fail()
+        // Mark failed so I can see it fail before fix
+        t.Fail()
 	} else {
-		t.Log("Log message FOUND. Bug NOT reproduced.")
-	}
+        t.Log("Log message FOUND. Bug NOT reproduced.")
+    }
 }

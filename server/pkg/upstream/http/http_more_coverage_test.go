@@ -52,6 +52,7 @@ func TestHTTPUpstream_Register_CallPolicyCompileError(t *testing.T) {
 	assert.Empty(t, tm.ListTools())
 }
 
+
 func TestHTTPUpstream_Register_UnsupportedMethod(t *testing.T) {
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
