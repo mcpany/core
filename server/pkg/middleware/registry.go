@@ -267,8 +267,7 @@ func InitStandardMiddlewares(
 						ToolInputs: r.Params.Arguments,
 					}
 					// Caching middleware expects a 'next' that returns (any, error)
-					result, err := cachingMiddleware.Execute(ctx, executionReq, func(ctx context.Context,
-						_ *tool.ExecutionRequest) (any, error) {
+					result, err := cachingMiddleware.Execute(ctx, executionReq, func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 						return next(ctx, method, req)
 					})
 					if err != nil {
@@ -294,8 +293,7 @@ func InitStandardMiddlewares(
 						ToolName:   r.Params.Name,
 						ToolInputs: r.Params.Arguments,
 					}
-					result, err := rateLimit.Execute(ctx, executionReq, func(ctx context.Context,
-						_ *tool.ExecutionRequest) (any, error) {
+					result, err := rateLimit.Execute(ctx, executionReq, func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 						return next(ctx, method, req)
 					})
 					if err != nil {
@@ -320,8 +318,7 @@ func InitStandardMiddlewares(
 						ToolName:   r.Params.Name,
 						ToolInputs: r.Params.Arguments,
 					}
-					result, err := callPolicy.Execute(ctx, executionReq, func(ctx context.Context,
-						_ *tool.ExecutionRequest) (any, error) {
+					result, err := callPolicy.Execute(ctx, executionReq, func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 						return next(ctx, method, req)
 					})
 					if err != nil {
@@ -421,8 +418,7 @@ func InitStandardMiddlewares(
 						ToolName:   r.Params.Name,
 						ToolInputs: r.Params.Arguments,
 					}
-					result, err := smartRecovery.Execute(ctx, executionReq, func(ctx context.Context,
-						updatedReq *tool.ExecutionRequest) (any, error) {
+					result, err := smartRecovery.Execute(ctx, executionReq, func(ctx context.Context, updatedReq *tool.ExecutionRequest) (any, error) {
 						// Propagate updated arguments to the MCP request
 						r.Params.Arguments = updatedReq.ToolInputs
 						return next(ctx, method, req)
