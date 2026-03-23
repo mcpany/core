@@ -5,7 +5,7 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/mcpany/core/ci.yml?branch=main)](https://github.com/mcpany/core/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mcpany/core)](https://goreportcard.com/report/github.com/mcpany/core)
 
-## The Ultimate Developer Entry Point
+## Elevator Pitch
 
 Welcome to **MCP Any**, the definitive Model Context Protocol (MCP) universal adapter designed to streamline and democratize API integration for AI agents.
 
@@ -128,7 +128,7 @@ We adhere to a strict development workflow to ensure code quality and maintainab
 ### Testing
 Run all unit and integration tests to ensure code correctness. We practice proactive testing and continuous integration.
 ```bash
-bazelisk test //...
+make test
 ```
 
 ### Linting

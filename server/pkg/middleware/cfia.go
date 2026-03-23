@@ -39,6 +39,8 @@ type CFIAMiddleware struct {
 
 // NewCFIAMiddleware creates a new CFIAMiddleware instance.
 //
+// Summary: Creates a new CFIAMiddleware instance.
+//
 // Parameters:
 //   - config (CFIAConfig): The configuration settings.
 //
@@ -57,6 +59,8 @@ func NewCFIAMiddleware(config CFIAConfig) *CFIAMiddleware {
 }
 
 // Execute enforces context-file integrity before proceeding to the next handler.
+//
+// Summary: Enforces context-file integrity before proceeding to the next handler.
 //
 // Parameters:
 //   - ctx (context.Context): The execution context.

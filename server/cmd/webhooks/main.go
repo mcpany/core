@@ -25,12 +25,27 @@ import (
 const (
 	// HeaderWebhookID is the header name for the webhook ID.
 	// Summary: Defines HeaderWebhookID.
+//
+// Summary: Represents ->:HeaderWebhookID
+//
+//
+// Summary: Represents ->:HeaderWebhookTimestamp
+//
+//
+// Summary: Represents ->:HeaderWebhookSignature
+//
 	HeaderWebhookID = webhook.HeaderWebhookID
 	// HeaderWebhookTimestamp is the header name for the webhook timestamp.
 	// Summary: Defines HeaderWebhookTimestamp.
+//
+// Summary: Represents ->:HeaderWebhookTimestamp
+//
 	HeaderWebhookTimestamp = webhook.HeaderWebhookTimestamp
 	// HeaderWebhookSignature is the header name for the webhook signature.
 	// Summary: Defines HeaderWebhookSignature.
+//
+// Summary: Represents ->:HeaderWebhookSignature
+//
 	HeaderWebhookSignature = webhook.HeaderWebhookSignature
 )
 

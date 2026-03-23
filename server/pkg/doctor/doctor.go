@@ -33,15 +33,36 @@ type Status string
 const (
 	// StatusOk indicates the check passed successfully.
 	// Summary: Defines StatusO.
+//
+// Summary: Represents ->:StatusOk
+//
+//
+// Summary: Represents ->:StatusWarning
+//
+//
+// Summary: Represents ->:StatusError
+//
+//
+// Summary: Represents ->:StatusSkipped
+//
 	StatusOk Status = "OK"
 	// StatusWarning indicates a partial failure or non-critical issue that should be investigated.
 	// Summary: Defines StatusWarnin.
+//
+// Summary: Represents ->:StatusWarning
+//
 	StatusWarning Status = "WARNING"
 	// StatusError indicates a critical failure that prevents the service from functioning correctly.
 	// Summary: Defines StatusErro.
+//
+// Summary: Represents ->:StatusError
+//
 	StatusError Status = "ERROR"
 	// StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
 	// Summary: Defines StatusSkippe.
+//
+// Summary: Represents ->:StatusSkipped
+//
 	StatusSkipped Status = "SKIPPED"
 )
 

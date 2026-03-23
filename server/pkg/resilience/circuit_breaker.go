@@ -21,12 +21,27 @@ type State int32
 const (
 	// StateClosed represents the state where the circuit breaker allows requests to pass through.
 	// Summary: Defines StateClose.
+//
+// Summary: Represents ->:StateClosed
+//
+//
+// Summary: Represents ->:StateOpen
+//
+//
+// Summary: Represents ->:StateHalfOpen
+//
 	StateClosed State = iota
 	// StateOpen represents the state where the circuit breaker blocks requests immediately.
 	// Summary: Defines StateOpe.
+//
+// Summary: Represents ->:StateOpen
+//
 	StateOpen
 	// StateHalfOpen represents the state where the circuit breaker allows a limited number of requests to test if the service has recovered.
 	// Summary: Defines StateHalfOpe.
+//
+// Summary: Represents ->:StateHalfOpen
+//
 	StateHalfOpen
 )
 

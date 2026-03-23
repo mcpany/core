@@ -7,6 +7,9 @@ const (
 	// Name is the name of the MCP Any server. This is used in help messages and
 	// other user-facing output.
 	// Summary: Defines Name.
+//
+// Summary: Represents ->:Name
+//
 	Name = "mcpany"
 )
 

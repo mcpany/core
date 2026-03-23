@@ -187,28 +187,21 @@ func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the WebRTC tool.
-//
-// Summary: Executes the WebRTC tool.
-//
-// It establishes a new peer connection (or reuses one), negotiates the session
-// via an HTTP signaling server, sends the tool inputs over the data channel,
-// and waits for a response.
-//
-// Parameters:
-//   - ctx (context.Context): The execution context.
-//   - req (*ExecutionRequest): The execution request.
-//
-// Returns:
-//   - any: The result of the execution.
-//   - error: An error if execution fails.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
 //
+// Parameters:
+//   - None.
+//
 // Returns:
 //   - bool: True if streaming is supported.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *WebrtcTool) IsStreaming() bool {
 	return false
 }
@@ -238,6 +231,28 @@ func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (
 	return ch, nil
 }
 
+// Execute handles the execution of the WebRTC tool.
+//
+// Summary: Executes the WebRTC tool.
+//
+// It establishes a new peer connection (or reuses one), negotiates the session
+// via an HTTP signaling server, sends the tool inputs over the data channel,
+// and waits for a response.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The execution request.
+//
+// Returns:
+//   - any: The result of the execution.
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns error if peer connection pool operations fail.
+//   - Returns error if execution operations fail.
+//
+// Side Effects:
+//   - Opens WebRTC peer connections.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized

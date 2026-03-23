@@ -108,27 +108,21 @@ func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the WebSocket tool.
-//
-// Summary: Executes the tool over WebSocket.
-//
-// It retrieves a connection from the pool, sends the tool inputs as a message,
-// and waits for a single response message, which it then processes and returns.
-//
-// Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The request containing input arguments.
-//
-// Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
 //
+// Parameters:
+//   - None.
+//
 // Returns:
 //   - bool: True if streaming is supported.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *WebsocketTool) IsStreaming() bool {
 	return false
 }
@@ -158,6 +152,28 @@ func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest
 	return ch, nil
 }
 
+// Execute handles the execution of the WebSocket tool.
+//
+// Summary: Executes the tool over WebSocket.
+//
+// It retrieves a connection from the pool, sends the tool inputs as a message,
+// and waits for a single response message, which it then processes and returns.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *ExecutionRequest. The request containing input arguments.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns error if websocket pool is missing or connection fails.
+//   - Returns error if unmarshaling inputs or sending/receiving messages fails.
+//
+// Side Effects:
+//   - Sends a message over the WebSocket connection.
+//   - Reads a response message from the WebSocket connection.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

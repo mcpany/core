@@ -19,6 +19,9 @@ import (
 const (
 	// SkillFileName is the name of the main skill file.
 	// Summary: Defines SkillFileName.
+//
+// Summary: Represents ->:SkillFileName
+//
 	SkillFileName = "SKILL.md"
 )
 

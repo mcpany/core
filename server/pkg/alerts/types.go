@@ -18,22 +18,55 @@ type Status string
 const (
 	// SeverityCritical indicates a critical issue.
 	// Summary: Defines SeverityCritica.
+//
+// Summary: Represents ->:SeverityCritical
+//
+//
+// Summary: Represents ->:SeverityWarning
+//
+//
+// Summary: Represents ->:SeverityInfo
+//
 	SeverityCritical Severity = "critical"
+//
+// Summary: Represents ->:StatusActive
+//
+//
+// Summary: Represents ->:StatusAcknowledged
+//
+//
+// Summary: Represents ->:StatusResolved
+//
 	// SeverityWarning indicates a warning.
 	// Summary: Defines SeverityWarnin.
+//
+// Summary: Represents ->:SeverityWarning
+//
 	SeverityWarning Severity = "warning"
 	// SeverityInfo indicates an informational alert.
 	// Summary: Defines SeverityInf.
+//
+// Summary: Represents ->:SeverityInfo
+//
 	SeverityInfo Severity = "info"
 
 	// StatusActive indicates the alert is currently active.
 	// Summary: Defines StatusActiv.
+//
+// Summary: Represents ->:StatusActive
+//
 	StatusActive Status = "active"
 	// StatusAcknowledged indicates the alert has been acknowledged.
 	// Summary: Defines StatusAcknowledge.
+//
+// Summary: Represents ->:StatusAcknowledged
+//
 	StatusAcknowledged Status = "acknowledged"
 	// StatusResolved indicates the alert has been resolved.
 	// Summary: Defines StatusResolve.
+//
+// Summary: Represents ->:StatusResolved
+//
 	StatusResolved Status = "resolved"
 )
 

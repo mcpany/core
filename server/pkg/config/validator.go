@@ -37,26 +37,59 @@ const (
 const (
 	// Server represents the server binary.
 	// Summary: Defines Serve.
+//
+// Summary: Represents ->:Server
+//
+//
+// Summary: Represents ->:Worker
+//
+//
+// Summary: Represents ->:Client
+//
 	Server BinaryType = iota
 	// Worker represents the worker binary.
 	// Summary: Defines Worke.
+//
+// Summary: Represents ->:Worker
+//
 	Worker
 	// Client represents the client binary.
 	// Summary: Defines Clien.
+//
+// Summary: Represents ->:Client
+//
 	Client
 )
+//
+// Summary: Represents ->:AuthValidationContextIncoming
+//
+//
+// Summary: Represents ->:AuthValidationContextOutgoing
+//
 
 // AuthValidationContext defines the context for authentication validation.
 //
 // Summary: Enumeration of authentication validation contexts.
 type AuthValidationContext int
 
+//
+// Summary: Represents ->:SkipSecretValidationKey
+//
 const (
 	// AuthValidationContextIncoming represents incoming authentication (e.g., Users).
+//
+// Summary: Represents ->:SkipFilesystemCheckKey
+//
 	// Summary: Defines AuthValidationContextIncomin.
+//
+// Summary: Represents ->:AuthValidationContextIncoming
+//
 	AuthValidationContextIncoming AuthValidationContext = iota
 	// AuthValidationContextOutgoing represents outgoing authentication (e.g., Upstream Services).
 	// Summary: Defines AuthValidationContextOutgoin.
+//
+// Summary: Represents ->:AuthValidationContextOutgoing
+//
 	AuthValidationContextOutgoing
 )
 
@@ -66,11 +99,17 @@ const (
 	// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
 	// Value should be a boolean.
 	// Summary: Defines SkipSecretValidationKey.
+//
+// Summary: Represents ->:SkipSecretValidationKey
+//
 	SkipSecretValidationKey contextKey = "skip_secret_validation"
 
 	// SkipFilesystemCheckKey is the context key to skip filesystem existence checks (e.g. for config check API).
 	// Value should be a boolean.
 	// Summary: Defines SkipFilesystemCheckKey.
+//
+// Summary: Represents ->:SkipFilesystemCheckKey
+//
 	SkipFilesystemCheckKey contextKey = "skip_filesystem_check"
 )
 

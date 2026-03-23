@@ -252,6 +252,9 @@ type RecursiveContextKeyType string
 const (
 	// RecursiveContextDataKey is the key used to store the recursive context data in the request context.
 	// Summary: Defines RecursiveContextDataKe.
+//
+// Summary: Represents ->:RecursiveContextDataKey
+//
 	RecursiveContextDataKey RecursiveContextKeyType = "recursive_context_data"
 )
 

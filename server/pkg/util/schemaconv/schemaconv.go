@@ -17,21 +17,54 @@ import (
 const (
 	// TypeNumber represents a JSON number type.
 	// Summary: Defines TypeNumber.
+//
+// Summary: Represents ->:TypeNumber
+//
+//
+// Summary: Represents ->:TypeInteger
+//
+//
+// Summary: Represents ->:TypeBoolean
+//
+//
+// Summary: Represents ->:TypeObject
+//
+//
+// Summary: Represents ->:TypeArray
+//
+//
+// Summary: Represents ->:TypeString
+//
 	TypeNumber = "number"
 	// TypeInteger represents a JSON integer type.
 	// Summary: Defines TypeInteger.
+//
+// Summary: Represents ->:TypeInteger
+//
 	TypeInteger = "integer"
 	// TypeBoolean represents a JSON boolean type.
 	// Summary: Defines TypeBoolean.
+//
+// Summary: Represents ->:TypeBoolean
+//
 	TypeBoolean = "boolean"
 	// TypeObject represents a JSON object type.
 	// Summary: Defines TypeObject.
+//
+// Summary: Represents ->:TypeObject
+//
 	TypeObject = "object"
 	// TypeArray represents a JSON array type.
 	// Summary: Defines TypeArray.
+//
+// Summary: Represents ->:TypeArray
+//
 	TypeArray = "array"
 	// TypeString represents a JSON string type.
 	// Summary: Defines TypeString.
+//
+// Summary: Represents ->:TypeString
+//
 	TypeString = "string"
 )
 

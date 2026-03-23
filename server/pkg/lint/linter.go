@@ -24,12 +24,27 @@ type Severity int
 const (
 	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
 	// Summary: Defines Erro.
+//
+// Summary: Represents ->:Error
+//
+//
+// Summary: Represents ->:Warning
+//
+//
+// Summary: Represents ->:Info
+//
 	Error Severity = iota
 	// Warning indicates a potential issue or best practice violation that should be addressed.
 	// Summary: Defines Warnin.
+//
+// Summary: Represents ->:Warning
+//
 	Warning
 	// Info indicates a suggestion or informational message for optimization or clarity.
 	// Summary: Defines Inf.
+//
+// Summary: Represents ->:Info
+//
 	Info
 )
 
