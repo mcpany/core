@@ -56,4 +56,3 @@ issues:
     - wsl
     - gci
     - gofumpt
-version: 2
