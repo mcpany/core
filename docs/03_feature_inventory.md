@@ -1489,3 +1489,14 @@
 ### Priority Shifts
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Elevated with mandatory **CFSA** integration to counter mimicry-based hijacking.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SHI** and **MHL** integration for all agency-initiation signals.
+
+## Evolution: [2026-06-27] Updates
+
+### Proposed Additions
+- **Attention-Density Guard (ADG)**: (P0) Authoritative attention gatekeeper utilizing hardware-bound headers to "pin" mission-critical intent fragments at the LLM attention layer, preventing eviction by noise.
+- **Handshake Lineage Attestation (HLA) Provider**: (P0) Security service mandating unique, monotonic lineage tokens for every agency-initiation signal (handshake) to prevent shadow handshakes and replay attacks.
+- **Mailbox Injection Shield (MIS)**: (P0) Advanced security extension for the Mailbox Integrity Middleware providing real-time, hardware-attested validation of task-claiming metadata to neutralize "Mailbox Splicing."
+
+### Priority Shifts
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Elevated to support **Atomic Mission Resumption (AMR)**, ensuring immutable recovery of the reasoning path and context snapshots after cold-boots.
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MIS** integration to secure horizontal teammate meshes.

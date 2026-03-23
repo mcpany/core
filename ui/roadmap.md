@@ -651,3 +651,6 @@
 - [ ] **[P0] Stylometric Alignment Dashboard**: Visual tracker for real-time stylometric consistency scores and mimicry alerts. (Added: 2026-06-26)
 - [ ] **[P0] Handshake Lineage Inspector**: Forensic UI for visualizing the cryptographically bound lineage of mission-initiation signals. (Added: 2026-06-26)
 - [ ] **[P0] Differential Reasoning Debugger**: Workspace for reviewing cross-framework state handoffs and DRV-redacted payloads. (Added: 2026-06-26)
+- [ ] **[P0] Visual Attention Heatmap**: Real-time visualization of LLM attention layer distribution and ADG locking status. (Added: 2026-06-27)
+- [ ] **[P0] Atomic Continuity Manager**: UI for reviewing and managing AMR context snapshots and mission resumption events. (Added: 2026-06-27)
+- [ ] **[P0] Handshake Lineage Tracer**: Visualizer for cryptographically signed agency-initiation lineages and parent-child attestation chains. (Added: 2026-06-27)

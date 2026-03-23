@@ -814,3 +814,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Shadow-Handshake Interceptor (SHI)**: Transport-level monitoring to interdict unauthorized agency-initiation signals. (Added: 2026-06-26)
 *   **[P0] Differential Reasoning Validator (DRV)**: Framework-aware sanity checks for state fragments to prevent cross-framework poisoning. (Added: 2026-06-26)
 *   **[P0] Monotonic Handshake Lineage (MHL)**: Hardware-bound lineage tokens for all handshake and session-initiation events. (Added: 2026-06-26)
+*   **[P0] Attention-Density Guard (ADG)**: Real-time entropy analysis and hardware-bound attention locking for mission-critical intent fragments. (Added: 2026-06-27)
+*   **[P0] Mission-Root Continuity Provider (MRCP)**: Immutable recovery of reasoning paths and context snapshots for atomic mission resumption. (Added: 2026-06-27)
+*   **[P0] Handshake Lineage Attestation (HLA)**: Cryptographic verification of agency-initiation parentage to neutralize shadow handshakes. (Added: 2026-06-27)

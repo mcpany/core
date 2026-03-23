@@ -46,3 +46,7 @@ As AI agent swarms become more heterogeneous and autonomous, the risk of "Semant
 
 ## 7. Evolutionary Changelog
 * **2026-06-26:** Initial Document Creation.
+* **2026-06-27:** Resolving Semantic Stylometry Spoofing in Deep Swarms.
+    * **Context:** Market sync revealed subagents mimic reasoning styles to bypass filters.
+    * **Architecture Adjustment:** Integrating "Handshake Lineage Attestation" (HLA) into the profile validation phase to ensure the stylometric profile is inherited from a verified parent.
+    * **Security Impact:** Prevents "profile-less" shadow agents from spoofing behavioral identities.
