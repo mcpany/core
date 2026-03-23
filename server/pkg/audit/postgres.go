@@ -27,7 +27,6 @@ type PostgresAuditStore struct {
 // Summary: Initializes a new PostgresAuditStore.
 //
 // Parameters:
-//   - None.
 //   - dsn: string. The PostgreSQL connection string.
 //
 // Returns:
@@ -98,7 +97,6 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 // Summary: Writes a single audit entry with cryptographic chaining.
 //
 // Parameters:
-//   - None.
 //   - ctx: context.Context. The request context.
 //   - entry: Entry. The audit entry to write.
 //
@@ -116,9 +114,9 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	// s.mu.Lock() // removed
 
 	// Marshal complex types
-	args..ON := "{}"
+	argsJSON := "{}"
 	if len(entry.Arguments) > 0 {
-		args..ON = string(entry.Arguments)
+		argsJSON = string(entry.Arguments)
 	}
 
 	resultJSON := "{}"
@@ -164,7 +162,7 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	// Compute hash
 	// Use formatted timestamp string for hashing consistency (same as SQLite)
 	tsStr := entry.Timestamp.Format(time.RFC3339Nano)
-	hash := computeHash(tsStr, entry.ToolName, entry.UserID, entry.ProfileID, args..ON, resultJSON, entry.Error, entry.DurationMs, prevHash)
+	hash := computeHash(tsStr, entry.ToolName, entry.UserID, entry.ProfileID, argsJSON, resultJSON, entry.Error, entry.DurationMs, prevHash)
 
 	query := `
 	INSERT INTO audit_logs (
@@ -177,7 +175,7 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 		entry.ToolName,
 		entry.UserID,
 		entry.ProfileID,
-		args..ON,
+		argsJSON,
 		resultJSON,
 		entry.Error,
 		entry.DurationMs,
@@ -196,7 +194,6 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 // Summary: Reads audit entries (Not implemented).
 //
 // Parameters:
-//   - None.
 //   - _: context.Context. Unused.
 //   - _: Filter. Unused.
 //
@@ -210,6 +207,7 @@ func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) 
 // Verify checks the integrity of the audit logs.
 //
 // Summary: Verifies the cryptographic chain of the audit logs.
+//
 // Parameters:
 //   - None.
 //
@@ -240,10 +238,10 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 		var id int64
 		var ts time.Time
 		var toolName, userID, profileID, errorMsg, prevHash, hash string
-		var args..result sql.NullString // Can be null in some schemas, though we set defaults. Use NullString for safety.
+		var args, result sql.NullString // Can be null in some schemas, though we set defaults. Use NullString for safety.
 		var durationMs int64
 
-		if err := rows.Scan(&id, &ts, &toolName, &userID, &profileID, &args..&result, &errorMsg, &durationMs, &prevHash, &hash); err != nil {
+		if err := rows.Scan(&id, &ts, &toolName, &userID, &profileID, &args, &result, &errorMsg, &durationMs, &prevHash, &hash); err != nil {
 			return false, fmt.Errorf("scan error at id %d: %w", id, err)
 		}
 
@@ -258,9 +256,9 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 		// but we wrote them as string literals "{}" or "".
 		// If they come back as NULL from DB (legacy rows?), we treat as "".
 		// Our Write method writes actual strings.
-		args..r := ""
-		if args..alid {
-			args..r = args..tring
+		argsStr := ""
+		if args.Valid {
+			argsStr = args.String
 		}
 		resultStr := ""
 		if result.Valid {
@@ -268,10 +266,10 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 		}
 
 		if len(hash) > 3 && hash[:3] == "v1:" {
-			calculatedHash = computeHash(tsStr, toolName, userID, profileID, args..r, resultStr, errorMsg, durationMs, prevHash)
+			calculatedHash = computeHash(tsStr, toolName, userID, profileID, argsStr, resultStr, errorMsg, durationMs, prevHash)
 		} else {
 			// Fallback to legacy
-			calculatedHash = computeHashV0(tsStr, toolName, userID, profileID, args..r, resultStr, errorMsg, durationMs, prevHash)
+			calculatedHash = computeHashV0(tsStr, toolName, userID, profileID, argsStr, resultStr, errorMsg, durationMs, prevHash)
 		}
 
 		if calculatedHash != hash {

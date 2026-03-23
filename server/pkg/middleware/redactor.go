@@ -37,7 +37,6 @@ type Redactor struct {
 // Summary: Initializes a new Redactor based on Data Loss Prevention (DLP) configuration.
 //
 // Parameters:
-//   - None.
 //   - config: *configv1.DLPConfig. The DLP configuration containing enabled status and custom patterns.
 //   - log: *slog.Logger. Logger for warning about invalid patterns.
 //
@@ -93,7 +92,6 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 // Summary: Scans and redacts PII from a JSON-encoded byte slice.
 //
 // Parameters:
-//   - None.
 //   - data: []byte. The JSON data to redact.
 //
 // Returns:
@@ -155,7 +153,6 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 // Summary: Applies redaction rules to a plain string.
 //
 // Parameters:
-//   - None.
 //   - s: string. The input string.
 //
 // Returns:
@@ -224,7 +221,6 @@ func (r *Redactor) RedactString(s string) string {
 // Summary: Recursively redacts sensitive information from a map (struct representation).
 //
 // Parameters:
-//   - None.
 //   - v: map[string]interface{}. The map to redact.
 //
 // Side Effects:
@@ -243,7 +239,6 @@ func (r *Redactor) RedactStruct(v map[string]interface{}) {
 // Summary: Recursively redacts sensitive information from an arbitrary value (string, map, slice).
 //
 // Parameters:
-//   - None.
 //   - val: interface{}. The value to redact.
 //
 // Returns:

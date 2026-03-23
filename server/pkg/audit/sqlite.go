@@ -30,7 +30,6 @@ type SQLiteAuditStore struct {
 // Summary: Initializes a new SQLiteAuditStore.
 //
 // Parameters:
-//   - None.
 //   - path: string. The file path to the SQLite database.
 //
 // Returns:
@@ -164,7 +163,6 @@ func ensureColumn(db *sql.DB, colName string) error {
 // Summary: Writes a single audit entry with cryptographic hash chaining.
 //
 // Parameters:
-//   - None.
 //   - ctx: context.Context. The request context.
 //   - entry: Entry. The audit entry to write.
 //
@@ -178,9 +176,9 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	defer s.mu.Unlock()
 
 	// Marshal complex types
-	args...ON := "{}"
+	argsJSON := "{}"
 	if len(entry.Arguments) > 0 {
-		args...ON = string(entry.Arguments)
+		argsJSON = string(entry.Arguments)
 	}
 
 	resultJSON := "{}"
@@ -204,7 +202,7 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	}
 
 	// Compute hash
-	hash := computeHash(ts, entry.ToolName, entry.UserID, entry.ProfileID, args...ON, resultJSON, entry.Error, entry.DurationMs, prevHash)
+	hash := computeHash(ts, entry.ToolName, entry.UserID, entry.ProfileID, argsJSON, resultJSON, entry.Error, entry.DurationMs, prevHash)
 
 	query := `
 	INSERT INTO audit_logs (
@@ -220,7 +218,7 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 		entry.TraceID,
 		entry.SpanID,
 		entry.ParentID,
-		args...ON,
+		argsJSON,
 		resultJSON,
 		entry.Error,
 		entry.DurationMs,
@@ -235,7 +233,6 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 // Summary: Retrieves audit entries matching the specified filter criteria.
 //
 // Parameters:
-//   - None.
 //   - ctx: context.Context. The request context.
 //   - filter: Filter. The filtering criteria (time range, tool name, user ID, etc.).
 //
@@ -250,41 +247,41 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 	defer s.mu.Unlock()
 
 	query := "SELECT timestamp, tool_name, user_id, profile_id, trace_id, span_id, parent_id, arguments, result, error, duration_ms FROM audit_logs WHERE 1=1"
-	var args...]any
+	var args []any
 
 	if filter.StartTime != nil {
 		query += " AND timestamp >= ?"
-		args... append(args...filter.StartTime.Format(time.RFC3339Nano))
+		args = append(args, filter.StartTime.Format(time.RFC3339Nano))
 	}
 	if filter.EndTime != nil {
 		query += " AND timestamp <= ?"
-		args... append(args...filter.EndTime.Format(time.RFC3339Nano))
+		args = append(args, filter.EndTime.Format(time.RFC3339Nano))
 	}
 	if filter.ToolName != "" {
 		query += " AND tool_name = ?"
-		args... append(args...filter.ToolName)
+		args = append(args, filter.ToolName)
 	}
 	if filter.UserID != "" {
 		query += " AND user_id = ?"
-		args... append(args...filter.UserID)
+		args = append(args, filter.UserID)
 	}
 	if filter.ProfileID != "" {
 		query += " AND profile_id = ?"
-		args... append(args...filter.ProfileID)
+		args = append(args, filter.ProfileID)
 	}
 
 	query += " ORDER BY timestamp DESC"
 
 	if filter.Limit > 0 {
 		query += " LIMIT ?"
-		args... append(args...filter.Limit)
+		args = append(args, filter.Limit)
 	}
 	if filter.Offset > 0 {
 		query += " OFFSET ?"
-		args... append(args...filter.Offset)
+		args = append(args, filter.Offset)
 	}
 
-	rows, err := s.db.QueryContext(ctx, query, args...)
+	rows, err := s.db.QueryContext(ctx, query, args.)
 	if err != nil {
 		return nil, err
 	}
@@ -293,13 +290,13 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 	var entries []Entry
 	for rows.Next() {
 		var entry Entry
-		var tsStr, args...r, resultStr string
-		if err := rows.Scan(&tsStr, &entry.ToolName, &entry.UserID, &entry.ProfileID, &entry.TraceID, &entry.SpanID, &entry.ParentID, &args...r, &resultStr, &entry.Error, &entry.DurationMs); err != nil {
+		var tsStr, argsStr, resultStr string
+		if err := rows.Scan(&tsStr, &entry.ToolName, &entry.UserID, &entry.ProfileID, &entry.TraceID, &entry.SpanID, &entry.ParentID, &argsStr, &resultStr, &entry.Error, &entry.DurationMs); err != nil {
 			return nil, err
 		}
 
 		entry.Timestamp, _ = time.Parse(time.RFC3339Nano, tsStr)
-		entry.Arguments = json.RawMessage(args...r)
+		entry.Arguments = json.RawMessage(argsStr)
 		if resultStr != "" && resultStr != "{}" {
 			_ = json.Unmarshal([]byte(resultStr), &entry.Result)
 		}
@@ -317,6 +314,7 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 // Verify checks the integrity of the audit logs.
 //
 // Summary: Validates the cryptographic hash chain of all audit entries.
+//
 // Parameters:
 //   - None.
 //
@@ -344,10 +342,10 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 	var expectedPrevHash string
 	for rows.Next() {
 		var id int64
-		var ts, toolName, userID, profileID, args...result, errorMsg, prevHash, hash string
+		var ts, toolName, userID, profileID, args, result, errorMsg, prevHash, hash string
 		var durationMs int64
 
-		if err := rows.Scan(&id, &ts, &toolName, &userID, &profileID, &args...&result, &errorMsg, &durationMs, &prevHash, &hash); err != nil {
+		if err := rows.Scan(&id, &ts, &toolName, &userID, &profileID, &args, &result, &errorMsg, &durationMs, &prevHash, &hash); err != nil {
 			return false, fmt.Errorf("scan error at id %d: %w", id, err)
 		}
 
@@ -358,10 +356,10 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 		// Check hash version
 		var calculatedHash string
 		if len(hash) > 3 && hash[:3] == "v1:" {
-			calculatedHash = computeHash(ts, toolName, userID, profileID, args...result, errorMsg, durationMs, prevHash)
+			calculatedHash = computeHash(ts, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
 		} else {
 			// Fallback to legacy
-			calculatedHash = computeHashV0(ts, toolName, userID, profileID, args...result, errorMsg, durationMs, prevHash)
+			calculatedHash = computeHashV0(ts, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
 		}
 
 		if calculatedHash != hash {

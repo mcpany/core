@@ -38,8 +38,6 @@ type AuditMiddleware struct {
 // Summary: Initializes the audit middleware with the provided configuration.
 //
 // Parameters:
-//   - None.
-//   - None.
 //   - auditConfig (*configv1.AuditConfig): The configuration for audit logging.
 //
 // Returns:
@@ -106,8 +104,6 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 // Summary: Sets the audit store implementation.
 //
 // Parameters:
-//   - None.
-//   - None.
 //   - store (audit.Store): The audit store to use.
 //
 // Side Effects:
@@ -123,8 +119,6 @@ func (m *AuditMiddleware) SetStore(store audit.Store) {
 // Summary: Updates the middleware configuration and re-initializes the store if needed.
 //
 // Parameters:
-//   - None.
-//   - None.
 //   - auditConfig (*configv1.AuditConfig): The new configuration.
 //
 // Returns:
@@ -183,8 +177,6 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 // Summary: Intercepts and logs tool execution requests and results.
 //
 // Parameters:
-//   - None.
-//   - None.
 //   - ctx (context.Context): The context for the request.
 //   - req (*tool.ExecutionRequest): The tool execution request.
 //   - next (tool.ExecutionFunc): The next handler in the chain.
@@ -244,16 +236,16 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 
 	if auditConfig.GetLogArguments() {
 		// Try to marshal arguments to RawMessage to avoid double escaping if it's already structured
-		args..tes, marshalErr := json.Marshal(req.ToolInputs)
+		argsBytes, marshalErr := json.Marshal(req.ToolInputs)
 		if marshalErr == nil {
 			// Use Redactor to ensure no secrets are logged
 			if redactor != nil {
-				redactedBytes, err := redactor.RedactJSON(args..tes)
+				redactedBytes, err := redactor.RedactJSON(argsBytes)
 				if err == nil {
-					args..tes = redactedBytes
+					argsBytes = redactedBytes
 				}
 			}
-			entry.Arguments = json.RawMessage(args..tes)
+			entry.Arguments = json.RawMessage(argsBytes)
 		}
 	}
 
@@ -325,14 +317,15 @@ func (m *AuditMiddleware) ClearHistory() {
 //
 // Summary: Subscribes to audit events with history.
 //
+// Parameters:
+//   - None.
+//
 // Returns:
 //   - chan any: A channel receiving new audit entries.
 //   - []any: A slice of historical audit entries.
 //
 // Side Effects:
 //   - Adds a new subscriber to the broadcaster.
-// Parameters:
-//   - None.
 func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 	return m.broadcaster.SubscribeWithHistory()
 }
@@ -355,8 +348,6 @@ func (m *AuditMiddleware) GetHistory() []any {
 // Summary: Unsubscribes from audit events.
 //
 // Parameters:
-//   - None.
-//   - None.
 //   - ch (chan any): The channel to unsubscribe.
 //
 // Side Effects:
@@ -370,8 +361,6 @@ func (m *AuditMiddleware) Unsubscribe(ch chan any) {
 // Summary: Reads historical audit logs from storage.
 //
 // Parameters:
-//   - None.
-//   - None.
 //   - ctx (context.Context): The context for the request.
 //   - filter (audit.Filter): The filter criteria for querying logs.
 //
@@ -416,8 +405,6 @@ func (m *AuditMiddleware) Close() error {
 // Write writes an audit entry directly to the store.
 //
 // Parameters:
-//   - None.
-//   - None.
 //   - ctx: context.Context for the operation.
 //   - entry: The audit.Entry to write.
 //
@@ -430,8 +417,6 @@ func (m *AuditMiddleware) Close() error {
 // Summary: Updates Write operation.
 //
 // Parameters:
-//   - None.
-//   - None.
 //   - TODO: Document parameters.
 //
 // Returns:
