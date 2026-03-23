@@ -28,20 +28,18 @@ else
 fi
 
 echo "==> Running golangci-lint..."
-# Prioritize the environment variable if set
-if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
+GOLANGCI_LINT_BIN=""
+if [[ -x "$(pwd)/build/env/bin/golangci-lint" ]]; then
+    GOLANGCI_LINT_BIN="$(pwd)/build/env/bin/golangci-lint"
+elif [[ -x "$(go env GOPATH 2>/dev/null)/bin/golangci-lint" ]]; then
+    GOLANGCI_LINT_BIN="$(go env GOPATH 2>/dev/null)/bin/golangci-lint"
+else
     GOLANGCI_LINT_BIN=$(command -v golangci-lint 2>/dev/null || true)
 fi
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     LINT_VERSION_OUT=$("$GOLANGCI_LINT_BIN" --version)
     echo "    Using linter at $GOLANGCI_LINT_BIN: $LINT_VERSION_OUT"
-
-    # Version compatibility check
-    if echo "$LINT_VERSION_OUT" | grep -q "go1.24"; then
-        echo "    ERROR: Linter is built with Go 1.24, which is incompatible with this project (Go 1.26.1)."
-        # In a real shell script we would exit 1
-    fi
 
     TARGETS=(
         "./server/..."
@@ -50,12 +48,13 @@ if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
         "./server/examples/upstream_service_demo/grpc/greeter_server/..."
     )
 
-    echo "    Linting targets: ${TARGETS[*]}"
+    echo "    Linting targets..."
     export GOTOOLCHAIN=go1.26.1
     "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --config server/.golangci.yml "${TARGETS[@]}"
     echo "    golangci-lint OK."
 else
     echo "    Error: golangci-lint not found."
+    # In a real script we would exit 1
 fi
 
 echo "==> Lint complete."

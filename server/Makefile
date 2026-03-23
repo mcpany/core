@@ -353,7 +353,7 @@ prepare:
 		echo "golangci-lint v1.64.5 is already installed."; \
 	else \
 		echo "Installing golangci-lint v1.64.5 to $(TOOL_INSTALL_DIR)..."; \
-		GOBIN=$(TOOL_INSTALL_DIR) go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.5; \
+		GOTOOLCHAIN=go1.26.1 GOBIN=$(abspath $(TOOL_INSTALL_DIR)) go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.5; \
 		if test -f "$(GOLANGCI_LINT_BIN)"; then \
 			echo "golangci-lint installed successfully."; \
 		else \
