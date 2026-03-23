@@ -4,53 +4,39 @@
  */
 
 /**
- * Mock GrpcWebImpl for tests to avoid actual grpc-web client dependencies
+ * Mock class for GrpcWebImpl used in tests.
  */
-export class GrpcWebImpl {
-  constructor(url: string, options: any) {
-    // mock implementation
-  }
-}
+export class GrpcWebImpl { }
 
 /**
- * Mock RegistrationServiceClientImpl for tests
+ * Mock class for RegistrationServiceClientImpl used in tests.
  */
-export class RegistrationServiceClientImpl {
-  constructor(rpc: any) {
-    // mock implementation
-  }
-
-  RegisterUpstreamService(request: any): Promise<any> {
-    return Promise.resolve({ service: {} });
-  }
-
-  GetUpstreamService(request: any): Promise<any> {
-    return Promise.resolve({ service: {} });
-  }
-
-  UpdateUpstreamService(request: any): Promise<any> {
-    return Promise.resolve({ service: {} });
-  }
-
-  UnregisterUpstreamService(request: any): Promise<any> {
-    return Promise.resolve({});
-  }
-
-  ListUpstreamServices(request: any): Promise<any> {
-    return Promise.resolve({ services: [] });
-  }
-}
+export class RegistrationServiceClientImpl { }
 
 /**
- * Mock enum values for tests
+ * Mock constant for HttpUpstreamService used in tests.
  */
-export enum CallPolicyRule_Action {
+export const HttpUpstreamService = {};
+
+/**
+ * Mock constant for ServiceProvenance used in tests.
+ */
+export const ServiceProvenance = {};
+
+/**
+ * Mock enum for CallPolicy_Action used in tests.
+ */
+export enum CallPolicy_Action {
   ALLOW = 0,
   DENY = 1,
+  SAVE_CACHE = 2,
+  DELETE_CACHE = 3,
 }
 
-/** Mock enum */
-export enum ExportRule_Action {
+/**
+ * Mock enum for ExportPolicy_Action used in tests.
+ */
+export enum ExportPolicy_Action {
   EXPORT = 0,
   UNEXPORT = 1,
 }
@@ -59,11 +45,20 @@ export enum ExportRule_Action {
  * Mock type placeholders for policy-related proto messages.
  */
 export const CallPolicy = {};
-/** Mock type placeholder for CallPolicyRule */
+
+/**
+ * Mock type placeholder for CallPolicyRule.
+ */
 export const CallPolicyRule = {};
-/** Mock type placeholder for ExportPolicy */
+
+/**
+ * Mock type placeholder for ExportPolicy.
+ */
 export const ExportPolicy = {};
-/** Mock type placeholder for ExportRule */
+
+/**
+ * Mock type placeholder for ExportRule.
+ */
 export const ExportRule = {};
 
 /**
@@ -72,50 +67,81 @@ export const ExportRule = {};
 export const ProfileDefinition = {};
 
 /**
- * Mock ToolDefinition used in tests
+ * Mock constant for ToolDefinition used in tests.
  */
 export const ToolDefinition = {};
 
 /**
- * Mock UpstreamServiceConfig used in tests
+ * Mock enum for HttpCallDefinition_HttpMethod used in tests.
  */
-export const UpstreamServiceConfig = {};
+export enum HttpCallDefinition_HttpMethod {
+  HTTP_METHOD_UNSPECIFIED = 0,
+  HTTP_METHOD_GET = 1,
+  HTTP_METHOD_POST = 2,
+  HTTP_METHOD_PUT = 3,
+  HTTP_METHOD_DELETE = 4,
+  HTTP_METHOD_PATCH = 5,
+}
 
 /**
- * Mock ServiceTemplate used in tests
+ * Mock enum for OutputTransformer_OutputFormat used in tests.
  */
-export const ServiceTemplate = {};
+export enum OutputTransformer_OutputFormat {
+  JSON = 0,
+  XML = 1,
+  TEXT = 2,
+  RAW_BYTES = 3,
+  JQ = 4,
+}
 
 /**
- * Mock ResourceDefinition used in tests
+ * Mock interface/type for HttpCallDefinition used in tests.
+ */
+export const HttpCallDefinition = {};
+
+/**
+ * Mock enum for ParameterType used in tests.
+ */
+export enum ParameterType {
+  STRING = 0,
+  NUMBER = 1,
+  INTEGER = 2,
+  BOOLEAN = 3,
+  ARRAY = 4,
+  OBJECT = 5,
+}
+
+/**
+ * Mock type for InputTransformer used in tests.
+ */
+export const InputTransformer = {};
+
+/**
+ * Mock type for OutputTransformer used in tests.
+ */
+export const OutputTransformer = {};
+
+/**
+ * Mock type for HttpParameterMapping used in tests.
+ */
+export const HttpParameterMapping = {};
+
+/**
+ * Mock type for ResourceDefinition used in tests.
  */
 export const ResourceDefinition = {};
 
 /**
- * Mock PromptDefinition used in tests
+ * Mock type for PromptDefinition used in tests.
  */
 export const PromptDefinition = {};
 
 /**
- * Mock AdminServiceClientImpl for tests
+ * Mock type for Credential used in tests.
  */
-export class AdminServiceClientImpl {
-  constructor(rpc: any) {
-    // mock implementation
-  }
+export const Credential = {};
 
-  GetConfig(request: any): Promise<any> {
-    return Promise.resolve({ config: {} });
-  }
-
-  UpdateConfig(request: any): Promise<any> {
-    return Promise.resolve({ config: {} });
-  }
-
-  GetStatus(request: any): Promise<any> {
-    return Promise.resolve({
-      version: "mock-version",
-      status: "running"
-    });
-  }
-}
+/**
+ * Mock type for Authentication used in tests.
+ */
+export const Authentication = {};
