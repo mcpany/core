@@ -46,9 +46,9 @@ func TestOperatorE2E(t *testing.T) {
 	t.Logf("Project root detected: %s", rootDir)
 
 	// 3. Clean up existing cluster to ensure fresh state and free ports
-	if clusterExists(t, ctx, clusterName) {
+	if clusterExists(ctx, t, clusterName) {
 		t.Logf("Deleting existing cluster %s to ensure clean state...", clusterName)
-		if err := runCommand(t, ctx, rootDir, "kind", "delete", "cluster", "--name", clusterName); err != nil {
+		if err := runCommand(ctx, t, rootDir, "kind", "delete", "cluster", "--name", clusterName); err != nil {
 			t.Logf("Warning: failed to delete existing cluster: %v", err)
 		}
 	}
@@ -76,11 +76,11 @@ nodes:
     protocol: TCP
 `, hostPort)
 	tmpConfig := filepath.Join(t.TempDir(), "kind-config.yaml")
-	if err := os.WriteFile(tmpConfig, []byte(kindConfigContent), 0644); err != nil {
+	if err := os.WriteFile(tmpConfig, []byte(kindConfigContent), 0600); err != nil {
 		t.Fatalf("Failed to write temp kind config: %v", err)
 	}
 
-	if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "2m"); err != nil {
+	if err := runCommand(ctx, t, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "2m"); err != nil {
 		t.Fatalf("Failed to create kind cluster: %v", err)
 	}
 
@@ -92,7 +92,7 @@ nodes:
 	ensureBazelImageLoaded(t, filepath.Join("server", "tests", "integration", "cmd", "mocks", "http_echo_server", "http_echo_server_tarball.sh"), "mcpany/http-echo-server")
 	if os.Getenv("SKIP_IMAGE_BUILD") != "true" {
 		t.Logf("Building Docker images with tag %s...", tag)
-		if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/operator:%s", tag), "-f", "k8s/operator/Dockerfile", "."); err != nil {
+		if err := runCommand(ctx, t, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/operator:%s", tag), "-f", "k8s/operator/Dockerfile", "."); err != nil {
 			t.Fatalf("Failed to build operator image: %v", err)
 		}
 	} else {
@@ -101,23 +101,23 @@ nodes:
 
 	// 7. Load Images into Kind
 	t.Log("Loading images into Kind...")
-	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/server:%s", tag), "--name", clusterName); err != nil {
+	if err := runCommand(ctx, t, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/server:%s", tag), "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load server image: %v", err)
 	}
-	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/operator:%s", tag), "--name", clusterName); err != nil {
+	if err := runCommand(ctx, t, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/operator:%s", tag), "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load operator image: %v", err)
 	}
-	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/ui:%s", tag), "--name", clusterName); err != nil {
+	if err := runCommand(ctx, t, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/ui:%s", tag), "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load ui image: %v", err)
 	}
-	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", "mcpany/http-echo-server:latest", "--name", clusterName); err != nil {
+	if err := runCommand(ctx, t, rootDir, "kind", "load", "docker-image", "mcpany/http-echo-server:latest", "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load http-echo-server image: %v", err)
 	}
 
 	// 6. Install Helm Chart
 	t.Log("Installing Helm chart...")
 	// Helm upgrade --install
-	if err := runCommand(t, ctx, rootDir, "helm", "upgrade", "--install", "mcpany", "k8s/helm/mcpany",
+	if err := runCommand(ctx, t, rootDir, "helm", "upgrade", "--install", "mcpany", "k8s/helm/mcpany",
 		"--namespace", namespace,
 		"--create-namespace",
 		"--set", "image.repository=mcpany/server",
@@ -147,18 +147,18 @@ nodes:
 
 	// 7. Verify Pods
 	t.Log("Verifying pods...")
-	if err := runCommand(t, ctx, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "-l", "app.kubernetes.io/name=mcpany", "-n", namespace, "--timeout=60s"); err != nil {
+	if err := runCommand(ctx, t, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "-l", "app.kubernetes.io/name=mcpany", "-n", namespace, "--timeout=60s"); err != nil {
 		t.Fatalf("Failed to wait for pods: %v", err)
 	}
 
 	t.Log("Deploying http-echo-server...")
-	if err := runCommand(t, ctx, rootDir, "kubectl", "run", "ui-http-echo-server", "--image=mcpany/http-echo-server:latest", "--image-pull-policy=Never", "--restart=Always", "-n", namespace); err != nil {
+	if err := runCommand(ctx, t, rootDir, "kubectl", "run", "ui-http-echo-server", "--image=mcpany/http-echo-server:latest", "--image-pull-policy=Never", "--restart=Always", "-n", namespace); err != nil {
 		t.Fatalf("Failed to deploy http-echo-server: %v", err)
 	}
-	if err := runCommand(t, ctx, rootDir, "kubectl", "expose", "pod", "ui-http-echo-server", "--port=5678", "--target-port=8080", "-n", namespace); err != nil {
+	if err := runCommand(ctx, t, rootDir, "kubectl", "expose", "pod", "ui-http-echo-server", "--port=5678", "--target-port=8080", "-n", namespace); err != nil {
 		t.Fatalf("Failed to expose http-echo-server: %v", err)
 	}
-	if err := runCommand(t, ctx, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "ui-http-echo-server", "-n", namespace, "--timeout=60s"); err != nil {
+	if err := runCommand(ctx, t, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "ui-http-echo-server", "-n", namespace, "--timeout=60s"); err != nil {
 		t.Fatalf("Failed to wait for http-echo-server: %v", err)
 	}
 
@@ -167,7 +167,7 @@ nodes:
 
 	// Wait for NodePort to be accessible
 	// Since we mapped it in Kind, it should be reachable on localhost:hostPort
-	if err := waitForPort(t, ctx, fmt.Sprintf("127.0.0.1:%d", hostPort), 60*time.Second); err != nil {
+	if err := waitForPort(ctx, t, fmt.Sprintf("127.0.0.1:%d", hostPort), 60*time.Second); err != nil {
 		t.Fatalf("NodePort failed to become accessible: %v", err)
 	}
 
@@ -210,7 +210,7 @@ func checkPrerequisites(t *testing.T) {
 	}
 }
 
-func clusterExists(t *testing.T, ctx context.Context, name string) bool {
+func clusterExists(ctx context.Context, t *testing.T, name string) bool {
 	cmd := exec.CommandContext(ctx, "kind", "get", "clusters")
 	out, err := cmd.Output()
 	if err != nil {
@@ -308,7 +308,7 @@ func ensureBazelImageLoaded(t *testing.T, loaderRelPath, imageName string) {
 	t.Logf("Bazel image loader not found for %s (%s)", imageName, loaderRelPath)
 }
 
-func runCommand(t *testing.T, ctx context.Context, dir string, name string, args ...string) error {
+func runCommand(ctx context.Context, t *testing.T, dir string, name string, args ...string) error {
 	cmd := exec.CommandContext(ctx, name, args...)
 	cmd.Dir = dir
 	// Force Docker API version to 1.44 to avoid "client version too old" errors
@@ -319,7 +319,7 @@ func runCommand(t *testing.T, ctx context.Context, dir string, name string, args
 	return cmd.Run()
 }
 
-func waitForPort(t *testing.T, ctx context.Context, addr string, timeout time.Duration) error {
+func waitForPort(ctx context.Context, t *testing.T, addr string, timeout time.Duration) error {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 	timeoutTimer := time.NewTimer(timeout)

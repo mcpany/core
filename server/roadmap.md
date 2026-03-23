@@ -506,6 +506,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-15 Evolution)
+*   **[P0] S2S Mesh Gateway**: Native support for UACO v3.5 Swarm-to-Swarm mesh orchestration and collective negotiation. (Added: 2026-05-15)
+*   **[P0] IBHI Intent Broker**: Infrastructure for binding "Mission Root" intents to hardware-protected memory regions (IBHI pattern). (Added: 2026-05-15)
+*   **[P1] Negative Feedback Attestation (NFA)**: Middleware for cryptographically binding user corrections to autonomous reasoning loops. (Added: 2026-05-15)
+*   **[P1] Zero-Copy BSH Transport**: Shared-memory context handoff for sub-millisecond coordination in parallel teammate teams. (Added: 2026-05-15)
+
 #### Upcoming (2026-05-14 Evolution)
 *   **[P0] ContextEngine Lifecycle Adapter**: Implementation of OpenClaw v2026.3.7 "ContextEngine" lifecycle hooks for universal context plugin hosting. (Added: 2026-05-14)
 *   **[P0] Swarm-Aware Rate Limiter**: High-speed security middleware for neutralizing coordinated "Hivenet" swarm attacks at sub-millisecond speeds. (Added: 2026-05-14)

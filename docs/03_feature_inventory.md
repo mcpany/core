@@ -21,6 +21,17 @@
 - **A2A Messaging Hub**: (Re-affirmed P0) Evolving into the **S2S Mesh Gateway** to support collective swarm identity and negotiation.
 - **Shared KV Store (Blackboard)**: (Re-affirmed P0) Designated as the primary state provider for **Zero-Copy Shared-Memory BSH** coordination.
 
+## Evolution: [2026-05-15] Updates
+
+### Proposed Additions
+- **S2S Mesh Gateway**: (P0) Native UACO v3.5 support for Swarm-to-Swarm Mesh orchestration and S2S negotiation.
+- **IBHI Intent Broker**: (P0) Hardware-protected "Mission Root" intent binding using Intent-Bound Hardware Isolation.
+- **Negative Feedback Attestation (NFA) Middleware**: (P1) Cryptographic binding of user corrections to autonomous reasoning loops.
+- **Zero-Copy BSH Shared Memory Transport**: (P1) Sub-millisecond context handoff via shared memory regions for parallel teammate teams.
+
+### Priority Shifts
+- **Discovery Sandbox Middleware**: (Promoted to P0) Designated as mandatory for all discovery-phase commands to counter Ghost-Execution vulnerabilities.
+
 ## Evolution: [2026-05-14] Updates
 
 ### Proposed Additions

@@ -16,7 +16,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	mcpv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
+	mcpv1alpha1 "github.com/mcpany/core/k8s/operator/api/v1alpha1"
 )
 
 // MCPServerReconciler reconciles a MCPServer object.
@@ -32,6 +32,20 @@ type MCPServerReconciler struct {
 //+kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
+// move the current state of the cluster closer to the desired state.
+//
+// Summary: Reconciles a MCPServer object.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: ctrl.Request. The reconciliation request.
+//
+// Returns:
+//   - ctrl.Result: The result.
+//   - error: Any error.
+//
+// Errors:
+//   - Returns error if MCPServer cannot be read. which aims to
 // move the current state of the cluster closer to the desired state.
 // It creates or updates the Deployment and Service for the MCPServer.
 //

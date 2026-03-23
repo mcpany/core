@@ -22,20 +22,19 @@ cd "$PROJECT_ROOT"
 find_tool() {
     local name="$1"
     local bin=""
-    local search_dirs=()
-    [[ -d "${RUNFILES_DIR:-}" ]] && search_dirs+=("${RUNFILES_DIR}")
-    [[ -d "${0}.runfiles" ]] && search_dirs+=("${0}.runfiles")
-    [[ -d "${BASH_SOURCE[0]}.runfiles" ]] && search_dirs+=("${BASH_SOURCE[0]}.runfiles")
-    for dir in "${search_dirs[@]}"; do
-        bin="$(find -L "${dir}" -name "${name}" \( -type f -o -type l \) 2>/dev/null | head -1 || true)"
-        if [[ -n "$bin" && -x "$bin" ]]; then
-            echo "$bin"
-            return 0
+    if [[ $(type -t rlocation) == function ]]; then
+        # When running under Bazel, use rlocation to find tools.
+        case "$name" in
+            buildifier) bin="$(rlocation buildifier_prebuilt/buildifier)" ;;
+            golangci-lint) bin="$(rlocation golangci_lint_bin/golangci-lint)" ;;
+        esac
+    fi
+    if [[ -z "$bin" ]]; then
+        # Fallback to local build env or PATH
+        bin="$(command -v "${name}" 2>/dev/null || true)"
+        if [[ -z "$bin" && -x "${PROJECT_ROOT}/build/env/bin/${name}" ]]; then
+            bin="${PROJECT_ROOT}/build/env/bin/${name}"
         fi
-    done
-    bin="$(command -v "${name}" 2>/dev/null || true)"
-    if [[ -z "$bin" && -x "${PROJECT_ROOT}/build/env/bin/${name}" ]]; then
-        bin="${PROJECT_ROOT}/build/env/bin/${name}"
     fi
     echo "$bin"
 }
@@ -64,6 +63,8 @@ if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
 fi
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
+    # Run golangci-lint on the workspace.
+    # Note: If Go version > 1.24, golangci-lint v1.64.5 might fail due to toolchain mismatch.
     "$GOLANGCI_LINT_BIN" run --timeout 20m --config server/.golangci.yml ./...
     echo "    golangci-lint OK."
 else

@@ -1,6 +1,6 @@
 module github.com/mcpany/core/webhooks/examples/html_to_md
 
-go 1.24.0
+go 1.26.1
 
 require (
 	github.com/JohannesKaufmann/html-to-markdown v1.6.0

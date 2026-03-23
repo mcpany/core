@@ -353,6 +353,12 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-15 Evolution)
+- [ ] **[P0] S2S Negotiation Hub**: Visual workspace for orchestrating UACO v3.5 swarm-to-swarm peering and resource handshakes. (Added: 2026-05-15)
+- [ ] **[P0] Intent Sovereignty Widget**: Real-time monitor for IBHI hardware anchors and blocked intent poisoning attempts. (Added: 2026-05-15)
+- [ ] **[P1] Correction Feedback Portal**: UI for users to submit signed NFA tokens and track agent compliance with corrections. (Added: 2026-05-15)
+- [ ] **[P1] Memory-Mesh Performance Map**: Visualization of zero-copy BSH latency and shared-memory region health. (Added: 2026-05-15)
+
 #### Upcoming (2026-05-14 Evolution)
 - [ ] **[P0] Swarm Attack Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and SAAD neutralization events. (Added: 2026-05-14)
 - [ ] **[P0] ContextEngine Plugin Manager**: Re-affirmed P0 for managing OpenClaw-compatible lifecycle hooks and "Mission-Root" anchors. (Added: 2026-05-14)
