@@ -126,6 +126,7 @@ define_vitest_tests(vitest_bin)
 eslint_bin.eslint_test(
     name = "lint",
     args = [
+        "--max-warnings=560",
         "src/",
     ],
     chdir = package_name(),
