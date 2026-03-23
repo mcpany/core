@@ -10,6 +10,7 @@ import { Plus, Trash2, Edit } from 'lucide-react';
 import { Skill, SkillService } from '@/lib/skill-service';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { Checkbox } from '@/components/ui/checkbox';
 
 /**
  * SkillList component.
@@ -18,6 +19,7 @@ import { toast } from 'sonner';
 export default function SkillList() {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSkills, setSelectedSkills] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadSkills();
@@ -39,9 +41,55 @@ export default function SkillList() {
     try {
       await SkillService.delete(name);
       toast.success('Skill deleted');
+      setSelectedSkills(prev => {
+        const next = new Set(prev);
+        next.delete(name);
+        return next;
+      });
       loadSkills();
     } catch (err: unknown) {
       toast.error('Failed to delete skill: ' + (err as Error).message);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedSkills.size === 0) return;
+    if (!confirm(`Are you sure you want to delete ${selectedSkills.size} selected skills?`)) return;
+
+    let deletedCount = 0;
+    for (const name of selectedSkills) {
+      try {
+        await SkillService.delete(name);
+        deletedCount++;
+      } catch (err: unknown) {
+        toast.error(`Failed to delete skill "${name}": ` + (err as Error).message);
+      }
+    }
+
+    if (deletedCount > 0) {
+      toast.success(`Successfully deleted ${deletedCount} skill(s)`);
+      setSelectedSkills(new Set());
+      loadSkills();
+    }
+  };
+
+  const toggleSelection = (name: string) => {
+    setSelectedSkills(prev => {
+      const next = new Set(prev);
+      if (next.has(name)) {
+        next.delete(name);
+      } else {
+        next.add(name);
+      }
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedSkills.size === skills.length) {
+      setSelectedSkills(new Set());
+    } else {
+      setSelectedSkills(new Set(skills.map(s => s.name)));
     }
   };
 
@@ -53,19 +101,41 @@ export default function SkillList() {
     <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Agent Skills</h1>
-        <Link to="/skills/create">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" /> Create Skill
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          {selectedSkills.size > 0 && (
+            <div className="flex items-center gap-2 mr-4 p-1 bg-muted rounded-md px-3 border fade-in animate-in">
+              <span className="text-sm font-medium">{selectedSkills.size} selected</span>
+              <Button variant="destructive" size="sm" onClick={handleBulkDelete} className="h-7 text-xs px-2">
+                <Trash2 className="mr-1.5 h-3 w-3" /> Bulk Delete
+              </Button>
+            </div>
+          )}
+          {skills.length > 0 && (
+            <Button variant="outline" size="sm" onClick={toggleSelectAll} className="mr-2 h-9">
+              {selectedSkills.size === skills.length ? 'Deselect All' : 'Select All'}
+            </Button>
+          )}
+          <Link to="/skills/create">
+            <Button>
+              <Plus className="mr-2 h-4 w-4" /> Create Skill
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {skills.map((skill) => (
-          <Card key={skill.name} className="hover:shadow-lg transition-shadow">
+          <Card key={skill.name} className={`hover:shadow-lg transition-all ${selectedSkills.has(skill.name) ? 'border-primary ring-1 ring-primary/20 bg-primary/5' : ''}`}>
             <CardHeader>
               <CardTitle className="flex justify-between items-center">
-                <span>{skill.name}</span>
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    checked={selectedSkills.has(skill.name)}
+                    onCheckedChange={() => toggleSelection(skill.name)}
+                    aria-label={`Select skill ${skill.name}`}
+                  />
+                  <span>{skill.name}</span>
+                </div>
                 <div className="flex gap-2">
                   <Link to={`/skills/${skill.name}/edit`}>
                     <Button variant="ghost" size="icon" className="h-8 w-8">
