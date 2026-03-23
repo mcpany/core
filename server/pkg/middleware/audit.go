@@ -304,6 +304,9 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 //
 // Summary: Clears the audit history.
 //
+// Parameters:
+//   - None.
+//
 // Side Effects:
 //   - Clears the history in the broadcaster.
 func (m *AuditMiddleware) ClearHistory() {
@@ -333,6 +336,9 @@ func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 // GetHistory returns the current broadcast history.
 //
 // Summary: Retrieves the audit history from the broadcaster.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
 //   - []any: A slice of audit entries.
@@ -387,6 +393,9 @@ func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audi
 // Close closes the underlying store.
 //
 // Summary: Closes the audit store.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
 //   - error: An error if the operation fails.
