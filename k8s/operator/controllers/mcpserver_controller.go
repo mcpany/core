@@ -33,20 +33,6 @@ type MCPServerReconciler struct {
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
-//
-// Summary: Reconciles a MCPServer object.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: ctrl.Request. The reconciliation request.
-//
-// Returns:
-//   - ctrl.Result: The result.
-//   - error: Any error.
-//
-// Errors:
-//   - Returns error if MCPServer cannot be read. which aims to
-// move the current state of the cluster closer to the desired state.
 // It creates or updates the Deployment and Service for the MCPServer.
 //
 // Summary: Reconciles a MCPServer object.
