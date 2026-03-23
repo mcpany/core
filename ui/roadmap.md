@@ -393,6 +393,14 @@
 
 - [ ] **[P1] Asynchronous RL Rollout View**: Live feed of multi-agent rollout collection for OpenClaw-RL synchronization. (Added: 2026-05-09)
 
+#### Upcoming (2026-05-09 Evolution)
+
+- [ ] **[P0] Context Sovereignty Dashboard**: Visualization of cryptographically bound memory shards and mission-root alignment. (Added: 2026-05-09)
+
+- [ ] **[P0] Continuous Attestation Monitor**: Real-time tracker for CLA polling and "Absence Manifest" re-verification status. (Added: 2026-05-09)
+
+- [ ] **[P1] Asynchronous RL Rollout View**: Live feed of multi-agent rollout collection for OpenClaw-RL synchronization. (Added: 2026-05-09)
+
 #### Upcoming (2026-05-08 Evolution)
 
 - [ ] **[P0] Context Sealing Auditor**: Visualization of cryptographically sealed context shards and exfiltration attempt alerts. (Added: 2026-05-08)
