@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { JsonTree } from "./json-tree";
 import { SmartTable } from "@/components/tools/smart-table";
+import { PropertiesTable } from "@/components/ui/properties-table";
 
 // ⚡ BOLT: Lazy load SyntaxHighlighter to reduce initial bundle size.
 // Randomized Selection from Top 5 High-Impact Targets (Assets/Bundle)
@@ -77,7 +78,7 @@ const getTableData = (data: unknown, smartTable: boolean) => {
  */
 export function JsonView({ data, className, smartTable = false, maxHeight = 400, defaultExpandedLevel = 1 }: JsonViewProps) {
     // Calculate initial state lazily
-    const [viewMode, setViewMode] = useState<"smart" | "tree" | "raw" | "image">(() => {
+    const [viewMode, setViewMode] = useState<"smart" | "properties" | "tree" | "raw" | "image">(() => {
         const parsed = tryParse(data);
 
         // Check for image
@@ -87,7 +88,10 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400,
         if (tableData) return "smart";
 
         const isObj = typeof parsed === 'object' && parsed !== null;
-        if (isObj) return "tree";
+        if (isObj) {
+            if (!Array.isArray(parsed) && Object.keys(parsed).length > 0) return "properties";
+            return "tree";
+        }
 
         return "raw";
     });
@@ -109,6 +113,8 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400,
             setViewMode("image");
         } else if (hasSmartView) {
             setViewMode("smart");
+        } else if (isObject && !Array.isArray(parsedData) && Object.keys(parsedData).length > 0) {
+            setViewMode("properties");
         } else if (isObject) {
             setViewMode("tree");
         } else {
@@ -246,6 +252,14 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400,
         );
     }
 
+    const renderProperties = () => {
+        return (
+            <div className={cn("rounded-md border bg-card", className)}>
+                <PropertiesTable data={parsedData as Record<string, any>} />
+            </div>
+        );
+    }
+
     const renderSmart = () => {
         if (!tableData) return renderRaw();
 
@@ -337,6 +351,7 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400,
 
             <div className="mt-0">
                 {viewMode === "smart" && hasSmartView ? renderSmart() :
+                    viewMode === "properties" && parsedData ? renderProperties() :
                     viewMode === "tree" ? renderTree() :
                         viewMode === "image" ? renderImage() :
                             renderRaw()}
