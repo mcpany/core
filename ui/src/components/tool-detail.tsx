@@ -14,7 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Wrench, AlertTriangle, TrendingUp, Braces } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ServicePropertyCard } from "./service-property-card";
-import { SchemaViewer } from "./tools/schema-viewer";
+import { SchemaVisualizer } from "./schema-visualizer";
 
 /**
  * Displays details of a specific tool within a service.
@@ -149,7 +149,7 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
           </CardHeader>
           <CardContent>
              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-             <SchemaViewer schema={tool.inputSchema || (tool as any).input_schema} />
+             <SchemaVisualizer schema={tool.inputSchema || (tool as any).input_schema} />
           </CardContent>
         </Card>
 

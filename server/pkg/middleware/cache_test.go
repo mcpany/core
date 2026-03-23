@@ -27,15 +27,6 @@ const (
 )
 
 // mockTool is a mock implementation of the tool.Tool interface for testing.
-
-func (m *mockTool) IsStreaming() bool {
-	return false
-}
-
-func (m *mockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, nil
-}
-
 type mockTool struct {
 	tool         *v1.Tool
 	executeCount int

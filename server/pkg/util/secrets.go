@@ -13,7 +13,6 @@ import (
 	"os"
 	"regexp"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -45,8 +44,6 @@ func ResolveSecret(ctx context.Context, secret *configv1.SecretValue) (string, e
 	return resolveSecretRecursive(ctx, secret, 0)
 }
 
-var secretRegexCache sync.Map
-
 func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, depth int) (string, error) {
 	val, err := resolveSecretImpl(ctx, secret, depth)
 	if err != nil {
@@ -54,24 +51,12 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 	}
 
 	if secret != nil && secret.GetValidationRegex() != "" {
-		pattern := secret.GetValidationRegex()
-
-		// ⚡ BOLT: Cached regex compilation for secret validation to eliminate O(N) regex compilation overhead during frequent secret resolutions.
-		// Randomized Selection from Top 5 High-Impact Targets
-		var re *regexp.Regexp
-		if cached, ok := secretRegexCache.Load(pattern); ok {
-			re = cached.(*regexp.Regexp)
-		} else {
-			var compErr error
-			re, compErr = regexp.Compile(pattern)
-			if compErr != nil {
-				return "", fmt.Errorf("invalid validation regex %q: %w", pattern, compErr)
-			}
-			secretRegexCache.Store(pattern, re)
+		re, err := regexp.Compile(secret.GetValidationRegex())
+		if err != nil {
+			return "", fmt.Errorf("invalid validation regex %q: %w", secret.GetValidationRegex(), err)
 		}
-
 		if !re.MatchString(val) {
-			return "", fmt.Errorf("secret value does not match validation regex %q", pattern)
+			return "", fmt.Errorf("secret value does not match validation regex %q", secret.GetValidationRegex())
 		}
 	}
 

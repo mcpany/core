@@ -393,15 +393,6 @@ func TestServiceRegistry_ServiceInfo(t *testing.T) {
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-
-func (m *mockTool) IsStreaming() bool {
-	return false
-}
-
-func (m *mockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, nil
-}
-
 type mockTool struct {
 	tool *mcp_routerv1.Tool
 }
