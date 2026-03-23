@@ -1,6 +1,17 @@
 # Feature Inventory: MCP Any
 
 ## Current Backlog (P0/P1)
+## Evolution: [2026-05-10] Updates
+
+### Proposed Additions
+- **Mission Anchor Kernel (MAK)**: (P0) Authoritative transport-layer enforcement engine that binds every subagent tool call to a cryptographically signed "Mission Manifest."
+- **Low-Frequency Trust Attestation (LFTA) Bridge**: (P0) Hardware-backed security proof provider that satisfies Local-First Verification (LFV) requirements for high-stakes tools.
+- **Mission-Bound Compute Leases**: (P1) Resource management middleware that atomically links token and compute budgets to specific Mission IDs, preventing runaway subagent swarms.
+
+### Priority Shifts
+- **Adaptive Reasoning Balancer**: (Promoted to P0) Designated as a critical component for managing the "Cognitive Stall" identified in today's market research.
+- **Zero-Hallucination Security Kernel**: (Evolved to MAK) The security kernel is being integrated into the broader Mission Anchor Kernel for unified intent enforcement.
+
 ## Evolution: [2026-05-09] Updates
 
 ### Proposed Additions

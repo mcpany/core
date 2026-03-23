@@ -501,6 +501,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Session Persistence Middleware**: Core security service for managing token refresh and trust persistence in deep reasoning chains. (Added: 2026-04-25)
 *   **[P0] DAP Enforcement for Pre-Flight Validator**: Mandatory enforcement of Deterministic Absence Proofs as a prerequisite for all agent boots. (Added: 2026-04-25)
 
+#### Upcoming (2026-05-10 Evolution)
+*   **[P0] Mission Anchor Kernel (MAK) Core**: Implement transport-layer interception and semantic validation against signed manifests. (Added: 2026-05-10)
+*   **[P0] LFTA Security Proof Provider**: Hardware-backed attestation bridge for Local-First Verification (LFV). (Added: 2026-05-10)
+*   **[P1] Mission-Bound Lease Controller**: Atomic resource limits for token and compute budgets linked to Mission IDs. (Added: 2026-05-10)
+
 #### Upcoming (2026-05-09 Evolution)
 - [ ] **[P0] Structured Task Event Bridge**: Authoritative infrastructure for routing and persisting standardized `task_completion` events across disparate agent frameworks. (Added: 2026-05-09)
 - [ ] **[P0] Zero-Hallucination Security Kernel**: Transport-layer enforcement engine for deterministic deny-rules independent of reasoning state. (Added: 2026-05-09)
