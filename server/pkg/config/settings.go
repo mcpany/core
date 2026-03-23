@@ -21,6 +21,8 @@ import (
 )
 
 // Settings defines the global configuration for the application.
+//
+// Summary: Represents a Settings.
 type Settings struct {
 	proto           *configv1.GlobalSettings
 	grpcPort        string
