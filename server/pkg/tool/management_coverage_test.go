@@ -42,6 +42,14 @@ func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }
 
+func (m *mockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
 // PreHook Mock
 type mockPreHook struct {
 	action tool.Action

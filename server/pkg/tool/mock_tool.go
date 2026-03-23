@@ -19,6 +19,8 @@ type MockTool struct {
 	MCPToolFunc        func() *mcp.Tool
 	ExecuteFunc        func(ctx context.Context, req *ExecutionRequest) (any, error)
 	GetCacheConfigFunc func() *configv1.CacheConfig
+	IsStreamingFunc    func() bool
+	StreamExecuteFunc  func(ctx context.Context, req *ExecutionRequest) (<-chan any, error)
 }
 
 // Tool returns the protobuf definition of the mock tool.
@@ -45,6 +47,32 @@ func (m *MockTool) MCPTool() *mcp.Tool {
 		return m.MCPToolFunc()
 	}
 	return nil
+}
+
+// IsStreaming calls the mock IsStreamingFunc if set, otherwise returns false.
+func (m *MockTool) IsStreaming() bool {
+	if m.IsStreamingFunc != nil {
+		return m.IsStreamingFunc()
+	}
+	return false
+}
+
+// StreamExecute calls the mock StreamExecuteFunc if set, otherwise falls back to Execute.
+func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+	if m.StreamExecuteFunc != nil {
+		return m.StreamExecuteFunc(ctx, req)
+	}
+	ch := make(chan any, 1)
+	go func() {
+		defer close(ch)
+		res, err := m.Execute(ctx, req)
+		if err != nil {
+			ch <- err
+		} else {
+			ch <- res
+		}
+	}()
+	return ch, nil
 }
 
 // Execute calls the mock ExecuteFunc if set, otherwise returns nil.

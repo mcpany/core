@@ -3467,8 +3467,11 @@ func prettyPrint(input []byte, contentType string) string {
 		encoder := xml.NewEncoder(&buf)
 		encoder.Indent("", "  ")
 
-		currentTag := ""
-		_ = currentTag // appease unused variable linter if it flags this
+		type StackNode struct {
+			Name string
+		}
+		stack := make([]StackNode, 0)
+		_ = stack // appease unused variable linter for specific staticcheck versions
 
 		// Attempt to decode and re-encode to format
 		for {
@@ -3491,12 +3494,17 @@ func prettyPrint(input []byte, contentType string) string {
 					}
 				}
 				token = t
-				currentTag = t.Name.Local
+				stack = append(stack, StackNode{Name: t.Name.Local})
 			case xml.EndElement:
-				currentTag = ""
+				if len(stack) > 0 {
+					stack = stack[:len(stack)-1]
+				}
 			case xml.CharData:
-				if currentTag != "" && util.IsSensitiveKey(currentTag) {
-					token = xml.CharData([]byte(redactedPlaceholder))
+				if len(stack) > 0 {
+					currentTag := stack[len(stack)-1].Name
+					if util.IsSensitiveKey(currentTag) {
+						token = xml.CharData([]byte(redactedPlaceholder))
+					}
 				}
 			}
 

@@ -49,6 +49,10 @@ func (m *mockToolSimple) Tool() *routerv1.Tool {
 
 func (m *mockToolSimple) GetCacheConfig() *configv1.CacheConfig { return nil }
 
+func (m *mockToolSimple) IsStreaming() bool { return false }
+
+func (m *mockToolSimple) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) { return nil, nil }
+
 func (m *mockToolSimple) MCPTool() *mcp.Tool {
 	t, _ := ConvertProtoToMCPTool(m.Tool())
 	return t
