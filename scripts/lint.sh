@@ -13,19 +13,19 @@ cd "$PROJECT_ROOT"
 
 find_tool() {
     local name="$1"
-    # 1. Check build/env/bin (Highest priority for CI stability)
+    # Explicitly check GOPATH first
+    local gp
+    gp=$(go env GOPATH 2>/dev/null)
+    if [[ -x "$gp/bin/$name" ]]; then
+        echo "$gp/bin/$name"
+        return 0
+    fi
+    # Then check build/env/bin
     if [[ -x "build/env/bin/$name" ]]; then
         echo "$(pwd)/build/env/bin/$name"
         return 0
     fi
-    # 2. Check GOPATH/bin
-    local gopath_bin
-    gopath_bin=$(go env GOPATH 2>/dev/null)/bin/"$name"
-    if [[ -x "$gopath_bin" ]]; then
-        echo "$gopath_bin"
-        return 0
-    fi
-    # 3. Check PATH
+    # Finally check PATH
     command -v "$name" 2>/dev/null || true
 }
 
@@ -48,20 +48,17 @@ else
 fi
 
 echo "==> Running golangci-lint..."
-GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
+# If linter is already in PATH and is the right version, use it.
+# Otherwise try to find it.
+LINT_BIN=$(find_tool golangci-lint)
 
-if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    # Verify Go version of the linter
-    LINT_VERSION_OUT=$("$GOLANGCI_LINT_BIN" --version)
-    echo "    Using linter: $LINT_VERSION_OUT"
+if [[ -x "$LINT_BIN" ]]; then
+    echo "    Using linter: $($LINT_BIN --version)"
 
-    # We run on specific directories to avoid workspace boundary issues and "no Go files" errors.
-    # Note: we run from root so it sees go.work.
-    # We use space-separated list of paths.
     TARGETS="./server/... ./proto/... ./k8s/operator/... ./server/examples/upstream_service_demo/grpc/greeter_server/..."
 
     echo "    Linting targets..."
-    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --config server/.golangci.yml $TARGETS
+    "$LINT_BIN" run --timeout 20m --fix --config server/.golangci.yml $TARGETS
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found."

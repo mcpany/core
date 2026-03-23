@@ -39,31 +39,33 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v8-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-            - v8-lint-
+            - v10-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+            - v10-lint-
       - run:
           name: Prepare Environment
           command: |
-            # Explicitly force a clean install of the linter if it doesn't match Go 1.26
-            rm -f build/env/bin/golangci-lint
             export GOTOOLCHAIN=go1.26.1
+            # Clean install of tools to avoid version conflicts
+            rm -rf build/env/bin
             make prepare
+            # Ensure the linter is built with Go 1.26
+            go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.5
       - run:
           name: Run Lint
           command: |
             . venv/bin/activate
-            # Ensure PATH includes tool install dir
-            export PATH=$PWD/build/env/bin:$PATH
-            # Explicitly set GOTOOLCHAIN to ensure correct version
             export GOTOOLCHAIN=go1.26.1
+            export GOPATH=$HOME/go
+            export PATH=$GOPATH/bin:$PWD/build/env/bin:$PATH
             # Run lint via the hardened script
             ./scripts/lint.sh
       - save_cache:
-          key: v8-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+          key: v10-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
             - "venv"
+            - "/home/circleci/go/bin"
 
 workflows:
   version: 2
