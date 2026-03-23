@@ -6,18 +6,6 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
-## Evolution: [2026-06-18] Updates
-
-### Proposed Additions
-- **Attention-Locked Sovereignty (ALS) Controller**: (P0) Authoritative attention governance middleware utilizing hardware-bound headers to protect mission-critical intents from eviction.
-- **Phase-Bound Reasoning Budget (PBRB) Firewall**: (P0) Resource management extension for the RBF providing tiered reasoning budgets for Discovery, Planning, and Execution phases.
-- **T2T Stylometric Attestation Relay**: (P0) Security bridge for Teammate-to-Teammate stylometric verification, anchoring coordination to hardware-attested behavioral signatures.
-- **Mission-Root Hardware Attestation (MRHA) Bridge**: (P0) Connectivity service for propagating hardware-bound mission-root attestation across multi-hop delegation chains.
-
-### Priority Shifts
-- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **PBRB-compliant** phase-gating.
-- **Attention-Locked Context Sharding (ALCS)**: (Re-affirmed P0) Designated as the primary infrastructure for **ALS-compliant** attention locking.
-
 ## Evolution: [2026-06-16] Updates
 
 ### Proposed Additions
@@ -1374,44 +1362,9 @@
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
 
 ### Strategic Additions: 2026-06-18
-- **[P0] ALS Controller**: Attention-Locked Sovereignty controller to mitigate CVE-2026-71002.
-- **[P0] PBRB Firewall**: Phase-Bound Reasoning Budget firewall for swarm token-spend governance.
-- **[P1] T2T Stylometric Attestation Relay**: verify agent identity in Teammate-to-Teammate (T2T) comms.
-
-### Strategic Additions: 2026-06-18
-- **[P0] ALS Controller**: Attention-Locked Sovereignty controller to mitigate CVE-2026-71002.
-- **[P0] PBRB Firewall**: Phase-Bound Reasoning Budget firewall for swarm token-spend governance.
-- **[P1] T2T Stylometric Attestation Relay**: verify agent identity in Teammate-to-Teammate (T2T) comms.
-
-### Strategic Additions: 2026-06-18
-- **[P0] ALS Controller**: Attention-Locked Sovereignty controller to mitigate CVE-2026-71002.
-- **[P0] PBRB Firewall**: Phase-Bound Reasoning Budget firewall for swarm token-spend governance.
-- **[P1] T2T Stylometric Attestation Relay**: verify agent identity in Teammate-to-Teammate (T2T) comms.
-
-### Strategic Additions: 2026-06-18
-- **[P0] ALS Controller**: Attention-Locked Sovereignty controller to mitigate CVE-2026-71002.
-- **[P0] PBRB Firewall**: Phase-Bound Reasoning Budget firewall for swarm token-spend governance.
-- **[P1] T2T Stylometric Attestation Relay**: verify agent identity in Teammate-to-Teammate (T2T) comms.
-
-### Strategic Additions: 2026-06-18
-- **[P0] ALS Controller**: Attention-Locked Sovereignty controller to mitigate CVE-2026-71002.
-- **[P0] PBRB Firewall**: Phase-Bound Reasoning Budget firewall for swarm token-spend governance.
-- **[P1] T2T Stylometric Attestation Relay**: verify agent identity in Teammate-to-Teammate (T2T) comms.
-
-### Strategic Additions: 2026-06-18
-- **[P0] ALS Controller**: Attention-Locked Sovereignty controller to mitigate CVE-2026-71002.
-- **[P0] PBRB Firewall**: Phase-Bound Reasoning Budget firewall for swarm token-spend governance.
-- **[P1] T2T Stylometric Attestation Relay**: verify agent identity in Teammate-to-Teammate (T2T) comms.
-
-### Strategic Additions: 2026-06-18
-- **[P0] ALS Controller**: Attention-Locked Sovereignty controller to mitigate CVE-2026-71002.
-- **[P0] PBRB Firewall**: Phase-Bound Reasoning Budget firewall for swarm token-spend governance.
-- **[P1] T2T Stylometric Attestation Relay**: verify agent identity in Teammate-to-Teammate (T2T) comms.
-
-### Strategic Additions: 2026-06-18
 - **[P0] ALS Controller**: Attention-Locked Sovereignty for context protection.
 - **[P0] PBRB Firewall**: Phase-bound reasoning budget monitoring.
-- **[P1] T2T Stylometric Relay**: Identity verification for horizontal teammates.
+- **[P1] T2T Stylometric Relay**: Stylometric identity attestation for horizontal teammates.
 
 ### Strategic Additions: 2026-06-18
 - **[P0] ALS Controller**: Attention-Locked Sovereignty for context protection.
