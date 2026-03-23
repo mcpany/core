@@ -8,7 +8,6 @@ go_library(
     srcs = [
         "doctor.go",
         "import.go",
-        "init.go",
         "main.go",
         "tool.go",
     ],
@@ -36,7 +35,6 @@ go_test(
     srcs = [
         "doctor_test.go",
         "import_test.go",
-        "init_test.go",
         "main_test.go",
         "tool_test.go",
         "validate_test.go",
