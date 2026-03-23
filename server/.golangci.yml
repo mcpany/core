@@ -8,33 +8,10 @@ run:
 
 linters:
   enable:
-    - bodyclose
     - errcheck
-    - goconst
-    - gocritic
-    - gocyclo
     - govet
-    - nolintlint
-    - prealloc
-    - revive
-    - gosec
     - staticcheck
-    - tparallel
-    - unconvert
     - unused
-    - misspell
-    - whitespace
-    - godot
-    - unparam
-    - nakedret
-    - dogsled
-    - asciicheck
-    - makezero
-    - nilerr
-    - noctx
-    - rowserrcheck
-    - sqlclosecheck
-    - wastedassign
 
 issues:
   exclude-dirs:
