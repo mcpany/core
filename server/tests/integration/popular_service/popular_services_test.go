@@ -17,9 +17,6 @@ import (
 )
 
 func TestUpstreamService_Trello(t *testing.T) {
-	if os.Getenv("TRELLO_API_KEY") == "" || os.Getenv("TRELLO_API_TOKEN") == "" || os.Getenv("TRELLO_API_KEY") == "dummy" {
-		// t.Skip("TRELLO_API_KEY or TRELLO_API_TOKEN not set")
-	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
@@ -62,9 +59,6 @@ func TestUpstreamService_Trello(t *testing.T) {
 }
 
 func TestUpstreamService_Miro(t *testing.T) {
-	if os.Getenv("MIRO_API_TOKEN") == "" || os.Getenv("MIRO_API_TOKEN") == "dummy" {
-		// t.Skip("MIRO_API_TOKEN not set")
-	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
@@ -107,9 +101,6 @@ func TestUpstreamService_Miro(t *testing.T) {
 }
 
 func TestUpstreamService_Figma(t *testing.T) {
-	if os.Getenv("FIGMA_API_TOKEN") == "" || os.Getenv("FIGMA_TEAM_ID") == "" || os.Getenv("FIGMA_API_TOKEN") == "dummy" {
-		// t.Skip("FIGMA_API_TOKEN or FIGMA_TEAM_ID not set")
-	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()

@@ -84,13 +84,6 @@ func dockerComposeDir(t *testing.T) string {
 }
 
 func TestDockerCompose(t *testing.T) {
-	if !integration.IsDockerSocketAccessible() {
-		t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
-	}
-	if !commandExists("docker") {
-		t.Skip("docker command not found, skipping TestDockerCompose.")
-	}
-
 	srcComposeDir := dockerComposeDir(t)
 	dockerComposeFile := filepath.Join(srcComposeDir, "docker-compose.yml")
 	if _, err := os.Stat(dockerComposeFile); err != nil {
@@ -302,9 +295,6 @@ func TestDockerCompose(t *testing.T) {
 }
 
 func TestHelmChart(t *testing.T) {
-	if !commandExists("helm") {
-		t.Skip("helm command not found, skipping TestHelmChart.")
-	}
 	t.Parallel()
 
 	helmPath := helmChartDir(t)
@@ -333,10 +323,6 @@ func TestHelmChart(t *testing.T) {
 }
 
 func TestK8sFullStack(t *testing.T) {
-	if !commandExists("helm") {
-		t.Skip("helm command not found, skipping TestK8sFullStack.")
-	}
-
 	helmPath := helmChartDir(t)
 	if _, err := os.Stat(helmPath); err != nil {
 		t.Skipf("Helm chart directory not found at %s, skipping TestK8sFullStack.", helmPath)

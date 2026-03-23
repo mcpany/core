@@ -16,7 +16,10 @@ export class RegistrationServiceClientImpl { }
 /**
  * Mock constant for HttpUpstreamService used in tests.
  */
-export const HttpUpstreamService = {};
+export const HttpUpstreamService = {
+  fromJSON: (data: any) => data,
+  toJSON: (data: any) => data,
+};
 
 /**
  * Mock constant for ServiceProvenance used in tests.
