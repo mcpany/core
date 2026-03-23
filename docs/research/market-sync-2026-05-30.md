@@ -9,7 +9,7 @@
 
 ### 2. OpenClaw: Isolated Execution Contexts (IEC)
 
-- Update: OpenClaw is transitioning to IECs using micro-VM isolation.
+- Update: OpenClaw transitioning to IECs using micro-VM isolation.
 - Discovery: Emergence of "Proof-of-Isolation" (PoI) headers.
 
 ### 3. Market Vulnerability: Context Shadowing
