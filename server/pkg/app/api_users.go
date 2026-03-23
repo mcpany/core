@@ -77,15 +77,13 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 			var user configv1.User
 			if userRaw, ok := tempMap["user"]; ok {
 				if err := protojson.Unmarshal(userRaw, &user); err != nil {
-					logging.GetLogger().Error("failed to unmarshal user from user field", "error", err)
-					http.Error(w, "invalid user configuration", http.StatusBadRequest)
+					http.Error(w, "invalid user proto: "+err.Error(), http.StatusBadRequest)
 					return
 				}
 			} else {
 				// Maybe body IS the user?
 				if err := protojson.Unmarshal(body, &user); err != nil {
-					// Sentinel Security Update: Do not log full body which might contain password.
-					logging.GetLogger().Error("failed to unmarshal user from request body", "error", err)
+					logging.GetLogger().Error("failed to unmarshal user", "error", err)
 					http.Error(w, "missing user field or invalid request body", http.StatusBadRequest)
 					return
 				}
@@ -204,15 +202,13 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 			var user configv1.User
 			if userRaw, ok := tempMap["user"]; ok {
 				if err := protojson.Unmarshal(userRaw, &user); err != nil {
-					logging.GetLogger().Error("failed to unmarshal user from user field", "error", err)
-					http.Error(w, "invalid user configuration", http.StatusBadRequest)
+					http.Error(w, "invalid user proto: "+err.Error(), http.StatusBadRequest)
 					return
 				}
 			} else {
 				// Maybe body IS the user?
 				if err := protojson.Unmarshal(body, &user); err != nil {
-					// Sentinel Security Update: Do not log full body which might contain password.
-					logging.GetLogger().Error("failed to unmarshal user from request body", "error", err)
+					logging.GetLogger().Error("failed to unmarshal user", "error", err)
 					http.Error(w, "missing user field or invalid request body", http.StatusBadRequest)
 					return
 				}

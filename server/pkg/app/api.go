@@ -125,8 +125,8 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	// If I register `/skills/` for `handleSkillDetail`, I can't easily register `/skills/{name}/assets` separately without 1.22.
 	// Let's assume `handleSkillDetail` needs to handle sub-paths or I merge them.
 
-	mux.Handle("/templates", rbacAdmin(a.handleTemplates()))
-	mux.Handle("/templates/", rbacAdmin(a.handleTemplateDetail()))
+	mux.HandleFunc("/templates", a.handleTemplates())
+	mux.HandleFunc("/templates/", a.handleTemplateDetail())
 
 	mux.HandleFunc("/profiles", a.handleProfiles(store))
 	mux.HandleFunc("/profiles/", a.handleProfileDetail(store))
@@ -143,7 +143,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/users/", a.handleUserDetail(store))
 
 	// Credentials
-	mux.Handle("/credentials", rbacAdmin(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/credentials", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			a.listCredentialsHandler(w, r)
@@ -152,8 +152,8 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
-	})))
-	mux.Handle("/credentials/", rbacAdmin(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	})
+	mux.HandleFunc("/credentials/", func(w http.ResponseWriter, r *http.Request) {
 		// Manual dispatch for detail vs specific
 		// listCredentialsHandler handles GET /credentials (handled above)
 		// create is POST /credentials (handled below)
@@ -178,7 +178,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 			return
 		}
 		http.NotFound(w, r)
-	})))
+	})
 
 	// Auth (OAuth)
 	mux.Handle("/auth/login", loginRateLimiter.Handler(http.HandlerFunc(a.handleLogin)))
@@ -954,6 +954,7 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 			if secret.GetName() == "" && secret.GetId() != "" {
 				secret.SetName(secret.GetId())
 			}
+
 
 			// Force ID
 			secret.SetId(path)
