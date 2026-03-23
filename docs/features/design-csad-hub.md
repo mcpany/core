@@ -14,15 +14,15 @@ across the entire agent mesh in real-time.
 ## 2. Goals & Non-Goals
 
 * **Goals:**
-    * Implement sub-millisecond, cross-agent behavioral analysis.
-    * Detect coordinated probe patterns (e.g., distributed port scanning,
+* Implement sub-millisecond, cross-agent behavioral analysis.
+* Detect coordinated probe patterns (e.g., distributed port scanning,
 
       credential stuffing).
 
-    * Provide automated "Swarm Quarantine" capabilities.
+* Provide automated "Swarm Quarantine" capabilities.
 * **Non-Goals:**
-    * Replacing existing per-agent firewalls.
-    * Performing deep packet inspection (L7) beyond semantic tool call metadata.
+* Replacing existing per-agent firewalls.
+* Performing deep packet inspection (L7) beyond semantic tool call metadata.
 
 ## 3. Critical User Journey (CUJ)
 
@@ -45,27 +45,27 @@ across the entire agent mesh in real-time.
 ## 4. Design & Architecture
 
 * **System Flow:**
-    * Every tool call and A2A message is intercepted by the CSAD Middleware.
-    * Metadata fragments (caller_id, tool_id, timestamp, mission_root) are
+* Every tool call and A2A message is intercepted by the CSAD Middleware.
+* Metadata fragments (caller_id, tool_id, timestamp, mission_root) are
 
       pushed to a high-speed, in-memory "Swarm State Buffer."
 
-    * A background "Pattern Matcher" (using sliding-window correlation)
+* A background "Pattern Matcher" (using sliding-window correlation)
 
       evaluates the buffer against known Hivenet signatures.
 
 * **APIs / Interfaces:**
-    * `csad.v1.QuarantineSwarm(mission_id)`: Revokes all capabilities for a
+* `csad.v1.QuarantineSwarm(mission_id)`: Revokes all capabilities for a
 
       specific mission.
 
-    * `csad.v1.GetSwarmTrace(mission_id)`: Returns a graph of coordinated
+* `csad.v1.GetSwarmTrace(mission_id)`: Returns a graph of coordinated
 
       actions.
 
 * **Data Storage/State:**
-    * Ephemeral, lock-free ring buffer in memory for sub-millisecond processing.
-    * Persistent audit logs in the core database for post-mortem analysis.
+* Ephemeral, lock-free ring buffer in memory for sub-millisecond processing.
+* Persistent audit logs in the core database for post-mortem analysis.
 
 ## 5. Alternatives Considered
 

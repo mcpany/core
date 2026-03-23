@@ -2801,7 +2801,7 @@
 
   backend for the **Atomic Teammate Handshake (ATH)**.
 
-## Evolution: 2026-05-30 Update (Execution Sovereignty)
+## Evolution (2026-05-30): Execution Sovereignty Update (Execution Sovereignty)
 
 ### Proposed Additions (2026-05-30 Expansion)
 

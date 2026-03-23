@@ -2850,7 +2850,7 @@ framework boundaries.
   they cross teammate boundaries, ensuring they remain anchored to the mission-
   root intent.
 
-## Strategic Evolution: 2026-05-30 (Intent Hierarchy)
+## Strategic Evolution (2026-05-30): Intent Hierarchy (Intent Hierarchy)
 
 ### Focus: Intent Hierarchy Enforcement & Isolated Execution Contexts
 
