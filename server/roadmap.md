@@ -830,3 +830,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Reasoning Provenance Validator**: Implementation of `x-gemini-provenance` verification for hardware-signed reasoning steps. (Added: 2026-06-29)
 *   **[P0] CFIA v2 (HITL Context Sovereignty)**: Mandatory human-in-the-loop hashing and hardware-signing for project context files. (Added: 2026-06-29)
 *   **[P1] Fast-Path Identity Resumption (FPIR)**: Time-bound hardware-attested trust leases to neutralize teammate rotation latency. (Added: 2026-06-29)
+
+#### Upcoming (2026-03-23 Evolution - v2)
+*   **[P0] A2A Authentication Proxy**: Mandatory HTTP authentication gate for remote subagent discovery and task proposals (Gemini CLI v0.34.0 alignment). (Added: 2026-03-23)
+*   **[P1] Dynamic Usage Quota Monitor**: Real-time tracking and automated throttling based on credit/token consumption across frameworks. (Added: 2026-03-23)
+*   **[P1] gVisor-Bound Execution Identity**: Hardware-attested environment tokens for tools running in hardened gVisor sandboxes. (Added: 2026-03-23)
