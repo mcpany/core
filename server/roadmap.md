@@ -825,3 +825,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Configuration Anchor (HLCA)**: Cryptographically bind project settings to TPM-signed sessions to neutralize CVE-2026-33068. (Added: 2026-06-28)
 *   **[P0] Multi-Tenant Context Isolation Middleware**: Enforce strict state separation between missions using OpenClaw v2026.3.7 hooks. (Added: 2026-06-28)
 *   **[P1] Intent-Preserving ODCS Gateway**: On-demand context summarization to prevent "Context Ghosting" in deep swarms. (Added: 2026-06-28)
+
+#### Upcoming (2026-06-29 Evolution)
+*   **[P0] Reasoning Provenance Validator**: Implementation of `x-gemini-provenance` verification for hardware-signed reasoning steps. (Added: 2026-06-29)
+*   **[P0] CFIA v2 (HITL Context Sovereignty)**: Mandatory human-in-the-loop hashing and hardware-signing for project context files. (Added: 2026-06-29)
+*   **[P1] Fast-Path Identity Resumption (FPIR)**: Time-bound hardware-attested trust leases to neutralize teammate rotation latency. (Added: 2026-06-29)
