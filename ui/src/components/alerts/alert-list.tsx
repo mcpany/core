@@ -81,7 +81,6 @@ export function AlertList() {
 
   useEffect(() => {
     fetchAlerts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filteredAlerts = useMemo(() => {
