@@ -15,12 +15,14 @@ vi.mock('@/components/traces/trace-detail', () => ({
 
 // Mock TableVirtuoso to render items immediately in tests
 vi.mock('react-virtuoso', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TableVirtuoso: (props: any) => {
     const { data, itemContent, components, context } = props;
     const TableRow = components?.TableRow || 'tr';
     return (
       <table>
         <tbody>
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {data.map((item: any, index: number) => (
             <TableRow key={index} item={item} context={context}>
               {itemContent(index, item)}
