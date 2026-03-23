@@ -5,7 +5,7 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/mcpany/core/ci.yml?branch=main)](https://github.com/mcpany/core/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mcpany/core)](https://goreportcard.com/report/github.com/mcpany/core)
 
-## The Ultimate Developer Entry Point
+## Project Identity
 
 Welcome to **MCP Any**, the definitive Model Context Protocol (MCP) universal adapter designed to streamline and democratize API integration for AI agents.
 
@@ -78,17 +78,7 @@ graph TD
 *   **Configuration as Code**: Services and capabilities are defined declaratively in YAML/JSON, enabling version control and CI/CD for your agent capabilities.
 *   **Gateway/Sidecar**: Deployable as a central gateway or a Kubernetes sidecar for maximum flexibility.
 
-## Getting Started
-
-Follow these steps to get up and running with MCP Any immediately.
-
-### Prerequisites
-
-*   [Go 1.23+](https://go.dev/doc/install) (for building from source)
-*   `bazelisk` (for build automation)
-*   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
-
-### One-Shot Setup
+## Quick Start
 
 The exact commands to clone, install dependencies, and run the app:
 
@@ -96,7 +86,6 @@ The exact commands to clone, install dependencies, and run the app:
 git clone https://github.com/mcpany/core.git
 cd core
 bazelisk build //...
-# Run the built binary appropriately based on Bazel output
 ```
 
 ### Hello World
@@ -121,31 +110,13 @@ Ask your agent:
 
 The agent will use the `get_weather` tool exposed by MCP Any (configured in `config.minimal.yaml`) to fetch the simulated data.
 
-## Development
+## Developer Workflow
 
-We adhere to a strict development workflow to ensure code quality and maintainability.
+How to run `make test`, `make lint`, and build builds.
 
-### Testing
-Run all unit and integration tests to ensure code correctness. We practice proactive testing and continuous integration.
 ```bash
-bazelisk test //...
-```
-
-### Linting
-We enforce **100% documentation coverage** and strict style guides.
-*   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards. We require structured docstrings (Summary, Parameters, Returns, Errors, Side Effects) for all public APIs.
-*   **Protocol:** We check for breaking changes in `.proto` files.
-
-See [AGENTS.md](server/AGENTS.md) for detailed coding and documentation guidelines.
-
-To run linters:
-```bash
+make test
 make lint
-```
-
-### Building
-Compile the server binary and UI assets.
-```bash
 bazelisk build //...
 ```
 
