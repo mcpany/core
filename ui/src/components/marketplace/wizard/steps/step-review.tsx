@@ -15,6 +15,7 @@ import { CheckCircle2 } from 'lucide-react';
  *
  * @param { onComplete - The { onComplete.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function StepReview({ onComplete }: { onComplete: (config: any) => void }) {
     const { state } = useWizard();
     const { config } = state;
