@@ -511,11 +511,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] UID-Bound Socket Identity Verifier**: OS-level authentication for subagents using `SO_PEERCRED`. (Added: 2026-05-13)
 *   **[P1] Ephemeral Browser Discovery Sandbox**: Hardware-isolated browser environment for secure tool discovery. (Added: 2026-05-13)
 
-#### Upcoming (2026-05-13 Evolution)
-*   **[P0] eBPF Socket Sentinel**: Kernel-resident semantic auditor for inter-agent traffic over isolated pipes. (Added: 2026-05-13)
-*   **[P0] UID-Bound Socket Identity Verifier**: OS-level authentication for subagents using `SO_PEERCRED`. (Added: 2026-05-13)
-*   **[P1] Ephemeral Browser Discovery Sandbox**: Hardware-isolated browser environment for secure tool discovery. (Added: 2026-05-13)
-
 #### Upcoming (2026-05-12 Evolution)
 *   **[P0] Isolated Named-Pipe Transport**: Kernel-level transport layer using UNIX domain sockets to eliminate local port exposure for inter-agent comms. (Added: 2026-05-12)
 *   **[P0] Subagent Routing Firewall**: Transport-level security broker enforcing "Auth-at-the-Pipe" identity validation. (Added: 2026-05-12)
