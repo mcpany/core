@@ -3,12 +3,12 @@
 **Created:** 2026-03-10
 
 ## 1. Context and Scope
-With the discovery of critical vulnerabilities like CVE-2025-59536, it is clear that AI agents' reliance on project-local configuration files (e.g., `.claude/settings.json`) introduces severe Remote Code Execution (RCE) risks. These files often contain "hooks" or "auto-execute" commands that run with the user's privileges. MCP Any needs a native, isolated execution environment -- a "Sandbox-as-a-Service" -- where approved hooks can run without compromising the host system.
+With the discovery of critical vulnerabilities like CVE-2025-59536, it is clear that AI agents' reliance on project-local configuration files (e.g., `.claude/settings.json`) introduces severe Remote Code Execution (RCE) risks. These files often contain "hooks" or "auto-execute" commands that run with the user's privileges. MCP Any needs a native, isolated execution environment—a "Sandbox-as-a-Service"—where approved hooks can run without compromising the host system.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
     * Provide a lightweight, containerized execution environment for project-local hooks.
-    * Enforce strict resource lim -- its (CPU, Memory, Disk) on hook execution.
+    * Enforce strict resource limits (CPU, Memory, Disk) on hook execution.
     * Restrict network access to only explicitly authorized endpoints.
     * Ensure zero host filesystem access unless a specific directory is mounted with read-only permissions.
 * **Non-Goals:**

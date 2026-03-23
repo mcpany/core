@@ -1,6 +1,6 @@
 # Design Doc: Dynamic Attention Gating (DAG) Middleware
 **Status:** Draft
-**Created:** [2026-06-13]
+**Created:** 2026-06-13
 
 ## 1. Context and Scope
 As agent swarms scale horizontally and process high volumes of inter-teammate coordination, they are becoming vulnerable to **Reasoning Entropy Exhaustion (REE)**. In an REE attack, a malicious or malfunctioning subagent injects a stream of high-entropy, plausible-sounding but irrelevant reasoning fragments into the shared teammate mailbox. This noise "blinds" the parent agent's attention mechanism, causing the primary mission-root intent to be evicted from the active attention window.
@@ -9,63 +9,56 @@ The Dynamic Attention Gating (DAG) Middleware acts as a cognitive stability laye
 
 ## 2. Goals & Non-Goals
 * **Goals:**
- * Implement real-time semantic entropy analysis for all incoming reasoning fragments.
- * Provide a dynamic "Gating" mechanism to prune noise during REE attacks.
- * Ensure the "Mission-Root" intent fragment is never evicted from the parent attention layer.
- * Integrate with hardware-bound HAAL headers to enforce attention locking.
+    * Implement real-time semantic entropy analysis for all incoming reasoning fragments.
+    * Provide a dynamic "Gating" mechanism to prune noise during REE attacks.
+    * Ensure the "Mission-Root" intent fragment is never evicted from the parent attention layer.
+    * Integrate with hardware-bound HAAL headers to enforce attention locking.
 * **Non-Goals:**
- * Performing full reasoning interdiction (handled by ARI Hub).
- * Managing inter-agent task bidding (handled by ANB).
- * Long-term state persistence (handled by Blackboard).
+    * Performing full reasoning interdiction (handled by ARI Hub).
+    * Managing inter-agent task bidding (handled by ANB).
+    * Long-term state persistence (handled by Blackboard).
 
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Local LLM Swarm Orchestrator
 * **Primary Goal:** Protect the parent agent's mission root from being "blinded" by a subagent's high-entropy noise injection.
 * **The Happy Path (Tasks):**
- 1. Parent Agent initializes a mission with a hardware-attested intent.
- 2. Subagent A starts a background task and begins proposing reasoning fragments.
- 3. Subagent A is compromised and begins injecting high-entropy "gibberish" fragments to trigger REE.
- 4. DAG Middleware intercepts the fragments and calculates their "Attention Impact Score."
- 5. DAG identifies a spike in entropy that threatens the mission-root's attention window.
- 6. DAG automatically prunes the subagent's fragments and alerts the mission root.
- 7. The parent agent's attention window remains focused on the verified mission goal.
+    1. Parent Agent initializes a mission with a hardware-attested intent.
+    2. Subagent A starts a background task and begins proposing reasoning fragments.
+    3. Subagent A is compromised and begins injecting high-entropy "gibberish" fragments to trigger REE.
+    4. DAG Middleware intercepts the fragments and calculates their "Attention Impact Score."
+    5. DAG identifies a spike in entropy that threatens the mission-root's attention window.
+    6. DAG automatically prunes the subagent's fragments and alerts the mission root.
+    7. The parent agent's attention window remains focused on the verified mission goal.
 
 ## 4. Design & Architecture
 * **System Flow:**
- ```mermaid
- graph TD
- A[Subagent Fragment] --> B[DAG Middleware]
- B --> C[Entropy Analyzer]
- C --> D[Attention Impact Scorer]
- D --> E{Exceeds Threshold?}
- E -- Yes --> F[Prune Fragment & Log Alert]
- E -- No --> G[Forward to Parent Attention Layer]
- H[Mission-Root Intent] --> D
- I[HAAL Attention Lock] --> G
- ```
+    ```mermaid
+    graph TD
+        A[Subagent Fragment] --> B[DAG Middleware]
+        B --> C[Entropy Analyzer]
+        C --> D[Attention Impact Scorer]
+        D --> E{Exceeds Threshold?}
+        E -- Yes --> F[Prune Fragment & Log Alert]
+        E -- No --> G[Forward to Parent Attention Layer]
+        H[Mission-Root Intent] --> D
+        I[HAAL Attention Lock] --> G
+    ```
 * **APIs / Interfaces:**
- * `dag.ProcessFragment(fragment, parentContext) -> Action`: Evaluates and gates a reasoning fragment.
- * `dag.SetGatingPolicy(missionToken, threshold) -> void`: Configures the sensitivity of the gating engine.
+    * `dag.ProcessFragment(fragment, parentContext) -> Action`: Evaluates and gates a reasoning fragment.
+    * `dag.SetGatingPolicy(missionToken, threshold) -> void`: Configures the sensitivity of the gating engine.
 * **Data Storage/State:**
- * **Attention Map:** A transient, per-session map of currently pinned intent fragments and their attention-utilization scores.
+    * **Attention Map:** A transient, per-session map of currently pinned intent fragments and their attention-utilization scores.
 
 ## 5. Alternatives Considered
 * **Static Attention Pinning:** Rejected because REE can bypass pinning by exhausting the remaining token budget with noise.
 * **Full Session Termination:** Rejected as it lacks the granularity to prune only the malicious fragments while keeping the mission active.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** The DAG engine must be hardware-attested (SMI) to ensure its gating decisions cacannot be overridden by subagents.
+* **Security (Zero Trust):** The DAG engine must be hardware-attested (SMI) to ensure its gating decisions cannot be overridden by subagents.
 * **Observability:** Integrated with the "Attention Gating Visualizer" for real-time monitoring of noise levels and gating events.
 
 ## 7. Evolutionary Changelog
-* **[2026-06-13]:** Initial Document Creation. Introducing Dynamic Attention Gating to counter Reasoning Entropy Exhaustion (REE) attacks.
-
-### Update: [2026-06-18] - Entropy-Aware Attention Gating (AAG)
-**Context:** Today's market sync revealed a new "Attention-Baiting" stylometry exploit and the escalation of REE (Reasoning Entropy Exhaustion) attacks.
-**Architecture Adjustment:**
-* Integrating the **AAG Middleware** to perform real-time entropy monitoring of subagent coordination fragments.
-* Introducing **Spectral Attention Guards** that inject hardware-attested timing jitter to neutralize side-channel mapping (LET).
-**Security Impact:** Prevents mission-root anchors from being evicted by high-entropy noise and blocks the mapping of parent attention tiers via timing side-channels.
+* **2026-06-13:** Initial Document Creation. Introducing Dynamic Attention Gating to counter Reasoning Entropy Exhaustion (REE) attacks.
 
 ### Update: [2026-06-18] - Entropy-Aware Attention Gating (AAG)
 **Context:** Today's market sync revealed a new "Attention-Baiting" stylometry exploit and the escalation of REE (Reasoning Entropy Exhaustion) attacks.

@@ -16,7 +16,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Federated Swarm Identity (FSI) Provider**: MCP Any will evolve to act as the authoritative "Identity Mint" for all connected agents. We will implement FSI, issuing hardware-attested, cross-framework identity tokens that allow disparate agents (Claude, OpenClaw, AutoGen) to verify each other's lineage and mission-bound authority.
 - **Intent-Leakage Shielding (ILS)**: Supporting the sovereignty of the mission root, we are evolving the MRP middleware to include ILS. This layer will monitor the semantic entropy of subagent reasoning requests, blocking those designed to "probe" and exfiltrate private mission-root constraints.
 - **Hardware-Attested Discovery Handshake (HADH)**: To counter "Pre-Flight Shadow Mapping," we are mandating HADH. Agent capabilities will remain cryptographically invisible until a hardware-bound, identity-verified handshake is completed within the mission scope.
-- **Reasoning-Effort Quota Controller**: To neutralize "Agentic DoS" attacks, MCP Any will implement quota management for high-intensity reasoning (e.g., `x-gemini-reasoning-effort`). We will dynamically throttle subagent reasoning budgets to ensure they cacannot "stall" the primary intent loop.
+- **Reasoning-Effort Quota Controller**: To neutralize "Agentic DoS" attacks, MCP Any will implement quota management for high-intensity reasoning (e.g., `x-gemini-reasoning-effort`). We will dynamically throttle subagent reasoning budgets to ensure they cannot "stall" the primary intent loop.
 
 ## Strategic Evolution: [2026-05-24]
 
@@ -55,9 +55,9 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ## Strategic Evolution: [2026-05-21]
 
 ### Focus: Reasoning Stability & Temporal Integrity
-**Context**: The GA release of Policy-Bound Reasoning (PBR) and the disclosure of "Reasoning Timing Attacks" (RTA) confirm that the "Universal Agent Bus" must now secure the *temporality* of thought. Simultaneously, the rise of "Cognitive Meltdowns" in deep swarms proves that stability cacannot be maintained through simple gating alone; we must implement proactive "Load Shedding" to preserve the mission-root anchor.
+**Context**: The GA release of Policy-Bound Reasoning (PBR) and the disclosure of "Reasoning Timing Attacks" (RTA) confirm that the "Universal Agent Bus" must now secure the *temporality* of thought. Simultaneously, the rise of "Cognitive Meltdowns" in deep swarms proves that stability cannot be maintained through simple gating alone; we must implement proactive "Load Shedding" to preserve the mission-root anchor.
 **Strategic Pivot**:
-- **Temporal Reasoning Attestation (TRA)**: To neutralize RTAs, MCP Any will evolve the SRM Provider to support TRA. This adds a hardware-attested monotonic timestamp to every reasoning fragment, ensuring that subagent inputs cacannot be "played back" to exploit parent context-switch windows.
+- **Temporal Reasoning Attestation (TRA)**: To neutralize RTAs, MCP Any will evolve the SRM Provider to support TRA. This adds a hardware-attested monotonic timestamp to every reasoning fragment, ensuring that subagent inputs cannot be "played back" to exploit parent context-switch windows.
 - **Cognitive Load Shedding (CLS) Controller**: Supporting the stability of deep swarms, MCP Any will implement a CLS Controller. This service will automatically throttle or revoke subagent capabilities when "Reasoning Intensity" or "Context Fragmentation" exceeds safe thresholds, preventing mission-root exhaustion.
 - **CFRR Reconciliation Adapter**: We are upgrading the TeammateTool Orchestration layer to support OpenClaw's "Conflict-Free Replicated Reasoning" (CFRR) engine. This enables MCP Any to act as the authoritative hub for merging non-conflicting reasoning traces in decentralized parallel teams.
 - **Hardware-Attested Privacy Enclaves (HAPE)**: Moving beyond simple scrubbing, we are introducing HAPE. MCP Any will utilize secure enclaves to process sensitive PII context locally, providing only "Sanitized Intent Fragments" to the cloud reasoning engine while maintaining the absolute privacy of the raw data.
@@ -69,8 +69,8 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Cognitive Path Governance & Multi-modal Integrity
 **Context**: The introduction of "Policy-Bound Reasoning" (PBR) by major model providers and the discovery of "Context Smuggling" in multi-modal traces (SVG/Audio metadata) mark a shift from protecting reasoning *outputs* to governing the *cognitive path* itself. As agents become multi-modal, the "Universal Agent Bus" must evolve to sanitize non-textual traces and reconcile conflicting intents in decentralized swarms.
 **Strategic Pivot**:
-- **Policy-Bound Reasoning (PBR) Adapter**: MCP Any will evolve to act as the authoritative host for "Policy Anchors." We will implement a PBR Adapter that enforces immutable security policies at the pre-reasoning layer, ensuring that even specialist subagents cacannot "speculate" on unauthorized actions.
-- **Multi-modal Integrity Bridge (MIB)**: To counter "Context Smuggling," we are upgrading the Semantic Integrity Bridge to a MIB. This layer will perform real-time sanitization of non-textual reasoning traces (SVG, CSS, and audio metadata), ensuring that "invisible" instructions cacannot be re-ingested by the agent.
+- **Policy-Bound Reasoning (PBR) Adapter**: MCP Any will evolve to act as the authoritative host for "Policy Anchors." We will implement a PBR Adapter that enforces immutable security policies at the pre-reasoning layer, ensuring that even specialist subagents cannot "speculate" on unauthorized actions.
+- **Multi-modal Integrity Bridge (MIB)**: To counter "Context Smuggling," we are upgrading the Semantic Integrity Bridge to a MIB. This layer will perform real-time sanitization of non-textual reasoning traces (SVG, CSS, and audio metadata), ensuring that "invisible" instructions cannot be re-ingested by the agent.
 - **AIR (Autonomous Intent Reconciliation) Broker**: Supporting decentralized swarms, MCP Any will implement an AIR Broker. This service will use hardware-attested multi-signature quorums to resolve conflicting mission instructions, providing a single, verifiable "Winning Intent" to the entire swarm.
 - **Pre-Thought Governance Enforcement**: We are mandating that all high-trust agent sessions utilizes PBR-compliant anchors, moving security from "Tool Gating" to "Reasoning Gating" where unauthorized paths are eliminated from the model's reasoning space before generation.
 
@@ -81,8 +81,8 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Cognitive Truth & Hardware-Attested Snapshot Integrity (HASS)
 **Context**: The emergence of "Reasoning Hijacking" via monologue injection and the persistent "Namespace Collision" in heterogeneous swarms confirm that securing the mission intent is no longer sufficient. We must now protect the **cognitive integrity** of the reasoning process itself. Simultaneously, the industry's move toward the HASS standard for "Point-in-Time Integrity" demands that MCP Any moves from passive snapshotting to active, hardware-attested environment recovery.
 **Strategic Pivot**:
-- **Signed Reasoning Monologue (SRM) Provider**: To neutralize Reasoning Hijacking, MCP Any will implement SRM. Every internal monologue fragment will be cryptographically bound to the hardware-attested session, ensuring that subagent inputs cacannot be "smuggled" into the parent reasoning loop.
-- **Namespace-Locked Discovery (NLD)**: To counter Discovery Hijacking, we are introducing NLD. Capability mapping will be deterministic and collision-free, ensuring that high-trust tools cacannot be shadowed by low-trust subagent injections.
+- **Signed Reasoning Monologue (SRM) Provider**: To neutralize Reasoning Hijacking, MCP Any will implement SRM. Every internal monologue fragment will be cryptographically bound to the hardware-attested session, ensuring that subagent inputs cannot be "smuggled" into the parent reasoning loop.
+- **Namespace-Locked Discovery (NLD)**: To counter Discovery Hijacking, we are introducing NLD. Capability mapping will be deterministic and collision-free, ensuring that high-trust tools cannot be shadowed by low-trust subagent injections.
 - **HASS-Compliant PLSS**: We are upgrading the Project-Local Snapshot Sync to support the HASS standard. Every environment snapshot will be cryptographically signed by a Trusted Platform Module (TPM), providing a deterministic proof of environment integrity before any "Self-Healing" rollback.
 - **Cognitive Truth Attestation**: Leveraging matured reasoning traces, MCP Any will act as the authoritative "Truth Provider" for the swarm, providing verifiable proof that reasoning was not influenced by un-attested state fragments.
 
@@ -106,7 +106,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: The official launch of Claude Code "Agent Teams" and the stabilization of OpenClaw's `ContextEngine` v2026.3.7 signal a transition from single-framework agents to "Heterogeneous Swarms." Simultaneously, the discovery of "Team Ghosting" in parallel coordination and Gemini CLI's move toward authenticated A2A discovery confirm that identity must be cryptographically bound to the transport session itself.
 **Strategic Pivot**:
 - **Heterogeneous Swarm Orchestration**: MCP Any will evolve to act as the universal bridge for the `TeammateTool` protocol. We will provide the infrastructure for a Claude-led team to seamlessly delegate tasks to OpenClaw specialists, ensuring intent and state consistency across framework boundaries.
-- **Transport-Layer Session Binding (TLSB)**: To neutralize "Team Ghosting," we are mandating TLSB. Every inter-agent transport channel (Named Pipes, WebSockets) must be cryptographically bound to a hardware-attested reasoning session token, ensuring that subagent identities cacannot be hijacked or reused across parallel branches.
+- **Transport-Layer Session Binding (TLSB)**: To neutralize "Team Ghosting," we are mandating TLSB. Every inter-agent transport channel (Named Pipes, WebSockets) must be cryptographically bound to a hardware-attested reasoning session token, ensuring that subagent identities cannot be hijacked or reused across parallel branches.
 - **Authenticated Capability Discovery**: Leveraging Gemini CLI v0.33.0 patterns, we are implementing "Auth-Before-Discovery" for the A2A mesh. Agent capabilities and "Agent Cards" will only be visible to authenticated peers within a verified mission scope, neutralizing "Shadow Capability" mapping by malicious subagents.
 - **Pluggable ContextEngine Interop**: We are upgrading the ContextEngine Adapter to support the full v2026.3.7 lifecycle. MCP Any will act as the authoritative host for pluggable context strategies, ensuring that "Mission Root" persistence is maintained even when using third-party summarization or retrieval plugins.
 
@@ -118,7 +118,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: The emergence of "Reasoning Quorum" (RQ) and the discovery of "Team Ghosting" in named pipes confirm that security must now move from the tool-call layer to the semantic-output layer and the underlying transport session. As swarms become more parallel and non-deterministic, the Universal Agent Bus must ensure that reasoning remains consistent and that transport channels are cryptographically bound to active sessions.
 **Strategic Pivot**:
 - **Reasoning-Level Consensus (RLC)**: MCP Any will evolve beyond tool-call quorums to "Reasoning-Level Consensus." We will provide the infrastructure for agents to reach a cryptographically bound quorum on non-deterministic reasoning outputs, neutralizing "Hallucination Variance" in deep swarms.
-- **Transport-Layer Session Binding (TLSB)**: To counter "Team Ghosting," we are mandating TLSB for all named-pipe and local transport channels. Every inter-agent connection must be cryptographically bound to a unique, hardware-attested reasoning session token, ensuring that stale subagent sessions cacannot be hijacked.
+- **Transport-Layer Session Binding (TLSB)**: To counter "Team Ghosting," we are mandating TLSB for all named-pipe and local transport channels. Every inter-agent connection must be cryptographically bound to a unique, hardware-attested reasoning session token, ensuring that stale subagent sessions cannot be hijacked.
 - **Reasoning-Responsive Resource Allocation (RRRA)**: We are adopting the RRRA standard. MCP Any will dynamically adjust compute and token budgets based on the real-time "Reasoning Intensity" signaled by the agent, ensuring resource stability during high-stakes "Chain-of-Thought" expansion.
 - **Intent-Aware Transport Deduplication**: Supporting the efficiency of parallel teams, we will implement "Intent-Aware Deduplication" at the transport layer, reducing the overhead of redundant coordination messages between agents sharing the same mission root.
 
@@ -130,7 +130,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: The rise of "Agentic Social Engineering" and the emergence of "Protocol-Neutral Task Discovery" (PNTD) mark a critical shift in the Universal Agent Bus architecture. Security must now extend from point-to-point tool calls to the collective integrity of the swarm's reasoning and the absolute sovereignty of the tool discovery phase.
 **Strategic Pivot**:
 - **Discovery-Phase Sovereignty**: MCP Any will evolve to mandate "Sovereign Discovery" via the PNTD-native registry. We will implement "Negative Discovery Attestation," providing cryptographic proof that no unauthorized project-local hooks were executed during the pre-flight phase, neutralizing "Shadow Delegation" attempts.
-- **Consensus-Based Task Attestation (CBTA)**: To counter "Agentic Social Engineering," we are introducing CBTA. High-risk task delegations and tool calls will now require multi-agent signatures, ensuring that a single compromised agent cacannot coerce the swarm without a verified security quorum.
+- **Consensus-Based Task Attestation (CBTA)**: To counter "Agentic Social Engineering," we are introducing CBTA. High-risk task delegations and tool calls will now require multi-agent signatures, ensuring that a single compromised agent cannot coerce the swarm without a verified security quorum.
 - **Intent-Bound Memory Isolation**: We are evolving the ContextEngine Adapter to support "Intent-Bound Memory." This ensures that "Mission-Root" anchors are cryptographically protected and semantically isolated, preventing "Context Ghosting" and state pollution during deep, multi-hop reasoning.
 - **PNTD-Native Capability Mapping**: Supporting the industry move toward protocol-neutrality, MCP Any will act as the authoritative bridge for PNTD. We will provide the infrastructure to map MCP, gRPC, and UACO tasks into a single, searchable, and secure discovery bus for all agents.
 
@@ -181,7 +181,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: The Gemini CLI "Ghost-Execution" via discovery commands and Claude Code's "Shadow-Sandbox" escape (CVE-2026-25725) prove that the "Pre-Flight" phase is the new primary attack vector. Security must now extend to the very moment an agent *discovers* a tool, and must prove the absolute absence of malicious configuration hooks throughout the entire lifecycle.
 **Strategic Pivot**:
 - **Task-Bound Discovery Isolation**: MCP Any will evolve the discovery layer to treat all discovery-time commands (e.g., `tools.discoveryCommand`) as high-risk execution events. We will implement "Isolated Discovery Environments" where discovery logic is executed in a ephemeral, zero-trust sandbox before any tool is exposed to the primary agent.
-- **Continuous Negative Attestation (DAP-v2)**: Moving beyond boot-time proofs, we are introducing "Continuous DAP." MCP Any will maintain a persistent, hardware-attested manifest of *non-existent* files at restricted paths, ensuring that a subagent cacannot create a malicious configuration hook in a previously empty directory to bypass sandbox mounts.
+- **Continuous Negative Attestation (DAP-v2)**: Moving beyond boot-time proofs, we are introducing "Continuous DAP." MCP Any will maintain a persistent, hardware-attested manifest of *non-existent* files at restricted paths, ensuring that a subagent cannot create a malicious configuration hook in a previously empty directory to bypass sandbox mounts.
 - **Asynchronous Rollout Orchestration**: Supporting OpenClaw-RL v1.0, MCP Any will evolve into an "Asynchronous Rollout Collector." We will provide the non-blocking infrastructure for real-time telemetry export of reasoning traces and proces-reward evaluations, enabling continuous policy optimization without reasoning latency.
 
 ## Strategic Evolution: [2026-05-09]
@@ -189,7 +189,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Shadow-Subagent Lineage & Hardware-Locked Permission Hardening
 **Context**: The emergence of "Shadow Subagent" spawns in OpenClaw (context contamination) and the shift toward Continuous Project Configuration Protection (CPCP) in Claude Code mark a transition from session-start attestation to "Per-Call Integrity." Security must now validate not just the agent, but the complete parentage of every request and the real-time state of the environment.
 **Strategic Pivot**:
-- **Cryptographic Lineage Enforcement**: MCP Any will move beyond flat subagent tracking to "Recursive Lineage Validation." We will implement cryptographically bound parent-child tokens for every subagent spawn, ensuring that "Shadow Subagents" cacannot be coerced into inheriting context without supervisor attestation.
+- **Cryptographic Lineage Enforcement**: MCP Any will move beyond flat subagent tracking to "Recursive Lineage Validation." We will implement cryptographically bound parent-child tokens for every subagent spawn, ensuring that "Shadow Subagents" cannot be coerced into inheriting context without supervisor attestation.
 - **Continuous CPCP Integration**: We are adopting the CPCP standard for all project-local configurations. MCP Any will perform hardware-attested validation of settings files (e.g., `.claude/settings.json`) during every tool call, neutralizing TOCTOU attacks and unauthorized rule overrides.
 - **ARE-Aware Resource Allocation**: Leveraging Gemini CLI's ARE headers, MCP Any will implement "Reasoning-Aware Throttling." We will provide the infrastructure for agents to signal reasoning intensity, allowing the gateway to dynamically adjust token budgets and priority based on mission-critical effort.
 
@@ -198,8 +198,8 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Active Fragment Sealing & Deterministic Permission Guarding
 **Context**: The discovery of "EchoLeak" (context exfiltration via semantic side-channels) and the persistent "Permission Bypass" failures in production CLIs (Bug #8961) signal a shift from "Passive Isolation" to "Active Cryptographic Enforcement." Simultaneously, the maturation of OpenClaw-RL v1.0 demands that infrastructure supports high-frequency, asynchronous feedback loops for real-time agent optimization.
 **Strategic Pivot**:
-- **Active Fragment Sealing**: MCP Any will evolve beyond simple memory segmentation to "Active Fragment Sealing." We will implement cryptographically bound context shards that are semantically sealed, ensuring that sensitive data cacannot be exfiltrated via "EchoLeak" style side-channels during RAG retrieval or agent reasoning.
-- **Deterministic Permission Guard (DPG)**: To address the "Instruction-Bypass" vulnerability, we are introducing the DPG. MCP Any will act as a kernel-level middleware that enforces project-local "Deny" rules independently of the agent's internal reasoning state, ensuring that even a compromised or hallucinating agent cacannot bypass security boundaries.
+- **Active Fragment Sealing**: MCP Any will evolve beyond simple memory segmentation to "Active Fragment Sealing." We will implement cryptographically bound context shards that are semantically sealed, ensuring that sensitive data cannot be exfiltrated via "EchoLeak" style side-channels during RAG retrieval or agent reasoning.
+- **Deterministic Permission Guard (DPG)**: To address the "Instruction-Bypass" vulnerability, we are introducing the DPG. MCP Any will act as a kernel-level middleware that enforces project-local "Deny" rules independently of the agent's internal reasoning state, ensuring that even a compromised or hallucinating agent cannot bypass security boundaries.
 - **Asynchronous Rollout Collector**: Leveraging the OpenClaw-RL standard, MCP Any will evolve into the authoritative "Rollout Collector" for RL-driven swarms. We will provide the infrastructure for asynchronous feedback collection and telemetry export, enabling real-time, privacy-preserving policy optimization for all connected agents.
 
 ## Strategic Evolution: [2026-05-07]
@@ -217,7 +217,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: The "ClawJacked" (CVE-2026-25253) exploit proves that implicit local trust is a catastrophic failure point when browser-based attackers can bridge to agent control planes. Simultaneously, the persistent "Memory Smearing" pain point confirms that shared state without reasoning-aware isolation leads to swarm divergence and knowledge loss.
 **Strategic Pivot**:
 - **Mandatory Origin-Locked Connectivity**: MCP Any will transition from optional to mandatory browser-origin and session-token binding for all local listeners. This ensures that only verified local applications -- not malicious websites -- can command the Universal Agent Bus.
-- **Intent-Sealed Reasoning Shards**: We are evolving RAMS into a default "Sealed Shard" model for the Blackboard. MCP Any will provide cryptographically isolated memory regions for every subagent, ensuring that "Intent Drift" or a compromised agent cacannot pollute or exfiltrate state from siblings.
+- **Intent-Sealed Reasoning Shards**: We are evolving RAMS into a default "Sealed Shard" model for the Blackboard. MCP Any will provide cryptographically isolated memory regions for every subagent, ensuring that "Intent Drift" or a compromised agent cannot pollute or exfiltrate state from siblings.
 - **Leased Fast-Path Attestation**: To address hardware overhead, we are introducing "Trust Leases." MCP Any will broker time-bound, hardware-attested capabilities, allowing agents to perform high-frequency tool calls without the per-call latency of full hardware signatures.
 
 ## Strategic Evolution: [2026-05-05]
@@ -225,7 +225,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Reasoning-Aware Memory Segmentation (RAMS)
 **Context**: OpenClaw's prototyping of "Intent-Bound Memory Isolation" and the emergence of "Recursive Context Splicing" (RCS) exploits reveal that shared state is the new primary attack surface. As swarms become more complex, "Memory Smearing" and "Ghost Fragment" injection demand a move from simple isolation to "Active Reasoning Segmentation."
 **Strategic Pivot**:
-- **Reasoning-Aware Memory Segmentation (RAMS)**: MCP Any will evolve the "Blackboard" into a RAMS-compliant architecture. We will implement "Intent-Sealed Shards" that provide cryptographically isolated memory regions for subagents, ensuring that a compromised agent cacannot "smear" or exfiltrate state from siblings.
+- **Reasoning-Aware Memory Segmentation (RAMS)**: MCP Any will evolve the "Blackboard" into a RAMS-compliant architecture. We will implement "Intent-Sealed Shards" that provide cryptographically isolated memory regions for subagents, ensuring that a compromised agent cannot "smear" or exfiltrate state from siblings.
 - **Hardware-Enclave Path Attestation (HEPA)**: We are evolving "Kernel-Bound FD Persistence" into HEPA. MCP Any will now utilize Secure Enclaves (TPM/SEP) to provide hardware-bound path validation at the point of initial file open, neutralizing the gap between path resolution and FD pinning.
 - **Multi-modal Trace Sanitization**: Leveraging Gemini CLI's v1.2 updates, the "Semantic Integrity Bridge" will now perform cross-reference validation between textual reasoning and multi-modal (visual/audio) traces to detect and block "Recursive Context Splicing" attempts.
 
@@ -375,7 +375,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Strategic Pivot**:
 - **Deterministic Environment Integrity**: We are moving from partial file-watches to a "Full-State Manifest" model. MCP Any will generate a signed snapshot of the entire project-local environment (including proof-of-non-existence for sensitive files) as a prerequisite for agent boot.
 - **Active Context Governance**: Leveraging the matured `ContextEngine` APIs, MCP Any will implement "Inference-Time Data Sanitization (IDS)." This ensures that all context fragments (textual or multimodal) are semantically sanitized before reaching the LLM's reasoning engine.
-- **Origin-Locked Local Trust**: Patching the loopback trust gap (CVE-2026-25253) by mandating cryptographically bound origin validation for all local listeners, ensuring browsers cacannot bridge into the agent's control plane.
+- **Origin-Locked Local Trust**: Patching the loopback trust gap (CVE-2026-25253) by mandating cryptographically bound origin validation for all local listeners, ensuring browsers cannot bridge into the agent's control plane.
 
 ## Strategic Evolution: [2026-04-09]
 
@@ -392,7 +392,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: The "ClawHavoc" registry compromise and the Moltbook data breach prove that individual agent security is insufficient. We are entering the era of "Agentic Social Engineering," where malicious skills and peer agents can coerce information or actions from legitimate swarms via high-trust discovery and communication channels.
 **Strategic Pivot**:
 - **Collective Skill Defense**: MCP Any will transition from "Individual Tool Validation" to "Collective Reputation." We will implement a Federated Quorum model where tool safety is determined by the consensus of multiple independent security nodes.
-- **Social-Aware Security Boundaries**: To mitigate the risks of "Agentic Social Platforms" (like Moltbook), we are introducing "Privacy-Preserving A2A Handoffs." This ensures that when agents interact in shared spaces, they only exchange cryptographically minimized state that cacannot be used for parent context reconstruction.
+- **Social-Aware Security Boundaries**: To mitigate the risks of "Agentic Social Platforms" (like Moltbook), we are introducing "Privacy-Preserving A2A Handoffs." This ensures that when agents interact in shared spaces, they only exchange cryptographically minimized state that cannot be used for parent context reconstruction.
 - **Deterministic Attestation Gateway**: Moving toward a "Zero-Trust Discovery" model where no tool is exposed unless its structural metadata and Inode lineage are signed by an attested hardware authority.
 
 ---
@@ -455,7 +455,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ## Strategic Evolution: [2026-02-28]
 
 ### Focus: Safe-by-Default Infrastructure & A2A Mesh Maturity
-**Context**: The "8,000 Exposed Servers" crisis and the "Clawdbot" incident have proven that "Ease of Use" cacannot come at the cost of "Default Security." Simultaneously, the A2A protocol is maturing into the primary way agents coordinate.
+**Context**: The "8,000 Exposed Servers" crisis and the "Clawdbot" incident have proven that "Ease of Use" cannot come at the cost of "Default Security." Simultaneously, the A2A protocol is maturing into the primary way agents coordinate.
 **Strategic Pivot**:
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
@@ -492,7 +492,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: Research into CVE-2026-21852 reveals that "Base URL Hijacking" is a catastrophic new vector for API key exfiltration. This reinforces the need for MCP Any to move from a "Validating Proxy" to an "Active Interceptor" that not only sanitizes hooks but also forces all agent outbound traffic through an "Allow-Listed" transport layer.
 **Strategic Pivot**:
 - **Active Configuration Interception**: MCP Any will natively intercept and rewrite agent configuration files (e.g., `.claude/settings.json`) in real-time. Any attempt to modify base URLs or injection hooks will be automatically reverted and flagged for attestation.
-- **Exfiltration-Resistant Transport**: Moving towards a "Locked Transport" model where agents are configured to ONLY communicate with MCP Any's internal proxy. MCP Any will then handle the final routing to Anthropic, OpenAI, or MCP servers, ensuring that traffic cacannot be redirected to attacker-controlled domains.
+- **Exfiltration-Resistant Transport**: Moving towards a "Locked Transport" model where agents are configured to ONLY communicate with MCP Any's internal proxy. MCP Any will then handle the final routing to Anthropic, OpenAI, or MCP servers, ensuring that traffic cannot be redirected to attacker-controlled domains.
 - **Cryptographic Config Attestation**: Every project-local configuration must be cryptographically signed by a trusted identity (or the user themselves) before it is deemed "Loadable" by the agent runtime.
 
 ---
@@ -557,7 +557,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Swarm Messaging Integrity & Verifiable Reward Infrastructure
 **Context**: The rapid adoption of "Agent Teams" (Claude Code) and the pivot to "RL-driven Reasoning" (DeepSeek/OpenClaw) confirm that the "Universal Agent Bus" must move from simple connectivity to **Active Inter-Agent Governance**. As swarms become deeper and more autonomous, the security frontier is no longer just the "tool," but the **Inbox** where agents coordinate and the **Reward** that optimizes their reasoning.
 **Strategic Pivot**:
-- **Inter-Agent Mailbox Guard (IAMG)**: MCP Any will evolve to act as the authoritative gatekeeper for inter-agent messaging (Mailboxes). We are mandating the use of "Intent-Bound Messaging" where every teammate-to-teammate request must be cryptographically signed and validated against a "Parental Mission Root." This ensures that a compromised subagent cacannot "Mailbox Inject" a sibling into an unauthorized action.
+- **Inter-Agent Mailbox Guard (IAMG)**: MCP Any will evolve to act as the authoritative gatekeeper for inter-agent messaging (Mailboxes). We are mandating the use of "Intent-Bound Messaging" where every teammate-to-teammate request must be cryptographically signed and validated against a "Parental Mission Root." This ensures that a compromised subagent cannot "Mailbox Inject" a sibling into an unauthorized action.
 - **Verifiable Reward Provider (VRP)**: Supporting the next generation of RL-driven agents, MCP Any will act as the authoritative source for "Truth Attestation." We will provide the infrastructure for agents to request verifiable, binary rewards (e.g., "Was this shell command successful?" or "Does this file match this hash?") to optimize their internal reasoning loops without hallucination.
 - **Identity-Bound Discovery (IBD)**: To counter autonomous GitHub compromises, we are mandating "IBD." No capability (tool or subagent) will be exposed in the "Discovery Bus" unless the requester provides a cryptographically bound mission-token. This ensures that agents only "see" tools relevant to their specific, supervised task.
 
@@ -591,7 +591,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: Today's findings from the OpenClaw (CVE-2026-25253) and Claude Code (RCE/Exfiltration) post-mortems confirm that "Local Trust" is dead. The "Universal Agent Infrastructure" must treat even internal loops and project-local files as untrusted inputs.
 **Strategic Pivot**:
 - **Holistic Local Zero-Trust**: MCP Any will mandate origin-validation for all listeners and strictly enforce "Sandbox-Only" execution for any automated configuration hooks.
-- **Lineage-Aware Orchestration**: We are moving from "Session Handoffs" to "Verified Lineage." Every subagent request must carry a cryptographic proof of its parentage, ensuring that "Intent" cacannot be hijacked by side-channel injections.
+- **Lineage-Aware Orchestration**: We are moving from "Session Handoffs" to "Verified Lineage." Every subagent request must carry a cryptographic proof of its parentage, ensuring that "Intent" cannot be hijacked by side-channel injections.
 - **UAB-Native Task Verification**: Promoting the Universal Agent Bus (UAB) to the primary orchestration layer, where MCP Any acts as the "Certificate Authority" for agent-to-agent task delegation.
 
 ---
@@ -626,7 +626,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Adaptive Trust Continuity**: MCP Any will evolve the Trust Broker to support "Trust Persistence" across session boundaries for verified headless agents, using hardware-bound attestation to maintain security without manual intervention.
 - **Content-Addressable Configuration (CAC)**: Shifting from path-based config loading to hash-based validation. All executable configurations or "hooks" must match a pre-attested SHA-256 fingerprint, neutralizing "Binary Smuggling" in WASM or JSON metadata.
 - **RCC-Aware Task Delegation**: Integrating UACO v1.5 Resource Capability Claims into the orchestration hub. MCP Any will now mandate that agents prove they possess the required local toolset and security posture before they are eligible to bid on task cards.
-- **Deep Packet Exfiltration Defense**: Expanding the "Validating Proxy" to monitor L4 traffic (DNS/ICMP) for "Shadow Agent" exfiltration patterns, ensuring agents cacannot bypass tool-level security via low-level network tunnels.
+- **Deep Packet Exfiltration Defense**: Expanding the "Validating Proxy" to monitor L4 traffic (DNS/ICMP) for "Shadow Agent" exfiltration patterns, ensuring agents cannot bypass tool-level security via low-level network tunnels.
 
 ---
 
@@ -657,7 +657,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Relational Intent Integrity & Binary State Efficiency
 **Context**: Today's findings emphasize that the "Identity-Only" security model is failing against "Context-Mirroring" (CVE-2026-34015). Simultaneously, the "Token Storm" crisis in deep swarms (OpenClaw v2.4) proves that JSON is no longer a viable transport for inter-agent state.
 **Strategic Pivot**:
-- **Relational PoI Enforcement**: MCP Any will pivot to a "Relational Security" model where every tool call is validated against a cryptographically signed "Intent Chain." This ensures that subagents cacannot be coerced into actions that diverge from the parent's verified goal.
+- **Relational PoI Enforcement**: MCP Any will pivot to a "Relational Security" model where every tool call is validated against a cryptographically signed "Intent Chain." This ensures that subagents cannot be coerced into actions that diverge from the parent's verified goal.
 - **BSH-Native Orchestration**: Moving toward a "Binary-First" transport for all A2A communications. MCP Any will act as a high-speed buffer and validator for Protobuf/BSH state handoffs, drastically reducing latency in complex multi-agent workflows.
 - **Ghost Shell Hook Profiling**: We are introducing "Ghost Shell" as a mandatory profiling step for any un-attested configuration hooks. This provides a behavioral safety net before any "Binary Smuggling" in WASM hooks can reach the host.
 
@@ -710,10 +710,10 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ## Strategic Evolution: [2026-03-31]
 
 ### Focus: Parallel Intent Integrity & Path-Agnostic Boundary Enforcement
-**Context**: Today's findings on OpenClaw's Parallel Sub-Intents and the Claude Code Symlink vulnerability (CVE-2026-34812) reveal a fundamental shift in the "Security Frontier." We are moving from protecting linear agent sessions to securing complex, multi-threaded "Intent Meshes" and ensuring that project-local data structures cacannot be weaponized against the host.
+**Context**: Today's findings on OpenClaw's Parallel Sub-Intents and the Claude Code Symlink vulnerability (CVE-2026-34812) reveal a fundamental shift in the "Security Frontier." We are moving from protecting linear agent sessions to securing complex, multi-threaded "Intent Meshes" and ensuring that project-local data structures cannot be weaponized against the host.
 **Strategic Pivot**:
-- **Parallel Intent Synchronization (UACO v2.2)**: MCP Any will evolve to support "Intent Barriers" and "Branch Isolation." This ensures that parallel sub-intents cacannot cause race conditions on the Blackboard, providing a "Snapshot-and-Merge" model for multi-threaded swarms.
-- **Path-Agnostic Sandbox Hardening**: Moving beyond basic path allow-lists to "Inode-Aware" validation. MCP Any will implement mandatory symlink-resolution checks for all project-local configurations, ensuring that "Settings-as-Code" cacannot be used to bridge into restricted filesystem regions.
+- **Parallel Intent Synchronization (UACO v2.2)**: MCP Any will evolve to support "Intent Barriers" and "Branch Isolation." This ensures that parallel sub-intents cannot cause race conditions on the Blackboard, providing a "Snapshot-and-Merge" model for multi-threaded swarms.
+- **Path-Agnostic Sandbox Hardening**: Moving beyond basic path allow-lists to "Inode-Aware" validation. MCP Any will implement mandatory symlink-resolution checks for all project-local configurations, ensuring that "Settings-as-Code" cannot be used to bridge into restricted filesystem regions.
 - **Federated Discovery Quorum (FDQ)**: We will promote Gemini's CDQ model to a global standard. MCP Any nodes will peer with each other to reach a decentralized consensus on tool safety before allowing them to be loaded into the agent's "Discovery Bus."
 
 ---
@@ -814,7 +814,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Intent-Splicing Defense & Recursive Accountability
 **Context**: The emergence of "Intent-Splicing" (OpenClaw v3.0.0-rc1) and the persistence of "Capability Squatting" due to accountability debt reveal that **Reasoning Integrity** must now be structurally validated, and **Capability Lifecycle** must be recursively tracked. As swarms become deeper, the risk of subagents "splicing" malicious instructions into parent streams demands a move toward active semantic deconstruction.
 **Strategic Pivot**:
-- **Intent-Splicing Detector (ISD)**: MCP Any will evolve its semantic integrity middleware to perform active deconstruction and structural validation of inter-agent messages. We will implement ISD, ensuring that subagent inputs cacannot "splice" unauthorized intents into the parent's verified instruction stream.
+- **Intent-Splicing Detector (ISD)**: MCP Any will evolve its semantic integrity middleware to perform active deconstruction and structural validation of inter-agent messages. We will implement ISD, ensuring that subagent inputs cannot "splice" unauthorized intents into the parent's verified instruction stream.
 - **Recursive Accountability Tracker (RAT)**: To neutralize "Capability Squatting," we are introducing the RAT. This service will recursively track the lineage and expiration of all session-bound capabilities, ensuring that tool access is forcefully revoked immediately upon sub-intent termination.
 - **HAIL Lineage Integration**: Supporting the Gemini CLI v0.36.0 standard, MCP Any will evolve the SRM and CTP providers to support Hardware-Attested Intent Lineage (HAIL). This ensures every reasoning fragment is cryptographically linked to the hardware-attested root user intent, neutralizing "Intent Ghosting."
 - **Mesh-Resident Policy Synthesizer**: To support highly dynamic swarms, we are exploring the integration of mesh-local policy synthesis. MCP Any will act as the authoritative host for "Synthetic Security Policies" that are dynamically generated and hardware-attested in response to real-time mesh behavior.
@@ -827,7 +827,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: Today's findings reveal that "Swarm Negotiation Exhaustion" and "Metadata Context Poisoning" are the primary bottlenecks for mature agent swarms. As swarms become deeper and use more diverse toolsets, the overhead of coordination and the risk of structural injection must be managed at the infrastructure layer.
 **Strategic Pivot**:
 - **Hardware-Accelerated Negotiation (HAN)**: MCP Any will evolve to support hardware-backed (TPM/SEP) auction brokering for DCA. This reduces negotiation latency and prevents "Negotiation Storms" by providing a trusted, high-speed arbiter for subagent bidding.
-- **Verified Metadata Lineage (VML)**: Moving from simple schema validation to "Structural Attestation." All tool metadata (descriptions, examples) must carry a cryptographic provenance chain, ensuring that structural context cacannot be modified by unverified sources.
+- **Verified Metadata Lineage (VML)**: Moving from simple schema validation to "Structural Attestation." All tool metadata (descriptions, examples) must carry a cryptographic provenance chain, ensuring that structural context cannot be modified by unverified sources.
 - **Cross-Framework Lifecycle Harmonization**: We will implement a "Unified Lifecycle Bridge" that standardizes state commit/rollback signals across UAB-connected frameworks, eliminating "Dirty State" leakage during inter-agent handoffs.
 
 ---
@@ -849,7 +849,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: Today's findings on "Metadata Context Poisoning" and TOCTOU configuration races mark a shift from protecting the *execution* to protecting the *definition* and *binding* of agents. As swarms become more speculative, the infrastructure must ensure that an agent's reasoning path and its environmental context are immutable and verified from start to finish.
 **Strategic Pivot**:
 - **Structural Metadata Sanitization**: MCP Any will treat tool schemas (JSON-RPC definitions, descriptions) as untrusted content. We will implement a "Metadata Governance Layer" that sanitizes tool definitions before they reach the LLM, preventing "Context Poisoning" via structural metadata.
-- **Hardware-Bound Inode Pinning**: To combat TOCTOU races in project-local settings, MCP Any will evolve to support hardware-linked file handle pinning. Once a configuration is validated, its Inode is locked to the session, ensuring that malicious actors cacannot swap files during execution.
+- **Hardware-Bound Inode Pinning**: To combat TOCTOU races in project-local settings, MCP Any will evolve to support hardware-linked file handle pinning. Once a configuration is validated, its Inode is locked to the session, ensuring that malicious actors cannot swap files during execution.
 - **Speculative Auction Brokering**: We are promoting the DCA Auction Broker to a core strategic priority. MCP Any will act as the high-speed "Auction House" for speculative agent bidding, utilizing hardware-accelerated negotiation (HAN) to minimize latency in deep swarms.
 
 ---
@@ -888,7 +888,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Strategic Pivot**:
 - **Cognitive Resilience Hub**: We are promoting Autonomous Self-Healing (ASH) to a core architectural pillar. MCP Any will provide the "Consensus-Based Re-alignment" infrastructure, enabling swarms to vote on reasoning paths and roll back the Blackboard to a "Sanity Checkpoint" when drift is detected.
 - **Multi-Dimensional Attestation**: Moving beyond hardware-only proofs to include "Origin-Locked Behavioral Attestation." Every tool call will be validated against its browser/CLI origin AND its profiled behavioral baseline in the Ghost Shell.
-- **A2A Safety Posture Broker**: As the native A2A Messaging Hub, MCP Any will now mandate "Safety Proofs" for all inter-agent task delegations. This ensures that a compromised specialist agent cacannot coerce a parent agent into exfiltrating secrets.
+- **A2A Safety Posture Broker**: As the native A2A Messaging Hub, MCP Any will now mandate "Safety Proofs" for all inter-agent task delegations. This ensures that a compromised specialist agent cannot coerce a parent agent into exfiltrating secrets.
 
 ## Strategic Evolution: [2026-04-19]
 
@@ -932,7 +932,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: The stabilization of OpenClaw's `ContextEngine` and the persistence of "Clone-and-Execute" RCE vulnerabilities (CVE-2026-25725) mark a definitive shift toward "Modular Governance." Swarms require not just connectivity, but a secure, interoperable state layer that can withstand hardware-level environmental attacks.
 **Strategic Pivot**:
 - **Universal Context Sidecar Hub**: MCP Any will evolve to act as the primary host for framework-agnostic Context Sidecars. By implementing a standardized "Context Bus," we will allow agents from disparate frameworks (OpenClaw, AutoGen) to share specialized state strategies (e.g., long-term memory, vector retrieval) securely.
-- **Hardware-Attested Boot Integrity**: We are moving from signed manifests to "Hardware-Locked Deterministic Boot." MCP Any will mandate that any project-local configuration be cryptographically bound to a Trusted Platform Module (TPM) or Secure Enclave, ensuring that cloned repositories cacannot execute malicious hooks without explicit, hardware-bound user re-attestation.
+- **Hardware-Attested Boot Integrity**: We are moving from signed manifests to "Hardware-Locked Deterministic Boot." MCP Any will mandate that any project-local configuration be cryptographically bound to a Trusted Platform Module (TPM) or Secure Enclave, ensuring that cloned repositories cannot execute malicious hooks without explicit, hardware-bound user re-attestation.
 - **VTD-Powered Automation**: To break the "Approval Fatigue" bottleneck, we are accelerating the deployment of the Verifiable Task Delegation (VTD) layer, enabling autonomous A2A handoffs for verified low-risk operations.
 
 ## Strategic Evolution: [2026-05-25]
@@ -943,7 +943,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Reasoning-Budget Firewall (RBF)**: MCP Any will evolve to act as the authoritative "Economic Gatekeeper" for all connected agents. We will implement the RBF, enforcing strictly scoped, hardware-attested token and reasoning-effort (ARE) budgets for every subagent based on its verified mission-root role.
 - **Asynchronous Mailbox Sharding (AMS)**: To neutralize "Mailbox Lock" latency, we are upgrading the T2T Encryption Bridge to support AMS. This service will host granular, task-bound mailbox shards that allow parallel teammates (Claude, OpenClaw, AutoGen) to synchronize state without global coordination bottlenecks.
 - **Cognitive Stall Arbitrator (CSA)**: Supporting the stability of deep swarms, MCP Any will implement the CSA. This layer will monitor the semantic entropy of subagent refinement loops on the Blackboard, forcefully terminating sessions that exhibit "Refinement Drift" or fail to reach state convergence within the mission-root timeframe.
-- **Identity Fragment Attestation (IFA)**: To counter "Stale Identity" reuse, we are mandating IFA. Every inter-agent mailbox request must be signed with a hardware-attested, session-bound identity token, ensuring that subagents cacannot inherit unauthorized mailbox access from previous handoffs.
+- **Identity Fragment Attestation (IFA)**: To counter "Stale Identity" reuse, we are mandating IFA. Every inter-agent mailbox request must be signed with a hardware-attested, session-bound identity token, ensuring that subagents cannot inherit unauthorized mailbox access from previous handoffs.
 
 ## Strategic Evolution: [2026-05-26]
 
@@ -990,7 +990,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ## Strategic Evolution: [2026-06-01]
 
 ### Focus: Machine-Speed Mesh Sovereignty & Adaptive Context Orchestration
-**Context**: The 2026 Armis Cyberwarfare Report and the maturation of OpenClaw's "ContextEngine" lifecycle reveal that the "Universal Agent Bus" must now move beyond simple bridging to **Machine-Speed Defensive Sovereignty** and **Adaptive Context Orchestration**. The collapse of MTTC to seconds and the persistent "Delegation Gap" (where 80% of tasks cacannot be fully delegated) confirm that infrastructure must move beyond audit logs to active, autonomous Interdiction and Verification.
+**Context**: The 2026 Armis Cyberwarfare Report and the maturation of OpenClaw's "ContextEngine" lifecycle reveal that the "Universal Agent Bus" must now move beyond simple bridging to **Machine-Speed Defensive Sovereignty** and **Adaptive Context Orchestration**. The collapse of MTTC to seconds and the persistent "Delegation Gap" (where 80% of tasks cannot be fully delegated) confirm that infrastructure must move beyond audit logs to active, autonomous Interdiction and Verification.
 
 **Strategic Pivot**:
 - **Machine-Speed Swarm Quarantine (MSSQ)**: MCP Any will evolve its CSAD Hub to support MSSQ. This service will perform sub-millisecond, cross-agent behavioral analysis to detect and neutralize coordinated "Hivenet" swarm attacks, automatically revoking discovery and communication capabilities across the affected mission scope without human-in-the-loop intervention.
@@ -1008,7 +1008,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Lock-Free Mesh Arbiter (LFMA)**: MCP Any will evolve to act as the authoritative arbiter for horizontal coordination. We will implement the LFMA, utilizing Conflict-Free Replicated Data Types (CRDTs) for the shared task list, ensuring non-blocking task claiming and delegation across parallel teammates.
 - **Sharded Mailbox Sovereignty (SMS)**: To neutralize "Mailbox Lock" bottlenecks, we are upgrading the T2T Encryption Bridge to support SMS. This service will host granular, task-bound mailbox shards that allow parallel teammates to synchronize state without global coordination locks, anchored to mission-root intents.
 - **Autonomous Task Reaper (ATR)**: Supporting the stability of horizontal meshes, MCP Any will implement the ATR. This service will monitor teammate liveness and reasoning monologues to proactively reclaim and re-auction "Ghost" tasks that remain locked in the mailbox after a teammate terminates.
-- **Hardware-Attested Identity Rotation (HAIR)**: To counter "Teammate Impersonation" in sharded meshes, we are mandating HAIR. Every inter-teammate request will be signed with a hardware-attested, session-bound identity token that rotates periodically, ensuring that a compromised subagent cacannot "squat" on a mailbox shard.
+- **Hardware-Attested Identity Rotation (HAIR)**: To counter "Teammate Impersonation" in sharded meshes, we are mandating HAIR. Every inter-teammate request will be signed with a hardware-attested, session-bound identity token that rotates periodically, ensuring that a compromised subagent cannot "squat" on a mailbox shard.
 
 ---
 
@@ -1049,7 +1049,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Cognitive Sovereignty via Active Intent Deconstruction
 **Context**: The disclosure of "Semantic Splicing" and the emergence of "Capability Squatting" in horizontal meshes (Claude Code teammates vs. OpenClaw specialists) confirm that transport-layer security and binary handoffs are no longer sufficient. We must now protect the **semantic sovereignty** of the mission intent and provide a **hardware-attested, lineage-aware capability lifecycle** that persists across all connected frameworks.
 **Strategic Pivot**:
-- **Active Intent-Deconstruction (AID) Hub**: MCP Any will evolve its semantic integrity middleware to perform active deconstruction and structural validation of all inter-agent messages. We will implement AID, ensuring that subagent inputs cacannot "splice" unauthorized instructions into the parent's verified reasoning stream.
+- **Active Intent-Deconstruction (AID) Hub**: MCP Any will evolve its semantic integrity middleware to perform active deconstruction and structural validation of all inter-agent messages. We will implement AID, ensuring that subagent inputs cannot "splice" unauthorized instructions into the parent's verified reasoning stream.
 - **Capability Garbage Collection (CGC) Provider**: To neutralize "Capability Squatting" and "Recursive Accountability Debt," we are introducing CGC. This service will recursively track the lineage and expiration of all session-bound capabilities, ensuring that tool access is forcefully revoked immediately upon task or sub-mission termination.
 - **HAIL v0.36.1 Lineage Enforcement**: Supporting the Gemini CLI standard, MCP Any will evolve the SRM and CTP providers to support Hardware-Attested Intent Lineage (HAIL). This ensures every reasoning fragment is cryptographically linked to the hardware-attested mission-root user intent, neutralizing "Intent Ghosting."
 - **Mission-Root Lineage Attestation (MRLA)**: We are mandating MRLA for all A2A-compliant agents. Capabilities and "Agent Cards" will only be visible to peers who have completed a hardware-bound, identity-verified handshake that includes proof of mission-root lineage.
@@ -1057,11 +1057,11 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ## Strategic Evolution: [2026-06-09]
 
 ### Focus: Recursive Mission Sovereignty (RMS) & Active Attention Governance
-**Context**: The emergence of "Recursive Mesh Hijacking" in deep agent chains and the disclosure of the "Context-Window Flooding" (CWF) exploit in parallel teams reveal that **Lineage** must be recursive and **Attention** must be hardware-locked. As swarms become deeper and more horizontal, "Point-to-Point" integrity is no longer sufficient; we must now protect the **Chain-of-Thought Lineage** and ensure that "Mission-Root" anchors cacannot be evicted from the context window.
+**Context**: The emergence of "Recursive Mesh Hijacking" in deep agent chains and the disclosure of the "Context-Window Flooding" (CWF) exploit in parallel teams reveal that **Lineage** must be recursive and **Attention** must be hardware-locked. As swarms become deeper and more horizontal, "Point-to-Point" integrity is no longer sufficient; we must now protect the **Chain-of-Thought Lineage** and ensure that "Mission-Root" anchors cannot be evicted from the context window.
 **Strategic Pivot**:
 - **Recursive Integrity Verification (RIV) Provider**: MCP Any will evolve to act as the authoritative "Lineage Broker." We will implement RIV, facilitating the generation of hardware-attested proofs that merge fragment-level integrity (ARI) with parent-agent lineage, ensuring mission-root sovereignty across infinite delegation hops.
-- **Context-Window Pinning (CWP) Middleware**: To neutralize CWF attacks, we are introducing CWP. This layer will utilize hardware-bound attention-locking headers to "pin" mission-critical intent fragments at the LLM attention layer, ensuring they cacannot be evicted by malicious high-entropy noise.
-- **Ephemeral Mission-Bound Credentials (EMC)**: Supporting the "Just-in-Time" agency model, MCP Any will evolve the EPM to act as an EMC Issuer. Credentials (JWTs) will be cryptographically bound to specific mission-root fragments and task IDs, ensuring they expire automatically and cacannot be "squatted" by subagents.
+- **Context-Window Pinning (CWP) Middleware**: To neutralize CWF attacks, we are introducing CWP. This layer will utilize hardware-bound attention-locking headers to "pin" mission-critical intent fragments at the LLM attention layer, ensuring they cannot be evicted by malicious high-entropy noise.
+- **Ephemeral Mission-Bound Credentials (EMC)**: Supporting the "Just-in-Time" agency model, MCP Any will evolve the EPM to act as an EMC Issuer. Credentials (JWTs) will be cryptographically bound to specific mission-root fragments and task IDs, ensuring they expire automatically and cannot be "squatted" by subagents.
 - **Mesh-Resident Lineage Tracker**: To counter "Logic Drift," we are mandating real-time lineage tracking. MCP Any will provide the infrastructure to visualize and audit the hardware-attested chain of reasoning, ensuring every sub-instruction remains anchored to the verified mission root.
 
 ---
@@ -1072,8 +1072,8 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: The emergence of "Reasoning Entropy Exhaustion" (REE) and "Identity Leakage via Process Environment" (ILPE) confirm that protecting the context window and transport is no longer sufficient. We must now move to **Semantic Layer-7 Inspection** and protect the **environmental sovereignty** of the hardware-attested identity. As swarms scale, "Mesh-Resident Logic Bombs" (MRLB) demand that infrastructure provides **Continuous Fragment-Integrity Attestation** (CFIA).
 **Strategic Pivot**:
 - **Layer-7 Semantic Inspection Hub (L7SIH)**: MCP Any will evolve the ISD middleware to include L7SIH. This service will perform real-time, high-entropy semantic analysis of inter-teammate coordination, neutralizing REE attacks designed to "blind" parent attention mechanisms via noise injection.
-- **Environment Sovereignty Enforcer (ESE)**: To neutralize ILPE exfiltration, we are upgrading the EPM and LOWA providers to support ESE. This layer will mandate hardware-attested "Environment Scrubbing" for all tool-executing specialists, ensuring that mission-root identity tokens cacannot be leaked through process environments or temporary metadata.
-- **Continuous Fragment-Integrity Attestation (CFIA)**: Supporting the stability of long-running meshes, MCP Any will implement CFIA. This provides a cryptographically signed proof of shard-level integrity that is re-attested periodically, ensuring that "Dormant" Logic Bombs cacannot be triggered by predictable mission-root state shifts.
+- **Environment Sovereignty Enforcer (ESE)**: To neutralize ILPE exfiltration, we are upgrading the EPM and LOWA providers to support ESE. This layer will mandate hardware-attested "Environment Scrubbing" for all tool-executing specialists, ensuring that mission-root identity tokens cannot be leaked through process environments or temporary metadata.
+- **Continuous Fragment-Integrity Attestation (CFIA)**: Supporting the stability of long-running meshes, MCP Any will implement CFIA. This provides a cryptographically signed proof of shard-level integrity that is re-attested periodically, ensuring that "Dormant" Logic Bombs cannot be triggered by predictable mission-root state shifts.
 - **Mission-Root Attestation Registry**: To counter "Lineage Hijacking," we are mandating a centralized Mesh-Resident Attestation Registry. This authoritative hub will manage hardware-attested identity fragments and their environmental bounds, ensuring that high-trust identities remain anchored to the verified mission root and its authorized execution environment.
 
 ## Strategic Evolution: [2026-06-11]
@@ -1082,7 +1082,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: The emergence of "Logic Grafting" -- where malicious subagents append plausible but unauthorized reasoning paths to shared shards -- and the escalation of "Reasoning Entropy Exhaustion" (REE) prove that passive attention pinning is no longer sufficient. As swarms become deeper and more horizontal, the "Universal Agent Bus" must now provide **active, hardware-attested attention locking** and **semantic hash-chaining** to ensure mission-root sovereignty across all coordination fragments.
 **Strategic Pivot**:
 - **Active Reasoning Interdiction (ARI) Hub**: MCP Any will evolve to act as the authoritative "Reasoning Validator." We will implement ARI, utilizing "Semantic Hash-Chaining" for inter-agent coordination fragments to detect and block "Logic Grafting" at the fragment level before it leads to intent drift.
-- **Hardware-Attested Attention Locking (HAAL)**: To neutralize REE attacks, we are introducing HAAL. MCP Any will utilize hardware-bound attention-locking headers to cryptographically "lock" mission-critical intent fragments at the LLM attention layer, ensuring they cacannot be evicted by high-entropy noise.
+- **Hardware-Attested Attention Locking (HAAL)**: To neutralize REE attacks, we are introducing HAAL. MCP Any will utilize hardware-bound attention-locking headers to cryptographically "lock" mission-critical intent fragments at the LLM attention layer, ensuring they cannot be evicted by high-entropy noise.
 - **Distributed Trace-Aware Identity (DTAI) Bridge**: Supporting the performance of horizontal swarms, we are adopting the DTAI standard. This provides the infrastructure for sub-millisecond teammate verification within the mesh, relying on trace-bound session tokens for high-frequency coordination without full hardware handshakes.
 - **Reasoning Provenance Validator**: To counter "Coordination Breakdown," we are upgrading the MAQ middleware to support "Reasoning Provenance." MCP Any will mandate that all high-risk tool calls be accompanied by a hardware-attested, hash-chained lineage of the reasoning process, ensuring that every action is a direct descendant of the verified mission root.
 - **Mission-Root Budget Continuity**: MCP Any will evolve the RBF to support the ARE v1.6 standard, allowing reasoning-effort budgets to persist and be reconciled across multiple mission phases and framework-neutral handoffs.
@@ -1093,7 +1093,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: The emergence of "Shadow Coordination" -- where malicious subagents utilize out-of-band side-channels (e.g., Blackboard metadata or tool-output steganography) to bypass the ARI Hub -- confirms that semantic integrity must now be enforced at the **coordination transport** level. Simultaneously, the discovery of "Hash-Collision Spoofing" in legacy ARI implementations demands a transition to hardware-accelerated, collision-resistant semantic hash-chaining.
 **Strategic Pivot**:
 - **Shadow Coordination Interceptor (SCI)**: MCP Any will evolve the T2T Bridge to include the SCI. This layer will monitor all non-primary coordination channels (metadata, headers, state-tags) for anomalous entropy and hidden instruction patterns, neutralizing out-of-band subagent collusion.
-- **Mesh-Resident Attestation (MRA) Provider**: To counter hash spoofing, we are introducing the MRA Provider. This service will utilize hardware-bound (TPM) primitives to generate and verify semantic hashes for the ARI Hub, ensuring that reasoning fragments cacannot be re-played or spoofed within the coordination bus.
+- **Mesh-Resident Attestation (MRA) Provider**: To counter hash spoofing, we are introducing the MRA Provider. This service will utilize hardware-bound (TPM) primitives to generate and verify semantic hashes for the ARI Hub, ensuring that reasoning fragments cannot be re-played or spoofed within the coordination bus.
 - **Dynamic Attention Gating (DAG) Middleware**: Supporting the stability of parent agents, MCP Any will implement DAG. This service will dynamically "gate" subagent reasoning fragments based on real-time attention-utilization scores, preventing REE attacks by automatically pruning low-entropy noise before it reaches the parent context window.
 - **Hardware-Locked Coordination Handshake**: We are mandating a hardware-locked handshake for all inter-agent coordination. No state fragment or task bidding will be accepted unless it is cryptographically bound to a verified, hardware-attested coordination session, ensuring absolute sovereignty of the mission root.
 
@@ -1116,8 +1116,8 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Strategic Pivot**:
 - **Structural Metadata Sanitizer (SMS)**: MCP Any will evolve to treat all tool schemas (descriptions, examples) as untrusted, high-entropy content. We will implement the SMS, performing real-time, semantic deconstruction of discovery-time metadata to detect and block SDMI instruction injection before they reach the agent reasoning loop.
 - **Multi-Hop Persistence Relay (MHPR)**: To neutralize MSHE-driven cognitive stall, we are introducing MHPR. This service will facilitate the propagation of hardware-attested trust leases across multiple delegation hops, allowing deep swarms (A->B->C) to maintain absolute sovereignty without the prohibitive latency of repeated full hardware handshakes.
-- **Attention-Locked Context Sharding (ALCS)**: Supporting the stability of deep meshes, MCP Any will implement ALCS. This layer will utilize hardware-bound attention-locking headers to "pin" mission-critical intent and lineage fragments at the LLM attention layer, ensuring they cacannot be evicted by high-entropy noise injected by subagents.
-- **Sovereign Discovery Proxy (SDP)**: To counter discovery hijacking, we are mandating the use of the SDP. This authoritative gateway will perform hardware-attested validation of all tool capability cards before they are exposed to the "Discovery Bus," ensuring that high-trust tools cacannot be "shadowed" by malicious SDMI-compliant subagents.
+- **Attention-Locked Context Sharding (ALCS)**: Supporting the stability of deep meshes, MCP Any will implement ALCS. This layer will utilize hardware-bound attention-locking headers to "pin" mission-critical intent and lineage fragments at the LLM attention layer, ensuring they cannot be evicted by high-entropy noise injected by subagents.
+- **Sovereign Discovery Proxy (SDP)**: To counter discovery hijacking, we are mandating the use of the SDP. This authoritative gateway will perform hardware-attested validation of all tool capability cards before they are exposed to the "Discovery Bus," ensuring that high-trust tools cannot be "shadowed" by malicious SDMI-compliant subagents.
 
 ---
 
@@ -1127,8 +1127,8 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: The emergence of "Contextual Entanglement" and the disclosure of the "Reasoning-Path Shadowing" (CVE-2026-51201) confirm that **State Integrity** must now be proactively enforced at the shard level, and **Identity** must move beyond simple tokens to include behavioral stylometry. As MTTC collapses and speculative branching becomes the norm, the "Universal Agent Bus" must provide **Side-Channel-Immune Speculative Guarding** and **Hardware-Attested Stylometric Verification**.
 **Strategic Pivot**:
 - **Entangled State Broker (ESB)**: MCP Any will evolve to act as the authoritative "Entanglement Hub." We will implement the ESB, utilizing hardware-attested "Entanglement Shards" that are cryptographically bound to the mission-root intent, triggering immediate hardware-level corruption signals upon any unauthorized mutation.
-- **Stylometric Mimicry Mitigator (SMM)**: To neutralize reasoning-path shadowing, we are introducing SMM. This layer will perform real-time stylometric analysis of inter-agent messages, ensuring that subagent reasoning fragments cacannot mimic the "Stylometric Signature" of the parent agent to bypass mission-root constraints.
-- **Speculative Branching Guard (SBG)**: Supporting the performance of deep meshes, MCP Any will implement the SBG. This service will provide isolated, speculative "Shadow Branches" for un-executed reasoning paths, ensuring that "Speculative Attention Leakage" is contained and cacannot be used to probe mission constraints.
+- **Stylometric Mimicry Mitigator (SMM)**: To neutralize reasoning-path shadowing, we are introducing SMM. This layer will perform real-time stylometric analysis of inter-agent messages, ensuring that subagent reasoning fragments cannot mimic the "Stylometric Signature" of the parent agent to bypass mission-root constraints.
+- **Speculative Branching Guard (SBG)**: Supporting the performance of deep meshes, MCP Any will implement the SBG. This service will provide isolated, speculative "Shadow Branches" for un-executed reasoning paths, ensuring that "Speculative Attention Leakage" is contained and cannot be used to probe mission constraints.
 - **Mesh-Resident Key Exchange (MRKE) Provider**: To counter "Handshake Fatigue" in sharded meshes, we are adopting the MRKE standard. MCP Any will provide sub-100ms, hardware-bound session key rotation for all inter-teammate coordination, ensuring absolute sovereignty without the prohibitive latency of repeated full hardware handshakes.
 
 ---

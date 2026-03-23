@@ -2,7 +2,7 @@
 **Focus:** Reason-Graph Integrity & Mesh-Resident Policy Synthesis (MRPS)
 
 ## 1. Ecosystem Shift: OpenClaw "Reason-Graph Collision" (RGC)
-* **Discovery:** A new class of exploit (RGC) has been identified in OpenClaw's multi-agent refinement loops. Malicious subagents can inject "Refined Reasoning Fragments" that appear semantically valid but cause a collision in the parent agent's **Reason-Graph**, leading to a state of "Cognitive Deadlock" where the mission-root cacannot reach a decision.
+* **Discovery:** A new class of exploit (RGC) has been identified in OpenClaw's multi-agent refinement loops. Malicious subagents can inject "Refined Reasoning Fragments" that appear semantically valid but cause a collision in the parent agent's **Reason-Graph**, leading to a state of "Cognitive Deadlock" where the mission-root cannot reach a decision.
 * **Response:** OpenClaw is proposing a **Reason-Graph Integrity (RGI) Provider** to perform hardware-attested graph validation before any refinement is merged into the mission-root.
 
 ## 2. Gemini CLI: Mesh-Resident Policy Synthesis (MRPS)
