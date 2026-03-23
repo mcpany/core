@@ -43,6 +43,9 @@ if [ "$CI" != "true" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
     LINT_ARGS="$LINT_ARGS --fix"
 fi
 
+# We disable unused checking on package-by-package runs to avoid AST errors
+LINT_ARGS="$LINT_ARGS -D unused"
+
 # Ensure protocol buffers are generated
 (cd server && make gen)
 

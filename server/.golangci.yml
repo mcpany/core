@@ -20,6 +20,7 @@ linters:
     - staticcheck
     - tparallel
     - unconvert
+    - unused
     - misspell
     - whitespace
     - godot
