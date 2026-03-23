@@ -43,8 +43,8 @@ if [ "$CI" != "true" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
     LINT_ARGS="$LINT_ARGS --fix"
 fi
 
-# Build everything before linting to avoid ast lookup errors
-(cd server && make gen && go build -v ./...)
+# Ensure protocol buffers are generated
+(cd server && make gen)
 
 for pkg in $(cd server && go list ./... | grep -v "/vendor/"); do
     pkg_path=$(echo "$pkg" | sed 's|github.com/mcpany/core/server||')
