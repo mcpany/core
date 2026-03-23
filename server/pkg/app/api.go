@@ -28,7 +28,6 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 // readBodyWithLimit reads the request body with a limit and returns the bytes.
@@ -86,7 +85,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/settings", a.handleSettings(store))
 	mux.HandleFunc("/debug/auth-test", a.handleAuthTest())
 
-	mux.HandleFunc("/tools", a.handleTools(store))
+	mux.HandleFunc("/tools", a.handleTools())
 	mux.HandleFunc("/execute", a.handleExecute())
 
 	mux.HandleFunc("/prompts", a.handlePrompts())
@@ -747,7 +746,7 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 	}
 }
 
-func (a *Application) handleTools(store storage.Storage) http.HandlerFunc {
+func (a *Application) handleTools() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
@@ -758,141 +757,10 @@ func (a *Application) handleTools(store storage.Storage) http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(toolList)
-		case http.MethodPut:
-			var req struct {
-				Name    string `json:"name"`
-				Disable bool   `json:"disable"`
-			}
-			body, err := readBodyWithLimit(w, r, 1024*1024)
-			if err != nil {
-				return
-			}
-			if err := json.Unmarshal(body, &req); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-
-			t, ok := a.ToolManager.GetTool(req.Name)
-			if !ok {
-				http.Error(w, "tool not found", http.StatusNotFound)
-				return
-			}
-
-			serviceID := t.Tool().GetServiceId()
-			service, err := store.GetService(r.Context(), serviceID)
-			if err != nil {
-				logging.GetLogger().Error("failed to get service for tool", "serviceID", serviceID, "error", err)
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-				return
-			}
-
-			if service == nil {
-				http.Error(w, "service not found", http.StatusNotFound)
-				return
-			}
-
-			err = a.setToolDisableFlag(service, req.Name, req.Disable)
-			if err != nil {
-				logging.GetLogger().Error("failed to update tool flag", "toolName", req.Name, "error", err)
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-
-			if err := store.SaveService(r.Context(), service); err != nil {
-				logging.GetLogger().Error("failed to save service", "serviceID", serviceID, "error", err)
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-				return
-			}
-
-			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
-				logging.GetLogger().Error("failed to reload config after tool update", "error", err)
-			}
-
-			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte("{}"))
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	}
-}
-
-func (a *Application) setToolDisableFlag(service *configv1.UpstreamServiceConfig, toolName string, disable bool) error {
-	var toolList []*configv1.ToolDefinition
-	if mcp := service.GetMcpService(); mcp != nil {
-		toolList = mcp.GetTools()
-	} else if httpSvc := service.GetHttpService(); httpSvc != nil {
-		toolList = httpSvc.GetTools()
-	} else if grpcSvc := service.GetGrpcService(); grpcSvc != nil {
-		toolList = grpcSvc.GetTools()
-	} else if openapiSvc := service.GetOpenapiService(); openapiSvc != nil {
-		toolList = openapiSvc.GetTools()
-	} else if cmdSvc := service.GetCommandLineService(); cmdSvc != nil {
-		toolList = cmdSvc.GetTools()
-	} else if fsSvc := service.GetFilesystemService(); fsSvc != nil {
-		toolList = fsSvc.GetTools()
-	} else if vectorSvc := service.GetVectorService(); vectorSvc != nil {
-		toolList = vectorSvc.GetTools()
-	} else if websocketSvc := service.GetWebsocketService(); websocketSvc != nil {
-		toolList = websocketSvc.GetTools()
-	} else if webrtcSvc := service.GetWebrtcService(); webrtcSvc != nil {
-		toolList = webrtcSvc.GetTools()
-	} else if service.GetGraphqlService() != nil {
-		// GraphQL service doesn't have an explicit Tool array
-	} else if service.GetSqlService() != nil {
-		// SQL service doesn't have an explicit Tool array
-	} else {
-		return fmt.Errorf("unknown service config type")
-	}
-
-	found := false
-	for _, t := range toolList {
-		if t.GetName() == toolName {
-			// Since we got a pointer to the tool definition, update the field
-			// Use the setter if possible, otherwise pointer mutation works.
-			// Protobuf fields mapping: bool disable -> Disable (or similar).
-			// If field is missing or named differently, we fall back to generic approach.
-			// Protobuf go generator generates 'Disable bool `protobuf:"..."`'
-			// For optional fields it could be a pointer, but in proto3 basic types are value types.
-			if disable {
-				// We need to figure out exactly how the disable field is exposed.
-				// Wait! Earlier error: `t.Disable undefined (type *"github.com/mcpany/core/proto/config/v1".ToolDefinition has no field or method Disable)`
-				// Let's use proto reflection to set the field.
-				t.ProtoReflect().Set(t.ProtoReflect().Descriptor().Fields().ByName("disable"), protoreflect.ValueOfBool(disable))
-			} else {
-				t.ProtoReflect().Set(t.ProtoReflect().Descriptor().Fields().ByName("disable"), protoreflect.ValueOfBool(false))
-			}
-			found = true
-			break
-		}
-	}
-
-	// Auto-discovered tools might not be in the list yet, so we append an override
-	if !found {
-		newTool := &configv1.ToolDefinition{}
-		newTool.ProtoReflect().Set(newTool.ProtoReflect().Descriptor().Fields().ByName("name"), protoreflect.ValueOfString(toolName))
-		newTool.ProtoReflect().Set(newTool.ProtoReflect().Descriptor().Fields().ByName("disable"), protoreflect.ValueOfBool(disable))
-
-		// To avoid direct field assignment issues like `mcp.Tools = ...`, we use reflection to append:
-		// However, mcp.Tools is a slice of pointers, we can't easily reflect-append. Wait, actually `mcp.Tools` might not be named `Tools` either?
-		// No, `GetTools()` exists. If `Tools` doesn't exist, we need to find what the field is.
-
-		// Let's try reflection for the service struct to append the tool
-		svcMsg := service.ProtoReflect()
-		serviceTypeField := svcMsg.Descriptor().Oneofs().ByName("service_config")
-		if serviceTypeField != nil {
-			field := svcMsg.WhichOneof(serviceTypeField)
-			if field != nil {
-				svcTypeMsg := svcMsg.Get(field).Message()
-				toolsField := svcTypeMsg.Descriptor().Fields().ByName("tools")
-				if toolsField != nil {
-					list := svcTypeMsg.Mutable(toolsField).List()
-					list.Append(protoreflect.ValueOfMessage(newTool.ProtoReflect()))
-				}
-			}
-		}
-	}
-
-	return nil
 }
 
 func (a *Application) handleExecute() http.HandlerFunc {
