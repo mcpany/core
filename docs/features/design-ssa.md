@@ -3,51 +3,57 @@
 **Created:** 2026-03-21
 
 ## 1. Context and Scope
-As AI agent swarms move from linear task delegation to horizontal "Agent Teams," the Shared KV Store (Blackboard) has become a primary bottleneck and stability risk. Current implementations suffer from "Reasoning Loops" where multiple specialized subagents attempt to lock the same context shard for atomic refinement, leading to circular wait states and infinite resource consumption.
+As AI agent swarms transition from vertical hierarchies to horizontal "Agent Teams" (e.g., Claude Code, CrewAI), specialized subagents increasingly compete for shared resources within the MCP Any Blackboard (Shared KV Store). Without central arbitration, parallel reasoning paths frequently enter "Reasoning Loops" or deadlocks, where Agent A waits for a state change from Agent B, who is simultaneously blocked by Agent A.
 
-The Shared State Arbiter (SSA) is a coordination service for the Blackboard that proactively manages state access. It moves the system from a first-come-first-served locking model to an authoritative arbitration model that understands mission-root priority and agent lineage.
+The Shared State Arbiter (SSA) is a core orchestration service for the Blackboard that provides real-time wait-graph analysis and authoritative deadlock resolution. It moves MCP Any from a passive storage layer to an active participant in swarm stability.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Implement real-time wait-graph analysis to identify and break circular dependencies.
-    * Enforce mission-aligned lock prioritization based on agent lineage and task criticality.
-    * Provide a standardized "Try-Lock" API with hardware-attested timeouts.
-    * Enable atomic "Snapshot-and-Rollback" for shards during conflict resolution.
+    * Implement a centralized "Wait-Graph" to track resource dependencies between session-bound agents.
+    * Detect circular dependencies (deadlocks) in multi-agent Blackboard transactions.
+    * Provide a "Checkpoint-and-Yield" API allowing high-priority agents to preempt resource locks.
+    * Standardize "Reasoning-Aware" timeouts to prevent infinite stalling in horizontal swarms.
 * **Non-Goals:**
-    * SSA will NOT handle the persistence of the KV data itself (handled by the Blackboard).
-    * SSA will NOT perform semantic validation of the data content (handled by the AID Hub).
+    * Replacing the underlying storage engine (SQLite/Redis) of the Blackboard.
+    * Managing inter-agent message passing (handled by A2A Messaging Hub).
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Deep Swarm Orchestrator
-* **Primary Goal:** Coordinate 5 specialized agents working on a large codebase without deadlocking the shared memory shards.
+* **User Persona:** Local LLM Swarm Orchestrator
+* **Primary Goal:** Resolve a circular dependency between a "Coder" agent and a "Reviewer" agent both trying to update the same project-local config state.
 * **The Happy Path (Tasks):**
-    1. Agent A requests a write-lock on `shard:refactor_logic`.
-    2. Agent B requests a write-lock on `shard:refactor_logic` while A is holding it.
-    3. SSA detects the contention and checks the lineage tokens of both agents.
-    4. SSA determines Agent B has a higher mission-priority (e.g., it is a Supervisor agent).
-    5. SSA issues a "Checkpoint-and-Yield" signal to Agent A.
-    6. Agent A snapshots its internal state to the Blackboard and releases the lock.
-    7. Agent B executes its critical update.
-    8. SSA re-notifies Agent A that the lock is available for resumption.
+    1. Coder Agent requests an exclusive lock on `kv://project/config/status`.
+    2. Reviewer Agent requests the same lock and is put into a "WAITING" state by SSA.
+    3. SSA adds a directed edge `Reviewer -> Coder` to the Wait-Graph.
+    4. Coder Agent then requests a read-lock on `kv://project/review/results` currently held by Reviewer.
+    5. SSA detects a cycle: `Coder -> Reviewer -> Coder`.
+    6. SSA triggers the Deadlock Resolver, which evaluates "Mission Lineage" and instructs the Reviewer to "Yield-and-Rollback."
+    7. Reviewer Agent releases its lock and checkpoints its current reasoning state.
+    8. Coder Agent completes its transaction; Reviewer automatically resumes.
 
 ## 4. Design & Architecture
 * **System Flow:**
-    `Agent -> Request Lock (Token) -> SSA (Wait-Graph Check) -> Lock Granted/Queued -> Blackboard Write`
+    ```
+    [Agent A] -> [Blackboard API] -> [SSA Lock Manager] -> [Wait-Graph Store]
+                                            |
+                                   [Deadlock Detector] -> [Mission Policy Engine]
+                                            |
+    [Agent B] <- [Yield Signal] <-----------+
+    ```
 * **APIs / Interfaces:**
-    * `POST /v1/ssa/acquire`: Request a timed lock on a specific shard.
-    * `POST /v1/ssa/release`: Release a held lock.
-    * `GET /v1/ssa/graph`: Retrieve the current wait-graph for observability.
+    * `POST /v1/ssa/lock`: Request a scoped lock with priority and lineage headers.
+    * `GET /v1/ssa/graph`: Debug endpoint to visualize the current dependency mesh.
+    * `POST /v1/ssa/yield`: Explicitly signal a willingness to yield state for higher-priority intents.
 * **Data Storage/State:**
-    * SSA maintains an in-memory directed graph of lock owners and waiters.
-    * State is cryptographically bound to the Mission Root session.
+    * SSA maintains an in-memory directed graph of `(AgentID, ResourceID)` pairs.
+    * Persistent state is minimal, as SSA focuses on the *active reasoning session*.
 
 ## 5. Alternatives Considered
-* **Timeouts Only**: Rejected because simple timeouts lead to "Thundering Herd" problems and lost reasoning progress when agents are forcefully killed without state recovery.
-* **Full Data Locking**: Rejected because locking the entire Blackboard prevents parallel execution in horizontal teams. Granular sharding is required.
+* **First-Come-First-Served (FCFS) Locking:** Rejected because it leads to "Reasoning Starvation" where a slow-reasoning subagent blocks the primary mission root indefinitely.
+* **Distributed Locking (Consul/Etcd):** Rejected as too heavyweight for local-first agentic infrastructure; MCP Any needs sub-millisecond arbitration latency.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** All lock requests must be accompanied by a hardware-attested Mission Token. SSA verifies that the requesting agent is authorized to access the specific shard lineage.
-* **Observability:** SSA will export "Wait-Time Heatmaps" and "Contention Alerts" to the UI Roadmap items to help developers identify reasoning bottlenecks.
+* **Security (Zero Trust):** The SSA verifies that yield signals and lock requests are bound to hardware-attested session tokens (from the Handshake Provider).
+* **Observability:** SSA logs all wait-graph "Breaks" (forced yields), providing critical data for RL-driven swarms to optimize their coordination logic.
 
 ## 7. Evolutionary Changelog
 * **2026-03-21:** Initial Document Creation.
