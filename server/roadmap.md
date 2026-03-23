@@ -515,35 +515,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
 
-#### Upcoming (2026-05-20 Evolution)
-*   **[P0] Policy-Bound Reasoning (PBR) Adapter**: Host and enforce immutable "Policy Anchors" at the pre-reasoning layer for cross-framework cognitive governance. (Added: 2026-05-20)
-*   **[P0] Multi-modal Integrity Bridge (MIB)**: Real-time sanitization of non-textual reasoning traces (SVG, CSS, Audio) to prevent context smuggling. (Added: 2026-05-20)
-*   **[P1] AIR Reconciliation Broker**: Decentralized intent reconciliation service utilizing hardware-attested multi-signature quorums. (Added: 2026-05-20)
-
-#### Upcoming (2026-05-19 Evolution)
-*   **[P0] Signed Reasoning Monologue (SRM) Provider**: Cryptographically bind and isolate an agent's internal reasoning from subagent inputs. (Added: 2026-05-19)
-*   **[P0] Namespace-Locked Discovery (NLD)**: Deterministic and collision-free capability mapping for heterogeneous swarms. (Added: 2026-05-19)
-*   **[P0] HASS-Compliant PLSS**: Upgrade to hardware-attested snapshot integrity for Deterministic Sandbox Recovery. (Added: 2026-05-19)
-*   **[P1] Cognitive Truth Attestation Hub**: Orchestration service for providing verifiable proof of reasoning integrity across frameworks. (Added: 2026-05-19)
-
-#### Upcoming (2026-05-18 Evolution)
-*   **[P0] Mission-Root Pinning (MRP) Middleware**: Transport-level safeguard to protect mission intent from context-window exhaustion attacks. (Added: 2026-05-18)
-*   **[P0] State-Trust Labeling (STL) Provider**: Security extension for the Blackboard to tag data with its framework trust-level. (Added: 2026-05-18)
-*   **[P1] Wait-Graph Deadlock Resolver**: Orchestration service for `TeammateTool` to break circular task dependencies. (Added: 2026-05-18)
-*   **[P1] Intent-Weighted Context Summarizer**: Upgrade for ContextEngine to support RCE v2.0 mission-anchored compression. (Added: 2026-05-18)
-
-#### Upcoming (2026-05-17 Evolution)
-*   **[P0] `TeammateTool` Orchestration Adapter**: Universal bridge for Claude Code orchestration protocol supporting heterogeneous swarms. (Added: 2026-05-17)
-*   **[P0] Transport-Layer Session Binder (TLSB)**: Cryptographically bind all local transport channels to hardware-attested Reasoning Session Tokens. (Added: 2026-05-17)
-*   **[P0] Authenticated Agent Card Discovery**: Implementation of Gemini CLI v0.33.0 style "Auth-Before-Discovery" for the A2A mesh. (Added: 2026-05-17)
-*   **[P0] ContextEngine Lifecycle Adapter (v2026.3.7)**: Upgrade to support full OpenClaw v2026.3.7 plugin hooks for third-party context strategies. (Added: 2026-05-17)
-
-#### Upcoming (2026-05-16 Evolution)
-*   **[P0] Reasoning Quorum Middleware**: Infrastructure for multi-agent semantic consensus on reasoning traces. (Added: 2026-05-16)
-*   **[P0] Transport-Layer Session Binder**: Cryptographically bind named-pipe/local transport to hardware-attested session tokens. (Added: 2026-05-16)
-*   **[P1] RRRA Budget Controller**: Dynamic resource allocation based on real-time reasoning intensity. (Added: 2026-05-16)
-*   **[P0] Coordination Token Optimizer**: Promoted to P0. Mandatory efficiency middleware for parallel swarm messages. (Added: 2026-05-16)
-
 #### Upcoming (2026-05-15 Evolution)
 *   **[P0] Consensus Tool Validation Hub**: Distributed security middleware requiring multi-agent signatures for high-risk delegations. (Added: 2026-05-15)
 *   **[P1] PNTD Discovery Provider**: Universal discovery bus for mapping MCP, gRPC, and UACO tasks into a single registry. (Added: 2026-05-15)
@@ -586,19 +557,7 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Deterministic Permission Guard (DPG)**: Kernel-level security middleware for non-bypassable enforcement of project-local "Deny" rules. (Added: 2026-05-08)
 *   **[P1] Asynchronous RL Rollout Collector**: Telemetry bridge for OpenClaw-RL v1.0, enabling high-frequency feedback collection for policy optimization. (Added: 2026-05-08)
 
-#### Upcoming (2026-05-21 Evolution)
-*   **[P0] Cognitive Load Shedding (CLS) Controller**: Stability middleware to dynamically throttle subagent capabilities based on reasoning intensity. (Added: 2026-05-21)
-*   **[P0] Temporal Reasoning Attestation (TRA)**: Security extension for SRM Provider adding monotonic timestamps to reasoning fragments. (Added: 2026-05-21)
-*   **[P0] Hardware-Attested Privacy Enclave (HAPE)**: Secure enclave infrastructure for local PII context processing. (Added: 2026-05-21)
-*   **[P1] CFRR Reconciliation Adapter**: Bridge for OpenClaw CFRR engine to support parallel reasoning trace merging. (Added: 2026-05-21)
-
 #### Upcoming (2026-04-22 Evolution)
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
 *   **[P1] Cognitive Fragment Reconciler**: Background service for synchronizing encrypted monologues across agent sessions. (Added: 2026-04-22)
-
-#### Upcoming (2026-05-22 Evolution)
-*   **[P0] Local-Only WebSocket Auth (LOWA) Gateway**: Mandatory session-bound authentication for all local WebSocket listeners. (Added: 2026-05-22)
-*   **[P0] Teammate-to-Teammate (T2T) Encryption Bridge**: Secure, cross-framework bus for encrypted teammate messaging. (Added: 2026-05-22)
-*   **[P0] Mailbox Integrity Middleware**: Intent-bound message validation for inter-agent mailboxes. (Added: 2026-05-22)
-*   **[P0] Full-Mesh Discovery Auth Provider**: Hardware-attested discovery handshakes for A2A meshes. (Added: 2026-05-22)

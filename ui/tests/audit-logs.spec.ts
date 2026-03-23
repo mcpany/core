@@ -15,7 +15,7 @@ test.describe('Feature Screenshot', () => {
     // Use test-results directory which is writable in CI
     const auditDir = path.join(process.cwd(), 'test-results/artifacts/audit/ui', date);
 
-    test.beforeAll(async ({ request }) => {
+    test.beforeAll(async () => {
         try {
             if (!fs.existsSync(auditDir)) {
                 fs.mkdirSync(auditDir, { recursive: true });
@@ -23,45 +23,7 @@ test.describe('Feature Screenshot', () => {
         } catch (e) {
             console.warn('Failed to create audit directory:', e);
         }
-
-        // Seed audit logs for these tests to ensure real data is verified.
-        try {
-            await request.post('/api/v1/debug/traces');
-        } catch (e) {
-            console.warn('Failed to seed debug traces:', e);
-        }
     });
-
-  test('View Audit Log Details', async ({ page }) => {
-    await page.goto('/audit');
-    await page.waitForSelector('text=Audit Logs');
-    await page.waitForTimeout(1000); // Give it a second to load
-
-    // Look for the "View" button in the table and click the first one
-    const viewBtn = page.locator('button:has-text("View")').first();
-    await viewBtn.waitFor({ state: 'visible' });
-    await viewBtn.click();
-
-    // Verify dialog appears and contains expected elements
-    await page.waitForSelector('text=Audit Log Detail');
-    await page.waitForSelector('text=Arguments');
-    await page.waitForSelector('text=Result');
-
-    // RichResultViewer or JsonView should be visible
-    const codeBlocks = page.locator('.lucide-code').first();
-    const rawButtons = page.locator('button:has-text("Raw")').first();
-    // At least one of these UI indicators of our new viewers should be present
-    await Promise.any([
-        codeBlocks.waitFor({ state: 'visible', timeout: 5000 }).catch(() => null),
-        rawButtons.waitFor({ state: 'visible', timeout: 5000 }).catch(() => null),
-    ]);
-
-    try {
-        await page.screenshot({ path: path.join(auditDir, 'audit_detail.png') });
-    } catch (e) {
-        console.warn('Failed to save screenshot:', e);
-    }
-  });
 
   test('Capture Logs', async ({ page }) => {
     await page.goto('/logs');

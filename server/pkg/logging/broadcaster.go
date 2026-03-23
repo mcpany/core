@@ -346,20 +346,6 @@ func (b *Broadcaster) Broadcast(msg any) {
 }
 
 // ClearHistory clears the history of the broadcaster without removing subscribers.
-//
-// Summary: Executes ClearHistory operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (b *Broadcaster) ClearHistory() {
 	b.mu.Lock()
 	defer b.mu.Unlock()

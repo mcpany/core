@@ -359,33 +359,6 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
-#### Upcoming (2026-05-20 Evolution)
-- [ ] **[P0] Policy-Bound Reasoning (PBR) Dashboard**: UI for managing and visualizing immutable "Policy Anchors" and cognitive governance status. (Added: 2026-05-20)
-- [ ] **[P0] Multi-modal Integrity Monitor**: Real-time visualization of semantically sanitized non-textual traces (SVG, Audio) and smuggling alerts. (Added: 2026-05-20)
-- [ ] **[P1] AIR Reconciliation Console**: Workspace for reviewing and auditing decentralized intent reconciliation events. (Added: 2026-05-20)
-
-#### Upcoming (2026-05-19 Evolution)
-- [ ] **[P0] Reasoning Integrity Dashboard**: Visual indicator for SRM attestation status and Monologue Injection alerts. (Added: 2026-05-19)
-- [ ] **[P0] Namespace Collision Monitor**: UI for visualizing NLD collisions and shadowing attempts across registries. (Added: 2026-05-19)
-- [ ] **[P0] HASS Attestation Viewer**: Monitor for TPM-signed environment snapshots and DSR integrity. (Added: 2026-05-19)
-- [ ] **[P1] Cognitive Truth Explorer**: Interactive visualization of hardware-attested reasoning traces and SRM provenance. (Added: 2026-05-19)
-
-#### Upcoming (2026-05-18 Evolution)
-- [ ] **[P0] Mission-Root Persistence Monitor**: Real-time visual indicator for pinned intents and re-injection events (MRE defense). (Added: 2026-05-18)
-- [ ] **[P0] State Trust-Level Inspector**: Visual debugger for Blackboard data, highlighting origin framework trust-labels (STL). (Added: 2026-05-18)
-- [ ] **[P1] Wait-Graph Visualizer**: Interactive graph for identifying and debugging circular task dependencies in parallel teams. (Added: 2026-05-18)
-- [ ] **[P1] Intent-Weighted Compression Debugger**: UI for visualizing mission-anchored context summarization and token density. (Added: 2026-05-18)
-
-#### Upcoming (2026-05-17 Evolution)
-- [ ] **[P0] Teammate Orchestration Tree**: Visual hierarchical tracer for `TeammateTool` operations across heterogeneous swarms. (Added: 2026-05-17)
-- [ ] **[P0] TLSB Security Widget**: Real-time status indicator for session-bound transport channels and "Ghosting" alerts. (Added: 2026-05-17)
-- [ ] **[P0] A2A Authenticated Discovery Manager**: Enhanced UI for managing and approving identity-bound agent cards in the A2A mesh. (Added: 2026-05-17)
-
-#### Upcoming (2026-05-16 Evolution)
-- [ ] **[P0] Reasoning Alignment Visualizer**: Visualization of semantic consensus scores and reasoning traces across the quorum. (Added: 2026-05-16)
-- [ ] **[P0] Transport Session Monitor**: Real-time indicator for cryptographically bound transport channels and "Team Ghosting" alerts. (Added: 2026-05-16)
-- [ ] **[P1] RRRA Intensity Dashboard**: Visual tracker for real-time reasoning intensity and dynamic resource budgeting. (Added: 2026-05-16)
-
 #### Upcoming (2026-05-15 Evolution)
 - [ ] **[P0] Consensus Attestation Workspace**: Security UI for orchestrating multi-agent approval quorums for high-risk delegations. (Added: 2026-05-15)
 - [ ] **[P1] PNTD Registry Explorer**: Unified browser for discovering capabilities across MCP, gRPC, and UACO via the universal discovery bus. (Added: 2026-05-15)
@@ -428,19 +401,7 @@
 - [ ] **[P0] Permission Enforcement Monitor**: Real-time tracker for DPG-blocked tool calls and project-local policy violations. (Added: 2026-05-08)
 - [ ] **[P1] RL Rollout Streamer**: Live feed of asynchronous RL feedback tokens and policy drift metrics. (Added: 2026-05-08)
 
-#### Upcoming (2026-05-21 Evolution)
-- [ ] **[P0] Cognitive Load Visualizer**: Real-time dashboard for monitoring reasoning intensity and CLS shedding events. (Added: 2026-05-21)
-- [ ] **[P0] Temporal Integrity Inspector**: Forensic UI for verifying hardware-attested timestamps on reasoning traces. (Added: 2026-05-21)
-- [ ] **[P0] HAPE Privacy Auditor**: Secure UI for reviewing local PII sanitization status and enclave logs. (Added: 2026-05-21)
-- [ ] **[P1] CFRR Merge Conflict Resolver**: Interactive workspace for reviewing and resolving CFRR reasoning conflicts. (Added: 2026-05-21)
-
 #### Upcoming (2026-04-22 Evolution)
 - [ ] **[P0] A2A Replay Security Dashboard**: Visualize nonce status and replay attempt alerts in the A2A hub. (Added: 2026-04-22)
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)
 - [ ] **[P1] Encrypted Monologue Explorer**: Secure UI fragment for user-authorized decryption and review of subagent reasoning. (Added: 2026-04-22)
-
-#### Upcoming (2026-05-22 Evolution)
-- [ ] **[P0] LOWA Pairing Portal**: Desktop UI for reviewing and approving local WebSocket pairing requests. (Added: 2026-05-22)
-- [ ] **[P0] T2T Mailbox Explorer**: Visual workspace for monitoring encrypted teammate-to-teammate coordination. (Added: 2026-05-22)
-- [ ] **[P0] Shared Task List Synchronizer**: Real-time diff viewer for cross-framework task list alignment. (Added: 2026-05-22)
-- [ ] **[P0] Mesh Discovery Handshake Monitor**: Real-time visualization of A2A discovery auth events. (Added: 2026-05-22)
