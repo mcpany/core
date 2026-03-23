@@ -134,6 +134,7 @@ eslint_bin.eslint_test(
         ":srcs",
         "//proto:ts_proto",
         "eslint.config.mjs",
+        ".eslintrc.json",
     ],
 )
 
