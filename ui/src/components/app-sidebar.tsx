@@ -107,6 +107,16 @@ const platformItems = [
     icon: Brain,
   },
   {
+    title: "Approvals",
+    url: "/approvals",
+    icon: ShieldCheck,
+  },
+  {
+    title: "Universal Agent Bus",
+    url: "/universal-agent-bus",
+    icon: Network,
+  },
+  {
     title: "Marketplace",
     url: "/marketplace",
     icon: ShoppingBag,
