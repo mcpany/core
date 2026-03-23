@@ -31,6 +31,23 @@ interface SwarmTopologyData {
     anomalies: string[];
 }
 
+/**
+ * SwarmTopologyWidget renders a visualization of the current MCP agent swarm topology.
+ *
+ * Summary: Fetches and displays the graph of interacting agents/tools in the swarm.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - JSX.Element: The rendered widget component.
+ *
+ * Errors:
+ *   - Renders an error message if the topology data fails to fetch.
+ *
+ * Side Effects:
+ *   - Fetches `/api/v1/topology` on mount to populate the graph.
+ */
 export function SwarmTopologyWidget() {
     const [data, setData] = useState<SwarmTopologyData | null>(null);
     const [loading, setLoading] = useState(true);

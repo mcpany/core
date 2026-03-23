@@ -158,6 +158,23 @@ func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest
 	return ch, nil
 }
 
+// Execute performs the WebSocket tool execution.
+//
+// Summary: Executes an MCP request over a WebSocket connection.
+//
+// Parameters:
+//   - ctx (context.Context): The context for execution.
+//   - req (*ExecutionRequest): The execution parameters, including tool inputs.
+//
+// Returns:
+//   - any: The response from the WebSocket MCP server.
+//   - error: An error if the WebSocket communication fails.
+//
+// Errors:
+//   - Returns an error if the WebSocket pool is not found or if the request fails.
+//
+// Side Effects:
+//   - Sends a request over the active WebSocket connection.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

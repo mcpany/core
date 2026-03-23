@@ -126,6 +126,25 @@ const rpc = new GrpcWebImpl(getBaseUrl(), {
 });
 const registrationClient = new RegistrationServiceClientImpl(rpc);
 
+/**
+ * fetchWithAuth wraps the native `fetch` API to automatically inject authentication headers.
+ *
+ * Summary: Performs an HTTP request with an Authorization header if a token is present in localStorage.
+ *
+ * Parameters:
+ *   - input (RequestInfo | URL): The resource URL to fetch.
+ *   - init (RequestInit?): Optional configuration for the fetch request.
+ *
+ * Returns:
+ *   - Promise<Response>: The fetch Response object.
+ *
+ * Errors:
+ *   - Rethrows any errors encountered during the network request.
+ *
+ * Side Effects:
+ *   - Reads `mcp_auth_token` from localStorage.
+ *   - Makes a network request.
+ */
 export const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
     // Inject Authorization header from localStorage if available

@@ -9,6 +9,12 @@ import (
 	"sync"
 )
 
+// FastJSON is a pre-configured, frozen jsoniter instance optimized for performance.
+//
+// Summary: Provides a fast JSON configuration with HTML escaping enabled and map key sorting disabled.
+//
+// Side Effects:
+//   - None.
 var (
 	FastJSON = jsoniter.Config{
 		EscapeHTML:             true,

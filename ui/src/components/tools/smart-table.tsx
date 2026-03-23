@@ -20,6 +20,23 @@ interface SmartTableProps {
 
 type SortDirection = 'asc' | 'desc' | null;
 
+/**
+ * SmartTable renders a data table with sorting and pagination capabilities.
+ *
+ * Summary: Displays a paginated and sortable table constructed from an array of data objects.
+ *
+ * Parameters:
+ *   - props (SmartTableProps): The component props containing the data array.
+ *
+ * Returns:
+ *   - JSX.Element: The rendered table component.
+ *
+ * Errors:
+ *   - None.
+ *
+ * Side Effects:
+ *   - None.
+ */
 export function SmartTable({ data }: SmartTableProps) {
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: SortDirection }>({ key: '', direction: null });
   const [currentPage, setCurrentPage] = useState(1);

@@ -62,6 +62,23 @@ func (m *MockTool) IsStreaming() bool {
 	return false
 }
 
+// StreamExecute executes the mock tool in streaming mode.
+//
+// Summary: Executes the tool in a separate goroutine and returns a channel with the result.
+//
+// Parameters:
+//   - ctx (context.Context): The context for execution.
+//   - req (*ExecutionRequest): The request parameters.
+//
+// Returns:
+//   - <-chan any: A channel that will yield the result or error.
+//   - error: Returns nil as the channel is returned immediately.
+//
+// Errors:
+//   - None directly, errors are sent to the returned channel.
+//
+// Side Effects:
+//   - Starts a goroutine.
 func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -76,6 +93,23 @@ func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
+// Execute performs the mocked tool execution.
+//
+// Summary: Records the execution call and returns the configured mocked response.
+//
+// Parameters:
+//   - ctx (context.Context): The context for execution.
+//   - req (*ExecutionRequest): The execution parameters.
+//
+// Returns:
+//   - any: The mocked response value.
+//   - error: The mocked error, if configured.
+//
+// Errors:
+//   - Returns the configured mocked error if one is set.
+//
+// Side Effects:
+//   - Depends on the configured mock ExecuteFunc.
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)

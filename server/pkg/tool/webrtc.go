@@ -238,6 +238,23 @@ func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (
 	return ch, nil
 }
 
+// Execute performs the WebRTC tool execution.
+//
+// Summary: Executes an MCP request over a WebRTC connection.
+//
+// Parameters:
+//   - ctx (context.Context): The context for execution.
+//   - req (*ExecutionRequest): The execution parameters, including tool inputs.
+//
+// Returns:
+//   - any: The response from the WebRTC MCP server.
+//   - error: An error if the WebRTC communication fails.
+//
+// Errors:
+//   - Returns an error if the WebRTC request fails or the connection is lost.
+//
+// Side Effects:
+//   - Sends a request over the WebRTC data channel.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized

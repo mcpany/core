@@ -20,6 +20,23 @@ interface SubagentStatus {
 
 
 
+/**
+ * ActiveIntentAlignmentWidget displays the status of various agents aligning with their intents.
+ *
+ * Summary: Fetches and displays the active subagent statuses and their alignment scores.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - JSX.Element: The rendered widget.
+ *
+ * Errors:
+ *   - Logs an error if fetching subagent status fails.
+ *
+ * Side Effects:
+ *   - Polls the `/api/v1/subagents/status` endpoint periodically.
+ */
 export function ActiveIntentAlignmentWidget() {
     const [agents, setAgents] = useState<SubagentStatus[]>([]);
 

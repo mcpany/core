@@ -29,6 +29,23 @@ export interface WizardWebhook {
     };
 }
 
+/**
+ * WizardState represents the entire state object managed by the WizardContext.
+ *
+ * Summary: Defines the shape of the configuration wizard's context state.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - None.
+ *
+ * Errors:
+ *   - None.
+ *
+ * Side Effects:
+ *   - None.
+ */
 export interface WizardState {
     currentStep: WizardStep;
     config: Partial<UpstreamServiceConfig>;
