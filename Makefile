@@ -172,6 +172,10 @@ gen-gateway-proto: prepare-proto
 			--proto_path=. \
 			--proto_path=$(BUILD_DIR)/grpc-gateway \
 			--proto_path=$(BUILD_DIR)/googleapis \
+			--go_out=. \
+			--go_opt=module=github.com/mcpany/core \
+			--go-grpc_out=. \
+			--go-grpc_opt=module=github.com/mcpany/core \
 			--grpc-gateway_out=. \
 			--grpc-gateway_opt=module=github.com/mcpany/core,use_opaque_api=true \
 			{} +

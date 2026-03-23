@@ -223,7 +223,7 @@ func runfilesWorkspaceName() string {
 
 func runfilesRoots() []string {
 	workspace := runfilesWorkspaceName()
-	var roots []string
+	roots := make([]string, 0, 2)
 	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
 		if base == "" {
 			continue
@@ -269,8 +269,10 @@ func isServerProjectRoot(dir string) bool {
 }
 
 func symlinkIfPresent(src, dst string) error {
-	if _, err := os.Stat(src); err != nil {
+	if _, err := os.Stat(src); os.IsNotExist(err) {
 		return nil
+	} else if err != nil {
+		return err
 	}
 	return os.Symlink(src, dst)
 }
