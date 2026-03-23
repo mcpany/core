@@ -1523,3 +1523,14 @@
 ### Priority Shifts
 - **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Evolving to v2 with the requirement for fragment-level semantic hash-chaining to counter Logic Grafting.
 - **SRM Provider**: (Re-affirmed P0) Elevated with mandatory support for **Reasoning Provenance** verification.
+
+## Evolution: [2026-03-23] (v2) Updates
+
+### Proposed Additions
+- **A2A Authentication Proxy**: (P0) A zero-trust security layer that enforces HTTP authentication for all Agent-to-Agent discovery and coordination requests, neutralizing shadow mapping.
+- **Dynamic Usage Quota Monitor**: (P1) Resource management middleware that tracks real-time credit and token consumption, providing agents with economic constraints and automated throttling.
+- **gVisor-Bound Execution Identity**: (P1) Security extension for the CMD adapter that issues hardware-attested environment tokens for tools running in gVisor sandboxes.
+
+### Priority Shifts
+- **A2A Messaging Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Authenticated Discovery** to align with Gemini CLI v0.34.0.
+- **Policy Firewall**: (Re-affirmed P0) Expanded to include **Quota-Aware Execution** rules based on real-time usage metrics.
