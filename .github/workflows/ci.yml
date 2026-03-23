@@ -91,7 +91,9 @@ jobs:
           # Run //:lint (buildifier + gazelle + golangci-lint) and
           # //ui:lint + //ui:typecheck (eslint + tsc) in a single Bazel invocation
           # so remote cache is shared across all of them.
-          # Bypassing the root level //:lint as the github action runner runs out of memory processing proto bindings
+          bazelisk run //:lint \
+            --config=remote \
+            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
           bazelisk test //ui:lint //ui:typecheck \
             --config=remote \
             --test_output=errors \
