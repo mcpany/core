@@ -66,7 +66,7 @@ upstream_services:
 		}
 		t.Logf("Tool not found. Found: %v", names)
 		return false
-	}, 30*time.Second, 500*time.Millisecond, "tool was not registered")
+	}, 15*time.Second, 500*time.Millisecond, "tool was not registered")
 
 	callToolParams := &mcp.CallToolParams{
 		Name:      "test-service.test-tool",
@@ -128,7 +128,7 @@ upstream_services:
 		}
 		t.Logf("Tool not found. Found: %v", names)
 		return false
-	}, 30*time.Second, 500*time.Millisecond, "tool was not registered")
+	}, 15*time.Second, 500*time.Millisecond, "tool was not registered")
 
 	callToolParams := &mcp.CallToolParams{
 		Name:      "test-service.test-tool",

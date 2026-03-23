@@ -29,7 +29,6 @@ test.describe('MCP Any Profile & Collection Tests', () => {
     // assert headers
     await expect(page.getByText('Profiles', { exact: true }).first()).toBeVisible();
 
-
     // Click Create
     const createBtn = page.getByRole('button', { name: /Create|Plus/i });
     await expect(createBtn).toBeVisible();

@@ -1,4 +1,5 @@
-/**
+with open("ui/tests/e2e/health-banner.spec.ts", "w") as f:
+    f.write("""/**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -22,3 +23,4 @@ test.describe('System Status Banner', () => {
     await expect(errorDescription).toBeVisible({ timeout: 15000 });
   });
 });
+""")

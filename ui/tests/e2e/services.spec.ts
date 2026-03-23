@@ -53,45 +53,6 @@ test.describe('Services Feature', () => {
     // page.on('request', request => console.log('>>', request.method(), request.url()));
 
     // Mock registration API with dynamic state
-    await page.route(url => url.pathname.endsWith('/api/v1/services'), async route => {
-        const method = route.request().method();
-        if (method === 'GET') {
-            await route.fulfill({ json: { services } });
-        } else if (method === 'POST') {
-            const newSvc = route.request().postDataJSON();
-            const created = { ...newSvc, status: 'up', enabled: true };
-            services.push(created);
-            await route.fulfill({ json: created });
-        } else {
-            await route.continue();
-        }
-    });
-
-    await page.route(url => /\/api\/v1\/services\/[^/]+$/.test(url.pathname), async route => {
-        const serviceName = extractLastPathSegment(route.request().url());
-        const service = services.find((candidate) => candidate.name === serviceName);
-        if (!service) {
-            await route.fulfill({ status: 404, json: { error: 'service not found' } });
-            return;
-        }
-
-        await route.fulfill({ json: { service } });
-    });
-
-    await page.route(url => url.pathname.endsWith('/status'), async route => {
-        const serviceName = extractServiceNameFromStatusUrl(route.request().url());
-        const service = services.find((candidate) => candidate.name === serviceName);
-
-        await route.fulfill({
-            json: {
-                tools: service?.tools ?? [],
-            },
-        });
-    });
-
-    await page.route(url => url.pathname.endsWith('/api/v1/dashboard/traffic'), async route => {
-        await route.fulfill({ json: [] });
-    });
 
     await page.goto('/upstream-services');
   });

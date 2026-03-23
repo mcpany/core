@@ -54,7 +54,6 @@ test.describe('Marketplace Tests', () => {
     }
   });
 
-
   test('should open create config wizard', async ({ page }) => {
     await page.goto('/marketplace');
     await page.getByRole('button', { name: 'Create Config' }).click();
