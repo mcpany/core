@@ -1,1 +1,0 @@
-sed -i "s/await expect(page.getByText('Your dashboard is empty')).not.toBeVisible();/await expect(page.getByText('Your dashboard is empty').first()).not.toBeVisible();/g" ui/tests/dashboard_persistence.spec.ts
