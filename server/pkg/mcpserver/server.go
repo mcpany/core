@@ -10,7 +10,6 @@ import (
 	"log/slog"
 	"time"
 
-
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	"github.com/mcpany/core/server/pkg/api/rest"
 	"github.com/mcpany/core/server/pkg/appconsts"
@@ -36,7 +35,6 @@ var (
 	metricToolsCallErrors  = []string{"tools", "call", "errors"}
 	metricToolsCallLatency = []string{"tools", "call", "latency"}
 )
-
 
 // AddReceivingMiddlewareHook is a testing hook that allows inspection of the middleware chain.
 //
@@ -1027,7 +1025,6 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		if text == "" && marshalErr == nil {
 			text, marshalErr = util.FastMarshalToString(result)
 		}
-
 
 		if marshalErr != nil {
 			text = util.ToString(result)
