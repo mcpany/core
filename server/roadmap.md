@@ -698,10 +698,10 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Sub-Millisecond ARL Synchronizer**: High-speed listener for the LFTA ARL Middleware to support ARL v3.0 synchronization in sub-100ms intervals.
 
 ### Upcoming: [2026-06-06]
-- **[P0] Active Intent-Deconstruction (AID) Hub**: Advanced security middleware extension for real-time deconstruction and structural validation of all inter-agent messages.
-- **[P0] Capability Garbage Collection (CGC) Provider**: Authoritative security service for tracking capability lineage and enforcing immediate revocation upon sub-intent termination.
-- **[P0] HAIL v0.36.1 Lineage Provider**: Identity extension supporting hardware-attested intent lineage for non-repudiable mission-root attestation.
-- **[P0] MRLA Gateway**: Advanced A2A handshake gateway mandating proof of mission-root lineage before capability discovery.
+*   **[P0] Active Intent-Deconstruction (AID) Hub**: Advanced security middleware extension for real-time deconstruction and structural validation of all inter-agent messages.
+*   **[P0] Capability Garbage Collection (CGC) Provider**: Authoritative security service for tracking capability lineage and enforcing immediate revocation upon sub-intent termination.
+*   **[P0] HAIL v0.36.1 Lineage Provider**: Identity extension supporting hardware-attested intent lineage for non-repudiable mission-root attestation.
+*   **[P0] MRLA Gateway**: Advanced A2A handshake gateway mandating proof of mission-root lineage before capability discovery.
 
 ### Upcoming: [2026-06-09]
 - **Recursive Integrity Verification (RIV) Provider**: (P0) Advanced security service facilitating lineage-aware proofs across multi-hop delegations. (Added: 2026-06-09)
@@ -737,10 +737,10 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative discovery gateway for hardware-attested tool capability card validation. (Added: 2026-06-14)
 
 ### Upcoming: [2026-06-16]
-- **[P0] Entangled State Broker (ESB)**: Authoritative coordination for "Entanglement Shards" bound to mission-root intent. (Added: 2026-06-16)
-- **[P0] Stylometric Mimicry Mitigator (SMM)**: Real-time stylometric analysis of inter-agent messages to detect reasoning-path shadowing. (Added: 2026-06-16)
-- **[P1] Speculative Branching Guard (SBG)**: Isolation for un-executed reasoning paths to prevent speculative attention leakage. (Added: 2026-06-16)
-- **[P0] Mesh-Resident Key Exchange (MRKE) Provider**: Hardware-bound session key rotation for sub-100ms inter-teammate coordination. (Added: 2026-06-16)
+*   **[P0] Entangled State Broker (ESB)**: Authoritative coordination for "Entanglement Shards" bound to mission-root intent. (Added: 2026-06-16)
+*   **[P0] Stylometric Mimicry Mitigator (SMM)**: Real-time stylometric analysis of inter-agent messages to detect reasoning-path shadowing. (Added: 2026-06-16)
+*   **[P1] Speculative Branching Guard (SBG)**: Isolation for un-executed reasoning paths to prevent speculative attention leakage. (Added: 2026-06-16)
+*   **[P0] Mesh-Resident Key Exchange (MRKE) Provider**: Hardware-bound session key rotation for sub-100ms inter-teammate coordination. (Added: 2026-06-16)
 
 ### Upcoming: [2026-06-15]
 - **Intent-Resumption Gateway (IRG)**: (P0) Authoritative resumption broker implementing OpenClaw-compliant "Intent-Resumption Tokens" to eliminate cognitive stall during teammate rotation. (Added: 2026-06-15)
@@ -749,13 +749,13 @@ These features represent the next logical steps for the product, focusing on Ent
 - **WASM-Hook Behavioral Profiler**: (P0) Mandatory extension for the SMS that performs sandboxed profiling of AI-generated configuration hooks to counter PR "Logic Bombs." (Added: 2026-06-15)
 
 ### Upcoming: [2026-06-17]
-- **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment service issuing hardware-attested heartbeats for mission-anchored reasoning (Added: 2026-06-17).
-- **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
-- **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
-- **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
+*   **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment service issuing hardware-attested heartbeats for mission-anchored reasoning (Added: 2026-06-17).
+*   **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
+*   **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
+*   **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
 
-### Upcoming: [2026-06-18]
-- **Reason-Graph Integrity (RGI) Provider**: (P0) Hardware-attested graph validation for multi-agent reasoning (Added: 2026-06-18).
-- **Mesh-Resident Policy Manager (MRPM)**: (P0) Federated policy service for MRPS compliance (Added: 2026-06-18).
-- **AAG Middleware**: (P1) Entropy-aware attention gating for DAG middleware (Added: 2026-06-18).
-- **Spectral Attention Guard**: (P0) Timing jitter injection for DAG middleware (Added: 2026-06-18).
+#### Upcoming (2026-06-18 Evolution)
+*   **[P0] Reason-Graph Integrity (RGI) Provider**: Hardware-attested graph validation for multi-agent reasoning. (Added: 2026-06-18)
+*   **[P0] Mesh-Resident Policy Manager (MRPM)**: Federated policy service for MRPS compliance. (Added: 2026-06-18)
+*   **[P1] AAG Middleware**: Entropy-aware attention gating for DAG middleware. (Added: 2026-06-18)
+*   **[P0] Spectral Attention Guard**: Timing jitter injection for DAG middleware. (Added: 2026-06-18)
