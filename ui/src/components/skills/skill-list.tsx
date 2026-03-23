@@ -27,8 +27,8 @@ export default function SkillList() {
     try {
       const list = await SkillService.list();
       setSkills(list);
-    } catch (err: any) {
-      toast.error('Failed to load skills: ' + err.message);
+    } catch (err: unknown) {
+      toast.error('Failed to load skills: ' + (err as Error).message);
     } finally {
       setLoading(false);
     }
@@ -40,8 +40,8 @@ export default function SkillList() {
       await SkillService.delete(name);
       toast.success('Skill deleted');
       loadSkills();
-    } catch (err: any) {
-      toast.error('Failed to delete skill: ' + err.message);
+    } catch (err: unknown) {
+      toast.error('Failed to delete skill: ' + (err as Error).message);
     }
   };
 
