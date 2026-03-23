@@ -10,9 +10,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-
----
-
 ## Strategic Evolution: [2026-05-16]
 ### Focus: Hardware-Locked Intent Sovereignty & Secure Swarm Coordination
 **Context**: The emergence of "Agent Teams" (Claude Code) and the rise of "Agentic Social Engineering" (OpenClaw) mark a shift from parallel, high-trust coordination. Security must now protect the "Root Intent" of a mission in hardware and ensure that parallel teammate coordination is cryptographically signed and immutable.
@@ -21,6 +18,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Secure Swarm Coordination Bus**: Supporting the "Agent Teams" model, we are introducing a "Secure Coordination Bus." All teammate-to-teammate messages and "Snapshot-and-Merge" state reconciliation events must be cryptographically signed, neutralizing "Identity Shadowing" and "Mailbox Injection" attacks.
 - **Multi-Modal Trace Sanitizer**: As reasoning becomes multi-modal, MCP Any will implement "Semantic Trace Sanitization." We will provide the infrastructure to scan and sanitize visual and auditory reasoning traces before they are re-ingested into the swarm's collective context, preventing multi-modal prompt injection.
 - **Identity-Bound Discovery (IBD)**: Hardening the discovery phase, we are mandating IBD. Agents will only be able to discover tools and teammates that are cryptographically linked to their specific mission-token, neutralizing "Shadow Delegation" in large agent meshes.
+
 
 ## Strategic Evolution: [2026-05-15]
 ### Focus: Discovery-Phase Sovereignty & Consensus-Based Task Attestation
