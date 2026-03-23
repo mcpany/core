@@ -16,8 +16,7 @@ test.describe('Layout Tests', () => {
     await expect(footer).toBeVisible();
 
     // Verify it contains the user avatar/name (Admin)
-    // Accept either "Admin" or the initials "AD" if the layout is compact/closed
-    await expect(footer).toContainText(/Admin|AD/);
+    await expect(footer).toContainText('Admin');
 
     // Verify visual positioning
     // We expect the footer to be at the bottom of the sidebar.

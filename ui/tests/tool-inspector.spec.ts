@@ -55,8 +55,6 @@ test('Tools page loads and inspector opens', async ({ page }) => {
 
   // The schema content from mock: { type: "object", properties: { location: { type: "string" } } }
   // We check for "location" property in the JSON view
-  // The JsonView component uses SyntaxHighlighter, so we look for the text within the container.
-  // Using locator instead of getByText for exact match inside syntax highlighter.
   // The React SyntaxHighlighter wraps the JSON in a `code` block usually, and might break up the string.
   await expect(page.getByText('location').first()).toBeVisible({ timeout: 10000 });
   await expect(page.getByText('object').first()).toBeVisible({ timeout: 10000 });
