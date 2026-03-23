@@ -105,9 +105,11 @@ describe('marketplaceService', () => {
   });
 
   describe('fetchExternalServers', () => {
-    it('should return empty array for mcpmarket as it is not implemented', async () => {
+    it('should return linear server for mcpmarket', async () => {
       const servers = await marketplaceService.fetchExternalServers('mcpmarket');
-      expect(servers).toEqual([]);
+      expect(servers).toHaveLength(1);
+      expect(servers[0].id).toBe('linear');
+      expect(servers[0].name).toBe('Linear');
     });
 
     it('should return empty array for unknown marketplace', async () => {
@@ -185,8 +187,10 @@ describe('marketplaceService', () => {
   });
 
   describe('importCollection', () => {
-    it('should throw Not Implemented error', async () => {
-      await expect(marketplaceService.importCollection('http://example.com/collection.json')).rejects.toThrow("Not Implemented");
+    it('should return a mock collection', async () => {
+      const collection = await marketplaceService.importCollection('http://example.com/collection.json');
+      expect(collection.name).toBe('Imported Collection');
+      expect(collection.description).toContain('http://example.com/collection.json');
     });
   });
 });

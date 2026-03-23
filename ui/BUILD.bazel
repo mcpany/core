@@ -162,7 +162,7 @@ pkg_files(
 # prune dev-only packages.
 pkg_files(
     name = "ui_node_modules_files",
-    srcs = [],
+    srcs = [":node_modules"],
     prefix = "/app/node_modules",
 )
 

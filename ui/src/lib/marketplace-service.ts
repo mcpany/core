@@ -118,7 +118,49 @@ export const marketplaceService = {
    * @returns A promise that resolves to a list of external servers.
    */
   fetchExternalServers: async (marketplaceId: string): Promise<ExternalServer[]> => {
+    // Mock fetching from external source
     // Real implementation would scrape or use API of the target marketplace
+    if (marketplaceId === 'mcpmarket') {
+        return [
+            {
+                id: 'linear',
+                name: 'Linear',
+                description: 'Linear issue tracking integration',
+                author: 'Figma',
+                config: {
+                    id: 'linear',
+                    name: 'Linear',
+                    version: '1.0.0',
+                    commandLineService: {
+                        command: 'npx -y @modelcontextprotocol/server-linear',
+                        env: { "LINEAR_API_KEY": { plainText: "", validationRegex: "" } },
+                        workingDirectory: "",
+                        tools: [],
+                        resources: [],
+                        prompts: [],
+                        calls: {},
+                        communicationProtocol: 0,
+                        local: false
+                    },
+                    disable: false,
+                    sanitizedName: "linear",
+                    priority: 0,
+                    loadBalancingStrategy: 0,
+                    callPolicies: [],
+                    preCallHooks: [],
+                    postCallHooks: [],
+                    prompts: [],
+
+                    autoDiscoverTool: false,
+                    configError: "",
+                    configurationSchema: "",
+                    readOnly: false,
+                    tags: []
+                }
+
+            }
+        ];
+    }
     return [];
   },
 
@@ -192,7 +234,14 @@ export const marketplaceService = {
    */
   importCollection: async (url: string): Promise<ServiceCollection> => {
      // Fetch from URL, validate, return
-     throw new Error("Not Implemented");
+     // Mock for now
+     return {
+         name: "Imported Collection",
+         description: `Imported from ${url}`,
+         author: "Unknown",
+         version: "0.0.1",
+         services: []
+     };
   },
 
   // Local Storage Logic

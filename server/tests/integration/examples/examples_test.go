@@ -7,6 +7,7 @@ import (
 	"context"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -36,14 +37,13 @@ func TestExampleConfigs(t *testing.T) {
 	stdioBinPath := filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool-bin")
 	if _, err := os.Stat(stdioBinPath); os.IsNotExist(err) {
 		t.Logf("Building missing stdio example binary: %s", stdioBinPath)
-		// Instead of dynamically building a random directory with go build
-		// We just create an empty executable file for the sake of the config validation test.
-		f, err := os.OpenFile(stdioBinPath, os.O_CREATE|os.O_RDWR, 0755)
-		if err == nil {
-			f.WriteString("#!/bin/sh\nexit 0\n")
-			f.Close()
-		} else {
-			t.Logf("Failed to create dummy executable %s: %v", stdioBinPath, err)
+		cmd := exec.Command("go", "build", "-o", stdioBinPath, filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool", "main.go"))
+		cmd.Env = append(os.Environ(), "GOCACHE="+filepath.Join(t.TempDir(), "gocache"))
+		cmd.Dir = runtimeRoot
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			t.Logf("Failed to build stdio example binary (continuing, but validation might fail): %v", err)
 		}
 	}
 

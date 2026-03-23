@@ -1,15 +1,74 @@
 const fs = require('fs');
-const file = 'ui/tests/inspector.spec.ts';
-let code = fs.readFileSync(file, 'utf8');
 
-code = code.replace(/ws\.send\(data\)/g, "ws.send(data)");
-code = code.replace(/ws: any/g, "ws: any");
+const file = 'ui/src/components/users/user-list.tsx';
+let content = fs.readFileSync(file, 'utf-8');
 
-// The issue is `routeWebSocket` is not present in all playwright versions or is being called incorrectly based on the TS types.
-// We should check the playwright version or how it expects routeWebSocket to be called.
-// Actually, `page.routeWebSocket` is available in recent playwright. The problem is `wsSend = (data: string) => ws.send(data);` might not be right because `ws` might be of a specific type. Wait, the error is:
-// tests/inspector.spec.ts(71,7): error TS2349: This expression is not callable. Type 'never' has no call signatures.
-// Line 71: wsSend(JSON.stringify(MOCK_TRACE));
-// This is because `let wsSend: ((data: string) => void) | null = null;` and TS thinks it's still `null`.
-// We need to use `wsSend!(...)` or `if (wsSend) { (wsSend as any)(...) }`. But the code has `if (wsSend) { wsSend(JSON.stringify(MOCK_TRACE)); }`.
-// Let's replace `let wsSend: ((data: string) => void) | null = null;` with `let wsSend: any = null;`.
+const importStr = `import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";`;
+const newImportStr = `import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TableVirtuoso } from "react-virtuoso";`;
+
+content = content.replace(importStr, newImportStr);
+
+const tableStart = `<div className="rounded-md border bg-background">
+                <Table>`;
+const newTableStart = `<div className="rounded-md border bg-background h-[calc(100vh-250px)]">
+                <TableVirtuoso
+                    data={filteredUsers}
+                    components={{
+                        Table: (props) => <Table {...props} />,
+                        TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => <TableBody {...props} ref={ref} />),
+                        TableRow: (props) => <TableRow {...props} />,
+                    }}
+                    fixedHeaderContent={() => (
+                        <TableRow className="bg-muted/50">
+                            <TableHead className="w-[250px]">User</TableHead>
+                            <TableHead>Roles</TableHead>
+                            <TableHead>Authentication</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                    )}
+                    itemContent={(index, user) => (`;
+
+content = content.replace(`<div className="rounded-md border bg-background">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[250px]">User</TableHead>
+                            <TableHead>Roles</TableHead>
+                            <TableHead>Authentication</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {filteredUsers.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
+                                    No users found.
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            filteredUsers.map((user) => (`, newTableStart);
+
+content = content.replace(`))
+                        )}
+                    </TableBody>
+                </Table>
+            </div>`, `)}
+                />
+            </div>`);
+
+
+// Add signature
+const signature = `
+    // ⚡ BOLT: Implemented virtualization for user list using react-virtuoso.
+    // Randomized Selection from Top 5 High-Impact Targets (React/View)
+    const filteredUsers = useMemo(() => {`;
+
+content = content.replace(`const filteredUsers = useMemo(() => {`, signature);
+
+const reactImportStr = `import { useMemo, useState } from "react";`;
+const newReactImportStr = `import React, { useMemo, useState } from "react";`;
+content = content.replace(reactImportStr, newReactImportStr);
+
+
+fs.writeFileSync(file, content);
