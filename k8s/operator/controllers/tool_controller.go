@@ -42,7 +42,7 @@ type ToolReconciler struct {
 // Side Effects:
 //   - Reads and updates Tool resources in the cluster.
 //   - May create or update related resources.
-func (r *ToolReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *ToolReconciler) Reconcile(ctx context.Context, _ ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
 	// TODO(user): your logic here
