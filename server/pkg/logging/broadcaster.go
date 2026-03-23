@@ -68,8 +68,6 @@ func (b *Broadcaster) Reset() {
 // ClearHistory removes all past broadcast messages from the history buffer,
 // leaving active subscribers intact.
 //
-// Summary: ClearHistory purges the current history buffer.
-//
 // Parameters:
 //   - None
 //
