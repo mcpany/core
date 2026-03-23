@@ -16,7 +16,7 @@
 
 ### Priority Shifts
 - **Active Intent Alignment (AIA) Broker**: (Evolved to AIA Hub) Now designated as the primary "Alignment Anchor" for all connected agents.
-- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SEF-compliant** trace analysis.
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SEF-compliant" trace analysis.
 
 ---
 

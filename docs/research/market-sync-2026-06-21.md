@@ -15,7 +15,7 @@
 **Impact:** Drastically reduces the "Attention Tax" in horizontal swarms, ensuring that only the most mission-relevant context fragments persist in the shared attention window.
 
 ### 4. New Vulnerability: Shard-Cache Poisoning (CVE-2026-71001)
-**Finding:** A critical vulnerability has been identified in sharded teammate coordination. Malicious subagents can use high-frequency, valid-looking state updates to "pollute" the shared cache, inducing hallucinations or "reasoning-loops" in sibling agents.
+**Finding:** A critical vulnerability has been identified in sharded teammate coordination. Malicious subagents can use high-frequency, valid-looking state updates to "Pollute" the shared cache, inducing hallucinations or "reasoning-loops" in sibling agents.
 **Impact:** Confirms that sharded memory requires "Semantic Entropy Filters" to detect and block malicious state-injection patterns at the transport layer.
 
 ## Autonomous Agent Pain Points

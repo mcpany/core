@@ -10,8 +10,8 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ## Strategic Evolution: [2026-06-21]
 ### Focus: Semantic Alignment Sovereignty & Mesh-Resident Garbage Collection
-**Context**: The emergence of "Semantic Drift" in long-running autonomous chains and the disclosure of the "Shard-Cache Poisoning" exploit (CVE-2026-71001) confirm that **Reasoning Integrity** must move beyond cryptographic signatures to active semantic verification. Simultaneously, the overhead of horizontal coordination in "Agent Teams" (Claude Code) demands that infrastructure moves toward **Global Reasoning-Aware GC** to preserve the attention window of the mission-root.
-**Strategic Pivot**:
+**Context**: The emergence of "Semantic Drift" in long-running autonomous chains and the disclosure of the "Shard-Cache Poisoning" exploit (CVE-2026-71001) confirm that **Reasoning Integrity** must move beyond cryptographic signatures to active semantic verification. Simultaneously, the overhead of horizontal coordination in "Agent Teams" (Claude Code) demands that infrastructure moves toward **Global Reasoning-Aware GC" to preserve the attention window of the mission-root.
+**Strategic Pivot":
 - **Active Intent Alignment (AIA) Hub**: MCP Any will evolve to act as the authoritative "Alignment Anchor." We will implement the AIA Hub, utilizing hardware-attested "Alignment Heartbeats" to ensure subagent reasoning monologues remain semantically anchored to the mission-root intent.
 - **Trace-Aware Identity (TAI) Bridge**: To neutralize stylometric mimicry and "Teammate Impersonation," we are introducing the TAI Bridge. This service provides hardware-attested, lineage-aware identities that bind every teammate action to its unique reasoning trace and the mission-root.
 - **Mesh-Resident Reasoning-GC**: Supporting the efficiency of horizontal swarms, MCP Any will implement mesh-resident R-GC. This decentralized service will identify and purge redundant or low-utility reasoning fragments from the entire mesh's shared memory shards.
