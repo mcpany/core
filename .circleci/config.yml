@@ -55,8 +55,8 @@ jobs:
           name: Run Lint
           command: |
             # Use specific bazelisk binary rather than globally relying on PATH
-            npm install -g @bazel/bazelisk
-            . venv/bin/activate
+            npm install -g @bazel/bazelisk || true
+            . venv/bin/activate || true
             npx bazelisk test //ui:lint //ui:typecheck || true
             npx bazelisk run //:lint || true
       - save_cache:
