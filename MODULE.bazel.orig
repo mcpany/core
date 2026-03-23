@@ -1,0 +1,338 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+module(
+    name = "mcp-any",
+    version = "0.0.1",
+)
+
+bazel_dep(name = "rules_go", version = "0.60.0")
+bazel_dep(name = "gazelle", version = "0.47.0")
+bazel_dep(name = "protobuf", version = "34.0.bcr.1")
+bazel_dep(name = "googleapis", version = "0.0.0-20260223-edfe7983")
+bazel_dep(name = "googleapis-go", version = "1.0.0")
+bazel_dep(name = "buildifier_prebuilt", version = "8.5.1")
+bazel_dep(name = "buildozer", version = "8.5.1")
+bazel_dep(name = "rules_oci", version = "2.3.0")
+bazel_dep(name = "aspect_bazel_lib", version = "2.22.5")
+bazel_dep(name = "rules_pkg", version = "1.2.0")
+bazel_dep(name = "rules_shell", version = "0.6.1")
+bazel_dep(name = "rules_nodejs", version = "6.7.3")
+bazel_dep(name = "aspect_rules_js", version = "3.0.3")
+bazel_dep(name = "aspect_rules_ts", version = "3.8.7")
+bazel_dep(name = "toolchains_buildbuddy", version = "0.0.4")
+bazel_dep(name = "rules_python", version = "1.7.0")
+
+go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
+go_sdk.download(version = "1.26.1")
+
+go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
+go_deps.from_file(go_mod = "//server:go.mod")
+go_deps.gazelle_override(
+    directives = [
+        "gazelle:proto disable_global",
+    ],
+    path = "github.com/cncf/xds/go",
+)
+go_deps.gazelle_override(
+    directives = [
+        "gazelle:resolve go google.golang.org/protobuf/types/pluginpb @org_golang_google_protobuf//types/pluginpb",
+    ],
+    path = "github.com/bufbuild/protocompile",
+)
+go_deps.gazelle_override(
+    path = "google.golang.org/genproto/googleapis/api",
+)
+
+# Disable proto generation for grpc-gateway so Gazelle uses pre-generated .pb.go
+# files directly and does not try to resolve @googleapis (which is not visible
+# from the grpc-gateway Go dep context in Bzlmod).
+# Use build_file_generation=off to preserve the original BUILD files and apply
+# our patch on top, which replaces the proto-based apiconfig target with one
+# that uses the pre-generated apiconfig.pb.go source file directly.
+go_deps.gazelle_override(
+    build_file_generation = "off",
+    path = "github.com/grpc-ecosystem/grpc-gateway/v2",
+)
+go_deps.module_override(
+    patch_strip = 1,
+    patches = [
+        "//patches:grpc_gateway_apiconfig.patch",
+        "//patches:grpc_gateway_pure.patch",
+    ],
+    path = "github.com/grpc-ecosystem/grpc-gateway/v2",
+)
+
+# Add required direct dependencies from go.mod manually or via use_repo
+# For now, let's let Gazelle handle it.
+use_repo(
+    go_deps,
+    "com_github_alexliesenfeld_health",
+    "com_github_alicebob_miniredis_v2",
+    "com_github_alitto_pond_v2",
+    "com_github_antchfx_xmlquery",
+    "com_github_antchfx_xpath",
+    "com_github_armon_go_metrics",
+    "com_github_aws_aws_sdk_go",
+    "com_github_aws_aws_sdk_go_v2",
+    "com_github_aws_aws_sdk_go_v2_config",
+    "com_github_aws_aws_sdk_go_v2_service_secretsmanager",
+    "com_github_bufbuild_protocompile",
+    "com_github_cenkalti_backoff_v4",
+    "com_github_cloudevents_sdk_go_v2",
+    "com_github_coder_websocket",
+    "com_github_coreos_go_oidc_v3",
+    "com_github_data_dog_go_sqlmock",
+    "com_github_docker_docker",
+    "com_github_eko_gocache_lib_v4",
+    "com_github_eko_gocache_store_go_cache_v4",
+    "com_github_fclairamb_afero_s3",
+    "com_github_fsnotify_fsnotify",
+    "com_github_getkin_kin_openapi",
+    "com_github_gin_gonic_gin",
+    "com_github_go_jose_go_jose_v4",
+    "com_github_go_redis_redismock_v9",
+    "com_github_go_sql_driver_mysql",
+    "com_github_golang_jwt_jwt_v5",
+    "com_github_google_go_cmp",
+    "com_github_google_go_github_v39",
+    "com_github_google_jsonschema_go",
+    "com_github_google_uuid",
+    "com_github_gorilla_mux",
+    "com_github_gorilla_websocket",
+    "com_github_graphql_go_graphql",
+    "com_github_grpc_ecosystem_grpc_gateway_v2",
+    "com_github_hashicorp_vault_api",
+    "com_github_improbable_eng_grpc_web",
+    "com_github_itchyny_gojq",
+    "com_github_jellydator_ttlcache_v3",
+    "com_github_johanneskaufmann_html_to_markdown",
+    "com_github_joho_godotenv",
+    "com_github_json_iterator_go",
+    "com_github_lib_pq",
+    "com_github_machinebox_graphql",
+    "com_github_masterminds_semver_v3",
+    "com_github_mcpany_core",
+    "com_github_milvus_io_milvus_sdk_go_v2",
+    "com_github_modelcontextprotocol_go_sdk",
+    "com_github_nats_io_nats_go",
+    "com_github_nats_io_nats_server_v2",
+    "com_github_opencontainers_image_spec",
+    "com_github_paesslerag_jsonpath",
+    "com_github_patrickmn_go_cache",
+    "com_github_pion_webrtc_v3",
+    "com_github_pkg_sftp",
+    "com_github_playwright_community_playwright_go",
+    "com_github_pmezard_go_difflib",
+    "com_github_prometheus_client_golang",
+    "com_github_puzpuzpuz_xsync_v4",
+    "com_github_redis_go_redis_v9",
+    "com_github_samber_lo",
+    "com_github_santhosh_tekuri_jsonschema_v5",
+    "com_github_segmentio_kafka_go",
+    "com_github_spf13_afero",
+    "com_github_spf13_cobra",
+    "com_github_spf13_pflag",
+    "com_github_spf13_viper",
+    "com_github_standard_webhooks_standard_webhooks_libraries",
+    "com_github_stretchr_testify",
+    "com_github_tidwall_gjson",
+    "com_github_valyala_fasttemplate",
+    "com_google_cloud_go_storage",
+    "dev_essio_al_pkg_shellescape",
+    "in_gopkg_square_go_jose_v2",
+    "in_gopkg_yaml_v2",
+    "in_gopkg_yaml_v3",
+    "io_k8s_client_go",
+    "io_k8s_sigs_yaml",
+    "io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc",
+    "io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp",
+    "io_opentelemetry_go_otel",
+    "io_opentelemetry_go_otel_exporters_otlp_otlpmetric_otlpmetrichttp",
+    "io_opentelemetry_go_otel_exporters_otlp_otlptrace_otlptracehttp",
+    "io_opentelemetry_go_otel_exporters_stdout_stdoutmetric",
+    "io_opentelemetry_go_otel_exporters_stdout_stdouttrace",
+    "io_opentelemetry_go_otel_sdk",
+    "io_opentelemetry_go_otel_sdk_metric",
+    "org_golang_google_api",
+    "org_golang_google_grpc",
+    "org_golang_google_grpc_cmd_protoc_gen_go_grpc",
+    "org_golang_google_protobuf",
+    "org_golang_x_crypto",
+    "org_golang_x_oauth2",
+    "org_golang_x_sync",
+    "org_golang_x_time",
+    "org_modernc_sqlite",
+    "org_uber_go_goleak",
+    "org_uber_go_mock",
+)
+
+oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
+oci.pull(
+    name = "debian_bookworm_slim",
+    digest = "sha256:74d56e3931e0d5a1dd51f8c8a2466d21de84a271cd3b5a733b803aa91abf4421",
+    image = "mirror.gcr.io/library/debian",
+    platforms = [
+        "linux/amd64",
+        "linux/arm64",
+    ],
+)
+
+# Distroless Node.js 24 image used as the base for the UI container (vite preview).
+oci.pull(
+    name = "distroless_nodejs24",
+    digest = "sha256:14d42e2511532589a7c7e01a753667a74fcc96266e137e8125006b87b0c32d0a",
+    image = "gcr.io/distroless/nodejs24-debian12",
+    platforms = [
+        "linux/amd64",
+        "linux/arm64",
+    ],
+)
+
+# Python 3.12-slim base image for Python-based container images (cowsay server, timeserver).
+oci.pull(
+    name = "python312_slim",
+    digest = "sha256:fe778fce55d620e6b4b27885aa170579aed9b119ba45652e45a2e8bf48c22ede",
+    image = "mirror.gcr.io/library/python",
+    platforms = ["linux/amd64"],
+)
+use_repo(oci, "debian_bookworm_slim", "debian_bookworm_slim_linux_amd64", "debian_bookworm_slim_linux_arm64", "distroless_nodejs24", "distroless_nodejs24_linux_amd64", "distroless_nodejs24_linux_arm64", "python312_slim", "python312_slim_linux_amd64")
+
+npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm")
+npm.npm_translate_lock(
+    name = "npm",
+    npmrc = "//ui:.npmrc",
+    pnpm_lock = "//ui:pnpm-lock.yaml",
+    public_hoist_packages = {
+        "@ungap/structured-clone": ["ui"],
+        "@floating-ui/core": ["ui"],
+        "@floating-ui/dom": ["ui"],
+        "@floating-ui/utils": ["ui"],
+        "@opentelemetry/api": ["ui"],
+        "@radix-ui/react-use-effect-event": ["ui"],
+        "bail": ["ui"],
+        "ccount": ["ui"],
+        "character-entities": ["ui"],
+        "character-entities-html4": ["ui"],
+        "character-entities-legacy": ["ui"],
+        "character-reference-invalid": ["ui"],
+        "comma-separated-tokens": ["ui"],
+        "d3-color": ["ui"],
+        "d3-dispatch": ["ui"],
+        "d3-format": ["ui"],
+        "d3-path": ["ui"],
+        "d3-time-format": ["ui"],
+        "d3-transition@3.0.1": ["ui"],
+        "debug@4.4.3": ["ui"],
+        "decode-named-character-reference": ["ui"],
+        "dequal": ["ui"],
+        "devlop": ["ui"],
+        "escape-string-regexp@5.0.0": ["ui"],
+        "estree-util-is-identifier-name": ["ui"],
+        "extend": ["ui"],
+        "graphlib": ["ui"],
+        "hast-util-to-jsx-runtime": ["ui"],
+        "hast-util-parse-selector": ["ui"],
+        "hast-util-whitespace": ["ui"],
+        "hastscript": ["ui"],
+        "html-url-attributes": ["ui"],
+        "inline-style-parser": ["ui"],
+        "internmap": ["ui"],
+        "is-alphabetical": ["ui"],
+        "is-alphanumerical": ["ui"],
+        "is-decimal": ["ui"],
+        "is-hexadecimal": ["ui"],
+        "is-plain-obj": ["ui"],
+        "longest-streak": ["ui"],
+        "markdown-table": ["ui"],
+        "mdast-util-from-markdown": ["ui"],
+        "mdast-util-find-and-replace": ["ui"],
+        "mdast-util-gfm": ["ui"],
+        "mdast-util-gfm-autolink-literal": ["ui"],
+        "mdast-util-gfm-footnote": ["ui"],
+        "mdast-util-gfm-strikethrough": ["ui"],
+        "mdast-util-gfm-table": ["ui"],
+        "mdast-util-gfm-task-list-item": ["ui"],
+        "mdast-util-mdx-expression": ["ui"],
+        "mdast-util-mdx-jsx": ["ui"],
+        "mdast-util-mdxjs-esm": ["ui"],
+        "mdast-util-phrasing": ["ui"],
+        "mdast-util-to-hast": ["ui"],
+        "mdast-util-to-markdown": ["ui"],
+        "mdast-util-to-string": ["ui"],
+        "micromark": ["ui"],
+        "micromark-core-commonmark": ["ui"],
+        "micromark-extension-gfm": ["ui"],
+        "micromark-extension-gfm-autolink-literal": ["ui"],
+        "micromark-extension-gfm-footnote": ["ui"],
+        "micromark-extension-gfm-strikethrough": ["ui"],
+        "micromark-extension-gfm-table": ["ui"],
+        "micromark-extension-gfm-tagfilter": ["ui"],
+        "micromark-extension-gfm-task-list-item": ["ui"],
+        "micromark-factory-destination": ["ui"],
+        "micromark-factory-label": ["ui"],
+        "micromark-factory-space": ["ui"],
+        "micromark-factory-title": ["ui"],
+        "micromark-factory-whitespace": ["ui"],
+        "micromark-util-character": ["ui"],
+        "micromark-util-chunked": ["ui"],
+        "micromark-util-classify-character": ["ui"],
+        "micromark-util-combine-extensions": ["ui"],
+        "micromark-util-decode-numeric-character-reference": ["ui"],
+        "micromark-util-decode-string": ["ui"],
+        "micromark-util-encode": ["ui"],
+        "micromark-util-html-tag-name": ["ui"],
+        "micromark-util-normalize-identifier": ["ui"],
+        "micromark-util-resolve-all": ["ui"],
+        "micromark-util-sanitize-uri": ["ui"],
+        "micromark-util-subtokenize": ["ui"],
+        "micromark-util-symbol": ["ui"],
+        "micromark-util-types": ["ui"],
+        "object-assign": ["ui"],
+        "parse-entities": ["ui"],
+        "property-information": ["ui"],
+        "remark-parse": ["ui"],
+        "remark-rehype": ["ui"],
+        "remark-stringify": ["ui"],
+        "scheduler": ["ui"],
+        "space-separated-tokens": ["ui"],
+        "stringify-entities": ["ui"],
+        "style-to-js": ["ui"],
+        "style-to-object": ["ui"],
+        "trim-lines": ["ui"],
+        "trough": ["ui"],
+        "unified": ["ui"],
+        "unist-util-is": ["ui"],
+        "unist-util-position": ["ui"],
+        "unist-util-stringify-position": ["ui"],
+        "unist-util-visit": ["ui"],
+        "unist-util-visit-parents": ["ui"],
+        "use-sync-external-store@1.6.0": ["ui"],
+        "vfile": ["ui"],
+        "vfile-message": ["ui"],
+        "zwitch": ["ui"],
+    },
+)
+use_repo(npm, "npm")
+
+node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
+node.toolchain(node_version = "24.13.0")
+use_repo(node, "nodejs_toolchains")
+
+buildbuddy = use_extension("@toolchains_buildbuddy//:extensions.bzl", "buildbuddy")
+
+python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+python.toolchain(python_version = "3.12")
+
+pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+pip.parse(
+    hub_name = "cowsay_server_deps",
+    python_version = "3.12",
+    requirements_lock = "//server/tests/integration/cmd/mocks/python_cowsay_server:requirements_lock.txt",
+)
+pip.parse(
+    hub_name = "timeserver_deps",
+    python_version = "3.12",
+    requirements_lock = "//server/tests/integration/examples:requirements_lock.txt",
+)
+use_repo(pip, "cowsay_server_deps", "timeserver_deps")
