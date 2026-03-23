@@ -281,6 +281,16 @@ func (m *MockStore) GetRecentLogs(ctx context.Context, limit int) ([]*logging.Lo
 	return args.Get(0).([]*logging.LogEntry), args.Error(1)
 }
 
+func (m *MockStore) SaveMockData(ctx context.Context, id string, data string) error {
+	args := m.Called(ctx, id, data)
+	return args.Error(0)
+}
+
+func (m *MockStore) GetMockData(ctx context.Context, id string) (string, error) {
+	args := m.Called(ctx, id)
+	return args.String(0), args.Error(1)
+}
+
 func TestInitializeDatabase_Empty(t *testing.T) {
 	mockStore := new(MockStore)
 	app := &Application{}
