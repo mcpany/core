@@ -65,6 +65,13 @@ service AdminService {
       get: "/api/v1/audit/logs"
     };
   }
+
+  // ClearAuditLogs deletes audit logs matching the filter.
+  rpc ClearAuditLogs(ClearAuditLogsRequest) returns (ClearAuditLogsResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/audit/logs"
+    };
+  }
 }
 
 // ClearCacheRequest represents a request to clear the server cache.
@@ -227,6 +234,26 @@ message ListAuditLogsRequest {
   int32 limit = 6;
   // The offset for pagination.
   int32 offset = 7;
+}
+
+// ClearAuditLogsRequest represents a request to clear audit logs.
+message ClearAuditLogsRequest {
+  // The start time for the query (ISO 8601).
+  string start_time = 1;
+  // The end time for the query (ISO 8601).
+  string end_time = 2;
+  // Filter by tool name.
+  string tool_name = 3;
+  // Filter by user ID.
+  string user_id = 4;
+  // Filter by profile ID.
+  string profile_id = 5;
+}
+
+// ClearAuditLogsResponse contains the result of the clear operation.
+message ClearAuditLogsResponse {
+  // The number of deleted entries.
+  int64 deleted_count = 1;
 }
 
 // ListAuditLogsResponse contains the list of audit log entries.
