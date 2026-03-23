@@ -46,7 +46,7 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 ## 7. Evolutionary Changelog
 * **2026-05-29:** Initial Document Creation.
 
-### Update: [2026-05-30] - Intent Hierarchy Integration
+### Update: Intent Hierarchy Integration (2026-05-30)
 
 **Context**: Research identified "Context Shadowing" where subagents override instructions.
 
