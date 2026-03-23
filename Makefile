@@ -1,5 +1,4 @@
 prepare:
-	npm install -g pre-commit
 	cd ui && npm ci
 
 lint:
