@@ -308,7 +308,7 @@ func ensureBazelImageLoaded(t *testing.T, loaderRelPath, imageName string) {
 	t.Logf("Bazel image loader not found for %s (%s)", imageName, loaderRelPath)
 }
 
-func runCommand(t *testing.T, ctx context.Context, dir string, name string, args ...string) error {
+func _ = runCommand(t *testing.T, ctx context.Context, dir string, name string, args ...string) error {
 	cmd := exec.CommandContext(ctx, name, args...)
 	cmd.Dir = dir
 	// Force Docker API version to 1.44 to avoid "client version too old" errors
