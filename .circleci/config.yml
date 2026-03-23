@@ -39,35 +39,41 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v13-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-            - v13-lint-
+            - v15-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+            - v15-lint-
       - run:
-          name: Prepare Environment
+          name: Prepare Environment and Linter
           command: |
             export GOTOOLCHAIN=go1.26.1
+            export GOPATH=$HOME/go
+            export PATH=$GOPATH/bin:$PATH
+            # Clean up ANY pre-installed or stale linter
+            sudo rm -f /usr/local/bin/golangci-lint
             rm -rf build/env/bin
             mkdir -p build/env/bin
-            sudo rm -f /usr/local/bin/golangci-lint
             make prepare
+            # Force rebuild golangci-lint from source with Go 1.26
+            echo "Building golangci-lint with $(go version)..."
             go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.5
+            # Move it to a known location and verify
+            cp $(go env GOPATH)/bin/golangci-lint build/env/bin/golangci-lint
+            build/env/bin/golangci-lint version
       - run:
           name: Run Lint
           command: |
             . venv/bin/activate
             export GOTOOLCHAIN=go1.26.1
-            export GOPATH=$HOME/go
-            export PATH=$GOPATH/bin:$PATH
-            go version
-            golangci-lint --version
-            which golangci-lint
+            # Explicitly point to our freshly built linter
+            export GOLANGCI_LINT_BIN=$PWD/build/env/bin/golangci-lint
+            export PATH=$PWD/build/env/bin:$PATH
+            # Run lint via the hardened script
             ./scripts/lint.sh
       - save_cache:
-          key: v13-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+          key: v15-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
             - "venv"
-            - "/home/circleci/go/bin"
 
 workflows:
   version: 2

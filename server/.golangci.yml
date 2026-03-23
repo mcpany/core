@@ -4,7 +4,6 @@
 run:
   timeout: 5m
   tests: false
-  # Explicitly allow loading modules
   modules-download-mode: readonly
 
 linters:
@@ -51,11 +50,6 @@ issues:
       linters:
         - "revive"
       text: "var-naming: avoid meaningless package names"
-  skip-files:
-    - '.*\.pb\.go$'
-    - '.*\.pb\.gw\.go$'
-    - lll
-    - funlen
-    - wsl
-    - gci
-    - gofumpt
+  exclude-files:
+    - ".*\\.pb\\.go$"
+    - ".*\\.pb\\.gw\\.go$"
