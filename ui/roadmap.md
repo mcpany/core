@@ -283,14 +283,9 @@
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
 
-#### Upcoming (2026-05-02 Evolution)
-- [ ] **[P0] KBI Alignment Monitor**: Real-time visualization of kernel-bound process-to-intent mappings and termination events. (Added: 2026-05-02)
-- [ ] **[P0] SACH Alignment Dashboard**: Visualizer for "Co-signed Capabilities" and inter-agent reasoning alignment heartbeats. (Added: 2026-05-02)
-- [ ] **[P0] ISRI Resource Map**: Per-intent resource quota visualization and isolation alerts. (Added: 2026-05-02)
-
 #### Upcoming (2026-05-01 Evolution)
 - [ ] **[P0] Contextual Quorum (CQ) Dashboard**: Visual workspace for monitoring multi-agent votes and consensus status. (Added: 2026-05-01)
-- [ ] **[P0] Adaptive Budgeting Monitor**: Real-time visualization of agent token/compute leases and reasoning confidence. (Added: 2026-05-01 - Promoted to P0 on 2026-05-02)
+- [ ] **[P1] Adaptive Budgeting Monitor**: Real-time visualization of agent token/compute leases and reasoning confidence. (Added: 2026-05-01)
 - [ ] **[P0] Snapshot Rollback Manager**: UI for reviewing speculative environment edits and performing rapid PLSS rollbacks. (Added: 2026-05-01)
 
 #### Upcoming (2026-04-30 Evolution)
@@ -332,3 +327,7 @@
 - [ ] **[P0] A2A Replay Security Dashboard**: Visualize nonce status and replay attempt alerts in the A2A hub. (Added: 2026-04-22)
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)
 - [ ] **[P1] Encrypted Monologue Explorer**: Secure UI fragment for user-authorized decryption and review of subagent reasoning. (Added: 2026-04-22)
+### Evolution: [2026-05-02] Updates
+*   **Quorum Monitoring Dashboard**: (P0) Real-time visualization of multi-agent voting and quorum status.
+*   **Adaptive Budgeting Telemetry**: (P1) Resource usage vs. intent budget visualization for agent swarms.
+*   **SACH Capability Lease Viewer**: (P0) Secure interface for viewing and revoking inter-agent capability leases.

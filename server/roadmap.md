@@ -434,14 +434,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
 *   **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-generated UI fragments (Added: 2026-04-23).
 
-#### Upcoming (2026-05-02 Evolution)
-*   **[P0] Kernel-Bound Intent (KBI) Broker**: Authoritative intent-manifest provider for KBIA-compliant kernels. (Added: 2026-05-02)
-*   **[P0] Shared Responsibility (SACH) Gateway**: A2A extension for co-signed capabilities and alignment heartbeats. (Added: 2026-05-02)
-*   **[P0] Intent-Scoped Resource Isolation (ISRI)**: Per-intent resource quota enforcement for AIB. (Added: 2026-05-02)
-
 #### Upcoming (2026-05-01 Evolution)
 *   **[P0] Contextual Quorum (CQ) Hub**: Coordination service for multi-agent attestation and consensus-based tool execution. (Added: 2026-05-01)
-*   **[P0] Adaptive Intent Budgeting (AIB)**: Resource management layer for dynamic token and compute lease scaling. (Added: 2026-05-01 - Promoted to P0 on 2026-05-02)
+*   **[P1] Adaptive Intent Budgeting (AIB)**: Resource management layer for dynamic token and compute lease scaling. (Added: 2026-05-01)
 *   **[P0] Project-Local Snapshot (PLSS) Sync**: OS-level bridge for rapid environment recovery and speculative agent rollbacks. (Added: 2026-05-01)
 
 #### Upcoming (2026-04-30 Evolution)
@@ -484,3 +479,7 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
 *   **[P1] Cognitive Fragment Reconciler**: Background service for synchronizing encrypted monologues across agent sessions. (Added: 2026-04-22)
+### Evolution: [2026-05-02] Updates
+*   **Contextual Quorum (CQ) Hub Integration**: (P0) Coordinate multi-agent voting on tool execution requests.
+*   **Adaptive Intent Budgeting (AIB) Middleware**: (P0) Implement dynamic token and compute lease scaling.
+*   **Kernel-Bound Intent (KBI) Broker**: (P0) Translate KBIA tokens into hardware-bound resource quotas.

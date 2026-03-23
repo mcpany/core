@@ -223,7 +223,7 @@ func runfilesWorkspaceName() string {
 
 func runfilesRoots() []string {
 	workspace := runfilesWorkspaceName()
-	roots := make([]string, 0, 2)
+	var roots []string
 	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
 		if base == "" {
 			continue
@@ -270,7 +270,7 @@ func isServerProjectRoot(dir string) bool {
 
 func symlinkIfPresent(src, dst string) error {
 	if _, err := os.Stat(src); err != nil {
-		return nil //nolint:nilerr // Intentional: skip if src doesn't exist
+		return nil
 	}
 	return os.Symlink(src, dst)
 }
@@ -1727,12 +1727,6 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
 	callID := "call-" + toolDef.GetName()
-	callDef := configv1.HttpCallDefinition_builder{
-		Id:           &callID,
-		EndpointPath: &endpointPath,
-		Method:       &method,
-		Parameters:   params,
-	}.Build()
 	toolDef.SetCallId(callID)
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
@@ -1740,7 +1734,14 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 		HttpService: configv1.HttpUpstreamService_builder{
 			Address: &baseURL,
 			Tools:   []*configv1.ToolDefinition{toolDef},
-			Calls:   map[string]*configv1.HttpCallDefinition{callID: callDef},
+			Calls: map[string]*configv1.HttpCallDefinition{
+				callID: configv1.HttpCallDefinition_builder{
+					Id:           &callID,
+					EndpointPath: &endpointPath,
+					Method:       &method,
+					Parameters:   params,
+				}.Build(),
+			},
 		}.Build(),
 	}
 	if authConfig != nil {
@@ -1965,7 +1966,7 @@ func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationSer
 
 	var secretEnv map[string]*configv1.SecretValue
 	if env != nil {
-		secretEnv = make(map[string]*configv1.SecretValue, len(env))
+		secretEnv = make(map[string]*configv1.SecretValue)
 		for k, v := range env {
 			secretEnv[k] = configv1.SecretValue_builder{
 				PlainText: &v,
@@ -2065,11 +2066,6 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 
 	toolDef := configv1.ToolDefinition_builder{Name: &operationID}.Build()
 	callID := "call-" + toolDef.GetName()
-	callDef := configv1.HttpCallDefinition_builder{
-		Id:           &callID,
-		EndpointPath: &endpointPath,
-		Method:       &method,
-	}.Build()
 	toolDef.SetCallId(callID)
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
@@ -2077,7 +2073,13 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 		HttpService: configv1.HttpUpstreamService_builder{
 			Address: &baseURL,
 			Tools:   []*configv1.ToolDefinition{toolDef},
-			Calls:   map[string]*configv1.HttpCallDefinition{callID: callDef},
+			Calls: map[string]*configv1.HttpCallDefinition{
+				callID: configv1.HttpCallDefinition_builder{
+					Id:           &callID,
+					EndpointPath: &endpointPath,
+					Method:       &method,
+				}.Build(),
+			},
 		}.Build(),
 	}
 	if authConfig != nil {

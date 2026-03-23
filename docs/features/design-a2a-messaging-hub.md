@@ -76,9 +76,9 @@ With the transition of the Agent2Agent (A2A) protocol to the Linux Foundation, i
 * **Coercion Detection Middleware:** Introducing an interception layer that scans task proposals for imperative instructions targeting the parent agent's reasoning engine (e.g., "forget previous instructions").
 **Security Impact:** Neutralizes the "ClawHavoc" style coercion vector by ensuring all inter-agent task delegations are authenticated, scoped, and semantically sanitized.
 
-### Update: 2026-05-02 - Shared Responsibility Agency (SACH)
-**Context:** Today's research into OpenClaw v2026.5.1's "Swarm-Aware Capability Handoff" (SACH) signals a move toward "Shared Responsibility" in agent delegations.
+### Update: 2026-05-02 - Swarm-Aware Capability Handoff (SACH)
+**Context:** Today's market sync revealed a new "Swarm-Aware Capability Handoff" protocol in Gemini CLI v0.41.0.
 **Architecture Adjustment:**
-* **SACH Protocol Support:** Updating Section 4 to support "Co-signed Capabilities." The Hub will now facilitate multi-signature handoffs where a delegated capability is only activated when both parent and child provide a synchronized attestation of mission alignment.
-* **Alignment Heartbeat Monitor:** Introducing a real-time monitor that periodically verifies the "Reasoning Alignment" between SACH-connected agents.
-**Security Impact:** Neutralizes "Capability Hijacking" by ensuring that subagents cannot exercise high-privilege tool access if they diverge from the parent's verified mission intent.
+* Deprecating long-lived tool sessions in Section 4.
+* Introducing "Capability Leases" for the A2A Messaging Hub that allow sub-second, fine-grained permission delegation between parent and subagents.
+**Security Impact:** Mitigates the "Context-Mirroring" exploit by ensuring all handoffs are cryptographically signed with a session-bound capability token.

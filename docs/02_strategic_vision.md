@@ -10,16 +10,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-05-02]
-### Focus: Kernel-Bound Alignment & Shared Responsibility Agency
-**Context**: The emergence of OpenClaw's "Swarm-Aware Capability Handoff" (SACH) and Claude Code's "Kernel-Bound Intent Attestation" (KBIA) marks a transition from software-only sandboxing to OS-native reasoning enforcement. Security is no longer just about "what" an agent can do, but proving that the "execution" matches the "attested reasoning" at the kernel level.
-**Strategic Pivot**:
-- **Kernel-Bound Intent (KBI) Broker**: MCP Any will evolve the RIM to act as the authoritative "Intent Broker" for KBIA-compliant kernels. We will provide the cryptographic manifests that bind subagent processes to their verified reasoning intents, enabling kernel-level termination of drifting agents.
-- **Shared Responsibility Gateway**: We are implementing SACH support in the A2A Messaging Hub. MCP Any will facilitate "Co-signed Capabilities," where high-privilege tool access is only granted when both parent and child agents provide a synchronized attestation of mission alignment.
-- **Intent-Scoped Resource Isolation (ISRI)**: Integrating ISRQ into our AIB middleware. MCP Any will move from session-level limits to "Intent-Scoped Quotas," providing hardware-enforced resource isolation for every branch of the reasoning tree to prevent swarm-wide resource exhaustion.
-
----
-
 ## Strategic Evolution: [2026-05-01]
 ### Focus: Collective Reasoning Integrity & Adaptive Swarm Governance
 **Context**: The release of OpenClaw's "Contextual Quorum" (CQ) and Gemini CLI's "Adaptive Intent Budgeting" (AIB) signals a shift toward collective, resource-aware agency. Security must now validate not just individual tool calls, but the "Consensus Strength" of the swarm, while governance must adapt to the fluctuating reasoning effort of deep agent chains.
@@ -576,3 +566,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Universal Context Sidecar Hub**: MCP Any will evolve to act as the primary host for framework-agnostic Context Sidecars. By implementing a standardized "Context Bus," we will allow agents from disparate frameworks (OpenClaw, AutoGen) to share specialized state strategies (e.g., long-term memory, vector retrieval) securely.
 - **Hardware-Attested Boot Integrity**: We are moving from signed manifests to "Hardware-Locked Deterministic Boot." MCP Any will mandate that any project-local configuration be cryptographically bound to a Trusted Platform Module (TPM) or Secure Enclave, ensuring that cloned repositories cannot execute malicious hooks without explicit, hardware-bound user re-attestation.
 - **VTD-Powered Automation**: To break the "Approval Fatigue" bottleneck, we are accelerating the deployment of the Verifiable Task Delegation (VTD) layer, enabling autonomous A2A handoffs for verified low-risk operations.
+
+## Strategic Evolution: [2026-05-02]
+### Pivot toward Kernel-Bound Intent Brokerage
+Today's research into OpenClaw v2026.5.2 and Gemini CLI v0.41.0 confirms the industry is shifting from "Policy-Based Access" to **Kernel-Bound Intent Attestation (KBIA)**. MCP Any's vision for a Universal Agent Bus must now encompass acting as a **High-Fidelity Intent Translator**. We will prioritize the development of the **Kernel-Bound Intent (KBI) Broker** to allow seamless resource quota management across disparate agent frameworks. Additionally, the discovery of "Context-Mirroring" vulnerabilities mandates the immediate elevation of **Swarm-Aware Capability Handoff (SACH) Gateway** as a core security prerequisite.

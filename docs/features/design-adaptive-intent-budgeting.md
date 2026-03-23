@@ -1,46 +1,50 @@
 # Design Doc: Adaptive Intent Budgeting (AIB)
-**Status:** Draft
+**Status:** Draft | In Review | Approved
 **Created:** 2026-05-02
 
 ## 1. Context and Scope
-Modern agent swarms, particularly those using Gemini CLI v0.36.0+, require dynamic resource management that scales with reasoning complexity. "Adaptive Intent Budgeting" (AIB) allows MCP Any to manage token, compute, and time budgets that are not static, but "Adaptive"—scaling up or down based on the agent's real-time confidence and the verified criticality of the sub-intent.
+With the introduction of Intent-Scoped Resource Quotas (ISRQ) in Claude Code and Gemini CLI, a central service is needed to manage and scale resource leases (tokens, compute) dynamically. The **Adaptive Intent Budgeting (AIB)** middleware is a resource management layer that scales agent leases based on reasoning confidence and task complexity.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Implement a "Lease-Based" resource allocation model for sub-intents.
-    * Integrate with UACO v3.1 `x-gemini-reasoning-effort` headers to adjust budgets dynamically.
-    * Provide a "Hard Stop" mechanism for recursive loops that exceed the maximum adaptive threshold.
-    * Support "Intent-Scoped Resource Isolation" (ISRI) to prevent resource leakage between branches.
+    * Dynamically adjust token and compute leases for agent swarms.
+    * Enforce resource quotas based on predicted tool-call impact.
+    * Provide real-time telemetry on resource usage vs. intent budget.
 * **Non-Goals:**
-    * Managing the underlying OS resource scheduling (handled by the Kernel-Bound Intent Broker).
-    * Predicting the exact token count needed (uses a "Budget-and-Replenish" model).
+    * Modifying agent reasoning logic directly.
+    * Managing billing (this is the job of the LLM provider).
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** DevOps AI Engineer
-* **Primary Goal:** Prevent a specialized "Code Refactoring" agent from consuming the entire monthly token budget on a single complex file.
+* **User Persona:** Local LLM Swarm Orchestrator (e.g., Gemini CLI)
+* **Primary Goal:** Share secure resource context between 3 agents without exceeding the predicted token budget.
 * **The Happy Path (Tasks):**
-    1. Parent agent delegates a task to a refactoring subagent with an initial "Intent Budget."
-    2. The AIB Middleware monitors token usage in real-time.
-    3. The subagent requests a "Budget Replenishment" as it reaches 80% of its lease.
-    4. AIB evaluates the subagent's "Reasoning Confidence" score.
-    5. AIB grants a limited replenishment based on the parent's "Overall Mission Budget."
+    1. Parent agent submits an "Intent-Bound Task Proposal" with a predicted resource budget.
+    2. AIB middleware evaluates the proposal's reasoning confidence and task complexity.
+    3. AIB allocates a "Resource Lease" (e.g., 50k tokens, 20s compute) to each specialized subagent.
+    4. Subagents report usage metrics back to AIB via the Unified Telemetry Bridge.
+    5. AIB dynamically scales leases (e.g., prunes tokens if usage exceeds predictions) or suspends tools.
+    6. Parent agent reconciles the final budget after task completion.
 
 ## 4. Design & Architecture
 * **System Flow:**
-    `Subagent Spawn` -> `Initial Budget Lease` -> `Token/Compute Monitoring` -> `Replenishment Negotiation` -> `Threshold Enforcement`
+    [Parent Agent] -> (Intent-Bound Proposal) -> [AIB Middleware]
+    [AIB Middleware] -> (Resource Lease) -> [Subagent 1, 2, 3]
+    [Subagent 1, 2, 3] -> (Usage Metrics) -> [Unified Telemetry Bridge]
+    [Unified Telemetry Bridge] -> (Resource Feedback) -> [AIB Middleware]
 * **APIs / Interfaces:**
-    * `BudgetBroker`: `RequestLease(intentID string, initialReq ResourceMap) (Lease, error)`
-    * `Replenish(leaseID string, confidenceScore float64) (Lease, error)`
+    * `RequestResourceLease(IntentID, PredictedBudget)`: Requests a lease for a subagent.
+    * `ReportResourceUsage(LeaseID, Metrics)`: Reports actual resource consumption.
+    * `SuspendResourceLease(LeaseID)`: Immediately revokes a lease.
 * **Data Storage/State:**
-    * Real-time budget consumption is tracked in the memory-mapped Shared KV Store for sub-millisecond latency.
+    * Uses a high-performance in-memory state store (Redis/XSync) for real-time lease tracking and enforcement.
 
 ## 5. Alternatives Considered
-* **Static Per-Agent Limits**: Rejected because it leads to "Reasoning Stall" for complex but legitimate tasks.
-* **Session-Only Budgeting**: Rejected because a single malicious subagent can exhaust the entire session budget.
+* **Static Resource Quotas:** Rejected as it leads to "Reasoning Starvation" for complex tasks or "Resource Bloat" for simple queries.
+* **Framework-Specific Budgeting:** Rejected as it prevents cross-framework (OpenClaw/Gemini) budget reconciliation in a shared swarm.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** Budget replenishment requests must be cryptographically signed by the requesting subagent and validated against the parent's intent tree.
-* **Observability:** Real-time budget usage and "Replenishment Events" are visualized in the "Adaptive Budgeting Monitor."
+* **Security (Zero Trust):** Resource leases are bound to the agent's cryptographically verified intent to prevent "Budget Smuggling."
+* **Observability:** Integrated with the Unified Telemetry Bridge for real-time monitoring of swarm-wide resource efficiency.
 
 ## 7. Evolutionary Changelog
 * **2026-05-02:** Initial Document Creation.
