@@ -4,35 +4,63 @@
 package middleware
 
 import (
-	"context"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/stretchr/testify/assert"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func TestLazyMCPMiddleware_Enabled(t *testing.T) {
-	config := LazyMCPConfig{
-		Enabled:   true,
-		Threshold: 0.85,
-		CacheTTL:  "600s",
-	}
-
+func TestLazyMCPMiddleware(t *testing.T) {
+	config := LazyMCPConfig{Enabled: true, Threshold: 0.85}
 	middleware := NewLazyMCPMiddleware(config)
 
-	ctx := context.Background()
-	req := &tool.ExecutionRequest{
-		ToolName: "test_tool",
+	originalResult := &mcp.ListToolsResult{
+		Tools: []*mcp.Tool{
+			{Name: "fs:read", Description: "Read a file from disk."},
+			{Name: "fs:write", Description: "Write a file to disk."},
+			{Name: "db:query", Description: "Execute a SQL query against the database."},
+			{Name: "aws:s3:upload", Description: "Upload a file to S3 bucket."},
+		},
 	}
 
-	nextCalled := false
-	next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-		nextCalled = true
-		return "success", nil
+	tests := []struct {
+		name          string
+		intent        string
+		expectedCount int
+	}{
+		{
+			name:          "filter for filesystem tools",
+			intent:        "disk",
+			expectedCount: 2,
+		},
+		{
+			name:          "filter for db tools",
+			intent:        "SQL",
+			expectedCount: 1,
+		},
+		{
+			name:          "filter for matching tool name",
+			intent:        "fs:",
+			expectedCount: 2,
+		},
+		{
+			name:          "no match returns empty",
+			intent:        "kubernetes",
+			expectedCount: 0,
+		},
+		{
+			name:          "empty intent returns original list",
+			intent:        "",
+			expectedCount: 4,
+		},
 	}
 
-	res, err := middleware.Execute(ctx, req, next)
-	assert.NoError(t, err)
-	assert.Equal(t, "success", res)
-	assert.True(t, nextCalled)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			filtered := middleware.FilterTools(originalResult, tt.intent)
+
+			if len(filtered.Tools) != tt.expectedCount {
+				t.Errorf("expected %d tools, got %d", tt.expectedCount, len(filtered.Tools))
+			}
+		})
+	}
 }

@@ -34,7 +34,7 @@ export function DownloadReportButton() {
                     toolFailures: failures.length,
                 },
                 metrics,
-                services: services.map(s => ({ name: s.name, version: s.version, type: s.httpService ? "HTTP" : s.grpcService ? "gRPC" : "Other" })),
+                services: services.map((s: any) => ({ name: s.name, version: s.version, type: s.httpService ? "HTTP" : s.grpcService ? "gRPC" : "Other" })),
                 topTools: tools,
                 recentFailures: failures
             };

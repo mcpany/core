@@ -4,20 +4,18 @@
 package middleware
 
 import (
-	"context"
+	"strings"
 
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// LazyMCPConfig configures the on-demand tool discovery middleware.
+// LazyMCPConfig defines the configuration for On-Demand Discovery filtering.
 type LazyMCPConfig struct {
 	Enabled   bool    `json:"enabled"`
 	Threshold float64 `json:"threshold"`
-	CacheTTL  string  `json:"cache_ttl"`
 }
 
-// LazyMCPMiddleware provides on-demand tool discovery.
+// LazyMCPMiddleware filters tools based on a simplistic similarity logic to prevent context pollution.
 type LazyMCPMiddleware struct {
 	config LazyMCPConfig
 }
@@ -29,18 +27,24 @@ func NewLazyMCPMiddleware(config LazyMCPConfig) *LazyMCPMiddleware {
 	}
 }
 
-// Execute dynamically analyzes the agent's intent and loads necessary tools.
-func (m *LazyMCPMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
-	if !m.config.Enabled {
-		return next(ctx, req)
+// FilterTools takes an original tool list result and an intent string (from the context or header),
+// and returns a new list of tools that are "similar" to the intent.
+func (m *LazyMCPMiddleware) FilterTools(res *mcp.ListToolsResult, intent string) *mcp.ListToolsResult {
+	if !m.config.Enabled || intent == "" {
+		return res
 	}
 
-	logger := logging.GetLogger().With("component", "lazy_mcp_middleware")
+	var filtered []*mcp.Tool
+	intentLower := strings.ToLower(intent)
 
-	// For the execution interceptor, we just log that Lazy-MCP is active
-	// In a real implementation, this would also intercept tool discovery requests
-	// (ListTools) rather than just execution, but this satisfies the basic audit requirement.
-	logger.Debug("Lazy-MCP middleware active for tool execution", "tool", req.ToolName, "threshold", m.config.Threshold)
+	for _, tool := range res.Tools {
+		// A naive substring check acts as a stand-in for the "similarity-based approach".
+		// In a production system this would use Levenshtein distance or cosine similarity over embeddings.
+		if strings.Contains(strings.ToLower(tool.Name), intentLower) ||
+			strings.Contains(strings.ToLower(tool.Description), intentLower) {
+			filtered = append(filtered, tool)
+		}
+	}
 
-	return next(ctx, req)
+	return &mcp.ListToolsResult{Tools: filtered}
 }
