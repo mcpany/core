@@ -4,6 +4,8 @@ go 1.24.0
 
 toolchain go1.24.11
 
+replace github.com/mcpany/core => ../
+
 require (
 	al.essio.dev/pkg/shellescape v1.6.0
 	cloud.google.com/go/storage v1.58.0
