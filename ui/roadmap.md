@@ -592,7 +592,8 @@
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
 
-#### Upcoming ([2026-06-18] Evolution)
-- [ ] **Reason-Graph Integrity Monitor**: Real-time visualization of structural graph validation and RGC alerts (Added: [2026-06-18])
-- [ ] **Mesh-Resident Policy Console**: UI for reviewing and attesting to synthesized mesh policies (MRPS) (Added: [2026-06-18])
-- [ ] **Entropy-Aware Attention Dashboard**: Visualization of DAG-gated fragments and spectral jitter levels (Added: [2026-06-18])
+
+#### Upcoming (2026-06-18 Evolution)
+- [ ] **[P0] Reason-Graph Integrity Monitor**: Real-time visualization of structural graph validation and RGC alerts. (Added: 2026-06-18)
+- [ ] **[P0] Mesh-Resident Policy Console**: UI for reviewing and attesting to synthesized mesh policies (MRPS). (Added: 2026-06-18)
+- [ ] **[P1] Entropy-Aware Attention Dashboard**: Visualization of DAG-gated fragments and spectral jitter levels. (Added: 2026-06-18)
