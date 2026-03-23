@@ -82,10 +82,11 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
     // 1. Shared unwrapping logic
     const unwrappedContent = useMemo(() => {
-        let content = result;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let content = result as any;
 
-        if (result && typeof result === 'object' && Array.isArray(result.content)) {
-            content = result.content;
+        if (result && typeof result === 'object' && Array.isArray((result as any).content)) {
+            content = (result as any).content;
         }
 
         if (content && typeof content === 'object' && !Array.isArray(content)) {
