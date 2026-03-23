@@ -1647,7 +1647,7 @@
       mailbox fragments flagged by the mesh-bound isolation engine. (Added:
       2026-05-29)
 
-#### Upcoming (2026-05-30 Infrastructure Evolution Expansion)
+#### Upcoming: Infrastructure Evolution Expansion (2026-05-30)
 
 - [ ] **[P0] Mission Anchor Visualization**: Real-time display of pinned
 

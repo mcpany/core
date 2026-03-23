@@ -1755,7 +1755,7 @@ and some new UI features lack comprehensive integration tests.
     across teammate boundaries for horizontal team stability. (Added:
     2026-05-29)
 
-#### Upcoming (2026-05-30 Infrastructure Evolution Expansion)
+#### Upcoming: Infrastructure Evolution Expansion (2026-05-30)
 
 * **[P0] Intent Hierarchy Enforcer (IHE)**: Mandatory priority-based state.
 * **[P0] Kernel-Namespace (KNS) Command Runner**: High-performance isolation.
