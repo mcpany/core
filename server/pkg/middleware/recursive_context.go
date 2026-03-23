@@ -7,10 +7,12 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // SessionState represents the shared state for a recursive context session.
@@ -82,7 +84,7 @@ func (m *RecursiveContextManager) CreateSession(data map[string]any, ttl time.Du
 	}
 	m.sessions[id] = session
 
-	// Simple cleanup of expired sessions
+	// Simple cleanup of expired sessions during creation
 	for k, v := range m.sessions {
 		if now.After(v.ExpiresAt) {
 			delete(m.sessions, k)
@@ -133,6 +135,7 @@ func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 // Errors:
 //   - Returns HTTP 400 for invalid requests.
 //   - Returns HTTP 404 for missing sessions.
+//   - Returns HTTP 405 for unsupported methods.
 //
 // Side Effects:
 //   - Modifies the HTTP response writer.
@@ -157,20 +160,23 @@ func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 			session := m.CreateSession(req.Data, ttl)
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusCreated)
-			_ = json.NewEncoder(w).Encode(session)
+			if err := json.NewEncoder(w).Encode(session); err != nil {
+				logging.GetLogger().Error("Failed to encode session response", "error", err)
+			}
 			return
 		}
 
 		if r.Method == http.MethodGet {
 			id := r.URL.Query().Get("id")
 			if id == "" {
+				// Fallback to path segment
 				path := r.URL.Path
-				if len(path) > 17 && path[:17] == "/context/session/" {
-					id = path[17:]
+				if idx := strings.LastIndex(path, "/"); idx != -1 {
+					id = path[idx+1:]
 				}
 			}
 
-			if id == "" {
+			if id == "" || id == "session" {
 				http.Error(w, "Session ID required", http.StatusBadRequest)
 				return
 			}
@@ -182,9 +188,12 @@ func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 			}
 
 			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(session)
+			if err := json.NewEncoder(w).Encode(session); err != nil {
+				logging.GetLogger().Error("Failed to encode session response", "error", err)
+			}
 			return
 		}
+
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
@@ -217,8 +226,7 @@ func (m *RecursiveContextManager) HandleContext(next http.Handler) http.Handler 
 		id := r.Header.Get("X-MCP-Parent-Context-ID")
 		if id != "" {
 			if session, exists := m.GetSession(id); exists {
-				ctx := context.WithValue(r.Context(),
-					RecursiveContextDataKey, session.Data)
+				ctx := context.WithValue(r.Context(), RecursiveContextDataKey, session.Data)
 				r = r.WithContext(ctx)
 			}
 		}
