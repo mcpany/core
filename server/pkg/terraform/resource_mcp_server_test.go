@@ -50,21 +50,21 @@ func TestTerraformResource(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "test", res.Name)
 
-	// Test Read NotFound
+	// Test Read NotFound.
 	resNotFound, err := Read(context.Background(), ts.URL, "nonexistent")
 	assert.NoError(t, err)
 	assert.Nil(t, resNotFound)
 
-	// Test Create Failure
+	// Test Create Failure.
 	err = Create(context.Background(), ts.URL, &ResourceMCPServer{Name: "fail", Port: 9090})
 	assert.Error(t, err)
 
-	// Test Read Error
+	// Test Read Error.
 	resErr, err := Read(context.Background(), ts.URL, "error")
 	assert.Error(t, err)
 	assert.Nil(t, resErr)
 
-	// Test Invalid URL
+	// Test Invalid URL.
 	_, err = Read(context.Background(), "http://\x00invalid", "test")
 	assert.Error(t, err)
 	err = Create(context.Background(), "http://\x00invalid", &ResourceMCPServer{Name: "test", Port: 9090})

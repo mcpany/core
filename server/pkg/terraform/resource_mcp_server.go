@@ -130,7 +130,7 @@ func Read(ctx context.Context, serverURL string, name string) (*ResourceMCPServe
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusNotFound {
-		return nil, nil // not found
+		return nil, nil // not found.
 	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("failed to read server: status %d", resp.StatusCode)
