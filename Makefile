@@ -5,6 +5,7 @@ prepare:
 	@echo "Preparation complete"
 
 lint:
+	pre-commit run --all-files -c server/.pre-commit-config.yaml || true
 	bazel run //:lint
 
 test:
