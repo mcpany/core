@@ -1,4 +1,0 @@
-#!/bin/bash
-cd server
-go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.54.2
-~/go/bin/golangci-lint run ./pkg/tool/...
