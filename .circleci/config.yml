@@ -50,15 +50,14 @@ jobs:
             - v1-lint-
       - run:
           name: Prepare Environment
-          command: npm install -g @bazel/bazelisk
+          command: make prepare
       - run:
           name: Run Lint
           command: |
             . venv/bin/activate
-            cd server
-            go mod tidy
-            cd ..
-            bazelisk run //:lint
+            # Ensure PATH includes tool install dir
+            export PATH=$PWD/build/env/bin:$PATH
+            make lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
