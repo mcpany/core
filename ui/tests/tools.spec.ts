@@ -98,17 +98,12 @@ test.describe('Tool Exploration', () => {
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Change grouping to "service"
-        // Try multiple robust fallback strategies to interact with the Radix Select dropdown
-        // to bypass flakiness due to hydration, overlays, or headless pointer events.
-        const groupByTrigger = page.locator('button[role="combobox"]').first();
-        await groupByTrigger.waitFor({ state: 'attached', timeout: 10000 });
-
-        try {
-            await groupByTrigger.click({ force: true, timeout: 5000 });
-        } catch (e) {
-            await groupByTrigger.focus();
-            await page.keyboard.press('Enter');
-        }
+        // Directly click the span containing the currently selected text ("No Grouping").
+        // This avoids relying on the outer combobox button which can fail Playwright's actionability
+        // checks during Radix component hydration.
+        const groupByTriggerSpan = page.locator('span:has-text("No Grouping")').first();
+        await groupByTriggerSpan.waitFor({ state: 'attached', timeout: 10000 });
+        await groupByTriggerSpan.click({ force: true });
 
         const option = page.getByRole('option', { name: 'Group by Service' });
         await option.waitFor({ state: 'attached', timeout: 5000 });
