@@ -232,7 +232,7 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 			if ce := cmd.GetContainerEnvironment(); ce != nil {
 				for k, v := range ce.GetEnv() {
 					checkSecret(v, fmt.Sprintf("command_line_service."+
-						"container_environment.env[%%s]", k), s.GetName())
+						"container_environment.env[%s]", k), s.GetName())
 				}
 			}
 		case configv1.UpstreamServiceConfig_McpService_case:
