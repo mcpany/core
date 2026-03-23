@@ -29,7 +29,7 @@ type Label = metrics.Label
 // Parameters:
 //   - None.
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - *prometheus.PrometheusSink: The initialized Prometheus sink.
 //   - error: An error if the sink creation fails.
 func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
@@ -48,7 +48,7 @@ var initOnce sync.Once
 // Parameters:
 //   - None.
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - error: An error if the initialization fails.
 func Initialize() error {
 	var err error
@@ -79,7 +79,7 @@ func Initialize() error {
 // Parameters:
 //   - None.
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - http.Handler: An http.Handler that serves the Prometheus metrics.
 func Handler() http.Handler {
 	return promhttp.Handler()
@@ -92,7 +92,7 @@ func Handler() http.Handler {
 // Parameters:
 //   - addr: string. The address to listen on (e.g., ":8080")..
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - error: An error if the server fails to start.
 func StartServer(addr string) error {
 	mux := http.NewServeMux()

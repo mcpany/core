@@ -32,7 +32,7 @@ type SQLiteAuditStore struct {
 // Parameters:
 //   - path: string. The file path to the SQLite database..
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - *SQLiteAuditStore: The initialized store.
 //   - error: An error if the path is invalid or database initialization fails.
 //
@@ -166,7 +166,7 @@ func ensureColumn(db *sql.DB, colName string) error {
 //   - ctx: context.Context. The request context..
 //   - entry: Entry. The audit entry to write..
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - error: An error if the write fails.
 //
 // Side Effects:
@@ -236,7 +236,7 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 //   - ctx: context.Context. The request context..
 //   - filter: Filter. The filtering criteria (time range, tool name, user ID, etc.)..
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - []Entry: A slice of matching audit entries.
 //   - error: An error if the query fails.
 //
@@ -318,7 +318,7 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 // Parameters:
 //   - None.
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - bool: True if the chain is valid, false otherwise.
 //   - error: An error if verification fails or data is corrupted.
 //
@@ -378,7 +378,7 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 //
 // Summary: Closes the SQLite database connection.
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - error: An error if closing fails.
 //
 // Side Effects:

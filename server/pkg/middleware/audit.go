@@ -40,7 +40,7 @@ type AuditMiddleware struct {
 // Parameters:
 //   - auditConfig (*configv1.AuditConfig): The configuration for audit logging..
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - *AuditMiddleware: The initialized middleware instance.
 //   - error: An error if the middleware cannot be initialized.
 //
@@ -121,7 +121,7 @@ func (m *AuditMiddleware) SetStore(store audit.Store) {
 // Parameters:
 //   - auditConfig (*configv1.AuditConfig): The new configuration..
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - error: An error if the store re-initialization fails.
 //
 // Errors:
@@ -181,7 +181,7 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 //   - req (*tool.ExecutionRequest): The tool execution request..
 //   - next (tool.ExecutionFunc): The next handler in the chain..
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - any: The result of the tool execution.
 //   - error: An error if the tool execution fails.
 //
@@ -323,7 +323,7 @@ func (m *AuditMiddleware) ClearHistory() {
 // Parameters:
 //   - None
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - chan any: A channel receiving new audit entries.
 //   - []any: A slice of historical audit entries.
 //
@@ -340,7 +340,7 @@ func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 // Parameters:
 //   - None.
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - []any: A slice of audit entries.
 //
 // Side Effects:
@@ -370,7 +370,7 @@ func (m *AuditMiddleware) Unsubscribe(ch chan any) {
 //   - ctx (context.Context): The context for the request..
 //   - filter (audit.Filter): The filter criteria for querying logs..
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - []audit.Entry: A slice of audit entries matching the filter.
 //   - error: An error if reading fails.
 //
@@ -397,7 +397,7 @@ func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audi
 // Parameters:
 //   - None.
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - error: An error if the operation fails.
 //
 // Side Effects:
@@ -419,7 +419,7 @@ func (m *AuditMiddleware) Close() error {
 //   - ctx (context.Context): The context for the operation..
 //   - entry (audit.Entry): The audit entry to write..
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - error: An error if the audit store is not initialized or the write fails.
 //
 // Errors:

@@ -29,7 +29,7 @@ type PostgresAuditStore struct {
 // Parameters:
 //   - dsn: string. The PostgreSQL connection string..
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - *PostgresAuditStore: The initialized store.
 //   - error: An error if connection or schema initialization fails.
 //
@@ -100,7 +100,7 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 //   - ctx: context.Context. The request context..
 //   - entry: Entry. The audit entry to write..
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - error: An error if the write fails.
 //
 // Errors:
@@ -197,7 +197,7 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 //   - _: context.Context. Unused..
 //   - _: Filter. Unused..
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
 func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
@@ -211,7 +211,7 @@ func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) 
 // Parameters:
 //   - None.
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - bool: True if the chain is valid, false otherwise.
 //   - error: An error if verification logic fails (e.g. database error) or integrity is compromised.
 //
@@ -288,7 +288,7 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 //
 // Summary: Closes the PostgreSQL database connection.
 //
-// Returns:
+// Returns: - error: An error if the operation fails.
 //   - error: An error if closing fails.
 //
 // Side Effects:
