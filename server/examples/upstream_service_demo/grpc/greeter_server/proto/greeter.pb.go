@@ -25,6 +25,9 @@ const (
 )
 
 // The request message containing the user's name.
+// HelloRequest represents a request containing a name.
+//
+// Summary: Represents a Hello Request.
 type HelloRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -32,6 +35,21 @@ type HelloRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
+// Reset clears the message.
+//
+// Summary: Clears the message.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies the receiver.
 func (x *HelloRequest) Reset() {
 	*x = HelloRequest{}
 	mi := &file_greeter_proto_msgTypes[0]
@@ -39,12 +57,57 @@ func (x *HelloRequest) Reset() {
 	ms.StoreMessageInfo(mi)
 }
 
+// String returns a string representation.
+//
+// Summary: Returns a string representation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The string representation.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
+// ProtoMessage marks this as a proto message.
+//
+// Summary: Marks as proto message.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (*HelloRequest) ProtoMessage() {}
 
+// ProtoReflect returns reflection information.
+//
+// Summary: Returns reflection information.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - protoreflect.Message: The reflection message.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_greeter_proto_msgTypes[0]
 	if x != nil {
@@ -58,10 +121,41 @@ func (x *HelloRequest) ProtoReflect() protoreflect.Message {
 }
 
 // Deprecated: Use HelloRequest.ProtoReflect.Descriptor instead.
+// Descriptor gets the protobuf message descriptor.
+//
+// Summary: Gets the protobuf message descriptor.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []byte: The raw descriptor.
+//   - []int: The descriptor index.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (*HelloRequest) Descriptor() ([]byte, []int) {
 	return file_greeter_proto_rawDescGZIP(), []int{0}
 }
 
+// GetName gets the name.
+//
+// Summary: Gets the name.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The name.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloRequest) GetName() string {
 	if x != nil {
 		return x.Name
@@ -70,6 +164,9 @@ func (x *HelloRequest) GetName() string {
 }
 
 // The response message containing the greetings
+// HelloReply represents a response containing a greeting message.
+//
+// Summary: Represents a Hello Reply.
 type HelloReply struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
@@ -77,6 +174,21 @@ type HelloReply struct {
 	sizeCache     protoimpl.SizeCache
 }
 
+// Reset clears the message.
+//
+// Summary: Clears the message.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies the receiver.
 func (x *HelloReply) Reset() {
 	*x = HelloReply{}
 	mi := &file_greeter_proto_msgTypes[1]
@@ -84,12 +196,57 @@ func (x *HelloReply) Reset() {
 	ms.StoreMessageInfo(mi)
 }
 
+// String returns a string representation.
+//
+// Summary: Returns a string representation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The string representation.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloReply) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
+// ProtoMessage marks this as a proto message.
+//
+// Summary: Marks as proto message.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (*HelloReply) ProtoMessage() {}
 
+// ProtoReflect returns reflection information.
+//
+// Summary: Returns reflection information.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - protoreflect.Message: The reflection message.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloReply) ProtoReflect() protoreflect.Message {
 	mi := &file_greeter_proto_msgTypes[1]
 	if x != nil {
@@ -103,10 +260,41 @@ func (x *HelloReply) ProtoReflect() protoreflect.Message {
 }
 
 // Deprecated: Use HelloReply.ProtoReflect.Descriptor instead.
+// Descriptor gets the protobuf message descriptor.
+//
+// Summary: Gets the protobuf message descriptor.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []byte: The raw descriptor.
+//   - []int: The descriptor index.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (*HelloReply) Descriptor() ([]byte, []int) {
 	return file_greeter_proto_rawDescGZIP(), []int{1}
 }
 
+// GetMessage gets the message.
+//
+// Summary: Gets the message.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The message.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloReply) GetMessage() string {
 	if x != nil {
 		return x.Message
@@ -114,6 +302,9 @@ func (x *HelloReply) GetMessage() string {
 	return ""
 }
 
+// File_greeter_proto is the proto reflection file descriptor.
+//
+// Summary: Proto reflection file descriptor.
 var File_greeter_proto protoreflect.FileDescriptor
 
 const file_greeter_proto_rawDesc = "" +

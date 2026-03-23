@@ -157,6 +157,21 @@ func (t *Tool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - None.
+// GetCacheConfig retrieves the cache configuration for the tool.
+//
+// Summary: Retrieves the cache configuration.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The configuration or nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDef == nil {
 		return nil
@@ -199,6 +214,21 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+// IsStreaming returns whether the tool supports streaming execution.
+//
+// Summary: Returns whether streaming is supported.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if streaming is supported, otherwise false.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *Tool) IsStreaming() bool {
 	return false
 }
@@ -214,6 +244,23 @@ func (t *Tool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// StreamExecute executes the tool in streaming mode.
+//
+// Summary: Executes the tool in streaming mode.
+//
+// Parameters:
+//   - ctx (context.Context): The context.
+//   - req (*tool.ExecutionRequest): The execution request.
+//
+// Returns:
+//   - <-chan any: The channel of stream results.
+//   - error: An error if streaming initialization fails.
+//
+// Errors:
+//   - Returns error if the underlying stream cannot be established.
+//
+// Side Effects:
+//   - Begins asynchronous processing and emitting to the returned channel.
 func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -228,6 +275,23 @@ func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<
 	return ch, nil
 }
 
+// Execute runs the tool with the given request.
+//
+// Summary: Executes the tool.
+//
+// Parameters:
+//   - ctx (context.Context): The context.
+//   - req (*tool.ExecutionRequest): The execution request parameters.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns an error on operational failures.
+//
+// Side Effects:
+//   - May invoke upstream services or mutate state depending on the tool logic.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

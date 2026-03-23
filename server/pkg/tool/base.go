@@ -77,6 +77,21 @@ func (t *baseTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+// IsStreaming returns whether the tool supports streaming execution.
+//
+// Summary: Returns whether streaming is supported.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if streaming is supported, otherwise false.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *baseTool) IsStreaming() bool {
 	return false
 }
@@ -96,6 +111,21 @@ func (t *baseTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return nil, nil // Should be implemented by embedding struct if supported
 }
 
+// GetCacheConfig retrieves the cache configuration for the tool.
+//
+// Summary: Retrieves the cache configuration.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The configuration or nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *baseTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

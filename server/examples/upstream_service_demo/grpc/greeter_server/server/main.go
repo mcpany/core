@@ -27,6 +27,23 @@ type server struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// SayHello responds to a greeting request.
+//
+// Summary: Processes a SayHello request and returns a greeting.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - in (*pb.HelloRequest): The incoming HelloRequest.
+//
+// Returns:
+//   - *pb.HelloReply: The greeting response.
+//   - error: An error if the request fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Logs the received name.
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	log.Printf("Received: %v", in.GetName())
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil

@@ -495,6 +495,21 @@ func (t *GRPCTool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - None.
+// GetCacheConfig retrieves the cache configuration for the tool.
+//
+// Summary: Retrieves the cache configuration.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The configuration or nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -524,6 +539,21 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+// IsStreaming returns whether the tool supports streaming execution.
+//
+// Summary: Returns whether streaming is supported.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if streaming is supported, otherwise false.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *GRPCTool) IsStreaming() bool {
 	return false
 }
@@ -553,6 +583,23 @@ func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
+// Execute runs the tool with the given request.
+//
+// Summary: Executes the tool.
+//
+// Parameters:
+//   - ctx (context.Context): The context.
+//   - req (*ExecutionRequest): The execution request parameters.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns an error on operational failures.
+//
+// Side Effects:
+//   - May invoke upstream services or mutate state depending on the tool logic.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -845,6 +892,21 @@ func (t *HTTPTool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - None.
+// GetCacheConfig retrieves the cache configuration for the tool.
+//
+// Summary: Retrieves the cache configuration.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The configuration or nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -874,6 +936,21 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+// IsStreaming returns whether the tool supports streaming execution.
+//
+// Summary: Returns whether streaming is supported.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if streaming is supported, otherwise false.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *HTTPTool) IsStreaming() bool {
 	return false
 }
@@ -903,6 +980,23 @@ func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
+// Execute runs the tool with the given request.
+//
+// Summary: Executes the tool.
+//
+// Parameters:
+//   - ctx (context.Context): The context.
+//   - req (*ExecutionRequest): The execution request parameters.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns an error on operational failures.
+//
+// Side Effects:
+//   - May invoke upstream services or mutate state depending on the tool logic.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1631,6 +1725,21 @@ func (t *MCPTool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - None.
+// GetCacheConfig retrieves the cache configuration for the tool.
+//
+// Summary: Retrieves the cache configuration.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The configuration or nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1659,6 +1768,21 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+// IsStreaming returns whether the tool supports streaming execution.
+//
+// Summary: Returns whether streaming is supported.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if streaming is supported, otherwise false.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *MCPTool) IsStreaming() bool {
 	return false
 }
@@ -1688,6 +1812,23 @@ func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-c
 	return ch, nil
 }
 
+// Execute runs the tool with the given request.
+//
+// Summary: Executes the tool.
+//
+// Parameters:
+//   - ctx (context.Context): The context.
+//   - req (*ExecutionRequest): The execution request parameters.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns an error on operational failures.
+//
+// Side Effects:
+//   - May invoke upstream services or mutate state depending on the tool logic.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -1950,6 +2091,21 @@ func (t *OpenAPITool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - None.
+// GetCacheConfig retrieves the cache configuration for the tool.
+//
+// Summary: Retrieves the cache configuration.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The configuration or nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1978,6 +2134,21 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+// IsStreaming returns whether the tool supports streaming execution.
+//
+// Summary: Returns whether streaming is supported.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if streaming is supported, otherwise false.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *OpenAPITool) IsStreaming() bool {
 	return false
 }
@@ -2007,6 +2178,23 @@ func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 	return ch, nil
 }
 
+// Execute runs the tool with the given request.
+//
+// Summary: Executes the tool.
+//
+// Parameters:
+//   - ctx (context.Context): The context.
+//   - req (*ExecutionRequest): The execution request parameters.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns an error on operational failures.
+//
+// Side Effects:
+//   - May invoke upstream services or mutate state depending on the tool logic.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2390,6 +2578,21 @@ func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - None.
+// GetCacheConfig retrieves the cache configuration for the tool.
+//
+// Summary: Retrieves the cache configuration.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The configuration or nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil
@@ -2422,6 +2625,21 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+// IsStreaming returns whether the tool supports streaming execution.
+//
+// Summary: Returns whether streaming is supported.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if streaming is supported, otherwise false.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *LocalCommandTool) IsStreaming() bool {
 	return false
 }
@@ -2451,6 +2669,23 @@ func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequ
 	return ch, nil
 }
 
+// Execute runs the tool with the given request.
+//
+// Summary: Executes the tool.
+//
+// Parameters:
+//   - ctx (context.Context): The context.
+//   - req (*ExecutionRequest): The execution request parameters.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns an error on operational failures.
+//
+// Side Effects:
+//   - May invoke upstream services or mutate state depending on the tool logic.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2847,6 +3082,21 @@ func (t *CommandTool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - None.
+// GetCacheConfig retrieves the cache configuration for the tool.
+//
+// Summary: Retrieves the cache configuration.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The configuration or nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil
@@ -2879,6 +3129,21 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+// IsStreaming returns whether the tool supports streaming execution.
+//
+// Summary: Returns whether streaming is supported.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if streaming is supported, otherwise false.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *CommandTool) IsStreaming() bool {
 	return false
 }
@@ -2908,6 +3173,23 @@ func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 	return ch, nil
 }
 
+// Execute runs the tool with the given request.
+//
+// Summary: Executes the tool.
+//
+// Parameters:
+//   - ctx (context.Context): The context.
+//   - req (*ExecutionRequest): The execution request parameters.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns an error on operational failures.
+//
+// Side Effects:
+//   - May invoke upstream services or mutate state depending on the tool logic.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError

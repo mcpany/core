@@ -13,6 +13,8 @@ import (
 )
 
 // SubagentStatus defines the structure for AIA heartbeat responses.
+//
+// Summary: Defines the structure for AIA heartbeat responses.
 type SubagentStatus struct {
 	ID           string  `json:"id"`
 	Name         string  `json:"name"`

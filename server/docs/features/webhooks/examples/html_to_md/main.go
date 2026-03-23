@@ -14,6 +14,9 @@ import (
 )
 
 // WebhookRequest matches the data payload sent by mcpany
+// WebhookRequest represents an incoming webhook payload.
+//
+// Summary: Represents an incoming webhook payload.
 type WebhookRequest struct {
 	Kind     int            `json:"kind"` // 1=PreCall, 2=PostCall
 	ToolName string         `json:"tool_name"`
@@ -21,6 +24,9 @@ type WebhookRequest struct {
 }
 
 // WebhookResponse matches the expected response data
+// WebhookResponse represents an outgoing webhook payload.
+//
+// Summary: Represents an outgoing webhook payload.
 type WebhookResponse struct {
 	ReplacementObject any `json:"replacement_object,omitempty"`
 }
@@ -116,4 +122,7 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // StatusOK represents the HTTP 200 OK status code.
+// StatusOK represents the HTTP 200 OK status code.
+//
+// Summary: Represents the HTTP 200 OK status code.
 const StatusOK = 200

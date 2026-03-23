@@ -58,10 +58,42 @@ func (m *MockTool) MCPTool() *mcp.Tool {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+// IsStreaming returns whether the tool supports streaming execution.
+//
+// Summary: Returns whether streaming is supported.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if streaming is supported, otherwise false.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockTool) IsStreaming() bool {
 	return false
 }
 
+// StreamExecute simulates streaming execution for testing.
+//
+// Summary: Simulates streaming execution.
+//
+// Parameters:
+//   - ctx (context.Context): The context.
+//   - req (*ExecutionRequest): The execution request.
+//
+// Returns:
+//   - <-chan any: A mock streaming channel.
+//   - error: An error if configured to fail.
+//
+// Errors:
+//   - Returns an error if mock fails.
+//
+// Side Effects:
+//   - None.
 func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -76,6 +108,23 @@ func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
+// Execute runs the tool with the given request.
+//
+// Summary: Executes the tool.
+//
+// Parameters:
+//   - ctx (context.Context): The context.
+//   - req (*ExecutionRequest): The execution request parameters.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns an error on operational failures.
+//
+// Side Effects:
+//   - May invoke upstream services or mutate state depending on the tool logic.
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)
@@ -89,6 +138,21 @@ func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration.
+// GetCacheConfig retrieves the cache configuration for the tool.
+//
+// Summary: Retrieves the cache configuration.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The configuration or nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	if m.GetCacheConfigFunc != nil {
 		return m.GetCacheConfigFunc()

@@ -12,11 +12,17 @@ import (
 )
 
 // Request represents a tool request.
+// Request represents an incoming stdio request.
+//
+// Summary: Represents an incoming stdio request.
 type Request struct {
 	Name string `json:"name"`
 }
 
 // Response represents a tool response.
+// Response represents an outgoing stdio response.
+//
+// Summary: Represents an outgoing stdio response.
 type Response struct {
 	Message string `json:"message"`
 }

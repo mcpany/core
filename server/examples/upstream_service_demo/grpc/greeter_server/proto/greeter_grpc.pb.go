@@ -30,6 +30,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
 // The greeting service definition.
+// GreeterClient represents a client for the Greeter service.
+//
+// Summary: Represents a Greeter service client.
 type GreeterClient interface {
 	// Sends a greeting
 	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
@@ -39,10 +42,43 @@ type greeterClient struct {
 	cc grpc.ClientConnInterface
 }
 
+// NewGreeterClient creates a new Greeter client.
+//
+// Summary: Creates a new Greeter client.
+//
+// Parameters:
+//   - cc (grpc.ClientConnInterface): The client connection interface.
+//
+// Returns:
+//   - GreeterClient: The client instance.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewGreeterClient(cc grpc.ClientConnInterface) GreeterClient {
 	return &greeterClient{cc}
 }
 
+// SayHello sends a greeting request.
+//
+// Summary: Sends a greeting request.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - in (*HelloRequest): The input request.
+//   - opts (...grpc.CallOption): The call options.
+//
+// Returns:
+//   - *HelloReply: The greeting reply.
+//   - error: An error if the request fails.
+//
+// Errors:
+//   - Returns error if the underlying RPC fails.
+//
+// Side Effects:
+//   - Initiates an RPC call.
 func (c *greeterClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(HelloReply)
@@ -58,6 +94,9 @@ func (c *greeterClient) SayHello(ctx context.Context, in *HelloRequest, opts ...
 // for forward compatibility.
 //
 // The greeting service definition.
+// GreeterServer represents a server for the Greeter service.
+//
+// Summary: Represents a Greeter service server.
 type GreeterServer interface {
 	// Sends a greeting
 	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
@@ -69,8 +108,28 @@ type GreeterServer interface {
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
+// UnimplementedGreeterServer is a default implementation of the GreeterServer interface.
+//
+// Summary: Provides a default, unimplemented GreeterServer.
 type UnimplementedGreeterServer struct{}
 
+// SayHello is the default unimplemented SayHello.
+//
+// Summary: Default unimplemented SayHello.
+//
+// Parameters:
+//   - _ (context.Context): The context.
+//   - _ (*HelloRequest): The request.
+//
+// Returns:
+//   - *HelloReply: The reply.
+//   - error: An unimplemented error.
+//
+// Errors:
+//   - Returns codes.Unimplemented.
+//
+// Side Effects:
+//   - None.
 func (UnimplementedGreeterServer) SayHello(context.Context, *HelloRequest) (*HelloReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
 }
@@ -80,10 +139,29 @@ func (UnimplementedGreeterServer) testEmbeddedByValue()                 {}
 // UnsafeGreeterServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to GreeterServer will
 // result in compilation errors.
+// UnsafeGreeterServer represents an unsafe Greeter Server interface without forward compatibility.
+//
+// Summary: Represents an Unsafe Greeter Server.
 type UnsafeGreeterServer interface {
 	mustEmbedUnimplementedGreeterServer()
 }
 
+// RegisterGreeterServer registers the Greeter server.
+//
+// Summary: Registers the Greeter server.
+//
+// Parameters:
+//   - s (grpc.ServiceRegistrar): The registrar.
+//   - srv (GreeterServer): The server instance.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Registers the service with the gRPC server.
 func RegisterGreeterServer(s grpc.ServiceRegistrar, srv GreeterServer) {
 	// If the following call pancis, it indicates UnimplementedGreeterServer was
 	// embedded by pointer and is nil.  This will cause panics if an
@@ -116,6 +194,9 @@ func _Greeter_SayHello_Handler(srv interface{}, ctx context.Context, dec func(in
 // Greeter_ServiceDesc is the grpc.ServiceDesc for Greeter service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
+// Greeter_ServiceDesc describes the Greeter service for grpc.RegisterService.
+//
+// Summary: Describes the Greeter service.
 var Greeter_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "greeter.Greeter",
 	HandlerType: (*GreeterServer)(nil),

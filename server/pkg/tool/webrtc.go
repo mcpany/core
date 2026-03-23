@@ -183,6 +183,21 @@ func (t *WebrtcTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration.
+// GetCacheConfig retrieves the cache configuration for the tool.
+//
+// Summary: Retrieves the cache configuration.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The configuration or nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -208,6 +223,21 @@ func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+// IsStreaming returns whether the tool supports streaming execution.
+//
+// Summary: Returns whether streaming is supported.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if streaming is supported, otherwise false.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *WebrtcTool) IsStreaming() bool {
 	return false
 }
@@ -237,6 +267,23 @@ func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (
 	return ch, nil
 }
 
+// Execute runs the tool with the given request.
+//
+// Summary: Executes the tool.
+//
+// Parameters:
+//   - ctx (context.Context): The context.
+//   - req (*ExecutionRequest): The execution request parameters.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns an error on operational failures.
+//
+// Side Effects:
+//   - May invoke upstream services or mutate state depending on the tool logic.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized

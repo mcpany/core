@@ -148,14 +148,63 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 // Side Effects:
 //   - None.
 
+// IsStreaming returns whether the tool supports streaming execution.
+//
+// Summary: Returns whether streaming is supported.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if streaming is supported, otherwise false.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *RootsTool) IsStreaming() bool {
 	return false
 }
 
+// StreamExecute executes the tool in streaming mode.
+//
+// Summary: Executes the tool in streaming mode.
+//
+// Parameters:
+//   - ctx (context.Context): The context.
+//   - req (*tool.ExecutionRequest): The execution request.
+//
+// Returns:
+//   - <-chan any: The channel of stream results.
+//   - error: An error if streaming initialization fails.
+//
+// Errors:
+//   - Returns error if the underlying stream cannot be established.
+//
+// Side Effects:
+//   - Begins asynchronous processing and emitting to the returned channel.
 func (t *RootsTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	return nil, nil
 }
 
+// Execute executes the "mcp:list_roots" tool.
+//
+// Summary: Executes the roots tool.
+//
+// Parameters:
+//   - ctx (context.Context): The context.
+//   - _ (*tool.ExecutionRequest): The execution request (unused).
+//
+// Returns:
+//   - any: The roots listing.
+//   - error: An error if roots are unavailable.
+//
+// Errors:
+//   - Returns error on retrieval failure.
+//
+// Side Effects:
+//   - Queries the connected client for its roots.
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {
@@ -188,6 +237,21 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// GetCacheConfig retrieves the cache configuration for the tool.
+//
+// Summary: Retrieves the cache configuration.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The configuration or nil.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
