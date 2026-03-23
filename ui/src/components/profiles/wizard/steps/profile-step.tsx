@@ -51,7 +51,7 @@ export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) 
       );
 
       // 2. Create Profile
-      const serviceConfig: Record<string, any> = {};
+      const serviceConfig: Record<string, { enabled: boolean }> = {};
       services.forEach(s => {
         serviceConfig[s.instanceName] = { enabled: true };
       });
@@ -71,9 +71,10 @@ export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) 
       await apiClient.createProfile(profileData);
       onComplete(profileName);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      toast.error(`Failed to create profile: ${error.message}`);
+      const msg = error instanceof Error ? error.message : String(error);
+      toast.error(`Failed to create profile: ${msg}`);
     } finally {
       setSubmitting(false);
     }
