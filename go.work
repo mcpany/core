@@ -6,4 +6,3 @@ use (
 	./server
 	./server/examples/upstream_service_demo/grpc/greeter_server
 )
-use ./proto
