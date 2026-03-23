@@ -54,11 +54,7 @@ func TestHandleUserDetail_IDOR_Reproduction(t *testing.T) {
 		handler.ServeHTTP(w, req)
 
 		// VULNERABILITY CHECK: Currently this likely returns 200 OK
-		if w.Code == http.StatusOK {
-			assert.Fail(t, "VULNERABILITY REPRODUCED: User 'victim-user' accessed 'admin-user' profile. IDOR Vulnerability found!")
-		} else {
-			assert.Equal(t, http.StatusForbidden, w.Code)
-		}
+		assert.Equal(t, http.StatusForbidden, w.Code, "VULNERABILITY REPRODUCED: User 'victim-user' accessed 'admin-user' profile. IDOR Vulnerability found!")
 	})
 
 	t.Run("Admin Access Victim Profile", func(t *testing.T) {
@@ -110,11 +106,7 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 		require.NoError(t, err)
 
 		// VULNERABILITY CHECK: The user should NOT have the admin role
-		for _, role := range updatedUser.GetRoles() {
-			if role == "admin" {
-				assert.Fail(t, "VULNERABILITY REPRODUCED: User 'victim-user' escalated privileges to 'admin'. Privilege Escalation Vulnerability found!")
-			}
-		}
+		assert.NotContains(t, updatedUser.GetRoles(), "admin", "VULNERABILITY REPRODUCED: User 'victim-user' escalated privileges to 'admin'. Privilege Escalation Vulnerability found!")
 	})
 
 	t.Run("Victim Spoofs JSON payload to update Admin", func(t *testing.T) {
@@ -146,17 +138,7 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 		require.NoError(t, err)
 
 		// If the attack succeeded, the admin's roles would be overwritten.
-		hasAdmin := false
-		for _, role := range adminUser.GetRoles() {
-			if role == "admin" {
-				hasAdmin = true
-				break
-			}
-		}
-
-		if !hasAdmin {
-			assert.Fail(t, "VULNERABILITY REPRODUCED: Victim overwrote Admin's profile via JSON body spoofing. IDOR via JSON Injection found!")
-		}
+		assert.Contains(t, adminUser.GetRoles(), "admin", "VULNERABILITY REPRODUCED: Victim overwrote Admin's profile via JSON body spoofing. IDOR via JSON Injection found!")
 	})
 
 	t.Run("Victim Elevates Own Profile IDs", func(t *testing.T) {
@@ -183,10 +165,6 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 		updatedUser, err := store.GetUser(context.Background(), "victim-user")
 		require.NoError(t, err)
 
-		for _, pid := range updatedUser.GetProfileIds() {
-			if pid == "admin-profile" {
-				assert.Fail(t, "VULNERABILITY REPRODUCED: User 'victim-user' escalated privileges to 'admin-profile'. Profile Escalation Vulnerability found!")
-			}
-		}
+		assert.NotContains(t, updatedUser.GetProfileIds(), "admin-profile", "VULNERABILITY REPRODUCED: User 'victim-user' escalated privileges to 'admin-profile'. Profile Escalation Vulnerability found!")
 	})
 }
