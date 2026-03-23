@@ -1,8 +1,10 @@
 # Design Doc: Teammate-to-Teammate (T2T) Encryption Bridge
+
 **Status:** Draft
 **Created:** 2026-05-22
 
 ## 1. Context and Scope
+
 The introduction of "Agent Teams" in Claude Code and similar "Mesh"
 orchestration patterns in OpenClaw has created a need for secure,
 cross-framework horizontal communication. Teammates within a team need to
@@ -15,6 +17,7 @@ teammate-to-teammate communication. It allows agents from different frameworks
 to coordinate with cryptographic guarantees of integrity and privacy.
 
 ## 2. Goals & Non-Goals
+
 *   **Goals:**
     *   Provide end-to-end encryption for inter-agent mailbox messages.
     *   Ensure cryptographic integrity for the Shared Task List across multiple
@@ -29,6 +32,7 @@ OpenClaw specialist).
 mission/session).
 
 ## 3. Critical User Journey (CUJ)
+
 *   **User Persona:** Developer orchestrating a "Heterogeneous Swarm" (Claude
 Code lead + 2 OpenClaw subagents).
 *   **Primary Goal:** Securely delegate a database migration task from the
@@ -49,8 +53,10 @@ the schema.
 intent scope.
 
 ## 4. Design & Architecture
+
 *   **System Flow:**
     ```mermaid
+
     graph TD
         AgentA[Claude Teammate] <--> Bridge[T2T Encryption Bridge]
         AgentB[OpenClaw Teammate] <--> Bridge
@@ -62,6 +68,7 @@ intent scope.
             VAL --> POL[Mission-Root Policy]
         end
     ```
+
 *   **APIs / Interfaces:**
     *   `POST /mailbox/send`: Encrypts and routes a message to another teammate.
     *   `GET /mailbox/receive`: Retrieves and decrypts messages for the caller.
@@ -72,6 +79,7 @@ validation.
     *   Encrypted SQLite backend for the Shared Task List.
 
 ## 5. Alternatives Considered
+
 *   **Plaintext Shared State:** Rejected due to the risk of "PASI"
 (Protocol-Agnostic State Injection) where a low-trust subagent pollutes a
 high-trust reasoning loop.
@@ -80,6 +88,7 @@ high-trust reasoning loop.
 Claude teammates).
 
 ## 6. Cross-Cutting Concerns
+
 *   **Security (Zero Trust):** T2T implements the "Mailbox Integrity" strategic
 pivot. It ensures that even if a subagent is hijacked, it cannot coerce its
 teammates into unauthorized actions via message injection.
@@ -87,9 +96,11 @@ teammates into unauthorized actions via message injection.
 audit trail of all encrypted exchanges.
 
 ## 7. Evolutionary Changelog
+
 *   **2026-05-22:** Initial Document Creation.
 
 ### Update: 2026-05-25 - Introducing Asynchronous Mailbox Sharding (AMS)
+
 **Context:** Today's market sync revealed "Mailbox Lock" bottlenecks in
 horizontal swarms with 10+ teammates. The monolithic encrypted mailbox model is
 causing significant latency during peak coordination.
@@ -102,6 +113,7 @@ teammate-to-teammate pair now utilizes a dedicated, task-bound shard.
 doesn't expose the metadata or throughput of unrelated teammate coordination.
 
 ### Update: 2026-05-26 - Non-Blocking Mailbox Sharding (AMS)
+
 **Context:** Further analysis of Claude Code "Mailbox Lock" confirms that
 synchronous sharding still introduces global coordination overhead.
 High-density teams (50+ agents) require a move to fully non-blocking
@@ -115,6 +127,7 @@ messages, further reducing the load on the primary Mailbox Integrity Validator.
 can stall the entire swarm's mailbox throughput.
 
 ### Update: 2026-05-27 - Fragment-Aware Mailbox Isolation (FAMI)
+
 **Context:** Today's market sync revealed a class of "State Splicing" exploits
 in horizontal coordination. Malicious teammates can inject mission-divergent
 fragments into the sharded mailbox, leading to collective intent drift.

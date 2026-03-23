@@ -1,6 +1,7 @@
 # Server Roadmap
 
 ## 1. Top Priorities: The Universal Agent Bus (New Strategic Focus)
+
 *   **[Security] Policy Firewall Engine:** Implement Rego/CEL based hooking for
 tool calls.
 *   **[Security] Granular Scopes:** implement capability-based token system
@@ -16,6 +17,7 @@ agents.
 ### Status: Active Development
 
 #### Upcoming (2026-02-23 Evolution)
+
 *   **[P0] Recursive Context Protocol**: Finalize header-based context
 inheritance for swarms.
 *   **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability
@@ -30,6 +32,7 @@ coordination (Added: 2026-02-24).
 Stdio/HTTP/FastMCP servers (Added: 2026-02-24).
 
 #### Upcoming (2026-02-25 Evolution)
+
 *   **[P0] On-Demand Discovery Middleware (Lazy-MCP)**: Implements
 similarity-based tool searching to prevent context pollution. (Added:
 2026-02-25)
@@ -40,6 +43,7 @@ verification for MCP servers to prevent unauthorized tool injection. (Added:
 and native Gemini CLI slash command mapping. (Added: 2026-02-25)
 
 #### Upcoming (2026-02-26 Evolution)
+
 *   **[P0] A2A Interop Bridge**: Implement Pseudo-MCP wrapper for A2A-compliant
 agents. (Added: 2026-02-26)
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool
@@ -48,6 +52,7 @@ proxying. (Added: 2026-02-26)
 tool schemas. (Added: 2026-02-26)
 
 #### Upcoming (2026-02-28 Evolution)
+
 *   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost`
 by default. Implement mandatory Attestation for remote exposure. (Added:
 2026-02-28)
@@ -57,6 +62,7 @@ asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 during tool discovery. (Added: 2026-02-28)
 
 #### Upcoming (2026-03-10 Evolution)
+
 *   **[P0] Sandbox-as-a-Service for Config Hooks**: Natively managed,
 ultra-lightweight execution environment for approved hooks found in
 project-local settings. (Added: 2026-03-10)
@@ -68,6 +74,7 @@ alerts the user if a project-local configuration file is modified (e.g., via
 `git pull`), requiring re-attestation of any hooks. (Added: 2026-03-10)
 
 #### Upcoming (2026-03-09 Evolution)
+
 *   **[P0] Project Configuration Security Guard**: Validating proxy for
 project-local agent configs (e.g., `.claude/settings.json`) to prevent RCE.
 (Added: 2026-03-09)
@@ -78,6 +85,7 @@ sequences with zero host access by default. (Added: 2026-03-09 - Promoted to P0
 on 2026-03-10)
 
 #### Upcoming (2026-03-11 Evolution)
+
 *   **[P0] Exfiltration-Resistant Transport Gateway**: Force all agent traffic
 through a secure, allow-listed proxy to prevent API key exfiltration. (Added:
 2026-03-11)
@@ -87,6 +95,7 @@ verification of signatures on agent configuration files. (Added: 2026-03-11)
 unauthorized changes to security-critical agent settings. (Added: 2026-03-11)
 
 #### Upcoming (2026-03-12 Evolution)
+
 *   **[P0] Verified Skill Registry**: Security-first marketplace/registry for
 agent skills requiring behavioral profiling. (Added: 2026-03-12)
 *   **[P0] Mandatory MFA for Hooks**: Integration of HITL Middleware for
@@ -95,6 +104,7 @@ multi-factor attestation of executable configuration hooks. (Added: 2026-03-12)
 configurations and air-gapped environment support. (Added: 2026-03-12)
 
 #### Upcoming (2026-03-13 Evolution)
+
 *   **[P0] Prompt Path Protection Middleware**: Real-time scanning of tool
 outputs for "Indirect Prompt Injection" patterns. (Added: 2026-03-13)
 *   **[P0] OpenClaw ContextEngine Bridge**: Middleware to synchronize state
@@ -104,6 +114,7 @@ P0 on 2026-03-14)
 simulating impact on sensitive data. (Added: 2026-03-13)
 
 #### Upcoming (2026-03-14 Evolution)
+
 *   **[P0] Same-Origin Policy (SOP) Enforcer**: Middleware to validate
 browser-origin headers for local listeners (CVE-2026-25253). (Added: 2026-03-14)
 *   **[P0] Semantic Boundary Detector**: Specialized scanner for Prompt Path
@@ -116,6 +127,7 @@ handshake latency in large swarms. (Added: 2026-03-14)
 authenticated discovery in the A2A bridge. (Added: 2026-03-14)
 
 #### Upcoming (2026-03-15 Evolution)
+
 *   **[P0] Call-Graph Loop Monitor**: Middleware to detect and prevent
 recursive "M2M" tool loops and resource exhaustion. (Added: 2026-03-15)
 *   **[P0] Signed Context Chain Protocol**: Cryptographic verification of
@@ -125,6 +137,7 @@ subagent lineage to prevent identity spoofing (CVE-2026-28190). (Added:
 the UAB protocol for framework-neutral handoffs. (Added: 2026-03-15)
 
 #### Upcoming (2026-03-16 Evolution)
+
 *   **[P0] Browser-Origin Validation Middleware**: Mandatory validation of
 `Origin` and `Sec-Fetch-Site` headers for all local listeners (CVE-2026-25253).
 (Added: 2026-03-16)
@@ -137,6 +150,7 @@ identities across disparate frameworks for context continuity. (Added:
 authenticated discovery in the A2A bridge. (Added: 2026-03-16)
 
 #### Upcoming (2026-03-17 Evolution)
+
 *   **[P0] Local-Loopback Rate Limiter**: Mandatory rate limiting and auditing
 for all `127.0.0.1` / `::1` traffic to mitigate brute-force attacks. (Added:
 2026-03-17)
@@ -149,6 +163,7 @@ for detecting "Delayed Payload" malicious skills. (Added: 2026-03-17)
 analyzing local connection attempt patterns. (Added: 2026-03-17)
 
 #### Upcoming (2026-03-19 Evolution)
+
 *   **[P0] UACO-Native Coordination Middleware**: Full implementation of UACO
 protocol for task negotiation, bidding, and stateful handoffs. (Added:
 2026-03-19)
@@ -160,6 +175,7 @@ policies and allowed-origins from a central management server. (Added:
 2026-03-19)
 
 #### Upcoming (2026-03-20 Evolution)
+
 *   **[P0] Ephemeral Workspace Trust Middleware**: Session-bound attestation
 service to translate desktop trust tokens for headless agents. (Added:
 2026-03-20)
@@ -171,6 +187,7 @@ to prevent task-card shadowing. (Added: 2026-03-20)
 configuration files. (Added: 2026-03-20)
 
 #### Upcoming (2026-03-21 Evolution)
+
 *   **[P0] Content-Addressable Config (CAC) Validator**: Core security service
 enforcing hash-based validation for all executable hooks. (Added: 2026-03-21)
 *   **[P0] UACO v1.5 RCC Validator**: Implementation of Resource Capability
@@ -181,6 +198,7 @@ and block non-HTTP exfiltration attempts. (Added: 2026-03-21)
 persist trust for verified headless agents. (Added: 2026-03-21)
 
 #### Upcoming (2026-03-17 Evolution)
+
 *   **[P0] Inter-Agent Mailbox Guard (IAMG)**: Mandatory mediation for
 teammate-to-teammate messaging with intent validation. (Added: 2026-03-17)
 *   **[P1] Verifiable RL Reward Provider**: Authoritative source for binary
@@ -189,6 +207,7 @@ truth attestation to optimize RL reasoning loops. (Added: 2026-03-17)
 capability discovery. (Added: 2026-03-17)
 
 #### Upcoming (2026-03-22 Evolution)
+
 *   **[P0] UACO Agentic SLA Middleware**: Enforcement of resource contracts
 (token budget, reasoning time) during task delegation. (Added: 2026-03-22)
 *   **[P0] Ghost Shell Execution Mode**: Isolated profiling environment for
@@ -197,12 +216,14 @@ behavioral analysis of un-attested hooks. (Added: 2026-03-22)
 security guardrails across multiple MCP Any instances. (Added: 2026-03-22)
 
 #### Upcoming (2026-03-17 Evolution)
+
 *   **[P0] Local-Loopback Rate Limiter**: Mandatory throttling for all loopback
 traffic to neutralize browser-based brute-force attacks. (Added: 2026-03-17)
 *   **[P0] Origin-Locked Session Bridge**: Hardened session management binding
 tokens to cryptographically verified origins. (Added: 2026-03-17)
 
 #### Upcoming (2026-03-23 Evolution)
+
 *   **[P0] Proof-of-Intent (PoI) Validator**: Middleware implementing UACO v1.7
 headers to bind tool calls to cryptographically signed intents. (Added:
 2026-03-23)
@@ -213,6 +234,7 @@ transport layer for agent state transfer. (Added: 2026-03-23 - Promoted to P0
 on 2026-03-24)
 
 #### Upcoming (2026-03-24 Evolution)
+
 *   **[P0] Relational PoI Enforcement**: Advanced intent-chain validation to
 prevent "Context-Mirroring" attacks. (Added: 2026-03-24)
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral
@@ -221,6 +243,7 @@ profiling of un-attested configuration hooks. (Added: 2026-03-24)
 only sends deltas between agent handoffs. (Added: 2026-03-24)
 
 #### Upcoming (2026-03-25 Evolution)
+
 *   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for
 binary context handoffs. (Added: 2026-03-25)
 *   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for
@@ -573,6 +596,7 @@ protocol details from business logic.
 features.
 
 #### Upcoming (2026-03-18 Evolution)
+
 *   **[P0] Local Listener Origin Enforcement**: Mandatory validation of
 Origin/Sec-Fetch-Site headers for local listeners. (Added: 2026-03-18)
 *   **[P0] Recursive Depth-Limit Middleware**: Real-time call-graph monitor to
@@ -583,6 +607,7 @@ card verification for cross-framework handoffs. (Added: 2026-03-18)
 to prevent subagent identity spoofing. (Added: 2026-03-18)
 
 #### Upcoming (2026-03-26 Evolution)
+
 *   **[P0] Modular Context Hook Adapter**: Bridge for OpenClaw-style lifecycle
 hooks to ensure context interop. (Added: 2026-03-26)
 *   **[P0] RID Mutation Boundary Enforcer**: Cryptographic enforcement of UACO
@@ -591,6 +616,7 @@ v1.8 intent delegation limits and depth. (Added: 2026-03-26)
 validation during handoffs. (Added: 2026-03-26)
 
 #### Upcoming (2026-03-27 Evolution)
+
 *   **[P0] Live Context Sharding Middleware**: Shard-aware lifecycle manager
 for addressable context fragments. (Added: 2026-03-27)
 *   **[P0] Consensus Tool Validation Gateway**: Multi-agent attestation hub for
@@ -601,6 +627,7 @@ Discovery for unified capability mapping. (Added: 2026-03-27)
 shard access. (Added: 2026-03-27)
 
 #### Upcoming (2026-03-28 Evolution)
+
 *   **[P0] Atomic State Rollback Middleware**: Support for swarm-wide
 checkpoints and rollbacks for Blackboard and Context Shards. (Added: 2026-03-28)
 *   **[P0] UACO-MAQ Consensus Gateway**: Implementation of UACO v1.9
@@ -613,6 +640,7 @@ Promoted to P0 on 2026-03-29)
 to detect "Ghost Fragments" in context handoffs. (Added: 2026-03-28)
 
 #### Upcoming (2026-03-29 Evolution)
+
 *   **[P0] UACO v2.0 RIS Validator**: Implementation of Relational Intent
 Scoping to prevent Identity Shadowing via hierarchical intent trees. (Added:
 2026-03-29)
@@ -625,6 +653,7 @@ continuous synchronization of agent-local state with the global Blackboard.
 segments to neutralize Context Smearing attacks. (Added: 2026-03-29)
 
 #### Upcoming (2026-03-31 Evolution)
+
 *   **[P0] UACO v2.2 Intent Barrier Middleware**: Synchronization engine for
 parallel sub-intents to prevent race conditions in the Blackboard. (Added:
 2026-03-31)
@@ -638,6 +667,7 @@ service requiring multi-node attestation for new tool beacons. (Added:
 2026-03-31)
 
 #### Upcoming (2026-03-30 Evolution)
+
 *   **[P0] UACO v2.1 IPSC Middleware**: Implementation of Intent-Preserving
 Self-Correction to prevent recursive "Cognitive Lock" refinement loops. (Added:
 2026-03-30)
@@ -650,6 +680,7 @@ Gemini-style Capability Beacons. (Added: 2026-03-30)
 agent self-correction loops. (Added: 2026-03-30)
 
 #### Upcoming (2026-04-01 Evolution)
+
 *   **[P0] Reasoning-Bound Context Shifter**: Context management middleware for
 synchronizing dynamic shifting logic. (Added: 2026-04-01)
 *   **[P0] Path Normalization Engine (NaaS)**: Centralized OS-agnostic path
@@ -658,6 +689,7 @@ normalization service. (Added: 2026-04-01)
 Gemini-style optimistic loading. (Added: 2026-04-01)
 
 #### Upcoming (2026-04-02 Evolution)
+
 *   **[P0] Speculative Execution Guard**: Middleware for managing "Shadow
 State" during speculative tool calls. (Added: 2026-04-02)
 *   **[P0] Inode-Pinning Middleware**: Hardware-bound file handle protection
@@ -668,6 +700,7 @@ KV Store to prevent cross-branch state contamination. (Added: 2026-04-02)
 Authority" models for time-critical agent authorization. (Added: 2026-04-02)
 
 #### Upcoming (2026-04-03 Evolution)
+
 *   **[P0] Active Subagent Reaper**: Lifecycle monitor to terminate "Ghost"
 subagents and purge orphaned state. (Added: 2026-04-03)
 *   **[P0] Tool Metadata Sanitizer**: Security middleware to detect "Context
@@ -678,6 +711,7 @@ Poisoning" in tool structural metadata. (Added: 2026-04-03)
 subagent session management. (Added: 2026-04-03)
 
 #### Upcoming (2026-04-04 Evolution)
+
 *   **[P0] DCA Negotiation Guard**: Hardware-accelerated (HAN) broker for
 subagent bidding to mitigate "Negotiation Exhaustion." (Added: 2026-04-04)
 *   **[P0] Metadata Provenance Engine**: Verification service for structural
@@ -688,6 +722,7 @@ metadata lineage using cryptographic signing. (Added: 2026-04-04)
 for cross-framework lifecycle synchronization. (Added: 2026-04-04)
 
 #### Upcoming (2026-04-05 Evolution)
+
 *   **[P0] Attested Discovery Authority**: Cryptographic identity broker for
 local MCP servers to satisfy Claude Code's "Trust Verification." (Added:
 2026-04-05)
@@ -697,6 +732,7 @@ synchronized with background discovery quorums. (Added: 2026-04-05)
 performance/feedback metrics to OpenClaw-RL training loops. (Added: 2026-04-05)
 
 #### Upcoming (2026-04-06 Evolution)
+
 *   **[P0] Structural Metadata Sanitizer**: Middleware to detect and block
 context poisoning instructions in tool schemas. (Added: 2026-04-06)
 *   **[P0] Hardware-Linked Inode Pinning**: Native filesystem security layer to
@@ -705,6 +741,7 @@ prevent TOCTOU symlink races in project configs. (Added: 2026-04-06)
 Probability" bidding in speculative agent swarms. (Added: 2026-04-06)
 
 #### Upcoming (2026-04-08 Evolution)
+
 *   **[P0] Pre-Flight Sandbox Validator**: Core security service for
 environment-manifest generation and config-injection defense (CVE-2026-25725).
 (Added: 2026-04-08)
@@ -715,6 +752,7 @@ agent tokens to cryptographically verified browser/CLI origins. (Added:
 middleware for cross-registry tool reliability scoring. (Added: 2026-04-08)
 
 #### Upcoming (2026-04-11 Evolution)
+
 *   **[P0] A2A Interoperability Layer**: Native messaging hub for the A2A
 protocol to secure agent-to-agent delegation. (Added: 2026-04-11)
 *   **[P0] Deterministic Environment Attestation**: Full-state manifest service
@@ -723,6 +761,7 @@ to prevent configuration-based RCE and exfiltration. (Added: 2026-04-11)
 security context for distributed agent swarms. (Added: 2026-04-11)
 
 #### Upcoming (2026-04-12 Evolution)
+
 *   **[P0] A2A Messaging Hub**: Transition from a simple bridge to a native A2A
 messaging implementation with integrated Zero-Trust policy enforcement. (Added:
 2026-04-12)
@@ -734,6 +773,7 @@ Attestation Gateway to sign "Missing File" proofs (CVE-2026-25725). (Added:
 2026-04-12)
 
 #### Upcoming (2026-04-10 Evolution)
+
 *   **[P0] Inference-Time Data Sanitizer (IDS)**: Semantic context governance
 middleware utilizing OpenClaw ContextEngine hooks to block multimodal
 injections. (Added: 2026-04-10)
@@ -744,6 +784,7 @@ Validator to provide signed environment manifests for deterministic agent boot.
 headers for all local listeners to patch CVE-2026-25253. (Added: 2026-04-10)
 
 #### Upcoming (2026-04-09 Evolution)
+
 *   **[P0] Pre-Flight Sandbox Validator**: Core security service for
 environment-manifest generation and config-injection defense (CVE-2026-25725).
 (Added: 2026-04-09)
@@ -754,6 +795,7 @@ agent tokens to cryptographically verified browser/CLI origins. (Added:
 middleware for cross-registry tool reliability scoring. (Added: 2026-04-09)
 
 #### Upcoming (2026-04-07 Evolution)
+
 *   **[P0] Verified Skill Auction (VSA)**: Integration of DCA Auction Broker
 with real-time skill attestation to mitigate ClawHavoc-style attacks. (Added:
 2026-04-07)
@@ -763,6 +805,7 @@ headers for all local listeners to patch CVE-2026-25253. (Added: 2026-04-07)
 reconstruction in shared multi-agent social spaces. (Added: 2026-04-07)
 
 #### Upcoming (2026-04-14 Evolution)
+
 *   **[P0] Delegation Attestation Layer (DAL)**: Core security service for
 evaluating A2A task proposals and generating "Safety Proofs." (Added:
 2026-04-14)
@@ -773,6 +816,7 @@ external frameworks (e.g., OpenClaw ContextEngine) via native APIs. (Added:
 2026-04-14)
 
 #### Upcoming (2026-04-13 Evolution)
+
 *   **[P0] A2A Open-Governance Integration**: Implementation of the finalized
 Linux Foundation A2A security manifest and task brokering model. (Added:
 2026-04-13)
@@ -782,6 +826,7 @@ state to the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)
 and signing environment integrity manifests. (Added: 2026-04-13)
 
 #### Upcoming (2026-04-17 Evolution)
+
 *   **[P0] Reactive Intent Arbitration Hub**: Advanced RIG extension for
 recursive deconstruction and validation of expansion requests. (Added:
 2026-04-17)
@@ -793,6 +838,7 @@ low-frequency trust attestation leases in deep swarms. (Added: 2026-04-17)
 reconciliation to prevent swarm consensus drift. (Added: 2026-04-17)
 
 #### Upcoming (2026-04-18 Evolution)
+
 *   **[P0] Continuous Sandbox Policy Verifier**: Real-time validation of
 sandbox boundaries against resident security policy. (Added: 2026-04-18)
 *   **[P0] LFTA Trust Lease Manager**: Scalable trust-lease management for
@@ -803,6 +849,7 @@ Foundation's neutral governance and transparency protocols. (Added: 2026-04-18)
 swarm-wide sandbox integrity proofs. (Added: 2026-04-18)
 
 #### Upcoming (2026-04-16 Evolution)
+
 *   **[P0] Reactive Intent Gateway (RIG)**: Middleware to mediate and sign
 agent "Boundary Expansion" requests, preventing Intent Smuggling. (Added:
 2026-04-16)
@@ -813,6 +860,7 @@ hardware-bound sandbox attestation to detect post-boot environment drift.
 self-correction, leveraging MAQ for state reconciliation. (Added: 2026-04-16)
 
 #### Upcoming (2026-04-21 Evolution)
+
 *   **[P0] A2UI Native Gateway**: Secure bridge for the A2UI protocol to
 surface sandboxed interactive agent fragments. (Added: 2026-04-21)
 *   **[P0] Deterministic Absence Proof (DAP) Provider**: signed "Non-Existence
@@ -823,6 +871,7 @@ for WebSocket-first streaming (OpenClaw v2026.3.1 compliance). (Added:
 2026-04-21)
 
 #### Upcoming (2026-04-20 Evolution)
+
 *   **[P0] ASH Consensus Broker**: Decentralized coordination service for
 swarm-wide state re-alignment and voting. (Added: 2026-04-20)
 *   **[P0] A2A Safety Proof Validator**: Mandatory validation layer for task
@@ -832,6 +881,7 @@ middleware binding tools to verified origins and behavior profiles. (Added:
 2026-04-20)
 
 #### Upcoming (2026-04-19 Evolution)
+
 *   **[P0] Distributed Trust Lease Broker**: Implementation of UACO v2.5 LFTA
 for sub-millisecond trust validation in deep swarms. (Added: 2026-04-19)
 *   **[P0] Deep Packet Enforcement (DPPE)**: L4 monitoring (DNS/ICMP) for the
@@ -843,6 +893,7 @@ alignment heartbeats to facilitate OpenClaw ASH. (Added: 2026-04-19)
 intent alignment against the root mission. (Added: 2026-04-19)
 
 #### Upcoming (2026-04-15 Evolution)
+
 *   **[P0] Hardware-Attested Boot Manifest Provider**: Core service for binding
 environment integrity to local TPM/Secure Enclave signatures. (Added:
 2026-04-15)
@@ -853,6 +904,7 @@ for bridging framework-specific state strategies (OpenClaw, etc.). (Added:
 2026-04-15)
 
 #### Upcoming (2026-04-23 Evolution)
+
 *   **[P0] OpenClaw ContextEngine Adapter**: Implementation of lifecycle hooks
 for external context management (Added: 2026-04-23).
 *   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight
@@ -861,6 +913,7 @@ Validator to sign missing-file proofs (Added: 2026-04-23).
 agent-generated UI fragments (Added: 2026-04-23).
 
 #### Upcoming (2026-05-02 Evolution)
+
 *   **[P0] Risk-Adaptive CQ Controller**: Dynamic policy engine for scaling
 quorum thresholds based on tool risk and reasoning confidence. (Added:
 2026-05-02)
@@ -873,6 +926,7 @@ detecting and breaking circular attestation dependencies. (Added: 2026-05-02)
 subagent exit codes to automated PLSS rollbacks. (Added: 2026-05-02)
 
 #### Upcoming (2026-05-07 Evolution)
+
 *   **[P0] Programmatic SDK Boundary Enforcer**: Mandatory security gating for
 SDK-driven agent interactions (e.g., OpenCode SDK). (Added: 2026-05-07)
 *   **[P1] Distributed Supervisor Mesh (DSM) Orchestrator**: Infrastructure for
@@ -882,6 +936,7 @@ decentralized delegation and mission-root anchored oversight. (Added:
 for breaking autonomous negotiation deadlocks. (Added: 2026-05-07)
 
 #### Upcoming (2026-05-06 Evolution)
+
 *   **[P0] Origin-Locked Agent Gateway**: Mandatory security layer for local
 listeners enforcing browser-origin and session-token binding (CVE-2026-25253
 defense). (Added: 2026-05-06)
@@ -891,6 +946,7 @@ default memory isolation in the Shared KV Store. (Added: 2026-05-06)
 for time-bound hardware-attested capabilities. (Added: 2026-05-06)
 
 #### Upcoming (2026-05-05 Evolution)
+
 *   **[P0] RAMS Isolation Hub**: Implementation of Reasoning-Aware Memory
 Segmentation for cryptographically isolated Blackboard shards. (Added:
 2026-05-05)
@@ -900,6 +956,7 @@ configuration loading. (Added: 2026-05-05)
 coordination for mission-root intents. (Added: 2026-05-05)
 
 #### Upcoming (2026-05-04 Evolution)
+
 *   **[P0] Semantic Integrity Bridge**: Intent Drift Detection middleware to
 prevent Recursive Intent Poisoning (RIP) and RCS. (Added: 2026-05-04 - Promoted
 to P0 on 2026-05-05)
@@ -909,6 +966,7 @@ absolute configuration immutability. (Added: 2026-05-04)
 for corrective user intent injection. (Added: 2026-05-04)
 
 #### Upcoming (2026-05-03 Evolution)
+
 *   **[P0] Deadlock-Resilient CQ Controller**: Advanced cycle-detection and
 wait-graph analysis for the CQ Hub. (Added: 2026-05-03)
 *   **[P0] Hierarchical Intent Lease (HIL) Broker**: Task-bound, hierarchical
@@ -917,6 +975,7 @@ capability management based on UACO v3.2. (Added: 2026-05-03)
 with hardware-bound depth limits. (Added: 2026-05-03)
 
 #### Upcoming (2026-05-01 Evolution)
+
 *   **[P0] Contextual Quorum (CQ) Hub**: Coordination service for multi-agent
 attestation and consensus-based tool execution. (Added: 2026-05-01)
 *   **[P1] Adaptive Intent Budgeting (AIB)**: Resource management layer for
@@ -926,6 +985,7 @@ environment recovery and speculative agent rollbacks. (Added: 2026-05-01 -
 Promoted to P0 on 2026-05-02)
 
 #### Upcoming (2026-04-30 Evolution)
+
 *   **[P0] Mesh-Aware Blackboard Adaptor**: Graph-based intent mesh for
 multi-agent swarm reconciliation. (Added: 2026-04-30)
 *   **[P0] Kernel-Level Inode Pinning (KLIP)**: Hardware-bound file handle
@@ -934,6 +994,7 @@ protection against SIR (Symlink-to-Inode Racing) exploits. (Added: 2026-04-30)
 for Swarm-to-Swarm task negotiation. (Added: 2026-04-30)
 
 #### Upcoming (2026-04-29 Evolution)
+
 *   **[P0] ContextEngine Security Bridge**: Core integration mapping OpenClaw
 lifecycle signals (spawning/ended) to MCP Any security policies. (Added:
 2026-04-29)
@@ -945,6 +1006,7 @@ Shadow-FS orchestrating multi-agent consensus. (Added: 2026-04-29)
 active agent reasoning sessions. (Added: 2026-04-29)
 
 #### Upcoming (2026-04-28 Evolution)
+
 *   **[P0] Ephemeral Privilege Manager (EPM)**: Core security service managing
 JIT privilege escalation and task-bound leases. (Added: 2026-04-28)
 *   **[P0] Shadow-FS Virtualization Adapter**: Transactional filesystem overlay
@@ -955,6 +1017,7 @@ PII/biometric scrubbing before cloud propagation. (Added: 2026-04-28)
 semantic context risk to trigger MFA. (Added: 2026-04-28)
 
 #### Upcoming (2026-04-27 Evolution)
+
 *   **[P0] LFTA ARL Middleware**: Real-time Attestation Revocation List
 listener for LFTA v2.1 compliance. (Added: 2026-04-27)
 *   **[P0] Intent-Gated Shard Manager**: Cryptographic intent-alignment
@@ -963,6 +1026,7 @@ enforcement for Context Sharding lifecycle. (Added: 2026-04-27)
 semantic pruning for the Cognitive Anchor Manager. (Added: 2026-04-27)
 
 #### Upcoming (2026-04-26 Evolution)
+
 *   **[P0] Multi-Hop Trust Relay**: Implementation of LFTA v2.0 for multi-hop
 trust delegation through deep agent swarms. (Added: 2026-04-26)
 *   **[P0] Cognitive Anchor Manager**: Extension for ContextEngine to manage
@@ -972,6 +1036,7 @@ delegated task card approvals via declarative A2UI manifests. (Added:
 2026-04-26)
 
 #### Upcoming (2026-04-25 Evolution)
+
 *   **[P0] A2A Session Persistence Middleware**: Core security service for
 managing token refresh and trust persistence in deep reasoning chains. (Added:
 2026-04-25)
@@ -980,6 +1045,7 @@ Deterministic Absence Proofs as a prerequisite for all agent boots. (Added:
 2026-04-25)
 
 #### Upcoming (2026-04-24 Evolution)
+
 *   **[P0] A2A Authenticated Handshake Provider**: Implementation of Gemini CLI
 v0.33.0 style HTTP authentication for all agent-to-agent remote communications.
 (Added: 2026-04-24)
@@ -990,6 +1056,7 @@ management. (Added: 2026-04-24)
 A2A capability card discovery. (Added: 2026-04-24)
 
 #### Upcoming (2026-05-20 Evolution)
+
 *   **[P0] Policy-Bound Reasoning (PBR) Adapter**: Host and enforce immutable
 "Policy Anchors" at the pre-reasoning layer for cross-framework cognitive
 governance. (Added: 2026-05-20)
@@ -1000,6 +1067,7 @@ non-textual reasoning traces (SVG, CSS, Audio) to prevent context smuggling.
 service utilizing hardware-attested multi-signature quorums. (Added: 2026-05-20)
 
 #### Upcoming (2026-05-19 Evolution)
+
 *   **[P0] Signed Reasoning Monologue (SRM) Provider**: Cryptographically bind
 and isolate an agent's internal reasoning from subagent inputs. (Added:
 2026-05-19)
@@ -1012,6 +1080,7 @@ providing verifiable proof of reasoning integrity across frameworks. (Added:
 2026-05-19)
 
 #### Upcoming (2026-05-18 Evolution)
+
 *   **[P0] Mission-Root Pinning (MRP) Middleware**: Transport-level safeguard
 to protect mission intent from context-window exhaustion attacks. (Added:
 2026-05-18)
@@ -1023,6 +1092,7 @@ Blackboard to tag data with its framework trust-level. (Added: 2026-05-18)
 support RCE v2.0 mission-anchored compression. (Added: 2026-05-18)
 
 #### Upcoming (2026-05-17 Evolution)
+
 *   **[P0] `TeammateTool` Orchestration Adapter**: Universal bridge for Claude
 Code orchestration protocol supporting heterogeneous swarms. (Added: 2026-05-17)
 *   **[P0] Transport-Layer Session Binder (TLSB)**: Cryptographically bind all
@@ -1035,6 +1105,7 @@ full OpenClaw v2026.3.7 plugin hooks for third-party context strategies.
 (Added: 2026-05-17)
 
 #### Upcoming (2026-05-16 Evolution)
+
 *   **[P0] Reasoning Quorum Middleware**: Infrastructure for multi-agent
 semantic consensus on reasoning traces. (Added: 2026-05-16)
 *   **[P0] Transport-Layer Session Binder**: Cryptographically bind
@@ -1046,6 +1117,7 @@ real-time reasoning intensity. (Added: 2026-05-16)
 middleware for parallel swarm messages. (Added: 2026-05-16)
 
 #### Upcoming (2026-05-15 Evolution)
+
 *   **[P0] Consensus Tool Validation Hub**: Distributed security middleware
 requiring multi-agent signatures for high-risk delegations. (Added: 2026-05-15)
 *   **[P1] PNTD Discovery Provider**: Universal discovery bus for mapping MCP,
@@ -1058,6 +1130,7 @@ non-execution for restricted paths during the PNTD discovery phase. (Added:
 2026-05-15)
 
 #### Upcoming (2026-05-14 Evolution)
+
 *   **[P0] ContextEngine Lifecycle Adapter**: Implementation of OpenClaw
 v2026.3.7 "ContextEngine" lifecycle hooks for universal context plugin hosting.
 (Added: 2026-05-14)
@@ -1070,6 +1143,7 @@ Enclave-bound machine identities for all connected agents. (Added: 2026-05-14)
 for OpenClaw-RL v1.0 reasoning traces and rollout tokens. (Added: 2026-05-14)
 
 #### Upcoming (2026-05-13 Evolution)
+
 *   **[P0] Loopback Authentication Proxy**: Mandatory security interceptor for
 legacy loopback ports enforcing origin-locked authentication. (Added:
 2026-05-13)
@@ -1081,6 +1155,7 @@ for inter-teammate messages to reduce swarm token consumption. (Added:
 2026-05-13)
 
 #### Upcoming (2026-05-12 Evolution)
+
 *   **[P0] Isolated Named-Pipe Transport**: Kernel-level transport layer using
 UNIX domain sockets to eliminate local port exposure for inter-agent comms.
 (Added: 2026-05-12)
@@ -1090,6 +1165,7 @@ enforcing "Auth-at-the-Pipe" identity validation. (Added: 2026-05-12)
 engine for BSH within isolated named-pipe transports. (Added: 2026-05-12)
 
 #### Upcoming (2026-05-11 Evolution)
+
 *   **[P0] Parallel Team Coordination Hub**: High-speed coordination bus
 supporting message passing and state reconciliation for parallel agent teams.
 (Added: 2026-05-11)
@@ -1100,6 +1176,7 @@ non-execution for restricted paths during the tool discovery phase. (Added:
 high-frequency reasoning trace and reward export. (Added: 2026-05-11)
 
 #### Upcoming (2026-05-10 Evolution)
+
 *   **[P0] Discovery Sandbox Middleware**: Ephemeral, zero-trust execution
 environment for MCP discovery commands to prevent "Ghost-Execution" exploits.
 (Added: 2026-05-10)
@@ -1111,6 +1188,7 @@ telemetry bridge for OpenClaw-RL rollout collection and policy optimization.
 (Added: 2026-05-10)
 
 #### Upcoming (2026-05-09 Evolution)
+
 *   **[P0] Cryptographic Lineage Validator**: Mandatory parent-child token
 binding for all subagent spawns to neutralize shadow context contamination.
 (Added: 2026-05-09)
@@ -1122,6 +1200,7 @@ allocation based on Gemini CLI ARE reasoning intensity headers. (Added:
 2026-05-09)
 
 #### Upcoming (2026-05-08 Evolution)
+
 *   **[P0] Context Sealed-Fragment Hub**: Implementation of "Active Fragment
 Sealing" to protect context shards from semantic side-channel exfiltration
 (EchoLeak defense). (Added: 2026-05-08)
@@ -1133,6 +1212,7 @@ OpenClaw-RL v1.0, enabling high-frequency feedback collection for policy
 optimization. (Added: 2026-05-08)
 
 #### Upcoming (2026-05-21 Evolution)
+
 *   **[P0] Cognitive Load Shedding (CLS) Controller**: Stability middleware to
 dynamically throttle subagent capabilities based on reasoning intensity.
 (Added: 2026-05-21)
@@ -1144,6 +1224,7 @@ infrastructure for local PII context processing. (Added: 2026-05-21)
 support parallel reasoning trace merging. (Added: 2026-05-21)
 
 #### Upcoming (2026-04-22 Evolution)
+
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces
 and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction
@@ -1152,6 +1233,7 @@ supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
 synchronizing encrypted monologues across agent sessions. (Added: 2026-04-22)
 
 #### Upcoming (2026-05-22 Evolution)
+
 *   **[P0] Local-Only WebSocket Auth (LOWA) Gateway**: Mandatory session-bound
 authentication for all local WebSocket listeners. (Added: 2026-05-22)
 *   **[P0] Teammate-to-Teammate (T2T) Encryption Bridge**: Secure,
@@ -1162,6 +1244,7 @@ inter-agent mailboxes. (Added: 2026-05-22)
 handshakes for A2A meshes. (Added: 2026-05-22)
 
 #### Upcoming (2026-05-23 Evolution)
+
 *   **[P0] Federated Swarm Identity (FSI) Provider**: Authority for
 hardware-attested cross-framework agent identities. (Added: 2026-05-23)
 *   **[P0] Intent-Leakage Shielding (ILS)**: Semantic entropy monitoring to
@@ -1173,6 +1256,7 @@ handshake mandating identity proof before capability discovery. (Added:
 high-intensity reasoning to prevent Agentic DoS. (Added: 2026-05-23)
 
 #### Upcoming (2026-05-24 Evolution)
+
 *   **[P0] Active Negotiation Broker (ANB)**: Authoritative bidding bus for
 hardware-attested multi-agent auctions. (Added: 2026-05-24)
 *   **[P0] Differential Context Guarding (DCG)**: Semantic analysis of tool
@@ -1183,6 +1267,7 @@ without revealing sensitive implementation details. (Added: 2026-05-24)
 reasoning hijacking via self-correction drift. (Added: 2026-05-24)
 
 #### Upcoming (2026-05-25 Evolution)
+
 *   **[P0] Reasoning-Budget Firewall (RBF)**: Authoritative economic gatekeeper
 enforcing hardware-attested token/ARE budgets. (Added: 2026-05-25)
 *   **[P0] Asynchronous Mailbox Sharding (AMS)**: Upgrade for T2T bridge to
@@ -1195,6 +1280,7 @@ hardware-attested, session-bound identity tokens for mailbox requests. (Added:
 2026-05-25)
 
 #### Upcoming (2026-05-26 Evolution)
+
 *   **[P0] Foundation Governance Sync**: Implementation of neutral lifecycle
 hooks for OpenClaw Foundation compliance. (Added: 2026-05-26)
 *   **[P0] Non-Blocking AMS Core**: Kernel-level lock-free buffers for
@@ -1205,6 +1291,7 @@ budgets to mission-root intent branches. (Added: 2026-05-26)
 subagent reasoning monologues with TPM-bound keys. (Added: 2026-05-26)
 
 #### Upcoming (2026-05-27 Evolution)
+
 *   **[P0] SMI Relay Provider**: Implementation of Sovereign Mesh Identity
 standard for cross-cloud agent identity persistence. (Added: 2026-05-27)
 *   **[P0] Fragment-Aware Mailbox Isolation (FAMI)**: Semantic fragment
@@ -1217,6 +1304,7 @@ reconciliation for cross-mission reasoning budget continuity. (Added:
 2026-05-27)
 
 #### Upcoming (2026-05-28 Evolution)
+
 *   **[P0] Command Traceability Provider (CTP)**: Authoritative security
 middleware issuing cryptographically signed "Chain of Command" tokens for every
 instruction. (Added: 2026-05-28)
@@ -1231,6 +1319,7 @@ service cryptographically attributing token/compute usage to specific
 mission-root branches. (Added: 2026-05-28)
 
 #### Upcoming (2026-05-30 Evolution)
+
 *   **[P0] T2T Identity Rotation Provider**: Hardware-attested session-bound
 identity rotation to neutralize teammate impersonation. (Added: 2026-05-30)
 *   **[P0] Teammate Task-List Arbiter**: Lock-free asynchronous task-claiming
@@ -1239,6 +1328,7 @@ logic to resolve horizontal coordination bottlenecks. (Added: 2026-05-30)
 cryptographically signed snapshots of the entire mesh state. (Added: 2026-05-30)
 
 #### Upcoming (2026-05-31 Evolution)
+
 *   **[P0] Lock-Free Mesh Arbiter (LFMA)**: Core coordination service
 implementing CRDT-based task list synchronization. (Added: 2026-05-31)
 *   **[P0] Shard-Aware Mailbox Sovereignty (SMS)**: Advanced isolation
@@ -1250,6 +1340,7 @@ mandating periodic, hardware-bound identity rotation for inter-teammate
 requests. (Added: 2026-05-31)
 
 #### Upcoming (2026-06-01 Evolution)
+
 *   **[P0] Machine-Speed Swarm Quarantine (MSSQ)**: Autonomous, sub-millisecond
 revocation of agent capabilities based on CSAD triggers. (Added: 2026-06-01)
 *   **[P0] Adaptive Context Lifecycle Orchestrator**: Authoritative host for
@@ -1262,6 +1353,7 @@ middleware for hardware-attested, multi-agent task validation. (Added:
 masking of agent capability cards for unauthenticated peers. (Added: 2026-06-01)
 
 #### Upcoming (2026-05-29 Evolution)
+
 *   **[P0] Collective Swarm Anomaly Detection (CSAD) Hub**: Cross-agent
 behavioral analysis middleware to detect "Hivenet" swarm attacks. (Added:
 2026-05-29)
@@ -1275,6 +1367,7 @@ exchange before teammate task delegation in horizontal teams. (Added:
 across teammate boundaries for horizontal team stability. (Added: 2026-05-29)
 
 #### Upcoming (2026-06-02 Evolution)
+
 *   **[P0] Reasoning Path Attestation (RPA)**: Cryptographically sign every
 step of the cognitive path using hardware TPM. (Added: 2026-06-02)
 *   **[P0] Spectral Reasoning Mitigator**: Inject reasoning-aware timing jitter
@@ -1285,6 +1378,7 @@ Sovereignty Protocol hooks. (Added: 2026-06-02)
 streaming to eliminate teammate mailbox locks. (Added: 2026-06-02)
 
 #### Upcoming (2026-06-03 Evolution)
+
 *   **[P0] Cross-Framework Attestation Translator**: Bridge proprietary
 TPM-bound reasoning paths to OpenClaw SRM format. (Added: 2026-06-03)
 *   **[P0] Atomic Shard Lock-Manager**: Kernel-level lock manager for granular
@@ -1293,6 +1387,7 @@ context streaming. (Added: 2026-06-03)
 on real-time intent analysis. (Added: 2026-06-03)
 
 ### Upcoming: [2026-06-08]
+
 - **Atomic Reasoning Integrity (ARI) Validator**: (P0) Advanced security
 middleware for fragment-level semantic validation of shared teammate state.
 (Added: 2026-06-08)
@@ -1304,6 +1399,7 @@ handling "Graceful Mission Decay" signals. (Added: 2026-06-08)
 mandating ARI-attestation for A2A teammates. (Added: 2026-06-08)
 
 ### Upcoming: [2026-06-07]
+
 - **Semantic Shadowing Mitigator (SSM)**: (P0) A behavioral security middleware
 for the AID Hub performing stylometric and contextual consistency checks to
 detect mimicry-based intent hijacking.
@@ -1317,6 +1413,7 @@ baselines.
 implementing "Ephemeral Mission Roots" to prevent long-term session hijacking.
 
 ### Upcoming: [2026-06-05]
+
 - **Intent-Splicing Detector (ISD)**: (P0) Structural validation middleware for
 the Semantic Integrity Bridge to prevent malicious instruction splicing in
 inter-agent streams.
@@ -1330,6 +1427,7 @@ attestation.
 generation service backed by hardware attestation.
 
 ### Upcoming: [2026-06-04]
+
 - **Pre-Commit Speculative Sanitizer (PCSS)**: Mandatory security middleware
 for the Speculative Execution Guard to neutralize "Speculative Fragment
 Poisoning."
@@ -1342,6 +1440,7 @@ hardware-attested trust across multiple delegation hops.
 Middleware to support ARL v3.0 synchronization in sub-100ms intervals.
 
 ### Upcoming: [2026-06-06]
+
 - **[P0] Active Intent-Deconstruction (AID) Hub**: Advanced security middleware
 extension for real-time deconstruction and structural validation of all
 inter-agent messages.
@@ -1354,6 +1453,7 @@ hardware-attested intent lineage for non-repudiable mission-root attestation.
 mission-root lineage before capability discovery.
 
 ### Upcoming: [2026-06-09]
+
 - **Recursive Integrity Verification (RIV) Provider**: (P0) Advanced security
 service facilitating lineage-aware proofs across multi-hop delegations. (Added:
 2026-06-09)
@@ -1364,6 +1464,7 @@ utilizing hardware-bound headers to protect mission-root anchors. (Added:
 that issues task-specific, mission-bound JWT tokens. (Added: 2026-06-09)
 
 ### Upcoming: [2026-06-10]
+
 - **Layer-7 Semantic Inspection Hub (L7SIH)**: (P0) Advanced security
 middleware for the ISD Hub performing real-time, high-entropy semantic analysis
 of inter-teammate coordination. (Added: 2026-06-10)
@@ -1375,6 +1476,7 @@ hardware-attested identity fragments and their environmental bounds. (Added:
 2026-06-10)
 
 ### Upcoming: [2026-06-11]
+
 - **Active Reasoning Interdiction (ARI) Hub**: (P0) Authoritative reasoning
 validator utilizing semantic hash-chaining to detect and block Logic Grafting.
 (Added: 2026-06-11)
@@ -1389,6 +1491,7 @@ mandating hardware-attested, hash-chained reasoning lineages for all high-risk
 actions. (Added: 2026-06-11)
 
 ### Upcoming: [2026-06-12]
+
 - **Shadow Coordination Interceptor (SCI)**: (P0) Advanced security middleware
 for the T2T Bridge that monitors non-primary channels (metadata, tags) for
 anomalous entropy and hidden instruction patterns. (Added: 2026-06-12)
@@ -1403,6 +1506,7 @@ handshake for all inter-agent coordination to ensure mission-root sovereignty.
 (Added: 2026-06-12)
 
 ### Upcoming: [2026-06-13]
+
 - **Shadow Coordination Interceptor (SCI)**: (P0) Authoritative transport-level
 security service for the T2T Bridge that monitors metadata and state-tags to
 neutralize out-of-band collusion. (Added: 2026-06-13)
@@ -1415,6 +1519,7 @@ the primary enforcement point for **Attention Sovereignty** and **Side-Channel
 Immunity**.
 
 ### Upcoming: [2026-06-14]
+
 - **Structural Metadata Sanitizer (SMS)**: (P0) Real-time semantic
 deconstruction of discovery metadata to neutralize SDMI instructions. (Added:
 2026-06-14)
@@ -1427,6 +1532,7 @@ of mission-critical fragments to prevent noise-driven eviction. (Added:
 hardware-attested tool capability card validation. (Added: 2026-06-14)
 
 ### Upcoming: [2026-06-16]
+
 - **[P0] Entangled State Broker (ESB)**: Authoritative coordination for
 "Entanglement Shards" bound to mission-root intent. (Added: 2026-06-16)
 - **[P0] Stylometric Mimicry Mitigator (SMM)**: Real-time stylometric analysis
@@ -1437,6 +1543,7 @@ reasoning paths to prevent speculative attention leakage. (Added: 2026-06-16)
 key rotation for sub-100ms inter-teammate coordination. (Added: 2026-06-16)
 
 ### Upcoming: [2026-06-15]
+
 - **Intent-Resumption Gateway (IRG)**: (P0) Authoritative resumption broker
 implementing OpenClaw-compliant "Intent-Resumption Tokens" to eliminate
 cognitive stall during teammate rotation. (Added: 2026-06-15)
@@ -1451,6 +1558,7 @@ performs sandboxed profiling of AI-generated configuration hooks to counter PR
 "Logic Bombs." (Added: 2026-06-15)
 
 ### Upcoming: [2026-06-17]
+
 - **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment
 service issuing hardware-attested heartbeats for mission-anchored reasoning
 (Added: 2026-06-17).

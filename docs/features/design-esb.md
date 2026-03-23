@@ -1,8 +1,10 @@
 # Design Doc: Entangled State Broker (ESB)
+
 **Status:** Draft
 **Created:** 2026-06-16
 
 ## 1. Context and Scope
+
 As agent swarms move toward high-frequency state sharing via sharded meshes,
 the risk of "Context Poisoning" and unauthorized state mutation by specialist
 subagents has reached a critical level. Current "Passive Sanitization" models
@@ -12,6 +14,7 @@ cryptographically bound to the mission-root intent, preventing any ingestion of
 unauthorized state.
 
 ## 2. Goals & Non-Goals
+
 * **Goals:**
     * Provide hardware-attested "Entanglement Shards" for inter-teammate
 coordination.
@@ -24,6 +27,7 @@ mutation.
     * Managing long-term archival of state fragments.
 
 ## 3. Critical User Journey (CUJ)
+
 * **User Persona:** Local LLM Swarm Orchestrator (e.g., Claude Code Team Lead)
 * **Primary Goal:** Share high-frequency state fragments between 5 specialized
 teammates without risking mission-root contamination.
@@ -41,8 +45,10 @@ triggers a "Shard Corruption" signal.
 before re-ingesting the poisoned state.
 
 ## 4. Design & Architecture
+
 * **System Flow:**
     ```mermaid
+
     graph TD
         MR[Mission Root] -->|Init Mission| ESB[Entangled State Broker]
         ESB -->|Generate Keys| TPM[Hardware TPM/Enclave]
@@ -53,6 +59,7 @@ before re-ingesting the poisoned state.
         TPM -->|Valid| Commit[Commit Mutation]
         TPM -->|Invalid| Alert[Trigger Shard Corruption Signal]
     ```
+
 * **APIs / Interfaces:**
     * `POST /v1/entanglement/init`: Initialize mission-bound entanglement keys.
     * `POST /v1/entanglement/shard/mount`: Request a cryptographically
@@ -64,18 +71,21 @@ shard.
 hardware-bound integrity tags (MACs).
 
 ## 5. Alternatives Considered
+
 * **Full State Encryption:** Rejected due to the prohibitive latency of
 per-call decryption in high-density meshes.
 * **Passive Semantic Scanning:** Rejected as it cannot detect "Low-and-Slow"
 semantic drift before ingestion.
 
 ## 6. Cross-Cutting Concerns
+
 * **Security (Zero Trust):** All entanglement keys are hardware-bound and
 session-specific. "Shard Corruption" signals are non-maskable.
 * **Observability:** Real-time monitoring of "Entanglement Drift" and
 "Corruption Events" via the Mesh-Resident Lineage Tracker.
 
 ## 7. Evolutionary Changelog
+
 * **2026-06-16:** Initial Document Creation.
 * **2026-06-17:** **Resolving Enclave-Timing Leakage (CVE-2026-62001).**
     * **Context:** Today's market sync revealed that hardware-bound entangled
