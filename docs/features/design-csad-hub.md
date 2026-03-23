@@ -51,5 +51,6 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 **Context**: Research identified "Context Shadowing" vulnerabilities.
 
 **Architecture Adjustment**:
+
 * Integrating the **Intent Hierarchy Enforcer (IHE)** into Pattern Matcher.
 * Implementing **KNS Command Runner** for all CSAD-triggered tools.

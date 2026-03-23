@@ -852,5 +852,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: Findings on "Context Shadowing" signal a transition to sovereignty.
 
 **Strategic Pivot**:
+
 * **Enforced Intent Hierarchies (EIH)**: Lineage Priority for state fragments.
 * **Kernel-Namespace (KNS) Tool Isolation**: Neutralizing RCE via namespaces.
