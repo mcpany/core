@@ -2,8 +2,6 @@ module github.com/mcpany/core/server
 
 go 1.24.3
 
-
-
 replace github.com/mcpany/core => ../
 
 replace github.com/mcpany/core/proto => ../proto
