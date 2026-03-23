@@ -4,9 +4,6 @@
 run:
   timeout: 5m
   tests: false
-  concurrency: 1
-  build-tags:
-    - skip-lint
 
 linters:
   enable:
