@@ -72,3 +72,10 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
 - Appending the **Attention-Boundary Governance (ABG)** Hub requirements to the verification logic in Section 4.
 - The SMM will now monitor fragment entropy to prevent splicing.
   **Security Impact:** Ensures that the parent agent's attention window remains anchored to the mission root even during high-entropy noise injection.
+
+### Update: 2026-06-18 - Mitigating Attention-Splicing (CVE-2026-71002)
+**Context:** A critical vulnerability has been disclosed where malicious subagents perform "Attention-Splicing" to evict mission-root anchors.
+**Architecture Adjustment:**
+* Introducing **Attention-Boundary Governance (ABG)** structural analysis.
+* SMM will now monitor not just stylometric signatures but the entropy distribution across the entire attention window.
+**Security Impact:** Detects and blocks high-entropy "noise shards" designed to bypass zero-tier attention locking.

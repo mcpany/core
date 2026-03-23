@@ -77,3 +77,10 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
 - Integrating the **Teammate Integrity Token (TIT) Broker** in Section 4.
 - Every shard mutation commit must now be accompanied by a hardware-attested TIT.
   **Security Impact:** Ensures absolute non-repudiation for all teammate-led state changes within the entangled mesh.
+
+### Update: 2026-06-18 - Resolving Teammate Impersonation via Integrity Tokens
+**Context:** Today's market sync revealed the adoption of "Teammate Integrity Tokens" (TITs) in Claude Code horizontal meshes.
+**Architecture Adjustment:**
+* Integrating the **TIT Broker** into the ESB sync loop.
+* Every state update propagated through the Entangled State Broker must now include a hardware-attested TIT.
+**Security Impact:** Prevents a compromised subagent from injecting malicious state shards into the mesh by spoofing its teammate identity.
