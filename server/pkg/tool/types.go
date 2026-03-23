@@ -4113,11 +4113,8 @@ func checkArgumentInterpreterInjection(val string, template string, base string,
 	// This covers cases where the main command is a shell or runner (e.g. bash -c "awk ...")
 	// and the argument is the command line for that interpreter.
 	args := strings.Fields(template)
-	for _, arg := range args {
-		if strings.HasPrefix(arg, "-") {
-			continue // skip flags like -c
-		}
-		argBase := strings.ToLower(filepath.Base(arg))
+	if len(args) > 0 {
+		argBase := strings.ToLower(filepath.Base(args[0]))
 		// Avoid double checking if it's the same command (already checked above)
 		if argBase != base && isInterpreter(argBase) {
 			effectiveQuoteLevel := quoteLevel
@@ -4139,7 +4136,6 @@ func checkArgumentInterpreterInjection(val string, template string, base string,
 					return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 				}
 			}
-			return nil
 		}
 	}
 	return nil
