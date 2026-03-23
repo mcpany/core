@@ -33,7 +33,7 @@ if [ -z "$GOLANGCI_LINT_BIN" ]; then
     exit 1
 fi
 
-GOGC=50 GOMEMLIMIT=1500MiB "$GOLANGCI_LINT_BIN" run --timeout 20m --fix ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
+GOMEMLIMIT=2000MiB "$GOLANGCI_LINT_BIN" run --timeout 20m --fix ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
 
 echo "Running pre-commit..."
 if command -v pre-commit >/dev/null 2>&1; then

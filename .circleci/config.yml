@@ -57,7 +57,7 @@ jobs:
             . venv/bin/activate
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
-            GOMEMLIMIT=2000MiB make lint
+            GOGC=50 GOMEMLIMIT=1500MiB make lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
