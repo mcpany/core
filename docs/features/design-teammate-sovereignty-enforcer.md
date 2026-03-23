@@ -73,4 +73,4 @@ The Teammate Sovereignty Enforcer (TSE) provides a kernel-level isolation layer 
 **Context:** Today's research revealed a surge in "Logic Bombs" injected via Request-Side prompt injection (CVE-2026-30741).
 **Architecture Adjustment:** * Mandatory integration with the Logic-Sovereignty Validator (LSV) in Section 2 and 4.
 * Introducing "Logic-Aware Shard Guards" to prevent un-attested reasoning fragments from being shared between teammates.
-**Security Impact:** Prevents "Refinement Drift" and ensures that malicious logic from a single teammate cannot compromise the mission-root audit trace.
+**Security Impact:** Prevents "Refinement Drift" and ensures that malicious logic from a single teammate cannot compromise the mission-root audit trail.
