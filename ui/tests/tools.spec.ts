@@ -98,15 +98,12 @@ test.describe('Tool Exploration', () => {
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Change grouping to "service"
-        // Use Javascript evaluation to directly trigger the click event on the Radix Select button.
-        // This bypasses all Playwright actionability checks and synthetic event overlays.
-        const combobox = page.locator('button[role="combobox"]').first();
-        await combobox.waitFor({ state: 'attached', timeout: 10000 });
-        await combobox.dispatchEvent('click');
+        // Wait a brief moment for the Radix UI Select component to fully hydrate its event listeners.
+        // Playwright can sometimes click the SSR'd button before React attaches the `onClick` handler.
+        await page.waitForTimeout(500);
 
-        const option = page.getByRole('option', { name: 'Group by Service' });
-        await option.waitFor({ state: 'attached', timeout: 5000 });
-        await option.dispatchEvent('click');
+        await page.getByRole('combobox').first().click();
+        await page.getByRole('option', { name: 'Group by Service' }).click();
 
         // Verify that the Payment Gateway service grouping header is visible
         // We use a regex because the AccordionTrigger button's accessible name includes the tool count badge (e.g. "Payment Gateway 1")
