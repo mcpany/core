@@ -822,4 +822,7 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Monotonic Handshake Lineage (MHL)**: Hardware-bound lineage tokens for all handshake and session-initiation events. (Added: 2026-06-26)
 
 #### Upcoming (2026-03-21 Evolution)
-* [P0] LOWA HMAC.
+*   **[P0] LOWA HMAC Challenge-Response**: Implementation of cryptographically bound handshakes for local WebSocket listeners to neutralize CSWSH. (Added: 2026-03-21)
+*   **[P0] T2T Mailbox Sharding Middleware**: Performance optimization for horizontal teammate meshes, supporting 5+ concurrent agents. (Added: 2026-03-21)
+*   **[P0] Full-Mesh Discovery Auth (v2)**: Advanced "Auth-before-Discovery" protocol requiring mission-root attestation before revealing capabilities. (Added: 2026-03-21)
+*   **[P1] A2A Capability Masking**: Implementation of schema-masking for agent capability cards during the initial handshake. (Added: 2026-03-21)
