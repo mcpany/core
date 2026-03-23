@@ -1037,9 +1037,5 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ---
 
 ## Strategic Evolution: 2026-06-18
-- **Infrastructure Sovereignty**: transition to "Attention Sovereignty" as a core security model. This involves cryptographically locking context fragments from being evicted or shadowed.
-- **Budget-Bound Autonomy**: Integration of "Phase-Bound Reasoning Budgets" (PBRB) as a primary governance layer to neutralize Agentic DoS threats.
-
-## Strategic Evolution: 2026-06-18
-- **Infrastructure Sovereignty**: transition to \"Attention Sovereignty\" as a core security model. This involves cryptographically locking context fragments from being evicted or shadowed.
-- **Budget-Bound Autonomy**: Integration of \"Phase-Bound Reasoning Budgets\" (PBRB) as a primary governance layer.
+- **Infrastructure Sovereignty**: transition to "Attention Sovereignty" as a core security model.
+- **Budget-Bound Autonomy**: Integration of "Phase-Bound Reasoning Budgets" (PBRB) for governance.

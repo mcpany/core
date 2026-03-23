@@ -1362,11 +1362,5 @@
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
 
 ### Strategic Additions: 2026-06-18
-- **[P0] ALS Controller**: Attention-Locked Sovereignty controller to mitigate CVE-2026-71002.
-- **[P0] PBRB Firewall**: Phase-Bound Reasoning Budget firewall for swarm token-spend governance.
-- **[P1] T2T Stylometric Relay**: verify agent identity in horizontal collaboration.
-
-### Strategic Additions: 2026-06-18
-- **[P0] ALS Controller**: Attention-Locked Sovereignty controller to mitigate CVE-2026-71002.
-- **[P0] PBRB Firewall**: Phase-Bound Reasoning Budget firewall for swarm token-spend governance.
-- **[P1] T2T Stylometric Relay**: verify agent identity in horizontal collaboration.
+- **[P0] ALS Controller**: Attention-Locked Sovereignty for context protection.
+- **[P0] PBRB Firewall**: Phase-Bound Reasoning Budget firewall.

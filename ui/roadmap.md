@@ -587,9 +587,5 @@
 - [ ] **[P0] WASM-Hook Safety Reporter**: (2026-06-15) UI for viewing behavioral profiling results for un-attested configuration hooks.
 
 ### Upcoming: 2026-06-18 - Strategic Monitoring
-- **[P0] ALS Status Dashboard**: Real-time visualization of Attention-Locked fragments.
-- **[P0] PBRB Budget Tracker**: Live view of reasoning budget consumption.
-
-### Upcoming: 2026-06-18 - Strategic Monitoring
-- **[P0] ALS Status Dashboard**: Real-time visualization of Attention-Locked fragments.
+- **[P0] ALS Status Dashboard**: Visualization of Attention-Locked fragments.
 - **[P0] PBRB Budget Tracker**: Live view of reasoning budget consumption.
