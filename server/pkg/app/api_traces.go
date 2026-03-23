@@ -10,7 +10,7 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-func (a *App) handleDebugSeedTraces() http.HandlerFunc {
+func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
