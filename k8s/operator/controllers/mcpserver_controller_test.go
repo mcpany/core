@@ -3,6 +3,8 @@
 
 package controllers
 
+// Package controllers provides the controller logic for the MCP Operator.
+
 import (
 	"context"
 	"testing"
