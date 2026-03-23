@@ -851,8 +851,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ## Strategic Evolution: [2026-05-30]
 ### Focus: Cognitive Integrity & Reasoning-Bound Context Sharding (RBCS)
-**Context**: Emerging threats like "Context Mirroring" (CVE-2026-45012) and "Teammate Coercion" demand infrastructure-level cognitive defense.
-**Strategic Pivot**:
 - **Cognitive Integrity Arbiter (CIA)**: Authoritative validator for reasoning traces.
 - **Reasoning-Bound Context Sharding (RBCS) Hub**: Cryptographic isolation of reasoning branches.
 - **Monotonic Task Nonce (MTN) Provider**: Neutralizing replay probes in deep swarms.

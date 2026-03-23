@@ -51,5 +51,4 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 * **2026-05-29:** Initial Document Creation.
 
 ### Update: [2026-05-30] - Integration with MTN Provider
-**Context**: "Context Mirroring" probes can evade anomaly detection.
-**Adjustment**: Integrating CSAD Hub with the **Monotonic Task Nonce (MTN) Provider** to block replay-based probes.
+Integrating CSAD Hub with the **Monotonic Task Nonce (MTN) Provider** to block replay-based probes.
