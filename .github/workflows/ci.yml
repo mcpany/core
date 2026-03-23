@@ -78,7 +78,7 @@ jobs:
       # All lint tooling (buildifier, gazelle, eslint, tsc) is managed by Bazel.
       # No Go, Node, or Python setup is needed outside of Bazel.
       - name: Set up Bazel
-        uses: bazel-contrib/setup-bazel@0.18.0
+        uses: bazel-contrib/setup-bazel@0.8.5
         with:
           bazelisk-cache: true
           disk-cache: ${{ runner.os }}-bazel-lint-${{ hashFiles('**/BUILD', '**/BUILD.bazel', '**/*.bzl', 'MODULE.bazel') }}
@@ -113,7 +113,7 @@ jobs:
       # This action manages the Bazel/Bazelisk installation and
       # automatically handles the GitHub Action Cache API for you.
       - name: Set up Bazel
-        uses: bazel-contrib/setup-bazel@0.18.0
+        uses: bazel-contrib/setup-bazel@0.8.5
         with:
           # 1. Bazelisk cache: keeps the bazel binaries themselves
           bazelisk-cache: true
