@@ -1,13 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 /**
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import { request, APIRequestContext } from "@playwright/test";
-
-// Removed proto imports as we use simple raw json payloads to seed test data
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 const BASE_URL = process.env.BACKEND_URL || "http://localhost:50050";
 const API_KEY = process.env.MCPANY_API_KEY || "test-token";
@@ -305,7 +302,7 @@ export const cleanupProfiles = async (requestContext?: APIRequestContext) => {
 };
 
 export const seedPrompts = async (requestContext?: APIRequestContext) => {
-  // Handled by seedGlobalState
+  // No-op
 };
 
 export const cleanupPrompts = async (requestContext?: APIRequestContext) => {

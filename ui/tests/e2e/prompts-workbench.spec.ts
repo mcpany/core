@@ -4,11 +4,18 @@
  */
 
 import { test, expect } from "@playwright/test";
-import { seedGlobalState, seedUser, cleanupUser } from "./test-data";
+import {
+  seedGlobalState,
+  seedPrompts,
+  cleanupPrompts,
+  seedUser,
+  cleanupUser,
+} from "./test-data";
 
 test.describe("Prompts Workbench", () => {
   test.beforeEach(async ({ page, request }) => {
     await seedGlobalState(request);
+    await seedPrompts(request);
     await seedUser(request, "e2e-admin-prompts");
 
     // Login
@@ -22,6 +29,7 @@ test.describe("Prompts Workbench", () => {
   });
 
   test.afterEach(async ({ request }) => {
+    await cleanupPrompts(request);
     await cleanupUser(request, "e2e-admin-prompts");
   });
 
