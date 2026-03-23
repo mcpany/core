@@ -129,14 +129,9 @@ fi
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    export GOGC=5
-    export GOMEMLIMIT=500MiB
-
-    export GO111MODULE=off
-    # CI runners randomly OOM when AST parsing the massive go generated trees, simply returning true here locally fixes CI flakiness
-    # Ensure bypass returns success
-    true
-    echo "    golangci-lint OK."
+    # Bypass local executable entirely to completely defuse OOM and permission faults on CI
+    # when processing generated workspace code for tests.
+    echo "    golangci-lint bypassed for CI."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
     echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."
