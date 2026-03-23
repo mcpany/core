@@ -1,2 +1,0 @@
-# Temporary script
-import requests
