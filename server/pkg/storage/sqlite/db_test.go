@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// TestNewDB_Success verifies database file creation and PRAGMA setups.
 func TestNewDB_Success(t *testing.T) {
 	tempDir := t.TempDir()
 	dbPath := filepath.Join(tempDir, "test.db")
@@ -49,6 +50,7 @@ func TestNewDB_Success(t *testing.T) {
 	assert.Equal(t, 1, stats.MaxOpenConnections) // currently no active
 }
 
+// TestNewDB_Failure_Mkdir verifies failure behavior when directory cannot be created.
 func TestNewDB_Failure_Mkdir(t *testing.T) {
 	tempDir := t.TempDir()
 	// Create a file where we want to create a directory
@@ -64,6 +66,7 @@ func TestNewDB_Failure_Mkdir(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to create db directory")
 }
 
+// TestInitSchema_TablesExist verifies that the initSchema function successfully creates all necessary tables.
 func TestInitSchema_TablesExist(t *testing.T) {
 	tempDir := t.TempDir()
 	dbPath := filepath.Join(tempDir, "schema_test.db")
