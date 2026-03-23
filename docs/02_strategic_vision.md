@@ -1184,4 +1184,4 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Active Reasoning Interdiction (ARI) Hub v2**: To counter "Logic Grafting" in shared teammate shards, we are upgrading the ARI Hub. This layer will utilize semantic hash-chaining to detect and block unauthorized reasoning fragments at the coordination fragment level before they lead to intent drift.
 
 ## Strategic Evolution: [2026-03-21]
-Focus on LOWA and AMS.
+Focus on LOWA and AMS middleware.

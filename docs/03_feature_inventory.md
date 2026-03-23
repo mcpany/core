@@ -1525,4 +1525,4 @@
 - **SRM Provider**: (Re-affirmed P0) Elevated with mandatory support for **Reasoning Provenance** verification.
 
 ## Evolution: [2026-03-21] Updates
-Proposed additions for LOWA and T2T.
+Proposed: LOWA Pairing (P0), T2T Sharding (P0).

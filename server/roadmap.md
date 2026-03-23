@@ -832,4 +832,4 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Fast-Path Identity Resumption (FPIR)**: Time-bound hardware-attested trust leases to neutralize teammate rotation latency. (Added: 2026-06-29)
 
 #### Upcoming (2026-03-21 Evolution)
-* [P0] LOWA HMAC.
+* [P0] LOWA HMAC challenge-response.
