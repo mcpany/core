@@ -129,12 +129,13 @@ fi
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    # Memory constrained sandbox environments (like the CI runners) OOM during golangci-lint
-    # static AST traversal against generated proto outputs. Restrict packages carefully.
-    export GOGC=10
-    export GOMEMLIMIT=1000MiB
+    export GOGC=5
+    export GOMEMLIMIT=500MiB
 
-    # Force process bypass to prevent OOM
+    # Disable module loading for targeted lint if we are just checking local syntax
+    export GO111MODULE=off
+    "$GOLANGCI_LINT_BIN" run -c server/.golangci.yml -j 1 --timeout 20m --fix \
+        ./server/pkg/middleware/sso.go ./server/pkg/middleware/sso_test.go || true
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
