@@ -657,3 +657,9 @@
 - [ ] **[P0] CRDT Shard Monitor**: Real-time visualization of lock-free mailbox synchronization and hardware-attested conflict resolution. (Added: 2026-06-27)
 - [ ] **[P0] Auditor Attestation Portal**: Interactive workspace for third-party security auditors to review and sign dynamic skill grafts. (Added: 2026-06-27)
 - [ ] **[P1] Reasoning Path Integrity Viewer**: Visual debugger for hardware-signed RPI fragments and semantic hash-chain integrity. (Added: 2026-06-27)
+
+#### Upcoming (2026-06-28 Evolution)
+- [ ] **[P0] Mailbox Fragment Auditor**: (2026-06-28) Real-time visualization of inter-teammate task metadata validation and splicing alerts.
+- [ ] **[P0] Markdown Attestation Reviewer**: (2026-06-28) Security workspace for TPM-signing and approving project-local agent definitions.
+- [ ] **[P0] Bidding Safety Console**: (2026-06-28) Visual tracker for UACO bid profiles, capability card verification, and shadow-bid alerts.
+- [ ] **[P0] Trust Initialization Monitor**: (2026-06-28) Real-time timeline of hardware-locked environment bootstrapping sequence.

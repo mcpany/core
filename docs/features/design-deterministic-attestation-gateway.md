@@ -61,3 +61,11 @@ The persistent threat from project-local configuration vulnerabilities (CVE-2025
 * **Hardware-Locked Boot:** Section 4 now includes a requirement for TPM-bound signatures on all project-local hooks and security-critical settings.
 * **Binding Logic:** The gateway will now refuse to attest to a manifest if sensitive hooks are not cryptographically bound to the local machine's TPM, neutralizing the risk of "Payload Smuggling" in malicious repo clones.
 **Security Impact:** Moves the trust boundary from the software manifest to the hardware, ensuring that security policies cannot be bypassed even if the manifest file itself is compromised or replaced.
+
+### Update: 2026-06-28 - Deterministic Trust Bootstrapping
+**Context:** The disclosure of CVE-2026-33068 (Claude Code trust bypass) confirms that the order of operations during workspace initialization is a critical vulnerability.
+**Architecture Adjustment:**
+* Mandating **Trust-before-Load** sequence. Section 4 flow updated: `Hardware Attestation` -> `Integrity Verification` -> `Config/Context Load`.
+* MCP Any now acts as the authoritative broker for the environment initialization sequence, blocking all filesystem and network access for the agent until hardware-bound attestation is validated.
+* Integration with **MCA** to ensure Markdown-resident instructions are attested before the agent process is even spawned.
+**Security Impact:** Eliminates race conditions where configurations are loaded before security policies are active, neutralizing trust bypass exploits.

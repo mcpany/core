@@ -1501,3 +1501,14 @@
 ### Priority Shifts
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Elevated with mandatory **CFSA** integration to counter mimicry-based hijacking.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SHI** and **MHL** integration for all agency-initiation signals.
+
+## Evolution: [2026-06-28] Updates
+
+### Proposed Additions
+- **Mailbox Splicing Guard (MSG)**: (P0) Advanced security middleware for the ARI Hub that performs fragment-level semantic validation for inter-teammate task metadata.
+- **Markdown Context Attestation (MCA)**: (P0) Hardware-attested signature service for project-local Markdown agent definitions to neutralize deceptive instructions.
+- **Bidding Integrity Validator**: (P0) Behavioral security service for the UACO Negotiation Hub that verifies agent capability cards against bid profiles.
+
+### Priority Shifts
+- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Evolving to support mandatory **MSG** integration to counter CVE-2026-81042.
+- **PNTD Discovery Provider**: (Re-affirmed P0) Elevated with the requirement for **MCA-compliant** Markdown ingestion.

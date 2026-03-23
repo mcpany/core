@@ -80,3 +80,11 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * The ARI Hub will now mandate **Lineage-Bound Context Verification**. Every context fragment ingested from project-local files must be cryptographically bound to a verified user attestation.
 * Implementing **Attention-Driver Analysis** in the Semantic Consistency Engine to detect when "Injected Context" is the primary driver for high-risk tool proposals.
 **Security Impact:** Prevents "Invisible" instructions from project-local files from hijacking the agent's reasoning loop.
+
+### Update: 2026-06-28 - Fragment-Level Mailbox Integrity (MSG)
+**Context:** The discovery of "Mailbox Splicing" (CVE-2026-81042) in horizontal teammate meshes reveals that subagents can inject unauthorized tasks into sibling queues by exploiting sharded state boundaries.
+**Architecture Adjustment:**
+* Integrating the **Mailbox Splicing Guard (MSG)** as a core validation module.
+* ARI Hub now performs **Fragment-Level Semantic Validation** for all inter-teammate task metadata.
+* Mandating **TPM-bound Task Lineage** for all teammate mailbox messages, ensuring they are direct descendants of the mission-root intent.
+**Security Impact:** Neutralizes cross-teammate task injection and ensures coordination remains anchored to the verified mission root.
