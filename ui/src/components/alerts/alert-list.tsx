@@ -335,4 +335,3 @@ export function AlertList() {
     </div>
   );
 }
-// Refined bulk status change implementation for stability.
