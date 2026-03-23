@@ -98,7 +98,7 @@ export function SecretsManager() {
                 name: newSecretName,
                 key: newSecretKey,
                 value: newSecretValue,
-                provider: newSecretProvider as any,
+                provider: newSecretProvider as "openai" | "anthropic" | "aws" | "gcp" | "custom",
                 createdAt: new Date().toISOString(),
                 lastUsed: "Never"
             };
@@ -233,7 +233,7 @@ export function SecretsManager() {
                         <div className="grid gap-4 py-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="provider">Provider</Label>
-                                <Select value={newSecretProvider} onValueChange={setNewSecretProvider}>
+                                <Select value={newSecretProvider as "openai" | "anthropic" | "aws" | "gcp" | "custom"} onValueChange={setNewSecretProvider}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select provider" />
                                     </SelectTrigger>
