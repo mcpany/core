@@ -77,7 +77,7 @@ func TestSmartRecoveryMiddleware_Execute(t *testing.T) {
 		mw.llmClient = mockLLM
 
 		// Expectation
-		mockLLM.On("ChatCompletion", mock.Anything, mock.MatchedBy(func(r llm.ChatRequest) bool {
+		mockLLM.On("ChatCompletion", mock.Anything(), mock.MatchedBy(func(r llm.ChatRequest) bool {
 			return r.Model == "gpt-4"
 		})).Return(&llm.ChatResponse{
 			Content: `{"arg": "good"}`,
@@ -112,7 +112,7 @@ func TestSmartRecoveryMiddleware_Execute(t *testing.T) {
 		mw := NewSmartRecoveryMiddleware(config, nil)
 		mw.llmClient = mockLLM
 
-		mockLLM.On("ChatCompletion", mock.Anything, mock.Anything).Return(&llm.ChatResponse{
+		mockLLM.On("ChatCompletion", mock.Anything(), mock.Anything()).Return(&llm.ChatResponse{
 			Content: `{"arg": "still-bad"}`,
 		}, nil)
 
@@ -137,7 +137,7 @@ func TestSmartRecoveryMiddleware_Execute(t *testing.T) {
 		mw := NewSmartRecoveryMiddleware(config, nil)
 		mw.llmClient = mockLLM
 
-		mockLLM.On("ChatCompletion", mock.Anything, mock.Anything).Return(nil, errors.New("llm down"))
+		mockLLM.On("ChatCompletion", mock.Anything(), mock.Anything()).Return(nil, errors.New("llm down"))
 
 		attempts := 0
 		next := func(ctx context.Context, r *tool.ExecutionRequest) (any, error) {

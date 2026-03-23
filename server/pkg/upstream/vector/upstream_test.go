@@ -243,8 +243,8 @@ func TestRegister(t *testing.T) {
 
 	// Setup mock tool manager
 	mockToolManager := new(MockToolManager)
-	mockToolManager.On("AddServiceInfo", mock.Anything, mock.Anything).Return()
-	mockToolManager.On("AddTool", mock.Anything).Return(nil)
+	mockToolManager.On("AddServiceInfo", mock.Anything(), mock.Anything()).Return()
+	mockToolManager.On("AddTool", mock.Anything()).Return(nil)
 
 	// Configure valid service config
 	validName := "valid-vector-service"

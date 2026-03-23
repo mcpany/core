@@ -47,7 +47,7 @@ func TestCheckHealth(t *testing.T) {
 			checker: mockChecker,
 		}
 
-		mockChecker.On("Check", mock.Anything).Return(health.CheckerResult{
+		mockChecker.On("Check", mock.Anything()).Return(health.CheckerResult{
 			Status: health.StatusUp,
 		})
 
@@ -63,7 +63,7 @@ func TestCheckHealth(t *testing.T) {
 		}
 
 		errMsg := "connection refused"
-		mockChecker.On("Check", mock.Anything).Return(health.CheckerResult{
+		mockChecker.On("Check", mock.Anything()).Return(health.CheckerResult{
 			Status: health.StatusDown,
 			Details: map[string]health.CheckResult{
 				"db": {
