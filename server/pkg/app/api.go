@@ -25,6 +25,7 @@ import (
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -746,29 +747,34 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 }
 
 func (a *Application) handleTools() http.HandlerFunc {
+	type toolResponse struct {
+		*mcp.Tool
+		ServiceID string `json:"service_id,omitempty"`
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			tools := a.ToolManager.ListTools()
-			var toolList []map[string]any
+			var toolList []toolResponse
 			for _, t := range tools {
 				mcpTool := t.MCPTool()
 				if mcpTool == nil {
 					continue
 				}
-				toolMap := map[string]any{
-					"name":        mcpTool.Name,
-					"description": mcpTool.Description,
-					"inputSchema": mcpTool.InputSchema,
+
+				resp := toolResponse{
+					Tool: mcpTool,
 				}
+
 				if v1Tool := t.Tool(); v1Tool != nil {
-					toolMap["service_id"] = v1Tool.GetServiceId()
+					resp.ServiceID = v1Tool.GetServiceId()
 				}
-				toolList = append(toolList, toolMap)
+				toolList = append(toolList, resp)
 			}
 			// Ensure we return an empty array instead of null when no tools exist
 			if toolList == nil {
-				toolList = make([]map[string]any, 0)
+				toolList = make([]toolResponse, 0)
 			}
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(toolList)
