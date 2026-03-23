@@ -129,6 +129,7 @@ filegroup(
         "market-sync-2026-06-26.md",
         "market-sync-2026-06-27.md",
         "market-sync-2026-06-28.md",
+        "market-sync-2026-06-29.md",
     ],
     visibility = ["//visibility:public"],
 )
