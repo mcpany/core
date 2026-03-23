@@ -825,8 +825,3 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Blind Handshake Provider**: Implementation of ZK-Capability Proofs for privacy-preserving tool discovery. (Added: 2026-06-28)
 *   **[P0] CRDT-Native Mailbox Sharding**: Transition to Conflict-Free Replicated Data Types for lock-free teammate synchronization. (Added: 2026-06-28)
 *   **[P0] Sovereign Traceability Validator**: Security middleware for verifying hardware-attested, hash-chained reasoning lineage. (Added: 2026-06-28)
-
-#### Upcoming (2026-06-28 Evolution)
-*   **[P0] Blind Handshake Provider**: Implementation of ZK-Capability Proofs for privacy-preserving tool discovery. (Added: 2026-06-28)
-*   **[P0] CRDT-Native Mailbox Sharding**: Transition to Conflict-Free Replicated Data Types for lock-free teammate synchronization. (Added: 2026-06-28)
-*   **[P0] Sovereign Traceability Validator**: Security middleware for verifying hardware-attested, hash-chained reasoning lineage. (Added: 2026-06-28)
