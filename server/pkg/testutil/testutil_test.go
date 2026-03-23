@@ -76,7 +76,7 @@ func TestMockTool(t *testing.T) {
 		mt := &MockTool{}
 		res, err := mt.Execute(context.Background(), &tool.ExecutionRequest{})
 		assert.NoError(t, err)
-		assert.NotNil(t, res)
+		assert.Nil(t, res)
 	})
 
 	t.Run("GetCacheConfig", func(t *testing.T) {
