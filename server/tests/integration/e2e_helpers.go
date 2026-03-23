@@ -1801,6 +1801,8 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 	}.Build()
 	toolDef.SetCallId(callID)
 
+	_ = callDef // To satisfy go tools
+
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
 		HttpService: configv1.HttpUpstreamService_builder{
@@ -2137,6 +2139,8 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 		Method:       &method,
 	}.Build()
 	toolDef.SetCallId(callID)
+
+	_ = callDef // To satisfy go tools
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
