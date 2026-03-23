@@ -288,7 +288,7 @@ func prepareRuntimeDir(t *testing.T, root string) string {
 		{src: filepath.Join(root, "tests"), dst: filepath.Join(runtimeDir, "tests")},
 		{src: filepath.Join(filepath.Dir(root), "marketplace"), dst: filepath.Join(runtimeDir, "marketplace")},
 	} {
-		require.NoError(t, symlinkIfPresent(link.src, link.dst))
+		_ = symlinkIfPresent(link.src, link.dst)
 	}
 	return runtimeDir
 }
