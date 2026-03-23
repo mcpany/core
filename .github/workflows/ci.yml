@@ -167,8 +167,7 @@ jobs:
         run: make prepare
 
       - name: Lint
-        run: |
-          echo "Bypassing root lint due to recurrent OOM on circleci/github runners"
+        run: make lint
 
   bazel-test:
     runs-on: ubuntu-latest
