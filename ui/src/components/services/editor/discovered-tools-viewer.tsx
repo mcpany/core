@@ -14,7 +14,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import { JsonView } from "@/components/ui/json-view";
+import { SchemaVisualizer } from "@/components/schema-visualizer";
 
 interface DiscoveredToolsViewerProps {
     tools: ToolDefinition[];
@@ -67,11 +67,7 @@ export function DiscoveredToolsViewer({ tools }: DiscoveredToolsViewerProps) {
                                     <div>
                                         <div className="text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wider">Input Schema</div>
                                         <div className="bg-muted/40 rounded-md border overflow-hidden">
-                                            <JsonView
-                                                data={tool.inputSchema}
-                                                maxHeight={300}
-                                                className="bg-transparent border-none text-xs"
-                                            />
+                                            <SchemaVisualizer schema={tool.inputSchema || {}} />
                                         </div>
                                     </div>
                                 </div>
