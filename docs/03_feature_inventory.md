@@ -1501,3 +1501,14 @@
 ### Priority Shifts
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Elevated with mandatory **CFSA** integration to counter mimicry-based hijacking.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SHI** and **MHL** integration for all agency-initiation signals.
+
+## Evolution: [2026-06-28] Updates
+
+### Proposed Additions
+- **Marketplace Skill Verification Engine (MSVE)**: (P0) Authoritative security service that performs mandatory behavioral profiling and static analysis of marketplace skills in an isolated sandbox.
+- **Inference-Time Retrieval Sanitizer (ITRS)**: (P0) Semantic security middleware that performs real-time analysis and scrubbing of retrieved data fragments to prevent uncontrolled exfiltration of PII/IP.
+- **Process-Level Context Reclaimer (PLCR)**: (P1) Resource management service that monitors and purges stale or high-entropy context fragments to stabilize long-running agent sessions.
+
+### Priority Shifts
+- **Verified Skill Registry**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MSVE-signed** manifests for all marketplace tools.
+- **Inference-Time Data Sanitizer (IDS)**: (Re-affirmed P0) Designated as the primary enforcement point for **ITRS-compliant** retrieval guardrails.

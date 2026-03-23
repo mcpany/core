@@ -657,3 +657,8 @@
 - [ ] **[P0] CRDT Shard Monitor**: Real-time visualization of lock-free mailbox synchronization and hardware-attested conflict resolution. (Added: 2026-06-27)
 - [ ] **[P0] Auditor Attestation Portal**: Interactive workspace for third-party security auditors to review and sign dynamic skill grafts. (Added: 2026-06-27)
 - [ ] **[P1] Reasoning Path Integrity Viewer**: Visual debugger for hardware-signed RPI fragments and semantic hash-chain integrity. (Added: 2026-06-27)
+
+#### Upcoming (2026-06-28 Evolution)
+- [ ] **[P0] Marketplace Skill Safety Dashboard**: (2026-06-28) UI for reviewing MSVE behavioral reports and risk scores for community tools.
+- [ ] **[P0] Retrieval Sanitization Monitor**: (2026-06-28) Real-time visualization of ITRS-redacted fragments and exfiltration alerts.
+- [ ] **[P1] Context Memory Health Widget**: (2026-06-28) Monitor for PLCR reclamation events and agent process memory usage.
