@@ -1,4 +1,5 @@
 <!-- markdownlint-disable -->
+
 # Server Roadmap
 
 ## 1. Top Priorities: The Universal Agent Bus (New Strategic Focus)
@@ -78,7 +79,7 @@
 *   **[P1] Relational Identity Provider**: Service to map and verify agent identities across disparate frameworks for context continuity. (Added: 2026-03-16)
 *   **[P1] UAB Task Delegation Bridge**: Support for UAB-native task cards and authenticated discovery in the A2A bridge. (Added: 2026-03-16)
 
-#### Upcoming (2026-03-17 Evolution)
+#### Upcoming (2026-03-17 Evolution - Core Capabilities)
 *   **[P0] Local-Loopback Rate Limiter**: Mandatory rate limiting and auditing for all `127.0.0.1` / `::1` traffic to mitigate brute-force attacks. (Added: 2026-03-17)
 *   **[P0] UAB Authenticated Task Delegation**: Core implementation of UAB v1.2 "Authenticated Task Cards" for secure cross-framework handoffs. (Added: 2026-03-17)
 *   **[P1] Behavioral Skill Burn-In Sandbox**: Isolated profiling environment for detecting "Delayed Payload" malicious skills. (Added: 2026-03-17)
@@ -101,7 +102,7 @@
 *   **[P1] DNS/ICMP Exfiltration Monitor**: L4 telemetry middleware to detect and block non-HTTP exfiltration attempts. (Added: 2026-03-21)
 *   **[P1] Hardware-Bound Trust Continuity**: TPM/Secure Enclave signatures to persist trust for verified headless agents. (Added: 2026-03-21)
 
-#### Upcoming (2026-03-17 Evolution)
+#### Upcoming (2026-03-17 Evolution - Edge Security)
 *   **[P0] Inter-Agent Mailbox Guard (IAMG)**: Mandatory mediation for teammate-to-teammate messaging with intent validation. (Added: 2026-03-17)
 *   **[P1] Verifiable RL Reward Provider**: Authoritative source for binary truth attestation to optimize RL reasoning loops. (Added: 2026-03-17)
 *   **[P0] Identity-Bound Discovery (IBD)**: Mission-token gated tool and capability discovery. (Added: 2026-03-17)
@@ -733,9 +734,6 @@ These features represent the next logical steps for the product, focusing on Ent
 
 #### Upcoming (2026-06-14 Evolution)
 
-* **[P0]** HLCH Handshake Gateway: Mandate hardware-locked session attestation for
-  all coordination fragments. (Added: 2026-06-14)
-* **[P0]** Side-Channel Immunity Filter: Frequency-analysis middleware for SCI to
-  detect hidden coordination noise. (Added: 2026-06-14)
-* **[P0]** MRA-Backed Lineage Provider: Hardware-bound collision-resistant semantic
-  hashes for deep reasoning chains. (Added: 2026-06-14)
+* **[P0] HLCH Handshake Gateway**: Mandate hardware-locked session attestation for all coordination fragments. (Added: 2026-06-14)
+* **[P0] Side-Channel Immunity Filter**: Frequency-analysis middleware for SCI to detect hidden coordination noise. (Added: 2026-06-14)
+* **[P0] MRA-Backed Lineage Provider**: Hardware-bound collision-resistant semantic hashes for deep reasoning chains. (Added: 2026-06-14)

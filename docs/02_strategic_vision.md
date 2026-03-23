@@ -1,4 +1,5 @@
 <!-- markdownlint-disable -->
+
 # Strategic Vision: MCP Any
 
 ## Mission Statement
@@ -1016,15 +1017,15 @@ filters.
 
 **Strategic Pivot**:
 
-- Hardware-Locked Coordination Handshake (HLCH): MCP Any will mandate HLCH v1.0
-  for all inter-agent task bidding and state fragments. This ensures that
+* **Hardware-Locked Coordination Handshake (HLCH)**: MCP Any will mandate HLCH
+  v1.0 for all inter-agent task bidding and state fragments. This ensures that
   coordination is cryptographically bound to a unique, hardware-attested
   session, neutralizing identity-decay mimicry.
-- Side-Channel Immunity Filtering: We are upgrading the SCI interceptor to
+* **Side-Channel Immunity Filtering**: We are upgrading the SCI interceptor to
   include "Side-Channel Immunity." This layer will perform real-time frequency
   analysis of context-window updates to detect and block hidden coordination
   signals.
-- MRA-Backed Lineage Provider: Moving beyond simple hash-chaining, we are
+* **MRA-Backed Lineage Provider**: Moving beyond simple hash-chaining, we are
   implementing MRA-backed lineage. Every coordination fragment will be signed
   using Mesh-Resident Attestation (MRA), providing proof of parentage that
   survives long-term session decay.
