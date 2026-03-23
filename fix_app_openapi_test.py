@@ -1,0 +1,46 @@
+import os
+import glob
+import re
+
+def process_file(filename):
+    with open(filename, 'r') as f:
+        content = f.read()
+
+    types_to_fix = [
+        "TestMockTool", "MockTool", "mockTool"
+    ]
+
+    modified = False
+    for t in types_to_fix:
+        if t in content and f"func (t *{t}) IsStreaming() bool" not in content and f"func (m *{t}) IsStreaming() bool" not in content and f"func (c *{t}) IsStreaming() bool" not in content:
+            # We just need to add the two methods
+
+            # Find receiver name, e.g., func (m *mockTool) Execute(...)
+            match = re.search(r"func \(([a-zA-Z0-9_]+) \*" + t + r"\) Execute\(", content)
+            if match:
+                receiver = match.group(1)
+                replacement = f"""
+func ({receiver} *{t}) IsStreaming() bool {{
+	return false
+}}
+
+func ({receiver} *{t}) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {{
+	return nil, nil
+}}
+"""
+                content = content.replace(match.group(0), replacement + "\n" + match.group(0))
+                modified = True
+
+    if modified:
+        with open(filename, 'w') as f:
+            f.write(content)
+
+for root, _, files in os.walk("server/pkg/app"):
+    for file in files:
+        if file.endswith(".go"):
+            process_file(os.path.join(root, file))
+
+for root, _, files in os.walk("server/pkg/upstream/openapi"):
+    for file in files:
+        if file.endswith(".go"):
+            process_file(os.path.join(root, file))
