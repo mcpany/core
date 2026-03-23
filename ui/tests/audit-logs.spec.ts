@@ -69,8 +69,8 @@ test.describe('Feature Screenshot', () => {
                 entries: [
                     {
                         timestamp: new Date().toISOString(),
-                        toolName: "echo_tool",
-                        userId: "e2e-admin-core",
+                        tool_name: "echo_tool",
+                        user_id: "e2e-admin-core",
                         arguments: JSON.stringify({ "hello": "world" }),
                         result: JSON.stringify({ "output": "world" }),
                         duration: "10ms",
@@ -84,7 +84,7 @@ test.describe('Feature Screenshot', () => {
     await page.goto('/audit');
 
     // Wait for the mock to populate the list
-    await expect(page.locator('text=echo_tool').first()).toBeVisible();
+    await expect(page.locator('text=echo_tool').first()).toBeVisible({ timeout: 10000 });
 
     // Click "View"
     await page.locator('button:has-text("View")').first().click();

@@ -32,14 +32,14 @@ import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 
 interface AuditLogEntry {
     timestamp: string;
-    toolName: string;
-    userId: string;
-    profileId: string;
+    tool_name: string;
+    user_id: string;
+    profile_id: string;
     arguments: string;
     result: string;
     error: string;
     duration: string;
-    durationMs: number;
+    duration_ms: number;
 }
 
 /**
@@ -57,8 +57,8 @@ export function AuditLogViewer() {
     const { toast } = useToast();
 
     // Filters
-    const [toolName, setToolName] = useState("");
-    const [userId, setUserId] = useState("");
+    const [tool_name, setToolName] = useState("");
+    const [user_id, setUserId] = useState("");
     const [startDate, setStartDate] = useState<Date | undefined>(undefined);
     const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
@@ -74,8 +74,8 @@ export function AuditLogViewer() {
                 limit: limit,
                 offset: page * limit
             };
-            if (toolName) filters.tool_name = toolName;
-            if (userId) filters.user_id = userId;
+            if (tool_name) filters.tool_name = tool_name;
+            if (user_id) filters.user_id = user_id;
             if (startDate) filters.start_time = startDate.toISOString();
             if (endDate) filters.end_time = endDate.toISOString();
 
@@ -88,7 +88,7 @@ export function AuditLogViewer() {
             // Let's assume camelCase.
             // Wait, looking at `admin.proto`:
             // string tool_name = 2;
-            // In JSON it will be `toolName`.
+            // In JSON it will be `tool_name`.
             const newLogs = res.entries || [];
             setLogs(newLogs);
             setHasMore(newLogs.length === limit);
@@ -97,7 +97,7 @@ export function AuditLogViewer() {
         } finally {
             setLoading(false);
         }
-    }, [toolName, userId, startDate, endDate, page]);
+    }, [tool_name, user_id, startDate, endDate, page]);
 
     useEffect(() => {
         fetchLogs();
@@ -115,8 +115,8 @@ export function AuditLogViewer() {
         setExporting(true);
         try {
             const filters: any = {};
-            if (toolName) filters.tool_name = toolName;
-            if (userId) filters.user_id = userId;
+            if (tool_name) filters.tool_name = tool_name;
+            if (user_id) filters.user_id = user_id;
             if (startDate) filters.start_time = startDate.toISOString();
             if (endDate) filters.end_time = endDate.toISOString();
 
@@ -160,7 +160,7 @@ export function AuditLogViewer() {
                             <label className="text-sm font-medium">Tool Name</label>
                             <Input
                                 placeholder="e.g. weather_get"
-                                value={toolName}
+                                value={tool_name}
                                 onChange={(e) => setToolName(e.target.value)}
                             />
                         </div>
@@ -168,7 +168,7 @@ export function AuditLogViewer() {
                             <label className="text-sm font-medium">User ID</label>
                             <Input
                                 placeholder="e.g. alice"
-                                value={userId}
+                                value={user_id}
                                 onChange={(e) => setUserId(e.target.value)}
                             />
                         </div>
@@ -261,8 +261,8 @@ export function AuditLogViewer() {
                                     <TableCell className="font-mono text-xs">
                                         {new Date(log.timestamp).toLocaleString()}
                                     </TableCell>
-                                    <TableCell className="font-medium">{log.toolName}</TableCell>
-                                    <TableCell>{log.userId || "-"}</TableCell>
+                                    <TableCell className="font-medium">{log.tool_name}</TableCell>
+                                    <TableCell>{log.user_id || "-"}</TableCell>
                                     <TableCell>{log.duration}</TableCell>
                                     <TableCell>
                                         {log.error ? (
@@ -315,7 +315,7 @@ export function AuditLogViewer() {
                     <DialogHeader>
                         <DialogTitle>Audit Log Detail</DialogTitle>
                         <DialogDescription>
-                            Execution details for {selectedLog?.toolName} at {selectedLog && new Date(selectedLog.timestamp).toLocaleString()}
+                            Execution details for {selectedLog?.tool_name} at {selectedLog && new Date(selectedLog.timestamp).toLocaleString()}
                         </DialogDescription>
                     </DialogHeader>
                     {selectedLog && (
@@ -323,15 +323,15 @@ export function AuditLogViewer() {
                             <div className="grid grid-cols-2 gap-4 text-sm">
                                 <div>
                                     <span className="font-semibold block text-muted-foreground">User ID</span>
-                                    {selectedLog.userId || "N/A"}
+                                    {selectedLog.user_id || "N/A"}
                                 </div>
                                 <div>
                                     <span className="font-semibold block text-muted-foreground">Profile ID</span>
-                                    {selectedLog.profileId || "N/A"}
+                                    {selectedLog.profile_id || "N/A"}
                                 </div>
                                 <div>
                                     <span className="font-semibold block text-muted-foreground">Duration</span>
-                                    {selectedLog.duration} ({selectedLog.durationMs}ms)
+                                    {selectedLog.duration} ({selectedLog.duration_ms}ms)
                                 </div>
                                 <div>
                                     <span className="font-semibold block text-muted-foreground">Status</span>
