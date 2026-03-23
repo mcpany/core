@@ -756,6 +756,6 @@ These features represent the next logical steps for the product, focusing on Ent
 
 #### Upcoming ([2026-06-18] Evolution)
 *   **[P0] Reason-Graph Integrity (RGI) Provider**: Hardware-attested graph validation for multi-agent reasoning (Added: [2026-06-18]).
-*   **[P0] Mesh-Resident Policy Manager (MRPM)**: Federated policy service for MRPS compliance(Added: [2026-06-18]).
-*   **[P1] AAG Middleware**: Entropy-aware attention gating for DAG middleware(Added: [2026-06-18]).
-*   **[P0] Spectral Attention Guard**: Timing jitter injection for DAG middleware(Added: [2026-06-18]).
+*   **[P0] Mesh-Resident Policy Manager (MRPM)**: Federated policy service for MRPS compliance (Added: [2026-06-18]).
+*   **[P1] AAG Middleware**: Entropy-aware attention gating for DAG middleware (Added: [2026-06-18]).
+*   **[P0] Spectral Attention Guard**: Timing jitter injection for DAG middleware (Added: [2026-06-18]).

@@ -61,7 +61,7 @@
 - [ ] **Import external services via gRPC auto-discovery or OpenAPI specs.**: (Added: [2026-06-18])
 - [ ] **Export and share service configurations.**: (Added: [2026-06-18])
 - [x] **Service Connection Diagnostic Tool**: Interactive tool to diagnose connection issues with upstream services (DNS, Handshake, Capabilities) - Added based on Ecosystem Audit.
- - _Update_: Enhanced with WebSocket support and browser-side connectivity probing.
+- _Update_: Enhanced with WebSocket support and browser-side connectivity probing.
 - [x] **Integrated Connection Diagnostics**: Added direct access to the Connection Diagnostic tool from the Service List status indicator, allowing users to quickly troubleshoot failed services.
 - [x] **Context-Aware Error Suggestions**: When a service error occurs, use heuristics to suggest a fix in the Connection Diagnostic dialog.
 - [x] **Fix E2E Testing Infrastructure**: Resolve persistent CI failures in `e2e-parallel` by implementing robust backend mocking for the Settings & Secrets page tests.
