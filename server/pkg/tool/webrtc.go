@@ -238,6 +238,23 @@ func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (
 	return ch, nil
 }
 
+// Execute handles the WebRTC tool logic.
+//
+// Summary: Executes a WebRTC-based tool.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *ExecutionRequest. The request payload.
+//
+// Returns:
+//   - any: The execution response.
+//   - error: An error if the execution fails.
+//
+// Errors:
+//   - Returns errors for connection establishment, negotiation, or message failure.
+//
+// Side Effects:
+//   - Connects to a remote WebRTC endpoint and exchanges data.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized

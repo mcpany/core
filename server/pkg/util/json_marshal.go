@@ -9,6 +9,9 @@ import (
 	"sync"
 )
 
+// FastJSON is a fast, thread-safe JSON iterator configuration.
+//
+// Summary: High-performance JSON configuration.
 var (
 	FastJSON = jsoniter.Config{
 		EscapeHTML:             true,
