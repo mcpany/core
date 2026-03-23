@@ -2024,42 +2024,6 @@ export const apiClient = {
     },
 
     /**
-     * Gets the current user's preferences.
-     *
-     * Summary: Retrieves user preferences.
-     *
-     * @returns A promise that resolves to the user preferences object.
-     * @throws {Error} If the request fails.
-     *
-     * Side Effects: Makes a GET request to /api/v1/user/preferences.
-     */
-    getUserPreferences: async (): Promise<Record<string, string>> => {
-        const res = await fetchWithAuth('/api/v1/user/preferences');
-        if (!res.ok) throw new Error('Failed to fetch user preferences');
-        return res.json();
-    },
-
-    /**
-     * Updates the current user's preferences.
-     *
-     * Summary: Updates user preferences.
-     *
-     * @param preferences - The updated preferences object.
-     * @returns A promise that resolves when the preferences are updated.
-     * @throws {Error} If the request fails.
-     *
-     * Side Effects: Makes a POST request to /api/v1/user/preferences.
-     */
-    updateUserPreferences: async (preferences: Record<string, string>): Promise<void> => {
-        const res = await fetchWithAuth('/api/v1/user/preferences', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(preferences)
-        });
-        if (!res.ok) throw new Error('Failed to update user preferences');
-    },
-
-    /**
      * Gets the dashboard metrics.
      *
      * Summary: Retrieves dashboard metrics.

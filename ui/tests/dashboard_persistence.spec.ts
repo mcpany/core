@@ -4,20 +4,10 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedGlobalState } from './e2e/test-data';
 
-test.beforeEach(async ({ request }) => {
-  // Seed the global state, creating the e2e-admin-core user
-  await seedGlobalState(request);
-});
-
-test('dashboard layout persistence', async ({ page }) => {
-  // 1. Login to get authenticated context
-  await page.goto('/login');
-  await page.fill('input[name="username"]', 'e2e-admin-core');
-  await page.fill('input[name="password"]', 'password');
-  await page.click('button[type="submit"]');
-  await expect(page).toHaveURL('/');
+test('dashboard layout persistence', async ({ page, request }) => {
+  // 1. Initial Load
+  await page.goto('/');
 
   // Wait for loading to finish
   await expect(page.locator('.animate-spin')).not.toBeVisible();
@@ -26,8 +16,8 @@ test('dashboard layout persistence', async ({ page }) => {
   // If defaults are loaded, we might see widgets.
   // The test env might start fresh.
 
-  // Clear preferences via API first to ensure clean state (must use authenticated page context)
-  await page.request.post('/api/v1/user/preferences', {
+  // Clear preferences via API first to ensure clean state
+  await request.post('/api/v1/user/preferences', {
       data: { "dashboard-layout": "[]" }
   });
 
@@ -58,8 +48,8 @@ test('dashboard layout persistence', async ({ page }) => {
   await expect(page.getByText('Recent Activity').first()).toBeVisible();
   await expect(page.getByText('Your dashboard is empty')).not.toBeVisible();
 
-  // 7. Verify API state (must use authenticated page context)
-  const response = await page.request.get('/api/v1/user/preferences');
+  // 7. Verify API state
+  const response = await request.get('/api/v1/user/preferences');
   expect(response.ok()).toBeTruthy();
   const data = await response.json();
   expect(data['dashboard-layout']).toBeDefined();
