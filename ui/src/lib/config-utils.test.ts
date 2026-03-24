@@ -20,7 +20,7 @@ describe('sanitizeServiceConfig', () => {
             },
             workingDirectory: '/tmp'
         }
-    } as any; // Casting as UpstreamServiceConfig might have other required fields in strict TS
+    } as UpstreamServiceConfig; // Casting as UpstreamServiceConfig might have other required fields in strict TS
 
     it('should redact secrets when mode is redact', () => {
         const sanitized = sanitizeServiceConfig(mockService, 'redact');
@@ -48,7 +48,7 @@ describe('sanitizeServiceConfig', () => {
 
     it('should handle missing env', () => {
         const serviceNoEnv = { ...mockService, commandLineService: { command: 'cmd' } };
-        const sanitized = sanitizeServiceConfig(serviceNoEnv as any, 'redact');
+        const sanitized = sanitizeServiceConfig(serviceNoEnv as UpstreamServiceConfig, 'redact');
         expect(sanitized.commandLineService?.env).toBeUndefined();
     });
 });

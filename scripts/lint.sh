@@ -130,8 +130,8 @@ fi
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
         # Use extremely low concurrency and memory bounds to avoid OOM kills in resource-constrained environments.
-    export GOGC=10
-    export GOMEMLIMIT=1024MiB
+    export GOGC=5
+    export GOMEMLIMIT=800MiB
     "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 1 \
         ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
     echo "    golangci-lint OK."
