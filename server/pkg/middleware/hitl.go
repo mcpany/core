@@ -16,6 +16,8 @@ import (
 )
 
 // HITLConfig defines the configuration for Human-In-The-Loop approval flows.
+//
+// Summary: Configuration settings for HITL approvals.
 type HITLConfig struct {
 	Enabled        bool     `json:"enabled"`
 	SensitiveTools []string `json:"sensitive_tools"`
@@ -24,6 +26,8 @@ type HITLConfig struct {
 }
 
 // HITLApprovalRequest represents a request for human approval published to the bus.
+//
+// Summary: A structure representing an approval request for a tool.
 type HITLApprovalRequest struct {
 	ExecutionID string `json:"execution_id"`
 	ToolName    string `json:"tool_name"`
@@ -31,18 +35,31 @@ type HITLApprovalRequest struct {
 }
 
 // HITLApprovalResponse represents the response from the human operator.
+//
+// Summary: A structure representing the human's approval decision.
 type HITLApprovalResponse struct {
 	ExecutionID string `json:"execution_id"`
 	Approved    bool   `json:"approved"`
 }
 
 // HITLMiddleware enforces Human-In-The-Loop approvals for sensitive actions.
+//
+// Summary: Middleware that blocks sensitive tool execution pending human approval.
 type HITLMiddleware struct {
 	config HITLConfig
 	bus    *bus.Provider
 }
 
 // NewHITLMiddleware creates a new HITLMiddleware.
+//
+// Summary: Initializes a HITLMiddleware instance.
+//
+// Parameters:
+//   - config: HITLConfig. Configuration settings defining tools that require approval.
+//   - busProvider: *bus.Provider. The message bus provider.
+//
+// Returns:
+//   - *HITLMiddleware: The initialized middleware.
 func NewHITLMiddleware(config HITLConfig, busProvider *bus.Provider) *HITLMiddleware {
 	return &HITLMiddleware{
 		config: config,
@@ -51,6 +68,17 @@ func NewHITLMiddleware(config HITLConfig, busProvider *bus.Provider) *HITLMiddle
 }
 
 // Execute checks if the tool requires HITL approval before proceeding.
+//
+// Summary: Enforces human approval for execution of sensitive tools.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *tool.ExecutionRequest. The request containing the tool details.
+//   - next: tool.ExecutionFunc. The next function in the middleware chain.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if approval is denied, times out, or execution fails.
 func (m *HITLMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if !m.config.Enabled {
 		return next(ctx, req)

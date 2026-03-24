@@ -12,17 +12,29 @@ import (
 )
 
 // ScopesConfig defines the configuration for capability-based scoping.
+//
+// Summary: Configuration for capability-based scoping by role.
 type ScopesConfig struct {
 	// Roles maps a role name to a list of allowed capability prefixes.
 	Roles map[string][]string `json:"roles"`
 }
 
 // ScopesMiddleware enforces granular capability-based tokens for tool execution.
+//
+// Summary: Middleware to enforce capability scopes based on agent roles.
 type ScopesMiddleware struct {
 	config ScopesConfig
 }
 
 // NewScopesMiddleware creates a new ScopesMiddleware.
+//
+// Summary: Initializes a ScopesMiddleware instance.
+//
+// Parameters:
+//   - config: ScopesConfig. Configuration map containing roles and scopes.
+//
+// Returns:
+//   - *ScopesMiddleware: The initialized middleware.
 func NewScopesMiddleware(config ScopesConfig) *ScopesMiddleware {
 	return &ScopesMiddleware{
 		config: config,
@@ -34,6 +46,17 @@ type contextKey string
 const agentRoleKey contextKey = "agent_role"
 
 // Execute checks if the tool name matches any capability token prefix granted to the agent's role.
+//
+// Summary: Validates that the requested tool is allowed for the agent's role.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context, which may contain the agent role.
+//   - req: *tool.ExecutionRequest. The request containing the tool name.
+//   - next: tool.ExecutionFunc. The next function in the middleware chain.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if access is denied or execution fails.
 func (m *ScopesMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	// For testing and mock purposes, we assume the agent role is passed in the context
 	// or we default to a "default" role if not found.

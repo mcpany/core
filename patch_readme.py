@@ -1,4 +1,9 @@
-# MCP Any - Gold Standard Universal Adapter
+import re
+with open("README.md", "r") as f:
+    content = f.read()
+
+# Phase 1: Overhaul README
+new_readme = """# MCP Any - Gold Standard Universal Adapter
 
 [![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
@@ -115,3 +120,6 @@ graph TD
 *   **Adapter Pattern**: The `Upstream` interface abstracts away the complexity of different backend protocols, providing a uniform interface for the Core Server.
 *   **Configuration as Code**: Services and capabilities are defined declaratively in YAML/JSON, enabling version control and CI/CD for your agent capabilities.
 *   **Gateway/Sidecar**: Deployable as a central gateway or a Kubernetes sidecar for maximum flexibility.
+"""
+with open("README.md", "w") as f:
+    f.write(new_readme)

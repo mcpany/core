@@ -13,11 +13,22 @@ import (
 )
 
 // BlackboardStore represents a shared key-value store with agent-aware row-level security.
+//
+// Summary: A store for agent-specific key-value data.
 type BlackboardStore struct {
 	db *sql.DB
 }
 
 // NewBlackboardStore creates a new SQLite Blackboard store.
+//
+// Summary: Initializes a BlackboardStore using SQLite.
+//
+// Parameters:
+//   - path: string. The file path for the SQLite database.
+//
+// Returns:
+//   - *BlackboardStore: The initialized blackboard store.
+//   - error: An error if database opening or schema creation fails.
 func NewBlackboardStore(path string) (*BlackboardStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -49,6 +60,17 @@ func NewBlackboardStore(path string) (*BlackboardStore, error) {
 }
 
 // Get retrieves a value from the blackboard for a specific agent.
+//
+// Summary: Retrieves a specific key's value for a given agent.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the database query.
+//   - agentID: string. The unique identifier of the agent.
+//   - key: string. The key to retrieve.
+//
+// Returns:
+//   - string: The retrieved value.
+//   - error: An error if the key is not found or the query fails.
 func (s *BlackboardStore) Get(ctx context.Context, agentID, key string) (string, error) {
 	var value string
 	err := s.db.QueryRowContext(ctx, "SELECT value FROM blackboard WHERE agent_id = ? AND key = ?", agentID, key).Scan(&value)
@@ -62,6 +84,17 @@ func (s *BlackboardStore) Get(ctx context.Context, agentID, key string) (string,
 }
 
 // Set stores a value in the blackboard for a specific agent.
+//
+// Summary: Upserts a key-value pair for a given agent.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the database execution.
+//   - agentID: string. The unique identifier of the agent.
+//   - key: string. The key to set.
+//   - value: string. The value to store.
+//
+// Returns:
+//   - error: An error if the database operation fails.
 func (s *BlackboardStore) Set(ctx context.Context, agentID, key, value string) error {
 	_, err := s.db.ExecContext(ctx, `
 		INSERT INTO blackboard (agent_id, key, value) VALUES (?, ?, ?)
@@ -71,6 +104,11 @@ func (s *BlackboardStore) Set(ctx context.Context, agentID, key, value string) e
 }
 
 // Close closes the database connection.
+//
+// Summary: Closes the underlying SQLite database connection.
+//
+// Returns:
+//   - error: An error if the closing operation fails.
 func (s *BlackboardStore) Close() error {
 	return s.db.Close()
 }
