@@ -667,3 +667,14 @@
 - [ ] **[P0] Reasoning Lineage Inspector**: UI component for visualizing verified `x-gemini-provenance` reasoning steps. (Added: 2026-06-29)
 - [ ] **[P0] CFIA v2 Signing Workspace**: Interactive UI for human-in-the-loop hashing and hardware-signing of context files. (Added: 2026-06-29)
 - [ ] **[P1] FPIR Lease Monitor**: Dashboard for tracking fast-path identity resumption leases and teammate rotation latency. (Added: 2026-06-29)
+
+#### Upcoming (2026-03-23 Evolution - v2)
+- [ ] **[P0] A2A Auth Status Dashboard**: (2026-03-23) Visualize authenticated inter-agent handshakes and peer-to-peer security status.
+- [ ] **[P1] Usage Quota Dashboard**: (2026-03-23) Real-time visualization of mission budget consumption and quota burn rates.
+- [ ] **[P1] Sandbox Identity Viewer**: (2026-03-23) Real-time status for gVisor-bound tools and execution environment integrity proofs.
+
+#### Upcoming (2026-06-30 Evolution)
+- [ ] **[P0] Cognitive Consensus Dashboard**: Visualize swarm quorum status and CAH attestation strengths. (Added: 2026-06-30)
+- [ ] **[P0] Priority Mailbox Visualizer**: Real-time monitor for PAMS interrupt signals and coordination bypasses. (Added: 2026-06-30)
+- [ ] **[P0] Attention Entropy Heatmap**: Forensic UI for visualizing noise-to-utility scores and ASF detection alerts. (Added: 2026-06-30)
+- [ ] **[P0] Mission Lease Manager**: Dashboard for tracking LMP token lifetimes and hardware re-attestation status. (Added: 2026-06-30)
