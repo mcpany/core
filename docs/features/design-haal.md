@@ -58,3 +58,9 @@ Hardware-Attested Attention Locking (HAAL) provides a cryptographic defense agai
 
 ## 7. Evolutionary Changelog
 * **2026-06-11:** Initial Document Creation. Evolving from Context-Window Pinning (2026-06-09) to support the hardware-attested HAAL standard.
+
+### Update: 2026-06-18 - Neutralizing REE via ABG Integration
+**Context:** The GA release of HAAL v1.0 and the discovery of Attention-Splicing confirm that simple pinning must be part of an active governance framework.
+**Architecture Adjustment:** * Evolving the HAAL Middleware to act as the primary execution engine for the **Attention-Boundary Governance (ABG)** service.
+    * Mandating TPM-signed attention-locking for every mission-root fragment.
+**Security Impact:** Provides the definitive, hardware-bound defense against Reasoning Entropy Exhaustion and Attention-Splicing.

@@ -73,9 +73,9 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
 - The SMM will now monitor fragment entropy to prevent splicing.
   **Security Impact:** Ensures that the parent agent's attention window remains anchored to the mission root even during high-entropy noise injection.
 
-### Update: 2026-06-18 - Mitigating Attention-Splicing (CVE-2026-71002)
-**Context:** A critical vulnerability has been disclosed where malicious subagents perform "Attention-Splicing" to evict mission-root anchors.
-**Architecture Adjustment:**
-* Introducing **Attention-Boundary Governance (ABG)** structural analysis.
-* SMM will now monitor not just stylometric signatures but the entropy distribution across the entire attention window.
-**Security Impact:** Detects and blocks high-entropy "noise shards" designed to bypass zero-tier attention locking.
+
+### Update: 2026-06-18 - Stylometric Verification via TIT Lineage
+**Context:** Today's sync revealed that stylometric mimicry is often used in conjunction with teammate impersonation to bypass coordination checks.
+**Architecture Adjustment:** * Upgrading stylometric analysis to require **TIT-bound** lineage for every reasoning trace.
+    * Mandating multi-modal behavioral anchoring for all horizontal teammates.
+**Security Impact:** Provides higher-dimensional defense against reasoning-path shadowing by binding stylometry to hardware-attested teammate identity.

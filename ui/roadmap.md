@@ -672,3 +672,10 @@
 - [ ] **[P0] Teammate Integrity Token Viewer**: (2026-06-18) Dashboard for monitoring TIT issuance and hardware-attested non-repudiation logs.
 - [ ] **[P1] Predictive Pruning Log**: (2026-06-18) Visual tracker for context shards purged by the PSP adapter.
 - [ ] **[P0] Zero-Tier Attention Widget**: (2026-06-18) Status indicator for cryptographically locked mission-root intent fragments.
+
+
+
+### Upcoming: 2026-06-18
+- **Attention-Window Health Monitor**: Real-time visualization of pinned vs. flooded context fragments in the mesh.
+- **Teammate Lineage Auditor**: UI component for auditing TIT-bound task claims and status updates.
+- **Speculative Branch Visualizer**: High-level view of pruned vs. active reasoning branches and their utility scores.
