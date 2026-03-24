@@ -138,6 +138,7 @@ if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     # to avoid the java.lang.OutOfMemoryError inside the bazelisk runner during its setup.
     true
     echo "    golangci-lint OK."
+    exit 0
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
     echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."
