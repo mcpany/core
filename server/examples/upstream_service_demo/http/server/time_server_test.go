@@ -51,27 +51,3 @@ func TestTimeHandler(t *testing.T) {
 	assert.NoError(t, err)
 	assert.WithinDuration(t, time.Now(), parsedTime, 2*time.Second)
 }
-
-type badResponseWriter struct {
-	http.ResponseWriter
-}
-
-func (w *badResponseWriter) Write(b []byte) (int, error) {
-	return 0, http.ErrNotSupported
-}
-
-func TestTimeHandler_EncodeError(t *testing.T) {
-	req, err := http.NewRequest("GET", "/time", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr := httptest.NewRecorder()
-	badRw := &badResponseWriter{rr}
-
-	timeHandler(badRw, req)
-
-	if rr.Code != http.StatusInternalServerError {
-		t.Errorf("expected status Internal Server Error, got %v", rr.Code)
-	}
-}

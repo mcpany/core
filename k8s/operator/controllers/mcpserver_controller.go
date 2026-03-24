@@ -16,7 +16,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	mcpv1alpha1 "github.com/mcpany/core/k8s/operator/api/v1alpha1"
+	mcpv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
 )
 
 // MCPServerReconciler reconciles a MCPServer object
