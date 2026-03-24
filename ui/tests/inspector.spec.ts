@@ -89,7 +89,7 @@ test.describe('Inspector Page', () => {
 
   test('should clear traces permanently on backend when Clear is clicked', async ({ page }) => {
     let wsSend: ((data: string) => void) | null = null;
-    await page.routeWebSocket('**/api/v1/ws/traces', (ws: any) => {
+    await page.routeWebSocket('**/api/v1/ws/traces', (ws) => {
       wsSend = (data: string) => ws.send(data);
     });
 
