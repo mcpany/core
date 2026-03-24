@@ -1,0 +1,69 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+option features.field_presence = IMPLICIT;
+
+package mcpany.config.v1;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/go_features.proto";
+
+option features.(pb.go).api_level = API_OPAQUE;
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+
+// WebhookReview explains the request and response of a webhook call.
+message WebhookReview {
+  WebhookRequest request = 1;
+  WebhookResponse response = 2;
+}
+
+message WebhookRequest {
+  // Unique identifier for the request.
+  string uid = 1;
+  // The operation type (e.g., "PreCall", "PostCall").
+  WebhookKind kind = 2;
+  // The tool name being executed.
+  string tool_name = 3;
+  // The object being reviewed (e.g., ToolInputs for PreCall, ToolResult for PostCall).
+  google.protobuf.Struct object = 4;
+}
+
+enum WebhookKind {
+  WEBHOOK_KIND_UNSPECIFIED = 0;
+  WEBHOOK_KIND_PRE_CALL = 1;
+  WEBHOOK_KIND_POST_CALL = 2;
+  WEBHOOK_KIND_TRANSFORM_INPUT = 3;
+}
+
+message WebhookConfig {
+  string url = 1;
+  google.protobuf.Duration timeout = 2;
+  string webhook_secret = 3;
+}
+
+message SystemWebhookConfig {
+  string name = 1;
+  string description = 2;
+  string url_path = 3;
+  bool disabled = 4;
+}
+
+message WebhookResponse {
+  // Unique identifier for the request.
+  string uid = 1;
+  // allowed indicates if the request is permitted (for PreCall).
+  bool allowed = 2;
+  // status contains extra details for the decision.
+  WebhookStatus status = 3;
+  // replacement_object is a complete replacement for the object (simple mutation).
+  google.protobuf.Struct replacement_object = 4;
+}
+
+message WebhookStatus {
+  int32 code = 1;
+  string message = 2;
+}

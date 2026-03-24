@@ -1,0 +1,64 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@protobuf//bazel:proto_library.bzl", "proto_library")
+load("@rules_go//proto:def.bzl", "go_proto_library")
+load("//proto:ts_proto_rules.bzl", "ts_proto_gen")
+
+# Generate TypeScript bindings from the proto files using Bazel.
+# Files are placed in bazel-out; they are NOT persisted in the source tree.
+ts_proto_gen(
+    name = "ts_proto_files",
+    proto = ":v1_proto",
+    visibility = ["//visibility:public"],
+)
+
+proto_library(
+    name = "v1_proto",
+    srcs = [
+        "catalog_service.proto",
+        "registration.proto",
+        "skill_service.proto",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_proto",
+        "@googleapis//google/api:annotations_proto",
+        "@protobuf//:go_features_proto",
+    ],
+)
+
+# go_proto_library with grpc-gateway compiler generates both gRPC stubs and
+# HTTP/JSON reverse-proxy code (*.pb.gw.go) at build time.
+# No generated files are stored in the source tree.
+go_proto_library(
+    name = "api",
+    compilers = [
+        "@rules_go//proto:go_proto",
+        "@rules_go//proto:go_grpc_v2",
+        "@com_github_grpc_ecosystem_grpc_gateway_v2//protoc-gen-grpc-gateway:go_gen_grpc_gateway_opaque",
+    ],
+    importpath = "github.com/mcpany/core/proto/api/v1",
+    proto = ":v1_proto",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:config",
+        "@com_github_grpc_ecosystem_grpc_gateway_v2//runtime",
+        "@com_github_grpc_ecosystem_grpc_gateway_v2//utilities",
+        "@org_golang_google_genproto_googleapis_api//annotations",
+        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//grpclog",
+        "@org_golang_google_grpc//metadata",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//types/gofeaturespb",
+    ],
+)
+
+# Backward-compatible alias for existing consumers of :v1_go_proto.
+alias(
+    name = "v1_go_proto",
+    actual = ":api",
+    visibility = ["//visibility:public"],
+)

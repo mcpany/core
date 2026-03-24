@@ -1,0 +1,196 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.config.v1;
+
+import "google/protobuf/go_features.proto";
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+option java_outer_classname = "AuthProto";
+option features.(pb.go).api_level = API_OPAQUE;
+
+// ===================================================================
+// Secret Management
+// ===================================================================
+
+// SecretValue represents a value that should be treated as a secret.
+// It can be a plain text value, an environment variable, a file path, or content fetched from a remote URL.
+message SecretValue {
+  oneof value {
+    string plain_text = 1;
+    string environment_variable = 2;
+    string file_path = 3;
+    RemoteContent remote_content = 4;
+    VaultSecret vault = 5;
+    AwsSecretManagerSecret aws_secret_manager = 6;
+  }
+  // Optional: A regex to validate the resolved secret value.
+  string validation_regex = 7 [json_name = "validation_regex"];
+}
+
+// AwsSecretManagerSecret defines the parameters for fetching a secret from AWS Secrets Manager.
+message AwsSecretManagerSecret {
+  // The name or ARN of the secret.
+  string secret_id = 1 [json_name = "secret_id"];
+  // Optional: The key to extract from the secret JSON.
+  string json_key = 2 [json_name = "json_key"];
+  // Optional: The version stage (defaults to AWSCURRENT).
+  string version_stage = 3 [json_name = "version_stage"];
+  // Optional: The version ID.
+  string version_id = 4 [json_name = "version_id"];
+  // Optional: The region. If not set, uses environment or profile.
+  string region = 5 [json_name = "region"];
+  // Optional: Profile to use.
+  string profile = 6 [json_name = "profile"];
+}
+
+// VaultSecret defines the parameters for fetching a secret from HashiCorp Vault.
+message VaultSecret {
+  // The address of the Vault server (e.g., "https://vault.example.com").
+  string address = 1;
+  // The token to authenticate with Vault.
+  SecretValue token = 2;
+  // The path to the secret in Vault (e.g., "secret/data/my-app/db").
+  string path = 3;
+  // The key of the secret to retrieve from the path.
+  string key = 4;
+}
+
+// RemoteContent represents content that is fetched from a remote URL.
+message RemoteContent {
+  string http_url = 1;
+  Authentication auth = 2;
+}
+
+// ===================================================================
+// Authentication
+// ===================================================================
+
+// Authentication defines an authentication method that can be used for both
+// incoming requests (validation) and outgoing requests (client).
+message Authentication {
+  oneof auth_method {
+    APIKeyAuth api_key = 1 [json_name = "api_key"];
+    BearerTokenAuth bearer_token = 2 [json_name = "bearer_token"];
+    BasicAuth basic_auth = 3 [json_name = "basic_auth"];
+    OAuth2Auth oauth2 = 4 [json_name = "oauth2"];
+    OIDCAuth oidc = 5 [json_name = "oidc"];
+    MTLSAuth mtls = 6 [json_name = "mtls"];
+    TrustedHeaderAuth trusted_header = 7 [json_name = "trusted_header"];
+  }
+}
+
+// APIKeyAuth defines authentication using an API key.
+message APIKeyAuth {
+  // The name of the parameter carrying the key (e.g., "X-API-Key", "api_key").
+  string param_name = 1 [json_name = "param_name"];
+  // Where the API key is located.
+  enum Location {
+    HEADER = 0;
+    QUERY = 1;
+    COOKIE = 2; // Added COOKIE for completeness
+  }
+  Location in = 2 [json_name = "in"];
+  // The API key value. Used for client authentication (outgoing).
+  SecretValue value = 3 [json_name = "value"];
+  // The expected API key value. Used for server validation (incoming).
+  // This is a plain string because we compare against it.
+  string verification_value = 4 [json_name = "verification_value"];
+}
+
+// BearerTokenAuth defines authentication using a bearer token.
+message BearerTokenAuth {
+  // The bearer token.
+  SecretValue token = 1 [json_name = "token"];
+}
+
+// BasicAuth defines authentication using a username and password.
+message BasicAuth {
+  string username = 1 [json_name = "username"];
+  // The password. Used for client authentication (outgoing).
+  SecretValue password = 2 [json_name = "password"];
+  // The bcrypt hash of the password. Used for server validation (incoming).
+  string password_hash = 3 [json_name = "password_hash"];
+}
+
+// OAuth2Auth defines authentication using the OAuth 2.0 client credentials flow.
+message OAuth2Auth {
+  string token_url = 1 [json_name = "token_url"];
+  SecretValue client_id = 2 [json_name = "client_id"];
+  SecretValue client_secret = 3 [json_name = "client_secret"];
+  // Space-delimited list of scopes.
+  string scopes = 4 [json_name = "scopes"];
+  // Issuer URL for validation/discovery.
+  string issuer_url = 5 [json_name = "issuer_url"];
+  // Audience for validation.
+  string audience = 6 [json_name = "audience"];
+  // Authorization URL (optional, mainly for 3-legged flows if we ever support them).
+  string authorization_url = 7 [json_name = "authorization_url"];
+}
+
+// OIDCAuth defines authentication using OpenID Connect.
+message OIDCAuth {
+  // The issuer URL.
+  string issuer = 1 [json_name = "issuer"];
+  // The subject to validate (incoming).
+  string subject = 2 [json_name = "subject"];
+  // The email to validate (incoming).
+  string email = 3 [json_name = "email"];
+  // The audience(s) to validate (incoming).
+  repeated string audience = 4 [json_name = "audience"];
+}
+
+// MTLSAuth defines authentication using mutual TLS.
+message MTLSAuth {
+  // Path to the client certificate file.
+  string client_cert_path = 1 [json_name = "client_cert_path"];
+  // Path to the client private key file.
+  string client_key_path = 2 [json_name = "client_key_path"];
+  // Path to the CA certificate file for verifying the server's certificate.
+  string ca_cert_path = 3 [json_name = "ca_cert_path"];
+}
+
+// TrustedHeaderAuth defines authentication using a trusted header.
+message TrustedHeaderAuth {
+  string header_name = 1 [json_name = "header_name"];
+  string header_value = 2 [json_name = "header_value"];
+}
+
+// UserToken represents an OAuth2 token stored for a user.
+message UserToken {
+  // The ID of the user who owns this token.
+  string user_id = 1 [json_name = "user_id"];
+  // The ID of the service this token is for.
+  string service_id = 2 [json_name = "service_id"];
+  // The access token.
+  string access_token = 3 [json_name = "access_token"];
+  // The refresh token.
+  string refresh_token = 4 [json_name = "refresh_token"];
+  // The token type (e.g. "Bearer").
+  string token_type = 5 [json_name = "token_type"];
+  // The expiry time of the token (RFC3339).
+  string expiry = 6 [json_name = "expiry"];
+  // The scopes associated with the token.
+  string scope = 7 [json_name = "scope"];
+  // The timestamp when the token was created/updated (RFC3339).
+  string updated_at = 8 [json_name = "updated_at"];
+  // The email associated with the token (if available).
+  string email = 9 [json_name = "email"];
+}
+
+// Credential represents a reusable authentication configuration.
+message Credential {
+  // Unique identifier for the credential.
+  string id = 1;
+  // Human-readable name (e.g. "My GitHub Personal").
+  string name = 2;
+
+  // The authentication configuration.
+  Authentication authentication = 3;
+
+  // Optional: For interactive OAuth, the persisted session/tokens.
+  // This allows the proxy to use this credential by refreshing the token.
+  UserToken token = 4;
+}
