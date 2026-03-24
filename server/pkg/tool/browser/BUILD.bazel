@@ -13,7 +13,10 @@ go_library(
 
 go_test(
     name = "browser_test",
-    srcs = ["browser_test.go"],
+    srcs = [
+        "browser_playwright_test.go",
+        "browser_test.go",
+    ],
     embed = [":browser"],
     deps = [
         "@com_github_stretchr_testify//assert",
