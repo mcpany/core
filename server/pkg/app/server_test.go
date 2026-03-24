@@ -1575,19 +1575,22 @@ func Test_runStdioMode_real(t *testing.T) {
 		time.Sleep(100 * time.Millisecond)
 	}()
 
-	// Wait a moment before checking output to avoid hanging read
-	time.Sleep(200 * time.Millisecond)
-	_ = outW.Close()
-
 	var buf bytes.Buffer
-	_, _ = io.Copy(&buf, outR)
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		_, _ = io.Copy(&buf, outR)
+	}()
+
+	// Give the server time to process the initialize request.
+	time.Sleep(300 * time.Millisecond)
 
 	cancel()
 	runErr := <-errChan
-	// Can be context canceled or closed pipe depending on order
-	if runErr != nil {
-		assert.Contains(t, runErr.Error(), "context canceled")
-	}
+	assert.NoError(t, runErr)
+	_ = outW.Close()
+	wg.Wait()
 
 	response := buf.String()
 	assert.Contains(t, response, `"id":0`)
