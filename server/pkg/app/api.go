@@ -88,7 +88,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/execute", a.handleExecute())
 
 	mux.HandleFunc("/prompts", a.handlePrompts())
-	mux.HandleFunc("/prompts/", a.handlePromptExecute())	// Handles /prompts/{name}/execute
+	mux.HandleFunc("/prompts/", a.handlePromptExecute()) // Handles /prompts/{name}/execute
 
 	mux.HandleFunc("/resources", a.handleResources())
 	mux.HandleFunc("/resources/read", a.handleResourceRead())
@@ -233,7 +233,7 @@ func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request,
 		services, err = store.ListServices(r.Context())
 	}
 	if err != nil {
-		logging.GetLogger().Error("failed to list services", "error", err.Error())
+		logging.GetLogger().Error("failed to list services", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -251,7 +251,7 @@ func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request,
 		}
 		b, err := opts.Marshal(svc)
 		if err != nil {
-			logging.GetLogger().Error("failed to marshal service", "error", err.Error())
+			logging.GetLogger().Error("failed to marshal service", "error", err)
 			continue
 		}
 
@@ -342,14 +342,14 @@ func (a *Application) handleCreateService(w http.ResponseWriter, r *http.Request
 	// But creating UUID here might be better? For now name fallback is fine.
 
 	if err := store.SaveService(r.Context(), &svc); err != nil {
-		logging.GetLogger().Error("failed to save service", "error", err.Error())
+		logging.GetLogger().Error("failed to save service", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	// Trigger reload
 	if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
-		logging.GetLogger().Error("failed to reload config after save", "error", err.Error())
+		logging.GetLogger().Error("failed to reload config after save", "error", err)
 	}
 
 	w.WriteHeader(http.StatusCreated)
@@ -377,9 +377,9 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
 			_ = json.NewEncoder(w).Encode(map[string]any{
-				"valid":	false,
-				"error":	err.Error(),
-				"details":	"Static validation failed",
+				"valid":   false,
+				"error":   err.Error(),
+				"details": "Static validation failed",
 			})
 			return
 		}
@@ -430,9 +430,9 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 			w.Header().Set("Content-Type", "application/json")
 			// Return 200 OK but with valid=false to distinguish from malformed request
 			_ = json.NewEncoder(w).Encode(map[string]any{
-				"valid":	false,
-				"error":	checkErr.Error(),
-				"details":	checkDetails,
+				"valid":   false,
+				"error":   checkErr.Error(),
+				"details": checkDetails,
 			})
 			return
 		}
@@ -550,7 +550,7 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 		case http.MethodGet:
 			svc, err := store.GetService(r.Context(), name)
 			if err != nil {
-				logging.GetLogger().Error("failed to get service", "name", name, "error", err.Error())
+				logging.GetLogger().Error("failed to get service", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
@@ -572,7 +572,7 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			svc.SetName(name)	// Force name match
+			svc.SetName(name) // Force name match
 
 			// Validate service configuration before saving
 			if err := config.ValidateOrError(r.Context(), &svc); err != nil {
@@ -597,23 +597,23 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 			}
 
 			if err := store.SaveService(r.Context(), &svc); err != nil {
-				logging.GetLogger().Error("failed to save service", "name", name, "error", err.Error())
+				logging.GetLogger().Error("failed to save service", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
-				logging.GetLogger().Error("failed to reload config after update", "error", err.Error())
+				logging.GetLogger().Error("failed to reload config after update", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("{}"))
 		case http.MethodDelete:
 			if err := store.DeleteService(r.Context(), name); err != nil {
-				logging.GetLogger().Error("failed to delete service", "name", name, "error", err.Error())
+				logging.GetLogger().Error("failed to delete service", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
-				logging.GetLogger().Error("failed to reload config after delete", "error", err.Error())
+				logging.GetLogger().Error("failed to reload config after delete", "error", err)
 			}
 			w.WriteHeader(http.StatusNoContent)
 		default:
@@ -653,9 +653,9 @@ func (a *Application) handleServiceStatus(w http.ResponseWriter, r *http.Request
 
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(map[string]any{
-		"name":		name,
-		"status":	status,
-		"metrics":	map[string]any{},
+		"name":    name,
+		"status":  status,
+		"metrics": map[string]any{},
 	})
 }
 
@@ -678,14 +678,14 @@ func (a *Application) handleServiceRestart(w http.ResponseWriter, r *http.Reques
 	if a.ServiceRegistry != nil {
 		// Unregister to force stop
 		if err := a.ServiceRegistry.UnregisterService(r.Context(), name); err != nil {
-			logging.GetLogger().Error("failed to unregister service during restart", "name", name, "error", err.Error())
+			logging.GetLogger().Error("failed to unregister service during restart", "name", name, "error", err)
 			// Continue to reload, as it might just be not running or already stopped
 		}
 	}
 
 	// Trigger reload to re-register
 	if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
-		logging.GetLogger().Error("failed to reload config after restart", "error", err.Error())
+		logging.GetLogger().Error("failed to reload config after restart", "error", err)
 		http.Error(w, "Failed to restart service: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -700,7 +700,7 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 		case http.MethodGet:
 			settings, err := store.GetGlobalSettings(r.Context())
 			if err != nil {
-				logging.GetLogger().Error("failed to get global settings", "error", err.Error())
+				logging.GetLogger().Error("failed to get global settings", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
@@ -711,7 +711,7 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 			opts := protojson.MarshalOptions{UseProtoNames: true, EmitUnpopulated: true}
 			b, err := opts.Marshal(settings)
 			if err != nil {
-				logging.GetLogger().Error("failed to marshal settings", "error", err.Error())
+				logging.GetLogger().Error("failed to marshal settings", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
@@ -728,13 +728,13 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 				return
 			}
 			if err := store.SaveGlobalSettings(r.Context(), &settings); err != nil {
-				logging.GetLogger().Error("failed to save global settings", "error", err.Error())
+				logging.GetLogger().Error("failed to save global settings", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 
 			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
-				logging.GetLogger().Error("failed to reload config after settings save", "error", err.Error())
+				logging.GetLogger().Error("failed to reload config after settings save", "error", err)
 			}
 
 			w.WriteHeader(http.StatusOK)
@@ -769,13 +769,13 @@ func (a *Application) handleTools() http.HandlerFunc {
 
 			w.Header().Set("Content-Type", "application/json")
 			if _, err := w.Write(buf); err != nil {
-				// ignore error
+				logging.GetLogger().Error("failed to write response", "error", err.Error())
 			}
 
 		case http.MethodPut:
 			var req struct {
-				Name	string	`json:"name"`
-				Disable	bool	`json:"disable"`
+				Name    string `json:"name"`
+				Disable bool   `json:"disable"`
 			}
 			body, err := readBodyWithLimit(w, r, 1024*1024)
 			if err != nil {
@@ -890,7 +890,7 @@ func (a *Application) handleTools() http.HandlerFunc {
 
 			w.WriteHeader(http.StatusOK)
 			if _, err := w.Write([]byte("{}")); err != nil {
-				// ignore error
+				logging.GetLogger().Error("failed to write response", "error", err.Error())
 			}
 
 		default:
@@ -913,7 +913,7 @@ func (a *Application) handleExecute() http.HandlerFunc {
 		}
 
 		if err := json.Unmarshal(body, &req); err != nil {
-			logging.GetLogger().Error("failed to decode execution request", "error", err.Error())
+			logging.GetLogger().Error("failed to decode execution request", "error", err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -929,7 +929,7 @@ func (a *Application) handleExecute() http.HandlerFunc {
 
 		result, err := a.ToolManager.ExecuteTool(r.Context(), &req)
 		if err != nil {
-			logging.GetLogger().Error("failed to execute tool", "error", err.Error())
+			logging.GetLogger().Error("failed to execute tool", "error", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -954,7 +954,7 @@ func (a *Application) handlePrompts() http.HandlerFunc {
 				}
 				b, err := opts.Marshal(p.Definition())
 				if err != nil {
-					logging.GetLogger().Error("failed to marshal prompt", "name", p.Definition().GetName(), "error", err.Error())
+					logging.GetLogger().Error("failed to marshal prompt", "name", p.Definition().GetName(), "error", err)
 					continue
 				}
 				var m map[string]any
@@ -990,7 +990,7 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 		case http.MethodGet:
 			secrets, err := store.ListSecrets(r.Context())
 			if err != nil {
-				logging.GetLogger().Error("failed to list secrets", "error", err.Error())
+				logging.GetLogger().Error("failed to list secrets", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
@@ -1031,14 +1031,14 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 			// Validate skipped as config.ValidateOrError expects UpstreamServiceConfig
 
 			if err := store.SaveSecret(r.Context(), &secret); err != nil {
-				logging.GetLogger().Error("failed to save secret", "error", err.Error())
+				logging.GetLogger().Error("failed to save secret", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 
 			// Reload
 			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
-				logging.GetLogger().Error("failed to reload config after secret save", "error", err.Error())
+				logging.GetLogger().Error("failed to reload config after secret save", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("{}"))
@@ -1070,7 +1070,7 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 		case http.MethodGet:
 			secret, err := store.GetSecret(r.Context(), path)
 			if err != nil {
-				logging.GetLogger().Error("failed to get secret", "id", path, "error", err.Error())
+				logging.GetLogger().Error("failed to get secret", "id", path, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
@@ -1103,24 +1103,24 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 			secret.SetId(path)
 
 			if err := store.SaveSecret(r.Context(), &secret); err != nil {
-				logging.GetLogger().Error("failed to save secret", "error", err.Error())
+				logging.GetLogger().Error("failed to save secret", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
-				logging.GetLogger().Error("failed to reload config after secret update", "error", err.Error())
+				logging.GetLogger().Error("failed to reload config after secret update", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("{}"))
 
 		case http.MethodDelete:
 			if err := store.DeleteSecret(r.Context(), path); err != nil {
-				logging.GetLogger().Error("failed to delete secret", "id", path, "error", err.Error())
+				logging.GetLogger().Error("failed to delete secret", "id", path, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
-				logging.GetLogger().Error("failed to reload config after secret delete", "error", err.Error())
+				logging.GetLogger().Error("failed to reload config after secret delete", "error", err)
 			}
 			w.WriteHeader(http.StatusNoContent)
 		default:
@@ -1137,7 +1137,7 @@ func (a *Application) handleSecretReveal(w http.ResponseWriter, r *http.Request,
 
 	secret, err := store.GetSecret(r.Context(), id)
 	if err != nil {
-		logging.GetLogger().Error("failed to get secret for reveal", "id", id, "error", err.Error())
+		logging.GetLogger().Error("failed to get secret for reveal", "id", id, "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -1170,7 +1170,7 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 			// Assuming Store.ListProfiles exists (it usually extracts from GlobalSettings)
 			profiles, err := store.ListProfiles(r.Context())
 			if err != nil {
-				logging.GetLogger().Error("failed to list profiles", "error", err.Error())
+				logging.GetLogger().Error("failed to list profiles", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
@@ -1205,13 +1205,13 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 			// ProfileDefinition uses Name as identifier, no ID field.
 
 			if err := store.SaveProfile(r.Context(), &profile); err != nil {
-				logging.GetLogger().Error("failed to save profile", "error", err.Error())
+				logging.GetLogger().Error("failed to save profile", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 			// Trigger reload
 			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
-				logging.GetLogger().Error("failed to reload config after profile save", "error", err.Error())
+				logging.GetLogger().Error("failed to reload config after profile save", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("{}"))
@@ -1237,7 +1237,7 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 			}
 			profile, err := store.GetProfile(r.Context(), name)
 			if err != nil {
-				logging.GetLogger().Error("failed to get profile for export", "name", name, "error", err.Error())
+				logging.GetLogger().Error("failed to get profile for export", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
@@ -1260,7 +1260,7 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 		case http.MethodGet:
 			profile, err := store.GetProfile(r.Context(), name)
 			if err != nil {
-				logging.GetLogger().Error("failed to get profile", "name", name, "error", err.Error())
+				logging.GetLogger().Error("failed to get profile", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
@@ -1283,27 +1283,27 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			profile.SetName(name)	// Force name match
+			profile.SetName(name) // Force name match
 
 			if err := store.SaveProfile(r.Context(), &profile); err != nil {
-				logging.GetLogger().Error("failed to save profile", "name", name, "error", err.Error())
+				logging.GetLogger().Error("failed to save profile", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
-				logging.GetLogger().Error("failed to reload config after profile update", "error", err.Error())
+				logging.GetLogger().Error("failed to reload config after profile update", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("{}"))
 
 		case http.MethodDelete:
 			if err := store.DeleteProfile(r.Context(), name); err != nil {
-				logging.GetLogger().Error("failed to delete profile", "name", name, "error", err.Error())
+				logging.GetLogger().Error("failed to delete profile", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
-				logging.GetLogger().Error("failed to reload config after profile delete", "error", err.Error())
+				logging.GetLogger().Error("failed to reload config after profile delete", "error", err)
 			}
 			w.WriteHeader(http.StatusNoContent)
 
@@ -1319,7 +1319,7 @@ func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc 
 		case http.MethodGet:
 			collections, err := store.ListServiceCollections(r.Context())
 			if err != nil {
-				logging.GetLogger().Error("failed to list collections", "error", err.Error())
+				logging.GetLogger().Error("failed to list collections", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
@@ -1352,7 +1352,7 @@ func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc 
 				return
 			}
 			if err := store.SaveServiceCollection(r.Context(), &collection); err != nil {
-				logging.GetLogger().Error("failed to save collection", "error", err.Error())
+				logging.GetLogger().Error("failed to save collection", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
@@ -1380,7 +1380,7 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 			}
 			collection, err := store.GetServiceCollection(r.Context(), name)
 			if err != nil {
-				logging.GetLogger().Error("failed to get collection for export", "name", name, "error", err.Error())
+				logging.GetLogger().Error("failed to get collection for export", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
@@ -1408,7 +1408,7 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 		case http.MethodGet:
 			collection, err := store.GetServiceCollection(r.Context(), name)
 			if err != nil {
-				logging.GetLogger().Error("failed to get collection", "name", name, "error", err.Error())
+				logging.GetLogger().Error("failed to get collection", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
@@ -1431,10 +1431,10 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			collection.SetName(name)	// Force name match
+			collection.SetName(name) // Force name match
 
 			if err := store.SaveServiceCollection(r.Context(), &collection); err != nil {
-				logging.GetLogger().Error("failed to save collection", "name", name, "error", err.Error())
+				logging.GetLogger().Error("failed to save collection", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
@@ -1443,7 +1443,7 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 
 		case http.MethodDelete:
 			if err := store.DeleteServiceCollection(r.Context(), name); err != nil {
-				logging.GetLogger().Error("failed to delete collection", "name", name, "error", err.Error())
+				logging.GetLogger().Error("failed to delete collection", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
@@ -1463,7 +1463,7 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 
 	collection, err := store.GetServiceCollection(r.Context(), name)
 	if err != nil {
-		logging.GetLogger().Error("failed to get collection for apply", "name", name, "error", err.Error())
+		logging.GetLogger().Error("failed to get collection for apply", "name", name, "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -1479,8 +1479,8 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 		// "Upsert" logic ideally.
 		// And we need to validate it.
 		if err := config.ValidateOrError(r.Context(), svc); err != nil {
-			logging.GetLogger().Error("invalid service in collection", "service", svc.GetName(), "error", err.Error())
-			continue	// Skip invalid? Or error out?
+			logging.GetLogger().Error("invalid service in collection", "service", svc.GetName(), "error", err)
+			continue // Skip invalid? Or error out?
 		}
 
 		if isUnsafeConfig(svc) && os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") != util.TrueStr {
@@ -1489,7 +1489,7 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 		}
 
 		if err := store.SaveService(r.Context(), svc); err != nil {
-			logging.GetLogger().Error("failed to save service from collection", "service", svc.GetName(), "error", err.Error())
+			logging.GetLogger().Error("failed to save service from collection", "service", svc.GetName(), "error", err)
 			// Continue or abort?
 			// Maybe best effort?
 		}
@@ -1497,7 +1497,7 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 
 	// Trigger reload
 	if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
-		logging.GetLogger().Error("failed to reload config after collection apply", "error", err.Error())
+		logging.GetLogger().Error("failed to reload config after collection apply", "error", err)
 	}
 
 	w.WriteHeader(http.StatusOK)
