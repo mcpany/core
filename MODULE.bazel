@@ -281,5 +281,3 @@ node.toolchain(node_version = "22.13.0")
 use_repo(node, "nodejs_toolchains")
 
 buildbuddy = use_extension("@toolchains_buildbuddy//:extensions.bzl", "buildbuddy")
-
-bazel_dep(name = "rules_proto", version = "7.1.0")
