@@ -177,7 +177,7 @@ func TestCommandInjection_Advanced(t *testing.T) {
 				}.Build(),
 			},
 		}.Build()
-		tool := NewLocalCommandTool(toolDef, service, callDef)
+		tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
 
 		req := &ExecutionRequest{
 			ToolName: "test",
@@ -203,5 +203,5 @@ func createTestCommandToolWithTemplate(command string, template string) Tool {
 			}.Build(),
 		},
 	}.Build()
-	return NewLocalCommandTool(toolDef, service, callDef)
+	return NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
 }

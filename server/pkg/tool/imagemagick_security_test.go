@@ -30,7 +30,7 @@ func TestImageMagick_Injection_Security(t *testing.T) {
 		},
 	}.Build()
 
-	tool := NewLocalCommandTool(toolDef, service, callDef)
+	tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
 
 	// Case 1: ImageMagick label:@/etc/passwd (LFI)
 	t.Run("label_scheme", func(t *testing.T) {

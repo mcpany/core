@@ -43,7 +43,7 @@ func TestLocalCommandTool_Python_Space_Issue(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(toolProto, service, callDef)
+	localTool := NewLocalCommandTool(toolProto, service, callDef, nil, "call-id")
 
 	// Payload with space
 	payload := "Hello World"
@@ -98,7 +98,7 @@ func TestLocalCommandTool_Python_Arg_Space_Issue(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(toolProto, service, callDef)
+	localTool := NewLocalCommandTool(toolProto, service, callDef, nil, "call-id")
 
 	// Payload with space
 	payload := "Hello World"

@@ -285,6 +285,6 @@ func TestCommandTool_Tool(t *testing.T) {
 	service := (&configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("echo"),
 	}).Build()
-	cmdTool := tool.NewCommandTool(toolProto, service, configv1.CommandLineCallDefinition_builder{}.Build())
+	cmdTool := tool.NewCommandTool(toolProto, service, configv1.CommandLineCallDefinition_builder{}.Build(), nil, "call-id")
 	assert.Equal(t, toolProto, cmdTool.Tool())
 }

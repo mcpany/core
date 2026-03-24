@@ -32,7 +32,7 @@ func TestLocalCommandTool_ArgumentInjection_Prevention(t *testing.T) {
 		Args: []string{"{{file}}"},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	// Case 1: Safe input (relative path)
 	reqSafe := &ExecutionRequest{
@@ -95,7 +95,7 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 			},
 			Args: []string{"-c", "echo {{msg}}"},
 		}.Build()
-		localTool := NewLocalCommandTool(tool, service, callDef)
+		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 		// Injection attempt
 		reqAttack := &ExecutionRequest{
@@ -138,7 +138,7 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 			},
 			Args: []string{"-c", "echo '{{msg}}'"},
 		}.Build()
-		localTool := NewLocalCommandTool(tool, service, callDef)
+		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 		// Safe input with special chars
 		reqSafe := &ExecutionRequest{
@@ -181,7 +181,7 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 			},
 			Args: []string{"-c", "echo \"{{msg}}\""},
 		}.Build()
-		localTool := NewLocalCommandTool(tool, service, callDef)
+		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 		// Safe input
 		reqSafe := &ExecutionRequest{
@@ -252,7 +252,7 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 			},
 			Args: []string{"{{msg}}"},
 		}.Build()
-		localTool := NewLocalCommandTool(tool, service, callDef)
+		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 		// Input with shell chars - should be allowed for non-shell command
 		reqSafe := &ExecutionRequest{
@@ -290,7 +290,7 @@ func TestLocalCommandTool_Execute_PythonInjection(t *testing.T) {
 		},
 	}.Build()
 
-	ct := NewLocalCommandTool(toolDef, service, callDef)
+	ct := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call-id")
 
 	// Malicious input trying to break out of python string
 	// msg = '); print("INJECTED"); print('
@@ -331,7 +331,7 @@ func TestLocalCommandTool_ShellInjection_ControlChars(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	// Test cases for control characters
 	testCases := []struct {

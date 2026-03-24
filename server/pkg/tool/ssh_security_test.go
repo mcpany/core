@@ -32,7 +32,7 @@ func TestLocalCommandTool_SSHInjection_Prevention(t *testing.T) {
 		Args: []string{"user@host", "echo {{cmd}}"},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	// Case 1: Safe input
 	reqSafe := &ExecutionRequest{

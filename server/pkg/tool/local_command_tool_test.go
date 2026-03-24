@@ -42,7 +42,7 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	req := &ExecutionRequest{
 		ToolName: "test-tool",
@@ -83,7 +83,7 @@ func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 		Args: []string{"-c", "if [ \"$MY_ENV\" = \"secret_value\" ]; then echo -n match; else echo -n mismatch; fi"},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	req := &ExecutionRequest{
 		ToolName:  "test-tool-env",
@@ -117,7 +117,7 @@ func TestLocalCommandTool_Execute_RedactsSecrets(t *testing.T) {
 		Args: []string{"-c", "echo -n $MY_SECRET"},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	req := &ExecutionRequest{
 		ToolName:  "test-tool-redact",
@@ -187,7 +187,7 @@ func TestLocalCommandTool_Execute_JSONProtocol_StderrCapture(t *testing.T) {
 		Args: []string{"-c", "echo 'something went wrong' >&2; exit 1"},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	req := &ExecutionRequest{
 		ToolName:  "test-tool-json-stderr",

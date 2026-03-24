@@ -40,7 +40,7 @@ func TestLocalCommandTool_RubyInjection_Backtick(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	// Payload: #{system('echo injected')}
 	payload := "#{system('echo injected')}"
@@ -83,7 +83,7 @@ func TestLocalCommandTool_PHPInjection_Backtick(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	// Payload: ${system('echo injected')}
 	payload := "${system('echo injected')}"

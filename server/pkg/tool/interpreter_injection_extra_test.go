@@ -37,7 +37,7 @@ func TestSqlite3ShellInjection(t *testing.T) {
 		},
 	}.Build()
 
-	tool := NewLocalCommandTool(toolProto, serviceConfig, callDef)
+	tool := NewLocalCommandTool(toolProto, serviceConfig, callDef, nil, "test-call-sqlite")
 
 	// Injection payload: .shell echo pwned
 	// This should be blocked.
@@ -86,7 +86,7 @@ func TestGdbShellInjection(t *testing.T) {
 		},
 	}.Build()
 
-	tool := NewLocalCommandTool(toolProto, serviceConfig, callDef)
+	tool := NewLocalCommandTool(toolProto, serviceConfig, callDef, nil, "test-call-gdb")
 
 	// Injection payload: shell echo pwned
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -133,7 +133,7 @@ func TestMysqlSystemInjection(t *testing.T) {
 		},
 	}.Build()
 
-	tool := NewLocalCommandTool(toolProto, serviceConfig, callDef)
+	tool := NewLocalCommandTool(toolProto, serviceConfig, callDef, nil, "test-call-mysql")
 
 	// Injection payload: system echo pwned
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)

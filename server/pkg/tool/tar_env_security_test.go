@@ -46,7 +46,7 @@ func TestTarEnvInjection_Protection(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(toolDef, service, callDefVulnerable)
+	localTool := NewLocalCommandTool(toolDef, service, callDefVulnerable, nil, "call-id")
 
 	// Payload to execute "touch pwned"
 	// We use "v" to try to bypass initial checks, but expect it to fail or be blocked.

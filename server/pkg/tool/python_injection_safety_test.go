@@ -38,7 +38,7 @@ func TestPythonDoubleQuoteInjection(t *testing.T) {
 		Name: strPtrInj("python_hello"),
 	}.Build()
 
-	tool := NewLocalCommandTool(toolProto, service, callDef)
+	tool := NewLocalCommandTool(toolProto, service, callDef, nil, "call-id")
 
 	// Payload: Close the print function, inject import sys; sys.exit(42), and comment out the rest.
 	// If this executes, the exit code will be 42.

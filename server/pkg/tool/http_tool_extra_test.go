@@ -48,7 +48,7 @@ func TestHTTPTool_ExtraCoverage(t *testing.T) {
 			Parameters: []*configv1.HttpParameterMapping{paramMapping},
 		}.Build()
 
-		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
 
 		inputs := json.RawMessage(`{"path": "../secret"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -83,7 +83,7 @@ func TestHTTPTool_ExtraCoverage(t *testing.T) {
 			Parameters: []*configv1.HttpParameterMapping{paramMapping},
 		}.Build()
 
-		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
 
 		// %252e%252e is double encoded ..
 		inputs := json.RawMessage(`{"path": "%252e%252e"}`)
@@ -110,7 +110,7 @@ func TestHTTPTool_ExtraCoverage(t *testing.T) {
 		require.NoError(t, err)
 		poolManager.Register("test-service", p)
 
-		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{})
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
 
 		_, err = httpTool.Execute(context.Background(), &tool.ExecutionRequest{})
 		require.Error(t, err)
@@ -145,7 +145,7 @@ func TestHTTPTool_ExtraCoverage(t *testing.T) {
 			Parameters: []*configv1.HttpParameterMapping{paramMapping},
 		}.Build()
 
-		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
 
 		_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{})
 		require.Error(t, err)

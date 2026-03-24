@@ -50,5 +50,5 @@ func createEnvCommandTool(command string) Tool {
 		},
 	}.Build()
 	// Policies nil, callID "test-call"
-	return NewLocalCommandTool(toolDef, service, callDef)
+	return NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
 }

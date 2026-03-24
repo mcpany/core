@@ -42,7 +42,7 @@ func BenchmarkHTTPToolExecute_LoggingOverhead(b *testing.B) {
 		UnderlyingMethodFqn: proto.String("GET http://example.com"),
 	}.Build()
 
-	httpTool := NewHTTPTool(toolProto, poolManager, "service-id", nil, &configv1.HttpCallDefinition{})
+	httpTool := NewHTTPTool(toolProto, poolManager, "service-id", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

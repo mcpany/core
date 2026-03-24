@@ -42,7 +42,7 @@ func TestLocalCommandTool_RCE_Verification(t *testing.T) {
 		Name: proto.String("test-rce"),
 	}.Build()
 
-	localTool := NewLocalCommandTool(toolDef, service, service.GetCalls()["call-id"])
+	localTool := NewLocalCommandTool(toolDef, service, service.GetCalls()["call-id"], nil, "call-id")
 
 	req := &ExecutionRequest{
 		ToolName: "test-rce",

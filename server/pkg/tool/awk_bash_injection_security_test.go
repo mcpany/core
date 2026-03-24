@@ -32,7 +32,7 @@ func TestLocalCommandTool_BashAwkFileWrite_Repro(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	// Attempt to write to a file in /tmp using awk redirection via bash
 	tmpFile := "/tmp/bash_awk_pwned.txt"

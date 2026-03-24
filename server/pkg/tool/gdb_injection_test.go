@@ -46,7 +46,7 @@ func TestLocalCommandTool_GDBInjection_Blocked(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	// We attempt to pass a command with dangerous characters (semicolon)
 	// Since gdb is now detected as a shell, this should raise "shell injection detected"

@@ -55,7 +55,7 @@ func TestLocalCommandTool_SSRF_Vulnerability(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "curl-call-id")
 
 	// 3. Execute with file:// URL
 	req := &ExecutionRequest{

@@ -103,7 +103,7 @@ func setupHTTPToolExtra(t *testing.T, handler http.Handler, callDefinition *conf
 
     method := "GET " + server.URL + urlSuffix
     toolDef := v1.Tool_builder{UnderlyingMethodFqn: proto.String(method)}.Build()
-    return NewHTTPTool(toolDef, poolManager, "s", nil, callDefinition), server
+    return NewHTTPTool(toolDef, poolManager, "s", nil, callDefinition, nil, nil, ""), server
 }
 
 func TestHTTPTool_Execute_Secret(t *testing.T) {

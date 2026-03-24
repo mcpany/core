@@ -36,7 +36,7 @@ func TestNewHTTPTool_SpaceInURL(t *testing.T) {
 	}.Build()
 
 	pm := pool.NewManager()
-	httpTool := NewHTTPTool(toolProto, pm, "service-id", nil, callDef)
+	httpTool := NewHTTPTool(toolProto, pm, "service-id", nil, callDef, nil, nil, "call-id")
 
 	// If initialization failed, initError would be set.
 	// We verify this by attempting to Execute.
@@ -63,7 +63,7 @@ func TestNewHTTPTool_InvalidFormat(t *testing.T) {
 	callDef := configv1.HttpCallDefinition_builder{}.Build()
 
 	pm := pool.NewManager()
-	httpTool := NewHTTPTool(toolProto, pm, "service-id", nil, callDef)
+	httpTool := NewHTTPTool(toolProto, pm, "service-id", nil, callDef, nil, nil, "call-id")
 
 	req := &ExecutionRequest{
 		ToolName: "test-tool",
@@ -92,7 +92,7 @@ func TestHTTPTool_PrepareBody_Template(t *testing.T) {
 	}.Build()
 
 	pm := pool.NewManager()
-	httpTool := NewHTTPTool(toolProto, pm, "service-id", nil, callDef)
+	httpTool := NewHTTPTool(toolProto, pm, "service-id", nil, callDef, nil, nil, "call-id")
 
 	// Since we are in the same package, we can directly call private methods like prepareBody.
 	ctx := context.Background()

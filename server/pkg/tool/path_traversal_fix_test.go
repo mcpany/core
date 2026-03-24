@@ -51,7 +51,7 @@ func TestHTTPTool_PathTraversal_Blocked(t *testing.T) {
 		Parameters: []*configv1.HttpParameterMapping{paramMapping},
 	}.Build()
 
-	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
 
 	// Attack 1: ../admin
 	inputs := json.RawMessage(`{"id": "../admin"}`)
@@ -106,7 +106,7 @@ func TestLocalCommandTool_ShellInjection_Prevention_NewCommands(t *testing.T) {
 				},
 				Args: []string{"{{arg}}"},
 			}.Build()
-			localTool := tool.NewLocalCommandTool(toolDef, service, callDef)
+			localTool := tool.NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
 
 			// Unquoted injection attempt
 			inputs := json.RawMessage(`{"arg": "foo; echo injected"}`)

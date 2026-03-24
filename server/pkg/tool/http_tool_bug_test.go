@@ -55,7 +55,7 @@ func TestHTTPTool_Execute_MissingAndEmptyParams(t *testing.T) {
 			Parameters: []*configv1.HttpParameterMapping{paramMapping},
 		}.Build()
 
-		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
 
 		inputs := json.RawMessage(`{}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -84,7 +84,7 @@ func TestHTTPTool_Execute_MissingAndEmptyParams(t *testing.T) {
 			Parameters: []*configv1.HttpParameterMapping{paramMapping},
 		}.Build()
 
-		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
 
 		inputs := json.RawMessage(`{}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -113,7 +113,7 @@ func TestHTTPTool_Execute_MissingAndEmptyParams(t *testing.T) {
 			Parameters: []*configv1.HttpParameterMapping{paramMapping},
 		}.Build()
 
-		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
 
 		inputs := json.RawMessage(`{"id": ""}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -142,7 +142,7 @@ func TestHTTPTool_Execute_MissingAndEmptyParams(t *testing.T) {
 			Parameters: []*configv1.HttpParameterMapping{paramMapping},
 		}.Build()
 
-		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
 
 		inputs := json.RawMessage(`{}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}

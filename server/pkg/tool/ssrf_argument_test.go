@@ -44,7 +44,7 @@ func TestSSRFArgumentProtection(t *testing.T) {
 				}.Build(),
 			},
 		}.Build()
-		return NewLocalCommandTool(toolDef, service, callDef)
+		return NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
 	}
 
 	tests := []struct {

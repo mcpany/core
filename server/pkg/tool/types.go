@@ -564,6 +564,8 @@ type HTTPTool struct {
 	webhookClient     *WebhookClient
 	cache             *configv1.CacheConfig
 	resilienceManager *resilience.Manager
+	policies          []*CompiledCallPolicy
+	callID            string
 	allowedParams     map[string]bool
 	secretParams      map[string]bool
 
@@ -794,6 +796,12 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
 	defer metrics.MeasureSince(metricHTTPRequestLatency, time.Now())
+
+	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
+	} else if !allowed {
+		return nil, fmt.Errorf("tool execution blocked by policy")
+	}
 
 	if t.initError != nil {
 		return nil, t.initError
@@ -1986,6 +1994,8 @@ type CommandTool struct {
 	service         *configv1.CommandLineUpstreamService
 	callDefinition  *configv1.CommandLineCallDefinition
 	executorFactory func(*configv1.ContainerEnvironment) command.Executor
+	policies        []*CompiledCallPolicy
+	callID          string
 	initError       error
 	allowedParams   map[string]bool
 }
@@ -1998,6 +2008,8 @@ type CommandTool struct {
 //   - tool: *v1.Tool. The protobuf definition of the tool.
 //   - service: *configv1.CommandLineUpstreamService. The service configuration.
 //   - callDefinition: *configv1.CommandLineCallDefinition. The call configuration.
+//   - policies: []*configv1.CallPolicy. The security policies.
+//   - callID: string. The unique identifier for the call.
 //
 // Returns:
 //   - Tool: The created CommandTool.
@@ -2005,7 +2017,11 @@ func NewCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
 	callDefinition *configv1.CommandLineCallDefinition,
+	policies []*configv1.CallPolicy,
+	callID string,
 ) Tool {
+	compiled, err := CompileCallPolicies(policies)
+
 	allowedParams := make(map[string]bool)
 	if callDefinition != nil {
 		for _, param := range callDefinition.GetParameters() {
@@ -2019,7 +2035,12 @@ func NewCommandTool(
 		tool:           tool,
 		service:        service,
 		callDefinition: callDefinition,
+		policies:       compiled,
+		callID:         callID,
 		allowedParams:  allowedParams,
+	}
+	if err != nil {
+		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
 
 	return t
@@ -2037,6 +2058,8 @@ type LocalCommandTool struct {
 	mcpToolOnce    sync.Once
 	service        *configv1.CommandLineUpstreamService
 	callDefinition *configv1.CommandLineCallDefinition
+	policies       []*CompiledCallPolicy
+	callID         string
 	sandboxArgs    []string
 	initError      error
 	allowedParams  map[string]bool
@@ -2050,6 +2073,8 @@ type LocalCommandTool struct {
 //   - tool: *v1.Tool. The protobuf definition of the tool.
 //   - service: *configv1.CommandLineUpstreamService. The service configuration.
 //   - callDefinition: *configv1.CommandLineCallDefinition. The call configuration.
+//   - policies: []*configv1.CallPolicy. The security policies.
+//   - callID: string. The unique identifier for the call.
 //
 // Returns:
 //   - Tool: The created LocalCommandTool.
@@ -2057,7 +2082,11 @@ func NewLocalCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
 	callDefinition *configv1.CommandLineCallDefinition,
+	policies []*configv1.CallPolicy,
+	callID string,
 ) Tool {
+	compiled, err := CompileCallPolicies(policies)
+
 	allowedParams := make(map[string]bool)
 	if callDefinition != nil {
 		for _, param := range callDefinition.GetParameters() {
@@ -2071,7 +2100,12 @@ func NewLocalCommandTool(
 		tool:           tool,
 		service:        service,
 		callDefinition: callDefinition,
+		policies:       compiled,
+		callID:         callID,
 		allowedParams:  allowedParams,
+	}
+	if err != nil {
+		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
 
 	// Check if the command is sed and supports sandbox
@@ -2202,6 +2236,11 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
 
+	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
+	} else if !allowed {
+		return nil, fmt.Errorf("tool execution blocked by policy")
+	}
 	var inputs map[string]any
 	// Handle empty inputs by treating them as empty JSON object
 	if len(bytes.TrimSpace(req.ToolInputs)) == 0 {
@@ -2615,6 +2654,11 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
 
+	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
+	} else if !allowed {
+		return nil, fmt.Errorf("tool execution blocked by policy")
+	}
 	var inputs map[string]any
 	// Handle empty inputs by treating them as empty JSON object
 	if len(bytes.TrimSpace(req.ToolInputs)) == 0 {

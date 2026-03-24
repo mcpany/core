@@ -31,7 +31,7 @@ func TestLocalCommandTool_AwkSystem_Security(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	// Payload: Use gawk's indirect function call to bypass keyword detection.
 	// f="s" "y" "s" "tem" -> "system" (concatenation)

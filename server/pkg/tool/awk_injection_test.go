@@ -31,7 +31,7 @@ func TestLocalCommandTool_AwkInjection_Repro(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	// We attempt to pass an awk script that executes a shell command via pipe
 	// BEGIN { print "hello" | "sh" }

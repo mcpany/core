@@ -34,7 +34,7 @@ func TestLocalCommandTool_DoesNotLeakHostEnv(t *testing.T) {
 		Args: []string{"-c", "echo $" + secretKey},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	req := &ExecutionRequest{
 		ToolName: "test-env-leak",
@@ -75,7 +75,7 @@ func TestCommandTool_DoesNotLeakHostEnv(t *testing.T) {
 	}.Build()
 
 	// Create CommandTool instead of LocalCommandTool
-	cmdTool := NewCommandTool(tool, service, callDef)
+	cmdTool := NewCommandTool(tool, service, callDef, nil, "call-id-2")
 
 	req := &ExecutionRequest{
 		ToolName: "test-env-leak-2",

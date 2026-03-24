@@ -51,7 +51,7 @@ func TestHTTPTool_Execute_DoubleSlashPreservation(t *testing.T) {
 		UnderlyingMethodFqn: &methodAndURL,
 	}.Build()
 
-	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{})
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
 
 	req := &tool.ExecutionRequest{ToolInputs: []byte("{}")}
 	_, err = httpTool.Execute(context.Background(), req)
@@ -86,7 +86,7 @@ func TestHTTPTool_Execute_DoubleSlashRootPreservation(t *testing.T) {
 		UnderlyingMethodFqn: &methodAndURL,
 	}.Build()
 
-	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{})
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
 
 	req := &tool.ExecutionRequest{ToolInputs: []byte("{}")}
 	_, err = httpTool.Execute(context.Background(), req)

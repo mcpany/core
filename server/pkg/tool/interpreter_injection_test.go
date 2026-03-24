@@ -31,7 +31,7 @@ func TestSedSandbox_Prevention(t *testing.T) {
 		},
 	}.Build()
 
-	tool := NewLocalCommandTool(toolDef, service, callDef)
+	tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
 
 	// Payload: 1e date (Execute 'date')
 	req := &ExecutionRequest{
@@ -110,7 +110,7 @@ func TestSedSandbox_ValidUsage(t *testing.T) {
 		},
 	}.Build()
 
-	tool := NewLocalCommandTool(toolDef, service, callDef)
+	tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
 
 	// Valid replacement (needs input, but sed waits for stdin if file not provided)
 	// We pass empty input via echo? No, LocalCommandTool doesn't easily pipe stdin in this test setup unless we use communication protocol JSON?

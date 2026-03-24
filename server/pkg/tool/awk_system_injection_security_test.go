@@ -31,7 +31,7 @@ func TestLocalCommandTool_AwkSystemInjection_Repro(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	// Payload uses gawk's indirect function call feature to call system()
 	// while evading keyword checks by splitting the string "system".

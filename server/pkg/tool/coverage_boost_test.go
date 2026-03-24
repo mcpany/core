@@ -56,7 +56,7 @@ func setupHTTPTool(t *testing.T, handler http.Handler, callDef *configv1.HttpCal
 		UnderlyingMethodFqn: proto.String(method),
 		Name:                proto.String("test-http"),
 	}.Build()
-	return NewHTTPTool(toolDef, poolManager, "s", nil, callDef), server
+	return NewHTTPTool(toolDef, poolManager, "s", nil, callDef, nil, nil, ""), server
 }
 
 func TestHTTPTool_Execute_DryRun(t *testing.T) {
@@ -102,7 +102,7 @@ func TestCommandTool_DryRun(t *testing.T) {
 		Args: []string{"hello"},
 	}.Build()
 	toolDef := v1.Tool_builder{Name: proto.String("test")}.Build()
-	tool := NewLocalCommandTool(toolDef, service, callDef)
+	tool := NewLocalCommandTool(toolDef, service, callDef, nil, "id")
 
 	req := &ExecutionRequest{
 		ToolName:   "test",
@@ -140,7 +140,7 @@ func TestCommandTool_ResolveServiceEnv_Error(t *testing.T) {
 	}.Build()
 	callDef := configv1.CommandLineCallDefinition_builder{}.Build()
 	toolDef := v1.Tool_builder{Name: proto.String("test")}.Build()
-	tool := NewLocalCommandTool(toolDef, service, callDef)
+	tool := NewLocalCommandTool(toolDef, service, callDef, nil, "id")
 
 	req := &ExecutionRequest{
 		ToolInputs: []byte(`{}`),
@@ -168,7 +168,7 @@ func TestCommandTool_ResolveContainerEnv_Error(t *testing.T) {
 	callDef := configv1.CommandLineCallDefinition_builder{}.Build()
 	toolDef := v1.Tool_builder{Name: proto.String("test")}.Build()
 	// Compile policies manually or pass nil (NewCommandTool takes policies slice)
-	tool := NewCommandTool(toolDef, service, callDef)
+	tool := NewCommandTool(toolDef, service, callDef, nil, "id")
 
 	req := &ExecutionRequest{
 		ToolInputs: []byte(`{}`),
@@ -194,7 +194,7 @@ func TestCommandTool_ResolveParameterSecret_Error(t *testing.T) {
         },
     }.Build()
     toolDef := v1.Tool_builder{Name: proto.String("test")}.Build()
-    tool := NewLocalCommandTool(toolDef, service, callDef)
+    tool := NewLocalCommandTool(toolDef, service, callDef, nil, "id")
 
     req := &ExecutionRequest{
         ToolInputs: []byte(`{}`),
@@ -216,7 +216,7 @@ func TestCommandTool_Success(t *testing.T) {
         Args: []string{"hello"},
     }.Build()
     toolDef := v1.Tool_builder{Name: proto.String("test")}.Build()
-    tool := NewCommandTool(toolDef, service, callDef)
+    tool := NewCommandTool(toolDef, service, callDef, nil, "id")
 
     // Inject mock executor
     ct := tool.(*CommandTool)
@@ -339,7 +339,7 @@ func TestHTTPTool_InputTransformer_Template(t *testing.T) {
 		UnderlyingMethodFqn: proto.String(method),
 		Name:                proto.String("test-post"),
 	}.Build()
-    tool := NewHTTPTool(toolDef, poolManager, "s", nil, callDef)
+    tool := NewHTTPTool(toolDef, poolManager, "s", nil, callDef, nil, nil, "")
 
     req := &ExecutionRequest{
         ToolName: "test-post",

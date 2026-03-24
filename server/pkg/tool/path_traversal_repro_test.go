@@ -43,7 +43,7 @@ func TestLocalCommandTool_PathTraversal_EncodedBypass(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	// Attack Vector: Use encoded slash to bypass path traversal check
 	// ..%2fetc%2fpasswd -> ../etc/passwd (if decoded by tool)
@@ -98,7 +98,7 @@ func TestLocalCommandTool_FileScheme_EncodedBypass(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	// Attack Vector: Use encoded 'f' to bypass "file:" check
 	// %66ile:///etc/passwd -> file:///etc/passwd

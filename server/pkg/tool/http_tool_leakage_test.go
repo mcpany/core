@@ -76,7 +76,7 @@ func TestHTTPTool_Execute_SecretLeakageInLogs(t *testing.T) {
 	// Mock Secret Resolution via env var
 	t.Setenv("API_KEY", "super_secret_value")
 
-	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
 
 	// Execute
 	inputs := json.RawMessage(`{}`)
@@ -152,7 +152,7 @@ func TestHTTPTool_Execute_SecretLeakageInDebugLogs(t *testing.T) {
 	// Mock Secret Resolution via env var
 	t.Setenv("API_KEY", "super_secret_value")
 
-	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
 
 	// Execute with debug context
 	inputs := json.RawMessage(`{}`)

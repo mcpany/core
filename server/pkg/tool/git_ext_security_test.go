@@ -49,7 +49,7 @@ func TestLocalCommandTool_Git_Ext_RCE_Repro(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(toolProto, service, callDef)
+	localTool := NewLocalCommandTool(toolProto, service, callDef, nil, "call-id")
 
 	// The payload: ext::sh -c "touch /tmp/pwned_git_ext"
     // We use a harmless command but verify execution via file creation

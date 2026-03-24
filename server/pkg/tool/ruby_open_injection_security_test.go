@@ -42,7 +42,7 @@ func TestRubySingleQuoteInjection(t *testing.T) {
 	}.Build()
 
 	// Use LocalCommandTool to execute locally
-	tool := NewLocalCommandTool(toolProto, service, callDef)
+	tool := NewLocalCommandTool(toolProto, service, callDef, nil, "call-id")
 
 	// Payload: |echo RCE_SUCCESS
 	payload := "|echo RCE_SUCCESS"

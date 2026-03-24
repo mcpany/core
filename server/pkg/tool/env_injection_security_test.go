@@ -41,7 +41,7 @@ func TestLocalCommandTool_Execute_EnvInjection(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	// Payload: "hello; echo INJECTED"
 	// Expected behavior (Vulnerable): The shell expands $USER_INPUT to "hello; echo INJECTED", executing "echo INJECTED".

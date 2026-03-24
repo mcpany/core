@@ -54,7 +54,7 @@ func TestLocalCommandTool_SecurityChecks(t *testing.T) {
 
 	toolDef := v1.Tool_builder{Name: proto.String("cmd_tool")}.Build()
 
-	cmdTool := NewLocalCommandTool(toolDef, svcConfig, callDef)
+	cmdTool := NewLocalCommandTool(toolDef, svcConfig, callDef, nil, "call1")
 
 	ctx := context.Background()
 
@@ -134,7 +134,7 @@ func TestLocalCommandTool_ShellInjection(t *testing.T) {
 
 	toolDef := v1.Tool_builder{Name: proto.String("shell_tool")}.Build()
 
-	cmdTool := NewLocalCommandTool(toolDef, svcConfig, callDef)
+	cmdTool := NewLocalCommandTool(toolDef, svcConfig, callDef, nil, "call1")
 
 	ctx := context.Background()
 
@@ -203,7 +203,7 @@ func TestLocalCommandTool_ArgsParameter(t *testing.T) {
 	    InputSchema: inputSchema, // Direct assignment of *structpb.Struct
 	}.Build()
 
-	cmdTool := NewLocalCommandTool(toolDef, svcConfig, callDef)
+	cmdTool := NewLocalCommandTool(toolDef, svcConfig, callDef, nil, "call1")
 	ctx := context.Background()
 
 	req := &ExecutionRequest{
@@ -239,7 +239,7 @@ func TestLocalCommandTool_DockerEnv(t *testing.T) {
     }.Build()
     toolDef := v1.Tool_builder{Name: proto.String("docker_tool")}.Build()
 
-    cmdTool := NewLocalCommandTool(toolDef, svcConfig, callDef)
+    cmdTool := NewLocalCommandTool(toolDef, svcConfig, callDef, nil, "call1")
     ctx := context.Background()
 
     // Absolute path should be allowed in Docker
@@ -260,7 +260,7 @@ func helperSetupHTTPTool(t *testing.T, toolDef *v1.Tool, callDef *configv1.HttpC
 	require.NoError(t, err)
 	poolManager.Register("svc", p)
 
-	return NewHTTPTool(toolDef, poolManager, "svc", nil, callDef)
+	return NewHTTPTool(toolDef, poolManager, "svc", nil, callDef, nil, nil, "call1")
 }
 
 func TestHTTPTool_RootDoubleSlash(t *testing.T) {

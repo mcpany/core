@@ -36,7 +36,7 @@ func TestPerlRCE_Unquoted(t *testing.T) {
 		},
 	}.Build()
 
-	tool := NewLocalCommandTool(toolDef, service, callDef)
+	tool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
 
 	// Payload that avoids forbidden characters: () " ' ; etc.
 	// system ls

@@ -40,7 +40,7 @@ func TestHTTPTool_PrepareInputsAndURL_Redaction(t *testing.T) {
 	}.Build()
 
 	// Initialize HTTPTool using constructor to ensure all fields (secretParams etc) are initialized
-	httpTool := NewHTTPTool(toolDef)
+	httpTool := NewHTTPTool(toolDef, nil, "service-id", nil, callDef, nil, nil, "")
 
 	// Prepare inputs
 	// prepareInputsAndURL expects inputs to be resolved? No, it takes raw ToolInputs (JSON)

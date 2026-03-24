@@ -52,7 +52,7 @@ func TestHTTPTool_Execute_Coverage_Secrets(t *testing.T) {
 			Parameters: []*configv1.HttpParameterMapping{paramMapping},
 		}.Build()
 
-		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
 
 		inputs := json.RawMessage(`{}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -87,7 +87,7 @@ func TestHTTPTool_Execute_Coverage_PathTraversal(t *testing.T) {
 		Parameters: []*configv1.HttpParameterMapping{paramMapping},
 	}.Build()
 
-	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
 
 	// Test encoded path traversal: %2e%2e -> ..
 	inputs := json.RawMessage(`{"file": "%2e%2e"}`)
@@ -169,7 +169,7 @@ func TestHTTPTool_Execute_Coverage_DryRun(t *testing.T) {
 		},
 	}.Build()
 
-	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
 
 	inputs := json.RawMessage(`{"key": "value"}`)
 	req := &tool.ExecutionRequest{

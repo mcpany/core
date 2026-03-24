@@ -35,7 +35,7 @@ func TestFindInjection(t *testing.T) {
 			},
 		}).Build()
 
-		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef)
+		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
 
 		// Malicious input using -exec with +
 		// We avoid {}, using a command that accepts arguments (like echo or ls)
@@ -75,7 +75,7 @@ func TestFindInjection(t *testing.T) {
 			},
 		}).Build()
 
-		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef)
+		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
 
 		// Malicious input using -delete
 		input := "foo -delete"

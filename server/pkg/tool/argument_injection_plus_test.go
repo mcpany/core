@@ -33,7 +33,7 @@ func TestLocalCommandTool_PlusInjection_Prevention(t *testing.T) {
 		Args: []string{"{{arg}}"},
 	}.Build()
 
-	localTool := NewLocalCommandTool(toolProto, service, callDef)
+	localTool := NewLocalCommandTool(toolProto, service, callDef, nil, "call-id")
 
 	// Injection attempt: Use +command syntax
 	// This should be blocked by checkForArgumentInjection hardening.

@@ -39,7 +39,7 @@ func TestLocalCommandTool_Perl_Open_Injection(t *testing.T) {
 	}.Build()
 
 	// NewLocalCommandTool(tool *v1.Tool, service *configv1.CommandLineUpstreamService, callDefinition *configv1.CommandLineCallDefinition, policies []*configv1.CallPolicy, callID string) Tool
-	localTool := NewLocalCommandTool(toolDef, service, callDef)
+	localTool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
 
 	// Attack payload: open F, ">hacked";
 	// This writes to a file named "hacked".

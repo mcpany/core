@@ -49,7 +49,11 @@ func TestTool_MCPTool_Method(t *testing.T) {
 			toolDef,
 			pool.NewManager(),
 			"service-id",
+			nil,
 			configv1.HttpCallDefinition_builder{}.Build(),
+			nil,
+			nil,
+			"call-id",
 		)
 
 		mcpTool := ht.MCPTool()
@@ -88,8 +92,10 @@ func TestTool_MCPTool_Method(t *testing.T) {
 		ot := NewOpenAPITool(
 			toolDef,
 			&client.HTTPClientWrapper{},
+			nil,
 			"GET",
 			"http://example.com",
+			nil,
 			configv1.OpenAPICallDefinition_builder{}.Build(),
 		)
 
@@ -108,6 +114,8 @@ func TestTool_MCPTool_Method(t *testing.T) {
 			toolDef,
 			&configv1.CommandLineUpstreamService{},
 			configv1.CommandLineCallDefinition_builder{}.Build(),
+			nil,
+			"call-id",
 		)
 
 		mcpTool := ct.MCPTool() // It calls ConvertProtoToMCPTool
@@ -124,7 +132,9 @@ func TestTool_MCPTool_Method(t *testing.T) {
 		// Mock pool or nil
 		wt, err := NewWebrtcTool(
 			toolDef,
+			nil,
 			"service-id",
+			nil,
 			configv1.WebrtcCallDefinition_builder{}.Build(),
 		)
 		assert.NoError(t, err)
@@ -143,6 +153,9 @@ func TestTool_MCPTool_Method(t *testing.T) {
         ct, err := NewCallableTool(
             toolDef,
             configv1.UpstreamServiceConfig_builder{}.Build(),
+            nil, // Callable
+            nil,
+            nil,
         )
         assert.NoError(t, err)
 
@@ -159,7 +172,9 @@ func TestTool_MCPTool_Method(t *testing.T) {
         }.Build()
         wst := NewWebsocketTool(
             toolDef,
+            nil,
             "service-id",
+            nil,
             configv1.WebsocketCallDefinition_builder{}.Build(),
         )
 
@@ -176,7 +191,11 @@ func TestTool_GetCacheConfig(t *testing.T) {
 			&pb.Tool{},
 			pool.NewManager(),
 			"s",
+			nil,
 			configv1.HttpCallDefinition_builder{Cache: cacheCfg}.Build(),
+			nil,
+			nil,
+			"",
 		)
 		assert.Equal(t, cacheCfg, ht.GetCacheConfig())
 	})
@@ -185,6 +204,7 @@ func TestTool_GetCacheConfig(t *testing.T) {
 		cacheCfg := configv1.CacheConfig_builder{IsEnabled: proto.Bool(true)}.Build()
 		mt := NewMCPTool(
 			&pb.Tool{},
+			nil,
 			configv1.MCPCallDefinition_builder{Cache: cacheCfg}.Build(),
 		)
 		assert.Equal(t, cacheCfg, mt.GetCacheConfig())
@@ -194,6 +214,11 @@ func TestTool_GetCacheConfig(t *testing.T) {
 		cacheCfg := configv1.CacheConfig_builder{IsEnabled: proto.Bool(true)}.Build()
 		ot := NewOpenAPITool(
 			&pb.Tool{},
+			nil,
+			nil,
+			"",
+			"",
+			nil,
 			configv1.OpenAPICallDefinition_builder{Cache: cacheCfg}.Build(),
 		)
 		assert.Equal(t, cacheCfg, ot.GetCacheConfig())
@@ -205,7 +230,9 @@ func TestTool_GetCacheConfig(t *testing.T) {
 		// NewCommandTool returns Tool interface.
 	wt, err := NewWebrtcTool(
 		pb.Tool_builder{Name: proto.String("tool"), UnderlyingMethodFqn: proto.String("WEBRTC http://127.0.0.1")}.Build(),
+		nil, // No pool -> triggers executeWithoutPool
 		"s",
+		nil,
 		configv1.WebrtcCallDefinition_builder{}.Build(),
 	)
 	assert.NoError(t, err)
@@ -234,6 +261,8 @@ func TestTool_GetCacheConfig(t *testing.T) {
 		pb.Tool_builder{}.Build(),
 		configv1.CommandLineUpstreamService_builder{}.Build(),
 		configv1.CommandLineCallDefinition_builder{Cache: cacheCfg}.Build(),
+		nil,
+		"",
 	)
 	assert.Equal(t, cacheCfg, lct.GetCacheConfig())
 	})
@@ -242,7 +271,9 @@ func TestTool_GetCacheConfig(t *testing.T) {
 		cacheCfg := configv1.CacheConfig_builder{IsEnabled: proto.Bool(true)}.Build()
 		wt, err := NewWebrtcTool(
 			&pb.Tool{},
+			nil,
 			"s",
+			nil,
 			configv1.WebrtcCallDefinition_builder{Cache: cacheCfg}.Build(),
 		)
 		assert.NoError(t, err)
@@ -266,7 +297,9 @@ func TestWebrtcTool_Close_And_ExecuteWithoutPool(t *testing.T) {
 
 	wt, err := NewWebrtcTool(
 		pb.Tool_builder{Name: proto.String("tool"), UnderlyingMethodFqn: proto.String("WEBRTC http://127.0.0.1")}.Build(),
+		nil, // No pool -> triggers executeWithoutPool
 		"s",
+		nil,
 		&configv1.WebrtcCallDefinition{},
 	)
 	assert.NoError(t, err)

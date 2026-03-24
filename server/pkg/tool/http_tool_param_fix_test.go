@@ -59,7 +59,7 @@ func TestHTTPTool_Bug_DroppedParameter(t *testing.T) {
 		Parameters: []*configv1.HttpParameterMapping{paramMapping},
 	}.Build()
 
-	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
 
 	inputs := json.RawMessage(`{"page": "1"}`)
 	req := &tool.ExecutionRequest{ToolInputs: inputs}

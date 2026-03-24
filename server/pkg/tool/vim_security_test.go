@@ -35,7 +35,7 @@ func TestLocalCommandTool_VimInjection_Prevention(t *testing.T) {
 		Args: []string{"{{file}}"},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	// Injection attempt: Use vim's +command syntax to execute a shell command
 	// We use '!' which is a dangerous character in our shell injection check.
