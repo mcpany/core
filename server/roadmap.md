@@ -759,15 +759,3 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Mesh-Resident Policy Manager (MRPM)**: Federated policy service for MRPS compliance. (Added: 2026-06-18)
 *   **[P1] AAG Middleware**: Entropy-aware attention gating for DAG middleware. (Added: 2026-06-18)
 *   **[P0] Spectral Attention Guard**: Timing jitter injection for DAG middleware. (Added: 2026-06-18)
-
-### Upcoming: [2026-06-18]
-- **Reason-Graph Integrity (RGI) Provider**: (P0) Hardware-attested graph validation (Added: 2026-06-18).
-- **Mesh-Resident Policy Manager (MRPM)**: (P0) Federated policy service (Added: 2026-06-18).
-- **AAG Middleware**: (P1) Entropy-aware attention gating (Added: 2026-06-18).
-- **Spectral Attention Guard**: (P0) Timing jitter injection (Added: 2026-06-18).
-
-### Upcoming: [2026-06-18]
-- **Reason-Graph Integrity (RGI) Provider**: (P0) Hardware-attested graph validation (Added: 2026-06-18).
-- **Mesh-Resident Policy Manager (MRPM)**: (P0) Federated policy service (Added: 2026-06-18).
-- **AAG Middleware**: (P1) Entropy-aware attention gating (Added: 2026-06-18).
-- **Spectral Attention Guard**: (P0) Timing jitter injection (Added: 2026-06-18).
