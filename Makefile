@@ -75,7 +75,7 @@ k8s-e2e:
 k8s-test: k8s-e2e
 
 lint:
-	export GOMAXPROCS=1 && export GOGC=10 && $(BAZELISK) run //:lint
+	export GOMAXPROCS=1 && export GOMEMLIMIT=1500MiB && $(BAZELISK) run //:lint
 
 # Run runs server
 run:
