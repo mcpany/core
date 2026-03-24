@@ -668,5 +668,8 @@
 - [ ] **[P0] CFIA v2 Signing Workspace**: Interactive UI for human-in-the-loop hashing and hardware-signing of context files. (Added: 2026-06-29)
 - [ ] **[P1] FPIR Lease Monitor**: Dashboard for tracking fast-path identity resumption leases and teammate rotation latency. (Added: 2026-06-29)
 
-#### Upcoming (2026-03-21 Evolution)
-- [ ] [P0] LOWA Challenge Visualizer.
+#### Upcoming (2026-06-30 Evolution)
+- [ ] **[P0] SVG Semantic Shield Dashboard**: UI for reviewing structural SVG deconstructions and approved metadata fragments. (Added: 2026-06-30)
+- [ ] **[P0] SVG Attention Heatmap**: Heatmap visualization of context fragments and hidden reasoning traces within SVG assets. (Added: 2026-06-30)
+- [ ] **[P0] HBL Resumption Monitor**: Visual indicator for TPM-bound monotonic counters and fast-path teammate rotation events. (Added: 2026-06-30)
+- [ ] **[P1] RPP Snapshot Explorer**: UI for reviewing hardware-attested reasoning-path snapshots and mission-root cognitive state. (Added: 2026-06-30)

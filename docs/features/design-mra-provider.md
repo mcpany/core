@@ -63,3 +63,4 @@ The Mesh-Resident Attestation (MRA) Provider provides the hardware-bound infrast
 
 ## 7. Evolutionary Changelog
 * **2026-06-12:** Initial Document Creation. Supporting ARI-v2 requirements for collision-resistant, hardware-bound reasoning hashes.
+* **2026-06-30:** Hardware-Bound Trust Continuity (HBL) Upgrade. Introducing support for TPM-bound monotonic counters to facilitate sub-100ms teammate rotation and trust resumption, neutralizing "Teammate Rotation Fatigue."

@@ -1524,5 +1524,14 @@
 - **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Evolving to v2 with the requirement for fragment-level semantic hash-chaining to counter Logic Grafting.
 - **SRM Provider**: (Re-affirmed P0) Elevated with mandatory support for **Reasoning Provenance** verification.
 
-## Evolution: [2026-03-21] Updates
-Proposed: LOWA Pairing (P0), T2T Sharding (P0).
+## Evolution: [2026-06-30] Updates
+
+### Proposed Additions
+- **SVG-Layer Semantic Interceptor**: (P0) Advanced extension for the MIB that performs real-time deconstruction of SVG/CSS metadata and pathing to detect "Invisible" instructions.
+- **Hardware-Bound Trust Continuity Relay**: (P0) Optimization service for the HBL Gateway utilizing TPM monotonic counters for sub-100ms teammate rotation.
+- **RPP Snapshot Broker**: (P0) Authoritative coordination service providing hardware-attested snapshots of the reasoning-path for cross-teammate cognitive continuity.
+- **Sovereign Path Normalizer**: (P1) Security extension for the NaaS provider mandating OS-agnostic path manifests to prevent "Normalization Escape" exfiltration.
+
+### Priority Shifts
+- **Multi-modal Integrity Bridge (MIB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SVG-Layer** deconstruction.
+- **HBL Gateway**: (Re-affirmed P0) Elevated as the primary solution for "Teammate Rotation Fatigue."

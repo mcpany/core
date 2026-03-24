@@ -61,6 +61,3 @@ LOWA is a mandatory security layer for MCP Any that enforces session-bound authe
 
 ## 7. Evolutionary Changelog
 *   **2026-05-22:** Initial Document Creation.
-
-### Update: 2026-03-21 - HMAC Hardening
-Hardening LOWA with HMAC challenge-response.

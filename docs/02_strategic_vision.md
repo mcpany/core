@@ -1183,5 +1183,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Fast-Path Identity Resumption (FPIR)**: To neutralize "Teammate Rotation Fatigue," MCP Any will implement FPIR. We will broker time-bound, hardware-attested trust leases that allow horizontal teammates to rotate and resume mission-root contexts without the prohibitive latency of full hardware signatures at every turn.
 - **Active Reasoning Interdiction (ARI) Hub v2**: To counter "Logic Grafting" in shared teammate shards, we are upgrading the ARI Hub. This layer will utilize semantic hash-chaining to detect and block unauthorized reasoning fragments at the coordination fragment level before they lead to intent drift.
 
-## Strategic Evolution: [2026-03-21]
-Focus on LOWA and AMS middleware.
+---
+
+## Strategic Evolution: [2026-06-30]
+### Focus: SVG-Layer Semantic Shielding & Fast-Path Hardware Lineage (HBL)
+**Context**: The discovery of "SVG-Layer Semantic Poisoning" and the emergence of "Hardware-Bound Lineage" (HBL) for trust resumption confirm that the **Universal Agent Bus** must now secure multi-modal reasoning traces and automate teammate rotation. As agents become multi-modal, "Invisible" SVG instructions pose a critical threat to mission-root sovereignty. Simultaneously, the latency of teammate rotation in high-density meshes must be addressed via hardware-accelerated trust continuity.
+**Strategic Pivot**:
+- **SVG-Layer Semantic Shield (SLSS)**: MCP Any will evolve the MIB to include the SLSS. This layer will perform real-time, structural deconstruction of SVG/CSS metadata and pathing to detect and block "Invisible" reasoning fragments before they reach the multi-modal reasoning engine.
+- **HBL Trust Resumption Gateway**: To neutralize "Teammate Rotation Fatigue," we are implementing an HBL Gateway. This service utilizes TPM-bound monotonic counters to facilitate sub-100ms trust resumption for horizontal teammates, ensuring seamless rotation without re-handshaking.
+- **RPP Snapshot Broker**: Supporting the OpenClaw v3.2.0 standard, MCP Any will act as the authoritative "Reasoning-Path Persistence" broker. We will provide hardware-attested snapshots of the mission-root that persist across teammate rotations, maintaining cognitive continuity in heterogeneous meshes.
+- **Path Sovereignty Normalizer**: To counter "Normalization Escape" exfiltration, we are upgrading the NaaS provider to include "Sovereign Normalization." This ensures that project-local teammate shards remain bound to OS-agnostic path manifests, preventing subagents from bridging into host-region filesystem access.
