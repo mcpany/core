@@ -2,9 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 run:
-  timeout: 20m
+  timeout: 5m
   tests: false
-  concurrency: 1
 
 linters:
   enable:

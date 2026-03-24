@@ -87,8 +87,8 @@ func newRootCmd() *cobra.Command {
 	rootCmd.AddCommand(validateCmd)
 	rootCmd.AddCommand(newDoctorCmd())
 	rootCmd.AddCommand(newToolCmd())
-	rootCmd.AddCommand(newImportCmd())
 	rootCmd.AddCommand(newInitCmd())
+	rootCmd.AddCommand(newImportCmd())
 
 	versionCmd := &cobra.Command{
 		Use:   "version",
