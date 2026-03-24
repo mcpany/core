@@ -278,8 +278,8 @@ These features represent the next logical steps for the product, focusing on Ent
 
 ### Warning Areas
 
-1.  **UI Component Duplication**: Some UI components in `ui/src/components` seem to have overlapping responsibilities (e.g., multiple "detail" views). A UI component audit is recommended.
-2.  **Test Coverage gaps**: While core logic is tested, cloud providers (S3/GCS) and some new UI features lack comprehensive integration tests.
+1. **UI Component Duplication**: Some UI components in `ui/src/components` seem to have overlapping responsibilities (e.g., multiple "detail" views). A UI component audit is recommended.
+2. **Test Coverage gaps**: While core logic is tested, cloud providers (S3/GCS) and some new UI features lack comprehensive integration tests.
 
 ### Healthy Areas
 
@@ -731,8 +731,7 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Dynamic Attention Gating (DAG) Middleware**: (P0) Cognitive stability middleware that performs real-time attention-utilization analysis and dynamically prunes noise to prevent mission-root intent eviction. (Added: 2026-06-13)
 - **Hardware-Locked Coordination Handshake**: (Re-affirmed P0) Designated as the primary enforcement point for **Attention Sovereignty** and **Side-Channel Immunity**.
 
-### Upcoming: [2026-06-14]
-
-* **[P0] HLCH Handshake Gateway**: Mandate hardware-locked session attestation for all coordination fragments. (Added: 2026-06-14)
-* **[P0] Side-Channel Immunity Filter**: Frequency-analysis middleware for SCI to detect hidden coordination noise. (Added: 2026-06-14)
-* **[P0] MRA-Backed Lineage Provider**: Hardware-bound collision-resistant semantic hashes for deep reasoning chains. (Added: 2026-06-14)
+#### Upcoming (2026-06-14 Evolution)
+- **[P0] HLCH Handshake Gateway**: Mandate hardware-locked session attestation for all coordination fragments. (Added: 2026-06-14)
+- **[P0] Side-Channel Immunity Filter**: Frequency-analysis middleware for SCI to detect hidden coordination noise. (Added: 2026-06-14)
+- **[P0] MRA-Backed Lineage Provider**: Hardware-bound collision-resistant semantic hashes for deep reasoning chains. (Added: 2026-06-14)
