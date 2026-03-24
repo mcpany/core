@@ -18,11 +18,13 @@ func main() {
     ast.Inspect(f, func(n ast.Node) bool {
         if funcDecl, ok := n.(*ast.FuncDecl); ok && funcDecl.Name.Name == "handleTools" {
             ast.Inspect(funcDecl.Body, func(n ast.Node) bool {
-                if expr, ok := n.(*ast.ExprStmt); ok {
-                    if call, ok := expr.X.(*ast.CallExpr); ok {
-                        if sel, ok := call.Fun.(*ast.SelectorExpr); ok {
-                            if sel.Sel.Name == "Write" || sel.Sel.Name == "Marshal" {
-                                fmt.Printf("Unassigned %s call at %s\n", sel.Sel.Name, fset.Position(expr.Pos()))
+                if assign, ok := n.(*ast.AssignStmt); ok {
+                    if len(assign.Lhs) == 2 {
+                        if ident, ok := assign.Lhs[1].(*ast.Ident); ok && ident.Name == "_" {
+                            if call, ok := assign.Rhs[0].(*ast.CallExpr); ok {
+                                if sel, ok := call.Fun.(*ast.SelectorExpr); ok {
+                                    fmt.Printf("Ignoring 2nd return value of %s at %s\n", sel.Sel.Name, fset.Position(assign.Pos()))
+                                }
                             }
                         }
                     }
