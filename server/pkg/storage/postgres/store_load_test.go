@@ -30,7 +30,7 @@ import (
 // Side Effects:
 //   - Modifies testing state through assertions.
 func TestStore_Load(t *testing.T) {
-		t.Run("Happy Path", func(t *testing.T) {
+	t.Run("Happy Path", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		require.NoError(t, err)
 		defer db.Close()
@@ -138,6 +138,14 @@ func TestStore_Load(t *testing.T) {
 
 		mock.ExpectQuery(".*").
 			WillReturnError(sql.ErrNoRows)
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
 		cfg, err := store.Load(context.Background())
 		require.Error(t, err)
 		require.Nil(t, cfg)
