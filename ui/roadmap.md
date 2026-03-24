@@ -405,3 +405,21 @@
 - [ ] **[P0] Mission Persistence Dashboard**: Visualizer for mission alignment scores and hardware-attested MAT distribution. (Added: 2026-05-16)
 - [ ] **[P1] Correction Ledger Auditor**: Secure interface for reviewing hard-locked user corrections and agent compliance. (Added: 2026-05-16)
 - [ ] **[P1] Reasoning Shadow Detector**: Security widget for tracking ARE header discrepancies and reasoning shadowing alerts. (Added: 2026-05-16)
+
+#### Upcoming (2026-05-17 Evolution)
+- [ ] **[P0] Sovereign Secret Manager**: UI for securely provisioning hardware-encrypted secret sidecars and managing lease policies. (Added: 2026-05-17)
+- [ ] **[P0] Reasoning Guard Status Hub**: Real-time visualization of sanitized tool outputs and CoT poisoning alerts. (Added: 2026-05-17)
+- [ ] **[P1] Swarm Quorum Monitor**: Visual workspace for monitoring SCQ v1.0 voting progress and auditor attestation logs. (Added: 2026-05-17)
+- [ ] **[P1] Multimodal Security Map**: Security widget for tracking "Intent Smuggling" attempts detected in non-textual metadata. (Added: 2026-05-17)
+
+#### Upcoming (2026-05-18 Evolution)
+- [ ] **[P0] Resource Lease Dashboard**: UI for allocating hardware-enforced compute/token budgets to subagent branches. (Added: 2026-05-18)
+- [ ] **[P0] Blackboard Consistency Inspector**: Visualizer for state merge conflicts and CAB quorum status. (Added: 2026-05-18)
+- [ ] **[P1] Attestation Receipt Ledger**: Secure UI for auditing RAR tokens and subagent alignment proofs. (Added: 2026-05-18)
+- [ ] **[P1] Physical Compute Monitor**: Real-time visualization of ARE v2.0 hardware telemetry and reasoning effort verification. (Added: 2026-05-18)
+
+#### Upcoming (2026-05-19 Evolution)
+- [ ] **[P0] Reasoning Integrity Dashboard**: UI for reviewing hardware-signed trace hashes and MAS v2.0 attestation status. (Added: 2026-05-19)
+- [ ] **[P0] Cognitive Undo Console**: Interactive interface for managing reasoning snapshots and performing swarm-wide rollbacks. (Added: 2026-05-19)
+- [ ] **[P1] Data Provenance Map**: Visualizer for Gemini reasoning watermarks across context fragments and tool outputs. (Added: 2026-05-19)
+- [ ] **[P1] Intent Paging Status Widget**: Real-time monitor for sub-microsecond security scope switches in deep swarms. (Added: 2026-05-19)

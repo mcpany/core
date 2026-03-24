@@ -6,6 +6,39 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-19] Updates
+
+### Proposed Additions
+- **Reasoning-Trace Validator**: (P0) Hardware-signed trace verification using MAS v2.0 to ensure Chain of Thought (CoT) integrity.
+- **Cognitive Checkpoint Controller**: (P0) Atomic "Undo" capability for agent reasoning state and Blackboard checkpoints.
+- **Watermark Provenance Monitor**: (P1) Real-time tracking and validation of cryptographically verifiable reasoning watermarks.
+- **Intent-Bound Paging Hub**: (P1) Kernel-level security scope switcher for multi-specialist swarms with sub-microsecond latency.
+
+### Priority Shifts
+- **Injection-Shielding Middleware**: (Re-affirmed P0) Evolved with "Reasoning-Trace Aware" scanning to detect Recursive Context Splicing (RCS).
+
+## Evolution: [2026-05-18] Updates
+
+### Proposed Additions
+- **Hardware-Enforced Resource Broker**: (P0) Deterministic compute and token budgeting using TBRI and TPM-bound resource leases.
+- **Consensus-Aware Blackboard (CAB)**: (P0) High-consistency state management for parallel teammate teams using SCQ v1.0 conflict resolution.
+- **Recursive Attestation Ledger (RAR)**: (P1) Cryptographic repository for subagent "Proof of Alignment" receipts and intent-scope verification.
+- **Hardware-Attested ARE Validator**: (P1) Real-time verification of agent reasoning effort against physical CPU/GPU telemetry.
+
+### Priority Shifts
+- **Shared KV Store (Blackboard)**: (Evolved to CAB) Upgraded with consensus-driven reconciliation for parallel teammate teams.
+
+## Evolution: [2026-05-17] Updates
+
+### Proposed Additions
+- **Sovereign Secret Mediator**: (P0) Mediator for hardware-encrypted "Secret Sidecars" using SCS, preventing sensitive credentials from entering agent context.
+- **Reasoning-Guard Middleware**: (P0) Security layer that scans tool outputs for "Imperative Reasoning" to block CoT Poisoning.
+- **Swarm Consensus Broker (SCQ)**: (P1) Distributed voting service for swarms, allowing specialized auditors to verify tool results before commit.
+- **Multimodal Intent Scanner**: (P1) Extension of the Injection Shield for semantic analysis of SVG/CSS and image metadata.
+
+### Priority Shifts
+- **Injection-Shielding Middleware**: (Re-affirmed P0) Evolved with the requirement for Multimodal scanning to counter "Intent Smuggling."
+
 ## Evolution: [2026-05-16] Updates
 
 ### Proposed Additions

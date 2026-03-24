@@ -558,3 +558,21 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Mission Alignment Token (MAT) Provider**: Middleware to inject hardware-attested alignment tokens into context fragments. (Added: 2026-05-16)
 *   **[P1] Correction Ledger (CPE) Service**: Hardware-protected persistence for user corrections to prevent agentic ghosting. (Added: 2026-05-16)
 *   **[P1] Dynamic Reasoning Verifier (DRV)**: Security middleware to detect reasoning shadowing by cross-referencing ARE headers. (Added: 2026-05-16)
+
+#### Upcoming (2026-05-17 Evolution)
+*   **[P0] Sovereign Secret Mediator**: Hardware-encrypted container mediation for sensitive tool credentials. (Added: 2026-05-17)
+*   **[P0] Reasoning-Guard Middleware**: Real-time scanning of tool outputs for imperative reasoning and CoT poisoning. (Added: 2026-05-17)
+*   **[P1] Swarm Consensus Broker (SCQ)**: Distributed voting and audit service for cross-framework tool validation. (Added: 2026-05-17)
+*   **[P1] Multimodal Intent Scanner**: Extension for semantic metadata analysis in SVG/CSS and images. (Added: 2026-05-17)
+
+#### Upcoming (2026-05-18 Evolution)
+*   **[P0] Hardware-Enforced Resource Broker**: Deterministic compute and token budgeting using TBRI. (Added: 2026-05-18)
+*   **[P0] Consensus-Aware Blackboard (CAB)**: High-consistency state management with automated conflict resolution. (Added: 2026-05-18)
+*   **[P1] Recursive Attestation Ledger**: Cryptographic repository for RAR tokens and subagent alignment receipts. (Added: 2026-05-18)
+*   **[P1] Hardware-Attested ARE Validator**: Real-time verification of reasoning effort against physical telemetry. (Added: 2026-05-18)
+
+#### Upcoming (2026-05-19 Evolution)
+*   **[P0] Reasoning-Trace Validator**: Hardware-signed trace verification using MAS v2.0 for CoT integrity. (Added: 2026-05-19)
+*   **[P0] Cognitive Checkpoint Controller**: Atomic "Undo" capability for agent reasoning state and Blackboard snapshots. (Added: 2026-05-19)
+*   **[P1] Watermark Persistence Monitor**: Real-time tracking and validation of cryptographically verifiable model watermarks. (Added: 2026-05-19)
+*   **[P1] Intent-Bound Paging Hub**: Kernel-level security scope switcher for low-latency multi-specialist swarms. (Added: 2026-05-19)
