@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"go/ast"
 	"go/parser"
+	"go/printer"
 	"go/token"
+	"os"
 )
 
 func main() {
@@ -15,23 +18,23 @@ func main() {
 		return
 	}
 
-    ast.Inspect(f, func(n ast.Node) bool {
-        if assign, ok := n.(*ast.AssignStmt); ok {
-            for _, lhs := range assign.Lhs {
-                if ident, ok := lhs.(*ast.Ident); ok {
-                    if ident.Name == "_" && len(assign.Lhs) > 1 {
-                        // Check if the rhs is a function call that might return an error
-                        if len(assign.Rhs) > 0 {
-                            if call, ok := assign.Rhs[0].(*ast.CallExpr); ok {
-                                // Just a simple heuristic to spot ignored errors
-                                fmt.Printf("Potentially ignored error at %s\n", fset.Position(assign.Pos()))
-                                _ = call
-                            }
-                        }
-                    }
+	ast.Inspect(f, func(n ast.Node) bool {
+		if assign, ok := n.(*ast.AssignStmt); ok {
+            if len(assign.Lhs) > 0 {
+                if ident, ok := assign.Lhs[0].(*ast.Ident); ok && ident.Name == "_" {
+                    // Turn `_, err = ...` into `_, _ = ...` or remove the underscore?
+                    // Actually, if it's `_, err := w.Write(...)`, then using the err is good. The linter complains about the first `_`?
+                    // NO! errcheck complains about `_, _ = w.Write(...)`!
+                    // If we did `_, err := w.Write(...)`, it does NOT complain if we use `err`.
+                    // But in my latest commit I did:
+                    // _, err := w.Write(...)
+                    // if err != nil ...
+                    // Is `_` assignment causing a different lint error? "errcheck"? No, ineffassign?
+                    // Let's check `errcheck` output. Oh, the previous `errcheck` output said:
+                    // `internal error: package "github.com/puzpuzpuz/xsync/v4" without types was imported from "github.com/mcpany/core/server/pkg/auth"`
                 }
             }
-        }
-        return true
-    })
+		}
+		return true
+	})
 }
