@@ -126,28 +126,3 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 func (a *AutoGenAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
 }
-
-// SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the AutoGen framework.
-//
-// Summary: Ingests a memory shard to synchronize state across agents.
-//
-// Parameters:
-//   - ctx (context.Context): The context for controlling cancellation and timeouts.
-//   - shard (*MemoryShard): The multimodal memory shard to synchronize.
-//
-// Returns:
-//   - error: An error if the signature is invalid.
-//
-// Errors:
-//   - Returns an error if the shard signature verification fails.
-//
-// Side Effects:
-//   - Modifies the chat history state by injecting new checkpoints.
-func (a *AutoGenAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard) error {
-	if shard.Signature == "" {
-		return fmt.Errorf("invalid memory shard: signature required for ingestion")
-	}
-
-	a.ChatHistory = append(a.ChatHistory, fmt.Sprintf("Received multimodal shard: %s", shard.ShardID))
-	return nil
-}
