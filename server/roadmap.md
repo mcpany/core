@@ -11,6 +11,14 @@
 
 ### Status: Active Development
 
+#### Upcoming (2026-05-17 Evolution)
+*   **[P0] Recursive Discovery Attestation (RDA) Provider**: Implementation of cryptographic cross-referencing for subagent tool discovery. (Added: 2026-05-17)
+*   **[P0] Kernel-Resident Mailbox Bus**: Transition inter-teammate coordination to isolated Unix Domain Sockets with peer-cred verification. (Added: 2026-05-17)
+*   **[P1] Intent Entropy Monitor**: Observability service for detecting reasoning hijacking via semantic variance tracking. (Added: 2026-05-17)
+*   **[P1] Trace Noise Injection Middleware**: Security layer to defend against cognitive side-channeling by stochasticizing call sequences. (Added: 2026-05-17)
+
+
+
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
@@ -514,12 +522,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Authenticated Handshake Provider**: Implementation of Gemini CLI v0.33.0 style HTTP authentication for all agent-to-agent remote communications. (Added: 2026-04-24)
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
-
-#### Upcoming (2026-05-16 Evolution)
-*   **[P0] Hardware-Locked Intent Store (HLIS)**: Cryptographic anchoring of mission-root intents in Secure Enclaves (TPM/SEP). (Added: 2026-05-16)
-*   **[P0] Secure Swarm Coordination Bus**: Mandatory signing for parallel teammate messaging and state reconciliation. (Added: 2026-05-16)
-*   **[P1] Multi-Modal Trace Sanitizer**: Semantic scanning of visual/auditory reasoning traces for multi-modal injection defense. (Added: 2026-05-16)
-*   **[P0] Identity-Bound Discovery (IBD) Enforcer**: Mission-token gated tool and peer discovery for large meshes. (Added: 2026-05-16)
 
 #### Upcoming (2026-05-15 Evolution)
 *   **[P0] Consensus Tool Validation Hub**: Distributed security middleware requiring multi-agent signatures for high-risk delegations. (Added: 2026-05-15)

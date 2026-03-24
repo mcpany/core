@@ -3,6 +3,10 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Discovery Attestation Workspace**: (2026-05-17) UI for reviewing RDA manifests and visualizing blocked shadow-delegation attempts.
+- [ ] **[P0] Kernel Mailbox Monitor**: (2026-05-17) Visual audit trail for UDS-based coordination and teammate process verification status.
+- [ ] **[P1] Reasoning Entropy Dashboard**: (2026-05-17) Real-time visualization of intent entropy and cognitive health alerts.
+
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)
@@ -358,12 +362,6 @@
 - [ ] **[P0] A2A Handshake Status Monitor**: Real-time visualization of authenticated inter-agent handshakes and auth failures. (Added: 2026-04-24)
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
-
-#### Upcoming (2026-05-16 Evolution)
-- [ ] **[P0] Hardware-Locked Intent Monitor**: Real-time visualization of HLIS-anchored mission intents and attestation status. (Added: 2026-05-16)
-- [ ] **[P0] Secure Coordination Stream**: Visual audit trail for cryptographically signed teammate-to-teammate messages. (Added: 2026-05-16)
-- [ ] **[P1] Multi-modal Trace Debugger**: Forensic UI for analyzing visual and auditory traces for injection patterns. (Added: 2026-05-16)
-- [ ] **[P0] Identity-Bound Discovery Explorer**: Mission-token gated browser for discovered tools and peers. (Added: 2026-05-16)
 
 #### Upcoming (2026-05-15 Evolution)
 - [ ] **[P0] Consensus Attestation Workspace**: Security UI for orchestrating multi-agent approval quorums for high-risk delegations. (Added: 2026-05-15)
