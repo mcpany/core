@@ -5,8 +5,7 @@
 
 
 
-import React, { useState, useEffect, useMemo } from "react";
-import { usePolling } from "@/hooks/use-polling";
+import { useState, useEffect, useMemo } from "react";
 import {
     Area,
     AreaChart,
@@ -26,6 +25,7 @@ import {
 } from "recharts";
 import {
     ArrowDownRight,
+    ArrowUpRight,
     Activity,
     Clock,
     AlertTriangle,
@@ -71,16 +71,17 @@ export function AnalyticsDashboard() {
     const [tools, setTools] = useState<ToolDefinition[]>([]);
     const [toolUsageMap, setToolUsageMap] = useState<Record<string, ToolAnalytics>>({});
     const [isMounted, setIsMounted] = useState(false);
-    const tokenCacheRef = React.useRef<Record<string, number>>({});
 
-    const fetchDashboardData = React.useCallback(async () => {
-        try {
-            const [traffic, topTools, toolsResponse, toolUsageStats] = await Promise.all([
-                apiClient.getDashboardTraffic(),
-                apiClient.getTopTools(),
-                apiClient.listTools().catch(() => ({ tools: [] })),
-                apiClient.getToolUsage().catch(() => [])
-            ]);
+    useEffect(() => {
+        setIsMounted(true);
+        const fetchDashboardData = async () => {
+            try {
+                const [traffic, topTools, toolsResponse, toolUsageStats] = await Promise.all([
+                    apiClient.getDashboardTraffic(),
+                    apiClient.getTopTools(),
+                    apiClient.listTools().catch(() => ({ tools: [] })),
+                    apiClient.getToolUsage().catch(() => [])
+                ]);
                 setTrafficData(traffic || []);
 
                 // Format tool usage data
@@ -106,16 +107,8 @@ export function AnalyticsDashboard() {
 
                 allTools.forEach(tool => {
                     // Estimate tokens for the tool definition
-                    // ⚡ BOLT: Prevent massive CPU spike during polling by caching token estimations
-                    // Randomized Selection from Top 5 High-Impact Targets (Memory/CPU)
-                    const cacheKey = `${tool.serviceId || 'Unknown'}-${tool.name}`;
-                    let tokens = tokenCacheRef.current[cacheKey];
-                    if (tokens === undefined) {
-                        const json = JSON.stringify(tool);
-                        tokens = estimateTokens(json);
-                        tokenCacheRef.current[cacheKey] = tokens;
-                    }
-
+                    const json = JSON.stringify(tool);
+                    const tokens = estimateTokens(json);
                     totalTokens += tokens;
 
                     const serviceId = tool.serviceId || "Unknown";
@@ -137,41 +130,25 @@ export function AnalyticsDashboard() {
                 // Top heaviest tools
                 setHeaviestTools(toolTokens.sort((a, b) => b.tokens - a.tokens).slice(0, 10));
 
-        } catch (error) {
-            console.error("Failed to fetch dashboard data", error);
-        }
-    }, [timeRange]);
+            } catch (error) {
+                console.error("Failed to fetch dashboard data", error);
+            }
+        };
 
-    useEffect(() => {
-        setIsMounted(true);
         fetchDashboardData();
-    }, [fetchDashboardData]);
-
-    // ⚡ BOLT: [Render Optimization] Use usePolling hook instead of raw setInterval
-    // Randomized Selection from Top 5 High-Impact Targets (Network Category)
-    // Avoids network waste when tab is backgrounded
-    usePolling(fetchDashboardData, 30000);
+        const interval = setInterval(fetchDashboardData, 30000);
+        return () => clearInterval(interval);
+    }, [timeRange]);
 
     const { totalRequests, avgLatency, errorCount, errorRate, avgRps } = useMemo(() => {
         // ⚡ BOLT: Memoized traffic stats calculation to prevent re-render waste.
         // Randomized Selection from Top 5 High-Impact Targets
-
-        // ⚡ BOLT: [Algorithmic Optimization] Consolidate multiple O(N) array reductions into a single O(N) pass
-        // to reduce CPU cycles and garbage collection overhead during dashboard polling.
-        let totalRequests = 0;
-        let totalLatency = 0;
-        let errorCount = 0;
-
-        for (let i = 0; i < trafficData.length; i++) {
-            const cur = trafficData[i];
-            totalRequests += (cur.requests || cur.total || 0);
-            totalLatency += (cur.latency || 0);
-            errorCount += (cur.errors || 0);
-        }
-
-        const avgLatency = trafficData.length ? Math.floor(totalLatency / trafficData.length) : 0;
+        const totalRequests = trafficData.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
+        const avgLatency = trafficData.length
+            ? Math.floor(trafficData.reduce((acc, cur) => acc + (cur.latency || 0), 0) / trafficData.length)
+            : 0;
+        const errorCount = trafficData.reduce((acc, cur) => acc + (cur.errors || 0), 0);
         const errorRate = totalRequests ? ((errorCount / totalRequests) * 100).toFixed(2) : "0.00";
-
         // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
         const durationMinutes = trafficData.length;
         const avgRps = (durationMinutes && totalRequests) ? (totalRequests / (durationMinutes * 60)).toFixed(2) : "0.00";

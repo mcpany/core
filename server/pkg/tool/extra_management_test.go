@@ -28,24 +28,6 @@ type mockToolSimple struct {
 	serviceID   string
 }
 
-func (m *mockToolSimple) IsStreaming() bool {
-	return false
-}
-
-func (m *mockToolSimple) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
-	ch := make(chan any, 1)
-	go func() {
-		defer close(ch)
-		res, err := m.Execute(ctx, req)
-		if err != nil {
-			ch <- err
-		} else {
-			ch <- res
-		}
-	}()
-	return ch, nil
-}
-
 func (m *mockToolSimple) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if m.executeFunc != nil {
 		return m.executeFunc(ctx, req)
@@ -66,6 +48,10 @@ func (m *mockToolSimple) Tool() *routerv1.Tool {
 }
 
 func (m *mockToolSimple) GetCacheConfig() *configv1.CacheConfig { return nil }
+
+func (m *mockToolSimple) IsStreaming() bool { return false }
+
+func (m *mockToolSimple) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) { return nil, nil }
 
 func (m *mockToolSimple) MCPTool() *mcp.Tool {
 	t, _ := ConvertProtoToMCPTool(m.Tool())

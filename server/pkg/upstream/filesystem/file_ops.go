@@ -13,22 +13,6 @@ import (
 	"github.com/spf13/afero"
 )
 
-// readFileTool creates a tool for reading a file.
-//
-// Summary: Creates read file tool.
-//
-// Parameters:
-//   - prov (provider.Provider): The filesystem provider.
-//   - fs (afero.Fs): The filesystem instance.
-//
-// Returns:
-//   - filesystemToolDef: The tool definition.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func readFileTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "read_file",
@@ -77,23 +61,6 @@ func readFileTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 	}
 }
 
-// writeFileTool creates a tool for writing a file.
-//
-// Summary: Creates write file tool.
-//
-// Parameters:
-//   - prov (provider.Provider): The filesystem provider.
-//   - fs (afero.Fs): The filesystem instance.
-//   - readOnly (bool): Whether the tool is read-only.
-//
-// Returns:
-//   - filesystemToolDef: The tool definition.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func writeFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "write_file",
@@ -276,23 +243,6 @@ func safeRemove(fs afero.Fs, path string, recursive bool) error {
 	return fs.Remove(path)
 }
 
-// moveFileTool creates a tool for moving a file.
-//
-// Summary: Creates move file tool.
-//
-// Parameters:
-//   - prov (provider.Provider): The filesystem provider.
-//   - fs (afero.Fs): The filesystem instance.
-//   - readOnly (bool): Whether the tool is read-only.
-//
-// Returns:
-//   - filesystemToolDef: The tool definition.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func moveFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "move_file",
@@ -341,23 +291,6 @@ func moveFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesystem
 	}
 }
 
-// deleteFileTool creates a tool for deleting a file.
-//
-// Summary: Creates delete file tool.
-//
-// Parameters:
-//   - prov (provider.Provider): The filesystem provider.
-//   - fs (afero.Fs): The filesystem instance.
-//   - readOnly (bool): Whether the tool is read-only.
-//
-// Returns:
-//   - filesystemToolDef: The tool definition.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func deleteFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "delete_file",
