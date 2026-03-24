@@ -38,34 +38,34 @@ func TestStore_Load(t *testing.T) {
 		pgDB := &DB{db}
 		store := NewStore(pgDB)
 
-		opts := protojson.MarshalOptions{UseProtoNames: true}
+
 
 		svc := configv1.UpstreamServiceConfig_builder{Id: proto.String("service-1"), Name: proto.String("Service One")}.Build()
-		svcBytes, err := opts.Marshal(svc)
+		svcBytes, err := protojson.MarshalOptions{}.Marshal(svc)
 		require.NoError(t, err)
 		mock.ExpectQuery(".*").
 			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(svcBytes))
 
 		user := configv1.User_builder{Id: proto.String("user-1"), Roles: []string{"admin"}}.Build()
-		userBytes, err := opts.Marshal(user)
+		userBytes, err := protojson.MarshalOptions{}.Marshal(user)
 		require.NoError(t, err)
 		mock.ExpectQuery(".*").
 			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(userBytes))
 
 		settings := configv1.GlobalSettings_builder{McpListenAddress: proto.String("instance-1")}.Build()
-		settingsBytes, err := opts.Marshal(settings)
+		settingsBytes, err := protojson.MarshalOptions{}.Marshal(settings)
 		require.NoError(t, err)
 		mock.ExpectQuery(".*").
 			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(settingsBytes))
 
 		coll := configv1.Collection_builder{Name: proto.String("Collection One"), Version: proto.String("collection-1")}.Build()
-		collBytes, err := opts.Marshal(coll)
+		collBytes, err := protojson.MarshalOptions{}.Marshal(coll)
 		require.NoError(t, err)
 		mock.ExpectQuery(".*").
 			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(collBytes))
 
 		profile := configv1.ProfileDefinition_builder{Name: proto.String("profile-1")}.Build()
-		profileBytes, err := opts.Marshal(profile)
+		profileBytes, err := protojson.MarshalOptions{}.Marshal(profile)
 		require.NoError(t, err)
 		mock.ExpectQuery(".*").
 			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(profileBytes))
@@ -73,6 +73,7 @@ func TestStore_Load(t *testing.T) {
 		cfg, err := store.Load(context.Background())
 		require.NoError(t, err)
 		require.NotNil(t, cfg)
+
 	})
 
 	t.Run("Query Error", func(t *testing.T) {
