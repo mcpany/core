@@ -171,7 +171,8 @@ if [[ ! -f "$next_cli_js" || ! -f "$playwright_cli_js" ]]; then
   exit 1
 fi
 
-export PATH="$(dirname "$node_bin"):$PATH"
+new_path="$(dirname "$node_bin"):$PATH"
+export PATH="$new_path"
 export NODE_PATH="$ui_runtime/node_modules${NODE_PATH:+:$NODE_PATH}"
 
 # Use `next start` (production mode) when a pre-built .next is available in the
@@ -187,7 +188,7 @@ else
 fi
 
 if [[ -n "$spec_path" ]]; then
-  escaped_spec="$(printf '%s' "$selected_spec" | sed -e 's/[.[\*^$()+?{}|]/\\&/g')"
+  escaped_spec=$(printf '%s' "$selected_spec" | sed -e "s/[.[\\*^\$()+?{}|]/\\\\&/g")
   export PLAYWRIGHT_TEST_MATCH="(^|.*/)${escaped_spec}$"
 fi
 
