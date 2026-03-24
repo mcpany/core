@@ -8,7 +8,7 @@ executors:
   default-executor:
     docker:
       - image: cimg/go:1.24
-    resource_class: large
+    resource_class: xlarge
 
 commands:
   check-skip:
@@ -21,12 +21,12 @@ commands:
             # But CircleCI shallow clones can be tricky.
             # Simple approach: If all changed files match docs, exit 0 (success) immediately?
             # Actually, CircleCI doesn't have an easy "skip remaining steps" without failing or using conditional steps for EVERYTHING.
-            # We will rely on the fact that 'export GOMEMLIMIT=2048MiB
-            export GOMAXPROCS=1
+            # We will rely on the fact that 'export GOMEMLIMIT=3072MiB
+            export GOMAXPROCS=2
             export GOMODCACHE=$PWD/build/.cache/go-mod
             export GOCACHE=$PWD/build/.cache/go-build
             export GOLANGCI_LINT_CACHE=$PWD/build/.cache/golangci-lint
-            export GOGC=10
+            export GOGC=50
             make lint' itself might be fast or we just run it.
             # However, the user asked for similar logic.
             # For now, let's just run it. If strict parity is needed, we'd add complex logic.
@@ -63,12 +63,12 @@ jobs:
             . venv/bin/activate
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
-            export GOMEMLIMIT=2048MiB
-            export GOMAXPROCS=1
+            export GOMEMLIMIT=3072MiB
+            export GOMAXPROCS=2
             export GOMODCACHE=$PWD/build/.cache/go-mod
             export GOCACHE=$PWD/build/.cache/go-build
             export GOLANGCI_LINT_CACHE=$PWD/build/.cache/golangci-lint
-            export GOGC=10
+            export GOGC=50
             make lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
