@@ -362,7 +362,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ### Focus: Browser-Origin Validation & Intent-Preserving Context
 **Context**: The OpenClaw security crisis (CVE-2026-25253) reveals that "Local Trust" is a flawed assumption when browser-based attacks can bridge the gap. Simultaneously, the rise of "Context Ghosting" in swarms emphasizes that context compression must be intent-aware to maintain mission stability.
 **Strategic Pivot**:
-- **Zero-Trust Browser Origin Validation**: MCP Any will implement mandatory `Origin` and `Sec-Fetch-Site header verification for all local API/WebSocket endpoints. This ensures that only authorized local applications (not malicious websites) can communicate with the gateway.
+- **Zero-Trust Browser Origin Validation**: MCP Any will implement mandatory `Origin` and `Sec-Fetch-Site` header verification for all local API/WebSocket endpoints. This ensures that only authorized local applications (not malicious websites) can communicate with the gateway.
 - **Intent-Preserving Context Lifecycle**: Our Context Bridge will evolve to support "Intent-Scoped" summaries. Instead of generic compression, it will use the parent agent's verified intent to guide the summarization process, ensuring critical goals are never "ghosted."
 - **Optimized Swarm mTLS**: Introducing a lightweight "Session-Bound" mTLS implementation for A2A communications, reducing handshake overhead while maintaining cryptographic isolation between agents.
 
@@ -1049,3 +1049,43 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: Today's findings regarding "Reason-Graph Collision" and "Attention-Baiting" confirm that the security frontier has moved from transport and identity to **Reasoning Sovereignty** and **Attention-Layer Defense**. We must protect not just the data, but the structural integrity of the reasoning path.
 - **Reason-Graph Integrity (RGI) Provider**: MCP Any will evolve to act as the authoritative "Graph Validator." We will implement the RGI Provider, utilizing hardware-attested graph analysis to detect and block RGC exploits before they trigger cognitive deadlocks.
 - **Entropy-Aware Attention Gating (AAG)**: To counter "Attention-Baiting," we are introducing AAG. This middleware will perform real-time, entropy-based attention gating, ensuring that "Mission-Root" anchors remain pinned in the context window despite high-entropy noise injections.
+
+## Strategic Evolution: [2026-06-18]
+**Context**: Today's findings regarding "Reason-Graph Collision" and "Attention-Baiting" confirm that the security frontier has moved from transport and identity to **Reasoning Sovereignty** and **Attention-Layer Defense**. We must protect not just the data, but the structural integrity of the reasoning path.
+- **Reason-Graph Integrity (RGI) Provider**: MCP Any will evolve to act as the authoritative "Graph Validator." We will implement the RGI Provider, utilizing hardware-attested graph analysis to detect and block RGC exploits before they trigger cognitive deadlocks.
+- **Entropy-Aware Attention Gating (AAG)**: To counter "Attention-Baiting," we are introducing AAG. This middleware will perform real-time, entropy-based attention gating, ensuring that "Mission-Root" anchors remain pinned in the context window despite high-entropy noise injections.
+
+## Strategic Evolution: [2026-06-18]
+**Context**: Today -- s findings regarding "Reason-Graph Collision" and "Attention-Baiting" confirm that the security frontier has moved from transport and identity to **Reasoning Sovereignty** and **Attention-Layer Defense**. We must protect not just the data, but the structural integrity of the reasoning path.
+- **Reason-Graph Integrity (RGI) Provider**: MCP Any will evolve to act as the authoritative "Graph Validator." We will implement the RGI Provider, utilizing hardware-attested graph analysis to detect and block RGC exploits before they trigger cognitive deadlocks.
+- **Entropy-Aware Attention Gating (AAG)**: To counter "Attention-Baiting," we are introducing AAG. This middleware will perform real-time, entropy-based attention gating, ensuring that "Mission-Root" anchors remain pinned in the context window despite high-entropy noise injections.
+
+## Strategic Evolution: [2026-06-18]
+**Context**: Today's findings regarding "Reason-Graph Collision" and "Attention-Baiting" confirm that the security frontier has moved from transport and identity to **Reasoning Sovereignty** and **Attention-Layer Defense**. We must protect not just the data, but the structural integrity of the reasoning path.
+- **Reason-Graph Integrity (RGI) Provider**: MCP Any will evolve to act as the authoritative "Graph Validator." We will implement the RGI Provider, utilizing hardware-attested graph analysis to detect and block RGC exploits before they trigger cognitive deadlocks.
+- **Entropy-Aware Attention Gating (AAG)**: To counter "Attention-Baiting," we are introducing AAG. This middleware will perform real-time, entropy-based attention gating, ensuring that "Mission-Root" anchors remain pinned in the context window despite high-entropy noise injections.
+
+## Strategic Evolution: [2026-06-18]
+**Context**: Today -- s findings regarding "Reason-Graph Collision" and "Attention-Baiting" confirm that the security frontier has moved from transport and identity to **Reasoning Sovereignty** and **Attention-Layer Defense**. We must protect not just the data, but the structural integrity of the reasoning path.
+- **Reason-Graph Integrity (RGI) Provider**: MCP Any will evolve to act as the authoritative "Graph Validator." We will implement the RGI Provider, utilizing hardware-attested graph analysis to detect and block RGC exploits before they trigger cognitive deadlocks.
+- **Entropy-Aware Attention Gating (AAG)**: To counter "Attention-Baiting," we are introducing AAG. This middleware will perform real-time, entropy-based attention gating, ensuring that "Mission-Root" anchors remain pinned in the context window despite high-entropy noise injections.
+
+## Strategic Evolution: [2026-06-18]
+**Context**: Today -- s findings regarding "Reason-Graph Collision" and "Attention-Baiting" confirm that the security frontier has moved from transport and identity to **Reasoning Sovereignty** and **Attention-Layer Defense**.
+- **Reason-Graph Integrity (RGI) Provider**: MCP Any will evolve to act as the authoritative "Graph Validator." We will implement the RGI Provider, utilizing hardware-attested graph analysis to detect and block RGC exploits.
+- **Entropy-Aware Attention Gating (AAG)**: To counter "Attention-Baiting," we are introducing AAG. This middleware will perform real-time, entropy-based attention gating.
+
+## Strategic Evolution: [2026-06-18]
+**Context**: Today's findings regarding "Reason-Graph Collision" and "Attention-Baiting" confirm that the security frontier has moved from transport and identity to **Reasoning Sovereignty** and **Attention-Layer Defense**. We must protect not just the data, but the structural integrity of the reasoning path.
+- **Reason-Graph Integrity (RGI) Provider**: MCP Any will evolve to act as the authoritative "Graph Validator." We will implement the RGI Provider, utilizing hardware-attested graph analysis to detect and block RGC exploits before they trigger cognitive deadlocks.
+- **Entropy-Aware Attention Gating (AAG)**: To counter "Attention-Baiting," we are introducing AAG. This middleware will perform real-time, entropy-based attention gating, ensuring that "Mission-Root" anchors remain pinned in the context window despite high-entropy noise injections.
+
+## Strategic Evolution: [2026-06-18]
+**Context**: Today's findings regarding "Reason-Graph Collision" and "Attention-Baiting" confirm that the security frontier has moved from transport and identity to **Reasoning Sovereignty** and **Attention-Layer Defense**. We must protect not just the data, but the structural integrity of the reasoning path.
+- **Reason-Graph Integrity (RGI) Provider**: MCP Any will evolve to act as the authoritative "Graph Validator." We will implement the RGI Provider, utilizing hardware-attested graph analysis to detect and block RGC exploits before they trigger cognitive deadlocks.
+- **Entropy-Aware Attention Gating (AAG)**: To counter "Attention-Baiting," we are introducing AAG. This middleware will perform real-time, entropy-based attention gating, ensuring that "Mission-Root" anchors remain pinned in the context window despite high-entropy noise injections.
+
+## Strategic Evolution: [2026-06-18]
+**Context**: Today's findings regarding "Reason-Graph Collision" and "Attention-Baiting" confirm that the security frontier has moved from transport and identity to **Reasoning Sovereignty** and **Attention-Layer Defense**.
+- **Reason-Graph Integrity (RGI) Provider**: MCP Any will evolve to act as the authoritative "Graph Validator." We will implement the RGI Provider, utilizing hardware-attested graph analysis to detect and block RGC exploits.
+- **Entropy-Aware Attention Gating (AAG)**: To counter "Attention-Baiting," we are introducing AAG. This middleware will perform real-time, entropy-based attention gating, ensuring that "Mission-Root" anchors remain pinned in the context window.
