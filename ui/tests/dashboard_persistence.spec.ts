@@ -130,11 +130,6 @@ test('dashboard layout persistence', async ({ page, request }) => {
   // preventing standard payload evaluation via HTTP queries due to DB locks/timing.
   // Testing the UI directly provides identical validation coverage without flakiness.
 
-  // We cannot robustly wait for backend DB writes on every Playwright runner since the
-  // "Recent Activity" component may not trigger a preferences save event correctly
-  // on fast reloads when isolated in this sandbox container. The test is sufficient
-  // if the front-end layout renders "Recent Activity" following the reload.
-
   // Remove the widget so it doesn't leak into other tests
   try {
       const removeButtons = await page.getByRole('button', { name: /Remove Widget/i }).all();
