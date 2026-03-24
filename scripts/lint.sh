@@ -137,4 +137,15 @@ else
     echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."
 fi
 
+# ---------------------------------------------------------------------------
+# 4. Docstring Audit – enforces Gold Standard documentation.
+# ---------------------------------------------------------------------------
+echo "==> Running Docstring Audit..."
+if [[ -f "server/tools/audit_docs.py" ]]; then
+    python3 server/tools/audit_docs.py server/pkg server/cmd
+    echo "    Docstring Audit OK."
+else
+    echo "    Warning: audit_docs.py not found – skipping."
+fi
+
 echo "==> Lint complete."
