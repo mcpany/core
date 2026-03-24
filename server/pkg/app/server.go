@@ -2110,6 +2110,8 @@ func (a *Application) runServerMode(
 		}
 	})))
 
+	// Register Debugger API if enabled
+
 	// Register Recursive Context Manager
 	if standardMiddlewares != nil && standardMiddlewares.RecursiveContext == nil {
 		standardMiddlewares.RecursiveContext = middleware.NewRecursiveContextManager()
@@ -2118,8 +2120,6 @@ func (a *Application) runServerMode(
 		mux.Handle("/context/session", authMiddleware(standardMiddlewares.RecursiveContext.APIHandler()))
 		mux.Handle("/context/session/", authMiddleware(standardMiddlewares.RecursiveContext.APIHandler()))
 	}
-
-	// Register Debugger API if enabled
 
 	if standardMiddlewares != nil && standardMiddlewares.Debugger != nil {
 		mux.Handle("/debug/entries", authMiddleware(standardMiddlewares.Debugger.APIHandler()))

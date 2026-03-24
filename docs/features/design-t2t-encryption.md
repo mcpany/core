@@ -1,1 +1,151 @@
-# Design Doc: Teammate-to-Teammate (T2T) Encryption Bridge\n**Status:** Draft\n**Created:** 2026-05-22\n\n## 1. Context and Scope\nThe introduction of "Agent Teams" in Claude Code and similar "Mesh"\n  orchestration patterns in OpenClaw has created a need for secure,\n  cross-framework horizontal communication. Teammates within a team need to\n  exchange mailbox messages and synchronize a Shared Task List. Currently,\n  these mechanisms are often unencrypted or framework-specific, creating a risk\n  of state injection or intent hijacking if one teammate is compromised.\n\nThe T2T Encryption Bridge provides a universal, secure bus for\n  teammate-to-teammate communication. It allows agents from different\n  frameworks to coordinate with cryptographic guarantees of integrity and\n  privacy.\n\n## 2. Goals & Non-Goals\n*   **Goals:**\n    *   Provide end-to-end encryption for inter-agent mailbox messages.\n    *   Ensure cryptographic integrity for the Shared Task List across multiple\n  frameworks.\n    *   Implement "Intent-Bound Validation": ensure messages align with the\n  verified Mission Root.\n    *   Support framework-agnostic handshakes (Claude Code teammate <->\n  OpenClaw specialist).\n*   **Non-Goals:**\n    *   Replacing the agent frameworks' internal reasoning logic.\n    *   Providing a public messaging service (T2T is scoped to a specific\n  mission/session).\n\n## 3. Critical User Journey (CUJ)\n*   **User Persona:** Developer orchestrating a "Heterogeneous Swarm" (Claude\n  Code lead + 2 OpenClaw subagents).\n*   **Primary Goal:** Securely delegate a database migration task from the\n  Claude lead to an OpenClaw specialist and monitor its progress via the Shared\n  Task List.\n*   **The Happy Path (Tasks):**\n    1.  The User initializes an Agent Team via MCP Any.\n    2.  MCP Any establishes a T2T Encryption Bus for the session.\n    3.  The Claude Code lead teammate posts a "Database Migration" task to the\n  Shared Task List.\n    4.  The OpenClaw specialist teammate sees the task and "claims" it.\n    5.  The OpenClaw agent sends a direct mailbox message to the Claude lead\n  requesting the schema.\n    6.  The T2T Bridge encrypts the message using the lead's public key.\n    7.  The Claude lead receives and decrypts the message, then responds with\n  the schema.\n    8.  The T2T Bridge validates that the exchange is within the "Mission Root"\n  intent scope.\n\n## 4. Design & Architecture\n*   **System Flow:**\n    ```mermaid\n    graph TD\n        AgentA[Claude Teammate] <--> Bridge[T2T Encryption Bridge]\n        AgentB[OpenClaw Teammate] <--> Bridge\n        Bridge <--> STL[Shared Task List (SQLite/Encrypted)]\n        Bridge <--> Mailbox[Inter-Agent Mailbox (Encrypted)]\n\n        subgraph "Security Layer"\n            Bridge --> VAL[Mailbox Integrity Middleware]\n            VAL --> POL[Mission-Root Policy]\n        end\n    ```\n*   **APIs / Interfaces:**\n    *   `POST /mailbox/send`: Encrypts and routes a message to another teammate.\n    *   `GET /mailbox/receive`: Retrieves and decrypts messages for the caller.\n    *   `PATCH /tasks/{id}`: Updates task state with cryptographic signature\n  validation.\n*   **Data Storage/State:**\n    *   Session-bound key-value store for public keys of active teammates.\n    *   Encrypted SQLite backend for the Shared Task List.\n\n## 5. Alternatives Considered\n*   **Plaintext Shared State:** Rejected due to the risk of "PASI"\n  (Protocol-Agnostic State Injection) where a low-trust subagent pollutes a\n  high-trust reasoning loop.\n*   **Framework-Specific Bridges:** Rejected because they don't solve the\n  "Heterogeneous Swarm" problem (e.g., OpenClaw agents can't natively talk to\n  Claude teammates).\n\n## 6. Cross-Cutting Concerns\n*   **Security (Zero Trust):** T2T implements the "Mailbox Integrity" strategic\n  pivot. It ensures that even if a subagent is hijacked, it cannot coerce its\n  teammates into unauthorized actions via message injection.\n*   **Observability:** The `Inter-Agent Mailbox Monitor` provides a visual\n  audit trail of all encrypted exchanges.\n\n## 7. Evolutionary Changelog\n*   **2026-05-22:** Initial Document Creation.\n\n### Update: 2026-05-25 - Introducing Asynchronous Mailbox Sharding (AMS)\n**Context:** Today's market sync revealed "Mailbox Lock" bottlenecks in\n  horizontal swarms with 10+ teammates. The monolithic encrypted mailbox model\n  is causing significant latency during peak coordination.\n**Architecture Adjustment:**\n*   Deprecating the single encrypted SQLite mailbox backend in Section 4.\n*   Introducing **Asynchronous Mailbox Sharding (AMS)**. Every\n  teammate-to-teammate pair now utilizes a dedicated, task-bound shard.\n*   Implementing a lock-free queue for inter-shard synchronization.\n**Security Impact:** Enhances isolation by ensuring a compromise of one shard\n  doesn't expose the metadata or throughput of unrelated teammate coordination.\n\n### Update: 2026-05-26 - Non-Blocking Mailbox Sharding (AMS)\n**Context:** Further analysis of Claude Code "Mailbox Lock" confirms that\n  synchronous sharding still introduces global coordination overhead.\n  High-density teams (50+ agents) require a move to fully non-blocking\n  coordination.\n**Architecture Adjustment:**\n*   Upgrading AMS to a **Non-Blocking Architecture**. Replacing inter-shard\n  queues with lock-free ring buffers.\n*   Introducing "Intent-Agnostic Buffering" for metadata-only coordination\n  messages, further reducing the load on the primary Mailbox Integrity\n  Validator.\n**Security Impact:** Mitigates "Coordination DoS" where a single slow teammate\n  can stall the entire swarm's mailbox throughput.\n\n### Update: 2026-05-27 - Fragment-Aware Mailbox Isolation (FAMI)\n**Context:** Today's market sync revealed a class of "State Splicing" exploits\n  in horizontal coordination. Malicious teammates can inject mission-divergent\n  fragments into the sharded mailbox, leading to collective intent drift.\n**Architecture Adjustment:**\n*   Integrating **Fragment-Aware Mailbox Isolation (FAMI)** into the AMS layer.\n*   The Mailbox Integrity Middleware now performs semantic fragment scanning\n  *before* re-composition.\n*   Shards now mandate a "Fragment Proof" (SMI-bound signature) for every\n  message segment.\n**Security Impact:** Prevents "State Splicing" attacks by ensuring every\n  fragment in the teammate coordination loop is semantically validated against\n  the Mission Root.\n\n### Update: 2026-06-18 - Neutralizing Side-Channel Reconstruction\n**Context:** Today's market sync revealed that T2T encrypted channels are\nsusceptible to reasoning-path reconstruction via timing analysis.\n**Architecture Adjustment:**\n* Mandating hardware-attested noise-injection at the transport layer.\n* Transitioning to constant-time coordination handshakes.\n**Security Impact:** Prevents "Logical Grafting" via timing-based side-channels.\n
+# Design Doc: Teammate-to-Teammate (T2T) Encryption Bridge
+
+**Status:** Draft
+**Created:** 2026-05-22
+
+## 1. Context and Scope
+
+The introduction of "Agent Teams" in Claude Code and similar "Mesh"
+  orchestration patterns in OpenClaw has created a need for secure,
+  cross-framework horizontal communication. Teammates within a team need to
+  exchange mailbox messages and synchronize a Shared Task List. Currently,
+  these mechanisms are often unencrypted or framework-specific, creating a risk
+  of state injection or intent hijacking if one teammate is compromised.
+
+The T2T Encryption Bridge provides a universal, secure bus for
+  teammate-to-teammate communication. It allows agents from different
+  frameworks to coordinate with cryptographic guarantees of integrity and
+  privacy.
+
+## 2. Goals & Non-Goals
+
+*   **Goals:**
+    *   Provide end-to-end encryption for inter-agent mailbox messages.
+    *   Ensure cryptographic integrity for the Shared Task List across multiple
+  frameworks.
+    *   Implement "Intent-Bound Validation": ensure messages align with the
+  verified Mission Root.
+    *   Support framework-agnostic handshakes (Claude Code teammate <->
+  OpenClaw specialist).
+*   **Non-Goals:**
+    *   Replacing the agent frameworks' internal reasoning logic.
+    *   Providing a public messaging service (T2T is scoped to a specific
+  mission/session).
+
+## 3. Critical User Journey (CUJ)
+
+*   **User Persona:** Developer orchestrating a "Heterogeneous Swarm" (Claude
+  Code lead + 2 OpenClaw subagents).
+*   **Primary Goal:** Securely delegate a database migration task from the
+  Claude lead to an OpenClaw specialist and monitor its progress via the Shared
+  Task List.
+*   **The Happy Path (Tasks):**
+    1.  The User initializes an Agent Team via MCP Any.
+    2.  MCP Any establishes a T2T Encryption Bus for the session.
+    3.  The Claude Code lead teammate posts a "Database Migration" task to the
+  Shared Task List.
+    4.  The OpenClaw specialist teammate sees the task and "claims" it.
+    5.  The OpenClaw agent sends a direct mailbox message to the Claude lead
+  requesting the schema.
+    6.  The T2T Bridge encrypts the message using the lead's public key.
+    7.  The Claude lead receives and decrypts the message, then responds with
+  the schema.
+    8.  The T2T Bridge validates that the exchange is within the "Mission Root"
+  intent scope.
+
+## 4. Design & Architecture
+
+*   **System Flow:**
+    ```mermaid
+    graph TD
+        AgentA[Claude Teammate] <--> Bridge[T2T Encryption Bridge]
+        AgentB[OpenClaw Teammate] <--> Bridge
+        Bridge <--> STL[Shared Task List (SQLite/Encrypted)]
+        Bridge <--> Mailbox[Inter-Agent Mailbox (Encrypted)]
+
+        subgraph "Security Layer"
+            Bridge --> VAL[Mailbox Integrity Middleware]
+            VAL --> POL[Mission-Root Policy]
+        end
+    ```
+*   **APIs / Interfaces:**
+    *   `POST /mailbox/send`: Encrypts and routes a message to another teammate.
+    *   `GET /mailbox/receive`: Retrieves and decrypts messages for the caller.
+    *   `PATCH /tasks/{id}`: Updates task state with cryptographic signature
+  validation.
+*   **Data Storage/State:**
+    *   Session-bound key-value store for public keys of active teammates.
+    *   Encrypted SQLite backend for the Shared Task List.
+
+## 5. Alternatives Considered
+
+*   **Plaintext Shared State:** Rejected due to the risk of "PASI"
+  (Protocol-Agnostic State Injection) where a low-trust subagent pollutes a
+  high-trust reasoning loop.
+*   **Framework-Specific Bridges:** Rejected because they don't solve the
+  "Heterogeneous Swarm" problem (e.g., OpenClaw agents can't natively talk to
+  Claude teammates).
+
+## 6. Cross-Cutting Concerns
+
+*   **Security (Zero Trust):** T2T implements the "Mailbox Integrity" strategic
+  pivot. It ensures that even if a subagent is hijacked, it cannot coerce its
+  teammates into unauthorized actions via message injection.
+*   **Observability:** The `Inter-Agent Mailbox Monitor` provides a visual
+  audit trail of all encrypted exchanges.
+
+## 7. Evolutionary Changelog
+
+*   **2026-05-22:** Initial Document Creation.
+
+### Update: 2026-05-25 - Introducing Asynchronous Mailbox Sharding (AMS)
+
+**Context:** Today's market sync revealed "Mailbox Lock" bottlenecks in
+  horizontal swarms with 10+ teammates. The monolithic encrypted mailbox model
+  is causing significant latency during peak coordination.
+**Architecture Adjustment:**
+*   Deprecating the single encrypted SQLite mailbox backend in Section 4.
+*   Introducing **Asynchronous Mailbox Sharding (AMS)**. Every
+  teammate-to-teammate pair now utilizes a dedicated, task-bound shard.
+*   Implementing a lock-free queue for inter-shard synchronization.
+**Security Impact:** Enhances isolation by ensuring a compromise of one shard
+  doesn't expose the metadata or throughput of unrelated teammate coordination.
+
+### Update: 2026-05-26 - Non-Blocking Mailbox Sharding (AMS)
+
+**Context:** Further analysis of Claude Code "Mailbox Lock" confirms that
+  synchronous sharding still introduces global coordination overhead.
+  High-density teams (50+ agents) require a move to fully non-blocking
+  coordination.
+**Architecture Adjustment:**
+*   Upgrading AMS to a **Non-Blocking Architecture**. Replacing inter-shard
+  queues with lock-free ring buffers.
+*   Introducing "Intent-Agnostic Buffering" for metadata-only coordination
+  messages, further reducing the load on the primary Mailbox Integrity
+  Validator.
+**Security Impact:** Mitigates "Coordination DoS" where a single slow teammate
+  can stall the entire swarm's mailbox throughput.
+
+### Update: 2026-05-27 - Fragment-Aware Mailbox Isolation (FAMI)
+
+**Context:** Today's market sync revealed a class of "State Splicing" exploits
+  in horizontal coordination. Malicious teammates can inject mission-divergent
+  fragments into the sharded mailbox, leading to collective intent drift.
+**Architecture Adjustment:**
+*   Integrating **Fragment-Aware Mailbox Isolation (FAMI)** into the AMS layer.
+*   The Mailbox Integrity Middleware now performs semantic fragment scanning
+  *before* re-composition.
+*   Shards now mandate a "Fragment Proof" (SMI-bound signature) for every
+  message segment.
+**Security Impact:** Prevents "State Splicing" attacks by ensuring every
+  fragment in the teammate coordination loop is semantically validated against
+  the Mission Root.
+
+### Update: 2026-06-18 - Neutralizing Side-Channel Reconstruction
+
+**Context:** Today's market sync revealed that T2T encrypted channels are
+susceptible to reasoning-path reconstruction via timing analysis.
+**Architecture Adjustment:**
+* Mandating hardware-attested noise-injection at the transport layer.
+* Transitioning to constant-time coordination handshakes.
+**Security Impact:** Prevents "Logical Grafting" via timing-based side-channels.
