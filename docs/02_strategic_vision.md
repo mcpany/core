@@ -1,5 +1,14 @@
 # Strategic Vision: MCP Any
 
+## Strategic Evolution: [2026-03-24]
+### Focus: Horizontal Coordination & Discovery-Phase Sovereignty
+**Context**: The emergence of "Agent Teams" in horizontal swarms and the discovery of "Settings-as-Shell" exploits in Gemini CLI and OpenClaw confirm that the "Universal Agent Bus" must now move beyond simple tool proxying. We must now protect the **discovery phase** itself and provide **non-blocking coordination** for parallel teammates. As agents move from linear sessions to horizontal teammate meshes, the security frontier is no longer just the "tool," but the **Inbox** where agents coordinate and the **Manifest** that defines their discovery.
+**Strategic Pivot**:
+- **Discovery-Phase Sandbox Isolation**: MCP Any will evolve to treat all discovery-time execution (e.g., `tools.discoveryCommand`) as high-risk events. We will implement "Isolated Discovery Environments" where discovery logic is executed in an ephemeral, zero-trust sandbox before any tool is exposed to the primary agent.
+- **Lock-Free Teammate Coordination (LFTC)**: Supporting the efficiency of horizontal swarms (e.g., Claude Code Agent Teams), we are introducing LFTC. This service will host granular, task-bound mailbox shards utilizing Conflict-Free Replicated Data Types (CRDTs) for the shared task list, ensuring non-blocking performance.
+- **Argument-Level Semantic Validation (ALSV)**: To neutralize the shell-fallback and allowlist bypass vulnerabilities seen in OpenClaw, we are mandating ALSV for all command-based tools. MCP Any will perform real-time, semantic analysis of command arguments, blocking any use of unauthorized flags or shell metacharacters.
+- **Teammate Task-Claim Integrity**: We are implementing "Auth-before-Claim" for all teammate coordination. Teammates must provide a hardware-attested mission-root token before claiming tasks from the shared mailbox, ensuring that a compromised specialist agent cannot "hijack" unauthorized work.
+
 ## Mission Statement
 MCP Any aims to be the indispensable core infrastructure layer for all AI agents, subagents, and swarms. It provides a universal adapter and gateway that standardizes how agents interact with tools, manage context, and enforce security policies.
 
