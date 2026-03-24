@@ -32,8 +32,8 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v45-lint-{{ checksum "server/go.sum" }}
-            - v45-lint-
+            - v46-lint-{{ checksum "server/go.sum" }}
+            - v46-lint-
       - run:
           name: Prepare and Run Lint
           command: |
@@ -43,7 +43,7 @@ jobs:
             export PATH=$(pwd)/build/env/bin:$PATH
             ./scripts/lint.sh
       - save_cache:
-          key: v45-lint-{{ checksum "server/go.sum" }}
+          key: v46-lint-{{ checksum "server/go.sum" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
@@ -70,8 +70,8 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v45-test-{{ checksum "server/go.sum" }}
-            - v45-test-
+            - v46-test-{{ checksum "server/go.sum" }}
+            - v46-test-
       - run:
           name: Run Tests
           command: |
@@ -91,7 +91,7 @@ jobs:
             make test-proto
             cd server && go test -short ./...
       - save_cache:
-          key: v45-test-{{ checksum "server/go.sum" }}
+          key: v46-test-{{ checksum "server/go.sum" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
