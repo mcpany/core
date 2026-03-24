@@ -18,6 +18,8 @@ import (
 
 // TestStore_Load tests the Load method of the PostgreSQL store.
 //
+// Summary: Validates that the store correctly loads and parses all server configuration from the database.
+//
 // Parameters:
 //   - t (*testing.T): The testing context.
 //
