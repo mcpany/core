@@ -32,7 +32,7 @@ class MockPointerEvent extends Event {
   }
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-window.PointerEvent = MockPointerEvent as any;
+window.PointerEvent = MockPointerEvent as unknown as typeof PointerEvent;
 window.HTMLElement.prototype.scrollIntoView = vi.fn();
 window.HTMLElement.prototype.releasePointerCapture = vi.fn();
 window.HTMLElement.prototype.hasPointerCapture = vi.fn();
@@ -123,7 +123,7 @@ describe('ServiceList', () => {
             <TooltipProvider>
                 <ServiceHealthProvider>
                     <ServiceList
-                        services={[mockService, { ...mockService, id: 'test-2', name: 'service-2' } as any]}
+                        services={[mockService, { ...mockService, id: 'test-2', name: 'service-2' }]}
                         onBulkToggle={onBulkToggle}
                         onBulkDelete={onBulkDelete}
                     />
