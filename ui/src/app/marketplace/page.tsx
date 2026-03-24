@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { marketplaceService, ServiceCollection, ExternalMarketplace, CommunityServer } from "@/lib/marketplace-service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -255,13 +255,18 @@ export default function MarketplacePage() {
       });
   };
 
-  // Filter Community Servers
-  const filteredCommunityServers = communityServers.filter(s =>
-      s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      s.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // ⚡ BOLT: [Render Optimization] Memoize Marketplace Community Servers filter to eliminate render waste
+  // Randomized Selection from Top 5 High-Impact Targets
+  const filteredCommunityServers = useMemo(() => {
+    if (!searchQuery) return communityServers;
+    const query = searchQuery.toLowerCase();
+    return communityServers.filter(s =>
+        s.name.toLowerCase().includes(query) ||
+        s.description.toLowerCase().includes(query) ||
+        s.tags.some(t => t.toLowerCase().includes(query)) ||
+        s.category.toLowerCase().includes(query)
+    );
+  }, [communityServers, searchQuery]);
 
   return (
     <div className="flex flex-col gap-8 p-8 h-[calc(100vh-4rem)] overflow-y-auto">
