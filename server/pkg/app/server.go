@@ -2198,7 +2198,7 @@ func (a *Application) runServerMode(
 	grpcBindAddress := grpcPort
 
 	// Initialize gRPC Interceptors
-	grpcUnaryInterceptor := func(ctx context.Context, req interface{}, _ *gogrpc.UnaryServerInfo, handler gogrpc.UnaryHandler) (interface{}, error) {
+	grpcUnaryInterceptor := func(ctx context.Context, req interface{}, info *gogrpc.UnaryServerInfo, handler gogrpc.UnaryHandler) (interface{}, error) {
 		if p, ok := peer.FromContext(ctx); ok {
 			ip := util.ExtractIP(p.Addr.String())
 			ctx = util.ContextWithRemoteIP(ctx, ip)
@@ -2207,9 +2207,28 @@ func (a *Application) runServerMode(
 				return nil, status.Error(codes.PermissionDenied, "IP not allowed")
 			}
 		}
+
+		// Sentinel Security Update: Enforce granular scopes via gRPC middleware
+		var scopesConfig *middleware.ScopesConfig
+		if v := ctx.Value("grpc_scopes_config"); v != nil {
+			if cfg, ok := v.(*middleware.ScopesConfig); ok {
+				scopesConfig = cfg
+			}
+		}
+
+		if scopesConfig != nil {
+			sm := middleware.NewScopesMiddleware(*scopesConfig)
+			// we extract a "service.tool" pseudo-name from the gRPC method.
+			// info.FullMethod is typically "/package.Service/Method"
+			// we'll just check if info.FullMethod satisfies the prefix
+			if err := sm.CheckScope(ctx, info.FullMethod); err != nil {
+				return nil, status.Error(codes.PermissionDenied, err.Error())
+			}
+		}
+
 		return handler(ctx, req)
 	}
-	grpcStreamInterceptor := func(srv interface{}, ss gogrpc.ServerStream, _ *gogrpc.StreamServerInfo, handler gogrpc.StreamHandler) error {
+	grpcStreamInterceptor := func(srv interface{}, ss gogrpc.ServerStream, info *gogrpc.StreamServerInfo, handler gogrpc.StreamHandler) error {
 		if p, ok := peer.FromContext(ss.Context()); ok {
 			ip := util.ExtractIP(p.Addr.String())
 			// Wrapper to modify context for stream
@@ -2220,8 +2239,39 @@ func (a *Application) runServerMode(
 			if !ipMiddleware.Allow(p.Addr.String()) {
 				return status.Error(codes.PermissionDenied, "IP not allowed")
 			}
+
+			// Sentinel Security Update: Enforce granular scopes via gRPC middleware
+			var scopesConfig *middleware.ScopesConfig
+			if v := wrappedStream.Context().Value("grpc_scopes_config"); v != nil {
+				if cfg, ok := v.(*middleware.ScopesConfig); ok {
+					scopesConfig = cfg
+				}
+			}
+
+			if scopesConfig != nil {
+				sm := middleware.NewScopesMiddleware(*scopesConfig)
+				if err := sm.CheckScope(wrappedStream.Context(), info.FullMethod); err != nil {
+					return status.Error(codes.PermissionDenied, err.Error())
+				}
+			}
+
 			return handler(srv, wrappedStream)
 		}
+
+		var scopesConfig *middleware.ScopesConfig
+		if v := ss.Context().Value("grpc_scopes_config"); v != nil {
+			if cfg, ok := v.(*middleware.ScopesConfig); ok {
+				scopesConfig = cfg
+			}
+		}
+
+		if scopesConfig != nil {
+			sm := middleware.NewScopesMiddleware(*scopesConfig)
+			if err := sm.CheckScope(ss.Context(), info.FullMethod); err != nil {
+				return status.Error(codes.PermissionDenied, err.Error())
+			}
+		}
+
 		return handler(srv, ss)
 	}
 	grpcOpts := []gogrpc.ServerOption{

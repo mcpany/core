@@ -3744,16 +3744,17 @@ func checkForLocalFileAccess(val string) error {
 }
 
 func checkForArgumentInjection(val string) error {
-	if strings.HasPrefix(val, "-") {
+	trimmedVal := strings.TrimSpace(val)
+	if strings.HasPrefix(trimmedVal, "-") {
 		// Allow negative numbers
-		if _, err := strconv.ParseFloat(val, 64); err == nil {
+		if _, err := strconv.ParseFloat(trimmedVal, 64); err == nil {
 			return nil
 		}
 		return fmt.Errorf("argument injection detected: value starts with '-'")
 	}
-	if strings.HasPrefix(val, "+") {
+	if strings.HasPrefix(trimmedVal, "+") {
 		// Allow positive numbers (e.g. +10, +1.5)
-		if _, err := strconv.ParseFloat(val, 64); err == nil {
+		if _, err := strconv.ParseFloat(trimmedVal, 64); err == nil {
 			return nil
 		}
 		return fmt.Errorf("argument injection detected: value starts with '+'")

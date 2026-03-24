@@ -555,6 +555,10 @@ message ContainerEnvironment {
   map<string, string> volumes = 3;
   // Environment variables to set in the container (supports secrets).
   map<string, SecretValue> env = 4;
+  // Memory limit in bytes.
+  int64 memory_limit = 5 [json_name = "memory_limit"];
+  // CPU limit in NanoCPUs.
+  int64 cpu_limit = 6 [json_name = "cpu_limit"];
 }
 
 // Defines strategies for load balancing across multiple service endpoints.

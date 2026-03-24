@@ -298,7 +298,12 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 		Tty:        false,
 	}
 
-	hostConfig := &container.HostConfig{}
+	hostConfig := &container.HostConfig{
+		Resources: container.Resources{
+			Memory:   e.containerEnv.GetMemoryLimit(),
+			NanoCPUs: e.containerEnv.GetCpuLimit(),
+		},
+	}
 	if e.containerEnv.GetVolumes() != nil {
 		for dest, src := range e.containerEnv.GetVolumes() {
 			// Validate host path (dest) to prevent mounting sensitive directories
@@ -439,7 +444,12 @@ func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, a
 		AttachStderr: true,
 	}
 
-	hostConfig := &container.HostConfig{}
+	hostConfig := &container.HostConfig{
+		Resources: container.Resources{
+			Memory:   e.containerEnv.GetMemoryLimit(),
+			NanoCPUs: e.containerEnv.GetCpuLimit(),
+		},
+	}
 	if e.containerEnv.GetVolumes() != nil {
 		for dest, src := range e.containerEnv.GetVolumes() {
 			// Validate host path (dest) to prevent mounting sensitive directories

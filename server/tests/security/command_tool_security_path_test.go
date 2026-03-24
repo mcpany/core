@@ -74,4 +74,16 @@ func TestCommandTool_Execute_PathTraversal_Comprehensive(t *testing.T) {
 	if assert.Error(t, err3) {
 		assert.Contains(t, err3.Error(), "argument injection detected")
 	}
+
+	// Negative test: Regression test for argument injection bypass (CVE)
+	// Passing an argument starting with space before the dash to bypass Prefix check
+	req4 := &tool.ExecutionRequest{
+		ToolName:   "cmd-tool",
+		ToolInputs: []byte(`{"env_var": " -rm -rf"}`),
+	}
+
+	_, err4 := cmdTool.Execute(context.Background(), req4)
+	if assert.Error(t, err4) {
+		assert.Contains(t, err4.Error(), "argument injection detected")
+	}
 }
