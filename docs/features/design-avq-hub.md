@@ -17,7 +17,7 @@ The **Autonomous Verification Quorum (AVQ) Hub** is a core security component de
     *   Solving for non-A2A compliant agents (AVQ requires hardware-attested NHI).
 
 ## 3. Critical User Journey (CUJ)
-*   **User Persona:** Heterogeneous Swarm Orchestrator (e.g., OpenClaw + Gemini Swarm).
+*   **User Persona:** Heterogeneous Swarm Orchestrator (e.g., Local LLM Swarm Orchestrator)
 *   **Primary Goal:** Authorize a high-risk filesystem commit across 3 parallel agents without manual user approval.
 *   **The Happy Path (Tasks):**
     1.  Agent A proposes a high-risk `fs_commit` to the AVQ Hub.
