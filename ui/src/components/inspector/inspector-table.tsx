@@ -214,10 +214,8 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                 item,
                 context,
                 ...props
-              }: {
-                item: VisibleRow;
-                context: { onClick: (t: Trace) => void };
-              } & React.HTMLAttributes<HTMLTableRowElement>) => (
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              }: any) => (
                 <TableRow
                   {...props}
                   className="cursor-pointer hover:bg-muted/50"
