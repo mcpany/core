@@ -3079,32 +3079,36 @@ func isShellCommand(cmd string) bool {
 	return isShell(cmd) || isInterpreter(cmd)
 }
 
+// ⚡ BOLT: Prevent per-call slice allocations for interpreter/shell detection
+// Randomized Selection from Top 5 High-Impact Targets
+var globalShells = map[string]struct{}{
+	"sh": {}, "bash": {}, "zsh": {}, "dash": {}, "ash": {}, "ksh": {}, "csh": {}, "tcsh": {}, "fish": {},
+	"pwsh": {}, "powershell": {}, "powershell.exe": {}, "pwsh.exe": {}, "cmd": {}, "cmd.exe": {},
+	"ssh": {}, "scp": {}, "su": {}, "sudo": {},
+	"busybox": {}, "expect": {}, "watch": {}, "tmux": {}, "screen": {},
+}
+
+// ⚡ BOLT: Prevent per-call slice allocations for interpreter/shell detection
+// Randomized Selection from Top 5 High-Impact Targets
+var globalShellScriptExts = map[string]struct{}{
+	".sh": {}, ".bash": {}, ".zsh": {}, ".ash": {}, ".ksh": {}, ".csh": {}, ".tcsh": {}, ".fish": {},
+	".bat": {}, ".cmd": {}, ".ps1": {}, ".vbs": {},
+}
+
 func isShell(cmd string) bool {
 	cmd = strings.TrimSpace(cmd)
 	// True shells and commands that behave like shells (parsing command lines)
-	shells := []string{
-		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
-		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
-		"ssh", "scp", "su", "sudo",
-		"busybox", "expect", "watch", "tmux", "screen",
-	}
 	base := filepath.Base(cmd)
-	for _, shell := range shells {
-		if base == shell {
-			return true
-		}
+	if _, ok := globalShells[base]; ok {
+		return true
 	}
+
 	// Check for script extensions that indicate shell execution
 	ext := strings.ToLower(filepath.Ext(base))
-	scriptExts := []string{
-		".sh", ".bash", ".zsh", ".ash", ".ksh", ".csh", ".tcsh", ".fish",
-		".bat", ".cmd", ".ps1", ".vbs",
+	if _, ok := globalShellScriptExts[ext]; ok {
+		return true
 	}
-	for _, scriptExt := range scriptExts {
-		if ext == scriptExt {
-			return true
-		}
-	}
+
 	return false
 }
 
@@ -4159,11 +4163,14 @@ func checkBacktickInjection(val, command string) error {
 	return nil
 }
 
+// ⚡ BOLT: Prevent per-call slice allocations for interpreter/shell detection
+// Randomized Selection from Top 5 High-Impact Targets
+var globalSafeBacktickLanguages = []string{"node", "nodejs", "bun", "deno"}
+
 func isSafeBacktickLanguage(command string) bool {
 	base := strings.ToLower(filepath.Base(command))
 	// Only JS/TS runtimes treat backticks as strings (template literals)
-	safe := []string{"node", "nodejs", "bun", "deno"}
-	for _, s := range safe {
+	for _, s := range globalSafeBacktickLanguages {
 		if base == s || strings.HasPrefix(base, s) {
 			return true
 		}
@@ -4196,40 +4203,52 @@ func checkUnquotedInjection(val, command string, isShell bool) error {
 	return nil
 }
 
+// ⚡ BOLT: Prevent per-call slice allocations for interpreter/shell detection
+// Randomized Selection from Top 5 High-Impact Targets
+var globalInterpreters = []string{
+	// Common interpreters and runners that can execute code
+	"python", "ruby", "perl", "php",
+	"node", "nodejs", "bun", "deno",
+	"lua", "awk", "gawk", "nawk", "mawk", "sed",
+	"jq",
+	"psql", "mysql", "sqlite3",
+	"docker",
+	"env", // env is technically a command runner but we treat it as interpreter to enforce injection checks without blocking spaces
+	"tclsh", "wish",
+	"irb", "php-cgi",
+	// Editors and pagers that can execute commands
+	"vi", "vim", "nvim", "emacs", "nano",
+	"less", "more", "man",
+	// Build tools and others that can execute commands
+	"find", "xargs", "tee",
+	"make", "rake", "ant", "mvn", "gradle",
+	"npm", "yarn", "pnpm", "npx", "bunx", "go", "cargo", "pip",
+	// Cloud/DevOps tools that can execute commands or have sensitive flags
+	"kubectl", "helm", "aws", "gcloud", "az", "terraform", "ansible", "ansible-playbook",
+	// Additional interpreters and compilers that can execute code
+	"r", "rscript", "julia", "groovy", "jshell",
+	"scala", "kotlin", "swift",
+	"elixir", "iex", "erl", "escript",
+	"ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
+	"lua", "luajit",
+	"gcc", "g++", "clang", "java",
+	// Additional dangerous tools
+	"zip", "unzip", "rsync", "nmap", "tcpdump", "gdb", "lldb",
+	"tar", "gtar", "bsdtar",
+}
+
+// ⚡ BOLT: Prevent per-call slice allocations for interpreter/shell detection
+// Randomized Selection from Top 5 High-Impact Targets
+var globalInterpreterScriptExts = map[string]struct{}{
+	".js": {}, ".mjs": {}, ".ts": {},
+	".py": {}, ".pyc": {}, ".pyo": {}, ".pyd": {},
+	".rb": {}, ".pl": {}, ".pm": {}, ".php": {},
+	".lua": {}, ".r": {},
+}
+
 func isInterpreter(command string) bool {
 	base := strings.ToLower(filepath.Base(command))
-	interpreters := []string{
-		// Common interpreters and runners that can execute code
-		"python", "ruby", "perl", "php",
-		"node", "nodejs", "bun", "deno",
-		"lua", "awk", "gawk", "nawk", "mawk", "sed",
-		"jq",
-		"psql", "mysql", "sqlite3",
-		"docker",
-		"env", // env is technically a command runner but we treat it as interpreter to enforce injection checks without blocking spaces
-		"tclsh", "wish",
-		"irb", "php-cgi",
-		// Editors and pagers that can execute commands
-		"vi", "vim", "nvim", "emacs", "nano",
-		"less", "more", "man",
-		// Build tools and others that can execute commands
-		"find", "xargs", "tee",
-		"make", "rake", "ant", "mvn", "gradle",
-		"npm", "yarn", "pnpm", "npx", "bunx", "go", "cargo", "pip",
-		// Cloud/DevOps tools that can execute commands or have sensitive flags
-		"kubectl", "helm", "aws", "gcloud", "az", "terraform", "ansible", "ansible-playbook",
-		// Additional interpreters and compilers that can execute code
-		"r", "rscript", "julia", "groovy", "jshell",
-		"scala", "kotlin", "swift",
-		"elixir", "iex", "erl", "escript",
-		"ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
-		"lua", "luajit",
-		"gcc", "g++", "clang", "java",
-		// Additional dangerous tools
-		"zip", "unzip", "rsync", "nmap", "tcpdump", "gdb", "lldb",
-		"tar", "gtar", "bsdtar",
-	}
-	for _, interp := range interpreters {
+	for _, interp := range globalInterpreters {
 		if base == interp || strings.HasPrefix(base, interp) {
 			return true
 		}
@@ -4237,16 +4256,8 @@ func isInterpreter(command string) bool {
 
 	// Check for script extensions that indicate interpretation
 	ext := strings.ToLower(filepath.Ext(base))
-	scriptExts := []string{
-		".js", ".mjs", ".ts",
-		".py", ".pyc", ".pyo", ".pyd",
-		".rb", ".pl", ".pm", ".php",
-		".lua", ".r",
-	}
-	for _, scriptExt := range scriptExts {
-		if ext == scriptExt {
-			return true
-		}
+	if _, ok := globalInterpreterScriptExts[ext]; ok {
+		return true
 	}
 
 	return false
@@ -4447,26 +4458,28 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 	return nil
 }
 
+// ⚡ BOLT: Prevent per-call slice allocations for interpreter/shell detection
+// Randomized Selection from Top 5 High-Impact Targets
+var globalMagickTools = map[string]struct{}{
+	"convert": {}, "mogrify": {}, "identify": {}, "composite": {}, "compare": {}, "stream": {},
+	"montage": {}, "display": {}, "animate": {}, "import": {}, "conjure": {}, "magick": {},
+}
+
+// ⚡ BOLT: Prevent per-call slice allocations for interpreter/shell detection
+// Randomized Selection from Top 5 High-Impact Targets
+var globalFfmpegTools = map[string]struct{}{"ffmpeg": {}, "ffprobe": {}, "ffplay": {}}
+
 func isVulnerableToSchemes(command string) bool {
 	base := strings.ToLower(filepath.Base(command))
 
 	// ImageMagick tools
-	magickTools := []string{
-		"convert", "mogrify", "identify", "composite", "compare", "stream",
-		"montage", "display", "animate", "import", "conjure", "magick",
-	}
-	for _, tool := range magickTools {
-		if base == tool {
-			return true
-		}
+	if _, ok := globalMagickTools[base]; ok {
+		return true
 	}
 
 	// FFmpeg tools
-	ffmpegTools := []string{"ffmpeg", "ffprobe", "ffplay"}
-	for _, tool := range ffmpegTools {
-		if base == tool {
-			return true
-		}
+	if _, ok := globalFfmpegTools[base]; ok {
+		return true
 	}
 
 	// Git
