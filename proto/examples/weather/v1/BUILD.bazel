@@ -42,7 +42,7 @@ go_test(
     srcs = ["weather_test.go"],
     embed = [":weather"],
     deps = [
-        "//proto/vendor/github.com/stretchr/testify/assert",
-        "//proto/vendor/google.golang.org/protobuf/proto",
+        "@com_github_stretchr_testify//assert",
+        "@org_golang_google_protobuf//proto",
     ],
 )
