@@ -672,3 +672,20 @@
 - [ ] **[P0] A2A Auth Status Dashboard**: (2026-03-23) Visualize authenticated inter-agent handshakes and peer-to-peer security status.
 - [ ] **[P1] Usage Quota Dashboard**: (2026-03-23) Real-time visualization of mission budget consumption and quota burn rates.
 - [ ] **[P1] Sandbox Identity Viewer**: (2026-03-23) Real-time status for gVisor-bound tools and execution environment integrity proofs.
+
+#### Upcoming (2026-06-30 Evolution)
+- [ ] **[P0] Cognitive Consensus Dashboard**: Visualize swarm quorum status and CAH attestation strengths. (Added: 2026-06-30)
+- [ ] **[P0] Priority Mailbox Visualizer**: Real-time monitor for PAMS interrupt signals and coordination bypasses. (Added: 2026-06-30)
+- [ ] **[P0] Attention Entropy Heatmap**: Forensic UI for visualizing noise-to-utility scores and ASF detection alerts. (Added: 2026-06-30)
+- [ ] **[P0] Mission Lease Manager**: Dashboard for tracking LMP token lifetimes and hardware re-attestation status. (Added: 2026-06-30)
+
+#### Upcoming (2026-07-02 Evolution)
+- [ ] **[P0] Intent Reconciliation Hub**: (2026-07-02) Workspace for managing multi-agent instruction quorums and hardware-attested vote resolution.
+- [ ] **[P0] Multimodal Entanglement Auditor**: (2026-07-02) Forensic UI for reviewing cryptographically entangled non-textual shards and lineage alerts.
+- [ ] **[P0] Reasoning Entropy Dashboard**: (2026-07-02) Real-time visualization of swarm reasoning entropy and cognitive stall triggers.
+- [ ] **[P1] CRDT Mailbox Visualizer**: (2026-07-02) High-speed monitor for lock-free teammate synchronization and conflict-free state resolution.
+
+#### Upcoming (2026-07-01 Evolution)
+- [ ] **[P0] Multimodal Memory Bus Monitor**: (2026-07-01) Real-time visualization of intent-pinned state synchronization and multimodal sanitization events.
+- [ ] **[P0] ZK-Discovery Broker Workspace**: (2026-07-01) UI for reviewing masked capability cards and unmasking schemas via mission-handshakes.
+- [ ] **[P0] Attention Anchor Heatmap**: (2026-07-01) Visual tracker for ALRA-pinned intent fragments and attention-density alerts.

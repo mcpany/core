@@ -65,7 +65,7 @@
 
 ### Proposed Additions
 - **Federated Swarm Identity (FSI) Provider**: (P0) A local identity service that issues hardware-attested, cross-framework tokens for secure teammate verification in heterogeneous meshes.
-- **Intent-Leakage Shielding (ILS) Middleware**: (P0) Security extension for the MRP middleware that monitors semantic entropy and blocks subagent requests designed to probe mission-root constraints.
+- **Intent-Leakage Shield (ILS) Middleware**: (P0) Security extension for the MRP middleware that monitors semantic entropy and blocks subagent requests designed to probe mission-root constraints.
 - **Hardware-Attested Discovery Handshake (HADH) Gateway**: (P0) Advanced discovery service that mandates hardware-bound handshakes before revealing any agent capabilities to peers.
 - **Reasoning-Effort Quota Controller**: (P0) Resource management middleware that dynamically throttles high-intensity reasoning (e.g., `x-gemini-reasoning-effort`) to prevent Agentic DoS.
 
@@ -1132,7 +1132,7 @@
 - **Self-Healing Consensus Hub**: (P0) A coordination service that provides a standardized interface for swarm state reconciliation, leveraging MAQ for authoritative "Truth Brokering."
 
 ### Priority Shifts
-- **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to support the new Resident Integrity Monitor for continuous lifecycle protection.
+- **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include Resident Integrity Monitor for continuous lifecycle protection.
 - **TPM-Bound Configuration Boot**: (Re-affirmed P0) Now considered the prerequisite foundation for RIG-mediated boundary expansions.
 
 ## Evolution: [2026-04-15] Updates
@@ -1233,7 +1233,7 @@
 ## Evolution: [2026-05-29] Updates
 
 ### Proposed Additions
-- **Collective Swarm Anomaly Detection (CSAD) Hub**: (P0) Advanced security middleware that performs cross-agent behavioral analysis to detect coordinated "Hivenet" swarm attacks.
+- **Collective Swomaly Detection (CSAD) Hub**: (P0) Advanced security middleware that performs cross-agent behavioral analysis to detect coordinated "Hivenet" swarm attacks.
 - **Cross-Mesh Command Sovereignty (CMCS) Provider**: (P0) Identity service that issues hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms.
 - **Atomic Teammate Handshake (ATH) Gateway**: (P0) Security middleware mandating hardware-attested identity exchange before teammate task delegation.
 - **Mesh-Bound Context Sovereignty Bridge**: (P0) Security extension for the DCG middleware that performs semantic fragment analysis across teammate boundaries.
@@ -1534,3 +1534,38 @@
 ### Priority Shifts
 - **A2A Messaging Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Authenticated Discovery** to align with Gemini CLI v0.34.0.
 - **Policy Firewall**: (Re-affirmed P0) Expanded to include **Quota-Aware Execution** rules based on real-time usage metrics.
+
+## Evolution: [2026-06-30] Updates
+
+### Proposed Additions
+- **Cognitive Attestation Hub (CAH) Adapter**: (P0) Advanced security middleware for the Semantic Integrity Bridge that implements OpenClaw v3.3.0 consensus hooks.
+- **Priority-Aware Mailbox Sharding (PAMS)**: (P0) High-priority upgrade for the AMS middleware allowing lock-free "Urgent Interrupt" signals.
+- **Attention-Splicing Firewall (ASF)**: (P0) Security service for the ADF that performs semantic entropy analysis to detect stylized mimicry in noise fragments.
+- **Leased Mission Persistence (LMP) Provider**: (P0) Performance-optimizing identity service providing hardware-locked mission leases to neutralize rotation fatigue.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Promoted to P0) Critical for supporting the new **LMP** standard and solving teammate rotation latency.
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Evolving into **PAMS** to support interrupt-driven coordination.
+
+## Evolution: [2026-07-02] Updates
+
+### Proposed Additions
+- **AIR (Autonomous Intent Reconciliation) Hub**: (P0) Authoritative swarm arbitration service utilizing hardware-attested "Intent Quorums" to resolve conflicting subagent instructions.
+- **Multimodal State Entanglement (MSE) Provider**: (P0) Advanced security service that cryptographically "entangles" non-textual reasoning traces (SVG, Audio) with the mission root.
+- **Reasoning Entropy Monitor (REM)**: (P0) Stability middleware performing real-time semantic analysis of agent outputs to detect "Cognitive Stalls" and trigger resolution policies.
+- **CRDT-Native Mailbox Hub**: (P1) High-performance coordination service using Conflict-Free Replicated Data Types to eliminate teammate mailbox locks.
+
+### Priority Shifts
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to act as the primary backend for the **AIR Hub** multi-agent quorums.
+- **Multimodal Inference-Time Sanitizer (MITS)**: (Re-affirmed P0) Upgraded with **MSE** capabilities for structural multimodal lineage.
+
+## Evolution: [2026-07-01] Updates
+
+### Proposed Additions
+- **Universal Multimodal Memory Bus (UMMB)**: (P0) A hardware-attested, intent-pinned memory bus for synchronizing state across disparate frameworks while performing real-time multimodal trace sanitization.
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (P0) Security middleware that mandates cryptographic capability masking until a mission-bound handshake is complete, preventing pre-flight shadow mapping.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (P0) Advanced attention governance middleware utilizing hardware-bound headers to pin mission-critical intent fragments, neutralizing context-window flooding.
+
+### Priority Shifts
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving to act as the primary backend for the **UMMB** state synchronization.
+- **Zero-Knowledge Discovery (ZKD) Proxy**: (Re-affirmed P0) Expanding into the **ZKDB** to support cross-framework capability negotiation.

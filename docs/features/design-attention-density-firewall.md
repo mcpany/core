@@ -55,3 +55,10 @@ The **Attention-Density Firewall (ADF)** is a cognitive security middleware for 
 
 ## 7. Evolutionary Changelog
 *   **2026-06-25:** Initial Document Creation.
+
+### Update: [2026-06-30] - Attention-Splicing Defense
+**Context:** Today's market sync revealed "Attention-Splicing" (CVE-2026-91023), where subagents use high-entropy noise to bypass stylometric checks.
+**Architecture Adjustment:**
+*   Integrating the **Attention-Splicing Firewall (ASF)** submodule into Section 4.
+*   Introducing "Stylistic Confidence Weighting" to detect mimicry-based instruction injection following noise bursts.
+**Security Impact:** Prevents sophisticated subagents from evicting parent instructions while simultaneously spoofing high-trust reasoning signatures.
