@@ -772,10 +772,49 @@ func (a *Application) handleTools() http.HandlerFunc {
 				return
 			}
 
-			// Since proper tool storage modifying is complex and touches internal fields depending on connection type
-			// we will return 200 OK without updating the DB for now to unblock the UI.
-			// Ideally this would lookup the service via toolInfo.Tool().GetServiceId(), figure out
-			// which connection_type it has, and update the tools slice within that.
+			// We must find the parent service to save the tool since tools are nested inside services
+			store := a.storage
+			services, err := store.ListServices(r.Context())
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			var parentService *configv1.ServiceDefinition
+			for _, srv := range services {
+				for _, t := range srv.GetTools() {
+					if t.GetName() == req.Name {
+						parentService = srv
+						break
+					}
+				}
+				if parentService != nil {
+					break
+				}
+			}
+
+			if parentService == nil {
+				http.NotFound(w, r)
+				return
+			}
+
+			// Create/update tool override
+			if parentService.ToolOverrides == nil {
+				parentService.ToolOverrides = make(map[string]*configv1.ToolOverride)
+			}
+			if parentService.ToolOverrides[req.Name] == nil {
+				parentService.ToolOverrides[req.Name] = &configv1.ToolOverride{}
+			}
+			parentService.ToolOverrides[req.Name].Disabled = req.Disable
+
+			// Save the updated parent service
+			if err := store.SaveService(r.Context(), parentService); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			// Signal a configuration reload
+			a.configCh <- &configv1.ConfigChangedEvent{Type: configv1.ConfigChangedEvent_UPDATED, Component: configv1.ConfigChangedEvent_SERVICE, Name: parentService.GetName()}
 
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(map[string]any{"status": "ok", "name": req.Name, "disable": req.Disable})
