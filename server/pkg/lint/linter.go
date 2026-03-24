@@ -102,7 +102,8 @@ func (r Result) String() string {
 	if r.ServiceName != "" {
 		serviceStr = fmt.Sprintf(" (service: %s)", r.ServiceName)
 	}
-	return fmt.Sprintf("[%s]%s%s: %s", r.Severity, serviceStr, pathStr, r.Message)
+	return fmt.Sprintf("[%s]%s%s: %s",
+		r.Severity, serviceStr, pathStr, r.Message)
 }
 
 // Linter performs static analysis on the configuration.
@@ -185,7 +186,8 @@ func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 func (l *Linter) checkPlainTextSecrets() []Result {
 	var results []Result
 
-	checkSecret := func(sv *configv1.SecretValue, path, serviceName string) {
+	checkSecret := func(sv *configv1.SecretValue,
+		path, serviceName string) {
 		if sv == nil {
 			return
 		}
@@ -270,7 +272,8 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 //   - None.
 func (l *Linter) checkShellInjection() []Result {
 	var results []Result
-	shellRiskPatterns := []string{"sh -c", "bash -c", "cmd /c", "powershell -c"}
+	shellRiskPatterns := []string{
+		"sh -c", "bash -c", "cmd /c", "powershell -c"}
 
 	for _, s := range l.cfg.GetUpstreamServices() {
 		var command string
@@ -378,7 +381,8 @@ func (l *Linter) checkCacheSettings() []Result {
 			continue
 		}
 
-		if s.GetCache().GetTtl() == nil || s.GetCache().GetTtl().GetSeconds() == 0 {
+		if s.GetCache().GetTtl() == nil ||
+			s.GetCache().GetTtl().GetSeconds() == 0 {
 			results = append(results, Result{
 				Severity:    Info,
 				ServiceName: s.GetName(),
