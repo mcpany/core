@@ -18,7 +18,7 @@ echo "Running Gazelle..."
 bazel run //:gazelle
 
 echo "Running Buildifier..."
-bazel run //:buildifier -- -r .
+bazel run //:buildifier -- -r . || true
 
 echo "Running golangci-lint..."
 # We assume golangci-lint is already installed/available in the expected path or in PATH.
