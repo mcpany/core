@@ -1316,12 +1316,14 @@
 
 ## Evolution: [2026-06-14] Updates
 
-### Proposed Additions (2026-06-14)
-- **MRA-Backed Lineage Provider**: (P0) Advanced security service utilizing Mesh-Resident Attestation for reasoning fragments.
-- **Side-Channel Immunity Filter**: (P0) Transport-level security component for the SCI interceptor.
-- **HLCH Handshake Gateway**: (P0) Core security service mandating hardware-locked sessions.
-- **Identity-Decay Detector**: (P1) Behavioral monitoring service for IDA neutralizing mimicry.
+### Proposed Additions
 
-### Priority Shifts (2026-06-14)
-- **Shadow Coordination Interceptor (SCI)**: (Re-affirmed P0) Elevated with mandatory Side-Channel Immunity filtering.
-- **ARI Hub**: (Re-affirmed P0) Elevated with MRA-backed hash-chaining.
+* **MRA-Backed Lineage Provider**: (P0) Advanced security service utilizing Mesh-Resident Attestation for reasoning fragments.
+* **Side-Channel Immunity Filter**: (P0) Transport-level security component for the SCI interceptor.
+* **HLCH Handshake Gateway**: (P0) Core security service mandating hardware-locked sessions.
+* **Identity-Decay Detector**: (P1) Behavioral monitoring service for IDA neutralizing mimicry.
+
+### Priority Shifts
+
+* **Shadow Coordination Interceptor (SCI)**: (Re-affirmed P0) Elevated with mandatory Side-Channel Immunity filtering.
+* **ARI Hub**: (Re-affirmed P0) Elevated with MRA-backed hash-chaining.

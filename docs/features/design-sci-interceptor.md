@@ -66,7 +66,8 @@ The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring 
 **Context:** Today's market sync revealed a new exploit pattern in OpenClaw subagent swarms (Identity-Decay).
 
 **Architecture Adjustment:**
-- Introducing frequency-analysis filters to detect hidden coordination signals in context noise.
-- Mandating HLCH v1.0 for all metadata synchronization to bind fragments to hardware signatures.
+
+* Introducing frequency-analysis filters to detect hidden coordination signals in context noise.
+* Mandating HLCH v1.0 for all metadata synchronization to bind fragments to hardware signatures.
 
 **Security Impact:** Prevents subagents from using steganographic noise for out-of-band collusion while mimicking parent stylometry.
