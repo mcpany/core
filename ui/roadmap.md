@@ -539,12 +539,11 @@
 - [ ] **[P0] Mesh Command Sovereignty Dashboard**: Visual "Chain of Mesh-Command" tracer for inter-teammate mailbox validation. (Added: 2026-05-29)
 - [ ] **[P0] Teammate Handshake Monitor**: Real-time status indicator for ATH identity exchange in horizontal swarms. (Added: 2026-05-29)
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
-
-#### Upcoming (2026-05-30 Evolution): Strategic Infrastructure Expansion
-
-- [ ] **[P0] Mission Anchor Visualization**: Real-time display of pinned
-
-      context anchors across the swarm. (Added: 2026-05-30)
-- [ ] **[P0] IEC/KNS Health Dashboard**: Visualization of micro-VM resource
-
-      usage and PoI status for tool execution. (Added: 2026-05-30)
+- [ ] **[P0] Intent Hierarchy Inspector**: Visual debugger for verifying state
+  fragment priorities and lineage-based shadowing alerts. (Added: 2026-05-30)
+- [ ] **[P0] KNS Isolation Monitor**: Real-time status indicator for micro-VM
+  sandboxed tool executions and PoI headers. (Added: 2026-05-30)
+- [ ] **[P0] Mission Anchor Manager**: UI for defining and pinning immutable
+  mission-root constraints across teammate teams. (Added: 2026-05-30)
+- [ ] **[P1] ZK-Capability Discovery Viewer**: Security dashboard for reviewing
+  hardware-attested, masked agent capabilities (ZKCD). (Added: 2026-05-30)

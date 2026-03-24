@@ -1322,16 +1322,27 @@
 - **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
 - **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
 
-## Evolution: [2026-05-30] Updates - Infrastructure Sovereignty
+## Evolution: [2026-05-30] Updates
 
-### Proposed Additions (2026-05-30 Expansion)
+### Proposed Additions [2026-05-30]
 
-- **Intent Hierarchy Enforcer (IHE)**: (P0) Security extension for the
+- **Intent Hierarchy Enforcer (IHE)**: (P0) Authoritative security middleware
+  that enforces a strict "Intent Priority" for all state fragments, preventing
+  subagent semantic shadowing.
+- **Kernel-Namespace (KNS) Command Runner**: (P0) High-security tool execution
+  engine that utilizes Firecracker micro-VMs and ephemeral kernel-namespaces
+  for absolute agent-to-host isolation.
+- **Mission Anchor Host (MAH)**: (P0) Centralized coordination service for
+  "Context Anchoring," ensuring that primary mission constraints are
+  immutable and universally inherited across teammate boundaries.
+- **Zero-Knowledge Capability Discovery (ZKCD)**: (P1) Identity-bound discovery
+  service mandating ZK-proofs of capability possession before revealing tool
+  metadata to mesh peers.
 
-  Blackboard mandating mission-root priority for state fragments.
-- **Kernel-Namespace (KNS) Command Runner**: (P0) High-performance isolation
+### Priority Shifts [2026-05-30]
 
-  wrapper using ephemeral namespaces (runc/Firecracker) for tool execution.
-- **Mission Anchor Host (MAH)**: (P0) Orchestration service for pinned,
-
-  team-wide context anchors to reduce swarm coordination latency.
+- **Collective Swarm Anomaly Detection (CSAD) Hub**: (Re-affirmed P0) Now
+  elevated with the requirement for **Intent-Hierarchy Verification** to detect
+  coordinated shadowing attempts.
+- **Mesh-Bound Context Sovereignty Bridge**: (Re-affirmed P0) Now designated as
+  a mandatory prerequisite for MAH-based context inheritance.
