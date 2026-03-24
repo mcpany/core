@@ -22,29 +22,29 @@ import (
 // Summary: Represents a Label.
 type Label = armonmetrics.Label
 
-// NewPrometheusSink creates a new Prometheus sink for metrics collection.
+// NewPrometheusSink creates a new Prometheus sink.
 //
 // Summary: Creates a Prometheus sink.
 //
 // Parameters: None.
 //
 // Returns:
-//   - *prometheus.PrometheusSink: The initialized Prometheus sink.
-//   - error: An error if the sink creation fails.
+//   - *prometheus.PrometheusSink: The sink.
+//   - error: Error if any.
 func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
 	return prometheus.NewPrometheusSink()
 }
 
 var initOnce sync.Once
 
-// Initialize prepares the metrics system with a Prometheus sink.
+// Initialize prepares the metrics system.
 //
 // Summary: Initializes the system.
 //
 // Parameters: None.
 //
 // Returns:
-//   - error: An error if the initialization fails.
+//   - error: Error if any.
 func Initialize() error {
 	var err error
 	initOnce.Do(func() {
@@ -63,19 +63,19 @@ func Initialize() error {
 	return err
 }
 
-// Handler returns an http.Handler for the /metrics endpoint.
+// Handler returns the metrics handler.
 //
-// Summary: Retrieves the metrics HTTP handler.
+// Summary: Returns the metrics HTTP handler.
 //
 // Parameters: None.
 //
 // Returns:
-//   - http.Handler: An http.Handler that serves the Prometheus metrics.
+//   - http.Handler: The handler.
 func Handler() http.Handler {
 	return promhttp.Handler()
 }
 
-// StartServer starts an HTTP server to expose the metrics.
+// StartServer starts the HTTP server.
 //
 // Summary: Starts the metrics server.
 //
@@ -83,7 +83,7 @@ func Handler() http.Handler {
 //   - addr (string): The address to listen on.
 //
 // Returns:
-//   - error: An error if the server fails to start.
+//   - error: Error if any.
 func StartServer(addr string) error {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", Handler())
@@ -105,9 +105,9 @@ func StartServer(addr string) error {
 	return server.Serve(ln)
 }
 
-// SetGauge sets a gauge value.
+// SetGauge sets a gauge.
 //
-// Summary: Sets a gauge.
+// Summary: Sets a gauge value.
 //
 // Parameters:
 //   - name (string): Metric name.
@@ -127,7 +127,7 @@ func SetGauge(name string, val float32, labels ...string) {
 //
 // Parameters:
 //   - name ([]string): Metric path.
-//   - val (float32): Amount.
+//   - val (float32): Increment amount.
 func IncrCounter(name []string, val float32) {
 	armonmetrics.IncrCounter(name, val)
 }
@@ -138,7 +138,7 @@ func IncrCounter(name []string, val float32) {
 //
 // Parameters:
 //   - name ([]string): Metric path.
-//   - val (float32): Amount.
+//   - val (float32): Increment amount.
 //   - labels ([]armonmetrics.Label): Labels.
 func IncrCounterWithLabels(name []string, val float32, labels []armonmetrics.Label) {
 	armonmetrics.IncrCounterWithLabels(name, val, labels)
