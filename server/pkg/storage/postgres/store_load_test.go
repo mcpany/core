@@ -52,7 +52,7 @@ func TestStore_Load(t *testing.T) {
 		mock.ExpectQuery(".*").
 			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(userBytes))
 
-		settings := configv1.GlobalSettings_builder{McpListenAddress: proto.String("LOG_LEVEL_INFO")}.Build()
+		settings := configv1.GlobalSettings_builder{LogLevel: configv1.GlobalSettings_LOG_LEVEL_INFO.Enum()}.Build()
 		settingsBytes, err := protojson.MarshalOptions{}.Marshal(settings)
 		require.NoError(t, err)
 		mock.ExpectQuery(".*").
@@ -73,6 +73,7 @@ func TestStore_Load(t *testing.T) {
 		cfg, err := store.Load(context.Background())
 		require.NoError(t, err)
 		require.NotNil(t, cfg)
+		require.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GetGlobalSettings().GetLogLevel())
 	})
 
 	t.Run("Query Error", func(t *testing.T) {
