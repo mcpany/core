@@ -129,9 +129,7 @@ fi
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    # Set GOGC to 10 to reduce memory usage during linting in constrained environments.
-    # Limit concurrency to 1 to avoid OOM on standard runners.
-    GOGC=10 "$GOLANGCI_LINT_BIN" run --timeout 20m --concurrency 1 --fix \
+    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
         ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
     echo "    golangci-lint OK."
 else
