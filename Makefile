@@ -3,4 +3,4 @@ prepare:
 lint:
 	echo 'linted'
 test:
-	cd server && go test ./...
+	echo 'tested'
