@@ -1,5 +1,5 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 Author(s) of MCP Any.
+// SPDX-License-Identifier: Apache-2.0.
 
 package audit
 
@@ -60,7 +60,7 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 		return nil, fmt.Errorf("failed to open sqlite database: %w", err)
 	}
 
-	// Create table if not exists
+	// Create table if not exists.
 	schema := `
 	CREATE TABLE IF NOT EXISTS audit_logs (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -86,7 +86,7 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 		return nil, fmt.Errorf("failed to create audit_logs table: %w", err)
 	}
 
-	// Set pragmas for performance
+	// Set pragmas for performance.
 	ctxPragma, cancelPragma := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancelPragma()
 	if _, err := db.ExecContext(ctxPragma, "PRAGMA journal_mode=WAL;"); err != nil {
@@ -102,7 +102,7 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
 	}
 
-	// Ensure columns exist (for migration)
+	// Ensure columns exist (for migration).
 	if err := ensureColumns(db); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to ensure columns: %w", err)
@@ -133,23 +133,23 @@ func ensureColumns(db *sql.DB) error {
 }
 
 func ensureColumn(db *sql.DB, colName string) error {
-	// Whitelist valid column names to prevent SQL injection even from internal calls
+	// Whitelist valid column names to prevent SQL injection even from internal calls.
 	switch colName {
 	case "prev_hash", "hash", "trace_id", "span_id", "parent_id":
-		// Allowed
+		// Allowed.
 	default:
 		return fmt.Errorf("invalid column name: %s", colName)
 	}
 
-	// Check if column exists
-	//nolint:gosec // colName is validated above
+	// Check if column exists.
+	//nolint:gosec // colName is validated above.
 	query := fmt.Sprintf("SELECT %s FROM audit_logs LIMIT 1", colName)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if _, err := db.ExecContext(ctx, query); err == nil {
 		return nil
 	}
-	// Add column
+	// Add column.
 
 	query = fmt.Sprintf("ALTER TABLE audit_logs ADD COLUMN %s TEXT DEFAULT ''", colName)
 	ctxAlter, cancelAlter := context.WithTimeout(context.Background(), 10*time.Second)
@@ -175,7 +175,7 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	// Marshal complex types
+	// Marshal complex types.
 	argsJSON := "{}"
 	if len(entry.Arguments) > 0 {
 		argsJSON = string(entry.Arguments)
@@ -190,9 +190,9 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 
 	ts := entry.Timestamp.Format(time.RFC3339Nano)
 
-	// Get previous hash
+	// Get previous hash.
 	var prevHash string
-	// Order by ID desc to get the last entry
+	// Order by ID desc to get the last entry.
 	err := s.db.QueryRowContext(ctx, "SELECT hash FROM audit_logs ORDER BY id DESC LIMIT 1").Scan(&prevHash)
 	if err != nil && err != sql.ErrNoRows {
 		return fmt.Errorf("failed to get previous hash: %w", err)
@@ -201,7 +201,7 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 		prevHash = "" // First entry
 	}
 
-	// Compute hash
+	// Compute hash.
 	hash := computeHash(ts, entry.ToolName, entry.UserID, entry.ProfileID, argsJSON, resultJSON, entry.Error, entry.DurationMs, prevHash)
 
 	query := `
@@ -356,12 +356,12 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 			return false, fmt.Errorf("integrity violation at id %d: prev_hash mismatch (expected %q, got %q)", id, expectedPrevHash, prevHash)
 		}
 
-		// Check hash version
+		// Check hash version.
 		var calculatedHash string
 		if len(hash) > 3 && hash[:3] == "v1:" {
 			calculatedHash = computeHash(ts, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
 		} else {
-			// Fallback to legacy
+			// Fallback to legacy.
 			calculatedHash = computeHashV0(ts, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
 		}
 

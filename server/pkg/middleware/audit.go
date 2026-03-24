@@ -1,5 +1,5 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 Author(s) of MCP Any.
+// SPDX-License-Identifier: Apache-2.0.
 
 package middleware
 
@@ -57,7 +57,7 @@ func NewAuditMiddleware(auditConfig *configv1.AuditConfig) (*AuditMiddleware, er
 	if err := m.initializeStore(auditConfig); err != nil {
 		return nil, err
 	}
-	// Initialize redactor with current global settings
+	// Initialize redactor with current global settings.
 	m.redactor = NewRedactor(config.GlobalSettings().GetDlp(), nil)
 	return m, nil
 }
@@ -67,7 +67,7 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 		var store audit.Store
 		var err error
 
-		// Determine storage type
+		// Determine storage type.
 		storageType := config.GetStorageType()
 		if storageType == configv1.AuditConfig_STORAGE_TYPE_UNSPECIFIED {
 			storageType = configv1.AuditConfig_STORAGE_TYPE_FILE
@@ -134,11 +134,11 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	// Update redactor on config update (it uses global DLP config, which might also change,
-	// but UpdateConfig is usually called when config file changes, so good time to refresh)
+	// Update redactor on config update (it uses global DLP config, which might also change,.
+	// but UpdateConfig is usually called when config file changes, so good time to refresh).
 	m.redactor = NewRedactor(config.GlobalSettings().GetDlp(), nil)
 
-	// If config is nil, disable audit
+	// If config is nil, disable audit.
 	if auditConfig == nil {
 		if m.store != nil {
 			_ = m.store.Close()
@@ -159,7 +159,7 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 	}
 
 	if needsReinit {
-		// Close old store
+		// Close old store.
 		if m.store != nil {
 			_ = m.store.Close()
 			m.store = nil
@@ -200,7 +200,7 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 
 	start := time.Now()
 
-	// Trace Context
+	// Trace Context.
 	traceID := GetTraceID(ctx)
 	if traceID == "" {
 		traceID = strings.ReplaceAll(uuid.New().String(), "-", "")
@@ -208,15 +208,15 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 	parentID := GetSpanID(ctx) // The parent is the current span in context
 	spanID := strings.ReplaceAll(uuid.New().String(), "-", "")[:16]
 
-	// Update context for downstream (Recursive Tracing)
+	// Update context for downstream (Recursive Tracing).
 	ctx = WithTraceContext(ctx, traceID, spanID, parentID)
 
-	// Execute the tool
+	// Execute the tool.
 	result, err := next(ctx, req)
 
 	duration := time.Since(start)
 
-	// Prepare audit entry
+	// Prepare audit entry.
 	entry := audit.Entry{
 		Timestamp:  start,
 		ToolName:   req.ToolName,
@@ -235,10 +235,10 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 	}
 
 	if auditConfig.GetLogArguments() {
-		// Try to marshal arguments to RawMessage to avoid double escaping if it's already structured
+		// Try to marshal arguments to RawMessage to avoid double escaping if it's already structured.
 		argsBytes, marshalErr := json.Marshal(req.ToolInputs)
 		if marshalErr == nil {
-			// Use Redactor to ensure no secrets are logged
+			// Use Redactor to ensure no secrets are logged.
 			if redactor != nil {
 				redactedBytes, err := redactor.RedactJSON(argsBytes)
 				if err == nil {
@@ -254,15 +254,15 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 	}
 
 	if auditConfig.GetLogResults() && err == nil {
-		// Use Redactor for result too to ensure structs are handled correctly
-		// and avoid side effects (modifying the result map if it's a map)
+		// Use Redactor for result too to ensure structs are handled correctly.
+		// and avoid side effects (modifying the result map if it's a map).
 		// We marshal to JSON, redact, and then unmarshal or store as RawMessage if entry.Result supports it?
 		// AuditEntry.Result is `any`. If we store redacted map, it's fine.
 		// If we use RedactJSON, we get []byte.
 
 		logResult := result
 		if redactor != nil {
-			// Best effort redaction
+			// Best effort redaction.
 			jsonBytes, err := json.Marshal(result)
 			if err == nil {
 				redactedBytes, err := redactor.RedactJSON(jsonBytes)
@@ -279,14 +279,14 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 		entry.Result = logResult
 	}
 
-	// Write log
+	// Write log.
 	m.writeLog(ctx, store, entry)
 
 	return result, err
 }
 
 func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry audit.Entry) {
-	// Broadcast first for real-time updates
+	// Broadcast first for real-time updates.
 	if m.broadcaster != nil {
 		// ⚡ BOLT: Pass struct directly to avoid JSON marshaling.
 		m.broadcaster.Broadcast(entry)
@@ -312,7 +312,7 @@ func (m *AuditMiddleware) ClearHistory() {
 	}
 }
 
-// SubscribeWithHistory returns a channel that will receive broadcast messages,
+// SubscribeWithHistory returns a channel that will receive broadcast messages,.
 // and the current history of messages.
 //
 // Summary: Subscribes to audit events with history.

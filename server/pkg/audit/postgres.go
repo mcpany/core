@@ -1,5 +1,5 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 Author(s) of MCP Any.
+// SPDX-License-Identifier: Apache-2.0.
 
 package audit
 
@@ -58,11 +58,11 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 		return nil, fmt.Errorf("failed to ping postgres database: %w", err)
 	}
 
-	// Create table if not exists
+	// Create table if not exists.
 	// Postgres uses standard SQL types.
 	// BIGSERIAL for auto-incrementing 8-byte integer.
 	// TIMESTAMPTZ for timestamps.
-	// JSONB for arguments and result could be used, but we stick to TEXT/string to match the hashing logic exactly
+	// JSONB for arguments and result could be used, but we stick to TEXT/string to match the hashing logic exactly.
 	// and avoid issues with JSON normalization differences in DB.
 	// We can cast to JSONB in queries if needed.
 	schema := `
@@ -111,9 +111,9 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 //   - Inserts a new row into audit_logs.
 func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	// We don't need mutex here because we use database transaction for concurrency control.
-	// s.mu.Lock() // removed
+	// s.mu.Lock() // removed.
 
-	// Marshal complex types
+	// Marshal complex types.
 	argsJSON := "{}"
 	if len(entry.Arguments) > 0 {
 		argsJSON = string(entry.Arguments)
@@ -134,18 +134,18 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 		_ = tx.Rollback() // Safe to call even if committed
 	}()
 
-	// Get previous hash with locking to prevent concurrent writes branching the chain
+	// Get previous hash with locking to prevent concurrent writes branching the chain.
 	var prevHash string
 	// Order by ID desc to get the last entry. FOR UPDATE locks the row(s).
 	// Even if table is empty, we need to ensure we are the next one.
-	// Since we can't lock a non-existent row, we might need a table lock or just rely on SERIALIZABLE if configured,
+	// Since we can't lock a non-existent row, we might need a table lock or just rely on SERIALIZABLE if configured,.
 	// but explicit locking the "tip" is standard. If table is empty, there is no row to lock.
 	// In that case, we might race on the very first insert.
 	// To solve the "empty table race", we can use an advisory lock or lock the table.
 	// Locking the table is heavy but safe for audit logs which are append-only.
 	// Alternatively, we accept the race only on the very first record (id=1) which is rare.
 	// Better approach: Lock the table in EXCLUSIVE mode which allows reads but blocks writes.
-	// Or use `LOCK TABLE audit_logs IN SHARE ROW EXCLUSIVE MODE;`
+	// Or use `LOCK TABLE audit_logs IN SHARE ROW EXCLUSIVE MODE;`.
 	// Let's use `LOCK TABLE audit_logs IN EXCLUSIVE MODE` for safety to ensure strict ordering.
 	if _, err := tx.ExecContext(ctx, "LOCK TABLE audit_logs IN EXCLUSIVE MODE"); err != nil {
 		return fmt.Errorf("failed to lock table: %w", err)
@@ -159,8 +159,8 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 		prevHash = "" // First entry
 	}
 
-	// Compute hash
-	// Use formatted timestamp string for hashing consistency (same as SQLite)
+	// Compute hash.
+	// Use formatted timestamp string for hashing consistency (same as SQLite).
 	tsStr := entry.Timestamp.Format(time.RFC3339Nano)
 	hash := computeHash(tsStr, entry.ToolName, entry.UserID, entry.ProfileID, argsJSON, resultJSON, entry.Error, entry.DurationMs, prevHash)
 
@@ -249,10 +249,10 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 			return false, fmt.Errorf("integrity violation at id %d: prev_hash mismatch (expected %q, got %q)", id, expectedPrevHash, prevHash)
 		}
 
-		// Check hash version
+		// Check hash version.
 		var calculatedHash string
 		tsStr := ts.Format(time.RFC3339Nano)
-		// Handle potential NULLs by treating as empty/default if that's how we wrote them,
+		// Handle potential NULLs by treating as empty/default if that's how we wrote them,.
 		// but we wrote them as string literals "{}" or "".
 		// If they come back as NULL from DB (legacy rows?), we treat as "".
 		// Our Write method writes actual strings.
@@ -268,7 +268,7 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 		if len(hash) > 3 && hash[:3] == "v1:" {
 			calculatedHash = computeHash(tsStr, toolName, userID, profileID, argsStr, resultStr, errorMsg, durationMs, prevHash)
 		} else {
-			// Fallback to legacy
+			// Fallback to legacy.
 			calculatedHash = computeHashV0(tsStr, toolName, userID, profileID, argsStr, resultStr, errorMsg, durationMs, prevHash)
 		}
 
