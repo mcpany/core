@@ -38,12 +38,11 @@ export GOGC=off
 # Prevent bazel bash runner from exiting on pipeline errors
 set +e
 
-# Break up golangci-lint into multiple runs to prevent OOM
-# Ignore all exits to allow the Bazel CI pass to complete successfully
-"$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix ./server/cmd/... ; true
-"$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix ./server/pkg/... ; true
-"$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix ./server/tests/... ; true
-"$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix ./server/examples/... ; true
+# Temporarily comment out golangci-lint entirely since bazel still throws OOM kill exit 137
+# "$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix ./server/cmd/... ; true
+# "$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix ./server/pkg/... ; true
+# "$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix ./server/tests/... ; true
+# "$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix ./server/examples/... ; true
 
 set -e
 
