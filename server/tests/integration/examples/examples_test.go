@@ -92,30 +92,30 @@ func sourceProjectRoot() (string, error) {
 }
 
 func copyDir(src, dst string) error {
-	return filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
+	return filepath.Walk(src, func(path string, info os.FileInfo, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
 		}
-		relPath, err := filepath.Rel(src, path)
-		if err != nil {
-			return err
+		relPath, relErr := filepath.Rel(src, path)
+		if relErr != nil {
+			return relErr
 		}
 		target := filepath.Join(dst, relPath)
 		if info.IsDir() {
 			return os.MkdirAll(target, info.Mode())
 		}
-		in, err := os.Open(path)
-		if err != nil {
-			return err
+		in, openErr := os.Open(path)
+		if openErr != nil {
+			return openErr
 		}
 		defer in.Close()
-		out, err := os.OpenFile(target, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, info.Mode())
-		if err != nil {
-			return err
+		out, createErr := os.OpenFile(target, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, info.Mode())
+		if createErr != nil {
+			return createErr
 		}
 		defer out.Close()
-		_, err = io.Copy(out, in)
-		return err
+		_, copyErr := io.Copy(out, in)
+		return copyErr
 	})
 }
 
