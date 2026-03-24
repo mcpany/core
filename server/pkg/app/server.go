@@ -717,7 +717,6 @@ func (a *Application) Run(opts RunOptions) error {
 		cfg.GetGlobalSettings().GetContextOptimizer(),
 		cfg.GetGlobalSettings().GetDebugger(),
 		cfg.GetGlobalSettings().GetSmartRecovery(),
-		nil,
 	)
 	if err != nil {
 		workerCancel()
@@ -1987,7 +1986,6 @@ func (a *Application) runServerMode(
 	mux.Handle("/healthz", healthHandler)
 	mux.Handle("/health", healthHandler)
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
-	mux.Handle("/api/v1/alignment/status", authMiddleware(a.handleActiveIntentAlignment()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
 	// OIDC Routes

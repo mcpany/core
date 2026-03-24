@@ -4,34 +4,48 @@
 
 ## Goal
 
-Intercept and modify tool executions. Webhooks utilize CloudEvents for a standardized event format and can be used for policy enforcement, data transformation, or auditing.
+Set up external notifications for system events. Webhooks allow you to integrate MCP Any with third-party systems like Slack, PagerDuty, or custom pipelines.
 
-## Configuration
+## Usage Guide
 
-Webhooks can be configured both via the UI dashboard and `config.yaml` under each upstream service as `pre_call_hooks` and `post_call_hooks`.
+### 1. Webhook List
 
-### UI Dashboard
+Navigate to `/webhooks`. This page lists all configured outbound webhooks.
 
-Navigate to `/webhooks` to access the Webhooks management console. Here you can:
-- **Add Webhooks**: Create new webhooks by providing a Payload URL.
-- **Status Management**: Instantly enable or disable specific webhooks via toggle switches.
-- **Testing**: Trigger test events (`/api/v1/webhooks/:id/test`) to verify connectivity and validate payloads.
-- **Delete Webhooks**: Remove unused or obsolete webhooks from your configuration.
+![Webhooks List](screenshots/webhooks_list.png)
 
-### YAML Example
+### 2. Register New Webhook
 
-```yaml
-upstream_services:
-  - name: "my-service"
-    pre_call_hooks:
-      - name: "validate-input"
-        webhook:
-          url: "http://my-webhook-service/validate"
+1. Click **"Add Webhook"**.
+2. Enter the **Target URL**.
+3. Select the **Events** to subscribe to (e.g., `service.down`, `job.failed`).
+
+![Create Webhook](screenshots/webhook_create_modal.png)
+
+### 3. Test Delivery
+
+Click the **"Test"** button on a webhook row to send a sample payload to the configured URL. The response status code (e.g., 200 OK) will be displayed ensuring connectivity.
+
+## Technical Details
+
+### Event Types
+
+- `service.health_change`: Triggered when a service goes Up or Down.
+- `tool.error`: Triggered when a tool execution fails.
+- `audit.log`: Triggered for every audit event (high volume).
+
+### Sample Payload
+
+```json
+{
+  "event_id": "evt_12345",
+  "type": "service.health_change",
+  "timestamp": "2026-01-10T12:00:00Z",
+  "data": {
+    "service_id": "postgres-primary",
+    "previous_status": "healthy",
+    "new_status": "unhealthy",
+    "reason": "Connection refused"
+  }
+}
 ```
-
-## Supported Types
-
-1.  **Pre-Call (`pre_call_hooks`)**: Triggered _before_ the tool executes to validate inputs or enforce policies.
-2.  **Post-Call (`post_call_hooks`)**: Triggered _after_ the tool executes to audit results or transform output.
-
-For advanced implementations, including the official webhook sidecar, see the Server Documentation.

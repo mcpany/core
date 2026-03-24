@@ -83,10 +83,3 @@ With the transition of the Agent2Agent (A2A) protocol to the Linux Foundation, i
 * The Hub will now require a valid mission-bound identity token before exposing "Agent Cards" or capability metadata to a requesting peer.
 * Integrating the `TeammateTool` protocol to support Claude-style hierarchical discovery across heterogeneous frameworks.
 **Security Impact:** Prevents "Shadow Capability" mapping by malicious subagents and ensures that only authorized teammates can discover and spawn specialized agents within the bus.
-
-### Update: 2026-06-01 - Machine-Speed Quarantining & Mandatory Discovery Auth
-**Context:** The 2026 Armis report confirm that "Agentic Swarms" can weaponize exploits in seconds, requiring the A2A Hub to move from passive routing to active interdiction.
-**Architecture Adjustment:**
-*   Integrating **MSSQ (Machine-Speed Swarm Quarantine)** triggers into the `/v1/a2a/mailbox` and delivery logic. The Hub will now check the high-speed bitset for quarantine status before delivering any task proposal or message.
-*   Enforcing **Mandatory Discovery Auth** for all UAB-connected peers, aligning with the Gemini CLI v0.33.0 baseline. Capability metadata is now cryptographically masked until a verified mission-bound handshake is completed.
-**Security Impact:** Neutralizes "Hivenet" propagation by cutting off inter-agent communication channels in sub-milliseconds and ensures "Zero-Visibility" for unauthenticated probes.
