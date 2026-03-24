@@ -86,7 +86,6 @@ export function DataTable<TData, TValue>({
     const header = columns
         .filter(c => c.id !== "select" && c.id !== "actions")
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .map(c => c.id || (c as any).accessorKey)
         .join(",")
 
@@ -95,8 +94,12 @@ export function DataTable<TData, TValue>({
             .filter(c => c.id !== "select" && c.id !== "actions")
             .map(c => {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const val = row.getValue(c.id || (c as any).accessorKey)
-                return `"${String(val ?? "").replace(/"/g, '""')}"`
+                const val = String(row.getValue(c.id || (c as any).accessorKey) ?? "")
+
+                // Prevent CSV injection by escaping starting characters typically used for formulas
+                const sanitizedVal = /^[=+\-@]/.test(val) ? `'${val}` : val
+
+                return `"${sanitizedVal.replace(/"/g, '""')}"`
             })
             .join(",")
     }).join("\n")
