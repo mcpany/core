@@ -592,8 +592,6 @@
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
 
-- [ ] **[P0] Teammate Isolation Monitor**: (2026-06-18) Visual indicator for cryptographically bound isolation.
-- [ ] **[P0] Logic-Sovereignty Path Tracer**: (2026-06-18) Visual debugger for reasoning paths.
-- [ ] **[P0] Request-Side Injection Alerts**: (2026-06-18) Real-time notification for blocked request-side injection attempts.
-- [ ] **[P1] HADM Manifest Viewer**: (2026-06-18) Security UI for reviewing hardware-attested discovery manifests.
-- [ ] **[P0] Parallel Coordination Status**: (2026-06-18) Real-time monitor for lock-free coordination buffers.
+- [ ] **[P0] Teammate Isolation Monitor**: (2026-06-18)
+- [ ] **[P0] Logic-Sovereignty Path Tracer**: (2026-06-18)
+- [ ] **[P0] Request-Side Injection Alerts**: (2026-06-18)
