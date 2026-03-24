@@ -51,7 +51,6 @@ describe('ResourcePreviewModal', () => {
     mimeType: 'application/json',
     title: 'test.json',
     description: '',
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     size: 0 as any,
     disable: false,
     profiles: [],
