@@ -975,7 +975,6 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 
 	var finalResult *mcp.CallToolResult
 	var text string
-	var jsonBytes []byte
 	var marshalErr error
 	var isStructured bool
 
@@ -1023,11 +1022,8 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 
 	// 3. Fallback: If no structured result identified, treat as raw data
 	if finalResult == nil {
-		if len(jsonBytes) == 0 && marshalErr == nil {
-			jsonBytes, marshalErr = util.FastMarshal(result)
-			if marshalErr == nil {
-				text = util.BytesToString(jsonBytes)
-			}
+		if text == "" && marshalErr == nil {
+			text, marshalErr = util.FastMarshalToString(result)
 		}
 
 		if marshalErr != nil {
@@ -1046,10 +1042,10 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		var logValue slog.Value
 		// If we have a structured result (either directly or converted), use the summarizer.
 		// If we fell back to raw JSON (isStructured=false), reuse the jsonBytes for redacted logging.
-		if !isStructured && len(jsonBytes) > 0 && marshalErr == nil {
+		if !isStructured && text != "" && marshalErr == nil {
 			// ⚡ Bolt Optimization: Reuse marshaled bytes for logging (redacted)
 			// This saves a second marshal operation for large maps.
-			logValue = slog.StringValue(util.BytesToString(util.RedactJSON(jsonBytes)))
+			logValue = slog.StringValue(util.BytesToString(util.RedactJSON([]byte(text))))
 		} else {
 			logValue = summarizeCallToolResult(finalResult)
 		}
