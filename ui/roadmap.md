@@ -333,6 +333,10 @@
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)
 - [ ] **[P1] Encrypted Monologue Explorer**: Secure UI fragment for user-authorized decryption and review of subagent reasoning. (Added: 2026-04-22)
 
+#### Upcoming (2026-05-05 Evolution)
+- [ ] **[P0] Reasoning Path Explorer**: (2026-05-05) Interactive visualization of the verified chain-of-thought and SIA reasoning proofs for any tool call.
+- [ ] **[P1] Zk-Context Verification Dashboard**: (2026-05-05) Monitor for tracking Zk-proof verification status and context shard privacy metrics.
+
 #### Upcoming (2026-05-04 Evolution)
 - [ ] **[P0] CSCS Reputation Map**: (2026-05-04) UI for visualizing federated tool trust and peer swarm contributions.
 - [ ] **[P1] Speculative Permissioning Monitor**: (2026-05-04) Dashboard for tracking PET token generation and pre-staging efficiency.

@@ -223,7 +223,7 @@ func runfilesWorkspaceName() string {
 
 func runfilesRoots() []string {
 	workspace := runfilesWorkspaceName()
-	roots := make([]string, 0, 2) //nolint:prealloc
+	roots := make([]string, 0, 2)
 	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
 		if base == "" {
 			continue
@@ -339,7 +339,7 @@ func GetProjectRoot() (string, error) {
 		for _, start := range func() []string {
 			wd, wdErr := os.Getwd()
 			execPath, execErr := os.Executable()
-			paths := make([]string, 0, 2) //nolint:prealloc
+			paths := make([]string, 0, 2)
 			if wdErr == nil {
 				paths = append(paths, wd)
 			}
