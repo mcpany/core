@@ -38,6 +38,12 @@ func TestExampleConfigs(t *testing.T) {
 	if _, err := os.Stat(stdioBinPath); os.IsNotExist(err) {
 		t.Logf("Building missing stdio example binary: %s", stdioBinPath)
 		cmd := exec.Command("go", "build", "-o", stdioBinPath, filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool", "main.go"))
+		// We avoid using go modules for this ad-hoc build inside test sandbox to avoid go.mod missing errors.
+		cmd.Env = append(os.Environ(), "GO111MODULE=off")
+		// We avoid using go modules for this ad-hoc build inside test sandbox to avoid go.mod missing errors.
+		cmd.Env = append(os.Environ(), "GO111MODULE=off")
+		// We avoid using go modules for this ad-hoc build inside test sandbox to avoid go.mod missing errors.
+		cmd.Env = append(os.Environ(), "GO111MODULE=off")
 		cmd.Dir = runtimeRoot
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
