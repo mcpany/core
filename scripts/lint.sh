@@ -131,6 +131,8 @@ fi
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     # Change to server directory so golangci-lint finds the correct go.mod
     cd "$PROJECT_ROOT/server"
+    export GO111MODULE=on
+    export GOTOOLCHAIN=auto
     "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
         ./cmd/... ./pkg/... ./tests/... ../examples/...
     cd "$PROJECT_ROOT"
