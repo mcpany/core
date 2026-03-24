@@ -123,15 +123,6 @@ fi
 # ---------------------------------------------------------------------------
 echo "==> Running golangci-lint..."
 if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
-    GOLANGCI_LINT_BIN="./build/env/bin/golangci-lint"
-    if [[ ! -x "$GOLANGCI_LINT_BIN" ]]; then
-        GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
-    if [[ -z "$GOLANGCI_LINT_BIN" || ! -x "$GOLANGCI_LINT_BIN" ]]; then
-        if [[ -x "build/env/bin/golangci-lint" ]]; then
-            GOLANGCI_LINT_BIN="$PWD/build/env/bin/golangci-lint"
-        fi
-    fi
-    fi
     GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
     if [[ -z "$GOLANGCI_LINT_BIN" || ! -x "$GOLANGCI_LINT_BIN" ]]; then
         if [[ -x "build/env/bin/golangci-lint" ]]; then
@@ -143,8 +134,8 @@ fi
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
-        ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
+    cd server && "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
+        cmd/... pkg/... tests/... examples/...
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
