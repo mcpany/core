@@ -121,27 +121,35 @@ fi
 #    the path set by $GOLANGCI_LINT_BIN, then a local install, then
 #    build/env/bin/ (populated by `make prepare`).
 # ---------------------------------------------------------------------------
-echo "==> Running golangci-lint..."
-if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
-    GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
-fi
-# No longer fall back to build/env/bin/ (local make-managed path) since this
-# is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
+SKIP_GO=0
+for arg in "$@"; do
+    if [[ "$arg" == "--skip-go" ]]; then
+        SKIP_GO=1
+    fi
+done
 
-if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    # Change to server directory so golangci-lint finds the correct go.mod
-    cd "$PROJECT_ROOT/server"
-    export GO111MODULE=on
-    export GOTOOLCHAIN=auto
-
-    # Restrict memory/concurrency heavily to prevent OOM in CircleCI (and local Bazel sandboxes)
-    GOGC=20 "$GOLANGCI_LINT_BIN" run --concurrency 1 --timeout 20m --fix \
-        ./cmd/... ./pkg/... ./tests/... ../examples/... || true
-    cd "$PROJECT_ROOT"
-    echo "    golangci-lint OK."
+if [[ "$SKIP_GO" -eq 1 ]]; then
+    echo "==> Skipping golangci-lint (--skip-go provided)..."
 else
-    echo "    Warning: golangci-lint not found (skipping Go linting)."
-    echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."
+    echo "==> Running golangci-lint..."
+    if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
+        GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
+    fi
+
+    if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
+        # Change to server directory so golangci-lint finds the correct go.mod
+        cd "$PROJECT_ROOT/server"
+        export GO111MODULE=on
+        export GOTOOLCHAIN=auto
+
+        "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
+            ./cmd/... ./pkg/... ./tests/... ../examples/... || true
+        cd "$PROJECT_ROOT"
+        echo "    golangci-lint OK."
+    else
+        echo "    Warning: golangci-lint not found (skipping Go linting)."
+        echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."
+    fi
 fi
 
 echo "==> Lint complete."
