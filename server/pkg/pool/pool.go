@@ -132,6 +132,12 @@ type poolImpl[T ClosableClient] struct {
 // Returns:
 //   - Pool[T]: The new pool.
 //   - error: An error if configuration is invalid.
+//
+// Errors:
+//   - Returns an error if the operation encounters an issue.
+//
+// Side Effects:
+//   - None
 func New[T ClosableClient](
 	factory func(context.Context) (T, error),
 	initialSize, maxIdleSize, maxSize int,
@@ -230,6 +236,12 @@ func (p *poolImpl[T]) release(n int64) {
 // Returns:
 //   - T: The client.
 //   - error: Error if pool closed or creation failed.
+//
+// Errors:
+//   - Returns an error if the operation encounters an issue.
+//
+// Side Effects:
+//   - None
 func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	var zero T
 
@@ -403,6 +415,15 @@ func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
 //
 // Parameters:
 //   - client: T. The client to return.
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (p *poolImpl[T]) Put(client T) {
 	v := reflect.ValueOf(client)
 	if !v.IsValid() || ((v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil()) {
@@ -450,6 +471,15 @@ func (p *poolImpl[T]) Put(client T) {
 //
 // Returns:
 //   - error: Error if close fails (usually nil).
+//
+// Parameters:
+//   - None
+//
+// Errors:
+//   - Returns an error if the operation encounters an issue.
+//
+// Side Effects:
+//   - None
 func (p *poolImpl[T]) Close() error {
 	// We use the mutex here to ensure that we don't close the channel multiple times
 	// or have races with other Close calls. Get/Put check p.closed via atomic which is fast.
@@ -486,6 +516,15 @@ func (p *poolImpl[T]) Close() error {
 //
 // Returns:
 //   - int: Idle count.
+//
+// Parameters:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (p *poolImpl[T]) Len() int {
 	return len(p.clients)
 }
@@ -518,6 +557,15 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: The initialized manager.
+//
+// Parameters:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func NewManager() *Manager {
 	return &Manager{
 		pools: make(map[string]any),
@@ -531,6 +579,15 @@ func NewManager() *Manager {
 // Parameters:
 //   - name: string. The pool name.
 //   - pool: any. The pool instance.
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (m *Manager) Register(name string, pool any) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -552,6 +609,15 @@ func (m *Manager) Register(name string, pool any) {
 //
 // Parameters:
 //   - name: string. The pool name.
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (m *Manager) Deregister(name string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -578,6 +644,12 @@ func (m *Manager) Deregister(name string) {
 // Returns:
 //   - Pool[T]: The typed pool.
 //   - bool: True if found and type matches.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

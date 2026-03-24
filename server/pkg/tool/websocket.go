@@ -52,6 +52,12 @@ type WebsocketTool struct {
 //
 // Returns:
 //   - *WebsocketTool: A new instance of WebsocketTool.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func NewWebsocketTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,
@@ -77,6 +83,15 @@ func NewWebsocketTool(
 //
 // Returns:
 //   - *v1.Tool: The tool definition.
+//
+// Parameters:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (t *WebsocketTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -87,6 +102,15 @@ func (t *WebsocketTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Parameters:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (t *WebsocketTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -104,6 +128,15 @@ func (t *WebsocketTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration.
+//
+// Parameters:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -129,6 +162,12 @@ func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (t *WebsocketTool) IsStreaming() bool {
 	return false
 }
@@ -144,6 +183,12 @@ func (t *WebsocketTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+//
+// Errors:
+//   - Returns an error if the operation encounters an issue.
+//
+// Side Effects:
+//   - None
 func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {

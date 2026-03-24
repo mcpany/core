@@ -19,6 +19,20 @@ import (
 // t is the t.
 //
 // Returns the result.
+//
+// Summary: Performs the build httpecho server operation.
+//
+// Parameters:
+//   - t (*testing.T): The t argument.
+//
+// Returns:
+//   - *integration.ManagedProcess: The result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func BuildHTTPEchoServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	proc := integration.NewManagedProcess(t, "http_echo_server", integration.MockBinary(t, "http_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
@@ -31,6 +45,22 @@ func BuildHTTPEchoServer(t *testing.T) *integration.ManagedProcess {
 // t is the t.
 // registrationClient is the registrationClient.
 // upstreamEndpoint is the upstreamEndpoint.
+//
+// Summary: Performs the register httpecho service operation.
+//
+// Parameters:
+//   - t (*testing.T): The t argument.
+//   - registrationClient (apiv1.RegistrationServiceClient): The registrationClient argument.
+//   - upstreamEndpoint (string): The upstreamEndpoint argument.
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func RegisterHTTPEchoService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_http_echo"
 	integration.RegisterHTTPService(t, registrationClient, serviceID, upstreamEndpoint, "echo", "/echo", http.MethodPost, nil)
@@ -41,6 +71,20 @@ func RegisterHTTPEchoService(t *testing.T, registrationClient apiv1.Registration
 // t is the t.
 //
 // Returns the result.
+//
+// Summary: Performs the build httpauthed echo server operation.
+//
+// Parameters:
+//   - t (*testing.T): The t argument.
+//
+// Returns:
+//   - *integration.ManagedProcess: The result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func BuildHTTPAuthedEchoServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	proc := integration.NewManagedProcess(t, "http_authed_echo_server", integration.MockBinary(t, "http_authed_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
@@ -53,6 +97,22 @@ func BuildHTTPAuthedEchoServer(t *testing.T) *integration.ManagedProcess {
 // t is the t.
 // registrationClient is the registrationClient.
 // upstreamEndpoint is the upstreamEndpoint.
+//
+// Summary: Performs the register httpauthed echo service operation.
+//
+// Parameters:
+//   - t (*testing.T): The t argument.
+//   - registrationClient (apiv1.RegistrationServiceClient): The registrationClient argument.
+//   - upstreamEndpoint (string): The upstreamEndpoint argument.
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func RegisterHTTPAuthedEchoService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_http_authed_echo"
 	secret := configv1.SecretValue_builder{

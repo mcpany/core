@@ -43,6 +43,12 @@ func ensureSchema() (*jsonschema.Schema, error) {
 //
 // Returns:
 //   - error: An error if validation fails.
+//
+// Errors:
+//   - Returns an error if the operation encounters an issue.
+//
+// Side Effects:
+//   - None
 func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 	schema, err := ensureSchema()
 	if err != nil {

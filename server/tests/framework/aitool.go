@@ -12,6 +12,16 @@ import (
 
 // Re-exporting these from the integration package so that framework users
 // don't need to import both.
+//
+// Summary: Defines the FindFreePort constant or variable.
+//
+// Summary: Defines the ServiceStartupTimeout constant or variable.
+//
+// Summary: Defines the GetProjectRoot constant or variable.
+//
+// Summary: Defines the WaitForTCPPort constant or variable.
+//
+// Summary: Defines the NewManagedProcess constant or variable.
 var (
 	FindFreePort          = integration.FindFreePort
 	NewManagedProcess     = integration.NewManagedProcess
@@ -21,6 +31,8 @@ var (
 )
 
 // AITool represents an AI tool used in testing.
+//
+// Summary: Represents the AITool entity.
 type AITool interface {
 	// Install performs any necessary installation steps for the AI tool.
 	Install()

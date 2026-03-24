@@ -44,6 +44,9 @@ type Router struct {
 //
 // Side Effects:
 //   - Allocates memory for the Router and its handler map.
+//
+// Errors:
+//   - None
 func NewRouter() *Router {
 	return &Router{
 		handlers: make(map[string]MethodHandler),
@@ -63,6 +66,9 @@ func NewRouter() *Router {
 //
 // Side Effects:
 //   - Updates the internal handler map.
+//
+// Errors:
+//   - None
 func (r *Router) Register(method string, handler MethodHandler) {
 	r.handlers[method] = handler
 }
@@ -80,6 +86,9 @@ func (r *Router) Register(method string, handler MethodHandler) {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - None
 func (r *Router) GetHandler(method string) (MethodHandler, bool) {
 	handler, ok := r.handlers[method]
 	return handler, ok

@@ -20,6 +20,8 @@ import (
 )
 
 // MCPServerReconciler reconciles a MCPServer object
+//
+// Summary: Represents the MCPServerReconciler entity.
 type MCPServerReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
@@ -42,6 +44,14 @@ type MCPServerReconciler struct {
 // Returns:
 //   - ctrl.Result: The result of the reconciliation, indicating if the request should be requeued.
 //   - error: Any error that occurred during reconciliation.
+//
+// Summary: Performs the reconcile operation.
+//
+// Errors:
+//   - Returns an error if the operation encounters an issue.
+//
+// Side Effects:
+//   - None
 func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
@@ -241,6 +251,14 @@ func labelsForMCPServer(name string) map[string]string {
 //
 // Returns:
 //   - error: Any error that occurred during setup.
+//
+// Summary: Performs the setup with manager operation.
+//
+// Errors:
+//   - Returns an error if the operation encounters an issue.
+//
+// Side Effects:
+//   - None
 func (r *MCPServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&mcpv1alpha1.MCPServer{}).

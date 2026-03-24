@@ -12,6 +12,21 @@ import (
 
 // StartMockServer starts a new mock server with the provided handler.
 // The caller is responsible for calling Close() on the returned server.
+//
+// Summary: Performs the start mock server operation.
+//
+// Parameters:
+//   - t (*testing.T): The t argument.
+//   - handler (http.Handler): The handler argument.
+//
+// Returns:
+//   - *httptest.Server: The result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func StartMockServer(t *testing.T, handler http.Handler) *httptest.Server {
 	t.Helper()
 	server := httptest.NewServer(handler)
@@ -21,6 +36,21 @@ func StartMockServer(t *testing.T, handler http.Handler) *httptest.Server {
 
 // DefaultMockHandler provides a simple way to define responses for specific paths.
 // It maps path -> response body (string or bytes).
+//
+// Summary: Performs the default mock handler operation.
+//
+// Parameters:
+//   - t (*testing.T): The t argument.
+//   - responses (map[string]string): The responses argument.
+//
+// Returns:
+//   - http.Handler: The result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		bodyBytes, _ := io.ReadAll(r.Body)
@@ -48,6 +78,21 @@ func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler 
 }
 
 // CreateMockServerWithResponses is a convenience function to start a server with static responses.
+//
+// Summary: Performs the create mock server with responses operation.
+//
+// Parameters:
+//   - t (*testing.T): The t argument.
+//   - responses (map[string]string): The responses argument.
+//
+// Returns:
+//   - *httptest.Server: The result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func CreateMockServerWithResponses(t *testing.T, responses map[string]string) *httptest.Server {
 	return StartMockServer(t, DefaultMockHandler(t, responses))
 }

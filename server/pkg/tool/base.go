@@ -41,6 +41,15 @@ func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.Upstr
 //
 // Returns:
 //   - *v1.Tool: The protobuf tool definition.
+//
+// Parameters:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (t *baseTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -54,6 +63,12 @@ func (t *baseTool) Tool() *v1.Tool {
 //
 // Side Effects:
 //   - Lazily converts the proto definition to MCP format on first call.
+//
+// Parameters:
+//   - None
+//
+// Errors:
+//   - None
 func (t *baseTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -78,6 +93,15 @@ func (t *baseTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+//
+// Parameters:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (t *baseTool) IsStreaming() bool {
 	return false
 }
@@ -93,6 +117,12 @@ func (t *baseTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+//
+// Errors:
+//   - Returns an error if the operation encounters an issue.
+//
+// Side Effects:
+//   - None
 func (t *baseTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	return nil, nil // Should be implemented by embedding struct if supported
 }

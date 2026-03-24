@@ -14,6 +14,8 @@ import (
 )
 
 // Signal represents a WebRTC signal.
+//
+// Summary: Represents the Signal entity.
 type Signal struct {
 	Type    string `json:"type"`
 	Payload string `json:"payload"`

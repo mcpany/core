@@ -10,6 +10,8 @@ import (
 )
 
 // MonitorAgent represents a security/policy validator in the quorum.
+//
+// Summary: Represents the MonitorAgent entity.
 type MonitorAgent interface {
 	// ValidateRequest evaluates a request and returns a cryptographically bound
 	// signature if approved, or an error if rejected.
@@ -20,6 +22,8 @@ type MonitorAgent interface {
 
 // CAHAdapter acts as the central arbiter for verifying agent interactions.
 // It manages a decentralized quorum of MonitorAgents to collect approvals.
+//
+// Summary: Represents the CAHAdapter entity.
 type CAHAdapter struct {
 	monitors        []MonitorAgent
 	quorumThreshold int
@@ -42,6 +46,8 @@ type CAHAdapter struct {
 //
 // Side Effects:
 //   - None.
+//
+// Summary: Initializes the new cahadapter operation.
 func NewCAHAdapter(monitors []MonitorAgent, threshold int, timeout time.Duration) (*CAHAdapter, error) {
 	if threshold < 1 {
 		return nil, fmt.Errorf("quorum threshold must be at least 1")
@@ -75,6 +81,8 @@ func NewCAHAdapter(monitors []MonitorAgent, threshold int, timeout time.Duration
 //
 // Side Effects:
 //   - Interacts with all configured MonitorAgent instances.
+//
+// Summary: Performs the validate with quorum operation.
 func (c *CAHAdapter) ValidateWithQuorum(ctx context.Context, requestID string, intent string, payload []byte) ([]string, error) {
 	ctx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
