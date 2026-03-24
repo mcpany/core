@@ -16,13 +16,21 @@ func main() {
 	}
 
     ast.Inspect(f, func(n ast.Node) bool {
-        if funcDecl, ok := n.(*ast.FuncDecl); ok {
-            ast.Inspect(funcDecl.Body, func(n ast.Node) bool {
-                // look for any unhandled variables.
-                // specifically check if `opts.Marshal` is fine.
-                // We checked that earlier.
-                return true
-            })
+        if assign, ok := n.(*ast.AssignStmt); ok {
+            for _, lhs := range assign.Lhs {
+                if ident, ok := lhs.(*ast.Ident); ok {
+                    if ident.Name == "_" && len(assign.Lhs) > 1 {
+                        // Check if the rhs is a function call that might return an error
+                        if len(assign.Rhs) > 0 {
+                            if call, ok := assign.Rhs[0].(*ast.CallExpr); ok {
+                                // Just a simple heuristic to spot ignored errors
+                                fmt.Printf("Potentially ignored error at %s\n", fset.Position(assign.Pos()))
+                                _ = call
+                            }
+                        }
+                    }
+                }
+            }
         }
         return true
     })

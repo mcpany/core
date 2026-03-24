@@ -768,7 +768,10 @@ func (a *Application) handleTools() http.HandlerFunc {
 			buf = append(buf, ']')
 
 			w.Header().Set("Content-Type", "application/json")
-			_, _ = w.Write(buf)
+			_, err := w.Write(buf)
+			if err != nil {
+				logging.GetLogger().Error("failed to write response", "error", err.Error())
+			}
 
 		case http.MethodPut:
 			var req struct {
@@ -887,7 +890,10 @@ func (a *Application) handleTools() http.HandlerFunc {
 			}
 
 			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte("{}"))
+			_, err = w.Write([]byte("{}"))
+			if err != nil {
+				logging.GetLogger().Error("failed to write response", "error", err.Error())
+			}
 
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
