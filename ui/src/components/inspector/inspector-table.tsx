@@ -148,8 +148,9 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                     ),
                     TableHead: TableHeader,
                     TableBody: TableBody,
-                    TableRow: ({ item, context, ...props }: { item: VisibleRow, context: { onClick: (trace: Trace) => void }, [key: string]: unknown }) => (
-                        <TableRow {...props} className="cursor-pointer hover:bg-muted/50" onClick={() => context.onClick(item.trace)} />
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    TableRow: ({ item, context, ...props }: any) => (
+                        <TableRow {...props} className="cursor-pointer hover:bg-muted/50" onClick={() => (context as { onClick: (trace: Trace) => void }).onClick((item as VisibleRow).trace)} />
                     ),
                 }}
                 fixedHeaderContent={() => (
