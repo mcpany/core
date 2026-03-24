@@ -31,8 +31,12 @@ go work sync
 # Absolute path to config
 CONFIG_PATH="${PROJECT_ROOT}/server/.golangci.yml"
 
-# With root (.) included in go.work, we can just run on ./...
-echo "    Linting all modules via workspace..."
-"$LINT_BIN" run --timeout 20m --fix --config "$CONFIG_PATH" ./...
+# Lint all modules explicitly to ensure they are picked up in the workspace.
+echo "    Linting modules..."
+"$LINT_BIN" run --timeout 20m --fix --config "$CONFIG_PATH" \
+    ./server/... \
+    ./k8s/operator/... \
+    ./proto/... \
+    ./server/examples/upstream_service_demo/grpc/greeter_server/...
 
 echo "==> Lint complete."
