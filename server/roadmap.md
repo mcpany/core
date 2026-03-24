@@ -755,6 +755,7 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
 
 ### Update: 2026-06-18 - Strategic Infrastructure Alignment
+- [P0] ALS Controller Implementation
 - **[P0] ALS Controller Implementation:** Enforcing attention sovereignty in the gateway. (Target: Q3 2026)
 - **[P0] PBRB Firewall Middleware:** Hard compute limits for autonomous agent turns. (Target: Q3 2026)
 - **[P1] Reasoning Telemetry Exporter:** Standardized sink for agentic reasoning effort metrics.

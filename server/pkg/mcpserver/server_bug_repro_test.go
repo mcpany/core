@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/armon/go-metrics"
+	armonmetrics "github.com/armon/go-metrics"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/mcpserver"
@@ -31,10 +31,10 @@ import (
 
 func TestServer_CallTool_Metrics_Repro(t *testing.T) {
 	// Initialize metrics with an in-memory sink
-	sink := metrics.NewInmemSink(10*time.Second, 30*time.Second)
-	conf := metrics.DefaultConfig("mcpany")
+	sink := armonmetrics.NewInmemSink(10*time.Second, 30*time.Second)
+	conf := armonmetrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
-	_, err := metrics.NewGlobal(conf, sink)
+	_, err := armonmetrics.NewGlobal(conf, sink)
 	require.NoError(t, err)
 
 	poolManager := pool.NewManager()

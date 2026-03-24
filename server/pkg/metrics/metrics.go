@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package metrics provides utilities for collecting and exposing application metrics.
+//
+// Summary: Metrics collection and exposition utilities.
 package metrics
 
 import (
@@ -50,17 +52,19 @@ var (
 //   - error: An error if the initialization fails.
 func Initialize() error {
 	initOnce.Do(func() {
-		sink, err := NewPrometheusSink()
-		if err != nil {
-			initErr = err
+		// Create a Prometheus sink
+		var sink *prometheus.PrometheusSink
+		sink, initErr = NewPrometheusSink()
+		if initErr != nil {
 			return
 		}
 
+		// Create a metrics configuration
 		conf := armonmetrics.DefaultConfig("mcpany")
 		conf.EnableHostname = false
 
-		if _, err = armonmetrics.NewGlobal(conf, sink); err != nil {
-			initErr = err
+		// Initialize the metrics system
+		if _, initErr = armonmetrics.NewGlobal(conf, sink); initErr != nil {
 			return
 		}
 	})
@@ -119,7 +123,9 @@ func StartServer(addr string) error {
 // Parameters:
 //   - name (string): The name of the gauge.
 //   - val (float32): The value to set.
-//   - labels (...string): Optional labels.
+//   - labels (...string): A list of labels to apply to the gauge.
+//
+// Returns: None.
 func SetGauge(name string, val float32, labels ...string) {
 	var metricLabels []Label
 	if len(labels) > 0 {
@@ -137,6 +143,8 @@ func SetGauge(name string, val float32, labels ...string) {
 // Parameters:
 //   - name ([]string): The name of the counter.
 //   - val (float32): The amount to increment.
+//
+// Returns: None.
 func IncrCounter(name []string, val float32) {
 	armonmetrics.IncrCounter(name, val)
 }
@@ -149,6 +157,8 @@ func IncrCounter(name []string, val float32) {
 //   - name ([]string): The name of the counter.
 //   - val (float32): The amount to increment.
 //   - labels ([]Label): The labels to apply.
+//
+// Returns: None.
 func IncrCounterWithLabels(name []string, val float32, labels []Label) {
 	armonmetrics.IncrCounterWithLabels(name, val, labels)
 }
@@ -160,6 +170,8 @@ func IncrCounterWithLabels(name []string, val float32, labels []Label) {
 // Parameters:
 //   - name ([]string): The name of the metric.
 //   - start (time.Time): The start time.
+//
+// Returns: None.
 func MeasureSince(name []string, start time.Time) {
 	armonmetrics.MeasureSince(name, start)
 }
@@ -172,6 +184,8 @@ func MeasureSince(name []string, start time.Time) {
 //   - name ([]string): The name of the metric.
 //   - start (time.Time): The start time.
 //   - labels ([]Label): The labels to apply.
+//
+// Returns: None.
 func MeasureSinceWithLabels(name []string, start time.Time, labels []Label) {
 	armonmetrics.MeasureSinceWithLabels(name, start, labels)
 }
@@ -183,6 +197,8 @@ func MeasureSinceWithLabels(name []string, start time.Time, labels []Label) {
 // Parameters:
 //   - name ([]string): The name of the metric.
 //   - val (float32): The value to sample.
+//
+// Returns: None.
 func AddSample(name []string, val float32) {
 	armonmetrics.AddSample(name, val)
 }
@@ -195,6 +211,8 @@ func AddSample(name []string, val float32) {
 //   - name ([]string): The name of the metric.
 //   - val (float32): The value to sample.
 //   - labels ([]Label): The labels to apply.
+//
+// Returns: None.
 func AddSampleWithLabels(name []string, val float32, labels []Label) {
 	armonmetrics.AddSampleWithLabels(name, val, labels)
 }

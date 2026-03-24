@@ -593,6 +593,7 @@
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
 
 ### Upcoming: 2026-06-18 - Strategic Monitoring
+- [P0] PBRB Budget Tracker
 - **[P0] ALS Status Dashboard:** Visualizing locked fragments and security boundaries.
 - **[P0] PBRB Budget Tracker:** Monitoring agentic spend and reasoning effort.
 - **[P1] Reasoning effort Heatmap:** Visualizing ALS interrupts and budget-bound reasoning loops.

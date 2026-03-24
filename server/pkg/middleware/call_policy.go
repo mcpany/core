@@ -7,7 +7,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/armon/go-metrics"
+	armonmetrics "github.com/armon/go-metrics"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/tool"
 )
@@ -85,7 +85,7 @@ func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionR
 	}
 
 	if !allowed {
-		metrics.IncrCounterWithLabels([]string{"call_policy", "blocked_total"}, 1, []metrics.Label{
+		armonmetrics.IncrCounterWithLabels([]string{"call_policy", "blocked_total"}, 1, []armonmetrics.Label{
 			{Name: "service_id", Value: serviceID},
 			{Name: "tool_name", Value: req.ToolName},
 		})

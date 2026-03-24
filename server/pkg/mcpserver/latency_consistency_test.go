@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/armon/go-metrics"
+	armonmetrics "github.com/armon/go-metrics"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
@@ -32,10 +32,10 @@ import (
 
 func TestMetricLatencyConsistency(t *testing.T) {
 	// Initialize metrics with an in-memory sink
-	sink := metrics.NewInmemSink(10*time.Millisecond, 1*time.Minute)
-	conf := metrics.DefaultConfig("mcpany")
+	sink := armonmetrics.NewInmemSink(10*time.Millisecond, 1*time.Minute)
+	conf := armonmetrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
-	_, err := metrics.NewGlobal(conf, sink)
+	_, err := armonmetrics.NewGlobal(conf, sink)
 	require.NoError(t, err)
 
 	poolManager := pool.NewManager()
@@ -56,7 +56,7 @@ func TestMetricLatencyConsistency(t *testing.T) {
 
 	// Set a very short flush interval for testing
 	conf.TimerGranularity = 10 * time.Millisecond
-	_, err = metrics.NewGlobal(conf, sink)
+	_, err = armonmetrics.NewGlobal(conf, sink)
 	require.NoError(t, err)
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, false)
@@ -103,7 +103,7 @@ func TestMetricLatencyConsistency(t *testing.T) {
 	data := sink.Data()
 
 	// Consolidate samples from all intervals
-	allSamples := make(map[string]metrics.SampledValue)
+	allSamples := make(map[string]armonmetrics.SampledValue)
 	for _, interval := range data {
 		for k, v := range interval.Samples {
 			allSamples[k] = v
@@ -117,7 +117,7 @@ func TestMetricLatencyConsistency(t *testing.T) {
 	}
 
 	// We expect consistent naming with counters: mcpany.tools.call.latency (plural)
-	// and properly labeled for tool specific metrics.
+	// and properly labeled for tool specific armonmetrics.
 
 	// Check global latency metric
 	assert.NotContains(t, allSamples, "mcpany.tools.call.latency")

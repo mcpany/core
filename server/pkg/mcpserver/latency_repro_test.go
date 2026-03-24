@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/armon/go-metrics"
+	armonmetrics "github.com/armon/go-metrics"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/mcpserver"
@@ -32,10 +32,10 @@ import (
 func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	// Initialize metrics with an in-memory sink
 	// Use a short interval to ensure data is flushed quickly for the test
-	sink := metrics.NewInmemSink(10*time.Millisecond, 10*time.Second)
-	conf := metrics.DefaultConfig("mcpany")
+	sink := armonmetrics.NewInmemSink(10*time.Millisecond, 10*time.Second)
+	conf := armonmetrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
-	_, err := metrics.NewGlobal(conf, sink)
+	_, err := armonmetrics.NewGlobal(conf, sink)
 	require.NoError(t, err)
 
 	poolManager := pool.NewManager()
@@ -99,7 +99,7 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 
 	// Check metrics
 	// Wait for metrics to appear
-	var data []*metrics.IntervalMetrics
+	var data []*armonmetrics.IntervalMetrics
 	for i := 0; i < 20; i++ {
 		data = sink.Data()
 		if len(data) > 0 {
