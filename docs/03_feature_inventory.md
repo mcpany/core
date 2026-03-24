@@ -1547,6 +1547,17 @@
 - **Fast-Path Identity Resumption (FPIR)**: (Promoted to P0) Critical for supporting the new **LMP** standard and solving teammate rotation latency.
 - **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Evolving into **PAMS** to support interrupt-driven coordination.
 
+## Evolution: [2026-07-02] Updates
+
+### Proposed Additions
+- **Cognitive Loop Circuit Breaker (CLCB)**: (P0) High-speed stability middleware that detects and terminates non-convergent reasoning loops using semantic entropy analysis.
+- **Recursive Intent-Collision Shield (RICS)**: (P0) Advanced discovery hub facilitating ZKD-native handshakes and "Skill Fingerprint" exchange across disparate frameworks.
+- **Dynamic Documentation Sanitizer (DDS)**: (P0) Core security service that performs real-time structural analysis of README.md and AGENTS.md to strip smuggled imperatives.
+
+### Priority Shifts
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RICS** integration to prevent discovery stall.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Designated as a critical dependency for the new **CLCB** refinement quotas.
+
 ## Evolution: [2026-07-01] Updates
 
 ### Proposed Additions

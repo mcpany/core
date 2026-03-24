@@ -679,6 +679,11 @@
 - [ ] **[P0] Attention Entropy Heatmap**: Forensic UI for visualizing noise-to-utility scores and ASF detection alerts. (Added: 2026-06-30)
 - [ ] **[P0] Mission Lease Manager**: Dashboard for tracking LMP token lifetimes and hardware re-attestation status. (Added: 2026-06-30)
 
+#### Upcoming (2026-07-02 Evolution)
+- [ ] **[P0] Cognitive Loop Visualization**: Real-time Gantt-style chart showing reasoning steps and entropy deltas for CLCB monitoring. (Added: 2026-07-02)
+- [ ] **[P0] Documentation Sanitization Report**: UI for reviewing redacted natural-language configuration fragments. (Added: 2026-07-02)
+- [ ] **[P0] ZKD Handshake Debugger**: Forensic tool for visualizing Recursive Intent-Collision Shield (RICS) pre-flight handshakes. (Added: 2026-07-02)
+
 #### Upcoming (2026-07-01 Evolution)
 - [ ] **[P0] Multimodal Memory Bus Monitor**: (2026-07-01) Real-time visualization of intent-pinned state synchronization and multimodal sanitization events.
 - [ ] **[P0] ZK-Discovery Broker Workspace**: (2026-07-01) UI for reviewing masked capability cards and unmasking schemas via mission-handshakes.
