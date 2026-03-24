@@ -1,113 +1,50 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package main provides a mock HTTP echo server for integration testing.
 package main
 
 import (
-	"context"
-	"flag"
 	"fmt"
 	"io"
-	"log/slog"
 	"net"
 	"net/http"
 	"os"
-	"os/signal"
-	"syscall"
 	"time"
-
-	"github.com/mcpany/core/server/pkg/consts"
 )
 
-func echoHandler(w http.ResponseWriter, r *http.Request) {
-	slog.Info("http_echo_server: Received request", "method", r.Method, "path", r.URL.Path)
-
-	bodyBytes, errRead := io.ReadAll(r.Body)
-	if errRead != nil {
-		slog.Error("http_echo_server: Error reading request body", "error", errRead)
-		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", consts.ContentTypeApplicationJSON)
-	w.WriteHeader(http.StatusOK)
-
-	// Construct a simple JSON response echoing request details
-	// We do this manually to avoid importing large encoding/json structs if not needed,
-	// but standard library is fine.
-	// We want to verify URL contains "test-execution".
-
-	response := fmt.Sprintf(`{
-		"method": "%s",
-		"url": "%s",
-		"body": "%s",
-		"headers": {}
-	}`, r.Method, r.URL.Path, string(bodyBytes))
-	// Note: Headers handling is simplified for this mock.
-
-	if _, errWrite := w.Write([]byte(response)); errWrite != nil {
-		slog.Error("http_echo_server: Error writing response body", "error", errWrite)
-	}
-	slog.Info("http_echo_server: Responded to request", "path", r.URL.Path)
-}
-
-// main starts the mock HTTP echo server.
 func main() {
-	port := flag.Int("port", 0, "Port to listen on. If 0, a random available port will be chosen and printed to stdout.")
-	flag.Parse()
-
-	addr := fmt.Sprintf(":%d", *port)
-	listener, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", addr)
-	if err != nil {
-		slog.Error("http_echo_server: Failed to listen on a port", "error", err)
+	if err := run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Fatal error: %v\n", err)
 		os.Exit(1)
 	}
+}
 
-	actualPort := listener.Addr().(*net.TCPAddr).Port
-	slog.Info("http_echo_server: Listening on port", "port", actualPort)
-
-	// If port was 0, print the actual chosen port to stdout so the test runner can pick it up.
-	if *port == 0 {
-		fmt.Printf("%d\n", actualPort) // Output port for test runner
+func run() error {
+	addr := os.Getenv("ADDR")
+	if addr == "" {
+		addr = ":0"
 	}
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", echoHandler)
-	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		_, _ = fmt.Fprintln(w, "OK")
+
+	ln, err := net.Listen("tcp", addr)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = ln.Close() }()
+
+	fmt.Printf("LISTENING ON %s\n", ln.Addr().String())
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "can't read body", http.StatusBadRequest)
+			return
+		}
+		_, _ = w.Write(body)
 	})
 
 	server := &http.Server{
-		Addr:              addr, // This will be overridden by the listener below for port 0 case
-		Handler:           mux,
-		ReadHeaderTimeout: 5 * time.Second,
+		ReadHeaderTimeout: 3 * time.Second,
 	}
 
-	// Channel to listen for OS signals
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
-
-	// Goroutine to start the server
-	go func() {
-		if err := server.Serve(listener); err != nil && err != http.ErrServerClosed {
-			slog.Error("http_echo_server: Server failed", "error", err)
-			os.Exit(1)
-		}
-	}()
-
-	// Block until a signal is received
-	<-stop
-
-	slog.Info("http_echo_server: Shutting down the server...")
-
-	// Create a context with a timeout to allow for graceful shutdown
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	if err := server.Shutdown(ctx); err != nil {
-		slog.Error("http_echo_server: Server Shutdown Failed", "error", err)
-	}
-
-	slog.Info("http_echo_server: Server gracefully stopped")
+	return server.Serve(ln)
 }

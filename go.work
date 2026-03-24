@@ -4,6 +4,6 @@ use (
 	./
 	./k8s/operator
 	./server
-	./server/examples/upstream_service_demo/grpc/greeter_server
 	./server/examples/upstream_service_demo/grpc/client
+	./server/examples/upstream_service_demo/grpc/greeter_server
 )

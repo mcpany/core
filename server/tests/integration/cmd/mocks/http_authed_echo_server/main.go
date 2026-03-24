@@ -1,54 +1,56 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package main implements a mock HTTP authenticated echo server for testing.
 package main
 
 import (
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"time"
-
-	"github.com/spf13/pflag"
 )
 
 func main() {
-	port := pflag.Int("port", 8080, "Port to listen on")
-	pflag.Parse()
+	if err := run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Fatal error: %v\n", err)
+		os.Exit(1)
+	}
+}
 
-	http.HandleFunc("/echo", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
+func run() error {
+	addr := os.Getenv("ADDR")
+	if addr == "" {
+		addr = ":0"
+	}
+	apiKey := os.Getenv("API_KEY")
 
-		apiKey := r.Header.Get("X-Api-Key")
-		if apiKey != "test-api-key" {
-			http.Error(w, "unauthorized", http.StatusUnauthorized)
+	ln, err := net.Listen("tcp", addr)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = ln.Close() }()
+
+	fmt.Printf("LISTENING ON %s\n", ln.Addr().String())
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if apiKey != "" && r.Header.Get("X-API-Key") != apiKey {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
-			http.Error(w, "failed to read body", http.StatusInternalServerError)
+			http.Error(w, "can't read body", http.StatusBadRequest)
 			return
 		}
-		defer func() { _ = r.Body.Close() }()
-
-		w.Header().Set("Content-Type", "text/plain")
 		_, _ = w.Write(body)
 	})
 
-	addr := fmt.Sprintf(":%d", *port)
-	fmt.Printf("Starting mock HTTP authed echo server on %s\n", addr)
 	server := &http.Server{
-		Addr:              addr,
 		ReadHeaderTimeout: 3 * time.Second,
 	}
-	if err := server.ListenAndServe(); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to start server: %v\n", err)
-		os.Exit(1)
-	}
+
+	return server.Serve(ln)
 }
