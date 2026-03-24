@@ -1316,11 +1316,11 @@
 ## Evolution: [2026-06-14] Updates
 
 ### Proposed Additions
-- **Attention-Locked Routing Hub (ALRH)**: (P0) Authoritative coordination middleware for the ARI Hub that performs real-time attention-utilization analysis to neutralize REE attacks.
-- **MDRA Attestation Bridge**: (P0) Unified security service that merges hardware, stylometric, and lineage proofs into a single MDRA-compliant attestation block.
-- **Three-Factor Agency Gateway**: (P1) Multi-factor authentication hub for high-risk autonomous task handoffs, requiring hardware, mission-token, and reputation signatures.
-- **Side-Channel Shield (gRPC Metadata)**: (P0) Advanced security listener for the T2T Bridge that performs metadata scrubbing to block shadow coordination handshakes.
+- **Attention-Locked Routing Hub (ALRH)**: (P0) Authoritative attention guard that performs real-time attention-utilization analysis and Attention-Aware Routing (AAR) to dynamically bypass high-entropy specialists.
+- **Hardware-Locked Context Pinning (HLCP)**: (P0) Core security middleware utilizing hardware-bound (TPM) headers to cryptographically "pin" mission-critical intent fragments at the LLM attention layer.
+- **MDRA Attestation Bridge**: (P0) Advanced bridge supporting Gemini's Multi-Dimensional Reasoning Attestation standard, merging hardware, stylometric, and lineage data into a unified proof.
+- **Attention-Aware Discovery Provider**: (P1) Upgrade for the discovery layer that throttles capability visibility based on the parent agent's real-time Attention Availability.
 
 ### Priority Shifts
-- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ALRH** integration to support attention-aware routing.
-- **A2A Messaging Hub**: (Re-affirmed P0) Designated as the primary transport for **MDRA-unified** tokens to ensure cross-framework trust continuity.
+- **Dynamic Attention Gating (DAG) Middleware**: (Evolved to Attention-Locked Routing Hub) Now designated as the primary mechanism for REE defense and mission-root attention sovereignty.
+- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MDRA-compliant** attestation merging to counter Coordination Drift.

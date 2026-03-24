@@ -569,7 +569,7 @@
 - [ ] **[P0] Hardware-Locked Coordination Debugger**: (2026-06-13) UI for reviewing hardware-bound session tokens and blocked out-of-band handoffs.
 
 ### Upcoming: [2026-06-14]
-- [ ] **[P0] Attention-Aware Routing Monitor**: Visualizer for the ALRH, showing real-time specialist attention availability and routing decisions. (Added: 2026-06-14)
-- [ ] **[P0] MDRA Attestation Dashboard**: UI for reviewing multi-dimensional reasoning proofs and MDRA-unified token lineage. (Added: 2026-06-14)
-- [ ] **[P1] Metadata Scrubbing Alert Hub**: Security dashboard for visualizing blocked shadow coordination handshakes in gRPC metadata. (Added: 2026-06-14)
-- [ ] **[P0] Three-Factor Handshake Workspace**: Interaction point for human approval of high-risk autonomous agent handoffs. (Added: 2026-06-14)
+- [ ] **[P0] Attention-Locked Routing Monitor**: (2026-06-14) Real-time visualization of AAR-active routes and bypassed specialist agents.
+- [ ] **[P0] HLCP Context Pinning Widget**: (2026-06-14) Status indicator for hardware-bound intent fragments and REE noise levels.
+- [ ] **[P0] MDRA Attestation Explorer**: (2026-06-14) Security dashboard for reviewing multi-dimensional reasoning proofs (TPM + SSM + HAIL).
+- [ ] **[P1] Attention-Aware Capability Browser**: (2026-06-14) UI for visualizing throttled agent capabilities based on parent Attention Availability.

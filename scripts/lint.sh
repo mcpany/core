@@ -90,7 +90,7 @@ buildifier_files=(
             -name 'BUILD' \
             -o -name 'BUILD.bazel' \
             -o -name 'WORKSPACE' \
-            -o -name 'WORKSPACE.bazel' -o -name 'MODULE.bazel' \
+            -o -name 'WORKSPACE.bazel' \
             -o -name '*.bzl' \
         \) \
         -type f \

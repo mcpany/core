@@ -731,7 +731,7 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Hardware-Locked Coordination Handshake**: (Re-affirmed P0) Designated as the primary enforcement point for **Attention Sovereignty** and **Side-Channel Immunity**.
 
 ### Upcoming: [2026-06-14]
-- **Attention-Locked Routing Hub (ALRH)**: (P0) Authoritative coordination middleware for the ARI Hub performing real-time attention-utilization analysis. (Added: 2026-06-14)
-- **MDRA Attestation Bridge**: (P0) Unified security service for MDRA-compliant attestation merging, ensuring coordination integrity in deep swarms. (Added: 2026-06-14)
-- **Three-Factor Agency Gateway**: (P1) Multi-factor authentication hub for high-risk autonomous task handoffs. (Added: 2026-06-14)
-- **Side-Channel Shield (gRPC Metadata)**: (P0) Advanced security listener for the T2T Bridge that performs metadata scrubbing to block shadow coordination. (Added: 2026-06-14)
+- **Attention-Locked Routing Hub (ALRH)**: (P0) Authoritative attention guard that performs real-time attention-utilization analysis and dynamically bypasses high-entropy specialists. (Added: 2026-06-14)
+- **Hardware-Locked Context Pinning (HLCP)**: (P0) Core security middleware utilizing hardware-bound (TPM) headers to cryptographically "pin" mission-critical intent fragments. (Added: 2026-06-14)
+- **MDRA Attestation Bridge**: (P0) Advanced bridge supporting Gemini's Multi-Dimensional Reasoning Attestation standard, merging hardware, stylometric, and lineage data. (Added: 2026-06-14)
+- **Attention-Aware Discovery Provider**: (P1) Upgrade for the discovery layer that throttles capability visibility based on the parent agent's Attention Availability. (Added: 2026-06-14)
