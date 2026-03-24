@@ -14,20 +14,6 @@ func main() {
 
 	str := string(content)
 
-	// Fix the first lint error (nilerr)
-	str = strings.Replace(str, `func symlinkIfPresent(src, dst string) error {
-	if _, err := os.Stat(src); err != nil {
-		return nil
-	}
-	return os.Symlink(src, dst)
-}`, `func symlinkIfPresent(src, dst string) error {
-	if _, err := os.Stat(src); err != nil {
-		// Ignore if the source directory does not exist.
-		return nil //nolint:nilerr
-	}
-	return os.Symlink(src, dst)
-}`, 1)
-
 	str = strings.Replace(str, `	callID := "call-" + toolDef.GetName()
 	callDef := configv1.HttpCallDefinition_builder{
 		Id:           &callID,
