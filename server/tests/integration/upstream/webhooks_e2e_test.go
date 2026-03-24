@@ -19,7 +19,7 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/mcp"
 	"github.com/mcpany/core/server/tests/integration"
-	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
