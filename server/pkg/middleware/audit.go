@@ -326,6 +326,9 @@ func (m *AuditMiddleware) ClearHistory() {
 //
 // Parameters:
 //   - None.
+//
+// Parameters:
+//   - None.
 func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 	return m.broadcaster.SubscribeWithHistory()
 }
