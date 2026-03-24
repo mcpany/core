@@ -835,9 +835,3 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Authentication Proxy**: Mandatory HTTP authentication gate for remote subagent discovery and task proposals (Gemini CLI v0.34.0 alignment). (Added: 2026-03-23)
 *   **[P1] Dynamic Usage Quota Monitor**: Real-time tracking and automated throttling based on credit/token consumption across frameworks. (Added: 2026-03-23)
 *   **[P1] gVisor-Bound Execution Identity**: Hardware-attested environment tokens for tools running in hardened gVisor sandboxes. (Added: 2026-03-23)
-
-#### Upcoming (2026-06-30 Evolution)
-*   **[P0] Cognitive Attestation Hub (CAH) Adapter**: Implementation of OpenClaw v3.3.0 consensus hooks for reasoning integrity. (Added: 2026-06-30)
-*   **[P0] Priority-Aware Mailbox Sharding (PAMS)**: Upgrade to AMS allowing lock-free "Urgent Interrupt" signals for safety. (Added: 2026-06-30)
-*   **[P0] Attention-Splicing Firewall (ASF)**: Entropy-based defense against mimicry-based instruction injection (CVE-2026-91023). (Added: 2026-06-30)
-*   **[P0] Leased Mission Persistence (LMP)**: Time-bound hardware-locked mission leases to neutralize rotation fatigue. (Added: 2026-06-30)
