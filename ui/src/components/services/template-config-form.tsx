@@ -50,7 +50,7 @@ export function TemplateConfigForm({ template, onCancel, onSubmit }: TemplateCon
 
       <form onSubmit={handleSubmit}>
         <div className="space-y-4">
-          {template.fields?.map((field) => (
+          {template.fields?.map((field: any) => (
             <div key={field.name} className="space-y-2">
               <Label htmlFor={field.name}>{field.label}</Label>
               <Input

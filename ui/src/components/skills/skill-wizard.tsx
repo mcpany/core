@@ -166,7 +166,7 @@ export default function SkillWizard() {
                 <Input
                     id="tools"
                     value={skill.allowedTools?.join(', ') || ''}
-                    onChange={(e) => handleChange('allowedTools', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                    onChange={(e) => handleChange('allowedTools', e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean))}
                     placeholder="tool1, tool2"
                 />
               </div>

@@ -98,7 +98,7 @@ describe("ProfileEditor", () => {
 
         // Remove tag "finance"
         // Find the "finance" text node that has a sibling button (the X button) in its parent
-        const financeTagNode = screen.getAllByText("finance").find(node => {
+        const financeTagNode = screen.getAllByText("finance").find((node: HTMLElement) => {
             return node.parentElement?.querySelector("button");
         });
 

@@ -38,17 +38,17 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 
     dagreGraph.setGraph({ rankdir: direction });
 
-    nodes.forEach((node) => {
+    nodes.forEach((node: Node) => {
         dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
     });
 
-    edges.forEach((edge) => {
+    edges.forEach((edge: Edge) => {
         dagreGraph.setEdge(edge.source, edge.target);
     });
 
     dagre.layout(dagreGraph);
 
-    const layoutedNodes = nodes.map((node) => {
+    const layoutedNodes = nodes.map((node: Node) => {
         const nodeWithPosition = dagreGraph.node(node.id);
 
         // Dagre returns center coordinates, React Flow needs top-left
@@ -142,13 +142,13 @@ export function useNetworkTopology() {
                 // Process Children with Truncation
                 if (tNode.children && tNode.children.length > 0) {
                      const limit = (tNode.type === 'NODE_TYPE_CORE' || tNode.type === 'NODE_TYPE_SERVICE') ? 100 : 100; // Disable limit for now to see all
-                     tNode.children.slice(0, limit).forEach(child => addNode(child, tNode.id));
+                     tNode.children.slice(0, limit).forEach((child: any) => addNode(child, tNode.id));
                 }
             };
 
             // 1. Clients
             if (graph.clients) {
-                graph.clients.forEach(client => {
+                graph.clients.forEach((client: any) => {
                     addNode(client);
                     // Connect Client to Core
                     if (graph.core) {
@@ -181,8 +181,8 @@ export function useNetworkTopology() {
                 newEdges.length === edgesRef.current.length;
 
             if (isSameStructure) {
-                const prevNodeSet = new Set(nodesRef.current.map(n => n.id));
-                const prevEdgeSet = new Set(edgesRef.current.map(e => e.id));
+                const prevNodeSet = new Set(nodesRef.current.map((n: any) => n.id));
+                const prevEdgeSet = new Set(edgesRef.current.map((e: any) => e.id));
                 for (let i = 0; i < newNodes.length; i++) {
                     if (!prevNodeSet.has(newNodes[i].id)) {
                         isSameStructure = false;
@@ -201,9 +201,9 @@ export function useNetworkTopology() {
 
             if (isSameStructure) {
                 // Structure match! Reuse positions.
-                const currentNodesMap = new Map(nodesRef.current.map(n => [n.id, n]));
+                const currentNodesMap = new Map(nodesRef.current.map((n: any) => [n.id, n]));
 
-                const nodesWithOldPositions = newNodes.map(node => {
+                const nodesWithOldPositions = newNodes.map((node: any) => {
                     const oldNode = currentNodesMap.get(node.id);
                     if (oldNode) {
                         return {

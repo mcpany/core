@@ -97,7 +97,7 @@ export const SystemHealthCard = memo(function SystemHealthCard() {
                 <ShieldAlert className="mr-1 h-3 w-3" /> Security Warnings
               </div>
               <ul className="list-disc list-inside">
-                {status.security_warnings.map((warning, idx) => (
+                {status.security_warnings.map((warning: string, idx: number) => (
                   <li key={idx} className="text-[10px] text-amber-800">{warning}</li>
                 ))}
               </ul>

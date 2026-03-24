@@ -51,7 +51,7 @@ export default function MiddlewarePage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {middleware.sort((a,b) => a.priority - b.priority).map((mw) => (
+                            {middleware.sort((a: Middleware, b: Middleware) => a.priority - b.priority).map((mw: Middleware) => (
                                 <TableRow key={mw.name}>
                                     <TableCell>{mw.priority}</TableCell>
                                     <TableCell className="font-medium">{mw.name}</TableCell>

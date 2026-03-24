@@ -35,7 +35,7 @@ interface EnvVarEditorProps {
 export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
     const [envVars, setEnvVars] = useState<EnvVar[]>(() => {
         if (!initialEnv) return [];
-        return Object.entries(initialEnv).map(([key, val]) => {
+        return Object.entries(initialEnv).map(([key, val]: [string, SecretValue]) => {
             // Heuristic: if plainText starts with ${ and ends with }, treat as secret ref
             const plainText = val.plainText || "";
             const secretMatch = plainText.match(/^\$\{(.+)\}$/);
@@ -50,7 +50,7 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
 
     const updateParent = (vars: EnvVar[]) => {
         const newEnv: Record<string, SecretValue> = {};
-        vars.forEach(v => {
+        vars.forEach((v: EnvVar) => {
             if (v.key) {
                 if (v.isSecretRef && v.secretId) {
                     newEnv[v.key] = { plainText: `\${${v.secretId}}`, validationRegex: "" };
@@ -67,13 +67,13 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
     };
 
     const removeVar = (index: number) => {
-        const newVars = envVars.filter((_, i) => i !== index);
+        const newVars = envVars.filter((_: any, i: number) => i !== index);
         setEnvVars(newVars);
         updateParent(newVars);
     };
 
     const updateVar = (index: number, field: keyof EnvVar, value: string | boolean) => {
-        const newVars = envVars.map((v, i) => {
+        const newVars = envVars.map((v: EnvVar, i: number) => {
             if (i === index) {
                 const updated = { ...v, [field]: value };
                 // If user edits value of a secret ref, it becomes plain text unless we implement secret picker
@@ -89,7 +89,7 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
     };
 
     const toggleSecretMode = (index: number) => {
-        const newVars = envVars.map((v, i) => {
+        const newVars = envVars.map((v: EnvVar, i: number) => {
             if (i === index) {
                 const newIsSecretRef = !v.isSecretRef;
                 return {
@@ -126,7 +126,7 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
             )}
 
             <div className="space-y-2">
-                {envVars.map((v, i) => (
+                {envVars.map((v: EnvVar, i: number) => (
                     <div key={i} className="flex items-center gap-2">
                         <Input
                             placeholder="KEY"

@@ -125,7 +125,7 @@ export function HealthHistoryChart() {
                             />
                             <YAxis hide domain={[0, 100]} />
                             <Tooltip
-                                content={({ active, payload }) => {
+                                content={({ active, payload }: any) => {
                                     if (active && payload && payload.length) {
                                         const d = payload[0].payload as HealthPoint;
                                         return (
@@ -155,7 +155,7 @@ export function HealthHistoryChart() {
                                 }}
                             />
                             <Bar dataKey="uptime" radius={[2, 2, 0, 0]}>
-                                {data.map((entry, index) => (
+                                {data.map((entry: any, index: number) => (
                                     <Cell key={`cell-${index}`} fill={getBarColor(entry.status)} />
                                 ))}
                             </Bar>

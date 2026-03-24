@@ -152,7 +152,7 @@ export function SecretsManager() {
         const query = searchQuery.toLowerCase();
         if (!query) return safeSecrets;
 
-        return safeSecrets.filter(s =>
+        return safeSecrets.filter((s: SecretDefinition) =>
             s.name.toLowerCase().includes(query) ||
             s.key.toLowerCase().includes(query)
         );
@@ -258,7 +258,7 @@ export function SecretsManager() {
                             </div>
                         ) : (
                             <div className="divide-y">
-                                {filteredSecrets.map((secret) => (
+                                {filteredSecrets.map((secret: SecretDefinition) => (
                                     <SecretItem key={secret.id} secret={secret} onDelete={handleDeleteSecret} />
                                 ))}
                             </div>

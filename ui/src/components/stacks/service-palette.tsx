@@ -124,7 +124,7 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
 
         // yaml.dump with array puts it at root level. Usually the stack expects it indented under `upstream_services:`.
         // The previous code returned `  - name: ...`. Let's prepend spaces to match indentation requirement.
-        return yamlStr.split('\n').filter(line => line.length > 0).map(line => `  ${line}`).join('\n') + '\n';
+        return yamlStr.split('\n').filter((line: string) => line.length > 0).map((line: string) => `  ${line}`).join('\n') + '\n';
     };
 
     const getIcon = (t: ServiceTemplate) => {
@@ -135,7 +135,7 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
         return DefaultIcon;
     };
 
-    const filtered = templates.filter(t => {
+    const filtered = templates.filter((t: any) => {
         const matchesSearch = t.name.toLowerCase().includes(search.toLowerCase()) ||
                               t.description.toLowerCase().includes(search.toLowerCase());
         // Category is not strict in API template, use tags?
@@ -145,7 +145,7 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
         return matchesSearch && matchesFilter;
     });
 
-    const categories = Array.from(new Set(templates.map(t => t.tags && t.tags.length > 0 ? t.tags[0] : "Other")));
+    const categories = Array.from(new Set(templates.map((t: any) => t.tags && t.tags.length > 0 ? t.tags[0] : "Other")));
 
     return (
         <div className="flex flex-col h-full bg-muted/10 border-r w-[280px]">
@@ -171,7 +171,7 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
                     >
                         All
                     </Badge>
-                    {categories.map(cat => (
+                    {categories.map((cat: string) => (
                         <Badge
                             key={cat}
                             variant={filter === cat ? "secondary" : "outline"}
@@ -195,7 +195,7 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
                     </div>
                 ) : (
                     <div className="p-3 grid gap-2">
-                        {filtered.map(template => {
+                        {filtered.map((template: any) => {
                             const Icon = getIcon(template);
                             return (
                                 <Card

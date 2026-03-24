@@ -43,7 +43,7 @@ export function StepServiceType() {
                 setLoading(true);
                 const data = await apiClient.getServiceTemplates();
 
-                const mapped = data.map(t => {
+                const mapped = data.map((t: ServiceTemplate) => {
                     // Extract params from config
                     const params: Record<string, string> = {};
                     const sc = t.serviceConfig;
@@ -81,7 +81,7 @@ export function StepServiceType() {
     }, []);
 
     const handleTemplateChange = (val: string) => {
-        const template = templates.find(t => t.id === val);
+        const template = templates.find((t: any) => t.id === val);
         if (template) {
             updateState({
                 selectedTemplateId: val,
@@ -124,7 +124,7 @@ export function StepServiceType() {
                         <SelectValue placeholder="Select a template" />
                     </SelectTrigger>
                     <SelectContent>
-                        {templates.map(t => (
+                        {templates.map((t: any) => (
                             <SelectItem key={t.id} value={t.id}>
                                 {t.name}
                             </SelectItem>
@@ -134,10 +134,10 @@ export function StepServiceType() {
                 <Card className="mt-2 bg-muted/50">
                     <CardHeader>
                         <CardTitle className="text-base">
-                            {templates.find(t => t.id === (selectedTemplateId || 'manual'))?.name}
+                            {templates.find((t: any) => t.id === (selectedTemplateId || 'manual'))?.name}
                         </CardTitle>
                         <CardDescription>
-                            {templates.find(t => t.id === (selectedTemplateId || 'manual'))?.description}
+                            {templates.find((t: any) => t.id === (selectedTemplateId || 'manual'))?.description}
                         </CardDescription>
                     </CardHeader>
                 </Card>

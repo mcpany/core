@@ -114,11 +114,11 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
           rows.push({ trace, span, depth, hasChildren, isExpanded });
 
           if (isExpanded && hasChildren) {
-              span.children!.forEach(child => addSpan(trace, child, depth + 1));
+              span.children!.forEach((child: Span) => addSpan(trace, child, depth + 1));
           }
       };
 
-      traces.forEach(trace => addSpan(trace, trace.rootSpan, 0));
+      traces.forEach((trace: Trace) => addSpan(trace, trace.rootSpan, 0));
       return rows;
   }, [traces, expandedSpans]);
 

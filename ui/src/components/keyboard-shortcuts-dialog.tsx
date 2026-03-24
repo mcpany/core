@@ -38,7 +38,7 @@ export function KeyboardShortcutsDialog({ open, onOpenChange }: KeyboardShortcut
   // Group shortcuts by category
   const groupedShortcuts = React.useMemo(() => {
     const groups: Record<string, ShortcutDefinition[]> = {}
-    Object.values(shortcuts).forEach(s => {
+    Object.values(shortcuts).forEach((s: ShortcutDefinition) => {
       const cat = s.category || "General"
       if (!groups[cat]) groups[cat] = []
       groups[cat].push(s)
@@ -48,7 +48,7 @@ export function KeyboardShortcutsDialog({ open, onOpenChange }: KeyboardShortcut
 
   const formatKeyForDisplay = (keyDef: string) => {
     const parts = keyDef.toLowerCase().split("+")
-    return parts.map(p => {
+    return parts.map((p: string) => {
       if (p === "meta" || p === "cmd" || p === "command") return "⌘"
       if (p === "ctrl" || p === "control") return "⌃"
       if (p === "alt" || p === "option") return "⌥"
@@ -128,11 +128,11 @@ export function KeyboardShortcutsDialog({ open, onOpenChange }: KeyboardShortcut
                 </div>
             )}
 
-            {Object.entries(groupedShortcuts).map(([category, items]) => (
+            {Object.entries(groupedShortcuts).map(([category, items]: [string, ShortcutDefinition[]]) => (
                 <div key={category} className="mb-6 last:mb-0">
                     <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wider">{category}</h3>
                     <div className="grid gap-2">
-                        {items.map(item => {
+                        {items.map((item: ShortcutDefinition) => {
                             const isEditing = editingId === item.id
                             const activeKeys = overrides[item.id] || item.defaultKeys
                             const hasOverride = !!overrides[item.id]
@@ -146,7 +146,7 @@ export function KeyboardShortcutsDialog({ open, onOpenChange }: KeyboardShortcut
                                         <span className="font-medium text-sm">{item.label}</span>
                                         {hasOverride && (
                                             <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                                Default: {item.defaultKeys.map(formatKeyForDisplay).join(", ")}
+                                                Default: {item.defaultKeys.map((k: string) => formatKeyForDisplay(k)).join(", ")}
                                             </span>
                                         )}
                                     </div>
@@ -160,7 +160,7 @@ export function KeyboardShortcutsDialog({ open, onOpenChange }: KeyboardShortcut
                                                     tabIndex={0}
                                                     autoFocus
                                                 >
-                                                    {recordedKeys.length > 0 ? recordedKeys.map(formatKeyForDisplay).join(", ") : "Press keys..."}
+                                                    {recordedKeys.length > 0 ? recordedKeys.map((k: string) => formatKeyForDisplay(k)).join(", ") : "Press keys..."}
                                                 </div>
                                                 <Button size="sm" onClick={() => handleSave(item.id)} disabled={recordedKeys.length === 0}>Save</Button>
                                                 <Button size="sm" variant="ghost" onClick={handleStopEditing}><X className="h-4 w-4" /></Button>
@@ -168,7 +168,7 @@ export function KeyboardShortcutsDialog({ open, onOpenChange }: KeyboardShortcut
                                         ) : (
                                             <div className="flex items-center gap-2">
                                                 <div className="flex gap-1">
-                                                    {activeKeys.map((k, i) => (
+                                                    {activeKeys.map((k: string, i: number) => (
                                                         <kbd key={i} className="pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded border bg-muted px-2 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
                                                             {formatKeyForDisplay(k)}
                                                         </kbd>

@@ -53,17 +53,17 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
 
     dagreGraph.setGraph({ rankdir: 'TB' });
 
-    nodes.forEach((node) => {
+    nodes.forEach((node: Node) => {
         dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
     });
 
-    edges.forEach((edge) => {
+    edges.forEach((edge: Edge) => {
         dagreGraph.setEdge(edge.source, edge.target);
     });
 
     dagre.layout(dagreGraph);
 
-    const layoutedNodes = nodes.map((node) => {
+    const layoutedNodes = nodes.map((node: Node) => {
         const nodeWithPosition = dagreGraph.node(node.id);
         node.position = {
             x: nodeWithPosition.x - nodeWidth / 2,
@@ -178,7 +178,7 @@ export function StackGraph({ yamlContent }: StackGraphProps) {
             return;
         }
 
-        const newNodes: Node[] = services.map((svc) => ({
+        const newNodes: Node[] = services.map((svc: ParsedService) => ({
             id: svc.name,
             type: 'service',
             data: { ...svc },
@@ -186,9 +186,9 @@ export function StackGraph({ yamlContent }: StackGraphProps) {
         }));
 
         const newEdges: Edge[] = [];
-        services.forEach((svc) => {
+        services.forEach((svc: ParsedService) => {
             if (svc.dependsOn) {
-                svc.dependsOn.forEach((dep) => {
+                svc.dependsOn.forEach((dep: string) => {
                     // Check if dependency exists
                     if (services.some(s => s.name === dep)) {
                         newEdges.push({

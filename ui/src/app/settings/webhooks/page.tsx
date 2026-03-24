@@ -77,7 +77,7 @@ export default function WebhooksPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {webhooks.map((hook) => (
+                                    {webhooks.map((hook: any) => (
                                         <TableRow key={hook.id}>
                                             <TableCell>{hook.id}</TableCell>
                                             <TableCell>{hook.url}</TableCell>

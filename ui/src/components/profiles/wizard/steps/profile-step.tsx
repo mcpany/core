@@ -48,7 +48,7 @@ export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) 
 
       // 2. Create Profile
       const serviceConfig: Record<string, any> = {};
-      services.forEach(s => {
+      services.forEach((s: WizardService) => {
         serviceConfig[s.instanceName] = { enabled: true };
       });
 
@@ -98,7 +98,7 @@ export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) 
         <div className="bg-muted p-4 rounded-md text-sm">
           <strong>Included Services:</strong>
           <ul className="list-disc list-inside mt-2">
-            {services.map((s, i) => (
+            {services.map((s: WizardService, i: number) => (
               <li key={i}>{s.instanceName} <span className="text-muted-foreground">({s.templateId})</span></li>
             ))}
           </ul>

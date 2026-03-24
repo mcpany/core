@@ -58,7 +58,7 @@ export function estimateTokens(input: any): number {
  *   - None.
  */
 export function estimateMessageTokens(messages: any[]): number {
-    return messages.reduce((acc, msg) => {
+    return messages.reduce((acc: number, msg: any) => {
         let content = typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content || "");
         if (msg.toolName) content += ` ${msg.toolName}`;
         if (msg.toolArgs) content += ` ${JSON.stringify(msg.toolArgs)}`;

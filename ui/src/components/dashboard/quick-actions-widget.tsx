@@ -54,7 +54,7 @@ export function QuickActionsWidget() {
                 <CardTitle className="text-lg font-medium">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 gap-3 flex-1">
-                {actions.map((action) => (
+                {actions.map((action: any) => (
                     <Link key={action.href} to={action.href} className="group block">
                         <div className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
                             <div className="flex items-center gap-3">

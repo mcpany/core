@@ -54,7 +54,7 @@ export function CollectionDetailsDialog({
                 <div className="flex-1 overflow-y-auto py-4 pr-2">
                     <h3 className="font-semibold mb-3">Included Services ({collection.services.length})</h3>
                     <div className="grid gap-4">
-                        {collection.services.map((service, idx) => (
+                        {collection.services.map((service: any, idx: number) => (
                             <Card key={idx} className="bg-muted/30">
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                     <div className="flex items-center gap-2">

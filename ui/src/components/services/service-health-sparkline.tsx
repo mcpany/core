@@ -27,7 +27,7 @@ export const ServiceHealthSparkline = memo(function ServiceHealthSparkline({ ser
     const { getServiceHistory } = useServiceHealth();
     const history = getServiceHistory(serviceName);
 
-    const latencies = useMemo(() => history.map(h => h.latencyMs), [history]);
+    const latencies = useMemo(() => history.map((h: any) => h.latencyMs), [history]);
     const maxLatency = useMemo(() => Math.max(...latencies, 50), [latencies]); // Minimum max of 50ms for scale
 
     // Determine color based on latest health

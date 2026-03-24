@@ -90,13 +90,13 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
   // Computed stats from audit logs (recent 50)
   const recentStats = useMemo(() => {
       const total = auditLogs.length;
-      const successes = auditLogs.filter(l => !l.error).length;
+      const successes = auditLogs.filter((l: AuditLogEntry) => !l.error).length;
       const failures = total - successes;
-      const avgLatency = total > 0 ? Math.round(auditLogs.reduce((acc, curr) => acc + curr.durationMs, 0) / total) : 0;
+      const avgLatency = total > 0 ? Math.round(auditLogs.reduce((acc: number, curr: AuditLogEntry) => acc + curr.durationMs, 0) / total) : 0;
 
       // Map for chart
       const sorted = [...auditLogs].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-      const chartData = sorted.map(l => ({
+      const chartData = sorted.map((l: AuditLogEntry) => ({
           time: new Date(l.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
           latency: l.durationMs,
           status: l.error ? "error" : "success"
@@ -112,7 +112,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
               apiClient.getToolUsage(),
               apiClient.listAuditLogs({ tool_name: tool.name, limit: 50 })
           ]);
-          const stats = usage.find(u => u.name === tool.name && u.serviceId === tool.serviceId);
+          const stats = usage.find((u: ToolAnalytics) => u.name === tool.name && u.serviceId === tool.serviceId);
           setHistoricalStats(stats || null);
           setAuditLogs(logs.entries || []);
       } catch (e) {
@@ -398,7 +398,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                                     No recent executions.
                                 </div>
                             )}
-                            {[...recentStats.chartData].reverse().slice(0, 10).map((h, i) => (
+                            {[...recentStats.chartData].reverse().slice(0, 10).map((h: any, i: number) => (
                                 <div key={i} className="flex items-center justify-between text-sm p-3 hover:bg-muted/50 transition-colors">
                                     <div className="flex items-center gap-3">
                                         <div className={cn("h-2.5 w-2.5 rounded-full", h.status === "success" ? "bg-green-500" : "bg-destructive")} />

@@ -63,7 +63,7 @@ export function PlaygroundClientPro() {
 
   // Revive dates from stored messages (JSON strings)
   const displayMessages = useMemo(() => {
-      return messages.map(m => ({
+      return messages.map((m: any) => ({
           ...m,
           timestamp: new Date(m.timestamp)
       }));
@@ -112,7 +112,7 @@ export function PlaygroundClientPro() {
              setMode("console");
         } else {
             // If just tool name, open runner
-            const tool = availableTools.find(t => t.name === toolName);
+            const tool = availableTools.find((t: any) => t.name === toolName);
             if (tool) {
                 setToolToConfigure(tool);
                 setMode("runner");
@@ -152,7 +152,7 @@ export function PlaygroundClientPro() {
   const handleInputChange = (value: string) => {
       setInput(value);
       if (value.trim()) {
-          const suggestions = availableTools.filter(t => t.name.toLowerCase().includes(value.toLowerCase()));
+          const suggestions = availableTools.filter((t: any) => t.name.toLowerCase().includes(value.toLowerCase()));
           setFilteredSuggestions(suggestions);
           setShowSuggestions(suggestions.length > 0);
       } else {
@@ -167,7 +167,7 @@ export function PlaygroundClientPro() {
   };
 
   const handleReplay = (toolName: string, args: Record<string, unknown>) => {
-      const tool = availableTools.find(t => t.name === toolName);
+      const tool = availableTools.find((t: any) => t.name === toolName);
       if (tool) {
           // Switch to runner and pre-fill?
           // For now, keep replay in console as it was.
@@ -218,7 +218,7 @@ export function PlaygroundClientPro() {
           // Find previous execution for diffing
           let previousResult: unknown | undefined;
           const reversedMessages = [...messages].reverse();
-          const previousCall = reversedMessages.find(m =>
+          const previousCall = reversedMessages.find((m: Message) =>
               m.type === "tool-call" &&
               m.toolName === toolName &&
               JSON.stringify(m.toolArgs) === JSON.stringify(toolArgs)
@@ -440,7 +440,7 @@ export function PlaygroundClientPro() {
                         <div className="flex-1 overflow-hidden relative">
                             <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
                                 <div className="max-w-4xl mx-auto pb-10 space-y-4">
-                                    {displayMessages.map((msg) => (
+                                    {displayMessages.map((msg: Message) => (
                                         <ChatMessage key={msg.id} message={msg} onReplay={handleReplay} onRetry={handleReplay} />
                                     ))}
                                     {isLoading && (
@@ -471,7 +471,7 @@ export function PlaygroundClientPro() {
                                     {showSuggestions && (
                                         <div className="absolute bottom-full left-0 w-full bg-popover border rounded-md shadow-md mb-2 overflow-hidden z-20">
                                             <div className="p-1">
-                                                {filteredSuggestions.map(tool => (
+                                                {filteredSuggestions.map((tool: ToolDefinition) => (
                                                     <div
                                                         key={tool.name}
                                                         className="px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm flex items-center justify-between"

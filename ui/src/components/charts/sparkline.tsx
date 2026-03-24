@@ -37,7 +37,7 @@ export const Sparkline = memo(function Sparkline({ data, width = 60, height = 24
         const effectiveMax = max !== undefined ? max : Math.max(...data, 1);
         const step = width / (data.length - 1 || 1);
 
-        const points = data.map((val, i) => {
+        const points = data.map((val: number, i: number) => {
             const x = i * step;
             // Invert Y (SVG 0 is top). Clamp to height-1 to avoid clipping stroke
             const y = Math.min(height - 1, Math.max(1, height - (val / effectiveMax) * height));
@@ -49,7 +49,7 @@ export const Sparkline = memo(function Sparkline({ data, width = 60, height = 24
              points.push([width, points[0][1]]);
         }
 
-        const d = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(" ");
+        const d = points.map((p: number[], i: number) => `${i === 0 ? 'M' : 'L'} ${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(" ");
         const fillD = `${d} L ${points[points.length-1][0]} ${height} L ${points[0][0]} ${height} Z`;
 
         // Unique ID for gradient based on color

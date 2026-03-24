@@ -51,7 +51,7 @@ export interface WidgetInstance {
 }
 
 // Default widgets for a fresh dashboard
-const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
+const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map((def: any) => ({
     instanceId: crypto.randomUUID(),
     type: def.type,
     title: def.title,
@@ -181,13 +181,13 @@ export function DashboardGrid() {
             const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
                 instanceId: crypto.randomUUID(),
                 type: w.id, // In legacy, id was effectively the type
-                title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
+                title: WIDGET_DEFINITIONS.find((d: any) => d.type === w.id)?.title || w.title,
                 size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
                 hidden: w.hidden ?? false
             }));
 
             // Filter out any invalid types
-            const validMigrated = migrated.filter(w => getWidgetDefinition(w.type));
+            const validMigrated = migrated.filter((w: WidgetInstance) => getWidgetDefinition(w.type));
 
             // If migration resulted in empty or too few widgets, append defaults?
             // No, respect user's (possibly empty) layout, but ensure at least we tried.
@@ -294,8 +294,8 @@ export function DashboardGrid() {
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;
 
-        const visibleWidgets = widgets.filter(w => !w.hidden);
-        const hiddenWidgets = widgets.filter(w => w.hidden);
+        const visibleWidgets = widgets.filter((w: WidgetInstance) => !w.hidden);
+        const hiddenWidgets = widgets.filter((w: WidgetInstance) => w.hidden);
 
         const items = Array.from(visibleWidgets);
         const [reorderedItem] = items.splice(result.source.index, 1);
@@ -305,17 +305,17 @@ export function DashboardGrid() {
     };
 
     const updateWidgetSize = (instanceId: string, newSize: WidgetSize) => {
-        const updated = widgets.map(w => w.instanceId === instanceId ? { ...w, size: newSize } : w);
+        const updated = widgets.map((w: WidgetInstance) => w.instanceId === instanceId ? { ...w, size: newSize } : w);
         saveWidgets(updated);
     };
 
     const toggleWidgetVisibility = (instanceId: string) => {
-        const updated = widgets.map(w => w.instanceId === instanceId ? { ...w, hidden: !w.hidden } : w);
+        const updated = widgets.map((w: WidgetInstance) => w.instanceId === instanceId ? { ...w, hidden: !w.hidden } : w);
         saveWidgets(updated);
     };
 
     const removeWidget = (instanceId: string) => {
-        const updated = widgets.filter(w => w.instanceId !== instanceId);
+        const updated = widgets.filter((w: WidgetInstance) => w.instanceId !== instanceId);
         saveWidgets(updated);
     };
 
@@ -337,7 +337,7 @@ export function DashboardGrid() {
 
     // ⚡ BOLT: Memoize visibleWidgets to prevent full Draggable/Droppable re-renders on unrelated state changes (e.g., drag hover states).
     // Randomized Selection from Top 5 High-Impact Targets (React/View)
-    const visibleWidgets = useMemo(() => widgets.filter(w => !w.hidden), [widgets]);
+    const visibleWidgets = useMemo(() => widgets.filter((w: WidgetInstance) => !w.hidden), [widgets]);
 
     if (!isMounted) return null;
 
@@ -369,7 +369,7 @@ export function DashboardGrid() {
                     <PopoverContent className="w-56" align="end">
                         <div className="space-y-2">
                             <h4 className="font-medium leading-none mb-2">Visible Widgets</h4>
-                            {widgets.map((widget) => (
+                            {widgets.map((widget: any) => (
                                 <div key={widget.instanceId} className="flex items-center space-x-2">
                                     <Checkbox
                                         id={`show-${widget.instanceId}`}
@@ -400,7 +400,7 @@ export function DashboardGrid() {
                             ref={provided.innerRef}
                             className="grid grid-cols-12 gap-4"
                         >
-                            {visibleWidgets.map((widget, index) => (
+                            {visibleWidgets.map((widget: any, index: number) => (
                                 <MemoizedWidgetCard
                                     key={widget.instanceId}
                                     widget={widget}

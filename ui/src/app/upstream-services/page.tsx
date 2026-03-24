@@ -85,7 +85,7 @@ export default function ServicesPage() {
 
   const toggleService = useCallback(async (name: string, enabled: boolean) => {
     // Optimistic update
-    setServices(prev => prev.map(s => s.name === name ? { ...s, disable: !enabled } : s));
+    setServices(prev => prev.map((s: any) => s.name === name ? { ...s, disable: !enabled } : s));
 
     try {
         await apiClient.setServiceStatus(name, !enabled);
@@ -109,7 +109,7 @@ export default function ServicesPage() {
 
     try {
         await apiClient.unregisterService(name);
-        setServices(prev => prev.filter(s => s.name !== name));
+        setServices(prev => prev.filter((s: any) => s.name !== name));
         toast({
             title: "Service Deleted",
             description: `Service ${name} has been removed.`
@@ -127,10 +127,10 @@ export default function ServicesPage() {
 
   const bulkToggleService = useCallback(async (names: string[], enabled: boolean) => {
     // Optimistic update
-    setServices(prev => prev.map(s => names.includes(s.name) ? { ...s, disable: !enabled } : s));
+    setServices(prev => prev.map((s: any) => names.includes(s.name) ? { ...s, disable: !enabled } : s));
 
     try {
-        await Promise.all(names.map(name => apiClient.setServiceStatus(name, !enabled)));
+        await Promise.all(names.map((name: string) => apiClient.setServiceStatus(name, !enabled)));
         toast({
             title: enabled ? "Services Enabled" : "Services Disabled",
             description: `${names.length} services have been ${enabled ? "enabled" : "disabled"}.`
@@ -150,8 +150,8 @@ export default function ServicesPage() {
     if (!confirm(`Are you sure you want to delete ${names.length} services?`)) return;
 
     try {
-        await Promise.all(names.map(name => apiClient.unregisterService(name)));
-        setServices(prev => prev.filter(s => !names.includes(s.name)));
+        await Promise.all(names.map((name: string) => apiClient.unregisterService(name)));
+        setServices(prev => prev.filter((s: any) => !names.includes(s.name)));
         toast({
             title: "Services Deleted",
             description: `${names.length} services have been removed.`
@@ -169,8 +169,8 @@ export default function ServicesPage() {
 
   const handleBulkEdit = useCallback(async (names: string[], updates: { tags?: string[] }) => {
     try {
-        const servicesToUpdate = services.filter(s => names.includes(s.name));
-        await Promise.all(servicesToUpdate.map(service => {
+        const servicesToUpdate = services.filter((s: any) => names.includes(s.name));
+        await Promise.all(servicesToUpdate.map((service: any) => {
             const updated = { ...service };
             if (updates.tags) {
                 updated.tags = [...new Set([...(service.tags || []), ...updates.tags])];

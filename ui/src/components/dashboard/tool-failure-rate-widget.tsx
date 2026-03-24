@@ -34,7 +34,7 @@ export function ToolFailureRateWidget() {
         const fetchStats = async () => {
             try {
                 const stats = await apiClient.getToolFailures(serviceId);
-                const mapped = stats.map(s => ({
+                const mapped = stats.map((s: any) => ({
                     name: s.name,
                     service: s.serviceId,
                     failureRate: s.failureRate,
@@ -59,7 +59,7 @@ export function ToolFailureRateWidget() {
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
-                    {tools.map((tool) => (
+                    {tools.map((tool: ToolFailureRate) => (
                         <div key={tool.name} className="space-y-1">
                             <div className="flex items-center justify-between text-xs">
                                 <div className="flex items-center gap-2">

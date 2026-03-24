@@ -211,7 +211,7 @@ export function AppSidebar() {
   // Filter items based on role
   // Regular users see Dashboard, Network Graph, Analytics, Marketplace for Platform?
   // User said: "Regular user, probably will not see... Live Logs/Traces"
-  const filteredPlatformItems = platformItems.filter(item => {
+  const filteredPlatformItems = platformItems.filter((item: any) => {
     if (!isAdmin) {
         return !['Live Logs', 'Traces'].includes(item.title);
     }
@@ -222,7 +222,7 @@ export function AppSidebar() {
   // So we hide the whole config group if not admin?
   // "Regular user can only see and manage settings belong to their own copy of profile"
   // Maybe we keep Settings but hide Services, Users, Secrets?
-  const filteredConfigItems = configItems.filter(item => {
+  const filteredConfigItems = configItems.filter((item: any) => {
       if (!isAdmin) {
           // Keep Settings, hide others?
           return item.title === 'Settings';
@@ -248,7 +248,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {filteredPlatformItems.map((item) => (
+              {filteredPlatformItems.map((item: any) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
                     <Link to={item.url}>
@@ -266,7 +266,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Development</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {devItems.map((item) => (
+              {devItems.map((item: any) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
                     <Link to={item.url}>
@@ -286,7 +286,7 @@ export function AppSidebar() {
             <SidebarGroupLabel>Configuration</SidebarGroupLabel>
             <SidebarGroupContent>
                 <SidebarMenu>
-                {filteredConfigItems.map((item) => (
+                {filteredConfigItems.map((item: any) => (
                     <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
                         <Link to={item.url}>

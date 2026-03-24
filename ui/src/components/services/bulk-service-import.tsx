@@ -132,7 +132,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
             if (!parsedServices.length) throw new Error("No services found in input.");
 
             // Initial items setup
-            const initialItems: ServiceImportItem[] = parsedServices.map(s => ({
+            const initialItems: ServiceImportItem[] = parsedServices.map((s: any) => ({
                 config: s,
                 validationStatus: "pending",
                 selected: true // Select by default
@@ -154,7 +154,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
         const validatedItems = [...itemsToValidate];
 
         // Parallel validation
-        await Promise.all(validatedItems.map(async (item, index) => {
+        await Promise.all(validatedItems.map(async (item: ServiceImportItem, index: number) => {
             try {
                 // Ensure basic structure matches UpstreamServiceConfig
                 // We assume input is roughly correct, validation endpoint will catch specifics
@@ -194,26 +194,26 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
     // --- Step 2: Review & Selection ---
 
     const toggleSelection = (index: number) => {
-        setItems(prev => prev.map((item, i) => i === index ? { ...item, selected: !item.selected } : item));
+        setItems(prev => prev.map((item: ServiceImportItem, i: number) => i === index ? { ...item, selected: !item.selected } : item));
     };
 
     const toggleSelectAll = (checked: boolean) => {
-         setItems(prev => prev.map(item => ({
+         setItems(prev => prev.map((item: ServiceImportItem) => ({
              ...item,
              selected: checked && item.validationStatus !== "invalid"
          })));
     };
 
-    const selectedCount = items.filter(i => i.selected).length;
-    const validCount = items.filter(i => i.validationStatus === "valid").length;
-    const warningCount = items.filter(i => i.validationStatus === "warning").length;
+    const selectedCount = items.filter((i: ServiceImportItem) => i.selected).length;
+    const validCount = items.filter((i: ServiceImportItem) => i.validationStatus === "valid").length;
+    const warningCount = items.filter((i: ServiceImportItem) => i.validationStatus === "warning").length;
 
     const startImport = async () => {
         setStep("import");
         setIsImporting(true);
         setProgress(0);
 
-        const itemsToImport = items.filter(i => i.selected);
+        const itemsToImport = items.filter((i: ServiceImportItem) => i.selected);
         let successCount = 0;
         let failureCount = 0;
 
@@ -356,7 +356,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                             <TableRow>
                                 <TableHead className="w-[50px]">
                                     <Checkbox
-                                        checked={selectedCount > 0 && selectedCount === items.filter(i => i.validationStatus !== 'invalid').length}
+                                        checked={selectedCount > 0 && selectedCount === items.filter((i: any) => i.validationStatus !== 'invalid').length}
                                         onCheckedChange={(c) => toggleSelectAll(!!c)}
                                     />
                                 </TableHead>
@@ -452,7 +452,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                     </h3>
                     <p className="text-muted-foreground">
                         {isImporting
-                            ? `Processing ${items.filter(i => i.selected).length} services.`
+                                ? `Processing ${items.filter((i: any) => i.selected).length} services.`
                             : `Successfully imported ${importSummary?.success} services.`}
                     </p>
                 </div>
@@ -480,7 +480,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                         <div className="border rounded-md max-h-[200px] overflow-y-auto">
                              <Table>
                                 <TableBody>
-                                    {items.filter(i => i.selected).map((item, idx) => (
+                                    {items.filter((i: ServiceImportItem) => i.selected).map((item: ServiceImportItem, idx: number) => (
                                         <TableRow key={idx}>
                                             <TableCell className="w-[30px]">
                                                 {item.importStatus === "success" && <CheckCircle2 className="h-4 w-4 text-green-500" />}

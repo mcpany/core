@@ -238,7 +238,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
     }, [toast]);
 
     const filteredResources = useMemo(() => {
-        return resources.filter(r => {
+        return resources.filter((r: ResourceDefinition) => {
             const matchesBasic = r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                r.uri.toLowerCase().includes(searchQuery.toLowerCase());
 
@@ -261,7 +261,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
     const handleDownload = useCallback(async (uri: string) => {
         if (!uri) return;
 
-        const targetRes = resources.find(r => r.uri === uri);
+        const targetRes = resources.find((r: ResourceDefinition) => r.uri === uri);
         if (!targetRes) {
             toast({ title: "Error", description: "Resource definition not found." });
             return;
@@ -414,7 +414,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                             </div>
                         ) : viewMode === "list" ? (
                             <div className="divide-y">
-                                {filteredResources.map(res => (
+                                {filteredResources.map((res: ResourceDefinition) => (
                                     <MemoizedResourceListItem
                                         key={res.uri}
                                         res={res}
@@ -430,7 +430,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 gap-2 p-3">
-                                {filteredResources.map(res => (
+                                {filteredResources.map((res: ResourceDefinition) => (
                                     <MemoizedResourceGridItem
                                         key={res.uri}
                                         res={res}
@@ -496,7 +496,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                         size="icon"
                                         className="h-7 w-7"
                                         onClick={() => {
-                                            const res = resources.find(r => r.uri === selectedUri);
+                                            const res = resources.find((r: ResourceDefinition) => r.uri === selectedUri);
                                             if (res) setPreviewResource(res);
                                         }}
                                         title="Maximize"

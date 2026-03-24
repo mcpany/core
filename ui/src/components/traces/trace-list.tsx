@@ -80,7 +80,7 @@ export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchC
   // especially when only selectedId changes.
   const filteredTraces = useMemo(() => {
     const lowerQuery = searchQuery.toLowerCase();
-    return traces.filter(t =>
+    return traces.filter((t: Trace) =>
       t.rootSpan.name.toLowerCase().includes(lowerQuery) ||
       t.id.toLowerCase().includes(lowerQuery)
     );

@@ -257,7 +257,7 @@ describe("LogStream", () => {
     // Find the Selects. There are two (Source and Level).
     // We can find the one that contains the "service-a" option.
     const selects = screen.getAllByTestId("mock-select");
-    const sourceSelect = selects.find(select =>
+    const sourceSelect = selects.find((select: any) =>
       select.innerHTML.includes("service-a")
     );
 

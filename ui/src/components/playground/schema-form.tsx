@@ -74,7 +74,7 @@ export function SchemaForm({
           return (
             <div key={key} className="space-y-2">
               <label className="block text-sm font-medium">{fieldLabel}</label>
-              {arrayValue.map((_item, idx) => (
+              {arrayValue.map((_item: any, idx: number) => (
                 <div key={idx} className="flex items-center gap-2">
                   <input
                     type="text"

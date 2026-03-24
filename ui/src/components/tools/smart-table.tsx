@@ -28,9 +28,9 @@ export function SmartTable({ data }: SmartTableProps) {
   // Extract columns
   const columns = useMemo(() => {
     const keys = new Set<string>();
-    data.slice(0, 100).forEach((item) => {
+    data.slice(0, 100).forEach((item: any) => {
       if (typeof item === 'object' && item !== null) {
-        Object.keys(item).forEach(k => keys.add(k));
+        Object.keys(item).forEach((k: string) => keys.add(k));
       }
     });
     return Array.from(keys);
@@ -40,7 +40,7 @@ export function SmartTable({ data }: SmartTableProps) {
   const sortedData = useMemo(() => {
     if (!sortConfig.key || !sortConfig.direction) return data;
 
-    return [...data].sort((a, b) => {
+    return [...data].sort((a: any, b: any) => {
       const aVal = a[sortConfig.key];
       const bVal = b[sortConfig.key];
 
@@ -168,7 +168,7 @@ export function SmartTable({ data }: SmartTableProps) {
                 <Table>
                     <TableHeader className="bg-muted/30 sticky top-0 backdrop-blur-md z-10 shadow-sm">
                         <TableRow className="hover:bg-transparent">
-                            {columns.map(col => (
+                            {columns.map((col: string) => (
                                 <TableHead
                                     key={col}
                                     className="whitespace-nowrap h-10 cursor-pointer select-none transition-colors hover:bg-muted/50 px-4 group"
@@ -196,9 +196,9 @@ export function SmartTable({ data }: SmartTableProps) {
                                 </TableCell>
                             </TableRow>
                         ) : (
-                            paginatedData.map((row, i) => (
+                            paginatedData.map((row: any, i: number) => (
                                 <TableRow key={i} className="hover:bg-muted/30 transition-colors group/row">
-                                    {columns.map(col => (
+                                    {columns.map((col: string) => (
                                         <TableCell key={col} className="py-2.5 px-4">
                                             {renderCell(row[col], col, i)}
                                         </TableCell>
@@ -228,7 +228,7 @@ export function SmartTable({ data }: SmartTableProps) {
                         Previous
                     </Button>
                     <div className="flex items-center gap-1">
-                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        {Array.from({ length: Math.min(5, totalPages) }, (_: any, i: number) => {
                             let pageNum = i + 1;
                             if (totalPages > 5 && currentPage > 3) {
                                 pageNum = currentPage - 2 + i;

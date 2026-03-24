@@ -36,7 +36,7 @@ export function ServiceTools({ tools }: ServiceToolsProps) {
 
     return (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {tools.map((tool) => (
+            {tools.map((tool: any) => (
                 <Card key={tool.name} className="flex flex-col">
                     <CardHeader className="pb-3">
                         <CardTitle className="flex items-center justify-between text-base">

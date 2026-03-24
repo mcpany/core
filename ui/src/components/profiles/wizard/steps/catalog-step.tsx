@@ -43,8 +43,8 @@ export function CatalogStep({ onNext }: CatalogStepProps) {
 
   const handleNext = () => {
     // Convert selected templates to initial WizardService objects
-    const services: WizardService[] = Array.from(selectedTemplateIds).map(id => {
-      const tmpl = templates.find(t => t.id === id) as any;
+    const services: WizardService[] = Array.from(selectedTemplateIds).map((id: string) => {
+      const tmpl = templates.find((t: any) => t.id === id) as any;
       return {
         templateId: id,
         instanceName: "", // To be filled in next step
@@ -62,7 +62,7 @@ export function CatalogStep({ onNext }: CatalogStepProps) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {templates.map(tmpl => {
+        {templates.map((tmpl: any) => {
           const isSelected = selectedTemplateIds.has(tmpl.id);
           return (
             <Card

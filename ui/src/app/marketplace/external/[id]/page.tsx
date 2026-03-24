@@ -43,7 +43,7 @@ export default function ExternalMarketplacePage() {
     async function load() {
         try {
             const markets = await marketplaceService.fetchPublicMarketplaces();
-            const m = markets.find(m => m.id === id);
+            const m = markets.find((m: ExternalMarketplace) => m.id === id);
             setMarket(m || null);
 
             if (m) {
@@ -65,7 +65,7 @@ export default function ExternalMarketplacePage() {
       // Pre-populate env vars from config if any
       const initialEnv: Record<string, string> = {};
       if (server.config.commandLineService?.env) {
-          Object.keys(server.config.commandLineService.env).forEach(k => {
+          Object.keys(server.config.commandLineService.env).forEach((k: string) => {
               initialEnv[k] = "";
           });
       }
@@ -80,7 +80,7 @@ export default function ExternalMarketplacePage() {
           const config = { ...selectedServer.config };
           // Update Env
           if (config.commandLineService && config.commandLineService.env) {
-              Object.keys(config.commandLineService.env).forEach(key => {
+              Object.keys(config.commandLineService.env).forEach((key: string) => {
                   if (config.commandLineService?.env?.[key]) {
                       config.commandLineService.env[key].plainText = envValues[key] || "";
                   }
@@ -113,7 +113,7 @@ export default function ExternalMarketplacePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {servers.map(server => (
+            {servers.map((server: ExternalServer) => (
                 <Card key={server.id} className="flex flex-col">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
@@ -151,7 +151,7 @@ export default function ExternalMarketplacePage() {
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
-                    {Object.keys(envValues).map(key => (
+                    {Object.keys(envValues).map((key: string) => (
                         <div key={key} className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor={key} className="text-right">{key}</Label>
                             <Input

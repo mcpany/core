@@ -40,7 +40,7 @@ describe('RegisterServiceDialog Wizard', () => {
     fireEvent.click(screen.getByText('Register Service'));
 
     // Select PostgreSQL (which has fields)
-    const postgresTemplate = SERVICE_TEMPLATES.find(t => t.id === 'postgres');
+    const postgresTemplate = SERVICE_TEMPLATES.find((t: any) => t.id === 'postgres');
     expect(postgresTemplate).toBeDefined();
     fireEvent.click(screen.getByText(postgresTemplate!.name));
 
@@ -56,7 +56,7 @@ describe('RegisterServiceDialog Wizard', () => {
     fireEvent.click(screen.getByText('Register Service'));
 
     // Select PostgreSQL
-    const postgresTemplate = SERVICE_TEMPLATES.find(t => t.id === 'postgres');
+    const postgresTemplate = SERVICE_TEMPLATES.find((t: any) => t.id === 'postgres');
     expect(postgresTemplate).toBeDefined();
     fireEvent.click(screen.getByText(postgresTemplate!.name));
 

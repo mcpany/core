@@ -37,17 +37,17 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
 
     dagreGraph.setGraph({ rankdir: 'LR' });
 
-    nodes.forEach((node) => {
+    nodes.forEach((node: Node) => {
         dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
     });
 
-    edges.forEach((edge) => {
+    edges.forEach((edge: Edge) => {
         dagreGraph.setEdge(edge.source, edge.target);
     });
 
     dagre.layout(dagreGraph);
 
-    const layoutedNodes = nodes.map((node) => {
+    const layoutedNodes = nodes.map((node: any) => {
         const nodeWithPosition = dagreGraph.node(node.id);
         return {
             ...node,
@@ -119,7 +119,7 @@ export function useRealTimeTopology() {
 
                 // Process Services (Children of Core)
                 if (data.core.children) {
-                    data.core.children.forEach(svc => {
+                    data.core.children.forEach((svc: any) => {
                         if (svc.type && String(svc.type).includes('MIDDLEWARE')) {
                             return;
                         }
@@ -152,7 +152,7 @@ export function useRealTimeTopology() {
 
                         // Tools inside Service
                         if (svc.children) {
-                            svc.children.forEach(tool => {
+                            svc.children.forEach((tool: any) => {
                                 // Tools don't have individual metrics in current proto usually,
                                 // but if they did, we would use them.
                                 // For now, assume a fraction of service traffic or 0.
@@ -179,7 +179,7 @@ export function useRealTimeTopology() {
 
             // Process Clients
             if (data.clients) {
-                data.clients.forEach(client => {
+                data.clients.forEach((client: any) => {
                     rawNodes.push({
                         id: client.id,
                         type: 'user',
@@ -211,8 +211,8 @@ export function useRealTimeTopology() {
                 rawEdges.length === edgesRef.current.length;
 
             if (isSameStructure) {
-                const prevNodeSet = new Set(nodesRef.current.map(n => n.id));
-                const prevEdgeSet = new Set(edgesRef.current.map(e => e.id));
+                const prevNodeSet = new Set(nodesRef.current.map((n: any) => n.id));
+                const prevEdgeSet = new Set(edgesRef.current.map((e: any) => e.id));
                 for (let i = 0; i < rawNodes.length; i++) {
                     if (!prevNodeSet.has(rawNodes[i].id)) {
                         isSameStructure = false;
@@ -231,9 +231,9 @@ export function useRealTimeTopology() {
 
             if (isSameStructure) {
                 // Structure matches, only update data (metrics) and preserve positions
-                const currentNodesMap = new Map(nodesRef.current.map(n => [n.id, n]));
+                const currentNodesMap = new Map(nodesRef.current.map((n: any) => [n.id, n]));
 
-                const updatedNodes = rawNodes.map(node => {
+                const updatedNodes = rawNodes.map((node: any) => {
                     const existing = currentNodesMap.get(node.id);
                     if (existing) {
                         return {

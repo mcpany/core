@@ -27,7 +27,7 @@ interface ServiceConfigStepProps {
 export function ServiceConfigStep({ services, onNext, onBack }: ServiceConfigStepProps) {
     // Local state for edits
     const [configs, setConfigs] = useState<WizardService[]>(
-        services.map(s => ({
+        services.map((s: WizardService) => ({
             ...s,
             instanceName: s.instanceName || s.config.name + "-" + Math.random().toString(36).substring(7)
         }))
@@ -60,7 +60,7 @@ export function ServiceConfigStep({ services, onNext, onBack }: ServiceConfigSte
     return (
         <div className="space-y-6">
             <div className="space-y-4">
-                {configs.map((svc, idx) => (
+                {configs.map((svc: WizardService, idx: number) => (
                     <Card key={svc.templateId + idx}>
                         <CardHeader className="py-3">
                             <CardTitle className="text-base">Configure {svc.templateId}</CardTitle>

@@ -126,7 +126,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
   };
 
   const handleCredentialSelect = (credId: string) => {
-      const cred = credentials.find(c => c.id === credId);
+      const cred = credentials.find((c: Credential) => c.id === credId);
       if (cred && cred.authentication) {
           form.setValue("upstreamAuth", cred.authentication, { shouldDirty: true });
           toast({ title: "Authentication Applied", description: `Applied auth from '${cred.name}'` });
@@ -157,7 +157,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       if (template.fields && template.fields.length > 0) {
           // Initialize default values
           const defaults: Record<string, string> = {};
-          template.fields.forEach(f => {
+          template.fields.forEach((f: any) => {
               if (f.defaultValue) defaults[f.name] = f.defaultValue;
           });
           setTemplateConfigValues(defaults);
@@ -175,7 +175,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
 
       // Perform substitution if fields present
       if (template.fields && fieldValues) {
-          template.fields.forEach(field => {
+          template.fields.forEach((field: any) => {
               const value = fieldValues[field.name] || "";
               if (!value) return;
 
@@ -252,7 +252,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
           autoDiscoverTool: false,
           configError: "",
           configurationSchema: "",
-          tags: values.tags ? values.tags.split(",").map(t => t.trim()).filter(t => t) : [],
+          tags: values.tags ? values.tags.split(",").map((t: string) => t.trim()).filter((t: string) => t) : [],
       };
 
       if (values.type === 'grpc') {
@@ -413,7 +413,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
             <ServiceTemplateSelector onSelect={handleTemplateSelect} />
         ) : view === "template-config" ? (
             <form onSubmit={handleTemplateConfigSubmit} className="space-y-4 mt-4">
-                {selectedTemplate?.fields?.map((field) => (
+                {selectedTemplate?.fields?.map((field: any) => (
                     <div key={field.name} className="space-y-2">
                         <label htmlFor={field.name} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                             {field.label}
@@ -569,7 +569,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                                     <SelectValue placeholder="Select credential..." />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {credentials.map((cred) => (
+                                    {credentials.map((cred: Credential) => (
                                         <SelectItem key={cred.id ?? ''} value={cred.id ?? ''}>{cred.name}</SelectItem>
                                     ))}
                                 </SelectContent>

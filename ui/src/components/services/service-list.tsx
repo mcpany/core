@@ -75,7 +75,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
 
   const handleSelectAll = useCallback((checked: boolean) => {
     if (checked) {
-      setSelected(new Set(filteredServices.map(s => s.name)));
+      setSelected(new Set(filteredServices.map((s: UpstreamServiceConfig) => s.name)));
     } else {
       setSelected(new Set());
     }
@@ -98,7 +98,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   if (isLoading) {
       return (
           <div className="space-y-4">
-               {[...Array(3)].map((_, i) => (
+               {[...Array(3)].map((_: any, i: number) => (
                   <div key={i} className="w-full h-12 bg-muted animate-pulse rounded-md" />
                ))}
           </div>
@@ -180,7 +180,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredServices.map((service) => (
+            {filteredServices.map((service: UpstreamServiceConfig) => (
                <ServiceRow
                   key={service.name}
                   service={service}
@@ -228,7 +228,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                 <Button variant="outline" onClick={() => setIsBulkEditDialogOpen(false)}>Cancel</Button>
                 <Button onClick={() => {
                     if (onBulkEdit) {
-                        onBulkEdit(Array.from(selected), { tags: bulkTags.split(",").map(t => t.trim()).filter(Boolean) });
+                        onBulkEdit(Array.from(selected), { tags: bulkTags.split(",").map((t: string) => t.trim()).filter(Boolean) });
                     }
                     setIsBulkEditDialogOpen(false);
                     setSelected(new Set());

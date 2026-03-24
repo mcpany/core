@@ -66,7 +66,7 @@ export default function ToolsPage() {
       const stats = await apiClient.getToolUsage();
       if (!stats || !Array.isArray(stats)) return;
       const statsMap: Record<string, ToolAnalytics> = {};
-      stats.forEach(s => {
+      stats.forEach((s: any) => {
         statsMap[`${s.name}@${s.serviceId}`] = s;
       });
       setToolUsage(statsMap);
@@ -117,7 +117,7 @@ export default function ToolsPage() {
 
   const toggleTool = async (name: string, currentStatus: boolean) => {
     // Optimistic update
-    setTools(tools.map(t => t.name === name ? { ...t, disable: currentStatus } : t));
+    setTools(tools.map((t: any) => t.name === name ? { ...t, disable: currentStatus } : t));
 
     try {
       await apiClient.setToolStatus(name, !currentStatus);
@@ -129,10 +129,10 @@ export default function ToolsPage() {
 
   const handleBulkToggle = async (names: string[], enabled: boolean) => {
     // Optimistic update
-    setTools(tools.map(t => names.includes(t.name) ? { ...t, disable: !enabled } : t));
+    setTools(tools.map((t: any) => names.includes(t.name) ? { ...t, disable: !enabled } : t));
 
     try {
-      await Promise.all(names.map(name => apiClient.setToolStatus(name, !enabled)));
+      await Promise.all(names.map((name: string) => apiClient.setToolStatus(name, !enabled)));
       toast({
         title: enabled ? "Tools Enabled" : "Tools Disabled",
         description: `${names.length} tools have been ${enabled ? "enabled" : "disabled"}.`
@@ -175,14 +175,14 @@ export default function ToolsPage() {
   // Randomized Selection from Top 5 High-Impact Targets (React/View)
   const filteredTools = React.useMemo(() => {
     return tools
-      .filter((t) => !showPinnedOnly || isPinned(t.name))
-      .filter((t) => selectedService === "all" || t.serviceId === selectedService)
-      .filter((t) =>
+      .filter((t: ToolDefinition) => !showPinnedOnly || isPinned(t.name))
+      .filter((t: ToolDefinition) => selectedService === "all" || t.serviceId === selectedService)
+      .filter((t: ToolDefinition) =>
         searchQuery === "" ||
         t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         t.description.toLowerCase().includes(searchQuery.toLowerCase())
       )
-      .sort((a, b) => {
+      .sort((a: ToolDefinition, b: ToolDefinition) => {
         const aPinned = isPinned(a.name);
         const bPinned = isPinned(b.name);
         if (aPinned && !bPinned) return -1;
@@ -196,10 +196,10 @@ export default function ToolsPage() {
     // ⚡ BOLT: Prevented O(N*M) loop inside reduce by creating an O(1) lookup map for services.
     // Randomized Selection from Top 5 High-Impact Targets (Algorithmic / Render Waste)
     const servicesMap = groupBy === "service"
-      ? new Map(services.map(s => [s.id, s]))
+      ? new Map(services.map((s: any) => [s.id, s]))
       : new Map();
 
-    return filteredTools.reduce((acc, tool) => {
+    return filteredTools.reduce((acc: Record<string, ToolDefinition[]>, tool: ToolDefinition) => {
       let key = "Other";
       if (groupBy === "service") {
         const service = servicesMap.get(tool.serviceId);

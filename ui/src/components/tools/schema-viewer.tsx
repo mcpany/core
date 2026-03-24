@@ -120,7 +120,7 @@ export function SchemaViewer({ schema, name, required = false, depth = 0 }: Sche
 
              <CollapsibleContent>
                <div className="pt-1">
-                 {isObject && properties.map(([key, propSchema], idx) => (
+                 {isObject && properties.map(([key, propSchema]: [string, any], idx: number) => (
                    <SchemaViewer
                      key={key}
                      schema={propSchema}

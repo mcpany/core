@@ -105,7 +105,7 @@ describe('AppSidebar Navigation', () => {
       'Secrets Vault'
     ];
 
-    links.forEach(linkText => {
+    links.forEach((linkText: string) => {
       expect(screen.getByText(linkText)).toBeDefined();
     });
   });

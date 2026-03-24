@@ -44,7 +44,7 @@ export function DiscoveredToolsViewer({ tools }: DiscoveredToolsViewerProps) {
             </div>
             <div className="border rounded-md overflow-hidden bg-background">
                 <Accordion type="multiple" className="w-full">
-                    {tools.map((tool, index) => (
+                    {tools.map((tool: ToolDefinition, index: number) => (
                         <AccordionItem value={`item-${index}`} key={index} className="border-b last:border-0 px-4">
                             <AccordionTrigger className="hover:no-underline py-3">
                                 <div className="flex items-center gap-3 text-left w-full overflow-hidden">

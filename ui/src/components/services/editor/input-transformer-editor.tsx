@@ -38,13 +38,13 @@ export function InputTransformerEditor({ transformer, onChange, parameters = [] 
 
     const variables = useMemo(() => {
         return parameters
-            .map(p => p.schema?.name)
+            .map((p: any) => p.schema?.name)
             .filter((name): name is string => !!name);
     }, [parameters]);
 
     const defaultTestData = useMemo(() => {
         const data: Record<string, any> = {};
-        parameters.forEach(p => {
+        parameters.forEach((p: any) => {
             if (!p.schema?.name) return;
             switch (p.schema.type) {
                 case ParameterType.STRING:

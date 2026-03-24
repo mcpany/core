@@ -150,5 +150,5 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
  * @returns The widget definition if found, otherwise undefined.
  */
 export const getWidgetDefinition = (type: string): WidgetDefinition | undefined => {
-    return WIDGET_DEFINITIONS.find(w => w.type === type);
+    return WIDGET_DEFINITIONS.find((w: any) => w.type === type);
 };

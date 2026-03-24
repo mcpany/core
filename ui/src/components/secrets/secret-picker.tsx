@@ -102,7 +102,7 @@ export function SecretPicker({
           <CommandList>
             <CommandEmpty>{loading ? "Loading..." : "No secrets found."}</CommandEmpty>
             <CommandGroup>
-              {secrets.map((secret) => (
+              {secrets.map((secret: SecretDefinition) => (
                 <CommandItem
                   key={secret.id}
                   value={secret.key || secret.name} // Command uses value for filtering

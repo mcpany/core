@@ -45,6 +45,15 @@ export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, 
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '../../../proto/api/v1/registration';
 
 /**
+ * ToolUsageStats represents usage statistics for a tool.
+ */
+export interface ToolUsageStats {
+  name: string;
+  serviceId: string;
+  count: number;
+}
+
+/**
  * ServiceTemplate defines a template for an upstream service.
  */
 export interface ServiceTemplate {
@@ -370,7 +379,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a GET request to /api/v1/services.
      */
-    listServices: async () => {
+    listServices: async (): Promise<UpstreamServiceConfig[]> => {
         return dedupeRequests('listServices', async () => {
             // Fallback to REST for E2E reliability until gRPC-Web is stable
             const res = await fetchWithAuth('/api/v1/services');
@@ -392,7 +401,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a GET request to /api/v1/catalog/services.
      */
-    listCatalog: async () => {
+    listCatalog: async (): Promise<UpstreamServiceConfig[]> => {
         const res = await fetchWithAuth('/api/v1/catalog/services');
         if (!res.ok) throw new Error('Failed to fetch catalog');
         const data = await res.json();
@@ -413,7 +422,7 @@ export const apiClient = {
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
-        }));
+        })) as UpstreamServiceConfig[];
     },
 
     /**
@@ -1802,14 +1811,14 @@ export const apiClient = {
      *
      * Side Effects: Makes a GET request to /api/v1/dashboard/top-tools.
      */
-    getTopTools: async (serviceId?: string) => {
+    getTopTools: async (serviceId?: string): Promise<ToolUsageStats[]> => {
         let url = '/api/v1/dashboard/top-tools';
         if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
         const res = await fetchWithAuth(url);
         // If 404/500, return empty to avoid crashing UI
         if (!res.ok) return [];
         const data = await res.json();
-        return data || [];
+        return (data || []) as ToolUsageStats[];
     },
 
     // Alerts

@@ -62,7 +62,7 @@ export function SmartToolSearch({
 
   const toolMap = useMemo(() => {
     const map = new Map<string, ToolDefinition>();
-    tools.forEach((t) => map.set(t.name, t));
+    tools.forEach((t: any) => map.set(t.name, t));
     return map;
   }, [tools]);
 
@@ -79,7 +79,7 @@ export function SmartToolSearch({
   // ⚡ BOLT: Optimized recent tools lookup from O(R*T) to O(R) using a hash map.
   // Randomized Selection from Top 5 High-Impact Targets
   const recentToolDefs = recentTools
-    .map((name) => toolMap.get(name))
+    .map((name: string) => toolMap.get(name))
     .filter((t): t is ToolDefinition => !!t);
 
   return (
@@ -103,7 +103,7 @@ export function SmartToolSearch({
 
               {recentToolDefs.length > 0 && (
                 <CommandGroup heading="Recent">
-                  {recentToolDefs.map((tool) => (
+                  {recentToolDefs.map((tool: any) => (
                     <CommandItem
                       key={`recent-${tool.name}`}
                       value={`${tool.name} ${tool.description}`}
@@ -119,7 +119,7 @@ export function SmartToolSearch({
               {recentToolDefs.length > 0 && <CommandSeparator />}
 
               <CommandGroup heading="All Tools">
-                {tools.map((tool) => (
+                {tools.map((tool: any) => (
                   <CommandItem
                     key={tool.name}
                     value={`${tool.name} ${tool.description} ${tool.serviceId}`}

@@ -123,7 +123,7 @@ export function GlobalSearch() {
         // Save to recent tools
         const updated = [
             tool,
-            ...recentTools.filter(t => t.name !== tool.name)
+            ...recentTools.filter((t: ToolDefinition) => t.name !== tool.name)
         ].slice(0, 5)
         localStorage.setItem("recent_tools", JSON.stringify(updated))
         setRecentTools(updated)
@@ -146,7 +146,7 @@ export function GlobalSearch() {
       if (!keys || keys.length === 0) return ""
       const key = keys[0] // Just show first one
       const parts = key.toLowerCase().split("+")
-      return parts.map(p => {
+      return parts.map((p: string) => {
           if (p === "meta" || p === "cmd") return "⌘"
           if (p === "ctrl") return "⌃"
           if (p === "shift") return "⇧"
@@ -266,7 +266,7 @@ export function GlobalSearch() {
 
            {recentTools.length > 0 && query.length === 0 && (
              <CommandGroup heading="Recent Tools">
-               {recentTools.map((tool) => (
+               {recentTools.map((tool: ToolDefinition) => (
                  <CommandItem key={`recent-${tool.name}`} value={`recent tool ${tool.name}`} onSelect={() => selectTool(tool)}>
                    <RotateCcw className="mr-2 h-4 w-4 text-muted-foreground" />
                    <span>{tool.name}</span>
@@ -277,7 +277,7 @@ export function GlobalSearch() {
 
           {services.length > 0 && (
              <CommandGroup heading="Services">
-               {services.map((service) => (
+               {services.map((service: UpstreamServiceConfig) => (
                  <CommandItem key={service.id || service.name} value={`service ${service.name}`} onSelect={() => runCommand(() => router(`/upstream-services?id=${service.id}`))}>
                    <Database className="mr-2 h-4 w-4" />
                    <span>{service.name}</span>
@@ -287,7 +287,7 @@ export function GlobalSearch() {
                {/* Actions for Services - only shown if searching for "restart" or service name */}
                {/* ⚡ Bolt Optimization: Only render these heavy actions when the user has typed something.
                    This significantly reduces the number of DOM nodes when the dialog is first opened. */}
-               {query.length > 0 && services.map((service) => (
+               {query.length > 0 && services.map((service: UpstreamServiceConfig) => (
                    <CommandItem key={`restart-${service.name}`} value={`restart service ${service.name}`} onSelect={() => restartService(service.name)}>
                        <RefreshCw className="mr-2 h-4 w-4 text-orange-500" />
                        <span>Restart {service.name}</span>
@@ -298,7 +298,7 @@ export function GlobalSearch() {
 
           {tools.length > 0 && (
              <CommandGroup heading="Tools">
-               {tools.map((tool) => (
+               {tools.map((tool: ToolDefinition) => (
                  <CommandItem key={tool.name} value={`tool ${tool.name}`} onSelect={() => runCommand(() => router(`/tools?name=${tool.name}`))}>
                    <Calculator className="mr-2 h-4 w-4" />
                    <span>{tool.name}</span>
@@ -310,14 +310,14 @@ export function GlobalSearch() {
 
            {resources.length > 0 && (
              <CommandGroup heading="Resources">
-               {resources.map((resource) => (
+               {resources.map((resource: ResourceDefinition) => (
                  <CommandItem key={resource.uri} value={`resource ${resource.name}`} onSelect={() => runCommand(() => router(`/resources?uri=${encodeURIComponent(resource.uri)}`))}>
                    <FileBox className="mr-2 h-4 w-4" />
                    <span>{resource.name}</span>
                  </CommandItem>
                ))}
                 {/* ⚡ Bolt Optimization: Only render copy actions when searching to reduce DOM nodes */}
-                {query.length > 0 && resources.map((resource) => (
+                {query.length > 0 && resources.map((resource: ResourceDefinition) => (
                  <CommandItem key={`copy-${resource.uri}`} value={`copy uri ${resource.name}`} onSelect={() => copyToClipboard(resource.uri, "Resource URI")}>
                    <Copy className="mr-2 h-4 w-4 text-blue-500" />
                    <span>Copy URI: {resource.name}</span>
@@ -328,7 +328,7 @@ export function GlobalSearch() {
 
            {prompts.length > 0 && (
              <CommandGroup heading="Prompts">
-               {prompts.map((prompt) => (
+               {prompts.map((prompt: PromptDefinition) => (
                  <CommandItem key={prompt.name} value={`prompt ${prompt.name}`} onSelect={() => runCommand(() => router(`/prompts?name=${prompt.name}`))}>
                    <MessageSquare className="mr-2 h-4 w-4" />
                    <span>{prompt.name}</span>

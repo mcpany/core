@@ -101,7 +101,7 @@ export function StepParameters() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {Object.entries(params).map(([key, value], idx) => (
+                        {Object.entries(params).map(([key, value]: [string, any], idx: number) => (
                             <TableRow key={idx}>
                                 <TableCell>
                                     <Input

@@ -59,7 +59,7 @@ export default function InspectorPage() {
   };
 
   const filteredTraces = useMemo(() => {
-      return traces.filter((trace) => {
+      return traces.filter((trace: any) => {
         // Filter by Status
         if (statusFilter !== "all" && trace.status !== statusFilter) return false;
 

@@ -68,7 +68,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
                 initialSchemaValues = {};
 
                 if (templateConfig.commandLineService.env) {
-                    Object.entries(templateConfig.commandLineService.env).forEach(([k, v]) => {
+                    Object.entries(templateConfig.commandLineService.env).forEach(([k, v]: [string, any]) => {
                         const sv = v as any;
                         let val = "";
                         if (sv && typeof sv === 'object' && sv.plainText) {
@@ -111,7 +111,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
                     setSchemaValues(valuesWithDefaults);
                     // Sync defaults to envVars immediately
                     const envWithDefaults = { ...newEnv };
-                    Object.entries(valuesWithDefaults).forEach(([k, v]) => {
+                    Object.entries(valuesWithDefaults).forEach(([k, v]: [string, string]) => {
                         envWithDefaults[k] = { plainText: v, validationRegex: "" };
                     });
                     setEnvVars(envWithDefaults);
@@ -151,7 +151,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
         // We flatten or stringify values because Env Vars are strings.
         // For nested objects returned by UniversalSchemaForm, we JSON stringify them if they are objects,
         // or just String() them if primitives.
-        Object.entries(newValues).forEach(([k, v]) => {
+        Object.entries(newValues).forEach(([k, v]: [string, any]) => {
             let stringValue = "";
             if (typeof v === 'object' && v !== null) {
                 stringValue = JSON.stringify(v);
@@ -184,7 +184,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
             }
 
             if (authId !== 'none') {
-                const cred = credentials.find(c => c.id === authId);
+                const cred = credentials.find((c: any) => c.id === authId);
                 if (cred && cred.authentication) {
                     newConfig.upstreamAuth = cred.authentication;
                 }
@@ -255,7 +255,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="none">None</SelectItem>
-                                {credentials.map(c => (
+                                {credentials.map((c: any) => (
                                     <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                                 ))}
                             </SelectContent>

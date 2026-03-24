@@ -52,7 +52,7 @@ export function ServiceFilter() {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Services</SelectItem>
-          {services.map((svc) => (
+          {services.map((svc: any) => (
             <SelectItem key={svc.id} value={svc.id}>
               {svc.name}
             </SelectItem>

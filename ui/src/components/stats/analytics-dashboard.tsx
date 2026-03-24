@@ -104,7 +104,7 @@ export function AnalyticsDashboard() {
                 const serviceMap: Record<string, number> = {};
                 const toolTokens: { name: string, tokens: number, service: string }[] = [];
 
-                allTools.forEach(tool => {
+                allTools.forEach((tool: ToolDefinition) => {
                     // Estimate tokens for the tool definition
                     // ⚡ BOLT: Prevent massive CPU spike during polling by caching token estimations
                     // Randomized Selection from Top 5 High-Impact Targets (Memory/CPU)
@@ -183,7 +183,7 @@ export function AnalyticsDashboard() {
         try {
             await apiClient.setToolStatus(name, disable);
             // Optimistic update
-            setTools(tools.map(t => t.name === name ? { ...t, disable } : t));
+            setTools(tools.map((t: ToolDefinition) => t.name === name ? { ...t, disable } : t));
         } catch (error) {
             console.error("Failed to toggle tool", error);
         }
@@ -339,7 +339,7 @@ export function AnalyticsDashboard() {
                                                 dataKey="value"
                                                 isAnimationActive={false}
                                             >
-                                                {toolUsageData.map((entry, index) => (
+                                                {toolUsageData.map((entry: any, index: number) => (
                                                     <Cell key={`cell-${index}`} fill={entry.color} />
                                                 ))}
                                             </Pie>
@@ -466,9 +466,9 @@ export function AnalyticsDashboard() {
                                                 outerRadius={80}
                                                 dataKey="value"
                                                 isAnimationActive={false}
-                                                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                                label={({ name, percent }: any) => `${name} ${(percent * 100).toFixed(0)}%`}
                                             >
-                                                {contextByService.map((entry, index) => (
+                                                {contextByService.map((entry: any, index: number) => (
                                                     <Cell key={`cell-${index}`} fill={entry.color} />
                                                 ))}
                                             </Pie>
@@ -492,7 +492,7 @@ export function AnalyticsDashboard() {
                             </CardHeader>
                             <CardContent>
                                  <div className="space-y-4 max-h-[300px] overflow-auto pr-2">
-                                    {heaviestTools.map((tool, index) => (
+                                    {heaviestTools.map((tool: any, index: number) => (
                                         <div key={tool.name} className="flex items-center justify-between border-b pb-2 last:border-0">
                                             <div className="space-y-1">
                                                 <p className="text-sm font-medium leading-none">{tool.name}</p>

@@ -68,11 +68,11 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
 
     // Helper to update a step
     const updateStep = (id: string, updates: Partial<DiagnosticStep>) => {
-      setSteps((prev) => prev.map((s) => (s.id === id ? { ...s, ...updates } : s)));
+      setSteps((prev: any) => prev.map((s: DiagnosticStep) => (s.id === id ? { ...s, ...updates } : s)));
     };
 
     const addLog = (id: string, message: string) => {
-      setSteps((prev) => prev.map((s) => (s.id === id ? { ...s, logs: [...s.logs, `[${new Date().toLocaleTimeString()}] ${message}`] } : s)));
+      setSteps((prev: any) => prev.map((s: DiagnosticStep) => (s.id === id ? { ...s, logs: [...s.logs, `[${new Date().toLocaleTimeString()}] ${message}`] } : s)));
     };
 
     // --- Step 1: Config Validation ---
@@ -192,7 +192,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
         const data: ServiceHealth[] = await res.json();
 
         // Find our service
-        const serviceStatus = data.find(s => s.id === service.id || s.name === service.name);
+        const serviceStatus = data.find((s: ServiceHealth) => s.id === service.id || s.name === service.name);
 
         if (!serviceStatus) {
              addLog("backend_health", "Warning: Service not found in backend registry.");
@@ -230,7 +230,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
 
     // --- Step 3: Operational Verification ---
     // Only proceed if backend check was successful or skipped (disabled)
-    const backendStep = steps.find(s => s.id === "backend_health");
+    const backendStep = steps.find((s: DiagnosticStep) => s.id === "backend_health");
     // We access current state via a fresh look or logic flow, but here 'steps' state is stale closure.
     // However, we can infer success if we reached here without returning early?
     // Actually, I didn't return early in backend_health block. I should probably check if previous steps failed.
@@ -292,7 +292,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
   };
 
   const copyLogs = () => {
-      const allLogs = steps.flatMap(s => s.logs).join('\n');
+      const allLogs = steps.flatMap((s: DiagnosticStep) => s.logs).join('\n');
       navigator.clipboard.writeText(allLogs).then(() => {
           setCopied(true);
           setTimeout(() => setCopied(false), 2000);
@@ -322,7 +322,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
         <div className="flex-1 overflow-hidden grid grid-cols-3">
             {/* Steps List */}
             <div className="col-span-1 border-r bg-muted/10 overflow-y-auto p-4 space-y-4">
-                {steps.map((step) => (
+                {steps.map((step: DiagnosticStep) => (
                     <div key={step.id} className={cn(
                         "relative pl-6 pb-4 border-l-2 last:border-0",
                         step.status === 'success' ? "border-green-500" :
@@ -367,7 +367,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
                             <Terminal className="h-3 w-3" />
                             <span className="font-semibold tracking-wide uppercase text-[10px]">Diagnostic Console</span>
                         </div>
-                        {steps.flatMap(s => s.logs).length > 0 && (
+                        {steps.flatMap((s: DiagnosticStep) => s.logs).length > 0 && (
                             <Button
                                 variant="ghost"
                                 size="icon"
@@ -380,10 +380,10 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
                     </div>
                     <ScrollArea className="flex-1">
                         <div className="space-y-1">
-                            {steps.flatMap(s => s.logs).length === 0 ? (
+                            {steps.flatMap((s: DiagnosticStep) => s.logs).length === 0 ? (
                                 <span className="text-muted-foreground/50 italic">Waiting to start diagnostics...</span>
                             ) : (
-                                steps.flatMap(s => s.logs).map((log, i) => (
+                                steps.flatMap((s: DiagnosticStep) => s.logs).map((log: string, i: number) => (
                                     <div key={i} className="break-all whitespace-pre-wrap">{log}</div>
                                 ))
                             )}
@@ -439,7 +439,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
                 ) : (
                     <>
                         <Play className="mr-2 h-4 w-4" />
-                        {steps.some(s => s.status !== 'pending') ? "Rerun Diagnostics" : "Start Diagnostics"}
+                        {steps.some((s: DiagnosticStep) => s.status !== 'pending') ? "Rerun Diagnostics" : "Start Diagnostics"}
                     </>
                 )}
             </Button>

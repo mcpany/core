@@ -53,7 +53,7 @@ export function OutputTransformerEditor({ transformer, onChange }: OutputTransfo
 
     const defaultTestData = useMemo(() => {
         const data: Record<string, string> = {};
-        variables.forEach(v => {
+        variables.forEach((v: string) => {
             data[v] = `example_${v}`;
         });
         return JSON.stringify(data, null, 2);

@@ -82,16 +82,16 @@ export function ShareCollectionDialog() {
     if (selected.size === services.length) {
       setSelected(new Set())
     } else {
-      setSelected(new Set(services.map(s => s.name)))
+      setSelected(new Set(services.map((s: UpstreamServiceConfig) => s.name)))
     }
   }
 
   const generateConfig = () => {
-    const selectedServices = services.filter(s => selected.has(s.name))
+    const selectedServices = services.filter((s: UpstreamServiceConfig) => selected.has(s.name))
     // Clean up for export - remove IDs if they are system generated?
     // Usually keep basic config.
     // Helper to sanitize
-    const sanitized = selectedServices.map(s => {
+    const sanitized = selectedServices.map((s: UpstreamServiceConfig) => {
         // Create a clean copy conformant to UpstreamServiceConfig for export
         // We might want to remove 'connectionPool' status etc.
         const { connectionPool, id, ...rest } = s as any;
@@ -164,7 +164,7 @@ export function ShareCollectionDialog() {
                             <TableCell colSpan={3} className="text-center">No services found.</TableCell>
                         </TableRow>
                     ) : (
-                        services.map((service) => (
+                        services.map((service: UpstreamServiceConfig) => (
                         <TableRow key={service.name}>
                             <TableCell>
                             <Checkbox

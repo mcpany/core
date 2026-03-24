@@ -170,7 +170,7 @@ export default function MarketplacePage() {
 
   const openInstantiateCommunity = (server: CommunityServer) => {
       // Check Registry First
-      const registryMatch = SERVICE_REGISTRY.find(item => {
+      const registryMatch = SERVICE_REGISTRY.find((item: any) => {
           // Check by name exact match
           if (item.name.toLowerCase() === server.name.toLowerCase()) return true;
           // Check by repo URL substring match
@@ -248,7 +248,7 @@ export default function MarketplacePage() {
   };
 
   const isVerified = (server: CommunityServer) => {
-       return SERVICE_REGISTRY.some(item => {
+       return SERVICE_REGISTRY.some((item: any) => {
           if (item.name.toLowerCase() === server.name.toLowerCase()) return true;
           if (server.url.includes(item.repo)) return true;
           return false;
@@ -256,7 +256,7 @@ export default function MarketplacePage() {
   };
 
   // Filter Community Servers
-  const filteredCommunityServers = communityServers.filter(s =>
+  const filteredCommunityServers = communityServers.filter((s: CommunityServer) =>
       s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       s.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       s.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())) ||
@@ -301,7 +301,7 @@ export default function MarketplacePage() {
                           Popular Services
                       </h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                          {popularServices.map((service) => (
+                          {popularServices.map((service: UpstreamServiceConfig) => (
                               <Card key={service.id || service.name} className="flex flex-col">
                                   <CardHeader>
                                       <CardTitle>{service.name}</CardTitle>
@@ -330,7 +330,7 @@ export default function MarketplacePage() {
                     Official Service Collections
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {collections.map((col, idx) => (
+                    {collections.map((col: ServiceCollection, idx: number) => (
                         <Card key={idx} className="flex flex-col">
                             <CardHeader>
                                 <CardTitle>{col.name}</CardTitle>
@@ -364,7 +364,7 @@ export default function MarketplacePage() {
                     Public MCP Server Marketplaces
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {publicMarkets.map((market) => (
+                    {publicMarkets.map((market: ExternalMarketplace) => (
                         <Card key={market.id} className="cursor-pointer hover:border-primary transition-colors">
                             <Link to={`/marketplace/external/${market.id}`}>
                                 <CardHeader>
@@ -393,7 +393,7 @@ export default function MarketplacePage() {
                     Local Templates
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                     {backendTemplates.map((col, idx) => (
+                     {backendTemplates.map((col: ServiceCollection, idx: number) => (
                         <Card key={idx} className="flex flex-col border-dashed">
                             <CardHeader>
                                 <CardTitle>{col.name}</CardTitle>
@@ -447,7 +447,7 @@ export default function MarketplacePage() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {filteredCommunityServers.slice(0, 100).map((server, idx) => (
+                      {filteredCommunityServers.slice(0, 100).map((server: CommunityServer, idx: number) => (
                           <Card key={idx} className="flex flex-col">
                               <CardHeader>
                                   <div className="flex justify-between items-start gap-2">
@@ -468,7 +468,7 @@ export default function MarketplacePage() {
                               <CardContent className="flex-1">
                                   <div className="flex flex-wrap gap-1 mb-2">
                                       <Badge variant="outline" className="text-[10px] h-5">{server.category}</Badge>
-                                      {server.tags.map((tag, i) => (
+                                      {server.tags.map((tag: string, i: number) => (
                                           <span key={i} className="text-sm" title="Tag">{tag}</span>
                                       ))}
                                   </div>

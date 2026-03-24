@@ -107,7 +107,7 @@ const ItemContent = (_: number, svc: UpstreamServiceConfig, context: VirtuosoCon
                     ) : serviceTools[svc.name].length === 0 ? (
                         <div className="text-xs text-muted-foreground">No tools found.</div>
                     ) : (
-                        serviceTools[svc.name].map(tool => {
+                        serviceTools[svc.name].map((tool: ToolDefinition) => {
                             const isDisabled = disabledTools[svc.name]?.has(tool.name);
                             return (
                                 <div key={tool.name} className="flex items-center space-x-2">
@@ -241,8 +241,8 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
                 try {
                     const res = await apiClient.listTools();
                     // Filter by service ID (svcName matches ID usually)
-                    const tools = res.tools.filter((t: ToolDefinition) => t.serviceId === svcName);
-                    setServiceTools(prev => ({ ...prev, [svcName]: tools }));
+                    const tools = res.tools.filter((t: any) => t.serviceId === svcName);
+                    setServiceTools((prev: any) => ({ ...prev, [svcName]: tools }));
                 } catch (e) {
                     console.error("Failed to fetch tools", e);
                 }
@@ -287,10 +287,10 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
         try {
             // Construct backend ProfileDefinition
             const serviceConfig: Record<string, any> = {};
-            selectedServices.forEach(svc => {
+            selectedServices.forEach((svc: string) => {
                 const toolsConfig: Record<string, any> = {};
                 if (disabledTools[svc]) {
-                    disabledTools[svc].forEach(tName => {
+                    disabledTools[svc].forEach((tName: string) => {
                         toolsConfig[tName] = { disabled: true };
                     });
                 }
@@ -331,12 +331,12 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
     };
 
     const removeTag = (tag: string) => {
-        setAdditionalTags(additionalTags.filter(t => t !== tag));
+        setAdditionalTags(additionalTags.filter((t: string) => t !== tag));
     };
 
     const filteredServices = useMemo(() => {
         if (!searchQuery) return availableServices;
-        return availableServices.filter(s =>
+        return availableServices.filter((s: UpstreamServiceConfig) =>
             s.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [availableServices, searchQuery]);
@@ -345,7 +345,7 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
         const allProfileTags = new Set([type, ...additionalTags]);
         const implicitSet = new Set<string>();
 
-        availableServices.forEach(svc => {
+        availableServices.forEach((svc: UpstreamServiceConfig) => {
             if (svc.tags && svc.tags.some((t: string) => allProfileTags.has(t))) {
                 implicitSet.add(svc.name);
             }
@@ -365,13 +365,13 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
 
     const handleSelectAll = () => {
         const newSet = new Set(selectedServices);
-        filteredServices.forEach(s => newSet.add(s.name));
+        filteredServices.forEach((s: UpstreamServiceConfig) => newSet.add(s.name));
         setSelectedServices(newSet);
     };
 
     const handleDeselectAll = () => {
         const newSet = new Set(selectedServices);
-        filteredServices.forEach(s => newSet.delete(s.name));
+        filteredServices.forEach((s: UpstreamServiceConfig) => newSet.delete(s.name));
         setSelectedServices(newSet);
     };
 
@@ -444,7 +444,7 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
                             </div>
                             {additionalTags.length > 0 && (
                                 <div className="flex flex-wrap gap-2 mt-2 p-2 bg-muted/20 rounded-md border">
-                                    {additionalTags.map(tag => (
+                                    {additionalTags.map((tag: string) => (
                                         <Badge key={tag} variant="secondary" className="pl-2 pr-1 py-1">
                                             {tag}
                                             <button

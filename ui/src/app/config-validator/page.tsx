@@ -128,7 +128,7 @@ export default function ConfigValidatorPage() {
                   <span className="text-lg font-semibold">Validation Errors</span>
                 </div>
                 <div className="space-y-2">
-                  {result.errors?.map((err, i) => (
+                  {result.errors?.map((err: string, i: number) => (
                     <div
                       key={i}
                       className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900 rounded text-sm font-mono text-red-800 dark:text-red-200 break-words whitespace-pre-wrap"

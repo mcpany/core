@@ -48,13 +48,13 @@ export function useRecentTools() {
   const addRecent = (toolName: string) => {
     setRecentTools((prev) => {
       // Remove if exists, then add to front
-      const filtered = prev.filter((t) => t !== toolName);
+      const filtered = prev.filter((t: string) => t !== toolName);
       return [toolName, ...filtered].slice(0, MAX_RECENT_TOOLS);
     });
   };
 
   const removeRecent = (toolName: string) => {
-    setRecentTools((prev) => prev.filter((t) => t !== toolName));
+    setRecentTools((prev) => prev.filter((t: string) => t !== toolName));
   };
 
   const clearRecent = () => {

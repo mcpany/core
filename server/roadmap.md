@@ -161,6 +161,7 @@
 *   **[P0] Multi-Signature Skill Grafting (MSSG) Hub**: Authoritative broker for federated skill integrity requiring framework and auditor tokens. (Added: 2026-06-28)
 *   **[P0] Stylometric Sovereignty Monitor (SSM)**: Behavioral security middleware for detecting reasoning-persona mimicry and PBR bypasses. (Added: 2026-06-28)
 *   **[P0] Headless Mission Resumption (HMR)**: Hardware-locked binary checkpointing for sub-100ms cold-boot mission recovery. (Added: 2026-06-28)
+*   **[P0] Lock-Free Mesh Arbiter (LFMA)**: Core coordination service implementing CRDT-based mailbox shards. (Added: 2026-06-28)
 
 ## 2. Top 10 Recommended Features
 

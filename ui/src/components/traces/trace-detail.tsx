@@ -152,7 +152,7 @@ function WaterfallItem({
 
                     {/* Children */}
                     <div className="pl-8">
-                        {span.children?.map(child => (
+                        {span.children?.map((child: Span) => (
                              <WaterfallItem
                                 key={child.id}
                                 span={child}
@@ -304,7 +304,7 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    {diagnostics.map((diag, i) => (
+                                    {diagnostics.map((diag: any, i: number) => (
                                         <Alert key={i} variant={diag.type === 'error' ? 'destructive' : 'default'}>
                                             <AlertTriangle className="h-4 w-4" />
                                             <AlertTitle>{diag.title}</AlertTitle>

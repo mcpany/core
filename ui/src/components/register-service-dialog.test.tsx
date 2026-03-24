@@ -43,7 +43,7 @@ describe('RegisterServiceDialog', () => {
     expect(screen.getByText('Select Service Template')).toBeInTheDocument();
 
     // Check if templates are rendered
-    SERVICE_TEMPLATES.forEach(template => {
+    SERVICE_TEMPLATES.forEach((template: any) => {
        expect(screen.getByText(template.name)).toBeInTheDocument();
     });
   });
@@ -53,7 +53,7 @@ describe('RegisterServiceDialog', () => {
     fireEvent.click(screen.getByText('Register Service'));
 
     // Click on Puppeteer template (no fields, goes to form)
-    const puppeteerTemplate = SERVICE_TEMPLATES.find(t => t.id === 'puppeteer');
+    const puppeteerTemplate = SERVICE_TEMPLATES.find((t: any) => t.id === 'puppeteer');
     expect(puppeteerTemplate).toBeDefined();
     if (!puppeteerTemplate) return;
 
@@ -99,7 +99,7 @@ describe('RegisterServiceDialog', () => {
     fireEvent.click(screen.getByText('Register Service'));
 
     // Select a template (Puppeteer)
-    const puppeteerTemplate = SERVICE_TEMPLATES.find(t => t.id === 'puppeteer');
+    const puppeteerTemplate = SERVICE_TEMPLATES.find((t: any) => t.id === 'puppeteer');
     expect(puppeteerTemplate).toBeDefined();
     if (!puppeteerTemplate) return;
     fireEvent.click(screen.getByText(puppeteerTemplate.name));

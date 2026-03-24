@@ -8,15 +8,9 @@
 import { useEffect, useState, useCallback } from "react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Cell } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { apiClient } from "@/lib/client";
+import { apiClient, ToolUsageStats } from "@/lib/client";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { usePolling } from "@/hooks/use-polling";
-
-interface ToolUsageStats {
-  name: string;
-  serviceId: string;
-  count: number;
-}
 
 /**
  * TopToolsWidget displays a bar chart of the most frequently executed tools.
@@ -105,7 +99,7 @@ export function TopToolsWidget() {
                     formatter={(value: number) => [value, 'Executions']}
                 />
                 <Bar dataKey="count" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]}>
-                    {data.map((entry, index) => (
+                    {data.map((entry: ToolUsageStats, index: number) => (
                         <Cell key={`cell-${index}`} fill="hsl(var(--primary))" fillOpacity={0.8 - (index * 0.05)} />
                     ))}
                 </Bar>

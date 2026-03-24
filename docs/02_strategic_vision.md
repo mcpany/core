@@ -8,15 +8,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 2. **Zero Trust Security**: Granular, capability-based access control for all tool calls.
 3. **Context Persistence**: Shared state and context inheritance across agent swarms and execution environments.
 
-## Strategic Evolution: [2026-05-23]
-### Focus: Federated Swarm Identity & Mission-Root Sovereignty
-**Context**: The emergence of "Intent Leakage" via high-frequency reasoning traces and the persistent "Identity Spoofing" in heterogeneous meshes (Claude Code teammates vs. OpenClaw specialists) confirm that transport-layer security is no longer sufficient. We must now protect the **semantic sovereignty** of the mission intent and provide a **federated, hardware-bound identity** that persists across all connected frameworks.
-**Strategic Pivot**:
-- **Federated Swarm Identity (FSI) Provider**: MCP Any will evolve to act as the authoritative "Identity Mint" for all connected agents. We will implement FSI, issuing hardware-attested, cross-framework identity tokens that allow disparate agents (Claude, OpenClaw, AutoGen) to verify each other's lineage and mission-bound authority.
-- **Intent-Leakage Shielding (ILS)**: Supporting the sovereignty of the mission root, we are evolving the MRP middleware to include ILS. This layer will monitor the semantic entropy of subagent reasoning requests, blocking those designed to "probe" and exfiltrate private mission-root constraints.
-- **Hardware-Attested Discovery Handshake (HADH)**: To counter "Pre-Flight Shadow Mapping," we are mandating HADH. Agent capabilities will remain cryptographically invisible until a hardware-bound, identity-verified handshake is completed within the mission scope.
-- **Reasoning-Effort Quota Controller**: To neutralize "Agentic DoS" attacks, MCP Any will implement quota management for high-intensity reasoning (e.g., `x-gemini-reasoning-effort`). We will dynamically throttle subagent reasoning budgets to ensure they cannot "stall" the primary intent loop.
-
 ## Strategic Evolution: [2026-05-24]
 ### Focus: Active Negotiation Brokering & Differential Context Sovereignty
 **Context**: The emergence of "Dynamic Task-Capability Bidding" (DTCB) and the disclosure of the "Context-Dump" exploit (CVE-2026-39102) reveal that the security of a swarm now depends on the integrity of the **bidding process** and the **granularity of state sharing**. Transport-layer security and binary handoffs are no longer enough; we must now protect the semantic boundaries of the shared teammate mailbox.
@@ -37,16 +28,16 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **HAMS (Hardware-Attested Mesh Snapshot)**: Supporting the stability of deep meshes, MCP Any will implement HAMS. This provides a cryptographically signed snapshot of the entire mesh state, ensuring mission-root consistency across heterogeneous framework boundaries.
 - **T2T Verification Middleware**: To counter "Teammate Impersonation," we are upgrading the Mailbox Integrity Middleware. This layer will mandate cryptographically signed mailbox requests, validating every inter-teammate instruction against the mission root and its authorized role in the shared task list.
 
----
-
 ## Strategic Evolution: [2026-05-23]
-### Focus: Local Zero-Trust (LOWA) & Peer-to-Peer Agent Orchestration
-**Context**: The disclosure of "ClawJacked" (CVE-2026-25253) proves that "Implicit Local Trust" for loopback WebSocket traffic is a critical failure point. Simultaneously, the rise of Claude Code's "Agent Teams" signals a shift toward horizontal (mesh) collaboration. The "Universal Agent Bus" must now act as the secure, authenticated bridge for both local control and peer-to-peer teammate communication.
+### Focus: Federated Swarm Identity, Local Zero-Trust (LOWA) & Peer-to-Peer Agent Orchestration
+**Context**: The emergence of "Intent Leakage" via high-frequency reasoning traces, the disclosure of "ClawJacked" (CVE-2026-25253), and the rise of horizontal teammate swarms confirm that transport-layer security and "Implicit Local Trust" are no longer sufficient. We must protect the **semantic sovereignty** of the mission intent, provide a **federated hardware-bound identity**, and secure the local loopback control plane.
+
 **Strategic Pivot**:
-- **Local-Only WebSocket Auth (LOWA)**: MCP Any will evolve to mandate session-bound authentication for all local WebSocket listeners. This neutralizes cross-site brute-force attacks and ensures that only verified local applications—not malicious browser scripts—can command the gateway.
-- **Teammate-to-Teammate (T2T) Encryption Bridge**: Supporting horizontal swarms, MCP Any will implement a T2T Encryption Bridge. This service provides the infrastructure for teammates from disparate frameworks (Claude Code, OpenClaw, AutoGen) to securely exchange mailbox messages and synchronize their views of a "Shared Task List."
-- **Full-Mesh Discovery Authorization**: We are mandating "Auth-before-Discovery" for all A2A-compliant agents. Capabilities and "Agent Cards" will only be visible to peers who have completed a cryptographically bound handshake within a verified mission scope.
-- **Mailbox Integrity Middleware**: To prevent "Mailbox Injection" by rogue subagents, we are introducing a message-validation layer. Every inter-agent message must be signed and validated against the "Mission Root" intent before reaching the target teammate's mailbox.
+- **Federated Swarm Identity (FSI) Provider**: MCP Any will evolve to act as the authoritative "Identity Mint" for all connected agents, issuing hardware-attested, cross-framework tokens for secure inter-agent verification.
+- **Local-Only WebSocket Auth (LOWA)**: We are mandating session-bound authentication for all local listeners to neutralize cross-site hijacking and ensure only verified local applications can command the gateway.
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: Supporting horizontal swarms, this service provides the infrastructure for teammates (Claude Code, OpenClaw, AutoGen) to securely exchange mailbox messages and synchronize state.
+- **Intent-Leakage Shielding (ILS) & Mailbox Integrity**: We are evolving the middleware stack to monitor semantic entropy and validate every inter-agent message against the mission root, blocking "probing" requests and unauthorized mailbox injections.
+- **Hardware-Attested Discovery Handshake (HADH)**: Mandating "Auth-before-Discovery" where capabilities remain cryptographically invisible until a hardware-bound, identity-verified handshake is completed.
 
 ## Strategic Evolution: [2026-05-21]
 ### Focus: Reasoning Stability & Temporal Integrity
@@ -1161,7 +1152,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Strategic Pivot**:
 - **Multi-Signature Skill Grafting (MSSG) Hub**: MCP Any will evolve to act as the authoritative broker for federated skill integrity. We will implement the MSSG protocol, requiring cryptographic approval tokens from both the local framework and a verified third-party "Auditor Agent" before any new tool can be grafted into the swarm's capability set.
 - **Stylometric Sovereignty Monitor (SSM)**: To neutralize mimicry-based hijacking, we are introducing the SSM. This service will perform real-time, high-dimensional stylometric analysis of subagent reasoning monologues, ensuring that "Persona Shadowing" cannot be used to bypass Policy-Bound Reasoning (PBR) constraints.
-- **CRDT-Native Mailbox Sharding (CNMS)**: To eliminate the coordination stall in 10+ member teams, we are standardizing on CNMS. This architecture utilizes Conflict-Free Replicated Data Types to provide lock-free mailbox shards, ensuring sub-millisecond task synchronization across horizontal meshes.
+- **Lock-Free Mesh Arbiter (LFMA)**: To eliminate the coordination stall in 10+ member teams, we are standardizing on LFMA. This architecture utilizes Conflict-Free Replicated Data Types (CRDTs) to provide lock-free mailbox shards, ensuring sub-millisecond task synchronization across horizontal meshes.
 - **Headless Mission Resumption (HMR) Provider**: Supporting the stability of long-running missions, MCP Any will act as an HMR provider. We will implement hardware-locked binary checkpoints for mission state, allowing agent swarms to recover from cold-boots in sub-100ms without loss of reasoning-path integrity.
 
 ---

@@ -88,7 +88,7 @@ const HealthTimeline = memo(function HealthTimeline({ history }: { history: Heal
 
   return (
     <div className="flex items-center gap-[2px] h-3 ml-4">
-      {history.map((point, i) => {
+      {history.map((point: any, i: number) => {
         let colorClass = "bg-muted";
         switch (point.status) {
           case "healthy": colorClass = "bg-green-500/80 hover:bg-green-500"; break;
@@ -239,7 +239,7 @@ export function ServiceHealthWidget() {
       </CardHeader>
       <CardContent>
         <div className="space-y-1">
-          {sortedServices.map((service) => (
+          {sortedServices.map((service: any) => (
             <ServiceHealthItem
                 key={service.id}
                 service={service}

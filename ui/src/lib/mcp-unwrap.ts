@@ -117,7 +117,7 @@ export function deepParseJson(obj: any): any {
     }
 
     if (Array.isArray(obj)) {
-        return obj.map(deepParseJson);
+        return obj.map((item: any) => deepParseJson(item));
     }
 
     if (typeof obj === 'object' && obj !== null) {

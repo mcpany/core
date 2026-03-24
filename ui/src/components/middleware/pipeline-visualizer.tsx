@@ -68,7 +68,7 @@ export function PipelineVisualizer() {
 
     const updatePriorities = (list: Middleware[]) => {
         // Reassign priorities: 10, 20, 30...
-        const updated = list.map((m, i) => ({ ...m, priority: (i + 1) * 10 }));
+        const updated = list.map((m: Middleware, i: number) => ({ ...m, priority: (i + 1) * 10 }));
         setMiddlewares(updated);
     };
 
@@ -106,7 +106,7 @@ export function PipelineVisualizer() {
             </CardHeader>
             <CardContent>
                 <div className="space-y-2">
-                    {middlewares.map((m, i) => (
+                    {middlewares.map((m: Middleware, i: number) => (
                         <div key={m.name} className="flex items-center justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors">
                             <div className="flex items-center gap-4">
                                 <Badge variant="outline" className="w-8 h-8 flex items-center justify-center rounded-full">

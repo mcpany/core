@@ -121,7 +121,7 @@ export function RecentActivityWidget() {
             </div>
         ) : (
             <div className="relative z-10 p-4 space-y-4">
-                {traces.map((trace, index) => {
+                {traces.map((trace: any, index: number) => {
                     const isExpanded = expandedTraceId === trace.id;
                     const isSuccess = trace.status === 'success';
                     const isError = trace.status === 'error';
@@ -249,7 +249,7 @@ export function RecentActivityWidget() {
                                                     <div className="bg-background rounded-md border border-border overflow-hidden">
                                                         <pre className="text-[11px] font-mono whitespace-pre-wrap break-all m-0">
                                                             {/* Mock rendering of a unified diff */}
-                                                            {String(trace.rootSpan.attributes['mcp.response_diff']).split('\n').map((line, i) => {
+                                                            {String(trace.rootSpan.attributes['mcp.response_diff']).split('\n').map((line: string, i: number) => {
                                                                 if (line.startsWith('+')) {
                                                                     return <div key={i} className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 px-2 py-0.5">{line}</div>;
                                                                 }

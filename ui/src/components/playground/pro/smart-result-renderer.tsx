@@ -138,7 +138,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
 
         return (
             <div className="flex flex-col gap-4 p-4 border rounded-md bg-muted/10">
-                {mcpContent.map((item, idx) => (
+                {mcpContent.map((item: McpContent, idx: number) => (
                     <div key={idx} className="flex flex-col gap-2">
                         {item.type === 'text' && (
                             <div className="whitespace-pre-wrap font-mono text-sm bg-muted/30 p-3 rounded-md border border-white/5">
@@ -185,7 +185,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
         // Determine columns from all keys in the first 10 rows
         const allKeys = new Set<string>();
         tableData.slice(0, 10).forEach((row: any) => {
-            Object.keys(row).forEach(k => allKeys.add(k));
+            Object.keys(row).forEach((k: string) => allKeys.add(k));
         });
         const columns = Array.from(allKeys);
 
@@ -194,7 +194,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                 <Table>
                     <TableHeader className="bg-muted/50 sticky top-0">
                         <TableRow>
-                            {columns.map(col => (
+                            {columns.map((col: string) => (
                                 <TableHead key={col} className="whitespace-nowrap font-medium text-xs px-2 py-1 h-8">
                                     {col}
                                 </TableHead>
@@ -204,7 +204,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                     <TableBody>
                         {tableData.map((row: any, idx: number) => (
                             <TableRow key={idx} className="hover:bg-muted/50">
-                                {columns.map(col => {
+                                {columns.map((col: string) => {
                                     const val = row[col];
                                     let displayVal = val;
                                     if (typeof val === 'object' && val !== null) {

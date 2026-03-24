@@ -39,7 +39,7 @@ interface McpContentRendererProps {
 function McpContentRenderer({ content }: McpContentRendererProps) {
     return (
         <div className="space-y-6 p-4">
-            {content.map((item, index) => {
+            {content.map((item: McpContent, index: number) => {
                 if (item.type === "text") {
                     return (
                         <div key={index} className="prose prose-sm dark:prose-invert max-w-none break-words">
@@ -145,7 +145,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             }
 
             // 3. Heuristic: Object with exactly one array of objects, and other simple properties (e.g. metadata)
-            const arrayProps = Object.entries(content).filter(([_, val]) =>
+            const arrayProps = Object.entries(content).filter(([_, val]: [string, any]) =>
                 Array.isArray(val) && val.length > 0 && typeof val[0] === 'object' && val[0] !== null
             );
             if (arrayProps.length === 1) {
@@ -164,7 +164,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         // Limit rows scanned for columns to avoid perf issues on huge datasets
         tableData.slice(0, 50).forEach((item: any) => {
             if (typeof item === 'object' && item !== null) {
-                Object.keys(item).forEach(k => keys.add(k));
+                Object.keys(item).forEach((k: string) => keys.add(k));
             }
         });
         return Array.from(keys);

@@ -126,7 +126,7 @@ export const MetricsOverview = memo(function MetricsOverview() {
         <div className="text-muted-foreground animate-pulse">Loading dashboard metrics...</div>
       ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {metrics.map((metric) => (
+            {metrics.map((metric: Metric) => (
               <MetricItem key={metric.label} metric={metric} />
             ))}
           </div>

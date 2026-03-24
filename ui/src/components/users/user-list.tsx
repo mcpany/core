@@ -64,7 +64,7 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
     const filteredUsers = useMemo(() => {
         if (!searchQuery) return users;
         const query = searchQuery.toLowerCase();
-        return users.filter(user =>
+        return users.filter((user: User) =>
             user.id.toLowerCase().includes(query) ||
             user.roles.some((role: string) => role.toLowerCase().includes(query))
         );
@@ -89,7 +89,7 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                 </div>
                 <div className="border rounded-md">
                     <div className="h-12 border-b bg-muted/50" />
-                    {[...Array(3)].map((_, i) => (
+                    {[...Array(3)].map((_: any, i: number) => (
                         <div key={i} className="h-16 border-b bg-background animate-pulse" />
                     ))}
                 </div>
@@ -127,7 +127,7 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                             <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                     )}
-                    itemContent={(index, user) => (
+                    itemContent={(index: number, user: any) => (
                                 <TableRow data-testid={`user-row-${user.id}`}>
                                     <TableCell>
                                         <div className="flex items-center gap-3">

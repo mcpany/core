@@ -56,7 +56,7 @@ export function ActiveIntentAlignmentWidget() {
                 </CardDescription>
             </CardHeader>
             <CardContent className="relative space-y-4">
-                {agents.map(agent => (
+                {agents.map((agent: any) => (
                     <div
                         key={agent.id}
                         className={cn(

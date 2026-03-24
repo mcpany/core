@@ -126,9 +126,9 @@ export function SwarmTopologyWidget() {
                         </linearGradient>
                     </defs>
 
-                    {data.edges.map((edge, i) => {
-                        const source = data.nodes.find(n => n.id === edge.source);
-                        const target = data.nodes.find(n => n.id === edge.target);
+                    {data.edges.map((edge: SwarmEdge, i: number) => {
+                        const source = data.nodes.find((n: SwarmNode) => n.id === edge.source);
+                        const target = data.nodes.find((n: SwarmNode) => n.id === edge.target);
                         if (!source || !target) return null;
 
                         // Calculate SVG coordinates (percentage to pixels based on container, or just use % for simple rendering)
@@ -159,7 +159,7 @@ export function SwarmTopologyWidget() {
 
                 {/* Nodes Layer (HTML for easier interaction/styling) */}
                 <div className="absolute inset-0">
-                    {data.nodes.map((node) => {
+                    {data.nodes.map((node: SwarmNode) => {
                         const Icon = node.type === 'validator' ? Shield : node.type === 'agent' ? Cpu : Zap;
                         const isBlocked = node.status === 'stall';
 
@@ -193,7 +193,7 @@ export function SwarmTopologyWidget() {
                 {/* Anomalies Overlay */}
                 {data.anomalies.length > 0 && (
                     <div className="absolute bottom-4 left-4 right-4 z-20">
-                        {data.anomalies.map((msg, i) => (
+                        {data.anomalies.map((msg: string, i: number) => (
                             <div key={i} className="bg-red-950/90 border border-red-500/50 rounded-md p-2 flex items-start gap-2 backdrop-blur-md shadow-lg transform transition-all translate-y-0 opacity-100">
                                 <ShieldAlert className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
                                 <div className="text-xs text-red-200 font-mono">

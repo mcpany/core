@@ -55,7 +55,7 @@ export default function TracesPage() {
   // Randomized Selection from Top 5 High-Impact Targets (Network Category)
   usePolling(() => loadTraces(false), isLive ? 3000 : null);
 
-  const selectedTrace = traces.find(t => t.id === selectedId) || null;
+  const selectedTrace = traces.find((t: any) => t.id === selectedId) || null;
 
   if (loading) {
       return (

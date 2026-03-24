@@ -202,12 +202,12 @@ export default function WebhooksPage() {
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                webhooks.map((hook) => (
+                                webhooks.map((hook: any) => (
                                     <TableRow key={hook.id}>
                                         <TableCell className="font-mono text-xs max-w-[300px] truncate" title={hook.url}>{hook.url}</TableCell>
                                         <TableCell>
                                             <div className="flex gap-1 flex-wrap">
-                                                {hook.events.map(e => <Badge key={e} variant="secondary" className="text-xs">{e}</Badge>)}
+                                                {hook.events.map((e: any) => <Badge key={e} variant="secondary" className="text-xs">{e}</Badge>)}
                                             </div>
                                         </TableCell>
                                         <TableCell>

@@ -1,65 +1,59 @@
 # Design Doc: Lock-Free Mesh Arbiter (LFMA)
 **Status:** Draft
-**Created:** 2026-05-31
+**Created:** 2026-06-28
 
 ## 1. Context and Scope
-As AI agent swarms evolve from hierarchical trees to horizontal teams (e.g., Claude Code's Agent Teams), the traditional model of a single "Supervisor" or "Mailbox Lock" is becoming a performance bottleneck. Parallel teammates attempting to claim tasks or synchronize state frequently collide, leading to "Cognitive Stall" and increased latency.
+As AI agent teams scale horizontally (e.g., Claude Code swarms), traditional centralized task queues and database locks become a prohibitive bottleneck. The "Mailbox Lock" crisis of early 2026 saw coordination latency spike to 2s+ in swarms of 10+ agents.
 
-The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-blocking coordination layer for horizontal swarms. It utilizes Conflict-Free Replicated Data Types (CRDTs) to ensure that teammates can claim, delegate, and update tasks asynchronously without requiring global locks or a central supervisor for every state change.
+The Lock-Free Mesh Arbiter (LFMA) implements a decentralized coordination model using Conflict-Free Replicated Data Types (CRDTs) to provide sub-millisecond task synchronization across heterogeneous framework boundaries.
 
 ## 2. Goals & Non-Goals
 *   **Goals:**
-    *   Provide sub-millisecond task claiming for parallel teammates.
-    *   Ensure eventual consistency of the shared task list across framework-neutral meshes.
-    *   Support lock-free state synchronization for horizontal swarms exceeding 5+ agents.
-    *   Integrate with hardware-attested identity to ensure secure, non-repudiable coordination.
+    *   Eliminate coordination deadlocks in high-density horizontal swarms.
+    *   Achieve <10ms task-claiming latency for teammate mailboxes.
+    *   Ensure mission-root consistency across decentralized framework nodes.
+    *   Provide hardware-attested conflict resolution for parallel agent edits.
 *   **Non-Goals:**
-    *   Replacing the mission-root intent (LFMA manages task state, not mission definition).
-    *   Providing real-time synchronous consensus for every minor tool call (handled by CQ Hub).
+    *   Replacing the Shared KV Store (Blackboard) for persistent storage.
+    *   Implementing a full distributed database (LFMA is for coordination state).
 
 ## 3. Critical User Journey (CUJ)
-*   **User Persona:** Horizontal Agent Swarm Orchestrator (e.g., Claude Code Agent Team)
-*   **Primary Goal:** Enable 10 parallel teammates to claim and execute tasks from a shared list without coordination locks.
+*   **User Persona:** Local LLM Swarm Orchestrator
+*   **Primary Goal:** Coordinate 20 parallel specialist agents on a complex refactoring task without mailbox contention.
 *   **The Happy Path (Tasks):**
-    1.  The Mission Root agent initializes a shared task list on the LFMA bus.
-    2.  Parallel Teammates (Claude, OpenClaw, AutoGen) subscribe to the LFMA mesh.
-    3.  Agent A identifies a task and issues a "Claim" instruction via a CRDT LWW-Element-Set.
-    4.  Agent B simultaneously attempts to claim the same task; the LFMA resolves the conflict locally using monotonic timestamps and hardware-attested identity priority.
-    5.  Both agents continue reasoning without waiting for a global lock acknowledgment.
-    6.  The mesh state converges asynchronously, and Agent B gracefully pivots to the next available task.
+    1.  The parent agent publishes a list of 50 tasks to the sharded mailbox.
+    2.  Specialist agents utilize the LFMA client to perform local, lock-free task claiming.
+    3.  LFMA synchronizes the CRDT task list across all teammate nodes in the background.
+    4.  Conflict resolution is handled via hardware-attested logical clocks (LWW-Element-Set).
+    5.  Teammates stream status updates to the shared shard, visible to the parent without blocking.
 
 ## 4. Design & Architecture
 *   **System Flow:**
-    Teammate A (Claim) ---> [LFMA CRDT Buffer] <--- Teammate B (Claim)
-                                |
-                                v
-                    [Conflict Resolution Logic]
-                                |
-                                v
-                    [Hardware-Attested Mesh State]
-                                |
-                                v
-                    Broadcast Update to all Teammates
+    [Parent Agent] -> (Seed Tasks) -> [CRDT Mailbox Shard]
+                                            |
+                    -------------------------------------------------
+                    |                       |                       |
+            [Teammate A (OpenClaw)]   [Teammate B (Claude)]   [Teammate C (AutoGen)]
+                    |                       |                       |
+            (Claim Task 1)           (Claim Task 2)          (Claim Task 3)
+                    |                       |                       |
+                    ------- (P2P Sync / CRDT Merge) -----------------
 
 *   **APIs / Interfaces:**
-    *   `POST /v1/mesh/claim`: Submit a task claim with hardware-attested session token.
-    *   `GET /v1/mesh/state`: Retrieve the current converged CRDT state of the task mesh.
-    *   `WS /v1/mesh/sync`: Real-time WebSocket stream for sharded state updates.
+    *   `POST /v1/mesh/claim`: Atomic, lock-free task claiming.
+    *   `GET /v1/mesh/state`: Retrieve current CRDT state for a mailbox shard.
+    *   `POST /v1/mesh/sync`: Peer-to-peer state synchronization endpoint.
 *   **Data Storage/State:**
-    *   In-memory CRDT (G-Set or LWW-Element-Set) for active tasks.
-    *   Persistent backup in the Shared KV Store (Blackboard) with STL (State-Trust Labeling).
+    *   In-memory LWW-Element-Set (Last-Write-Wins) for task ownership.
+    *   Merkle-Search-Trees (MST) for efficient delta synchronization.
 
 ## 5. Alternatives Considered
-*   **Centralized Redis Lock:** Rejected due to the "Local Sovereignty" requirement and the latency of network-bound locking in air-gapped or high-frequency local environments.
-*   **Hierarchical Supervisor handoffs:** Rejected as it recreates the supervisor bottleneck we are trying to eliminate for horizontal teams.
+*   **Centralized Redis Queue:** Rejected due to single-point-of-failure and latency in local-first deployments.
+*   **Raft-based Consensus:** Rejected as too heavy for the high-frequency, transient state of agent mailboxes.
 
 ## 6. Cross-Cutting Concerns
-*   **Security (Zero Trust):** Every LFMA operation must be signed with a HAIR (Hardware-Attested Identity Rotation) token to prevent "Teammate Impersonation" or "Task Squatting."
-*   **Observability:** Real-time visualization via the "Teammate Task-List Arbiter Workspace" in the UI, showing CRDT merge events and conflict resolutions.
+*   **Security (Zero Trust):** All CRDT operations must be signed with hardware-bound identity tokens to prevent "State Splicing."
+*   **Observability:** Visualized via the "Lock-Free Coordination Monitor," showing real-time shard throughput and conflict rates.
 
 ## 7. Evolutionary Changelog
-*   **2026-05-31:** Initial Document Creation.
-*   **2026-06-28:** Evolving to **CRDT-Native Mailbox Sharding (CNMS)**.
-    *   **Context:** Industry feedback from large-scale (10+ agent) deployments indicates that even with CRDTs, a single global mailbox buffer creates a "Serialization Bottleneck" during peak reasoning bursts.
-    *   **Architecture Adjustment:** Introducing **Asynchronous Mailbox Sharding (AMS)** at the CRDT layer. Teammate mailboxes are now sharded by task-ID, with each shard maintaining its own independent CRDT lattice. This allows parallel teammates to synchronize sub-states without global lattice merges.
-    *   **Performance Impact:** Reduces coordination stall by an additional 40% for horizontal swarms exceeding 10 teammates.
+*   **2026-06-28:** Initial Document Creation.

@@ -88,7 +88,7 @@ export function LogStream({
     // Optimization: Flush buffer periodically to limit re-renders
     const flushInterval = setInterval(() => {
       if (logBufferRef.current.length > 0) {
-        setLogs((prev) => {
+        setLogs((prev: LogEntry[]) => {
           const buffer = logBufferRef.current
           logBufferRef.current = [] // Clear buffer
           const MAX_LOGS = 2000 // Increased limit to allow for more history
@@ -183,7 +183,7 @@ export function LogStream({
   // Optimization: Extract unique sources from logs efficiently
   const uniqueSources = React.useMemo(() => {
     const sources = new Set<string>()
-    logs.forEach(log => {
+    logs.forEach((log: LogEntry) => {
       if (log.source) {
         sources.add(log.source)
       }
@@ -196,7 +196,7 @@ export function LogStream({
   const filteredLogs = React.useMemo(() => {
     const lowerSearchQuery = deferredSearchQuery.toLowerCase()
 
-    return logs.filter((log) => {
+    return logs.filter((log: LogEntry) => {
       // 1. Trace ID Filtering (Highest Priority)
       if (traceId) {
         // Check metadata for trace_id
@@ -241,7 +241,7 @@ export function LogStream({
   const clearLogs = () => setLogs([])
 
   const downloadLogs = () => {
-    const content = filteredLogs.map(l => `[${l.timestamp}] [${l.level}] [${l.source}] ${l.message}`).join('\n')
+    const content = filteredLogs.map((l: LogEntry) => `[${l.timestamp}] [${l.level}] [${l.source}] ${l.message}`).join('\n')
     const blob = new Blob([content], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -339,7 +339,7 @@ export function LogStream({
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="ALL">All Sources</SelectItem>
-                                {uniqueSources.map(source => (
+                                {uniqueSources.map((source: string) => (
                                     <SelectItem key={source} value={source}>{source}</SelectItem>
                                 ))}
                             </SelectContent>

@@ -71,7 +71,7 @@ function DefinitionsTable<T extends { name: string; description?: string; type?:
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((item) => (
+            {data.map((item: T) => (
               <TableRow key={item.name}>
                 <TableCell className="font-medium">
                    <Link to={`/service/${encodeURIComponent(serviceId)}/${linkPath}/${encodeURIComponent(item.name)}`} className="hover:underline text-primary/90">
@@ -132,7 +132,7 @@ function MetricsCard({ serviceId }: { serviceId: string }) {
             </CardHeader>
             <CardContent>
                  <dl className="space-y-2">
-                    {Object.entries(metrics).map(([key, value]) => (
+                    {Object.entries(metrics).map(([key, value]: [string, any]) => (
                         <div key={key} className="flex justify-between items-start">
                             <dt className="text-muted-foreground capitalize">{key.replace(/_/g, ' ')}</dt>
                             <dd className="text-right font-mono text-sm">{value.toLocaleString()}</dd>

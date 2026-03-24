@@ -205,7 +205,7 @@ export const marketplaceService = {
 
                   // Extract emojis as tags
                   // Simple heuristic: split by space, keep if it's emoji-like or short code
-                  const tags = tagsRaw.split(/\s+/).filter(t => t.length > 0);
+                  const tags = tagsRaw.split(/\s+/).filter((t: string) => t.length > 0);
 
                   // Filter out "TOC" items which might look like servers but point to anchors
                   if (url.startsWith('#')) continue;
@@ -285,7 +285,7 @@ export const marketplaceService = {
   deleteLocalCollection: (name: string) => {
       if (typeof window === 'undefined') return;
       const current = marketplaceService.fetchLocalCollections();
-      const newCols = current.filter(c => c.name !== name);
+      const newCols = current.filter((c: ServiceCollection) => c.name !== name);
       localStorage.setItem('mcp_local_collections', JSON.stringify(newCols));
   }
 };

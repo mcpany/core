@@ -116,7 +116,7 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
             // But we should try to be safer if possible.
             // Assuming Node type from @/types/topology
             const extractServiceNodes = (nodes: any[]) => {
-                nodes.forEach(node => {
+                nodes.forEach((node: any) => {
                     if (node.type === 'NODE_TYPE_SERVICE') {
                         newPoints[node.id] = {
                             timestamp: now,
@@ -138,9 +138,9 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
             }
 
             // Update history
-            setHistory(prev => {
+            setHistory((prev: any) => {
                 const next = { ...prev };
-                Object.entries(newPoints).forEach(([id, point]) => {
+                Object.entries(newPoints).forEach(([id, point]: [string, any]) => {
                     const points = next[id] ? [...next[id], point] : [point];
                     if (points.length > MAX_HISTORY_POINTS) {
                         points.shift();

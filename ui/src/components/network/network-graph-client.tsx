@@ -156,7 +156,7 @@ export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) 
     }, [isMobile]);
 
     const filteredNodes = useMemo(() => {
-        return nodes.filter(n => {
+        return nodes.filter((n: Node) => {
             const type = n.data.type as NodeType;
             if (!showSystem && (type === 'NODE_TYPE_MIDDLEWARE' || type === 'NODE_TYPE_CORE')) return false;
             if (!showTools && (type === 'NODE_TYPE_TOOL' || type === 'NODE_TYPE_RESOURCE' || type === 'NODE_TYPE_PROMPT')) return false;
@@ -165,8 +165,8 @@ export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) 
     }, [nodes, showSystem, showTools]);
 
     const filteredEdges = useMemo(() => {
-        const nodeIds = new Set(filteredNodes.map(n => n.id));
-        return edges.filter(e => nodeIds.has(e.source) && nodeIds.has(e.target));
+        const nodeIds = new Set(filteredNodes.map((n: Node) => n.id));
+        return edges.filter((e: any) => nodeIds.has(e.source) && nodeIds.has(e.target));
     }, [edges, filteredNodes]);
 
     // Optimization: Memoize onNodeClick to prevent unnecessary re-renders in ReactFlow
@@ -357,7 +357,7 @@ export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) 
                                 <div className="bg-black/90 rounded-lg p-3 overflow-hidden border border-slate-800">
                                     <table className="w-full text-xs font-mono">
                                         <tbody>
-                                            {Object.entries(selectedNode.data.metadata).map(([k, v]) => (
+                                            {Object.entries(selectedNode.data.metadata).map(([k, v]: [string, string]) => (
                                                 <tr key={k} className="border-b border-white/10 last:border-0">
                                                     <td className="py-2 pr-4 text-slate-400 select-none w-1/3">{k}</td>
                                                     <td className="py-2 text-slate-100 break-all">{String(v)}</td>

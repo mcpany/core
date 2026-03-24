@@ -47,7 +47,7 @@ export function OptimizationTab({ tools, toolUsage, onToggleTool }: Optimization
         let totalWastedTokens = 0;
         let potentialSavings = 0;
 
-        tools.forEach((tool) => {
+        tools.forEach((tool: ToolDefinition) => {
             if (tool.disable) return; // Skip already disabled tools
 
             const tokens = estimateTokens(JSON.stringify(tool));
@@ -139,7 +139,7 @@ export function OptimizationTab({ tools, toolUsage, onToggleTool }: Optimization
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {analysis.ghostTools.map(({ tool, tokens }) => (
+                                {analysis.ghostTools.map(({ tool, tokens }: any) => (
                                     <TableRow key={tool.name}>
                                         <TableCell className="font-medium">
                                             <div className="flex flex-col">

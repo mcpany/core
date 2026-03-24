@@ -31,7 +31,7 @@ export function ServicePropertyCard({ title, data }: ServicePropertyCardProps) {
             </CardHeader>
             <CardContent>
                 <dl className="space-y-2">
-                    {Object.entries(data).map(([key, value]) => (
+                    {Object.entries(data).map(([key, value]: [string, any]) => (
                         <div key={key} className="flex justify-between items-start">
                             <dt className="text-muted-foreground">{key}</dt>
                             <dd className="text-right font-mono text-sm">

@@ -39,7 +39,7 @@ export function usePinnedTools() {
   const togglePin = (toolName: string) => {
     setPinnedTools((prev) => {
       const newPinned = prev.includes(toolName)
-        ? prev.filter((t) => t !== toolName)
+        ? prev.filter((t: string) => t !== toolName)
         : [...prev, toolName];
       saveToStorage(newPinned);
       return newPinned;
@@ -56,7 +56,7 @@ export function usePinnedTools() {
 
   const bulkUnpin = (names: string[]) => {
     setPinnedTools((prev) => {
-      const newPinned = prev.filter((t) => !names.includes(t));
+      const newPinned = prev.filter((t: string) => !names.includes(t));
       saveToStorage(newPinned);
       return newPinned;
     });

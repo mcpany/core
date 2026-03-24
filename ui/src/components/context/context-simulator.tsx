@@ -35,7 +35,7 @@ export function ContextSimulator() {
 
     const groupedTools = useMemo(() => {
         const groups: Record<string, typeof tools> = {};
-        tools.forEach(tool => {
+        tools.forEach((tool: any) => {
             if (!groups[tool.serviceId]) groups[tool.serviceId] = [];
             groups[tool.serviceId].push(tool);
         });
@@ -106,7 +106,7 @@ export function ContextSimulator() {
                                     </Label>
                                 </div>
                                 <div className="pl-2 space-y-2 border-l-2 border-muted ml-1">
-                                    {serviceTools.map(tool => {
+                                    {serviceTools.map((tool: any) => {
                                         const id = `${tool.serviceId}.${tool.name}`;
                                         const disabled = disabledToolIds.has(id);
                                         const cost = getToolCost(tool);

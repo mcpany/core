@@ -662,3 +662,4 @@
 - [ ] **[P0] Auditor Quorum Manager**: UI for configuring and monitoring multi-signature tool grafting status and auditor consensus. (Added: 2026-06-28)
 - [ ] **[P0] Stylometric Alignment Dashboard**: Real-time visualization of behavioral persona consistency and mimicry alerts. (Added: 2026-06-28)
 - [ ] **[P0] Mission Checkpoint Explorer**: Workspace for reviewing and triggering hardware-locked headless resumption events. (Added: 2026-06-28)
+- [ ] **[P0] Lock-Free Coordination Monitor**: Real-time visualizer for CRDT-based mailbox shards and teammate synchronization. (Added: 2026-06-28)

@@ -218,7 +218,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   const togglePromptStatus = async (prompt: PromptDefinition) => {
       const newDisable = !prompt.disable;
       // Optimistic update
-      setPrompts(prompts.map(p => p.name === prompt.name ? {...p, disable: newDisable} : p));
+      setPrompts(prompts.map((p: PromptDefinition) => p.name === prompt.name ? {...p, disable: newDisable} : p));
       if (selectedPrompt?.name === prompt.name) {
           setSelectedPrompt({...selectedPrompt, disable: newDisable});
       }
@@ -278,7 +278,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
         </div>
         <ScrollArea className="flex-1">
             <div className="flex flex-col p-2 gap-1">
-                {filteredPrompts.map((prompt) => (
+                {filteredPrompts.map((prompt: PromptDefinition) => (
                     <button
                         key={prompt.name}
                         onClick={() => handleSelectPrompt(prompt)}
@@ -368,7 +368,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                                 <Card>
                                     <CardContent className="p-4 space-y-4">
                                         {getArguments(selectedPrompt).length > 0 ? (
-                                            getArguments(selectedPrompt).map((arg) => (
+                                            getArguments(selectedPrompt).map((arg: any) => (
                                                 <div key={arg.name} className="space-y-1.5">
                                                     <Label htmlFor={arg.name} className="flex items-center gap-1 text-xs font-mono uppercase text-muted-foreground">
                                                         {arg.name}

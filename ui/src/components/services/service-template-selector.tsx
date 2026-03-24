@@ -32,7 +32,7 @@ export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorPro
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   const filteredTemplates = useMemo(() => {
-    return SERVICE_TEMPLATES.filter((template) => {
+    return SERVICE_TEMPLATES.filter((template: ServiceTemplate) => {
       const matchesCategory = selectedCategory === "All" || template.category === selectedCategory;
       const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             template.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -59,7 +59,7 @@ export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorPro
         </div>
 
         <div className="flex overflow-x-auto pb-2 gap-2 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
-            {CATEGORIES.map(cat => (
+            {CATEGORIES.map((cat: string) => (
                 <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
@@ -77,7 +77,7 @@ export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorPro
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4">
-        {filteredTemplates.map((template) => {
+        {filteredTemplates.map((template: ServiceTemplate) => {
           const Icon = template.icon;
           return (
             <div

@@ -150,7 +150,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                     if (!opt.properties) return;
                     const keys = Object.keys(value as object);
                     let matches = 0;
-                    keys.forEach(k => {
+                    keys.forEach((k: string) => {
                         if (k in opt.properties) matches++;
                     });
 
@@ -348,7 +348,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
         const renderDynamicProperties = () => {
             if (!allowDynamic) return null;
 
-            const dynamicKeys = Object.keys(objectValue).filter(k => !(k in properties));
+            const dynamicKeys = Object.keys(objectValue).filter((k: string) => !(k in properties));
 
             return (
                 <div className="space-y-2 mt-4">
@@ -357,7 +357,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                             <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                                 Custom Properties
                             </Label>
-                            {dynamicKeys.map((key) => (
+                            {dynamicKeys.map((key: string) => (
                                 <div key={key} className="flex gap-2 items-start group relative pl-2">
                                     <div className="mt-2.5 text-muted-foreground/30 absolute left-0">
                                          <div className="w-1 h-1 rounded-full bg-current" />
@@ -414,7 +414,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
         if (level === 0) {
             return (
                 <div className="space-y-5">
-                    {hasProperties && Object.entries(properties).map(([key, propSchema]) => (
+                    {hasProperties && Object.entries(properties).map(([key, propSchema]: [string, any]) => (
                         <SchemaField
                             key={key}
                             path={path ? `${path}.${key}` : key}
@@ -456,7 +456,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                     )}
                 </div>
                 <CollapsibleContent className="space-y-4 pt-1 pb-2 pl-2">
-                    {hasProperties && Object.entries(properties).map(([key, propSchema]) => (
+                    {hasProperties && Object.entries(properties).map(([key, propSchema]: [string, any]) => (
                         <SchemaField
                             key={key}
                             path={path ? `${path}.${key}` : key}
@@ -516,7 +516,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                             Empty list.
                         </div>
                     ) : (
-                        arrayValue.map((item, index) => (
+                        arrayValue.map((item: any, index: number) => (
                             <div key={index} className="flex gap-2 items-start group relative pl-2">
                                 <div className="mt-2.5 text-muted-foreground/30 absolute left-0">
                                      <div className="w-1 h-1 rounded-full bg-current" />

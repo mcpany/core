@@ -74,7 +74,7 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
   const entries = Object.entries(data as object);
   const preview = isArray
     ? `Array(${entries.length})`
-    : `{ ${entries.slice(0, 3).map(([k]) => k).join(", ")}${entries.length > 3 ? ", ..." : ""} }`;
+    : `{ ${entries.slice(0, 3).map(([k]: [string, any]) => k).join(", ")}${entries.length > 3 ? ", ..." : ""} }`;
 
   return (
     <div className={cn("font-mono text-xs", className)}>
@@ -105,7 +105,7 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
 
       {expanded && (
         <div className="border-l border-white/10 ml-2 pl-2 flex flex-col">
-          {entries.map(([key, value], idx) => (
+          {entries.map(([key, value]: [string, any], idx: number) => (
             <div key={key} className="flex items-start gap-1">
                {/* Key */}
                <div className="pt-[2px] shrink-0 text-purple-400">

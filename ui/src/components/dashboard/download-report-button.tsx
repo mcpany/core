@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { apiClient } from "@/lib/client";
+import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 
 /**
  * A button component that fetches dashboard metrics and downloads them as a JSON report.
@@ -34,7 +34,7 @@ export function DownloadReportButton() {
                     toolFailures: failures.length,
                 },
                 metrics,
-                services: services.map(s => ({ name: s.name, version: s.version, type: s.httpService ? "HTTP" : s.grpcService ? "gRPC" : "Other" })),
+                services: (services as UpstreamServiceConfig[]).map((s: UpstreamServiceConfig) => ({ name: s.name, version: s.version, type: s.httpService ? "HTTP" : s.grpcService ? "gRPC" : "Other" })),
                 topTools: tools,
                 recentFailures: failures
             };

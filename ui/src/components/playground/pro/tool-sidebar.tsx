@@ -30,7 +30,7 @@ export function ToolSidebar({ tools, onSelectTool, className }: ToolSidebarProps
     const [selectedService, setSelectedService] = useState<string | null>(null);
 
     const filteredTools = useMemo(() => {
-        return tools.filter(tool => {
+        return tools.filter((tool: ToolDefinition) => {
             const matchesSearch = tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                   tool.description?.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesService = selectedService ? tool.serviceId === selectedService : true;
@@ -39,7 +39,7 @@ export function ToolSidebar({ tools, onSelectTool, className }: ToolSidebarProps
     }, [tools, searchQuery, selectedService]);
 
     const services = useMemo(() => {
-        const s = new Set(tools.map(t => t.serviceId || 'builtin'));
+        const s = new Set(tools.map((t: ToolDefinition) => t.serviceId || 'builtin'));
         return Array.from(s);
     }, [tools]);
 
@@ -68,7 +68,7 @@ export function ToolSidebar({ tools, onSelectTool, className }: ToolSidebarProps
                         >
                             All
                         </Badge>
-                        {services.map(s => (
+                        {services.map((s: string) => (
                             <Badge
                                 key={s}
                                 variant={selectedService === s ? "default" : "outline"}
@@ -91,7 +91,7 @@ export function ToolSidebar({ tools, onSelectTool, className }: ToolSidebarProps
                         </div>
                     )}
 
-                    {filteredTools.map((tool) => (
+                    {filteredTools.map((tool: ToolDefinition) => (
                         <div
                             key={tool.name}
                             className="group flex flex-col gap-2 p-3 rounded-lg border bg-card hover:bg-accent/50 hover:border-primary/30 transition-all cursor-pointer shadow-sm"

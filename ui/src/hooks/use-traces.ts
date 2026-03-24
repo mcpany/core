@@ -47,7 +47,7 @@ export function useTraces(options: UseTracesOptions = {}) {
             const buffer = bufferRef.current;
             bufferRef.current = [];
 
-            setTraces((prev) => {
+            setTraces((prev: any) => {
                 // ⚡ BOLT: Batched updates logic
 
                 // 1. Deduplicate buffer (last write wins)
@@ -57,7 +57,7 @@ export function useTraces(options: UseTracesOptions = {}) {
                 }
 
                 // 2. Identify existing IDs for O(1) lookup
-                const existingIds = new Set(prev.map(t => t.id));
+                const existingIds = new Set(prev.map((t: any) => t.id));
 
                 // 3. Separate new inserts from updates
                 const inserts: Trace[] = [];
@@ -75,7 +75,7 @@ export function useTraces(options: UseTracesOptions = {}) {
                 // ⚡ BOLT: Optimization - Skip mapping if no existing items need updates
                 let nextTraces = prev;
                 if (updatesForExisting.size > 0) {
-                    nextTraces = prev.map(t => {
+                    nextTraces = prev.map((t: any) => {
                         if (updatesForExisting.has(t.id)) {
                             return updatesForExisting.get(t.id)!;
                         }

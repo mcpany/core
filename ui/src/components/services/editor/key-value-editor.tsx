@@ -31,7 +31,7 @@ export function KeyValueEditor({ initialValues, onChange, keyPlaceholder = "Key"
 
     useEffect(() => {
         if (initialValues) {
-            setPairs(Object.entries(initialValues).map(([key, value]) => ({ id: crypto.randomUUID(), key, value })));
+            setPairs(Object.entries(initialValues).map(([key, value]: [string, string]) => ({ id: crypto.randomUUID(), key, value })));
         } else {
             setPairs([]);
         }
@@ -39,7 +39,7 @@ export function KeyValueEditor({ initialValues, onChange, keyPlaceholder = "Key"
 
     const updateParent = (currentPairs: KeyValuePair[]) => {
         const newValues: Record<string, string> = {};
-        currentPairs.forEach(p => {
+        currentPairs.forEach((p: KeyValuePair) => {
             if (p.key) {
                 newValues[p.key] = p.value;
             }
@@ -54,13 +54,13 @@ export function KeyValueEditor({ initialValues, onChange, keyPlaceholder = "Key"
     };
 
     const removePair = (index: number) => {
-        const newPairs = pairs.filter((_, i) => i !== index);
+        const newPairs = pairs.filter((_: any, i: number) => i !== index);
         setPairs(newPairs);
         updateParent(newPairs);
     };
 
     const updatePair = (index: number, field: keyof KeyValuePair, value: string) => {
-        const newPairs = pairs.map((p, i) => {
+        const newPairs = pairs.map((p: KeyValuePair, i: number) => {
             if (i === index) {
                 return { ...p, [field]: value };
             }
@@ -74,7 +74,7 @@ export function KeyValueEditor({ initialValues, onChange, keyPlaceholder = "Key"
         <div className="space-y-2">
             {/* ⚡ BOLT: [Render Optimization] Use stable IDs instead of array index for list keys to prevent React state/focus loss and unnecessary remounts.
                 Randomized Selection from Top 5 High-Impact Targets (Render Category) */}
-            {pairs.map((pair, index) => (
+            {pairs.map((pair: KeyValuePair, index: number) => (
                 <div key={pair.id} className="flex items-center gap-2">
                     <Input
                         placeholder={keyPlaceholder}

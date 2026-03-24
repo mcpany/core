@@ -60,7 +60,7 @@ export function AlertList() {
 
   const handleSelectAll = useCallback((checked: boolean, filteredAlerts: Alert[]) => {
     if (checked) {
-      setSelected(new Set(filteredAlerts.map(a => a.id)));
+      setSelected(new Set(filteredAlerts.map((a: any) => a.id)));
     } else {
       setSelected(new Set());
     }
@@ -81,9 +81,9 @@ export function AlertList() {
   const handleBulkStatusChange = async (newStatus: AlertStatus) => {
       const selectedIds = Array.from(selected);
       try {
-          await Promise.all(selectedIds.map(id => apiClient.updateAlertStatus(id, newStatus)));
+          await Promise.all(selectedIds.map((id: string) => apiClient.updateAlertStatus(id, newStatus)));
 
-          setAlerts(prev => prev.map(a => selectedIds.includes(a.id) ? { ...a, status: newStatus } : a));
+          setAlerts(prev => prev.map((a: any) => selectedIds.includes(a.id) ? { ...a, status: newStatus } : a));
 
           toast({
               title: "Alerts Updated",
@@ -123,7 +123,7 @@ export function AlertList() {
   }, []);
 
   const filteredAlerts = useMemo(() => {
-    return alerts.filter(alert => {
+    return alerts.filter((alert: any) => {
       const matchesSearch =
         alert.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         alert.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -139,7 +139,7 @@ export function AlertList() {
   const handleStatusChange = async (id: string, newStatus: AlertStatus) => {
     try {
         const updated = await apiClient.updateAlertStatus(id, newStatus);
-        setAlerts(prev => prev.map(a => a.id === id ? updated : a));
+        setAlerts(prev => prev.map((a: any) => a.id === id ? updated : a));
         toast({
             title: "Status Updated",
             description: `Alert marked as ${newStatus}`,
@@ -271,7 +271,7 @@ export function AlertList() {
                     </TableCell>
                 </TableRow>
             ) : (
-                filteredAlerts.map((alert) => (
+                filteredAlerts.map((alert: Alert) => (
                 <TableRow key={alert.id} className={cn("group", selected.has(alert.id) ? "bg-muted/50" : "")}>
                     <TableCell className="pr-0">
                        <Checkbox

@@ -70,7 +70,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
         // Filter out existing and keep only unique hrefs
         const updatedHistory = [
             lastItem,
-            ...savedHistory.filter(h => h && h.href !== lastItem.href)
+            ...savedHistory.filter((h: BreadcrumbItem) => h && h.href !== lastItem.href)
         ].slice(0, 10); // Keep last 10
 
         localStorage.setItem("breadcrumb_history", JSON.stringify(updatedHistory));
@@ -97,7 +97,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="start" className="w-56">
                                 <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Recent History</div>
-                                {history.map((h) => (
+                                {history.map((h: BreadcrumbItem) => (
                                     <DropdownMenuItem key={h.href} asChild>
                                         <Link to={h.href} className="cursor-pointer truncate">
                                             {h.label}
@@ -108,7 +108,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                         </DropdownMenu>
                     </li>
                 )}
-                {items.map((item, index) => (
+                {items.map((item: any, index: number) => (
                     <Fragment key={item.href}>
                         <li className="flex items-center gap-1">
                              <ChevronRight className="size-4 text-muted-foreground/50" />
@@ -132,7 +132,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                                             </button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="start" className="max-h-[300px] overflow-y-auto">
-                                            {item.siblings.map((sibling) => (
+                                            {item.siblings.map((sibling: any) => (
                                                 <DropdownMenuItem key={sibling.href} asChild>
                                                     <Link to={sibling.href} className={cn("cursor-pointer", sibling.href === item.href && "font-semibold bg-accent")}>
                                                         {sibling.label}

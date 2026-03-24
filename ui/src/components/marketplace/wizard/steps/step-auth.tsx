@@ -82,7 +82,7 @@ export function StepAuth() {
       }
   };
 
-  const selectedCred = credentials.find(c => c.id === selectedCredId);
+  const selectedCred = credentials.find((c: Credential) => c.id === selectedCredId);
   const isOAuthConfigured = selectedCred?.authentication?.oauth2;
 
   const handleConnect = async () => {
@@ -138,7 +138,7 @@ export function StepAuth() {
                   <SelectValue placeholder="Select a credential..." />
               </SelectTrigger>
               <SelectContent>
-                  {credentials.map(c => (
+                  {credentials.map((c: any) => (
                       <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                   ))}
                   {credentials.length === 0 && (

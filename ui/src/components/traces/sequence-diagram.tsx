@@ -128,7 +128,7 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
 
         // Children
         if (span.children) {
-            span.children.forEach(child => traverse(child, calleeId));
+            span.children.forEach((child: Span) => traverse(child, calleeId));
         }
 
         // Response
@@ -194,7 +194,7 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
   // Randomized Selection from Top 5 High-Impact Targets
   const actorIndexMap = useMemo(() => {
     const map = new Map<string, number>();
-    actors.forEach((a, i) => map.set(a.id, i));
+    actors.forEach((a: Actor, i: number) => map.set(a.id, i));
     return map;
   }, [actors]);
 
@@ -202,7 +202,7 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
     <div className="w-full overflow-x-auto border rounded-md bg-white dark:bg-zinc-950 p-4">
         <svg width={width} height={height} className="font-sans text-xs">
             {/* Lifelines */}
-            {actors.map((actor, i) => {
+            {actors.map((actor: Actor, i: number) => {
                 const x = getActorX(i);
                 return (
                     <g key={actor.id}>
@@ -240,7 +240,7 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
             })}
 
             {/* Messages */}
-            {messages.map((msg, i) => {
+            {messages.map((msg: Message, i: number) => {
                 const fromIndex = actorIndexMap.get(msg.from) ?? -1;
                 const toIndex = actorIndexMap.get(msg.to) ?? -1;
 

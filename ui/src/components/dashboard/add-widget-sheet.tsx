@@ -54,7 +54,7 @@ export function AddWidgetSheet({ onAdd }: AddWidgetSheetProps) {
                 </SheetHeader>
                 <ScrollArea className="h-[calc(100vh-8rem)] mt-6 pr-4">
                     <div className="grid grid-cols-1 gap-4">
-                        {WIDGET_DEFINITIONS.map((widget) => {
+                        {WIDGET_DEFINITIONS.map((widget: any) => {
                             const Icon = widget.icon;
                             return (
                                 <Card

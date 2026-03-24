@@ -141,7 +141,7 @@ export function PromptEditor({ open, onOpenChange, prompt, services, onSave }: P
                 name: data.name,
                 description: data.description,
                 inputSchema: parsedSchema,
-                messages: data.messages.map(m => ({
+                messages: data.messages.map((m: any) => ({
                     role: m.role === "user" ? 0 : 1, // USER=0, ASSISTANT=1
                     content: {
                         text: { text: m.content }
@@ -200,7 +200,7 @@ export function PromptEditor({ open, onOpenChange, prompt, services, onSave }: P
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {services.map(svc => (
+                                                {services.map((svc: UpstreamServiceConfig) => (
                                                     <SelectItem key={svc.name} value={svc.name}>
                                                         {svc.name}
                                                     </SelectItem>

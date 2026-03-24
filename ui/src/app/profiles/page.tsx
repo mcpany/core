@@ -43,7 +43,7 @@ export default function ProfilesPage() {
                       if (cfg.tools) {
                           const disabled = Object.entries(cfg.tools)
                               .filter(([_, tCfg]: [string, any]) => tCfg.disabled)
-                              .map(([tName, _]) => tName);
+                              .map(([tName, _]: [string, any]) => tName);
                           if (disabled.length > 0) {
                               disabledTools[svcName] = disabled;
                           }
@@ -130,7 +130,7 @@ export default function ProfilesPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {isLoading && <div className="col-span-3 text-center p-4">Loading profiles...</div>}
           {!isLoading && profiles.length === 0 && <div className="col-span-3 text-center p-4 text-muted-foreground">No profiles found. Create one to get started.</div>}
-          {profiles.map(profile => (
+          {profiles.map((profile: any) => (
               <Card key={profile.id} className="backdrop-blur-sm bg-background/50 hover:shadow-md transition-all cursor-pointer group" onClick={() => openEdit(profile)}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-xl font-bold group-hover:text-primary transition-colors">{profile.name}</CardTitle>
@@ -142,7 +142,7 @@ export default function ProfilesPage() {
                           <Badge variant={profile.type === 'prod' ? 'destructive' : profile.type === 'debug' ? 'secondary' : 'default'}>
                               {profile.type.toUpperCase()}
                           </Badge>
-                          {profile.additionalTags.slice(0, 3).map(tag => (
+                          {profile.additionalTags.slice(0, 3).map((tag: any) => (
                               <Badge key={tag} variant="outline">{tag}</Badge>
                           ))}
                           {profile.additionalTags.length > 3 && (

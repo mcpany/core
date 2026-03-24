@@ -1513,3 +1513,14 @@
 ### Priority Shifts
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Elevated with mandatory **CFSA** integration to counter mimicry-based hijacking.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SHI** and **MHL** integration for all agency-initiation signals.
+
+## Evolution: [2026-06-28] Updates
+
+### Proposed Additions
+- **Multi-Signature Skill Grafting (MSSG) Hub**: (P0) Authoritative broker for federated skill integrity, requiring cryptographic approval tokens from both the local framework and a verified third-party "Auditor Agent" before any new tool can be grafted into the swarm's capability set.
+- **Stylometric Sovereignty Monitor (SSM)**: (P0) Behavioral security middleware for detecting reasoning-persona mimicry and PBR bypasses.
+- **Headless Mission Resumption (HMR)**: (P0) Hardware-locked binary checkpointing for sub-100ms cold-boot mission recovery.
+- **Lock-Free Mesh Arbiter (LFMA)**: (P0) Core coordination service implementing CRDT-based mailbox shards.
+
+### Priority Shifts
+- **Zero-Knowledge Capability Proofs (ZKCP)**: (Promoted to P0) Critical for satisfying new Gemini CLI v0.43.0 discovery requirements.

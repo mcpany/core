@@ -169,7 +169,7 @@ export function ServiceDiagnostics({ service }: ServiceDiagnosticsProps) {
                             </div>
                         )}
 
-                        {results.map((result, index) => (
+                        {results.map((result: DiagnosticResult, index: number) => (
                             <div key={index} className="border rounded-lg p-4 space-y-2">
                                 <div className="flex items-center gap-3">
                                     {renderIcon(result.status)}

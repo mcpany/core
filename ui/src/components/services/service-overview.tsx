@@ -29,17 +29,17 @@ export function ServiceOverview({ service, status, trafficData = [] }: ServiceOv
     // Process traffic data for sparklines
     const latencyData = useMemo(() => {
         if (!trafficData.length) return [];
-        return trafficData.map(d => d.latency || 0);
+        return trafficData.map((d: any) => d.latency || 0);
     }, [trafficData]);
 
     const rpsData = useMemo(() => {
         if (!trafficData.length) return [];
-        return trafficData.map(d => d.requests || 0);
+        return trafficData.map((d: any) => d.requests || 0);
     }, [trafficData]);
 
     const errorData = useMemo(() => {
         if (!trafficData.length) return [];
-        return trafficData.map(d => d.errors || 0);
+        return trafficData.map((d: any) => d.errors || 0);
     }, [trafficData]);
 
     // Helpers to format display values

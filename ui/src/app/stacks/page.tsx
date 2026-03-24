@@ -95,7 +95,7 @@ export default function StacksPage() {
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {stacks.map((stack) => (
+            {stacks.map((stack: ServiceCollection) => (
             <Link key={stack.name} to={`/stacks/${stack.name}`}>
                 <Card className="hover:shadow-md transition-all cursor-pointer group border-transparent shadow-sm bg-card hover:bg-muted/50 h-full flex flex-col">
                 <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">

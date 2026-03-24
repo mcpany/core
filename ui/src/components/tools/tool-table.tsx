@@ -58,7 +58,7 @@ export const ToolTable = memo(function ToolTable({
 
   const handleSelectAll = useCallback((checked: boolean) => {
     if (checked) {
-      setSelected(new Set(tools.map(t => t.name)));
+      setSelected(new Set(tools.map((t: ToolDefinition) => t.name)));
     } else {
       setSelected(new Set());
     }
@@ -154,7 +154,7 @@ export const ToolTable = memo(function ToolTable({
               </TableCell>
             </TableRow>
           ) : (
-          tools.map((tool) => (
+          tools.map((tool: ToolDefinition) => (
             <TableRow key={tool.name} className={cn("group", isCompact ? "h-8" : "", selected.has(tool.name) ? "bg-muted/50" : "")}>
                <TableCell className={cn("pr-0", isCompact ? "py-0 px-2" : "")}>
                  <Checkbox

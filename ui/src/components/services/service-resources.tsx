@@ -83,7 +83,7 @@ export function ServiceResources({ resources }: ServiceResourcesProps) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {resources.map((resource) => (
+                        {resources.map((resource: any) => (
                             <TableRow key={resource.uri}>
                                 <TableCell className="font-medium">{resource.name}</TableCell>
                                 <TableCell className="font-mono text-xs">{resource.uri}</TableCell>
