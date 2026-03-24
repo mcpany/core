@@ -4,6 +4,9 @@
  */
 
 /**
+ */
+
+/**
  * Mock class for GrpcWebImpl used in tests.
  */
 export class GrpcWebImpl { }

@@ -1,6 +1,9 @@
 <!--
- * Copyright 2025 Author(s) of MCP Any
+ * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
+ -->
+
+<!--
  -->
 
 # Market Sync: 2026-05-06
