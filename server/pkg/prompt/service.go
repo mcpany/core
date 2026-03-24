@@ -84,6 +84,12 @@ func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 // Returns:
 //   - *mcp.ListPromptsResult: The list of prompts.
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *Service) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,
@@ -112,6 +118,9 @@ func (s *Service) ListPrompts(
 //
 // Throws/Errors:
 //   - ErrPromptNotFound: If the prompt does not exist.
+//
+// Side Effects:
+//   - None.
 func (s *Service) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,

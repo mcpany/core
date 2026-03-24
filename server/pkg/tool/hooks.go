@@ -103,6 +103,9 @@ func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 // Errors:
 //   - Returns error if an explicit DENY rule is matched.
 //   - Returns error if the default policy is DENY and no ALLOW rule matches.
+//
+// Side Effects:
+//   - None.
 func (h *PolicyHook) ExecutePre(
 	_ context.Context,
 	req *ExecutionRequest,
@@ -340,6 +343,8 @@ func (h *WebhookHook) ExecutePre(
 	}
 
 	// ResponseData is a helper struct for parsing the webhook response.
+	//
+	// Summary: ResponseData implementation.
 	type ResponseData struct {
 		Allowed           bool            `json:"allowed"`
 		Status            *WebhookStatus  `json:"status,omitempty"`
@@ -413,6 +418,8 @@ func (h *WebhookHook) ExecutePost(
 	}
 
 	// ResponseData is a helper struct for parsing the webhook response.
+	//
+	// Summary: ResponseData implementation.
 	type ResponseData struct {
 		Allowed           bool            `json:"allowed"`
 		Status            *WebhookStatus  `json:"status,omitempty"`

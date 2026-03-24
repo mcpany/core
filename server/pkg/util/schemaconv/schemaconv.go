@@ -14,6 +14,8 @@ import (
 )
 
 // JSON schema types.
+//
+// Summary: Exported symbol implementation.
 const (
 	// TypeNumber represents a JSON number type.
 	// Summary: Defines TypeNumber.

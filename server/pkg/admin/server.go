@@ -54,6 +54,12 @@ type Server struct {
 //
 // Returns:
 //   - *Server: The newly created Server instance.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewServer(
 	cache *middleware.CachingMiddleware,
 	toolManager tool.ManagerInterface,

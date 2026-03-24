@@ -1538,6 +1538,12 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,

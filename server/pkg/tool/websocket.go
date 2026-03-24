@@ -52,6 +52,12 @@ type WebsocketTool struct {
 //
 // Returns:
 //   - *WebsocketTool: A new instance of WebsocketTool.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewWebsocketTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,
