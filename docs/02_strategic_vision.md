@@ -2695,44 +2695,14 @@ non-primary mission-root requests, ensuring absolute temporal isolation in
 sharded meshes.
 
 ## Strategic Evolution: 2026-06-18
-Pivoting toward **Autonomous Capability Governance** and **Hardware-Locked
-Context Lineage**. MCP Any must now act as the authoritative root for all
-subagent capability leases, implementing the OpenClaw ACR standard to mitigate
-recursive handoff vulnerabilities.
-
-## Strategic Evolution: 2026-06-18
-Pivoting toward **Autonomous Capability Governance** and **Hardware-Locked
-Context Lineage**. MCP Any must now act as the authoritative root for all
-subagent capability leases, implementing the OpenClaw ACR standard to mitigate
-recursive handoff vulnerabilities.
-
-## Strategic Evolution: 2026-06-18
 ### Focus: Autonomous Capability Governance & Depth-Bound Delegation
-**Context**: The emergence of the OpenClaw ACR standard and the disclosure of
-CVE-2026-71001 (Recursive Shadow Handoffs) confirm that infrastructure must
-now manage the **lineage of authority** as it descends through recursive
-delegation chains.
+**Context**: The emergence of OpenClaw ACR and the disclosure of CVE-2026-71001
+confirm that infrastructure must manage the lineage of authority through
+recursive delegation.
 **Strategic Pivot**:
-- **ACR Hub Implementation**: MCP Any will act as the authoritative root for
-  OpenClaw-compliant capability revocation, allowing for real-time,
-  mission-wide
-  kill-switch propagation.
-- **Recursive Depth Enforcement**: We are mandating hardware-attested depth
-  markers for all inter-agent handoffs to neutralize "Shadow Handoff" escapes.
-
-## Strategic Evolution: 2026-06-18
-### Focus: Autonomous Capability Governance & Depth-Bound Delegation
-**Context**: The emergence of the OpenClaw ACR standard and the disclosure of
-CVE-2026-71001 (Recursive Shadow Handoffs) confirm that infrastructure must now
-manage the **lineage of authority** as it descends through recursive delegation
-chains. Protecting the mission root requires not just isolation, but active,
-hardware-attested revocation and depth enforcement.
-**Strategic Pivot**:
-- **ACR Hub Implementation**: MCP Any will act as the authoritative root for
-  OpenClaw-compliant capability revocation. We will implement the ACR Hub,
-  allowing parent agents to instantly revoke specific tool capabilities from
-  their descendants without terminating the reasoning session.
-- **Recursive Depth Enforcement**: We are mandating hardware-attested depth
-  markers for all inter-agent handoffs. MCP Any will recursively track and
-  enforce hard depth limits on the "Chain of Command" to neutralize shadow
-  handoff escapes.
+- **ACR Hub**: MCP Any will act as the authoritative root for
+OpenClaw-compliant
+  capability revocation.
+- **Recursive Depth Enforcement**: Mandating hardware-attested depth
+markers for
+  all inter-agent handoffs.

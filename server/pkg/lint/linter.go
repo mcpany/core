@@ -21,13 +21,13 @@ import (
 type Severity int
 
 const (
-	// Error indicates a critical issue that must be fixed.
+	// Error indicates a critical issue.
 	// Summary: Defines the Error severity level.
 	Error Severity = iota
-	// Warning indicates a potential issue or best practice violation.
+	// Warning indicates a potential issue.
 	// Summary: Defines the Warning severity level.
 	Warning
-	// Info indicates a suggestion or informational message.
+	// Info indicates a suggestion.
 	// Summary: Defines the Info severity level.
 	Info
 )
@@ -37,10 +37,10 @@ const (
 // Summary: Executes String operation.
 //
 // Parameters:
-//   - s: Severity.
+//   - s: Severity level.
 //
 // Returns:
-//   - string: Representation.
+//   - string: Result string.
 //
 // Errors:
 //   - None.
@@ -79,10 +79,10 @@ type Result struct {
 // Summary: Executes String operation.
 //
 // Parameters:
-//   - r: Result.
+//   - r: Result instance.
 //
 // Returns:
-//   - string: Formatted.
+//   - string: Formatted string.
 //
 // Errors:
 //   - None.
@@ -113,10 +113,10 @@ type Linter struct {
 // Summary: Initializes NewLinter operation.
 //
 // Parameters:
-//   - cfg: Configuration.
+//   - cfg: Configuration to analyze.
 //
 // Returns:
-//   - *Linter: Instance.
+//   - *Linter: New instance.
 //
 // Errors:
 //   - None.
@@ -135,8 +135,8 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 //   - ctx: context.Context.
 //
 // Returns:
-//   - []Result: Findings.
-//   - error: Issue.
+//   - []Result: Findings list.
+//   - error: Fatal issue.
 //
 // Errors:
 //   - None.
@@ -163,32 +163,17 @@ func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	return results, nil
 }
 
-// checkPlainTextSecrets checks for secrets stored in plain text.
-//
-// Summary: Executes checkPlainTextSecrets operation.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - []Result: Findings.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (l *Linter) checkPlainTextSecrets() []Result {
 	var results []Result
 
-	checkSecret := func(sv *configv1.SecretValue, path, serviceName string) {
+	checkSecret := func(sv *configv1.SecretValue, path, svc string) {
 		if sv == nil {
 			return
 		}
 		if sv.WhichValue() == configv1.SecretValue_PlainText_case {
 			results = append(results, Result{
 				Severity:    Warning,
-				ServiceName: serviceName,
+				ServiceName: svc,
 				Message:     "Secret is stored in plain text.",
 				Path:        path,
 			})
@@ -244,45 +229,29 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 			}
 		}
 	}
-
 	return results
 }
 
-// checkShellInjection checks for shell injection risks.
-//
-// Summary: Executes checkShellInjection operation.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - []Result: Findings.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (l *Linter) checkShellInjection() []Result {
 	var results []Result
-	shellRiskPatterns := []string{"sh -c", "bash -c", "cmd /c", "powershell -c"}
+	risks := []string{"sh -c", "bash -c", "cmd /c", "powershell -c"}
 
 	for _, s := range l.cfg.GetUpstreamServices() {
-		var command string
+		var cmd string
 		switch s.WhichServiceConfig() {
 		case configv1.UpstreamServiceConfig_CommandLineService_case:
-			command = s.GetCommandLineService().GetCommand()
+			cmd = s.GetCommandLineService().GetCommand()
 		case configv1.UpstreamServiceConfig_McpService_case:
 			mcp := s.GetMcpService()
 			if mcp.WhichConnectionType() ==
 				configv1.McpUpstreamService_StdioConnection_case {
-				command = mcp.GetStdioConnection().GetCommand()
+				cmd = mcp.GetStdioConnection().GetCommand()
 			}
 		}
 
-		if command != "" {
-			for _, pattern := range shellRiskPatterns {
-				if strings.Contains(strings.ToLower(command), pattern) {
+		if cmd != "" {
+			for _, pattern := range risks {
+				if strings.Contains(strings.ToLower(cmd), pattern) {
 					results = append(results, Result{
 						Severity:    Warning,
 						ServiceName: s.GetName(),
@@ -296,51 +265,37 @@ func (l *Linter) checkShellInjection() []Result {
 	return results
 }
 
-// checkInsecureHTTP checks for insecure HTTP connections.
-//
-// Summary: Executes checkInsecureHTTP operation.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - []Result: Findings.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (l *Linter) checkInsecureHTTP() []Result {
 	var results []Result
 	for _, s := range l.cfg.GetUpstreamServices() {
-		checkInsecure := func(url, path string) {
-			if url != "" && strings.HasPrefix(strings.ToLower(url), "http://") {
-				if !strings.Contains(url, "localhost") &&
-					!strings.Contains(url, "127.0.0.1") {
-					results = append(results, Result{
-						Severity:    Warning,
-						ServiceName: s.GetName(),
-						Message:     fmt.Sprintf("Insecure: %q.", url),
-						Path:        path,
-					})
-				}
+		check := func(url, path string) {
+			if url == "" || !strings.HasPrefix(strings.ToLower(url), "http://") {
+				return
+			}
+			isLocal := strings.Contains(url, "localhost") ||
+				strings.Contains(url, "127.0.0.1")
+			if !isLocal {
+				results = append(results, Result{
+					Severity:    Warning,
+					ServiceName: s.GetName(),
+					Message:     fmt.Sprintf("Insecure HTTP: %q.", url),
+					Path:        path,
+				})
 			}
 		}
 
 		switch s.WhichServiceConfig() {
 		case configv1.UpstreamServiceConfig_HttpService_case:
-			checkInsecure(s.GetHttpService().GetAddress(),
-				"http_service.address")
+			check(s.GetHttpService().GetAddress(), "http_service.address")
 		case configv1.UpstreamServiceConfig_OpenapiService_case:
 			openapi := s.GetOpenapiService()
-			checkInsecure(openapi.GetAddress(), "openapi_service.address")
-			checkInsecure(openapi.GetSpecUrl(), "openapi_service.spec_url")
+			check(openapi.GetAddress(), "openapi_service.address")
+			check(openapi.GetSpecUrl(), "openapi_service.spec_url")
 		case configv1.UpstreamServiceConfig_McpService_case:
 			mcp := s.GetMcpService()
 			if mcp.WhichConnectionType() ==
 				configv1.McpUpstreamService_HttpConnection_case {
-				checkInsecure(mcp.GetHttpConnection().GetHttpAddress(),
+				check(mcp.GetHttpConnection().GetHttpAddress(),
 					"mcp_service.http_connection.http_address")
 			}
 		}
@@ -348,28 +303,12 @@ func (l *Linter) checkInsecureHTTP() []Result {
 	return results
 }
 
-// checkCacheSettings checks for cache settings.
-//
-// Summary: Executes checkCacheSettings operation.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - []Result: Findings.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (l *Linter) checkCacheSettings() []Result {
 	var results []Result
 	for _, s := range l.cfg.GetUpstreamServices() {
 		if s.GetCache() == nil {
 			continue
 		}
-
 		if s.GetCache().GetTtl() == nil || s.GetCache().GetTtl().GetSeconds() == 0 {
 			results = append(results, Result{
 				Severity:    Info,

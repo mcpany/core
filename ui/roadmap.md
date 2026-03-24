@@ -1093,25 +1093,5 @@ tracker for R-GC purged context fragments and reasoning entropy scores.
 TSJ-injected state synchronization and timing-side-channel mitigation.
 
 #### Upcoming (2026-06-18 Evolution)
-*   **[UX] ACR Status Dashboard**: Real-time visualization of active capability
-    leases and revocation status. (Added: 2026-06-18)
-*   **[UX] Delegation Depth Graph**: Visual representation of the delegation
-    tree with depth-limit highlights. (Added: 2026-06-18)
-
-#### Upcoming (2026-06-18 Evolution)
-*   **[UX] ACR Status Dashboard**: Real-time visualization of active capability
-    leases and revocation status. (Added: 2026-06-18)
-*   **[UX] Delegation Depth Graph**: Visual representation of the delegation
-    tree with depth-limit highlights. (Added: 2026-06-18)
-
-#### Upcoming (2026-06-18 Evolution)
-*   **[UX] ACR Status Dashboard**: Real-time visualization of active capability
-    leases and revocation status. (Added: 2026-06-18)
-*   **[UX] Delegation Depth Graph**: Visual representation of the delegation
-    tree with depth-limit highlights. (Added: 2026-06-18)
-
-#### Upcoming (2026-06-18 Evolution)
-*   **[UX] ACR Status Dashboard**: Real-time visualization of active capability
-    leases and revocation status. (Added: 2026-06-18)
-*   **[UX] Delegation Depth Graph**: Visual representation of the delegation
-    tree with depth-limit highlights. (Added: 2026-06-18)
+*   **[UX] ACR Status Dashboard**: Visualization of revocation status.
+*   **[UX] Delegation Depth Graph**: Visual tree of delegation depth.

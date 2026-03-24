@@ -2269,28 +2269,8 @@ synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to
 support the new **Multi-Modal Behavioral Anchoring** requirement.
 
-### Update: 2026-06-18
-- **[P0] ACR Hub Controller**: Authoritative coordination for autonomous
+### Evolution: 2026-06-18
+- **ACR Hub Controller**: (P0) Authoritative coordination for autonomous
   capability revocation.
-- **[P0] Recursive Depth-Limit Enforcer (RDLE)**: Real-time tracking and
-  enforcement of hardware-attested handoff depth.
-
-### Update: 2026-06-18
-- **[P0] ACR Hub Controller**: Authoritative coordination for autonomous
-  capability revocation.
-- **[P0] Recursive Depth-Limit Enforcer (RDLE)**: Real-time tracking and
-  enforcement of hardware-attested handoff depth.
-
-## Evolution: [2026-06-18] Updates
-### Proposed Additions
-- **ACR Hub Controller**: (P0) Authoritative coordination service for
-  autonomous capability revocation and recursive lock-down.
-- **Recursive Depth-Limit Enforcer (RDLE)**: (P0) Middleware to recursively
-  track and enforce hardware-attested handoff limits.
-
-## Evolution: [2026-06-18] Updates
-### Proposed Additions
-- **ACR Hub Controller**: (P0) Authoritative coordination service for
-  autonomous capability revocation and recursive lock-down.
-- **Recursive Depth-Limit Enforcer (RDLE)**: (P0) Middleware to recursively
-  track and enforce hardware-attested handoff limits.
+- **Recursive Depth-Limit Enforcer (RDLE)**: (P0) Middleware to track and
+  enforce hardware-attested handoff depth.
