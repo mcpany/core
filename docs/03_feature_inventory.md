@@ -65,7 +65,7 @@
 
 ### Proposed Additions
 - **Federated Swarm Identity (FSI) Provider**: (P0) A local identity service that issues hardware-attested, cross-framework tokens for secure teammate verification in heterogeneous meshes.
-- **Intent-Leakage Shielding (ILS) Middleware**: (P0) Security extension for the MRP middleware that monitors semantic entropy and blocks subagent requests designed to probe mission-root constraints.
+- **Intent-Leakage Shield (ILS) Middleware**: (P0) Security extension for the MRP middleware that monitors semantic entropy and blocks subagent requests designed to probe mission-root constraints.
 - **Hardware-Attested Discovery Handshake (HADH) Gateway**: (P0) Advanced discovery service that mandates hardware-bound handshakes before revealing any agent capabilities to peers.
 - **Reasoning-Effort Quota Controller**: (P0) Resource management middleware that dynamically throttles high-intensity reasoning (e.g., `x-gemini-reasoning-effort`) to prevent Agentic DoS.
 
@@ -1132,7 +1132,7 @@
 - **Self-Healing Consensus Hub**: (P0) A coordination service that provides a standardized interface for swarm state reconciliation, leveraging MAQ for authoritative "Truth Brokering."
 
 ### Priority Shifts
-- **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to support the new Resident Integrity Monitor for continuous lifecycle protection.
+- **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include Resident Integrity Monitor for continuous lifecycle protection.
 - **TPM-Bound Configuration Boot**: (Re-affirmed P0) Now considered the prerequisite foundation for RIG-mediated boundary expansions.
 
 ## Evolution: [2026-04-15] Updates
@@ -1233,7 +1233,7 @@
 ## Evolution: [2026-05-29] Updates
 
 ### Proposed Additions
-- **Collective Swarm Anomaly Detection (CSAD) Hub**: (P0) Advanced security middleware that performs cross-agent behavioral analysis to detect coordinated "Hivenet" swarm attacks.
+- **Collective Swomaly Detection (CSAD) Hub**: (P0) Advanced security middleware that performs cross-agent behavioral analysis to detect coordinated "Hivenet" swarm attacks.
 - **Cross-Mesh Command Sovereignty (CMCS) Provider**: (P0) Identity service that issues hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms.
 - **Atomic Teammate Handshake (ATH) Gateway**: (P0) Security middleware mandating hardware-attested identity exchange before teammate task delegation.
 - **Mesh-Bound Context Sovereignty Bridge**: (P0) Security extension for the DCG middleware that performs semantic fragment analysis across teammate boundaries.
