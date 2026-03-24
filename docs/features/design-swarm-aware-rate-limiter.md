@@ -1,5 +1,5 @@
 # Design Doc: Swarm-Aware Rate Limiter
-**Status:** Draft | In Review | Approved
+**Status:** Draft
 **Created:** 2026-05-14
 
 ## 1. Context and Scope

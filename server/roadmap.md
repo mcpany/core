@@ -501,11 +501,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Session Persistence Middleware**: Core security service for managing token refresh and trust persistence in deep reasoning chains. (Added: 2026-04-25)
 *   **[P0] DAP Enforcement for Pre-Flight Validator**: Mandatory enforcement of Deterministic Absence Proofs as a prerequisite for all agent boots. (Added: 2026-04-25)
 
-#### Upcoming (2026-04-24 Evolution)
-*   **[P0] A2A Authenticated Handshake Provider**: Implementation of Gemini CLI v0.33.0 style HTTP authentication for all agent-to-agent remote communications. (Added: 2026-04-24)
-*   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
-*   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
-
 #### Upcoming (2026-05-15 Evolution)
 *   **[P0] Relational PoI Validator**: Advanced security middleware to cryptographically validate parent-child mission linkage and block RCS attacks. (Added: 2026-05-15)
 *   **[P0] Deadlock-Aware Auction Arbiter**: Coordination engine to detect and resolve infinite bidding loops in autonomous swarms. (Added: 2026-05-15)
@@ -515,6 +510,17 @@ These features represent the next logical steps for the product, focusing on Ent
 #### Upcoming (2026-05-14 Evolution)
 *   **[P0] ContextEngine Lifecycle Adapter**: Implementation of OpenClaw v2026.4.0 "ContextEngine" lifecycle hooks for universal context plugin hosting. (Added: 2026-05-14 - Updated: 2026-05-15)
 *   **[P0] Swarm-Aware Rate Limiter**: High-speed security middleware for neutralizing coordinated "Hivenet" swarm attacks and coordination deadlocks. (Added: 2026-05-14 - Updated: 2026-05-15)
+*   **[P1] Hardware-Attested NHI Identity Wallets**: Integration of TPM/Secure Enclave-bound machine identities for all connected agents. (Added: 2026-05-14)
+*   **[P1] Asynchronous Telemetry Sink**: Authoritative non-blocking collector for OpenClaw-RL v1.0 reasoning traces and rollout tokens. (Added: 2026-05-14)
+
+#### Upcoming (2026-04-24 Evolution)
+*   **[P0] A2A Authenticated Handshake Provider**: Implementation of Gemini CLI v0.33.0 style HTTP authentication for all agent-to-agent remote communications. (Added: 2026-04-24)
+*   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
+*   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
+
+#### Upcoming (2026-05-14 Evolution)
+*   **[P0] ContextEngine Lifecycle Adapter**: Implementation of OpenClaw v2026.3.7 "ContextEngine" lifecycle hooks for universal context plugin hosting. (Added: 2026-05-14)
+*   **[P0] Swarm-Aware Rate Limiter**: High-speed security middleware for neutralizing coordinated "Hivenet" swarm attacks at sub-millisecond speeds. (Added: 2026-05-14)
 *   **[P1] Hardware-Attested NHI Identity Wallets**: Integration of TPM/Secure Enclave-bound machine identities for all connected agents. (Added: 2026-05-14)
 *   **[P1] Asynchronous Telemetry Sink**: Authoritative non-blocking collector for OpenClaw-RL v1.0 reasoning traces and rollout tokens. (Added: 2026-05-14)
 
