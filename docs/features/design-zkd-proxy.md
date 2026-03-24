@@ -55,3 +55,11 @@ The Zero-Knowledge Discovery (ZKD) Proxy evolves the discovery process by mandat
 
 ## 7. Evolutionary Changelog
 * **2026-06-27:** Initial Document Creation.
+
+### Update: [2026-07-01] - Local-First Discovery & NVIDIA OpenShell Interop
+**Context:** Today's market sync revealed the launch of NVIDIA OpenShell and the shift toward local-first tool execution. Traditional remote discovery is too high-latency for local-to-local agent handoffs.
+**Architecture Adjustment:**
+*   Introducing "Local-First Discovery Fast-Path" in Section 4.
+*   Implementing hardware-attested local capability claims using NVIDIA Nemotron-native tokens.
+*   Deprecating remote registry round-trips for tools discovered on the local bus.
+**Security Impact:** Reduces exposure of local tool schemas to remote registries while maintaining Zero-Knowledge integrity via local TPM-signed handshakes.
