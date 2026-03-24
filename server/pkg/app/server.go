@@ -2197,7 +2197,7 @@ func (a *Application) runServerMode(
 	grpcBindAddress := grpcPort
 
 	// Initialize gRPC Interceptors
-	grpcUnaryInterceptor := func(ctx context.Context, req interface{}, _ *gogrpc.UnaryServerInfo, handler gogrpc.UnaryHandler) (interface{}, error) {
+	grpcUnaryInterceptor := func(ctx context.Context, req any, _ *gogrpc.UnaryServerInfo, handler gogrpc.UnaryHandler) (any, error) {
 		if p, ok := peer.FromContext(ctx); ok {
 			ip := util.ExtractIP(p.Addr.String())
 			ctx = util.ContextWithRemoteIP(ctx, ip)
@@ -2208,7 +2208,7 @@ func (a *Application) runServerMode(
 		}
 		return handler(ctx, req)
 	}
-	grpcStreamInterceptor := func(srv interface{}, ss gogrpc.ServerStream, _ *gogrpc.StreamServerInfo, handler gogrpc.StreamHandler) error {
+	grpcStreamInterceptor := func(srv any, ss gogrpc.ServerStream, _ *gogrpc.StreamServerInfo, handler gogrpc.StreamHandler) error {
 		if p, ok := peer.FromContext(ss.Context()); ok {
 			ip := util.ExtractIP(p.Addr.String())
 			// Wrapper to modify context for stream
