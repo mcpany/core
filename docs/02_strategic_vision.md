@@ -1050,11 +1050,10 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Active Reasoning Firewall:** Moving beyond transport-layer security, we are implementing semantic gating to detect and terminate "Context-Window Ghosting" loops, ensuring orchestrator attention is never fully captured by rogue subagents.
 - **Universal Reasoning Bus:** We will expose a standardized "Reasoning Telemetry" interface, allowing external tools (e.g., OpenClaw, AutoGen) to offload their attention-management and budget-enforcement logic to MCP Any.
 
-## Strategic Evolution: 2026-06-18
 - **Attention Sovereignty:** Enforcing agent focus limits to prevent context poisoning.
 
-## Strategic Evolution: 2026-06-18
 - **Attention Sovereignty:** Enforcing agent focus limits.
 
-## Strategic Evolution: 2026-06-18
 - **Attention Sovereignty:** Enforcing agent focus limits to prevent context poisoning.
+
+- **Attention Sovereignty:** Enforcing focus limits to prevent context poisoning.

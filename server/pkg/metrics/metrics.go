@@ -44,28 +44,23 @@ var (
 //
 // Summary: Initializes the global metrics collector.
 //
-// It sets up a global metrics collector that can be used throughout the application.
-// The metrics are exposed on the /metrics endpoint.
-//
 // Parameters: None.
 //
 // Returns:
 //   - error: An error if the initialization fails.
 func Initialize() error {
 	initOnce.Do(func() {
-		// Create a Prometheus sink
-		var sink *prometheus.PrometheusSink
-		sink, initErr = NewPrometheusSink()
-		if initErr != nil {
+		sink, err := NewPrometheusSink()
+		if err != nil {
+			initErr = err
 			return
 		}
 
-		// Create a metrics configuration
 		conf := armonmetrics.DefaultConfig("mcpany")
 		conf.EnableHostname = false
 
-		// Initialize the metrics system
-		if _, initErr = armonmetrics.NewGlobal(conf, sink); initErr != nil {
+		if _, err = armonmetrics.NewGlobal(conf, sink); err != nil {
+			initErr = err
 			return
 		}
 	})
@@ -89,7 +84,7 @@ func Handler() http.Handler {
 // Summary: Starts the metrics server.
 //
 // Parameters:
-//   - addr (string): The address to listen on (e.g., ":8080").
+//   - addr (string): The address to listen on.
 //
 // Returns:
 //   - error: An error if the server fails to start.
@@ -104,7 +99,6 @@ func StartServer(addr string) error {
 	}
 
 	if tcpAddr, ok := ln.Addr().(*net.TCPAddr); ok {
-		// Log to stdout so E2E tests can parse the dynamically assigned port
 		fmt.Printf("Metrics server listening on port %d\\n", tcpAddr.Port)
 	}
 
@@ -125,13 +119,11 @@ func StartServer(addr string) error {
 // Parameters:
 //   - name (string): The name of the gauge.
 //   - val (float32): The value to set.
-//   - labels (...string): A list of labels to apply to the gauge.
-//
-// Returns: None.
+//   - labels (...string): Optional labels.
 func SetGauge(name string, val float32, labels ...string) {
-	var metricLabels []armonmetrics.Label
+	var metricLabels []Label
 	if len(labels) > 0 {
-		metricLabels = []armonmetrics.Label{
+		metricLabels = []Label{
 			{Name: "service_name", Value: labels[0]},
 		}
 	}
@@ -143,10 +135,8 @@ func SetGauge(name string, val float32, labels ...string) {
 // Summary: Increments a counter metric.
 //
 // Parameters:
-//   - name ([]string): The name of the counter (as a path).
+//   - name ([]string): The name of the counter.
 //   - val (float32): The amount to increment.
-//
-// Returns: None.
 func IncrCounter(name []string, val float32) {
 	armonmetrics.IncrCounter(name, val)
 }
@@ -156,65 +146,55 @@ func IncrCounter(name []string, val float32) {
 // Summary: Increments a labeled counter metric.
 //
 // Parameters:
-//   - name ([]string): The name of the counter (as a path).
+//   - name ([]string): The name of the counter.
 //   - val (float32): The amount to increment.
-//   - labels ([]armonmetrics.Label): The labels to apply.
-//
-// Returns: None.
-func IncrCounterWithLabels(name []string, val float32, labels []armonmetrics.Label) {
+//   - labels ([]Label): The labels to apply.
+func IncrCounterWithLabels(name []string, val float32, labels []Label) {
 	armonmetrics.IncrCounterWithLabels(name, val, labels)
 }
 
-// MeasureSince measures the time since a given start time and records it.
+// MeasureSince measures the time since a given start time.
 //
 // Summary: Records latency metric.
 //
 // Parameters:
-//   - name ([]string): The name of the metric (as a path).
+//   - name ([]string): The name of the metric.
 //   - start (time.Time): The start time.
-//
-// Returns: None.
 func MeasureSince(name []string, start time.Time) {
 	armonmetrics.MeasureSince(name, start)
 }
 
-// MeasureSinceWithLabels measures the time since a given start time and records it with labels.
+// MeasureSinceWithLabels measures the time since a given start time with labels.
 //
 // Summary: Records labeled latency metric.
 //
 // Parameters:
-//   - name ([]string): The name of the metric (as a path).
+//   - name ([]string): The name of the metric.
 //   - start (time.Time): The start time.
-//   - labels ([]armonmetrics.Label): The labels to apply.
-//
-// Returns: None.
-func MeasureSinceWithLabels(name []string, start time.Time, labels []armonmetrics.Label) {
+//   - labels ([]Label): The labels to apply.
+func MeasureSinceWithLabels(name []string, start time.Time, labels []Label) {
 	armonmetrics.MeasureSinceWithLabels(name, start, labels)
 }
 
-// AddSample adds a sample to a histogram/summary.
+// AddSample adds a sample to a histogram.
 //
 // Summary: Adds a sample to a metric.
 //
 // Parameters:
-//   - name ([]string): The name of the metric (as a path).
+//   - name ([]string): The name of the metric.
 //   - val (float32): The value to sample.
-//
-// Returns: None.
 func AddSample(name []string, val float32) {
 	armonmetrics.AddSample(name, val)
 }
 
-// AddSampleWithLabels adds a sample to a histogram/summary with labels.
+// AddSampleWithLabels adds a sample to a histogram with labels.
 //
 // Summary: Adds a labeled sample to a metric.
 //
 // Parameters:
-//   - name ([]string): The name of the metric (as a path).
+//   - name ([]string): The name of the metric.
 //   - val (float32): The value to sample.
-//   - labels ([]armonmetrics.Label): The labels to apply.
-//
-// Returns: None.
-func AddSampleWithLabels(name []string, val float32, labels []armonmetrics.Label) {
+//   - labels ([]Label): The labels to apply.
+func AddSampleWithLabels(name []string, val float32, labels []Label) {
 	armonmetrics.AddSampleWithLabels(name, val, labels)
 }

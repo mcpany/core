@@ -1383,3 +1383,6 @@
 ### Strategic Expansion: 2026-06-18
 - [P0] ALS Controller.
 - [P0] PBRB Firewall.
+
+- **[P0] ALS Controller:** Attention Limit System.
+- **[P0] PBRB Firewall:** Phase-Bound Reasoning Budgets.
