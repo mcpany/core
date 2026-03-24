@@ -4,12 +4,19 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SecretsManager } from '../../components/settings/secrets-manager';
+import { apiClient } from '@/lib/client';
 
 // Mock the apiClient
-
+vi.mock('@/lib/client', () => ({
+  apiClient: {
+    listSecrets: vi.fn(),
+    saveSecret: vi.fn(),
+    deleteSecret: vi.fn(),
+  },
+}));
 
 // Mock useToast
 vi.mock('@/hooks/use-toast', () => ({

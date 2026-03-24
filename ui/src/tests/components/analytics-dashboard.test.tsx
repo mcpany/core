@@ -16,24 +16,34 @@ vi.mock('recharts', async () => {
     return {
         ...actual,
         ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-        PieChart: ({ children }: { children: React.ReactNode }) => <div data-testid="pie-chart">{children}</div>,
-        Pie: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+        PieChart: ({ children }: any) => <div data-testid="pie-chart">{children}</div>,
+        Pie: ({ children }: any) => <div>{children}</div>,
         Cell: () => <div />,
         Tooltip: () => <div />,
-        AreaChart: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+        AreaChart: ({ children }: any) => <div>{children}</div>,
         Area: () => <div />,
         XAxis: () => <div />,
         YAxis: () => <div />,
         CartesianGrid: () => <div />,
-        BarChart: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+        BarChart: ({ children }: any) => <div>{children}</div>,
         Bar: () => <div />,
-        LineChart: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+        LineChart: ({ children }: any) => <div>{children}</div>,
         Line: () => <div />,
         Legend: () => <div />,
     };
 });
 
 // Mock apiClient
+vi.mock('@/lib/client', () => ({
+    apiClient: {
+        getDashboardTraffic: vi.fn(),
+        getTopTools: vi.fn(),
+        listTools: vi.fn(),
+        getToolUsage: vi.fn(),
+        setToolStatus: vi.fn(),
+    },
+}));
+
 // Mock ResizeObserver for Recharts
 global.ResizeObserver = class ResizeObserver {
     observe() {}
@@ -50,19 +60,19 @@ describe('AnalyticsDashboard', () => {
         const user = userEvent.setup();
 
         // Mock API responses
-        global.fetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve([
+        (apiClient.getDashboardTraffic as any).mockResolvedValue([
             { time: "10:00", requests: 100, latency: 50, errors: 2 }
-        ]) });
-        global.fetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve([
+        ]);
+        (apiClient.getTopTools as any).mockResolvedValue([
             { name: "test_tool", count: 10 }
-        ]) });
-        global.fetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({
+        ]);
+        (apiClient.listTools as any).mockResolvedValue({
             tools: [
                 { name: "heavy_tool", description: "A very heavy tool", serviceId: "service_a", inputSchema: { type: "object", properties: { huge: { type: "string" } } } },
                 { name: "light_tool", description: "Light", serviceId: "service_b", inputSchema: { type: "object" } }
             ]
-        }) });
-        global.fetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve([]) });
+        });
+        (apiClient.getToolUsage as any).mockResolvedValue([]);
 
         render(<AnalyticsDashboard />);
 
@@ -100,9 +110,9 @@ describe('AnalyticsDashboard', () => {
         const user = userEvent.setup();
 
         // Mock API responses
-        global.fetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve([]) });
-        global.fetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve([]) });
-        global.fetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({
+        (apiClient.getDashboardTraffic as any).mockResolvedValue([]);
+        (apiClient.getTopTools as any).mockResolvedValue([]);
+        (apiClient.listTools as any).mockResolvedValue({
             tools: [
                 {
                     name: "ghost_tool",
@@ -117,11 +127,11 @@ describe('AnalyticsDashboard', () => {
                 },
                 { name: "used_tool", description: "Used", serviceId: "service_b", inputSchema: { type: "object" } }
             ]
-        }) });
-        global.fetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve([
+        });
+        (apiClient.getToolUsage as any).mockResolvedValue([
             { name: "used_tool", serviceId: "service_b", totalCalls: 100, successRate: 100 },
             { name: "ghost_tool", serviceId: "service_a", totalCalls: 0, successRate: 0 }
-        ]) });
+        ]);
 
         render(<AnalyticsDashboard />);
 

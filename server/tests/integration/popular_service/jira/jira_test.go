@@ -17,26 +17,15 @@ import (
 )
 
 func TestUpstreamService_Jira(t *testing.T) {
-	jiraDomain := "dummy-domain"
-	jiraUsername := "dummy-user"
-	jiraPat := "dummy-pat"
-	jiraTestIssueKey := "TEST-123"
-	jiraTestIssueSummary := "Test Issue Summary"
+	jiraDomain := os.Getenv("JIRA_DOMAIN")
+	jiraUsername := os.Getenv("JIRA_USERNAME")
+	jiraPat := os.Getenv("JIRA_PAT")
+	jiraTestIssueKey := os.Getenv("JIRA_TEST_ISSUE_KEY")
+	jiraTestIssueSummary := os.Getenv("JIRA_TEST_ISSUE_SUMMARY")
 
-	t.Setenv("JIRA_DOMAIN", jiraDomain)
-	t.Setenv("JIRA_USERNAME", jiraUsername)
-	t.Setenv("JIRA_PAT", jiraPat)
-	t.Setenv("JIRA_TEST_ISSUE_KEY", jiraTestIssueKey)
-	t.Setenv("JIRA_TEST_ISSUE_SUMMARY", jiraTestIssueSummary)
-
-	// Mock Jira API
-	mockResponse := `{"key": "TEST-123", "fields": {"summary": "Test Issue Summary"}}`
-	mockHandler := integration.DefaultMockHandler(t, map[string]string{
-		"/rest/api/3/issue/TEST-123": mockResponse,
-	})
-	mockServer := integration.StartMockServer(t, mockHandler)
-	defer mockServer.Close()
-	t.Setenv("JIRA_DOMAIN", mockServer.URL) // override domain to point to mock server
+	if jiraDomain == "" || jiraUsername == "" || jiraPat == "" || jiraTestIssueKey == "" || jiraTestIssueSummary == "" {
+		// t.Skip("Skipping Jira integration test because one or more of the required environment variables are not set: JIRA_DOMAIN, JIRA_USERNAME, JIRA_PAT, JIRA_TEST_ISSUE_KEY, JIRA_TEST_ISSUE_SUMMARY")
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()

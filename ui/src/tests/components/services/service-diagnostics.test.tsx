@@ -10,7 +10,13 @@ import { UpstreamServiceConfig } from '@/lib/client';
 import { vi } from 'vitest';
 
 // Mock apiClient
-
+vi.mock('@/lib/client', () => ({
+  apiClient: {
+    validateService: vi.fn(),
+    getServiceStatus: vi.fn(),
+    listTools: vi.fn(),
+  },
+}));
 
 import { apiClient } from '@/lib/client';
 

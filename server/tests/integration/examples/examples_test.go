@@ -153,10 +153,6 @@ func validateConfig(t *testing.T, configPath string) {
 	// The second argument "server" matches what the CLI uses for validation context if any
 	configs, err := config.LoadServices(context.Background(), store, "server")
 	if err != nil {
-		if strings.Contains(configPath, "my-tool") || strings.Contains(configPath, "stdio") {
-			t.Logf("Skipping load error for %s: %v", configPath, err)
-			return
-		}
 		// Some configs might require env vars which validly fail if missing.
 		// However, LoadServices typically parses the YAML/Proto.
 		// If it fails due to missing env vars that are required for *parsing* (if any), that might be acceptable if we can detect it.
@@ -167,11 +163,5 @@ func validateConfig(t *testing.T, configPath string) {
 
 	// Validate
 	validationErrors := config.Validate(context.Background(), configs, config.Server)
-	if strings.Contains(configPath, "my-tool") || strings.Contains(configPath, "stdio") {
-		// Skip validation errors for stdio test if it fails to find the binary
-		// Since we cannot run go build inside Bazel sandbox cleanly
-		t.Logf("Skipping validation errors for %s: %v", configPath, validationErrors)
-	} else {
-		assert.Empty(t, validationErrors, "Config validation failed for %s", configPath)
-	}
+	assert.Empty(t, validationErrors, "Config validation failed for %s", configPath)
 }

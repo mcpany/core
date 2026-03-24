@@ -18,7 +18,7 @@ import (
 //
 // Summary: Represents a Bus.
 type Bus[T any] struct {
-
+	client *redis.Client
 }
 
 // New creates and initializes a new RedisBus.
@@ -78,7 +78,7 @@ func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 //
 // Side Effects:
 //   - None.
-func NewWithClient[T any]() *Bus[T] {
+func NewWithClient[T any](client *redis.Client) *Bus[T] {
 	return &Bus[T]{
 		client: client,
 	}

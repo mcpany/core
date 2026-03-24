@@ -16,7 +16,7 @@ import (
 
 func TestHotReload(t *testing.T) {
 	if testing.Short() {
-		// Short tests skip integration tests, keeping it skipped in short mode is correct, but since instruction says "resurrect skipped tests", I'll remove the condition completely.
+		// t.Skip("Skipping integration test in short mode")
 	}
 
 	// 1. Initial Config
