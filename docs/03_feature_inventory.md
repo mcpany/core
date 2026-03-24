@@ -1221,20 +1221,6 @@
 
 ## Evolution: [2026-06-06] Updates
 
-## Evolution: [2026-06-07] Updates
-
-### Proposed Additions
-- **Recursive Mission Attestation (RMA) Provider**: (P0) A core security middleware that issues and validates "Mission Receipts" for hierarchical task delegation, ensuring non-repudiable intent lineage.
-- **Context-Aware Shard Isolation (CASI) Middleware**: (P0) Advanced coordination service that enforces semantic boundaries between teammate context shards to prevent reasoning drift and shard pollution.
-- **Cross-Framework Intent Bidding (CFIB) Gateway**: (P1) Orchestration bridge that facilitates task auctions between disparate agent frameworks (OpenClaw, Claude Code, Gemini) using standardized capability scores.
-- **Mission-Receipt Logging Service**: (P1) High-integrity audit service that stores cryptographically signed mission receipts for all tool calls and task completions.
-
-### Priority Shifts
-- **Inter-Agent Mailbox Guard (IAMG)**: (Re-affirmed P0) Now elevated with the requirement for mandatory CASI integration for parallel teammate coordination.
-- **`TeammateTool` Orchestration Adapter**: (Re-affirmed P0) Evolving to support CFIB-native task auctions across heterogeneous meshes.
-
-## Evolution: [2026-06-06] Updates
-
 ### Proposed Additions
 - **Active Intent-Deconstruction (AID) Hub**: (P0) Advanced security middleware extension for the Semantic Integrity Bridge that performs real-time deconstruction and structural validation of all inter-agent messages.
 - **Capability Garbage Collection (CGC) Provider**: (P0) Authoritative security service for the EPM and LFTA providers that recursively tracks capability lineage and enforces immediate revocation upon sub-intent termination.

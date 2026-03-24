@@ -922,15 +922,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-06-06]
 ### Focus: Cognitive Sovereignty via Active Intent Deconstruction
 **Context**: The disclosure of "Semantic Splicing" and the emergence of "Capability Squatting" in horizontal meshes (Claude Code teammates vs. OpenClaw specialists) confirm that transport-layer security and binary handoffs are no longer sufficient. We must now protect the **semantic sovereignty** of the mission intent and provide a **hardware-attested, lineage-aware capability lifecycle** that persists across all connected frameworks.
