@@ -36,41 +36,23 @@ The Teammate Sovereignty Enforcer (TSE) provides a kernel-level isolation layer 
 
 ## 4. Design & Architecture
 * **System Flow:**
-    ```mermaid
-    sequenceDiagram
-        participant Lead as Lead Agent (Claude)
-        participant TSE as TSE Isolation Kernel
-        participant TM1 as Teammate 1 (Auditor)
-        participant BB as Shared Blackboard (Sharded)
-
-        Lead->>TSE: Create Team Mission (MissionRoot: TPM-Signed)
-        TSE-->>Lead: Mission Token
-        Lead->>TSE: Spawn Teammate (Auditor)
-        TSE-->>TM1: Teammate Identity (Bound to MissionRoot)
-        TM1->>BB: Write Audit Trace
-        BB->>TSE: Validate Teammate Token
-        TSE-->>BB: Authorized (Auditor Shard Only)
-    ```
-* **APIs / Interfaces:**
-    * `POST /v1/team/mission`: Initialize a new team mission.
-    * `POST /v1/team/teammate`: Provision a new teammate with an isolation-aware identity.
-    * `GET /v1/team/validate`: Internal endpoint for middleware to verify teammate-mission lineage.
-* **Data Storage/State:**
-    * TSE utilizes the "Shared KV Store" (Blackboard) but enforces mandatory sharding based on Teammate Identity.
-    * Mission-root metadata is stored in a hardware-protected (TPM/Secure Enclave) state region.
+    * **Isolation Kernel**: Manages the lifecycle of "Sovereignty Shards."
+    * **Auth-at-the-Pipe**: Inter-teammate transport that validates mission-root tokens for every packet.
+    * **Logic-Aware Shard Guards**: Real-time filters that interface with the LSV to block malicious reasoning fragments.
 
 ## 5. Alternatives Considered
-* **OS-Level Namespacing (Docker):** Rejected as too high-overhead for ephemeral agent sessions and difficult to map to the internal reasoning states of LLMs.
-* **Flat Intent Isolation (RAMS):** Evolved into TSE. While RAMS isolated memory, it lacked the cross-teammate coordination awareness required for horizontal "Agent Teams."
+* **OS-Level Namespacing (Docker)**: Rejected as too high-overhead for ephemeral agent sessions and difficult to map to the internal reasoning states of LLMs.
+* **Flat Intent Isolation (RAMS)**: Evolved into TSE. While RAMS isolated memory, it lacked the cross-teammate coordination awareness required for horizontal "Agent Teams."
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** TSE enforces the "Principle of Least Privilege" at the teammate level. A compromised Auditor cannot impersonate the Lead or Executor teammates.
-* **Observability:** Every inter-teammate message and shard access is logged with the TSE Mission ID and Teammate ID, providing a forensic-grade audit trail.
+* **Security (Zero Trust)**: TSE enforces the "Principle of Least Privilege" at the teammate level. A compromised Auditor cannot impersonate the Lead or Executor teammates.
+* **Observability**: Every inter-teammate message and shard access is logged with the TSE Mission ID and Teammate ID, providing a forensic-grade audit trail.
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.
 ### Update: 2026-06-18 - Logic-Path Interdiction Integration
 **Context:** Today's research revealed a surge in "Logic Bombs" injected via Request-Side prompt injection (CVE-2026-30741).
-**Architecture Adjustment:** * Mandatory integration with the Logic-Sovereignty Validator (LSV) in Section 2 and 4.
-* Introducing "Logic-Aware Shard Guards" to prevent un-attested reasoning fragments from being shared between teammates.
+**Architecture Adjustment:**
+- Mandatory integration with the Logic-Sovereignty Validator (LSV) in Section 2 and 4.
+- Introducing "Logic-Aware Shard Guards" to prevent un-attested reasoning fragments from being shared between teammates.
 **Security Impact:** Prevents "Refinement Drift" and ensures that malicious logic from a single teammate cannot compromise the mission-root audit trace.
