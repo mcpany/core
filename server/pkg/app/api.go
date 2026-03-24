@@ -88,7 +88,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/execute", a.handleExecute())
 
 	mux.HandleFunc("/prompts", a.handlePrompts())
-	mux.HandleFunc("/prompts/", a.handlePromptExecute()) // Handles /prompts/{name}/execute
+	mux.HandleFunc("/prompts/", a.handlePromptExecute())	// Handles /prompts/{name}/execute
 
 	mux.HandleFunc("/resources", a.handleResources())
 	mux.HandleFunc("/resources/read", a.handleResourceRead())
@@ -377,9 +377,9 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
 			_ = json.NewEncoder(w).Encode(map[string]any{
-				"valid":   false,
-				"error":   err.Error(),
-				"details": "Static validation failed",
+				"valid":	false,
+				"error":	err.Error(),
+				"details":	"Static validation failed",
 			})
 			return
 		}
@@ -430,9 +430,9 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 			w.Header().Set("Content-Type", "application/json")
 			// Return 200 OK but with valid=false to distinguish from malformed request
 			_ = json.NewEncoder(w).Encode(map[string]any{
-				"valid":   false,
-				"error":   checkErr.Error(),
-				"details": checkDetails,
+				"valid":	false,
+				"error":	checkErr.Error(),
+				"details":	checkDetails,
 			})
 			return
 		}
@@ -572,7 +572,7 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			svc.SetName(name) // Force name match
+			svc.SetName(name)	// Force name match
 
 			// Validate service configuration before saving
 			if err := config.ValidateOrError(r.Context(), &svc); err != nil {
@@ -653,9 +653,9 @@ func (a *Application) handleServiceStatus(w http.ResponseWriter, r *http.Request
 
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(map[string]any{
-		"name":    name,
-		"status":  status,
-		"metrics": map[string]any{},
+		"name":		name,
+		"status":	status,
+		"metrics":	map[string]any{},
 	})
 }
 
@@ -768,8 +768,8 @@ func (a *Application) handleTools() http.HandlerFunc {
 
 		case http.MethodPut:
 			var req struct {
-				Name    string `json:"name"`
-				Disable bool   `json:"disable"`
+				Name	string	`json:"name"`
+				Disable	bool	`json:"disable"`
 			}
 			body, err := readBodyWithLimit(w, r, 1024*1024)
 			if err != nil {
@@ -1275,7 +1275,7 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			profile.SetName(name) // Force name match
+			profile.SetName(name)	// Force name match
 
 			if err := store.SaveProfile(r.Context(), &profile); err != nil {
 				logging.GetLogger().Error("failed to save profile", "name", name, "error", err.Error())
@@ -1423,7 +1423,7 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			collection.SetName(name) // Force name match
+			collection.SetName(name)	// Force name match
 
 			if err := store.SaveServiceCollection(r.Context(), &collection); err != nil {
 				logging.GetLogger().Error("failed to save collection", "name", name, "error", err.Error())
@@ -1472,7 +1472,7 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 		// And we need to validate it.
 		if err := config.ValidateOrError(r.Context(), svc); err != nil {
 			logging.GetLogger().Error("invalid service in collection", "service", svc.GetName(), "error", err.Error())
-			continue // Skip invalid? Or error out?
+			continue	// Skip invalid? Or error out?
 		}
 
 		if isUnsafeConfig(svc) && os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") != util.TrueStr {
