@@ -25,7 +25,7 @@ const (
 
 // SplunkAuditStore sends audit logs to Splunk HTTP Event Collector.
 //
-// Summary: Asynchronous audit store that pushes logs to Splunk via HEC.
+// Summary: Asynchronous audit store that forwards log entries to Splunk via its HTTP Event Collector (HEC).
 type SplunkAuditStore struct {
 	config *configv1.SplunkConfig
 	client *http.Client
@@ -36,16 +36,13 @@ type SplunkAuditStore struct {
 
 // NewSplunkAuditStore creates a new SplunkAuditStore.
 //
-// Summary: Initializes a new SplunkAuditStore with background workers.
+// Summary: Initializes a new SplunkAuditStore with the provided HEC configuration and starts background workers for processing.
 //
 // Parameters:
-//   - config: *configv1.SplunkConfig. The Splunk HEC configuration.
+//   - config (*configv1.SplunkConfig): The Splunk HEC and indexing configuration.
 //
 // Returns:
-//   - *SplunkAuditStore: The initialized store.
-//
-// Side Effects:
-//   - Starts background workers.
+//   - *SplunkAuditStore: The newly created and active Splunk audit store.
 func NewSplunkAuditStore(config *configv1.SplunkConfig) *SplunkAuditStore {
 	if config == nil {
 		config = &configv1.SplunkConfig{}
@@ -107,20 +104,14 @@ func (e *SplunkAuditStore) worker() {
 
 // Write implements the Store interface.
 //
-// Summary: Queues an audit entry for sending to Splunk.
+// Summary: Enqueues an audit entry for asynchronous transmission to Splunk.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - entry: Entry. The audit entry.
+//   - ctx (context.Context): The context for the request (unused).
+//   - entry (Entry): The audit log entry to be recorded.
 //
 // Returns:
-//   - error: An error if the queue is full.
-//
-// Errors:
-//   - Returns "audit queue full" if the buffer is exhausted.
-//
-// Side Effects:
-//   - Sends entry to a buffered channel.
+//   - error: An error if the internal buffer is full.
 func (e *SplunkAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case e.queue <- entry:
@@ -178,29 +169,25 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 
 // Read implements the Store interface.
 //
-// Summary: Reads audit entries (Not implemented).
+// Summary: Not implemented for SplunkAuditStore.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - _: Filter. Unused.
+//   - ctx (context.Context): The context for the request (unused).
+//   - filter (Filter): Criteria for filtering audit logs (unused).
 //
 // Returns:
-//   - []Entry: Nil.
-//   - error: Always returns "not implemented".
+//   - []Entry: Always returns nil.
+//   - error: Always returns a "not implemented" error.
 func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for splunk audit store")
 }
 
 // Close closes the queue and waits for workers to finish.
 //
-// Summary: Shuts down the Splunk audit store.
+// Summary: Gracefully shuts down the Splunk audit store, flushing any pending events before exiting.
 //
 // Returns:
-//   - error: Always nil.
-//
-// Side Effects:
-//   - Closes channels.
-//   - Flushes pending batches.
+//   - error: Always returns nil.
 func (e *SplunkAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)

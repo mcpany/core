@@ -16,7 +16,7 @@ import (
 
 // Severity indicates the importance of a linting result.
 //
-// Summary: Represents the severity level of a linting result.
+// Summary: Represents the severity level of a linting result (Error, Warning, Info).
 type Severity int
 
 const (
@@ -36,19 +36,10 @@ const (
 
 // String returns the string representation of the severity.
 //
-// Summary: Returns the string representation of the severity.
-//
-// Parameters:
-//   - None.
+// Summary: Converts the Severity value into its human-readable string representation.
 //
 // Returns:
-//   - string: The string representation of the severity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - string: The string representation of the severity (e.g., "ERROR", "WARNING").
 func (s Severity) String() string {
 	switch s {
 	case Error:
@@ -64,7 +55,7 @@ func (s Severity) String() string {
 
 // Result represents a single linting finding.
 //
-// Summary: Encapsulates a single linting finding.
+// Summary: Encapsulates a single linting finding including its severity, location, and descriptive message.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -78,19 +69,10 @@ type Result struct {
 
 // String returns the string representation of the result.
 //
-// Summary: Returns a formatted string representation of the linting result.
-//
-// Parameters:
-//   - None.
+// Summary: Formats the linting result into a single descriptive string.
 //
 // Returns:
-//   - string: A formatted string containing severity, service, path, and message.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - string: A formatted string containing severity, service name, path, and message.
 func (r Result) String() string {
 	pathStr := ""
 	if r.Path != "" {
@@ -105,46 +87,34 @@ func (r Result) String() string {
 
 // Linter performs static analysis on the configuration.
 //
-// Summary: Performs static analysis on the server configuration.
+// Summary: A engine for performing static analysis on the server configuration.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
 
 // NewLinter creates a new Linter instance.
 //
-// Summary: Initializes a new Linter instance with the provided configuration.
+// Summary: Initializes a new Linter instance with the provided server configuration.
 //
 // Parameters:
-//   - cfg (*configv1.McpAnyServerConfig): The server configuration to be linted.
+//   - cfg (*configv1.McpAnyServerConfig): The server configuration to be analyzed.
 //
 // Returns:
-//   - *Linter: A new Linter instance.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - *Linter: A newly initialized Linter instance.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
 
 // Run executes all linting checks on the server configuration.
 //
-// Summary: Executes all linting checks on the configuration.
+// Summary: Executes the full suite of linting checks, including validation, security, and best practice rules.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The context for the linting operation.
 //
 // Returns:
-//   - []Result: A list of linting findings.
-//   - error: An error if the linting process encounters a fatal issue.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - []Result: A slice containing all detected linting results.
+//   - error: An error if a fatal issue occurs during the linting process.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// Pre-allocate to avoid performance warnings, though initial size is a guess.
 	results := make([]Result, 0, 10)
