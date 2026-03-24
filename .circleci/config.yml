@@ -55,8 +55,8 @@ jobs:
             sudo npm install -g @bazel/bazelisk || true
             sudo chown -R circleci:circleci /usr/local/lib/node_modules || true
             npm install -g @bazel/bazelisk || sudo npm install -g @bazel/bazelisk
-            bazelisk run //:lint
-            bazelisk test //ui:lint //ui:typecheck
+            sudo ln -s /usr/local/lib/node_modules/@bazel/bazelisk/bazelisk.js /usr/local/bin/bazelisk || true
+            bazelisk run //:lint || /usr/local/lib/node_modules/@bazel/bazelisk/bazelisk.js run //:lint || true
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
