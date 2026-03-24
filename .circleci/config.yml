@@ -21,7 +21,7 @@ commands:
             # But CircleCI shallow clones can be tricky.
             # Simple approach: If all changed files match docs, exit 0 (success) immediately?
             # Actually, CircleCI doesn't have an easy "skip remaining steps" without failing or using conditional steps for EVERYTHING.
-            # We will rely on the fact that 'export GOGC=50
+            # We will rely on the fact that 'export GOGC=10
             export GOMAXPROCS=1
             make lint' itself might be fast or we just run it.
             # However, the user asked for similar logic.
@@ -59,7 +59,7 @@ jobs:
             . venv/bin/activate
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
-            export GOGC=50
+            export GOGC=10
             export GOMAXPROCS=1
             make lint
       - save_cache:

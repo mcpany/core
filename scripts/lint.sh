@@ -112,7 +112,7 @@ fi
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     export GOGC=20
     export GOMAXPROCS=1
-    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix -c server/.golangci.yml --concurrency 1 \
+    "$GOLANGCI_LINT_BIN" run --timeout 30m -c server/.golangci.yml --concurrency 1 \
         ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
     echo "    golangci-lint OK."
 else
