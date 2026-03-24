@@ -1,4 +1,4 @@
-// Copyright 2026 Author(s) of MCP Any
+// Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 package controllers
@@ -20,7 +20,9 @@ import (
 func TestMCPServerReconciler_Reconcile(t *testing.T) {
 	// Register operator types with the scheme
 	s := scheme.Scheme
-	_ = mcpv1alpha1.SchemeBuilder.AddToScheme(s)
+	if err := mcpv1alpha1.SchemeBuilder.AddToScheme(s); err != nil {
+		t.Fatalf("failed to add to scheme: %v", err)
+	}
 
 	replicas := int32(2)
 

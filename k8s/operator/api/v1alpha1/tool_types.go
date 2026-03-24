@@ -42,12 +42,12 @@ type ToolStatus struct {
 	Message string `json:"message,omitempty"`
 }
 
-// +kubebuilder:object:root=true
-// +kubebuilder:subresource:status
-
 // Tool is the Schema for the tools API.
 //
 // Summary: Tool resource definition.
+//
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
 type Tool struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -56,11 +56,11 @@ type Tool struct {
 	Status ToolStatus `json:"status,omitempty"`
 }
 
-// +kubebuilder:object:root=true
-
 // ToolList contains a list of Tool.
 //
 // Summary: List of Tool resources.
+//
+// +kubebuilder:object:root=true
 type ToolList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`

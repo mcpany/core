@@ -1,4 +1,4 @@
-// Copyright 2026 Author(s) of MCP Any
+// Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 package controllers
@@ -43,7 +43,7 @@ type MCPServerReconciler struct {
 //   - ctrl.Result: The result of the reconciliation, indicating if the request should be requeued.
 //   - error: Any error that occurred during reconciliation.
 func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	l := log.FromContext(ctx)
 
 	// Fetch the MCPServer instance
 	mcpServer := &mcpv1alpha1.MCPServer{}
@@ -125,6 +125,7 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		mcpServer.Status.AvailableReplicas = found.Status.AvailableReplicas
 		err := r.Status().Update(ctx, mcpServer)
 		if err != nil {
+			l.Error(err, "Failed to update MCPServer status")
 			return ctrl.Result{}, err
 		}
 	}
