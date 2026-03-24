@@ -41,7 +41,7 @@ jobs:
             export GOTOOLCHAIN=go1.26.1
             make prepare
             export PATH=$(pwd)/build/env/bin:$PATH
-            make lint
+            make lint VERBOSE=1
       - save_cache:
           key: v35-lint-{{ checksum "server/go.sum" }}
           paths:
