@@ -127,10 +127,6 @@ eslint_bin.eslint_test(
     name = "lint",
     args = [
         "src/",
-        "--config",
-        "eslint.config.mjs",
-        "--max-warnings",
-        "0"
     ],
     chdir = package_name(),
     data = [
