@@ -42,6 +42,7 @@ issues:
     - node_modules
     - .cache
     - proto
+    - bazel-*
   exclude-rules:
     - path: "_test.go"
       linters:
