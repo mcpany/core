@@ -4,13 +4,11 @@
 package examples_test
 
 import (
-	"context"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/config"
@@ -49,9 +47,9 @@ func TestExampleConfigs(t *testing.T) {
 	}
 
 	// Walk through examples directory
-	err = filepath.Walk(examplesDir, func(path string, info os.FileInfo, walkErr error) error {
-		if walkErr != nil {
-			return walkErr
+	err = filepath.Walk(examplesDir, func(path string, info os.FileInfo, walkDirErr error) error {
+		if walkDirErr != nil {
+			return walkDirErr
 		}
 
 		// Check for config.yaml
@@ -92,9 +90,9 @@ func sourceProjectRoot() (string, error) {
 }
 
 func copyDir(src, dst string) error {
-	return filepath.Walk(src, func(path string, info os.FileInfo, walkErr error) error {
-		if walkErr != nil {
-			return walkErr
+	return filepath.Walk(src, func(path string, info os.FileInfo, copyWalkErr error) error {
+		if copyWalkErr != nil {
+			return copyWalkErr
 		}
 		relPath, relErr := filepath.Rel(src, path)
 		if relErr != nil {
