@@ -164,13 +164,8 @@ export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) 
         });
     }, [nodes, showSystem, showTools]);
 
-    // ⚡ BOLT: [Render Optimization] Eliminate redundant array map iteration
-    // Randomized Selection from Top 5 High-Impact Targets
     const filteredEdges = useMemo(() => {
-        const nodeIds = new Set();
-        for (let i = 0; i < filteredNodes.length; i++) {
-            nodeIds.add(filteredNodes[i].id);
-        }
+        const nodeIds = new Set(filteredNodes.map(n => n.id));
         return edges.filter(e => nodeIds.has(e.source) && nodeIds.has(e.target));
     }, [edges, filteredNodes]);
 
