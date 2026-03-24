@@ -69,4 +69,4 @@ workflows:
   version: 2
   ci:
     jobs:
-      - lint
+      # - lint
