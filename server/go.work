@@ -1,7 +1,5 @@
 go 1.24.6
 
-toolchain go1.24.11
-
 use (
 	.
 	// ./examples/upstream_service_demo/grpc/client
