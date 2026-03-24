@@ -63,5 +63,3 @@ repos:
             - -ignore
             - "**/*.pb.go"
             - -s=only
-# Trigger CI cache bust
-# Bust CI cache again
