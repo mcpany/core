@@ -1546,3 +1546,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Promoted to P0) Critical for supporting the new **LMP** standard and solving teammate rotation latency.
 - **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Evolving into **PAMS** to support interrupt-driven coordination.
+
+## Evolution: [2026-07-01] Updates
+
+### Proposed Additions
+- **Universal Multimodal Memory Bus (UMMB)**: (P0) A hardware-attested, intent-pinned memory bus for synchronizing state across disparate frameworks while performing real-time multimodal trace sanitization.
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (P0) Security middleware that mandates cryptographic capability masking until a mission-bound handshake is complete, preventing pre-flight shadow mapping.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (P0) Advanced attention governance middleware utilizing hardware-bound headers to pin mission-critical intent fragments, neutralizing context-window flooding.
+
+### Priority Shifts
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving to act as the primary backend for the **UMMB** state synchronization.
+- **Zero-Knowledge Discovery (ZKD) Proxy**: (Re-affirmed P0) Expanding into the **ZKDB** to support cross-framework capability negotiation.
