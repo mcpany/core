@@ -20,7 +20,6 @@ import (
 )
 
 func TestExampleConfigs(t *testing.T) {
-	t.Skip("Skipping TestExampleConfigs locally due to go mod issues")
 	// Set dummy API key for validation to pass
 	t.Setenv("GEMINI_API_KEY", "dummy-key")
 	projectRoot, err := sourceProjectRoot()
