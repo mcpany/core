@@ -38,8 +38,6 @@ func TestStore_Load(t *testing.T) {
 		pgDB := &DB{db}
 		store := NewStore(pgDB)
 
-
-
 		svc := configv1.UpstreamServiceConfig_builder{Id: proto.String("service-1"), Name: proto.String("Service One")}.Build()
 		svcBytes, err := protojson.MarshalOptions{}.Marshal(svc)
 		require.NoError(t, err)
@@ -73,7 +71,6 @@ func TestStore_Load(t *testing.T) {
 		cfg, err := store.Load(context.Background())
 		require.NoError(t, err)
 		require.NotNil(t, cfg)
-
 	})
 
 	t.Run("Query Error", func(t *testing.T) {
