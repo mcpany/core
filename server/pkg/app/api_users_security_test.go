@@ -22,8 +22,6 @@ func TestHandleUserDetail_IDOR_Reproduction(t *testing.T) {
 	app, store := setupApiTestApp()
 	handler := app.handleUserDetail(store)
 
-	// Setup: Create 2 users
-	// Uses Builder pattern to support opaque API
 	victim := configv1.User_builder{Id: proto.String("victim-user"), Roles: []string{"user"}}.Build()
 	admin := configv1.User_builder{Id: proto.String("admin-user"), Roles: []string{"admin"}}.Build()
 
@@ -32,7 +30,6 @@ func TestHandleUserDetail_IDOR_Reproduction(t *testing.T) {
 
 	t.Run("Victim Access Own Profile", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/users/victim-user", nil)
-		// Simulate Authenticated User: victim-user
 		ctx := auth.ContextWithUser(req.Context(), "victim-user")
 		ctx = auth.ContextWithRoles(ctx, []string{"user"})
 		req = req.WithContext(ctx)
@@ -43,9 +40,8 @@ func TestHandleUserDetail_IDOR_Reproduction(t *testing.T) {
 		assert.Equal(t, http.StatusOK, w.Code)
 	})
 
-	t.Run("Victim Access Admin Profile (IDOR)", func(t *testing.T) {
+	t.Run("Victim Access Admin Profile", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/users/admin-user", nil)
-		// Simulate Authenticated User: victim-user
 		ctx := auth.ContextWithUser(req.Context(), "victim-user")
 		ctx = auth.ContextWithRoles(ctx, []string{"user"})
 		req = req.WithContext(ctx)
@@ -53,13 +49,11 @@ func TestHandleUserDetail_IDOR_Reproduction(t *testing.T) {
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, req)
 
-		// VULNERABILITY CHECK: Currently this likely returns 200 OK
-		assert.Equal(t, http.StatusForbidden, w.Code, "VULNERABILITY REPRODUCED: User 'victim-user' accessed 'admin-user' profile. IDOR Vulnerability found!")
+		assert.Equal(t, http.StatusForbidden, w.Code)
 	})
 
 	t.Run("Admin Access Victim Profile", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/users/victim-user", nil)
-		// Simulate Authenticated User: admin-user
 		ctx := auth.ContextWithUser(req.Context(), "admin-user")
 		ctx = auth.ContextWithRoles(ctx, []string{"admin"})
 		req = req.WithContext(ctx)
@@ -75,23 +69,20 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 	app, store := setupApiTestApp()
 	handler := app.handleUserDetail(store)
 
-	// Setup: Create victim user
 	victim := configv1.User_builder{Id: proto.String("victim-user"), Roles: []string{"user"}}.Build()
 	require.NoError(t, store.CreateUser(context.Background(), victim))
 
 	t.Run("Victim Elevates Own Privileges to Admin", func(t *testing.T) {
-		// Attempt to update own profile and inject "admin" role
 		payload := map[string]interface{}{
 			"user": map[string]interface{}{
 				"id":    "victim-user",
-				"roles": []string{"admin"}, // <--- Privilege Escalation attempt
+				"roles": []string{"admin"},
 			},
 		}
 		body, err := json.Marshal(payload)
 		require.NoError(t, err)
 
 		req := httptest.NewRequest(http.MethodPut, "/users/victim-user", bytes.NewReader(body))
-		// Simulate Authenticated User: victim-user
 		ctx := auth.ContextWithUser(req.Context(), "victim-user")
 		ctx = auth.ContextWithRoles(ctx, []string{"user"})
 		req = req.WithContext(ctx)
@@ -101,24 +92,20 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 
 		assert.Equal(t, http.StatusOK, w.Code)
 
-		// Check if the user is now an admin
 		updatedUser, err := store.GetUser(context.Background(), "victim-user")
 		require.NoError(t, err)
 
-		// VULNERABILITY CHECK: The user should NOT have the admin role
-		assert.NotContains(t, updatedUser.GetRoles(), "admin", "VULNERABILITY REPRODUCED: User 'victim-user' escalated privileges to 'admin'. Privilege Escalation Vulnerability found!")
+		assert.NotContains(t, updatedUser.GetRoles(), "admin")
 	})
 
 	t.Run("Victim Spoofs JSON payload to update Admin", func(t *testing.T) {
-		// Create admin user to update
 		admin := configv1.User_builder{Id: proto.String("admin-user"), Roles: []string{"admin"}}.Build()
 		require.NoError(t, store.CreateUser(context.Background(), admin))
 
-		// Attacker bypasses URL check by using their own URL but updating the admin in the JSON body
 		payload := map[string]interface{}{
 			"user": map[string]interface{}{
 				"id":    "admin-user",
-				"roles": []string{"user"}, // we try to demote admin to user
+				"roles": []string{"user"},
 			},
 		}
 		body, err := json.Marshal(payload)
@@ -132,17 +119,13 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, req)
 
-		// Expected response is 400 Bad Request due to "id mismatch".
-		// Even if bypassed (by omitting ID), the patched code enforces user.SetId(existingUser.GetId()).
 		adminUser, err := store.GetUser(context.Background(), "admin-user")
 		require.NoError(t, err)
 
-		// If the attack succeeded, the admin's roles would be overwritten.
-		assert.Contains(t, adminUser.GetRoles(), "admin", "VULNERABILITY REPRODUCED: Victim overwrote Admin's profile via JSON body spoofing. IDOR via JSON Injection found!")
+		assert.Contains(t, adminUser.GetRoles(), "admin")
 	})
 
 	t.Run("Victim Elevates Own Profile IDs", func(t *testing.T) {
-		// Attempt to update own profile and inject "admin-profile"
 		payload := map[string]interface{}{
 			"user": map[string]interface{}{
 				"id":          "victim-user",
@@ -165,6 +148,6 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 		updatedUser, err := store.GetUser(context.Background(), "victim-user")
 		require.NoError(t, err)
 
-		assert.NotContains(t, updatedUser.GetProfileIds(), "admin-profile", "VULNERABILITY REPRODUCED: User 'victim-user' escalated privileges to 'admin-profile'. Profile Escalation Vulnerability found!")
+		assert.NotContains(t, updatedUser.GetProfileIds(), "admin-profile")
 	})
 }
