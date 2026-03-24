@@ -73,7 +73,7 @@ echo "==> Running Buildifier..."
 BUILDIFIER_BIN="$(find_tool buildifier)"
 if [[ -z "$BUILDIFIER_BIN" || ! -x "$BUILDIFIER_BIN" ]]; then
     echo "ERROR: buildifier not found. It should be provided as a Bazel data dep." >&2
-    exit 0
+    exit 1
 fi
 # Collect Bazel BUILD / .bzl / WORKSPACE files, excluding caches and symlinks.
 buildifier_files=(
