@@ -672,3 +672,8 @@
 - [ ] **[P0] A2A Auth Status Dashboard**: (2026-03-23) Visualize authenticated inter-agent handshakes and peer-to-peer security status.
 - [ ] **[P1] Usage Quota Dashboard**: (2026-03-23) Real-time visualization of mission budget consumption and quota burn rates.
 - [ ] **[P1] Sandbox Identity Viewer**: (2026-03-23) Real-time status for gVisor-bound tools and execution environment integrity proofs.
+
+#### Upcoming (2026-03-24 Evolution)
+- [ ] **[P0] Relational Intent Chain Viewer**: (2026-03-24) Visual debugger for verifying the lineage and relational scoping of agent intents.
+- [ ] **[P0] Ghost Shell Safety Reporter**: (2026-03-24) UI for viewing behavioral profiling results and safety scores for un-attested configuration hooks.
+- [ ] **[P1] BSH Buffer Performance Monitor**: (2026-03-24) Real-time metrics for memory-mapped state transfer.

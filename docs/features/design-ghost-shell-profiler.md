@@ -45,3 +45,10 @@ With the discovery of "Binary Smuggling" in project-local configuration hooks (C
 
 ## 7. Evolutionary Changelog
 * **2026-03-24:** Initial Document Creation.
+
+### Update: 2026-03-24 - Ghost Shell as Mandatory Profiling
+**Context:** Today's market sync revealed the rise of "Binary Smuggling" in WASM hooks.
+**Architecture Adjustment:**
+* Ghost Shell is now a mandatory pre-flight step for any un-attested configuration hooks.
+* Introducing behavioral "Burn-In" periods for newly discovered skills.
+**Security Impact:** Provides a behavioral safety net before any malicious WASM or shell code can reach the host.

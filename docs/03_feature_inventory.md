@@ -1534,3 +1534,14 @@
 ### Priority Shifts
 - **A2A Messaging Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Authenticated Discovery** to align with Gemini CLI v0.34.0.
 - **Policy Firewall**: (Re-affirmed P0) Expanded to include **Quota-Aware Execution** rules based on real-time usage metrics.
+
+## Evolution: [2026-03-24] Updates
+
+### Proposed Additions
+- **Relational PoI Validator**: (P0) Extends PoI validation to verify the entire "Intent Chain," ensuring subagents cannot be coerced into actions outside the parent's verified goal.
+- **BSH State Buffer**: (P1) High-speed memory-mapped buffer for binary state handoffs between agents to minimize context transfer latency.
+- **Ghost Shell Hook Profiler**: (P0) Instrumented sandbox for behavioral profiling of un-attested configuration hooks, detecting "Binary Smuggling" before host execution.
+
+### Priority Shifts
+- **Binary State Handoff (BSH) Gateway**: Promoted from P1 to P0. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
+- **Ghost Shell Execution Mode**: Re-affirmed as P0. Critical security defense against malicious project-local hooks.
