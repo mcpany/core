@@ -6,7 +6,6 @@
 - [ ] **[P0] Discovery Attestation Workspace**: (2026-05-17) UI for reviewing RDA manifests and visualizing blocked shadow-delegation attempts.
 - [ ] **[P0] Kernel Mailbox Monitor**: (2026-05-17) Visual audit trail for UDS-based coordination and teammate process verification status.
 - [ ] **[P1] Reasoning Entropy Dashboard**: (2026-05-17) Real-time visualization of intent entropy and cognitive health alerts.
-
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)

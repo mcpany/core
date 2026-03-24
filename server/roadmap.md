@@ -17,8 +17,6 @@
 *   **[P1] Intent Entropy Monitor**: Observability service for detecting reasoning hijacking via semantic variance tracking. (Added: 2026-05-17)
 *   **[P1] Trace Noise Injection Middleware**: Security layer to defend against cognitive side-channeling by stochasticizing call sequences. (Added: 2026-05-17)
 
-
-
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.

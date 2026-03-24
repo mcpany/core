@@ -21,7 +21,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-
 ## Strategic Evolution: [2026-05-15]
 ### Focus: Discovery-Phase Sovereignty & Consensus-Based Task Attestation
 **Context**: The rise of "Agentic Social Engineering" and the emergence of "Protocol-Neutral Task Discovery" (PNTD) mark a critical shift in the Universal Agent Bus architecture. Security must now extend from point-to-point tool calls to the collective integrity of the swarm's reasoning and the absolute sovereignty of the tool discovery phase.
