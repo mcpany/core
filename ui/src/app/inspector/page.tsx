@@ -58,12 +58,7 @@ export default function InspectorPage() {
       }
   };
 
-  // ⚡ BOLT: [Render Optimization] Memoize array filtering and prevent O(N) string `.toLowerCase()` evaluations
-  // Randomized Selection from Top 5 High-Impact Targets
-  // ⚡ BOLT: [Render Optimization] Memoize array filtering and prevent O(N) string `.toLowerCase()` evaluations
-  // Randomized Selection from Top 5 High-Impact Targets
   const filteredTraces = useMemo(() => {
-      const query = searchQuery.toLowerCase();
       return traces.filter((trace) => {
         // Filter by Status
         if (statusFilter !== "all" && trace.status !== statusFilter) return false;
@@ -72,7 +67,8 @@ export default function InspectorPage() {
         if (typeFilter !== "all" && trace.rootSpan.type !== typeFilter) return false;
 
         // Filter by Search (ID or Name)
-        if (query) {
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
             return (
                 trace.id.toLowerCase().includes(query) ||
                 trace.rootSpan.name.toLowerCase().includes(query)
