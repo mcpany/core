@@ -186,21 +186,17 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
         profiles: []
     };
 
-    for (let i = 0; i < 5; i++) {
-        try {
-            const res = await context.post('/api/v1/debug/seed', { data: seedRequest, headers: HEADERS });
-            if (!res.ok()) {
-                const text = await res.text();
-                throw new Error(`Failed to seed global state: ${res.status()} ${text}`);
-            }
-            console.log("Global state seeded successfully.");
-            return;
-        } catch (e) {
-            console.log(`Failed to seed global state (attempt ${i + 1}/5): ${e}`);
-            await new Promise(r => setTimeout(r, 1000));
+    try {
+        const res = await context.post('/api/v1/debug/seed', { data: seedRequest, headers: HEADERS });
+        if (!res.ok()) {
+            const text = await res.text();
+            throw new Error(`Failed to seed global state: ${res.status()} ${text}`);
         }
+        console.log("Global state seeded successfully.");
+    } catch (e) {
+        console.log(`Failed to seed global state: ${e}`);
+        throw e;
     }
-    throw new Error('Failed to seed global state after multiple attempts');
 };
 
 export const seedTraffic = async (requestContext?: APIRequestContext) => {
