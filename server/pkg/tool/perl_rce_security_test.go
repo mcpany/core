@@ -65,7 +65,7 @@ func TestPerlRCE_Unquoted(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			req := &ExecutionRequest{
-				ToolName: "perl_runner",
+				ToolName:   "perl_runner",
 				ToolInputs: []byte(fmt.Sprintf(`{"script": %q}`, tc.payload)),
 			}
 

@@ -87,6 +87,9 @@ func NewServer(
 // Errors:
 //   - FailedPrecondition: If caching is not enabled.
 //   - Internal: If the cache clear operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.ClearCacheResponse, error) {
 	if s.cache == nil {
 		return nil, status.Error(codes.FailedPrecondition, "caching is not enabled")
@@ -111,6 +114,9 @@ func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.C
 //
 // Errors:
 //   - Internal: If the service registry fails to retrieve services.
+//
+// Side Effects:
+//   - None.
 func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb.ListServicesResponse, error) {
 	var services []*configv1.UpstreamServiceConfig
 	var serviceStates []*pb.ServiceState
@@ -172,6 +178,9 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 // Errors:
 //   - NotFound: If the service ID does not exist.
 //   - Internal: If the service configuration is missing for an existing service.
+//
+// Side Effects:
+//   - None.
 func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.GetServiceResponse, error) {
 	if s.serviceRegistry != nil {
 		cfg, ok := s.serviceRegistry.GetServiceConfig(req.GetServiceId())
@@ -225,6 +234,12 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 // Returns:
 //   - *pb.ListToolsResponse: The list of registered tools.
 //   - error: An error if the tool listing fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListToolsResponse, error) {
 	tools := s.toolManager.ListTools()
 	responseTools := make([]*mcprouterv1.Tool, 0, len(tools))
@@ -248,6 +263,9 @@ func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListT
 //
 // Errors:
 //   - NotFound: If the tool name does not exist.
+//
+// Side Effects:
+//   - None.
 func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetToolResponse, error) {
 	t, ok := s.toolManager.GetTool(req.GetToolName())
 	if !ok {
@@ -271,6 +289,9 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 // Errors:
 //   - InvalidArgument: If the user object is missing from the request.
 //   - Internal: If password hashing or storage operations fail.
+//
+// Side Effects:
+//   - None.
 func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	if !req.HasUser() {
 		return nil, status.Error(codes.InvalidArgument, "user is required")
@@ -311,6 +332,9 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 // Errors:
 //   - NotFound: If the user ID does not exist.
 //   - Internal: If the storage operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	user, err := s.storage.GetUser(ctx, req.GetUserId())
 	if err != nil {
@@ -339,6 +363,9 @@ func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUs
 //
 // Errors:
 //   - Internal: If the storage operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.ListUsersResponse, error) {
 	users, err := s.storage.ListUsers(ctx)
 	if err != nil {
@@ -370,6 +397,9 @@ func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.Lis
 // Errors:
 //   - InvalidArgument: If the user object is missing from the request.
 //   - Internal: If password hashing or storage operations fail.
+//
+// Side Effects:
+//   - None.
 func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
 	if !req.HasUser() {
 		return nil, status.Error(codes.InvalidArgument, "user is required")
@@ -409,6 +439,9 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 //
 // Errors:
 //   - Internal: If the storage operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
 	if err := s.storage.DeleteUser(ctx, req.GetUserId()); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete user: %v", err)
@@ -427,6 +460,12 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 // Returns:
 //   - *pb.GetDiscoveryStatusResponse: The status of all discovery providers.
 //   - error: An error if retrieving the status fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusRequest) (*pb.GetDiscoveryStatusResponse, error) {
 	if s.discoveryManager == nil {
 		return &pb.GetDiscoveryStatusResponse{}, nil
@@ -465,6 +504,9 @@ func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusR
 //   - FailedPrecondition: If audit logging is not enabled.
 //   - InvalidArgument: If start_time or end_time are invalid timestamps.
 //   - Internal: If the storage operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest) (*pb.ListAuditLogsResponse, error) {
 	if s.auditMiddleware == nil {
 		return nil, status.Error(codes.FailedPrecondition, "audit logging is not enabled")

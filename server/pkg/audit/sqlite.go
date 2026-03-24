@@ -35,6 +35,12 @@ type SQLiteAuditStore struct {
 // Returns:
 //   - *SQLiteAuditStore: The initialized audit store.
 //   - error: An error if the path is not allowed or the database initialization fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -157,6 +163,12 @@ func ensureColumn(db *sql.DB, colName string) error {
 //
 // Returns:
 //   - error: An error if the write operation or hash calculation fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -225,6 +237,12 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 // Returns:
 //   - []Entry: A list of audit entries matching the filter.
 //   - error: An error if the database query fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -304,6 +322,12 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 // Returns:
 //   - bool: True if the entire audit log chain is valid.
 //   - error: An error if a hash mismatch is detected or a database error occurs.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *SQLiteAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -357,6 +381,12 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 //
 // Returns:
 //   - error: An error if the database connection fails to close.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

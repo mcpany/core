@@ -87,7 +87,7 @@ func TestExtractIP(t *testing.T) {
 		{
 			name:     "IP with extra spaces",
 			input:    " 192.168.1.1 ", // ParseIP handles trimming? No, ParseIP returns nil for spaces.
-			expected: "",            // net.ParseIP(" 192.168.1.1 ") returns nil
+			expected: "",              // net.ParseIP(" 192.168.1.1 ") returns nil
 		},
 	}
 

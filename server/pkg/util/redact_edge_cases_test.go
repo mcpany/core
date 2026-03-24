@@ -12,14 +12,14 @@ func TestRedact_EdgeCases(t *testing.T) {
 			input string
 			want  bool
 		}{
-			{"author", false},      // auth is prefix, but 'o' continues word
+			{"author", false}, // auth is prefix, but 'o' continues word
 			{"authority", false},
 			{"authentication", true}, // 'authentication' is in the sensitive list
 			{"AUTH", true},
-			{"AUTHOR", false},      // continuation
-			{"AuthToken", true},    // CamelCase boundary
-			{"AUTH_TOKEN", true},   // underscore boundary
-			{"my_auth", true},      // found inside
+			{"AUTHOR", false},    // continuation
+			{"AuthToken", true},  // CamelCase boundary
+			{"AUTH_TOKEN", true}, // underscore boundary
+			{"my_auth", true},    // found inside
 			{"token", true},
 			{"tokens", true},
 			{"tokenization", false}, // token is prefix, 'i' continues
@@ -32,7 +32,6 @@ func TestRedact_EdgeCases(t *testing.T) {
 		}
 	})
 
-
 	// Test scanJSONForSensitiveKeys
 	t.Run("scanJSONForSensitiveKeys", func(t *testing.T) {
 		tests := []struct {
@@ -43,9 +42,9 @@ func TestRedact_EdgeCases(t *testing.T) {
 			// "nottoken" contains "token", and since we don't check previous character (suffix match allowed),
 			// it is considered sensitive.
 			{`{"nottoken": "val"}`, true},
-			{`{"key": "token"}`, false}, // token in value, not key
-			{`"token"`, false},          // just string, no colon
-			{`"token":`, true},          // key
+			{`{"key": "token"}`, false},               // token in value, not key
+			{`"token"`, false},                        // just string, no colon
+			{`"token":`, true},                        // key
 			{`{"token" /* comment */ : "val"}`, true}, // key with comment before colon
 		}
 		for _, tt := range tests {

@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/mcpany/core/server/pkg/util"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/stretchr/testify/assert"
 )
 

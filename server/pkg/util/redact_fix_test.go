@@ -16,13 +16,13 @@ func TestRedactMissingPlurals(t *testing.T) {
 
 	got := RedactJSON([]byte(input))
 
-    if bytes.Contains(got, []byte("very secret")) {
-         t.Errorf("credentials value was not redacted: %s", string(got))
-    }
+	if bytes.Contains(got, []byte("very secret")) {
+		t.Errorf("credentials value was not redacted: %s", string(got))
+	}
 
 	if bytes.Contains(got, []byte("super secret")) {
 		t.Errorf("secrets value was not redacted: %s", string(got))
-    }
+	}
 
 	// Ensure singular forms are also redacted (regression check)
 	// We look for the literal string "redacted" which was the value.

@@ -186,7 +186,7 @@ func TestResolvePath_ComplexGlobs(t *testing.T) {
 
 	rootPaths := map[string]string{"/": rootDir}
 	allowed := []string{
-		filepath.Join(rootDir, "allowed", "*.txt"),      // shallow
+		filepath.Join(rootDir, "allowed", "*.txt"),       // shallow
 		filepath.Join(rootDir, "allowed", "**", "*.txt"), // deep (if supported by filepath.Match? No, filepath.Match doesn't support **)
 		// Go's filepath.Match does NOT support **. It only supports *.
 		// But let's check what patterns we can use.

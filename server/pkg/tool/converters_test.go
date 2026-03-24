@@ -129,9 +129,9 @@ func TestGetJSONSchemaForScalarType(t *testing.T) {
 		}
 	})
 }
+
 // ... (skip others if needed or replace block)
 // I will just replace the TestGetJSONSchemaForScalarType block first
-
 
 func TestConvertMCPToolToProto(t *testing.T) {
 	t.Parallel()

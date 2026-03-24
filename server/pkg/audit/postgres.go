@@ -32,6 +32,12 @@ type PostgresAuditStore struct {
 // Returns:
 //   - *PostgresAuditStore: The initialized audit store.
 //   - error: An error if the database connection or schema initialization fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("postgres dsn is required")
@@ -87,6 +93,12 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 //
 // Returns:
 //   - error: An error if the transaction fails, hash calculation fails, or database write fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	// Marshal complex types
 	argsJSON := "{}"
@@ -163,6 +175,12 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 // Returns:
 //   - []Entry: Always returns nil.
 //   - error: Always returns a "not implemented" error.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
@@ -177,6 +195,12 @@ func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) 
 // Returns:
 //   - bool: True if the entire audit log chain is valid.
 //   - error: An error if a hash mismatch is detected or a database query fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *PostgresAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -242,6 +266,12 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 //
 // Returns:
 //   - error: An error if the database connection fails to close.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *PostgresAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

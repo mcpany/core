@@ -39,6 +39,12 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: The initialized manager.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewManager(fs afero.Fs, catalogPath string) *Manager {
 	return &Manager{
 		fs:          fs,
@@ -59,6 +65,9 @@ func NewManager(fs afero.Fs, catalogPath string) *Manager {
 // Side Effects:
 //   - Updates the internal list of services.
 //   - Reads files from the filesystem.
+//
+// Errors:
+//   - None.
 func (m *Manager) Load(ctx context.Context) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -137,6 +146,12 @@ func (m *Manager) Load(ctx context.Context) error {
 // Returns:
 //   - []*configv1.UpstreamServiceConfig: A slice of service configurations.
 //   - error: Always nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

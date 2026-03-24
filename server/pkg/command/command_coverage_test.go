@@ -28,14 +28,14 @@ type mockWriteOnlyConn struct {
 	w *io.PipeWriter
 }
 
-func (c *mockWriteOnlyConn) Write(p []byte) (int, error)       { return c.w.Write(p) }
-func (c *mockWriteOnlyConn) CloseWrite() error                 { return c.w.Close() }
-func (c *mockWriteOnlyConn) Close() error                      { return c.w.Close() }
-func (c *mockWriteOnlyConn) Read(_ []byte) (int, error)        { return 0, io.EOF }
-func (c *mockWriteOnlyConn) LocalAddr() net.Addr               { return &net.TCPAddr{} }
-func (c *mockWriteOnlyConn) RemoteAddr() net.Addr              { return &net.TCPAddr{} }
-func (c *mockWriteOnlyConn) SetDeadline(_ time.Time) error     { return nil }
-func (c *mockWriteOnlyConn) SetReadDeadline(_ time.Time) error { return nil }
+func (c *mockWriteOnlyConn) Write(p []byte) (int, error)        { return c.w.Write(p) }
+func (c *mockWriteOnlyConn) CloseWrite() error                  { return c.w.Close() }
+func (c *mockWriteOnlyConn) Close() error                       { return c.w.Close() }
+func (c *mockWriteOnlyConn) Read(_ []byte) (int, error)         { return 0, io.EOF }
+func (c *mockWriteOnlyConn) LocalAddr() net.Addr                { return &net.TCPAddr{} }
+func (c *mockWriteOnlyConn) RemoteAddr() net.Addr               { return &net.TCPAddr{} }
+func (c *mockWriteOnlyConn) SetDeadline(_ time.Time) error      { return nil }
+func (c *mockWriteOnlyConn) SetReadDeadline(_ time.Time) error  { return nil }
 func (c *mockWriteOnlyConn) SetWriteDeadline(_ time.Time) error { return nil }
 
 // TestDockerExecutorWithStdIO_Mock exercises the full stdin→stdout round-trip

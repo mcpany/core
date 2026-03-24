@@ -399,7 +399,7 @@ func TestUpstreamServiceManager_Profiles_Overrides(t *testing.T) {
 			name:            "No Profile (common only?)",
 			enabledProfiles: []string{}, // Default profile?
 			// If no profile overrides, services are enabled by default (logic in manager.go:314 allowed := !isOverrideDisabled)
-			expectedNames:   []string{"common-service", "dev-service", "prod-service"},
+			expectedNames: []string{"common-service", "dev-service", "prod-service"},
 		},
 		{
 			name:            "Dev Profile",

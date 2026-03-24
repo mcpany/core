@@ -90,8 +90,8 @@ func TestCallPolicyMiddleware(t *testing.T) {
 		svcConfig := &configv1.UpstreamServiceConfig{}
 		svcConfig.SetCallPolicies(policies)
 		serviceInfo := &tool.ServiceInfo{
-			Name: "test-service",
-			Config: svcConfig,
+			Name:             "test-service",
+			Config:           svcConfig,
 			CompiledPolicies: compiledPolicies,
 		}
 

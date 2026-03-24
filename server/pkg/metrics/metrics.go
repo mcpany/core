@@ -32,6 +32,12 @@ type Label = metrics.Label
 // Returns:
 //   - *prometheus.PrometheusSink: The initialized Prometheus metrics sink.
 //   - error: An error if the sink cannot be created.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
 	return prometheus.NewPrometheusSink()
 }
@@ -44,6 +50,12 @@ var initOnce sync.Once
 //
 // Returns:
 //   - error: An error if the global metrics system fails to initialize.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func Initialize() error {
 	var err error
 	initOnce.Do(func() {
@@ -72,6 +84,12 @@ func Initialize() error {
 //
 // Returns:
 //   - http.Handler: An HTTP handler configured to serve Prometheus metrics.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func Handler() http.Handler {
 	return promhttp.Handler()
 }
@@ -85,6 +103,12 @@ func Handler() http.Handler {
 //
 // Returns:
 //   - error: An error if the server fails to bind or start.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func StartServer(addr string) error {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", Handler())
@@ -118,6 +142,12 @@ func StartServer(addr string) error {
 //   - name (string): The name of the gauge.
 //   - val (float32): The current value to be recorded.
 //   - labels (...string): Optional service name to be used as a label.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func SetGauge(name string, val float32, labels ...string) {
 	var metricLabels []metrics.Label
 	if len(labels) > 0 {
@@ -135,6 +165,12 @@ func SetGauge(name string, val float32, labels ...string) {
 // Parameters:
 //   - name ([]string): The hierarchical name of the counter.
 //   - val (float32): The amount by which to increment the counter.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func IncrCounter(name []string, val float32) {
 	metrics.IncrCounter(name, val)
 }
@@ -147,6 +183,12 @@ func IncrCounter(name []string, val float32) {
 //   - name ([]string): The hierarchical name of the counter.
 //   - val (float32): The amount by which to increment the counter.
 //   - labels ([]metrics.Label): The labels to apply to the observation.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.IncrCounterWithLabels(name, val, labels)
 }
@@ -158,6 +200,12 @@ func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 // Parameters:
 //   - name ([]string): The hierarchical name of the latency metric.
 //   - start (time.Time): The timestamp representing the beginning of the operation.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func MeasureSince(name []string, start time.Time) {
 	metrics.MeasureSince(name, start)
 }
@@ -170,6 +218,12 @@ func MeasureSince(name []string, start time.Time) {
 //   - name ([]string): The hierarchical name of the latency metric.
 //   - start (time.Time): The timestamp representing the beginning of the operation.
 //   - labels ([]metrics.Label): The labels to apply to the latency observation.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Label) {
 	metrics.MeasureSinceWithLabels(name, start, labels)
 }
@@ -181,6 +235,12 @@ func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Lab
 // Parameters:
 //   - name ([]string): The hierarchical name of the histogram.
 //   - val (float32): The value to be sampled.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func AddSample(name []string, val float32) {
 	metrics.AddSample(name, val)
 }
@@ -193,6 +253,12 @@ func AddSample(name []string, val float32) {
 //   - name ([]string): The hierarchical name of the histogram.
 //   - val (float32): The value to be sampled.
 //   - labels ([]metrics.Label): The labels to apply to the histogram sample.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func AddSampleWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.AddSampleWithLabels(name, val, labels)
 }

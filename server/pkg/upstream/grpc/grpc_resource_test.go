@@ -275,7 +275,7 @@ func TestRegisterDynamicResources_Detailed(t *testing.T) {
 		grpcService := configv1.GrpcUpstreamService_builder{
 			Resources: []*configv1.ResourceDefinition{
 				configv1.ResourceDefinition_builder{
-					Name: proto.String("myResource"),
+					Name:    proto.String("myResource"),
 					Dynamic: configv1.DynamicResource_builder{
 						// Missing call definition
 					}.Build(),

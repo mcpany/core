@@ -20,6 +20,12 @@ import (
 //
 // Parameters:
 //   - cmd (*cobra.Command): The command instance to which the persistent flags will be attached.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func BindRootFlags(cmd *cobra.Command) {
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("MCPANY")
@@ -74,6 +80,12 @@ func BindRootFlags(cmd *cobra.Command) {
 //
 // Parameters:
 //   - cmd (*cobra.Command): The command instance to which the server flags will be attached.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func BindServerFlags(cmd *cobra.Command) {
 	cmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
 	cmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO")
@@ -114,6 +126,12 @@ func BindServerFlags(cmd *cobra.Command) {
 //
 // Parameters:
 //   - cmd (*cobra.Command): The command instance to which the flags will be attached.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func BindFlags(cmd *cobra.Command) {
 	BindRootFlags(cmd)
 	BindServerFlags(cmd)

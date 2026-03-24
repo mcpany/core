@@ -40,6 +40,12 @@ const (
 //
 // Returns:
 //   - string: The string representation of the severity (e.g., "ERROR", "WARNING").
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s Severity) String() string {
 	switch s {
 	case Error:
@@ -73,6 +79,12 @@ type Result struct {
 //
 // Returns:
 //   - string: A formatted string containing severity, service name, path, and message.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r Result) String() string {
 	pathStr := ""
 	if r.Path != "" {
@@ -101,6 +113,12 @@ type Linter struct {
 //
 // Returns:
 //   - *Linter: A newly initialized Linter instance.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
@@ -115,6 +133,12 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 // Returns:
 //   - []Result: A slice containing all detected linting results.
 //   - error: An error if a fatal issue occurs during the linting process.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// Pre-allocate to avoid performance warnings, though initial size is a guess.
 	results := make([]Result, 0, 10)

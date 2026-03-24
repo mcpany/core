@@ -43,6 +43,12 @@ type SplunkAuditStore struct {
 //
 // Returns:
 //   - *SplunkAuditStore: The newly created and active Splunk audit store.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewSplunkAuditStore(config *configv1.SplunkConfig) *SplunkAuditStore {
 	if config == nil {
 		config = &configv1.SplunkConfig{}
@@ -112,6 +118,12 @@ func (e *SplunkAuditStore) worker() {
 //
 // Returns:
 //   - error: An error if the internal buffer is full.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (e *SplunkAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case e.queue <- entry:
@@ -178,6 +190,12 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 // Returns:
 //   - []Entry: Always returns nil.
 //   - error: Always returns a "not implemented" error.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for splunk audit store")
 }
@@ -188,6 +206,12 @@ func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 //
 // Returns:
 //   - error: Always returns nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (e *SplunkAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)
