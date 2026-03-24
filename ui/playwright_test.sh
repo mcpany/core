@@ -128,9 +128,14 @@ with socket.socket() as sock:
 PY
 }
 
+# ShellCheck (SC2155): Combined declaration and assignment hides exit code.
+# shellcheck disable=SC2155
 test_port="${TEST_PORT:-$(find_free_port)}"
+# shellcheck disable=SC2155
 backend_port="${BACKEND_PORT:-$(find_free_port)}"
+# shellcheck disable=SC2155
 backend_grpc_port="${BACKEND_GRPC_PORT:-$(find_free_port)}"
+# shellcheck disable=SC2155
 echo_port="${UI_HTTP_ECHO_PORT:-$(find_free_port)}"
 
 echo "Starting HTTP echo server on 127.0.0.1:${echo_port}"
@@ -186,8 +191,9 @@ else
 fi
 
 if [[ -n "$spec_path" ]]; then
+  # ShellCheck (SC2016): Expressions inside single quotes are literal.
+  # ShellCheck (SC2016): Expressions inside single quotes are literal.
   # shellcheck disable=SC2016
-    # shellcheck disable=SC2016
   escaped_spec="$(printf '%s' "$selected_spec" | sed -e 's/[.[\*^$()+?{}|]/\\&/g')"
   export PLAYWRIGHT_TEST_MATCH="(^|.*/)${escaped_spec}$"
 fi

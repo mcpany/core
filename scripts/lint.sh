@@ -121,15 +121,36 @@ fi
 #    build/env/bin/ (populated by `make prepare`).
 # ---------------------------------------------------------------------------
 echo "==> Running golangci-lint..."
+
+# Hardening: golangci-lint requires proto Go files to be generated for
+# full analysis. Ensure these exist.
+if [[ -f "Makefile" ]]; then
+    echo "    Ensuring proto Go files are generated..."
+    make gen-pb-proto gen-gateway-proto >/dev/null 2>&1 || true
+fi
+
 if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
     GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
 fi
-# No longer fall back to build/env/bin/ (local make-managed path) since this
-# is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
-        ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
+    # In resource-constrained environments (like some CI runners), running
+    # golangci-lint on the entire workspace at once can cause OOM ("Killed").
+    # We use --concurrency 2 and run on critical paths to improve stability.
+    # Note: We prioritize stability over speed in CI.
+    CONCURRENCY=2
+    if [[ -n "${CI:-}" ]]; then
+        CONCURRENCY=1
+    fi
+
+    echo "    Linting server/pkg/ (concurrency: ${CONCURRENCY})..."
+    "$GOLANGCI_LINT_BIN" run --timeout 15m --fix --concurrency "${CONCURRENCY}" \
+        ./server/pkg/...
+
+    echo "    Linting other server components..."
+    "$GOLANGCI_LINT_BIN" run --timeout 15m --fix --concurrency "${CONCURRENCY}" \
+        ./server/cmd/... ./server/tests/... ./server/examples/...
+
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
