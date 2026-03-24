@@ -683,3 +683,7 @@
 - [ ] **[P0] Multimodal Memory Bus Monitor**: (2026-07-01) Real-time visualization of intent-pinned state synchronization and multimodal sanitization events.
 - [ ] **[P0] ZK-Discovery Broker Workspace**: (2026-07-01) UI for reviewing masked capability cards and unmasking schemas via mission-handshakes.
 - [ ] **[P0] Attention Anchor Heatmap**: (2026-07-01) Visual tracker for ALRA-pinned intent fragments and attention-density alerts.
+- [ ] **[P0] Binary STI Schema Manager**: (2026-07-02) UI for registering and TPM-signing Protobuf tool schemas.
+- [ ] **[P0] Role-Bound Shard Explorer**: (2026-07-02) Visual debugger for private teammate memory shards and isolation boundaries.
+- [ ] **[P1] MTA Session Dashboard**: (2026-07-02) Status monitor for long-running hardware-attested trust sessions and turn counts.
+- [ ] **[P0] Stylometric Splicing Alerts**: (2026-07-02) Real-time security feed for blocked instruction fragments mimicking parent stylistic signatures.

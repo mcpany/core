@@ -1557,3 +1557,15 @@
 ### Priority Shifts
 - **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving to act as the primary backend for the **UMMB** state synchronization.
 - **Zero-Knowledge Discovery (ZKD) Proxy**: (Re-affirmed P0) Expanding into the **ZKDB** to support cross-framework capability negotiation.
+
+## Evolution: [2026-07-02] Updates
+
+### Proposed Additions
+- **Binary STI Gateway**: (P0) Authoritative bridge for Sovereign Tool Invocation, implementing binary Protobuf validation for all tool calls to neutralize schema-injection.
+- **Role-Based Memory (RBM) Controller**: (P0) Coordination service for private, role-bound memory shards to support horizontal state specialization without blackboard pollution.
+- **Multi-Turn Attestation (MTA) Hub**: (P1) Trust-session broker facilitating hardware-locked attestation across 50+ turns to resolve handshake fatigue.
+- **Stylometric Instruction Filter (SIF)**: (P0) Security middleware for the ADF utilizing real-time stylometric analysis to detect and block attention-splicing instructions.
+
+### Priority Shifts
+- **Attention-Density Firewall (ADF)**: (Re-affirmed P0) Elevated with mandatory **SIF** integration to counter CVE-2026-91023.
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving to act as the primary backend for **RBM** sharded state management.

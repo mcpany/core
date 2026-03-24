@@ -846,3 +846,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Universal Multimodal Memory Bus (UMMB)**: Hardware-attested memory bus for state synchronization across disparate frameworks. (Added: 2026-07-01)
 *   **[P0] Zero-Knowledge Discovery Broker (ZKDB)**: Security middleware mandating cryptographic capability masking until mission-handshake. (Added: 2026-07-01)
 *   **[P0] Attention-Locked Reasoning Anchors (ALRA)**: Hardware-bound attention-pinning to prevent mission-root intent eviction. (Added: 2026-07-01)
+
+#### Upcoming (2026-07-02 Evolution)
+*   **[P0] Binary STI Gateway**: Implementation of Sovereign Tool Invocation (STI) via binary Protobuf to neutralize schema-injection. (Added: 2026-07-02)
+*   **[P0] Role-Based Memory (RBM) Controller**: Sharded teammate memory for specialized state isolation without blackboard pollution. (Added: 2026-07-02)
+*   **[P1] Multi-Turn Attestation (MTA) Hub**: Hardware-locked trust sessions for 50+ turns to resolve handshake fatigue. (Added: 2026-07-02)
+*   **[P0] Stylometric Instruction Filter (SIF)**: Real-time analysis middleware to detect and block attention-splicing (CVE-2026-91023). (Added: 2026-07-02)

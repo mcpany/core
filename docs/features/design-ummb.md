@@ -53,3 +53,10 @@ The Universal Multimodal Memory Bus (UMMB) implements a hardware-attested, inten
 
 ## 7. Evolutionary Changelog
 * **2026-07-01:** Initial Document Creation.
+
+### Update: 2026-07-02 - Role-Based Memory (RBM) Integration
+**Context:** Today's market sync revealed the "Team Spirits" pattern for horizontal state isolation.
+**Architecture Adjustment:**
+* Integrating **Role-Based Memory (RBM) Shards** into the UMMB lifecycle.
+* Supporting private, teammate-bound context shards that are excluded from the global UMMB sync by default.
+**Security Impact:** Prevents "Semantic Noise" and unauthorized state inheritance between horizontal teammates in complex swarms.
