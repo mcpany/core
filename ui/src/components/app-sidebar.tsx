@@ -25,7 +25,9 @@ import {
   ClipboardCheck,
   Bug,
   Workflow,
-  Brain
+  Brain,
+  ShieldAlert,
+  BotMessageSquare
 } from "lucide-react"
 import { Link } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
@@ -111,6 +113,11 @@ const platformItems = [
     url: "/marketplace",
     icon: ShoppingBag,
   },
+  {
+    title: "Approvals",
+    url: "/hitl",
+    icon: ShieldAlert,
+  },
 ]
 
 const devItems = [
@@ -118,6 +125,11 @@ const devItems = [
     title: "Playground",
     url: "/playground",
     icon: Bot,
+  },
+  {
+    title: "Universal Agent Bus",
+    url: "/universal-agent-bus",
+    icon: BotMessageSquare,
   },
   {
     title: "Inspector",

@@ -38,6 +38,8 @@ const ServiceToolPage = lazy(() => import("./app/service/[id]/tool/[name]/page")
 const SettingsMiddlewarePage = lazy(() => import("./app/settings/middleware/page"));
 const SettingsPage = lazy(() => import("./app/settings/page"));
 const SettingsWebhooksPage = lazy(() => import("./app/settings/webhooks/page"));
+const HITLPage = lazy(() => import("./app/hitl/page"));
+const UniversalAgentBusPage = lazy(() => import("./app/universal-agent-bus/page"));
 const SkillEditPage = lazy(() => import("./app/skills/[name]/edit/page"));
 const SkillNamePage = lazy(() => import("./app/skills/[name]/page"));
 const SkillCreatePage = lazy(() => import("./app/skills/create/page"));
@@ -89,6 +91,8 @@ export default function App() {
           <Route path="/marketplace/external/:id" element={<ExternalMarketplacePage />} />
           <Route path="/middleware" element={<MiddlewarePage />} />
           <Route path="/network" element={<NetworkPage />} />
+          <Route path="/hitl" element={<HITLPage />} />
+          <Route path="/universal-agent-bus" element={<UniversalAgentBusPage />} />
           <Route path="/playground" element={<PlaygroundPage />} />
           <Route path="/playground/schema" element={<PlaygroundSchemaPage />} />
           <Route path="/profiles" element={<ProfilesPage />} />
