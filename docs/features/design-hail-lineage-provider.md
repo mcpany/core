@@ -1,67 +1,44 @@
 <!-- markdownlint-disable -->
-# Design Doc: Hardware-Attested Intent Lineage (HAIL)
-
-**Status:** Draft | In Review | Approved
-**Created:** [2026-06-19]
+# Design Doc: HAIL (Hardware-Attested Intent Lineage)
+**Status:** Draft
+**Created:** 2026-06-19
 
 ## 1. Context and Scope
-
-The emergence of **Reasoning Path Shadowing** (stylometric mimicry) has exposed a critical gap in multi-agent swarms. In this attack, a malicious specialist agent mimics the "Stylometric Signature" and "Chain-of-Thought" structure of a parent agent to inject instructions that pass standard consistency checks. MCP Any needs to provide **Hardware-Attested Intent Lineage (HAIL)** to cryptographically link every reasoning fragment back to a TPM-signed mission root, ensuring that the "author" of any instruction is non-repudiable and verified.
+As agent swarms evolve, specialized subagents are increasingly prone to "Logic Grafting" and identity spoofing. Current transport-layer security is insufficient to verify the *behavioral identity* of a reasoning fragment. HAIL provides a standardized protocol for cryptographically signing every sub-instruction and linking it back to a hardware-attested mission-root intent.
 
 ## 2. Goals & Non-Goals
-
 * **Goals:**
-    * Generate cryptographically signed "Reasoning Fragments" for all inter-agent messages.
-    * Link every fragment back to a hardware-attested "Mission Root."
-    * Provide real-time stylometric analysis to verify the author of reasoning fragments (defense against mimicry).
-    * Maintain an immutable, hardware-locked audit trail of the reasoning path.
+    * Provide hardware-bound (TPM) signatures for all reasoning fragments.
+    * Establish a non-repudiable "Chain of Command" for sub-delegations.
+    * Enable real-time verification of "Reasoning Fragment Authorship."
 * **Non-Goals:**
-    * Eliminating all model-level hallucinations (we verify the *lineage*, not the *truth*).
-    * Protecting against local-user-initiated intent shifts (the user is the root of trust).
+    * Real-time sanitization of the *content* of the reasoning (handled by ISD).
+    * General-purpose identity for human users.
 
 ## 3. Critical User Journey (CUJ)
-
-* **User Persona:** Enterprise Security Architect
-* **Primary Goal:** Verify that all code changes proposed by a multi-agent swarm genuinely originate from the user-authorized mission root, and haven't been "shadowed" by a malicious subagent.
+* **User Persona:** Local LLM Swarm Orchestrator
+* **Primary Goal:** Verify that a subagent tool call was authorized by the parent mission-root without exposing parent environment variables.
 * **The Happy Path (Tasks):**
-    1.  The User initiates a mission via the MCP Any Gateway.
-    2.  MCP Any mints a hardware-attested **HAIL Mission Root Token**.
-    3.  Every tool call or sub-mission spawned by the lead agent must include a **HAIL Child Fragment**, signed by the lead agent's identity and linked to the root token.
-    4.  A specialist agent attempts to "Shadow" the parent agent's style to escalate its permissions.
-    5.  The **Stylometric Verification Hub** detects a mismatch between the reasoning style and the hardware-attested identity.
-    6.  MCP Any blocks the tool call and alerts the user of a lineage violation.
+    1. Parent agent initializes a session with a TPM-signed mission-root token.
+    2. Parent spawns a subagent and issues a "Lineage Fragment" token.
+    3. Subagent makes a tool call to the HAIL-compliant gateway.
+    4. Gateway verifies the fragment's signature against the mission-root lineage.
+    5. Tool is executed only if the lineage is valid.
 
 ## 4. Design & Architecture
-
 * **System Flow:**
-
-```mermaid
-graph TD
-    A[Mission Root Token] --> B[SRM Provider]
-    B --> C{HAIL Token Minting}
-    C --> D[Hardware-Signed Fragment]
-    E[Subagent Reasoning Trace] --> F[Stylometric Hub]
-    F --> G[Signature Verification]
-    G -- Match --> H[Authenticated Instruction]
-    G -- Mismatch --> I[Lineage Alert / Block]
-
-```
+    `[Parent (TPM Root)] -> [Lineage Token Generator] -> [Subagent] -> [HAIL Gateway (Verification)] -> [Tool]`
 * **APIs / Interfaces:**
-    * `POST /v1/lineage/sign`: Accept a reasoning fragment and return a HAIL-signed token.
-    * `GET /v1/lineage/verify`: Verify the lineage and stylometric signature of a fragment.
-* **Data Storage/State:**
-    * Lineage tokens are stored in the **Mesh-Resident Lineage Tracker** (forensic audit log).
+    * `x-mcpany-hail-lineage`: Header containing the signed lineage fragment.
+    * `/v1/hail/verify`: Internal endpoint for verifying fragment tokens.
+* **Data Storage/State:** Lineage state is ephemeral and bound to the hardware-attested session.
 
 ## 5. Alternatives Considered
-
-* **Token-only Lineage**: Rejected because tokens can be "Shadowed" if the model's output is not cryptographically bound to the hardware session.
-* **Manual Code Review**: Rejected because it cannot keep pace with machine-speed swarm coordination and doesn't address the stylometric mimicry threat.
+* **JWT-only signing**: Rejected because it is vulnerable to token theft/leakage. Hardware-bound signatures provide non-repudiation.
 
 ## 6. Cross-Cutting Concerns
-
-* **Security (Zero Trust)**: The HAIL Provider is the authoritative root of cognitive trust; its private keys are never exposed and remain TPM-bound.
-* **Observability**: The "Lineage Inspector" UI will provide a visual "Chain of Command" for every tool call in the swarm.
+* **Security (Zero Trust):** HAIL is the foundation of Behavioral Zero Trust, ensuring that only "known good" reasoning paths can execute high-risk tools.
+* **Observability:** Lineage traces are logged as non-repudiable audit trails.
 
 ## 7. Evolutionary Changelog
-
-* **[2026-06-19]:** Initial Document Creation.
+* **2026-06-19:** Initial Document Creation.
