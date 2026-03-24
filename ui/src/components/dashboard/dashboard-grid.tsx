@@ -78,13 +78,10 @@ export function DashboardGrid() {
                 type: string; // Actually 'wide'|'half' etc in some cases, but mapped
                 hidden?: boolean;
             }
-            // ⚡ BOLT: [Render Optimization] Eliminate O(N*M) lookups during widget migration
-            // Randomized Selection from Top 5 High-Impact Targets
-            const widgetDefMap = new Map(WIDGET_DEFINITIONS.map(d => [d.type, d.title]));
             const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
                 instanceId: crypto.randomUUID(),
                 type: w.id, // In legacy, id was effectively the type
-                title: widgetDefMap.get(w.id) || w.title,
+                title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
                 size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
                 hidden: w.hidden ?? false
             }));
