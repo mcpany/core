@@ -1,8 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package lint provides functionality for analyzing configuration files
-// to detect potential security issues and best practice violations.
+// Package lint provides configuration analysis tools.
 //
 // Summary: Package lint provides configuration analysis tools.
 package lint
@@ -23,15 +22,12 @@ type Severity int
 
 const (
 	// Error indicates a critical issue that must be fixed.
-	//
 	// Summary: Defines the Error severity level.
 	Error Severity = iota
 	// Warning indicates a potential issue or best practice violation.
-	//
 	// Summary: Defines the Warning severity level.
 	Warning
 	// Info indicates a suggestion or informational message.
-	//
 	// Summary: Defines the Info severity level.
 	Info
 )
@@ -41,10 +37,10 @@ const (
 // Summary: Executes String operation.
 //
 // Parameters:
-//   - s: Severity. The severity level to convert.
+//   - s: Severity.
 //
 // Returns:
-//   - string: The string representation (e.g., "ERROR").
+//   - string: Representation.
 //
 // Errors:
 //   - None.
@@ -70,11 +66,11 @@ func (s Severity) String() string {
 type Result struct {
 	// Severity indicates how critical the finding is.
 	Severity Severity
-	// ServiceName is the name of the service associated with the finding.
+	// ServiceName is the name of the service.
 	ServiceName string
-	// Message is the descriptive text of the finding.
+	// Message is the descriptive text.
 	Message string
-	// Path is the location in the configuration where the issue was found.
+	// Path is the location in the configuration.
 	Path string
 }
 
@@ -83,10 +79,10 @@ type Result struct {
 // Summary: Executes String operation.
 //
 // Parameters:
-//   - r: Result. The result instance to format.
+//   - r: Result.
 //
 // Returns:
-//   - string: A formatted string containing result details.
+//   - string: Formatted.
 //
 // Errors:
 //   - None.
@@ -117,10 +113,10 @@ type Linter struct {
 // Summary: Initializes NewLinter operation.
 //
 // Parameters:
-//   - cfg: *configv1.McpAnyServerConfig. The configuration to analyze.
+//   - cfg: Configuration.
 //
 // Returns:
-//   - *Linter: A new Linter instance.
+//   - *Linter: Instance.
 //
 // Errors:
 //   - None.
@@ -136,11 +132,11 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 // Summary: Executes Run operation.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the operation.
+//   - ctx: context.Context.
 //
 // Returns:
-//   - []Result: A slice of linting findings.
-//   - error: Encounters a fatal issue.
+//   - []Result: Findings.
+//   - error: Issue.
 //
 // Errors:
 //   - None.
@@ -175,7 +171,7 @@ func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 //   - None.
 //
 // Returns:
-//   - []Result: A slice of findings.
+//   - []Result: Findings.
 //
 // Errors:
 //   - None.
@@ -193,9 +189,8 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 			results = append(results, Result{
 				Severity:    Warning,
 				ServiceName: serviceName,
-				Message: "Secret is stored in plain text. Use environment " +
-					"variables or file references for better security.",
-				Path: path,
+				Message:     "Secret is stored in plain text.",
+				Path:        path,
 			})
 		}
 	}
@@ -222,13 +217,13 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 		case configv1.UpstreamServiceConfig_CommandLineService_case:
 			cmd := s.GetCommandLineService()
 			for k, v := range cmd.GetEnv() {
-				checkSecret(v, fmt.Sprintf("command_line_service.env[%s]", k),
+				checkSecret(v, fmt.Sprintf("cmd_line.env[%s]", k),
 					s.GetName())
 			}
 			if ce := cmd.GetContainerEnvironment(); ce != nil {
 				for k, v := range ce.GetEnv() {
-					checkSecret(v, fmt.Sprintf("command_line_service."+
-						"container_environment.env[%s]", k), s.GetName())
+					checkSecret(v, fmt.Sprintf("cmd_line.ce.env[%s]", k),
+						s.GetName())
 				}
 			}
 		case configv1.UpstreamServiceConfig_McpService_case:
@@ -237,13 +232,13 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 			case configv1.McpUpstreamService_StdioConnection_case:
 				stdio := mcp.GetStdioConnection()
 				for k, v := range stdio.GetEnv() {
-					checkSecret(v, fmt.Sprintf("mcp_service.stdio.env[%s]", k),
+					checkSecret(v, fmt.Sprintf("mcp.stdio.env[%s]", k),
 						s.GetName())
 				}
 			case configv1.McpUpstreamService_BundleConnection_case:
 				bundle := mcp.GetBundleConnection()
 				for k, v := range bundle.GetEnv() {
-					checkSecret(v, fmt.Sprintf("mcp_service.bundle.env[%s]", k),
+					checkSecret(v, fmt.Sprintf("mcp.bundle.env[%s]", k),
 						s.GetName())
 				}
 			}
@@ -261,7 +256,7 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 //   - None.
 //
 // Returns:
-//   - []Result: A slice of findings.
+//   - []Result: Findings.
 //
 // Errors:
 //   - None.
@@ -291,10 +286,8 @@ func (l *Linter) checkShellInjection() []Result {
 					results = append(results, Result{
 						Severity:    Warning,
 						ServiceName: s.GetName(),
-						Message: fmt.Sprintf("Command uses shell invocation "+
-							"(%q). Ensure inputs are properly sanitized to "+
-							"prevent shell injection.", pattern),
-						Path: "command",
+						Message:     fmt.Sprintf("Command uses %q.", pattern),
+						Path:        "command",
 					})
 				}
 			}
@@ -311,7 +304,7 @@ func (l *Linter) checkShellInjection() []Result {
 //   - None.
 //
 // Returns:
-//   - []Result: A slice of findings.
+//   - []Result: Findings.
 //
 // Errors:
 //   - None.
@@ -328,9 +321,8 @@ func (l *Linter) checkInsecureHTTP() []Result {
 					results = append(results, Result{
 						Severity:    Warning,
 						ServiceName: s.GetName(),
-						Message: fmt.Sprintf("Service uses insecure HTTP "+
-							"connection to %q. Consider using HTTPS.", url),
-						Path: path,
+						Message:     fmt.Sprintf("Insecure: %q.", url),
+						Path:        path,
 					})
 				}
 			}
@@ -364,7 +356,7 @@ func (l *Linter) checkInsecureHTTP() []Result {
 //   - None.
 //
 // Returns:
-//   - []Result: A slice of findings.
+//   - []Result: Findings.
 //
 // Errors:
 //   - None.
@@ -382,10 +374,8 @@ func (l *Linter) checkCacheSettings() []Result {
 			results = append(results, Result{
 				Severity:    Info,
 				ServiceName: s.GetName(),
-				Message: "Cache is configured but has 0 TTL (infinite or " +
-					"disabled depending on implementation). Verify this is " +
-					"intended.",
-				Path: "cache.ttl",
+				Message:     "Cache has 0 TTL.",
+				Path:        "cache.ttl",
 			})
 		}
 	}
