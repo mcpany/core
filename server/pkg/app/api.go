@@ -758,7 +758,11 @@ func (a *Application) handleTools() http.HandlerFunc {
 				if i > 0 {
 					buf = append(buf, ',')
 				}
-				b, _ := opts.Marshal(t.Tool())
+				b, err := opts.Marshal(t.Tool())
+				if err != nil {
+					http.Error(w, "Failed to marshal tool", http.StatusInternalServerError)
+					return
+				}
 				buf = append(buf, b...)
 			}
 			buf = append(buf, ']')
