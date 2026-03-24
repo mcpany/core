@@ -21,28 +21,18 @@ type server struct {
 }
 
 // SayHello implements greeter.GreeterServer.
-//
-// Summary: Greets the user with a message.
-//
-// Parameters:
-//   - _: context.Context. Unused.
-//   - in: *pb.HelloRequest. The request message containing the user's name.
-//
-// Returns:
-//   - *pb.HelloReply: The greeting message.
-//   - error: Any error that occurred.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Logs the received request to standard output.
 func (s *server) SayHello(_ context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	log.Printf("Received: %v", in.GetName())
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
 }
 
 func main() {
+	if err := run(); err != nil {
+		log.Fatalf("Fatal error: %v", err)
+	}
+}
+
+func run() error {
 	port := os.Getenv("GRPC_PORT")
 	if port == "" {
 		port = "50051"
@@ -50,13 +40,16 @@ func main() {
 	addr := fmt.Sprintf(":%s", port)
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		return fmt.Errorf("failed to listen: %w", err)
 	}
+	defer func() { _ = lis.Close() }()
+
 	s := grpc.NewServer()
 	pb.RegisterGreeterServer(s, &server{})
 	reflection.Register(s)
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		return fmt.Errorf("failed to serve: %w", err)
 	}
+	return nil
 }

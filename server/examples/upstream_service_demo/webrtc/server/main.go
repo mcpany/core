@@ -1,12 +1,12 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package main implements a WebRTC server demo.
 package main
 
 import (
 	"encoding/json"
 	"log"
+	"net"
 	"net/http"
 	"sync"
 	"time"
@@ -19,15 +19,13 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(_ *http.Request) bool { return true },
 }
 
-// Signal represents a WebRTC signal.
 type Signal struct {
 	Type    string `json:"type"`
 	Payload string `json:"payload"`
 }
 
-// handleWebSocket manages the WebRTC signaling over a WebSocket connection.
 func handleWebSocket(conn *websocket.Conn) {
-	defer func() { _ = conn.Close() }() // Ensure the WebSocket connection is closed when the handler exits
+	defer func() { _ = conn.Close() }()
 
 	peerConnection, err := webrtc.NewPeerConnection(webrtc.Configuration{
 		ICEServers: []webrtc.ICEServer{
@@ -37,19 +35,19 @@ func handleWebSocket(conn *websocket.Conn) {
 		},
 	})
 	if err != nil {
-		log.Print("Failed to create peer connection:", err) // Changed from Fatal
+		log.Print("Failed to create peer connection:", err)
 		return
 	}
-	defer func() { _ = peerConnection.Close() }() // Ensure the peer connection is closed
+	defer func() { _ = peerConnection.Close() }()
 
 	dataChannel, err := peerConnection.CreateDataChannel("data", nil)
 	if err != nil {
-		log.Print("Failed to create data channel:", err) // Changed from Fatal
+		log.Print("Failed to create data channel:", err)
 		return
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(1) // Expecting one message for now
+	wg.Add(1)
 
 	dataChannel.OnOpen(func() {
 		log.Println("Data channel opened")
@@ -69,35 +67,25 @@ func handleWebSocket(conn *websocket.Conn) {
 		}
 		payload, err := json.Marshal(c.ToJSON())
 		if err != nil {
-			log.Println("Error marshaling ICE candidate:", err)
 			return
 		}
-		if err := conn.WriteJSON(Signal{Type: "candidate", Payload: string(payload)}); err != nil {
-			log.Println("Error writing ICE candidate to WebSocket:", err)
-		}
+		_ = conn.WriteJSON(Signal{Type: "candidate", Payload: string(payload)})
 	})
 
 	offer, err := peerConnection.CreateOffer(nil)
 	if err != nil {
-		log.Printf("Failed to create offer: %v", err)
 		return
 	}
-	// Changed from Fatal
-	// return // This return is removed because log.Fatalf exits the program.
 
-	err = peerConnection.SetLocalDescription(offer)
-	if err != nil {
-		log.Print("Failed to set local description:", err) // Changed from Fatal
+	if err := peerConnection.SetLocalDescription(offer); err != nil {
 		return
 	}
 
 	payload, err := json.Marshal(offer)
 	if err != nil {
-		log.Print("Failed to marshal offer:", err) // Changed from Fatal
 		return
 	}
 	if err := conn.WriteJSON(Signal{Type: "offer", Payload: string(payload)}); err != nil {
-		log.Println("Error writing offer to WebSocket:", err)
 		return
 	}
 
@@ -105,40 +93,31 @@ func handleWebSocket(conn *websocket.Conn) {
 		var signal Signal
 		err := conn.ReadJSON(&signal)
 		if err != nil {
-			if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
-				log.Println("WebSocket closed normally:", err)
-			} else {
-				log.Println("Error reading JSON from WebSocket:", err)
-			}
 			return
 		}
 
 		switch signal.Type {
 		case "answer":
 			var answer webrtc.SessionDescription
-			if err := json.Unmarshal([]byte(signal.Payload), &answer); err != nil {
-				log.Println("Error unmarshaling answer:", err)
-				continue
-			}
-			if err := peerConnection.SetRemoteDescription(answer); err != nil {
-				log.Println("Error setting remote description:", err)
+			if err := json.Unmarshal([]byte(signal.Payload), &answer); err == nil {
+				_ = peerConnection.SetRemoteDescription(answer)
 			}
 		case "candidate":
 			var candidate webrtc.ICECandidateInit
-			if err := json.Unmarshal([]byte(signal.Payload), &candidate); err != nil {
-				log.Println("Error unmarshaling candidate:", err)
-				continue
+			if err := json.Unmarshal([]byte(signal.Payload), &candidate); err == nil {
+				_ = peerConnection.AddICECandidate(candidate)
 			}
-			if err := peerConnection.AddICECandidate(candidate); err != nil {
-				log.Println("Error adding ICE candidate:", err)
-			}
-		default:
-			log.Printf("Received unknown signal type: %s", signal.Type)
 		}
 	}
 }
 
 func main() {
+	if err := run(); err != nil {
+		log.Fatalf("Fatal error: %v", err)
+	}
+}
+
+func run() error {
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
@@ -153,7 +132,5 @@ func main() {
 		Addr:              ":8081",
 		ReadHeaderTimeout: 3 * time.Second,
 	}
-	if err := server.ListenAndServe(); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
+	return server.ListenAndServe()
 }
