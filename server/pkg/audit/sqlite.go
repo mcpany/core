@@ -325,6 +325,9 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 // Errors:
 //   - Returns error if a hash mismatch is detected.
 //
+// Parameters:
+//   - None.
+//
 // Side Effects:
 //   - Scans the entire audit_logs table.
 func (s *SQLiteAuditStore) Verify() (bool, error) {
