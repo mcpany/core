@@ -476,6 +476,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Session Persistence Middleware**: Core security service for managing token refresh and trust persistence in deep reasoning chains. (Added: 2026-04-25)
 *   **[P0] DAP Enforcement for Pre-Flight Validator**: Mandatory enforcement of Deterministic Absence Proofs as a prerequisite for all agent boots. (Added: 2026-04-25)
 
+#### Upcoming (2026-05-05 Evolution)
+*   **[P0] Reasoning-Path Validator (RPV)**: Native validation middleware for UACO that verifies Gemini-style cryptographic watermarks on agent monologues to ensure chain-of-thought integrity. (Added: 2026-05-05)
+*   **[P0] Intent-Bound Attestation (IBA)**: Advanced security layer that semantically audits SIA reasoning proofs against the swarm's mission-root before tool execution. (Added: 2026-05-05)
+*   **[P1] Zk-Context Proxy Service**: Backend service for the Context Sharding middleware that supports Zero-Knowledge proof verification for sensitive context fragments. (Added: 2026-05-05)
+
 #### Upcoming (2026-04-24 Evolution)
 *   **[P0] A2A Authenticated Handshake Provider**: Implementation of Gemini CLI v0.33.0 style HTTP authentication for all agent-to-agent remote communications. (Added: 2026-04-24)
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
@@ -485,16 +490,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
 *   **[P1] Cognitive Fragment Reconciler**: Background service for synchronizing encrypted monologues across agent sessions. (Added: 2026-04-22)
-
-#### Upcoming (2026-05-05 Evolution)
-*   **[P0] Reasoning-Path Validator (RPV)**: Native validation middleware for UACO that verifies Gemini-style cryptographic watermarks on agent monologues to ensure chain-of-thought integrity. (Added: 2026-05-05)
-*   **[P0] Intent-Bound Attestation (IBA)**: Advanced security layer that semantically audits SIA reasoning proofs against the swarm's mission-root before tool execution. (Added: 2026-05-05)
-*   **[P1] Zk-Context Proxy Service**: Backend service for the Context Sharding middleware that supports Zero-Knowledge proof verification for sensitive context fragments. (Added: 2026-05-05)
-
-#### Upcoming (2026-05-04 Evolution)
-*   **[P0] CSCS Reputation Hub**: Coordination service for the UACO layer that ingests OpenClaw v2026.5.3 reputation signals to inform risk-adaptive quorum thresholds. (Added: 2026-05-04)
-*   **[P1] Speculative Permissioning Layer (PET)**: Security middleware that pre-generates and stages capability leases during the LLM's speculative reasoning phase to eliminate tool-execution latency. (Added: 2026-05-04)
-*   **[P1] LSM Differential Sync Driver**: High-performance synchronization service for the PLSS bridge that manages differential snapshot transfers between local and cloud-resident sandboxes. (Added: 2026-05-04)
 
 #### Upcoming (2026-05-03 Evolution)
 *   **[P0] GSR Deadlock Resolver**: Implementation of a graph-based reconciliation engine for resolving circular attestation dependencies in swarms. (Added: 2026-05-03)

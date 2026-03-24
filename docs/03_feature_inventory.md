@@ -13,13 +13,6 @@
 - **Zk-Context Proxy**: (P1) A security-hardened extension for the Context Sharding middleware that supports Zero-Knowledge proof verification for sensitive context fragments.
 - **Intent-Bound Attestation (IBA)**: (P0) Advanced security layer that semantically audits "Reasoning Proofs" against the swarm's mission-root before tool execution, neutralizing mission-drift.
 
-## Evolution: [2026-05-04] Updates
-
-### Proposed Additions
-- **CSCS Reputation Hub**: (P0) A coordination service for the UACO layer that ingests OpenClaw v2026.5.3 reputation signals to inform risk-adaptive quorum thresholds.
-- **Speculative Permissioning Layer (PET)**: (P1) Security middleware that pre-generates and stages capability leases during the LLM's speculative reasoning phase to eliminate tool-execution latency.
-- **LSM Differential Sync Driver**: (P1) High-performance synchronization service for the PLSS bridge that manages differential snapshot transfers between local and cloud-resident sandboxes.
-
 ## Evolution: [2026-05-02] Updates
 
 ### Proposed Additions

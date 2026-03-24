@@ -10,6 +10,16 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-05]
+### Focus: Intent Integrity & Zero-Knowledge Context Sovereignty
+**Context**: The introduction of OpenClaw's "Sovereign Intent Auditing" (SIA) and Gemini's "Reasoning Path Watermarking" (RPW) signals a shift from behavioral security to "Cognitive Lineage" protection. Simultaneously, Claude Code's "Zero-Knowledge Context Splicing" (Zk-CS) marks a breakthrough in secure multi-agent state sharing. Security must now validate the *reasoning* that led to a tool call, while privacy must be maintained via Zk-proofs even during deep context inheritance.
+**Strategic Pivot**:
+- **Reasoning-Path Validator (RPV)**: MCP Any will implement a native RPV for the UACO layer. We will integrate Gemini-style RPW and OpenClaw SIA to cryptographically verify the integrity of the agent's internal monologue and its alignment with the mission-root before any high-stakes tool execution.
+- **Zk-Context Proxy**: We are evolving our Context Sharding middleware to support Zk-Context Proxies. MCP Any will host Zk-proof verification for context shards, allowing subagents to prove they possess necessary context without exposing raw sensitive data, neutralizing the risk of "Context Exfiltration" by untrusted specialists.
+- **Intent-Bound Attestation (IBA)**: Moving beyond static capability tokens, MCP Any will implement IBA. Every tool call will require a signed "Reasoning Proof" that is semantically audited against the swarm's collective mission intent in real-time, preventing "Mission Drift" exploits.
+
+---
+
 ## Strategic Evolution: [2026-05-02]
 ### Focus: Risk-Adaptive Quorums & Deterministic Environment Recovery
 **Context**: The introduction of OpenClaw's "Adaptive Quorum Thresholds" (AQT) and Claude Code's "Deterministic Sandbox Recovery" (DSR) signals a move toward highly granular, automated governance. Security is no longer a static gate but a dynamic system that scales with risk, while environment resilience is becoming "Self-Healing" via standardized recovery triggers.
@@ -576,26 +586,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Universal Context Sidecar Hub**: MCP Any will evolve to act as the primary host for framework-agnostic Context Sidecars. By implementing a standardized "Context Bus," we will allow agents from disparate frameworks (OpenClaw, AutoGen) to share specialized state strategies (e.g., long-term memory, vector retrieval) securely.
 - **Hardware-Attested Boot Integrity**: We are moving from signed manifests to "Hardware-Locked Deterministic Boot." MCP Any will mandate that any project-local configuration be cryptographically bound to a Trusted Platform Module (TPM) or Secure Enclave, ensuring that cloned repositories cannot execute malicious hooks without explicit, hardware-bound user re-attestation.
 - **VTD-Powered Automation**: To break the "Approval Fatigue" bottleneck, we are accelerating the deployment of the Verifiable Task Delegation (VTD) layer, enabling autonomous A2A handoffs for verified low-risk operations.
-
----
-
-## Strategic Evolution: [2026-05-05]
-### Focus: Intent Integrity & Zero-Knowledge Context Sovereignty
-**Context**: The introduction of OpenClaw's "Sovereign Intent Auditing" (SIA) and Gemini's "Reasoning Path Watermarking" (RPW) signals a shift from behavioral security to "Cognitive Lineage" protection. Simultaneously, Claude Code's "Zero-Knowledge Context Splicing" (Zk-CS) marks a breakthrough in secure multi-agent state sharing. Security must now validate the *reasoning* that led to a tool call, while privacy must be maintained via Zk-proofs even during deep context inheritance.
-**Strategic Pivot**:
-- **Reasoning-Path Validator (RPV)**: MCP Any will implement a native RPV for the UACO layer. We will integrate Gemini-style RPW and OpenClaw SIA to cryptographically verify the integrity of the agent's internal monologue and its alignment with the mission-root before any high-stakes tool execution.
-- **Zk-Context Proxy**: We are evolving our Context Sharding middleware to support Zk-Context Proxies. MCP Any will host Zk-proof verification for context shards, allowing subagents to prove they possess necessary context without exposing raw sensitive data, neutralizing the risk of "Context Exfiltration" by untrusted specialists.
-- **Intent-Bound Attestation (IBA)**: Moving beyond static capability tokens, MCP Any will implement IBA. Every tool call will require a signed "Reasoning Proof" that is semantically audited against the swarm's collective mission intent in real-time, preventing "Mission Drift" exploits.
-
----
-
-## Strategic Evolution: [2026-05-04]
-### Focus: Cross-Swarm Reputation & Live Sandbox Migration (LSM)
-**Context**: The emergence of OpenClaw's "Cross-Swarm Consensus Scoring" (CSCS) and Claude Code's "Live Sandbox Migration" (LSM) marks a move toward "Federated Sovereignty." Trust is no longer a local property but a global, consensus-based reputation, while the reasoning environment must become "Hot-Swappable" to support hybrid-cloud swarms.
-**Strategic Pivot**:
-- **CSCS Reputation Hub**: MCP Any will evolve into a native CSCS Reputation Hub. Beyond simple local attestation, we will implement a "Cross-Swarm Consensus" middleware for the UACO layer, allowing our `Risk-Adaptive CQ Controller` to leverage global reputation signals when setting quorum thresholds.
-- **Speculative Permissioning Layer (PET)**: To support Gemini's Predictive Execution Tokens (PET), we are implementing a "Speculative Permissioning" middleware. MCP Any will pre-sign and pre-stage capability leases during the model's speculative reasoning phase, ensuring that when the agent commits to a tool call, the security overhead is near-zero.
-- **LSM Differential Sync Driver**: We are evolving our PLSS Sync bridge into a "Hot-Swap Differential Driver." This provides the low-level synchronization primitives needed to "Live Migrate" an agent's execution environment between local HNS snapshots and cloud-resident containers without interrupting the reasoning chain.
 
 ---
 

@@ -323,6 +323,10 @@
 - [ ] **[P0] A2A Session Persistence Dashboard**: Real-time monitor for tracking token refresh and session health in long-running reasoning chains. (Added: 2026-04-25)
 - [ ] **[P0] DAP Enforcement Status Widget**: Security indicator for mandatory Deterministic Absence Proof compliance during agent boot. (Added: 2026-04-25)
 
+#### Upcoming (2026-05-05 Evolution)
+- [ ] **[P0] Reasoning Path Explorer**: (2026-05-05) Interactive visualization of the verified chain-of-thought and SIA reasoning proofs for any tool call.
+- [ ] **[P1] Zk-Context Verification Dashboard**: (2026-05-05) Monitor for tracking Zk-proof verification status and context shard privacy metrics.
+
 #### Upcoming (2026-04-24 Evolution)
 - [ ] **[P0] A2A Handshake Status Monitor**: Real-time visualization of authenticated inter-agent handshakes and auth failures. (Added: 2026-04-24)
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
@@ -332,15 +336,6 @@
 - [ ] **[P0] A2A Replay Security Dashboard**: Visualize nonce status and replay attempt alerts in the A2A hub. (Added: 2026-04-22)
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)
 - [ ] **[P1] Encrypted Monologue Explorer**: Secure UI fragment for user-authorized decryption and review of subagent reasoning. (Added: 2026-04-22)
-
-#### Upcoming (2026-05-05 Evolution)
-- [ ] **[P0] Reasoning Path Explorer**: (2026-05-05) Interactive visualization of the verified chain-of-thought and SIA reasoning proofs for any tool call.
-- [ ] **[P1] Zk-Context Verification Dashboard**: (2026-05-05) Monitor for tracking Zk-proof verification status and context shard privacy metrics.
-
-#### Upcoming (2026-05-04 Evolution)
-- [ ] **[P0] CSCS Reputation Map**: (2026-05-04) UI for visualizing federated tool trust and peer swarm contributions.
-- [ ] **[P1] Speculative Permissioning Monitor**: (2026-05-04) Dashboard for tracking PET token generation and pre-staging efficiency.
-- [ ] **[P1] LSM Migration Tracker**: (2026-05-04) Visualization of live sandbox migrations and differential sync progress.
 
 #### Upcoming (2026-05-03 Evolution)
 - [ ] **[P0] Inter-Swarm Wait-Graph Explorer**: Interactive visualization of attestation dependencies and deadlock resolution status. (Added: 2026-05-03)

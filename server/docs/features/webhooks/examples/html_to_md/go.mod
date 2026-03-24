@@ -2,6 +2,8 @@ module example/html_to_md
 
 go 1.24.0
 
+toolchain go1.24.11
+
 require (
 	github.com/JohannesKaufmann/html-to-markdown v1.6.0
 	github.com/google/uuid v1.6.0
