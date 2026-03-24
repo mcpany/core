@@ -21,9 +21,9 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 2.  Install dependencies:
     ```bash
     npm install
-    # or
+    # alternatives
     yarn install
-    # or
+    # alternatives
     pnpm install
     ```
 
@@ -33,11 +33,11 @@ First, run the development server:
 
 ```bash
 npm run dev
-# or
+# alternatives
 yarn dev
-# or
+# alternatives
 pnpm dev
-# or
+# alternatives
 bun dev
 ```
 
