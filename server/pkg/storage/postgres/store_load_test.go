@@ -30,7 +30,7 @@ import (
 // Side Effects:
 //   - Modifies testing state through assertions.
 func TestStore_Load(t *testing.T) {
-	t.Run("Happy Path", func(t *testing.T) {
+		t.Run("Happy Path", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		require.NoError(t, err)
 		defer db.Close()

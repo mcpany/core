@@ -3,20 +3,6 @@ import re
 with open("server/pkg/storage/postgres/store_load_test.go", "r") as f:
     content = f.read()
 
-content = content.replace("func TestStore_Load(t *testing.T) {\n", """// TestStore_Load tests the Load method of the PostgreSQL store.
-//
-// Parameters:
-//   - t (*testing.T): The testing context.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Modifies testing state through assertions.
-func TestStore_Load(t *testing.T) {\n""")
-
+content = content.replace('\tconfigv1 "github.com/mcpany/core/proto/config/v1""github.com/stretchr/testify/require"', '\tconfigv1 "github.com/mcpany/core/proto/config/v1"\n\t"github.com/stretchr/testify/require"')
 with open("server/pkg/storage/postgres/store_load_test.go", "w") as f:
     f.write(content)
