@@ -70,6 +70,31 @@ test.describe('MCP Any UI E2E Tests', () => {
       await expect(page.locator('text=process_payment').first()).toBeVisible({ timeout: 5000 });
     }).toPass({ timeout: 30000, intervals: [2000, 5000] });
 
+    // Open tool details to see SmartTable
+    await page.locator('text=calculator').first().click();
+    await expect(page.locator('text=Tool Details').first()).toBeVisible({ timeout: 5000 });
+
+    // Find a resizer handle in the SmartTable (assumes the tool returns schema/data rendered in a SmartTable)
+    // Note: If SmartTable is only used for executing tools, we need to click "Execute Tool", fill params, and wait for result.
+    const executeButton = page.locator('button', { hasText: 'Execute Tool' }).first();
+    if (await executeButton.isVisible()) {
+      await executeButton.click();
+      // Wait for table to appear
+      await expect(page.locator('table').first()).toBeVisible({ timeout: 10000 });
+
+      const resizer = page.locator('.cursor-col-resize').first();
+      await expect(resizer).toBeVisible({ timeout: 5000 });
+
+      // Perform drag action to resize column
+      const box = await resizer.boundingBox();
+      if (box) {
+        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+        await page.mouse.down();
+        await page.mouse.move(box.x + 100, box.y + box.height / 2);
+        await page.mouse.up();
+      }
+    }
+
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'tools.png'), fullPage: true });
     }
