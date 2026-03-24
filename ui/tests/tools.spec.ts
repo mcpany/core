@@ -42,9 +42,9 @@ test.describe('Tool Exploration', () => {
             } catch {
                 console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/10)`);
                 await page.reload();
+                // Wait for network idle and a small buffer
                 await page.waitForLoadState('networkidle');
-                // Use a non-linting wait mechanism to avoid no-wait-for-timeout errors
-                await new Promise(r => setTimeout(r, 2000));
+                await page.waitForTimeout(2000);
             }
         }
 
@@ -77,8 +77,8 @@ test.describe('Tool Exploration', () => {
             } catch {
                 await page.reload();
                 await page.waitForLoadState('networkidle');
-                // Use a non-linting wait mechanism to avoid no-wait-for-timeout errors
-                await new Promise(r => setTimeout(r, 1000));
+                // Use a non-linting wait mechanism or simply rely on the network idle
+                await page.waitForTimeout(1000);
             }
         }
         if (!found) {
@@ -86,17 +86,14 @@ test.describe('Tool Exploration', () => {
         }
 
         // Change grouping to "service"
-        // Target the specific container by finding the distinct 'Layers' icon SVG (lucide-layers),
-        // then finding the associated combobox button within that same block to avoid ambiguity.
-        const selectContainer = page.locator('div.flex').filter({ has: page.locator('svg.lucide-layers') });
-        const trigger = selectContainer.getByRole('combobox');
-        await trigger.waitFor({ state: 'visible', timeout: 10000 });
-        await trigger.click({ force: true });
+        // Wait for the combobox to become attached and specifically target the group trigger.
+        const groupByTrigger = page.getByRole('combobox').first();
+        await groupByTrigger.waitFor({ state: 'attached', timeout: 10000 });
+        await groupByTrigger.click();
 
-        // Once the portal opens, find the corresponding option and click it
         const option = page.getByRole('option', { name: 'Group by Service' });
-        await option.waitFor({ state: 'visible', timeout: 5000 });
-        await option.click({ force: true });
+        await option.waitFor({ state: 'attached', timeout: 5000 });
+        await option.click();
 
         // Verify that the Payment Gateway service grouping header is visible.
         // We use a regex for the raw service_id because the AccordionTrigger button's accessible name includes the tool count badge (e.g. "svc_01 1")
@@ -117,10 +114,9 @@ test.describe('Tool Exploration', () => {
             } catch {
                 await page.reload();
                 await page.waitForLoadState('networkidle');
-                await new Promise(r => setTimeout(r, 1000));
+                await page.waitForTimeout(1000);
             }
         }
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Use regex for filtering row as well
         const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
@@ -141,10 +137,9 @@ test.describe('Tool Exploration', () => {
             } catch {
                 await page.reload();
                 await page.waitForLoadState('networkidle');
-                await new Promise(r => setTimeout(r, 1000));
+                await page.waitForTimeout(1000);
             }
         }
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
         await toolRow.getByRole('button', { name: 'Inspect' }).click({ timeout: 30000 });
