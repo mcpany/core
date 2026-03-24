@@ -35,7 +35,7 @@ func TestExampleConfigs(t *testing.T) {
 	// Ensure stdio example binary is built, as Config validation checks for its existence
 	// This makes the test robust against sharding/environment where build-examples might not have run.
 	stdioBinPath := filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool-bin")
-	if _, err := os.Stat(stdioBinPath); os.IsNotExist(err) {
+	if _, statErr := os.Stat(stdioBinPath); os.IsNotExist(statErr) {
 		t.Logf("Building missing stdio example binary: %s", stdioBinPath)
 		// Set GO111MODULE=off because we are building a simple main.go in a temp dir without a go.mod.
 		cmd := exec.Command("go", "build", "-o", stdioBinPath, filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool", "main.go"))
@@ -43,15 +43,15 @@ func TestExampleConfigs(t *testing.T) {
 		cmd.Dir = runtimeRoot
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			t.Logf("Failed to build stdio example binary (continuing, but validation might fail): %v", err)
+		if runErr := cmd.Run(); runErr != nil {
+			t.Logf("Failed to build stdio example binary (continuing, but validation might fail): %v", runErr)
 		}
 	}
 
 	// Walk through examples directory
-	err = filepath.Walk(examplesDir, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
+	err = filepath.Walk(examplesDir, func(path string, info os.FileInfo, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
 		}
 
 		// Check for config.yaml
@@ -80,7 +80,7 @@ func sourceProjectRoot() (string, error) {
 			continue
 		}
 		candidate := filepath.Join(base, workspace, "server")
-		if _, err := os.Stat(filepath.Join(candidate, "examples")); err == nil {
+		if _, statErr := os.Stat(filepath.Join(candidate, "examples")); statErr == nil {
 			return candidate, nil
 		}
 	}

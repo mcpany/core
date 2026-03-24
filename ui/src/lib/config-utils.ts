@@ -35,7 +35,7 @@ export function sanitizeServiceConfig(service: UpstreamServiceConfig, mode: Secr
 
     // Process commandLineService.env
     if (clone.commandLineService && clone.commandLineService.env) {
-        const env = clone.commandLineService.env as Record<string, any>;
+        const env = clone.commandLineService.env as Record<string, string>;
         for (const key in env) {
             if (Object.prototype.hasOwnProperty.call(env, key)) {
                 if (isSecretKey(key)) {
@@ -54,19 +54,19 @@ export function sanitizeServiceConfig(service: UpstreamServiceConfig, mode: Secr
     // Looking at proto/config/v1/auth.proto (implied), it might have apiKey, basicAuth etc.
     // If upstreamAuth exists and has fields like 'apiKey', 'token', we should redact them.
     if (clone.upstreamAuth) {
-        const auth = clone.upstreamAuth as any;
-        if (auth.apiKey) {
-             if (mode === 'redact') auth.apiKey = '<REDACTED>';
-             else if (mode === 'template') auth.apiKey = '${API_KEY}';
+        const auth = clone.upstreamAuth as Record<string, unknown>;
+        if (typeof auth.apiKey === 'string') {
+             if (mode === 'redact') (auth as Record<string, string>).apiKey = '<REDACTED>';
+             else if (mode === 'template') (auth as Record<string, string>).apiKey = '${API_KEY}';
         }
-        if (auth.token) {
-             if (mode === 'redact') auth.token = '<REDACTED>';
-             else if (mode === 'template') auth.token = '${TOKEN}';
+        if (typeof auth.token === 'string') {
+             if (mode === 'redact') (auth as Record<string, string>).token = '<REDACTED>';
+             else if (mode === 'template') (auth as Record<string, string>).token = '${TOKEN}';
         }
-        if (auth.basicAuth) {
-             if (auth.basicAuth.password) {
-                 if (mode === 'redact') auth.basicAuth.password = '<REDACTED>';
-                 else if (mode === 'template') auth.basicAuth.password = '${PASSWORD}';
+        if (auth.basicAuth && typeof auth.basicAuth === 'object') {
+             if ((auth.basicAuth as Record<string, string>).password) {
+                 if (mode === 'redact') (auth.basicAuth as Record<string, string>).password = '<REDACTED>';
+                 else if (mode === 'template') (auth.basicAuth as Record<string, string>).password = '${PASSWORD}';
              }
         }
     }
