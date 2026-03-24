@@ -126,6 +126,10 @@
 *   **[P0] Relational PoI Enforcement**: Advanced intent-chain validation to prevent "Context-Mirroring" attacks. (Added: 2026-03-24)
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral profiling of un-attested configuration hooks. (Added: 2026-03-24)
 *   **[P1] BSH State Differential Sync**: Optimized binary state transfer that only sends deltas between agent handoffs. (Added: 2026-03-24)
+*   **[P0] Discovery-Phase Sandbox Middleware**: Ephemeral execution for discovery commands to neutralize startup-time RCE. (Added: 2026-03-24)
+*   **[P0] Lock-Free Teammate Coordination (LFTC)**: CRDT-based mailbox synchronization for horizontal swarms. (Added: 2026-03-24)
+*   **[P0] Argument-Level Semantic Validator (ALSV)**: Deep-inspection for command arguments to prevent shell-fallback exploits. (Added: 2026-03-24)
+*   **[P0] Task-Claim Integrity Provider**: Hardware-attested tokens for horizontal mesh task claiming. (Added: 2026-03-24)
 
 #### Upcoming (2026-03-20 Evolution)
 *   **[P0] Hardware-Attested Mission Manifest (HAMM) Provider**: Authoritative service for enforcing TPM-signed capability manifests. (Added: 2026-03-20)
