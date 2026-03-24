@@ -84,7 +84,7 @@ buildifier_files=(
             -o -path './node_modules/*' \
             -o -path './.git/*' \
             -o -path './ui/node_modules/*' \
-            -o -path './server/node_modules/*' \
+            -o -path 'node_modules/*' \
         \) \
         \( \
             -name 'BUILD' \
