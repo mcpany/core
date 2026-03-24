@@ -31,3 +31,18 @@ This code handles the critical integration between different agent frameworks (O
 
 ## Verification
 * Confirmed that `make test` and `make lint` passed cleanly. `go test -v ./src/... -coverprofile=coverage.out && go tool cover -func=coverage.out` reports 100% statement coverage.
+## Target
+* `server/pkg/tool/browser/browser.go`
+
+## Risk Profile
+This component implements the internal browser automation capability (via Playwright), allowing the MCP agent to launch and drive headless chromium to fetch visible text. As a feature interacting heavily with external system processes (Chromium instances), network operations, and DOM manipulations, its failure can lead to silent resource leaks (zombie browsers), application crashes, or hanging network calls affecting the core agent workflow. Its prior test coverage was inadequate (71.7%), leaving core orchestration paths unguarded.
+
+## New Coverage
+* Implemented extensive interface-based test suites using injected mocks for Playwright's core components: `playwrightRunner`, `playwrightImpl`, `playwrightBrowserType`, `playwrightBrowser`, `playwrightPage`, and `playwrightLocator`.
+* `playwrightFetcher.FetchText`: The critical execution flow—including starting Playwright, launching the browser, opening a new page, navigating, extracting text, and resource teardown (`Stop`, `Close`)—is now fully covered against successful execution and every possible failure mode.
+* The explicit `real*` wrapper layers around the third-party Playwright struct instances are now guarded.
+* Statement coverage for `server/pkg/tool/browser` increased from 71.7% to 98.1%.
+
+## Verification
+* Confirmed that `bazelisk test //server/...` passes securely for all packages, including the new browser tests.
+* Confirmed that `make test` and `make lint` passed cleanly across the repository.
