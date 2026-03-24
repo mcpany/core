@@ -1,4 +1,10 @@
+<!--
+Copyright 2026 Author(s) of MCP Any
+SPDX-License-Identifier: Apache-2.0
+-->
+
 <!-- markdownlint-disable -->
+
 # Design Doc: Hardware-Locked Coordination Handshake
 
 **Status:** Draft
@@ -41,18 +47,11 @@ establishes a hardware-bound root of trust for the coordination session itself.
 ## 4. Design & Architecture
 
 * **System Flow:**
-  ```mermaid
-  sequenceDiagram
-      Agent A->>HLCH Gateway: Coordination Request
-      HLCH Gateway-->>Agent A: Challenge (TPM Proof)
-      Agent A->>HLCH Gateway: TPM-Signed Token
-      HLCH Gateway->>Mission Registry: Verify Lineage
-      Mission Registry-->>HLCH Gateway: Valid
-      HLCH Gateway->>Agent B: Forward Authorized Request
-  ```
+  A -> [HLCH Gateway] -> B
+  Gateway validates TPM signature against the mission-root registry.
 * **APIs / Interfaces:**
-    * `hlch.VerifyHandshake(sessionToken, missionRoot) -> bool`
-    * `hlch.SignFragment(fragment, sessionKey) -> signedFragment`
+    * hlch.VerifyHandshake(sessionToken, missionRoot) -> bool
+    * hlch.SignFragment(fragment, sessionKey) -> signedFragment
 * **Data Storage/State:**
     * Mission-Root Registry: A hardware-attested registry of verified session
       keys.

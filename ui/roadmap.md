@@ -1,5 +1,4 @@
 <!-- markdownlint-disable -->
-<!-- markdownlint-disable -->
 # UI Roadmap
 
 ## Status: Active Development
@@ -571,14 +570,5 @@
 - [ ] **[P0] Hardware-Locked Coordination Debugger**: (2026-06-13) UI for reviewing hardware-bound session tokens and blocked out-of-band handoffs.
 
 ### Upcoming: [2026-06-14]
-- [ ] **[P0] Sovereignty Monitor**: Dashboard for hardware-locked handshake
-  status and blocked side-channel signals. (Added: 2026-06-14)
-- [ ] **[P1] Identity-Decay Alerting**: Real-time visualization of
-  stylometric mimicry detected by the IDA service. (Added: 2026-06-14)
-
-### Upcoming: [2026-06-14]
-
-- [ ] **[P0] Sovereignty Monitor**: Dashboard for hardware-locked handshake
-  status and blocked side-channel signals. (Added: 2026-06-14)
-- [ ] **[P1] Identity-Decay Alerting**: Real-time visualization of
-  stylometric mimicry detected by the IDA service. (Added: 2026-06-14)
+- [ ] **[P0] Sovereignty Monitor**: Dashboard for hardware-locked handshake status and blocked side-channel signals. (Added: 2026-06-14)
+- [ ] **[P1] Identity-Decay Alerting**: Real-time visualization of stylometric mimicry detected by the IDA service. (Added: 2026-06-14)

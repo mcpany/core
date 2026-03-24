@@ -1,5 +1,4 @@
 <!-- markdownlint-disable -->
-<!-- markdownlint-disable -->
 # Strategic Vision: MCP Any
 
 ## Mission Statement
@@ -1007,17 +1006,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ## Strategic Evolution: [2026-06-14]
 ### Focus: Coordination Sovereignty & Side-Channel Immunity
-The emergence of Identity-Decay Attacks (IDA) necessitates a transition from
-software-only "Attention Pinning" to hardware-locked "Coordination Sovereignty."
-We are prioritizing the implementation of HLCH (Hardware-Locked Coordination
-Handshake) to ensure that all inter-agent state fragments are cryptographically
-bound to the mission-root hardware lineage, neutralizing stylometric mimicry
-as an attack vector.
-
-## Strategic Evolution: [2026-06-14]
-
-### Focus: Coordination Sovereignty & Side-Channel Immunity
-
 The emergence of Identity-Decay Attacks (IDA) necessitates a transition from
 software-only "Attention Pinning" to hardware-locked "Coordination Sovereignty."
 We are prioritizing the implementation of HLCH (Hardware-Locked Coordination
