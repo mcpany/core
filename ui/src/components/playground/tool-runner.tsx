@@ -90,9 +90,17 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
   // Computed stats from audit logs (recent 50)
   const recentStats = useMemo(() => {
       const total = auditLogs.length;
-      const successes = auditLogs.filter(l => !l.error).length;
+      let successes = 0;
+      let totalLatency = 0;
+
+      for (let i = 0; i < auditLogs.length; i++) {
+          const l = auditLogs[i];
+          if (!l.error) successes++;
+          totalLatency += l.durationMs;
+      }
+
       const failures = total - successes;
-      const avgLatency = total > 0 ? Math.round(auditLogs.reduce((acc, curr) => acc + curr.durationMs, 0) / total) : 0;
+      const avgLatency = total > 0 ? Math.round(totalLatency / total) : 0;
 
       // Map for chart
       const sorted = [...auditLogs].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
