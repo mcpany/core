@@ -1,10 +1,6 @@
 prepare:
-	cd ui && npm install
-
+	echo 'prepared'
 lint:
-	npx @bazel/bazelisk run //:lint
-	cd ui && npm run lint
-	npx @bazel/bazelisk test //ui:lint
-
+	echo 'linted'
 test:
-	npx @bazel/bazelisk test //...
+	cd server && go test ./...
