@@ -1,8 +1,8 @@
 module github.com/mcpany/core
 
-go 1.26.1
+go 1.23.4
 
-toolchain go1.26.1
+toolchain go1.23.4
 
 replace github.com/mcpany/core => ./
 
