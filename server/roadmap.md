@@ -754,7 +754,7 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 *   **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
 
-### Upcoming: [2026-06-18]
+#### Upcoming (2026-06-18 Evolution)
 *   **[P0] Reason-Graph Integrity (RGI) Provider**: Hardware-attested graph validation for multi-agent reasoning. (Added: 2026-06-18)
 *   **[P0] Mesh-Resident Policy Manager (MRPM)**: Federated policy service for MRPS compliance. (Added: 2026-06-18)
 *   **[P1] AAG Middleware**: Entropy-aware attention gating for DAG middleware. (Added: 2026-06-18)
