@@ -115,6 +115,7 @@ use_repo(
     "com_github_masterminds_semver_v3",
     "com_github_mcpany_core",
     "com_github_milvus_io_milvus_sdk_go_v2",
+    "com_github_mcpany_core_proto",
     "com_github_modelcontextprotocol_go_sdk",
     "com_github_nats_io_nats_go",
     "com_github_nats_io_nats_server_v2",
@@ -166,6 +167,10 @@ use_repo(
     "org_modernc_sqlite",
     "org_uber_go_goleak",
     "org_uber_go_mock",
+    "io_k8s_sigs_controller_runtime",
+    "io_k8s_api",
+    "io_k8s_apimachinery",
+    "org_golang_google_genproto_googleapis_api",
 )
 
 oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
