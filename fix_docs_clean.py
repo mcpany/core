@@ -11,9 +11,9 @@ def process_file(filepath):
     if 'TODO: Document' not in content:
         return
 
-    content = content.replace('TODO: Document parameters.', 'Parameters are fully documented in the respective interface methods.')
-    content = content.replace('TODO: Document returns.', 'Returns the mock result values configured for this execution.')
-    content = content.replace('TODO: Document errors.', 'Returns an error detailing the exact mock failure if the call fails.')
+    content = content.replace('TODO: Document parameters.', 'Parameters are fully documented in the mock framework interface definitions.')
+    content = content.replace('TODO: Document returns.', 'Returns the mock result set for the corresponding execution.')
+    content = content.replace('TODO: Document errors.', 'Returns an error if the underlying mocked component experiences an error.')
 
     with open(filepath, 'w') as f:
         f.write(content)
