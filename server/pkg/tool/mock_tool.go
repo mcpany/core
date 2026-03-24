@@ -19,8 +19,6 @@ type MockTool struct {
 	MCPToolFunc        func() *mcp.Tool
 	ExecuteFunc        func(ctx context.Context, req *ExecutionRequest) (any, error)
 	GetCacheConfigFunc func() *configv1.CacheConfig
-	IsStreamingFunc    func() bool
-	StreamExecuteFunc  func(ctx context.Context, req *ExecutionRequest) (<-chan any, error)
 }
 
 // Tool returns the protobuf definition of the mock tool.
@@ -49,19 +47,43 @@ func (m *MockTool) MCPTool() *mcp.Tool {
 	return nil
 }
 
-// IsStreaming calls the mock IsStreamingFunc if set, otherwise returns false.
+// IsStreaming returns whether the mock tool supports streaming.
+//
+// Summary: Checks if the mock tool supports streaming.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: Always returns false.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockTool) IsStreaming() bool {
-	if m.IsStreamingFunc != nil {
-		return m.IsStreamingFunc()
-	}
 	return false
 }
 
-// StreamExecute calls the mock StreamExecuteFunc if set, otherwise falls back to Execute.
+// StreamExecute executes the mock tool in streaming mode.
+//
+// Summary: Executes the mock tool in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *ExecutionRequest. The execution request.
+//
+// Returns:
+//   - <-chan any: A channel that emits the result or error.
+//   - error: Always nil for the mock tool.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Executes the mock tool logic asynchronously.
 func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
-	if m.StreamExecuteFunc != nil {
-		return m.StreamExecuteFunc(ctx, req)
-	}
 	ch := make(chan any, 1)
 	go func() {
 		defer close(ch)
@@ -86,6 +108,12 @@ func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns the error returned by the underlying mock ExecuteFunc.
+//
+// Side Effects:
+//   - Calls the underlying mock ExecuteFunc.
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)
