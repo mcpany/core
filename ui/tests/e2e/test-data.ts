@@ -193,27 +193,13 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             trigger: 'user'
         }
     ];
-    const auditLogs = [
-        {
-            timestamp: new Date().toISOString(),
-            tool_name: "process_payment",
-            user_id: "test-user",
-            profile_id: "default",
-            arguments: { amount: 100, currency: "USD" },
-            result: { status: "success", transaction_id: "txn_123" },
-            duration: "50ms",
-            duration_ms: 50
-        }
-    ];
-
     const seedRequest = {
         upstream_services: services,
         service_templates: templates,
         users: users,
         credentials: [],
         secrets: [],
-        profiles: [],
-        audit_logs: auditLogs
+        profiles: []
     };
 
     try {
