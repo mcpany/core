@@ -1,162 +1,26 @@
 diff --git a/server/pkg/app/api.go b/server/pkg/app/api.go
-index f51dc02..28cfcbb 100644
+index dcbd4c3..1972828 100644
 --- a/server/pkg/app/api.go
 +++ b/server/pkg/app/api.go
-@@ -25,7 +25,6 @@ import (
-	"github.com/mcpany/core/server/pkg/storage"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/util"
--	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
- )
-@@ -751,14 +750,144 @@ func (a *Application) handleTools() http.HandlerFunc {
-		switch r.Method {
-		case http.MethodGet:
-			tools := a.ToolManager.ListTools()
--			var toolList []*mcp.Tool
--			for _, t := range tools {
--				toolList = append(toolList, t.MCPTool())
-+			var buf []byte
-+			buf = append(buf, '[')
-+			opts := protojson.MarshalOptions{UseProtoNames: true, EmitUnpopulated: false}
-+
-+			for i, t := range tools {
-+				if i > 0 {
-+					buf = append(buf, ',')
-+				}
-+				b, err := opts.Marshal(t.Tool())
-+				if err != nil {
-+					http.Error(w, "Failed to marshal tool", http.StatusInternalServerError)
-+					return
-+				}
-+				buf = append(buf, b...)
-			}
-+			buf = append(buf, ']')
-+
+@@ -768,7 +768,9 @@ func (a *Application) handleTools() http.HandlerFunc {
+			buf = append(buf, ']')
+
 			w.Header().Set("Content-Type", "application/json")
--			_ = json.NewEncoder(w).Encode(toolList)
-+			_, _ = w.Write(buf)
-+
-+		case http.MethodPut:
-+			var req struct {
-+				Name    string `json:"name"`
-+				Disable bool   `json:"disable"`
+-			_, _ = w.Write(buf)
++			if _, err := w.Write(buf); err != nil {
++				logging.GetLogger().Error("failed to write response", "error", err.Error())
 +			}
-+			body, err := readBodyWithLimit(w, r, 1024*1024)
-+			if err != nil {
-+				return
+
+		case http.MethodPut:
+			var req struct {
+@@ -883,7 +885,9 @@ func (a *Application) handleTools() http.HandlerFunc {
+			}
+
+			w.WriteHeader(http.StatusOK)
+-			_, _ = w.Write([]byte("{}"))
++			if _, err := w.Write([]byte("{}")); err != nil {
++				logging.GetLogger().Error("failed to write response", "error", err.Error())
 +			}
-+			if err := json.Unmarshal(body, &req); err != nil {
-+				http.Error(w, err.Error(), http.StatusBadRequest)
-+				return
-+			}
-+
-+			if a.ServiceRegistry == nil || a.Storage == nil {
-+				http.Error(w, "Service Registry or Storage not initialized", http.StatusInternalServerError)
-+				return
-+			}
-+
-+			// Find the service that owns this tool
-+			services, err := a.ServiceRegistry.GetAllServices()
-+			if err != nil {
-+				logging.GetLogger().Error("failed to list services", "error", err.Error())
-+				http.Error(w, "Failed to list services", http.StatusInternalServerError)
-+				return
-+			}
-+
-+			var targetSvc *configv1.UpstreamServiceConfig
-+			var found bool
-+
-+			for _, svc := range services {
-+				// Search the tools in the raw config
-+				if mcpSvc := svc.GetMcpService(); mcpSvc != nil {
-+					for _, t := range mcpSvc.GetTools() {
-+						if t.GetName() == req.Name {
-+							t.SetDisable(req.Disable)
-+							targetSvc = svc
-+							found = true
-+							break
-+						}
-+					}
-+				}
-+				if found {
-+					break
-+				}
-+				if cmdSvc := svc.GetCommandLineService(); cmdSvc != nil {
-+					for _, t := range cmdSvc.GetTools() {
-+						if t.GetName() == req.Name {
-+							t.SetDisable(req.Disable)
-+							targetSvc = svc
-+							found = true
-+							break
-+						}
-+					}
-+				}
-+				if found {
-+					break
-+				}
-+				if httpSvc := svc.GetHttpService(); httpSvc != nil {
-+					for _, t := range httpSvc.GetTools() {
-+						if t.GetName() == req.Name {
-+							t.SetDisable(req.Disable)
-+							targetSvc = svc
-+							found = true
-+							break
-+						}
-+					}
-+				}
-+				if found {
-+					break
-+				}
-+				if grpcSvc := svc.GetGrpcService(); grpcSvc != nil {
-+					for _, t := range grpcSvc.GetTools() {
-+						if t.GetName() == req.Name {
-+							t.SetDisable(req.Disable)
-+							targetSvc = svc
-+							found = true
-+							break
-+						}
-+					}
-+				}
-+				if found {
-+					break
-+				}
-+				if openapiSvc := svc.GetOpenapiService(); openapiSvc != nil {
-+					for _, t := range openapiSvc.GetTools() {
-+						if t.GetName() == req.Name {
-+							t.SetDisable(req.Disable)
-+							targetSvc = svc
-+							found = true
-+							break
-+						}
-+					}
-+				}
-+				if found {
-+					break
-+				}
-+			}
-+
-+			if !found {
-+				http.Error(w, "Tool not found in any registered service", http.StatusNotFound)
-+				return
-+			}
-+
-+			// Save updated service back to storage
-+			if err := a.Storage.SaveService(r.Context(), targetSvc); err != nil {
-+				logging.GetLogger().Error("failed to save service with updated tool status", "error", err.Error())
-+				http.Error(w, "Failed to save service", http.StatusInternalServerError)
-+				return
-+			}
-+
-+			// Reload configuration
-+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
-+				logging.GetLogger().Error("failed to reload config after updating tool status", "error", err.Error())
-+			}
-+
-+			w.WriteHeader(http.StatusOK)
-+			_, _ = w.Write([]byte("{}"))
-+
+
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-		}

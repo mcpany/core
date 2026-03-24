@@ -16,21 +16,20 @@ func main() {
 	}
 
     ast.Inspect(f, func(n ast.Node) bool {
-        if funcDecl, ok := n.(*ast.FuncDecl); ok && funcDecl.Name.Name == "handleTools" {
-            ast.Inspect(funcDecl.Body, func(n ast.Node) bool {
-                if assign, ok := n.(*ast.AssignStmt); ok {
-                    if len(assign.Lhs) == 2 {
-                        if ident, ok := assign.Lhs[1].(*ast.Ident); ok && ident.Name == "_" {
+        if assign, ok := n.(*ast.AssignStmt); ok {
+            if len(assign.Lhs) > 1 {
+                for _, lhs := range assign.Lhs {
+                    if ident, ok := lhs.(*ast.Ident); ok {
+                        if ident.Name == "_" {
                             if call, ok := assign.Rhs[0].(*ast.CallExpr); ok {
                                 if sel, ok := call.Fun.(*ast.SelectorExpr); ok {
-                                    fmt.Printf("Ignoring 2nd return value of %s at %s\n", sel.Sel.Name, fset.Position(assign.Pos()))
+                                    fmt.Printf("Ignoring part of return value of %s at %s\n", sel.Sel.Name, fset.Position(assign.Pos()))
                                 }
                             }
                         }
                     }
                 }
-                return true
-            })
+            }
         }
         return true
     })
