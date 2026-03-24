@@ -6,6 +6,105 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-31] Updates
+
+### Proposed Additions
+- **HSM Consensus Broker (HEC)**: (P0) Offloading of SCQ voting and consensus logic to dedicated hardware security modules.
+- **MRB Inheritance Masker**: (P0) Hardware-level whitelisting for sub-mission root capability inheritance.
+- **Partition-ID Binding Service**: (P1) Physical resource locking linking memory shards and FDs to specific sub-mission partitions.
+- **Monologue Watermark Validator**: (P1) Security utility verifying RI v3.0 watermarks before reasoning attestation.
+
+### Priority Shifts
+- **Swarm Consensus Broker (SCQ)**: (Evolved to HEC) Upgraded with HSM-resident requirements for physical tamper-proofing.
+
+## Evolution: [2026-05-30] Updates
+
+### Proposed Additions
+- **Reasoning-Output Validator (RIA)**: (P0) Hardware-level verification linking model token output to signed HART reasoning traces.
+- **Hardware Namespace Broker**: (P0) Physical tool-level namespace isolation for the Consensus-Aware Blackboard.
+- **Mission-Root Pinning Middleware**: (P1) Attention-continuous prompting utility that binds user directives to model focus.
+- **Predictive Attestation Pool**: (P1) Optimization service that pre-signs subagent spawn tokens to eliminate attestation jitter.
+
+### Priority Shifts
+- **Consensus-Aware Blackboard (CAB)**: (Re-affirmed P0) Elevated with "Hardware Namespace Isolation" requirements for multi-tool swarms.
+
+## Evolution: [2026-05-29] Updates
+
+### Proposed Additions
+- **S2S Resource Broker**: (P0) Native support for UACO v3.6 inter-swarm resource negotiation and collective hardware leases.
+- **Reasoning Stability (RS) Monitor**: (P0) Security middleware that throttles agent execution based on "Logic Jitter" and RS scores.
+- **High-Availability Intent Sharder**: (P1) Infrastructure for sharding a mission-root across multiple physical hardware nodes.
+- **Inode-Bound Paging Engine**: (P1) High-performance scope switcher for multi-root filesystem sovereignty.
+
+### Priority Shifts
+- **Collective Swarm Gateway (CSS)**: (Re-affirmed P0) Evolved with "S2S Resource Negotiation" requirements for collective bidding.
+
+## Evolution: [2026-05-28] Updates
+
+### Proposed Additions
+- **Hierarchical Enclave Pooler**: (P0) Enclave virtualization for massive swarms, managing physical TPM slot sharding and sharding.
+- **Reasoning-Aware Termination (RAT) Service**: (P0) Real-time mission-root lockdown based on internal monologue (CSM) safety violations.
+- **Watermark-Enforced Memory Shards**: (P1) Physical shard-level protection blocking un-watermarked or cross-provenance state commits.
+- **Temporary Inode Leaser**: (P1) Ephemeral, hardware-locked capabilities for single-Inode filesystem operations.
+
+### Priority Shifts
+- **Partition-Locked Enclave Mediator**: (Evolved to Enclave Pooler) Upgraded with virtualization requirements for massive swarm scaling.
+
+## Evolution: [2026-05-27] Updates
+
+### Proposed Additions
+- **Partition-Locked Enclave Mediator**: (P0) Hardware-enforced memory partitioning for sub-mission roots (MRB) to prevent policy leakage.
+- **Attention-Hijack Defense Middleware**: (P0) Real-time monitor for model attention weights (RT headers) to detect and block intent hijacking.
+- **Speculative Reification Verifier**: (P1) Ghost Shell-based dry-run service for Intention Binaries (IR v2.1) before hardware signing.
+- **Logic-Noise Reasoning Scanner**: (P1) Security utility that flags high-entropy/low-utility monologues to counter contextual shadowing.
+
+### Priority Shifts
+- **Mission Branching Mediator (MRB)**: (Re-affirmed P0) Evolved with "Memory Partitioning" requirements for high-security swarms.
+
+## Evolution: [2026-05-26] Updates
+
+### Proposed Additions
+- **Mission Branching Mediator (MRB)**: (P0) Native support for hardware-partitioned sub-mission roots and policy inheritance.
+- **Attention Continuity Validator (HART)**: (P0) Major upgrade to RTV supporting HART v3.0 attention continuity proofs.
+- **Intention Binary Reifier**: (P1) Middleware for concretizing abstract intents into hardware-executable machine code.
+- **Reasoning Density Scanner**: (P1) Security utility monitoring HART traces for logic-noise and contextual shadowing.
+
+### Priority Shifts
+- **Reasoning-Trace Validator**: (Evolved to HART) Upgraded with attention continuity requirements to block linear reasoning bypasses.
+
+## Evolution: [2026-05-25] Updates
+
+### Proposed Additions
+- **Collective Swarm Gateway (CSS)**: (P0) Native support for UACO v3.6 multi-agent handshakes and collective capability tokens.
+- **Hardware Negotiation Guard (HENG)**: (P0) HSM-resident service for secure task-bidding and consensus management.
+- **Speculative Veto-Buffer**: (P1) Security middleware that buffers tool results until the hardware-attested SCQ veto window closes.
+- **Lease-Based TPM Recycler**: (P1) Lifecycle-bound management for hardware intent slots to prevent handle leaks.
+
+### Priority Shifts
+- **Swarm Consensus Broker (SCQ)**: (Re-affirmed P0) Evolved with "Veto-Buffering" requirements to mitigate consensus racing.
+
+## Evolution: [2026-05-24] Updates
+
+### Proposed Additions
+- **Strict Sync-Write Validator**: (P0) Security gate that enforces synchronous hardware attestation for all tool calls that modify the host.
+- **Swarm Integrity Manifest (SIM) Broker**: (P0) Aggregator for subagent alignment tokens providing a single, verifiable proof for the entire swarm.
+- **Inode-Gap Mediator**: (P1) Filesystem security layer providing logical gaps between hardware-locked workspaces.
+- **Pre-Model Reasoning Shield**: (P1) Semantic filter for tool inputs designed to block CoT Poisoning at the gateway level.
+
+### Priority Shifts
+- **Asynchronous Attestation Pool**: (Re-affirmed P1) Evolved with "Safe Read" vs "Strict Write" logic for improved performance/security balance.
+
+## Evolution: [2026-05-23] Updates
+
+### Proposed Additions
+- **Hierarchical Kill Switch Broker**: (P0) Recursive revocation service providing hardware-attested subagent lockdowns within 50ms.
+- **Blind Reasoning Auditor (CSA) Mediator**: (P0) Zero-Knowledge audit service for hardware-isolated monologue enclaves.
+- **Asynchronous Attestation Pool**: (P1) Non-blocking pipeline for hardware-signing MAS tokens to mitigate spawn latency.
+- **Inode-Bound Artifact Guard**: (P1) Filesystem protection physically locking agent-generated files to a verified Inode-root.
+
+### Priority Shifts
+- **Cognitive Sovereignty Mediator**: (Re-affirmed P0) Elevated with requirement for Zero-Knowledge Blind Auditing.
+
 ## Evolution: [2026-05-22] Updates
 
 ### Proposed Additions
