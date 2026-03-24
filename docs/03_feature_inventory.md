@@ -2,6 +2,8 @@
 
 ## Current Backlog (P0/P1)
 
+This section tracks the active priority features and historical strategic updates.
+
 ## Evolution: [2026-05-10] Updates
 
 ### Proposed Additions
