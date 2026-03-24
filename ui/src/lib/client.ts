@@ -58,7 +58,7 @@ export interface ServiceTemplate {
 }
 
 // Helper to map snake_case config to camelCase UpstreamServiceConfig
-const mapUpstreamServiceConfig = (s: any): UpstreamServiceConfig => ({
+const mapUpstreamServiceConfig = (s: unknown): UpstreamServiceConfig => ({
     ...s,
     provenance: s.provenance ? {
         verified: s.provenance.verified,
@@ -94,9 +94,9 @@ const mapUpstreamServiceConfig = (s: any): UpstreamServiceConfig => ({
         } : undefined,
         timeout: s.resilience.timeout
     } : undefined,
-    callPolicies: s.call_policies?.map((p: any) => ({
+    callPolicies: s.call_policies?.map((p: unknown) => ({
         defaultAction: p.default_action,
-        rules: p.rules?.map((r: any) => ({
+        rules: p.rules?.map((r: unknown) => ({
             action: r.action,
             nameRegex: r.name_regex,
             argumentRegex: r.argument_regex,
@@ -389,7 +389,7 @@ export const apiClient = {
         const data = await res.json();
         const list = Array.isArray(data) ? data : (data.services || []);
 
-        return list.map((s: any) => ({
+        return list.map((s: unknown) => ({
             ...s,
             connectionPool: s.connection_pool,
             httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
@@ -446,9 +446,9 @@ export const apiClient = {
                          toolExportPolicy: s.tool_export_policy,
                          promptExportPolicy: s.prompt_export_policy,
                          resourceExportPolicy: s.resource_export_policy,
-                         callPolicies: s.call_policies?.map((p: any) => ({
+                         callPolicies: s.call_policies?.map((p: unknown) => ({
                             defaultAction: p.default_action,
-                            rules: p.rules?.map((r: any) => ({
+                            rules: p.rules?.map((r: unknown) => ({
                                 action: r.action,
                                 nameRegex: r.name_regex,
                                 argumentRegex: r.argument_regex,
@@ -535,7 +535,7 @@ export const apiClient = {
      */
     registerService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
-        const payload: any = {
+        const payload: unknown = {
             id: config.id,
             name: config.name,
             version: config.version,
@@ -582,9 +582,9 @@ export const apiClient = {
             payload.post_call_hooks = config.postCallHooks;
         }
         if (config.callPolicies) {
-            payload.call_policies = config.callPolicies.map((p: any) => ({
+            payload.call_policies = config.callPolicies.map((p: unknown) => ({
                 default_action: p.defaultAction,
-                rules: p.rules?.map((r: any) => ({
+                rules: p.rules?.map((r: unknown) => ({
                     action: r.action,
                     name_regex: r.nameRegex,
                     argument_regex: r.argumentRegex,
@@ -646,7 +646,7 @@ export const apiClient = {
      */
     updateService: async (config: UpstreamServiceConfig) => {
         // Same mapping as register
-        const payload: any = {
+        const payload: unknown = {
              id: config.id,
             name: config.name,
             version: config.version,
@@ -691,9 +691,9 @@ export const apiClient = {
             payload.post_call_hooks = config.postCallHooks;
         }
         if (config.callPolicies) {
-            payload.call_policies = config.callPolicies.map((p: any) => ({
+            payload.call_policies = config.callPolicies.map((p: unknown) => ({
                 default_action: p.defaultAction,
-                rules: p.rules?.map((r: any) => ({
+                rules: p.rules?.map((r: unknown) => ({
                     action: r.action,
                     name_regex: r.nameRegex,
                     argument_regex: r.argumentRegex,
@@ -774,7 +774,7 @@ export const apiClient = {
      */
     validateService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
-        const payload: any = {
+        const payload: unknown = {
             id: config.id,
             name: config.name,
             version: config.version,
@@ -821,9 +821,9 @@ export const apiClient = {
             payload.post_call_hooks = config.postCallHooks;
         }
         if (config.callPolicies) {
-            payload.call_policies = config.callPolicies.map((p: any) => ({
+            payload.call_policies = config.callPolicies.map((p: unknown) => ({
                 default_action: p.defaultAction,
-                rules: p.rules?.map((r: any) => ({
+                rules: p.rules?.map((r: unknown) => ({
                     action: r.action,
                     name_regex: r.nameRegex,
                     argument_regex: r.argumentRegex,
@@ -849,7 +849,7 @@ export const apiClient = {
         });
 
         const text = await response.text();
-        let data: any;
+        let data: unknown;
         try {
             data = JSON.parse(text);
         } catch (e) {
@@ -894,7 +894,7 @@ export const apiClient = {
         const data = await res.json();
         const list = Array.isArray(data) ? data : (data.tools || []);
         return {
-            tools: list.map((t: any) => ({
+            tools: list.map((t: unknown) => ({
                 ...t,
                 serviceId: t.serviceId || t.service_id,
                 inputSchema: t.inputSchema || t.input_schema,
@@ -915,7 +915,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a POST request to /api/v1/execute.
      */
-    executeTool: async (request: any, dryRun?: boolean) => {
+    executeTool: async (request: unknown, dryRun?: boolean) => {
         try {
             const payload = { ...request };
             if (dryRun) {
@@ -1098,7 +1098,7 @@ export const apiClient = {
         const data = await res.json();
         const list = Array.isArray(data) ? data : [];
 
-        return list.map((t: any) => {
+        return list.map((t: unknown) => {
             const sc = t.service_config || {};
             const auth = sc.upstream_auth;
             let authType = 'none';
@@ -1128,9 +1128,9 @@ export const apiClient = {
                     toolExportPolicy: sc.tool_export_policy,
                     promptExportPolicy: sc.prompt_export_policy,
                     resourceExportPolicy: sc.resource_export_policy,
-                    callPolicies: sc.call_policies?.map((p: any) => ({
+                    callPolicies: sc.call_policies?.map((p: unknown) => ({
                         defaultAction: p.default_action,
-                        rules: p.rules?.map((r: any) => ({
+                        rules: p.rules?.map((r: unknown) => ({
                             action: r.action,
                             nameRegex: r.name_regex,
                             argumentRegex: r.argument_regex,
@@ -1213,7 +1213,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a POST request to /api/v1/credentials.
      */
-    createCredential: async (credential: any): Promise<Credential> => {
+    createCredential: async (credential: unknown): Promise<Credential> => {
         const res = await fetchWithAuth('/api/v1/credentials', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1237,7 +1237,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a PUT request to /api/v1/credentials/:id.
      */
-    updateCredential: async (credential: any): Promise<Credential> => {
+    updateCredential: async (credential: unknown): Promise<Credential> => {
         const res = await fetchWithAuth(`/api/v1/credentials/${credential.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -1279,7 +1279,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a POST request to /api/v1/debug/auth-test.
      */
-    testAuth: async (request: any): Promise<any> => {
+    testAuth: async (request: unknown): Promise<any> => {
         const res = await fetchWithAuth('/api/v1/debug/auth-test', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1399,7 +1399,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a POST request to /api/v1/users.
      */
-    createUser: async (user: any): Promise<any> => {
+    createUser: async (user: unknown): Promise<any> => {
         const res = await fetchWithAuth('/api/v1/users', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1423,7 +1423,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a PUT request to /api/v1/users/:id.
      */
-    updateUser: async (user: any): Promise<any> => {
+    updateUser: async (user: unknown): Promise<any> => {
         const res = await fetchWithAuth(`/api/v1/users/${user.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -1500,7 +1500,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a POST request to /api/v1/skills.
      */
-    createSkill: async (skill: any): Promise<any> => {
+    createSkill: async (skill: unknown): Promise<any> => {
         const res = await fetchWithAuth('/api/v1/skills', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1526,7 +1526,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a PUT request to /api/v1/skills/:originalName.
      */
-    updateSkill: async (originalName: string, skill: any): Promise<any> => {
+    updateSkill: async (originalName: string, skill: unknown): Promise<any> => {
         const res = await fetchWithAuth(`/api/v1/skills/${originalName}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -1571,7 +1571,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a POST request to /api/v1/profiles.
      */
-    createProfile: async (profileData: any) => {
+    createProfile: async (profileData: unknown) => {
         const res = await fetchWithAuth('/api/v1/profiles', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1592,7 +1592,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a PUT request to /api/v1/profiles/:name.
      */
-    updateProfile: async (profileData: any) => {
+    updateProfile: async (profileData: unknown) => {
         const res = await fetchWithAuth(`/api/v1/profiles/${profileData.name}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -1748,7 +1748,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a POST request to /api/v1/settings.
      */
-    saveGlobalSettings: async (settings: any) => {
+    saveGlobalSettings: async (settings: unknown) => {
         const res = await fetchWithAuth('/api/v1/settings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1864,7 +1864,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a POST request to /api/v1/alerts/rules.
      */
-    createAlertRule: async (rule: any) => {
+    createAlertRule: async (rule: unknown) => {
         const res = await fetchWithAuth('/api/v1/alerts/rules', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1902,7 +1902,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a PUT request to /api/v1/alerts/rules/:id.
      */
-    updateAlertRule: async (rule: any) => {
+    updateAlertRule: async (rule: unknown) => {
         const res = await fetchWithAuth(`/api/v1/alerts/rules/${rule.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -2110,7 +2110,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a POST request to /api/v1/debug/seed_traffic.
      */
-    seedTrafficData: async (points: any[]) => {
+    seedTrafficData: async (points: unknown[]) => {
         const res = await fetchWithAuth('/api/v1/debug/seed_traffic', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -2130,7 +2130,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a POST request to /api/v1/debug/traces.
      */
-    seedTrace: async (trace?: any) => {
+    seedTrace: async (trace?: unknown) => {
         const res = await fetchWithAuth('/api/v1/debug/traces', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -2216,7 +2216,7 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to list collections');
         const data = await res.json();
         const list = Array.isArray(data) ? data : (data.collections || []);
-        return list.map((c: any) => ({
+        return list.map((c: unknown) => ({
             name: c.name,
             description: c.description,
             author: c.author,
@@ -2253,7 +2253,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a PUT request to /api/v1/collections/:name.
      */
-    saveCollection: async (collection: any) => {
+    saveCollection: async (collection: unknown) => {
         // Decide if create or update based on existence?
         // The API might expect POST for create, PUT for update.
         // For now, let's try POST to /api/v1/collections if id/name is new, or PUT if existing?
@@ -2321,7 +2321,7 @@ export const apiClient = {
      *
      * Side Effects: Delegates to saveCollection.
      */
-    saveStackConfig: async (stackId: string, config: any) => {
+    saveStackConfig: async (stackId: string, config: unknown) => {
         // Map to saveCollection. Ensure name is set.
         const collection = typeof config === 'string' ? JSON.parse(config) : config;
         if (!collection.name) collection.name = stackId;
