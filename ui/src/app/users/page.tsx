@@ -84,7 +84,7 @@ export default function UsersPage() {
 
     const handleSave = async (userUpdate: Partial<User>, password?: string, apiKey?: string) => {
         try {
-            let authConfig: Record<string, unknown> = (editingUser?.authentication as Record<string, unknown>) || {};
+            let authConfig: any = editingUser?.authentication || {};
 
             if (apiKey) {
                 // Configure for API Key
@@ -107,7 +107,7 @@ export default function UsersPage() {
 
             // Construct the payload
             // Server expects snake_case for fields.
-            const payload: Record<string, unknown> = {
+            const payload: any = {
                 id: userUpdate.id,
                 roles: userUpdate.roles,
                 authentication: authConfig,

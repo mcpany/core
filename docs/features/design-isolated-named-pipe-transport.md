@@ -46,3 +46,11 @@ The industry pivot away from local network port exposure (GSA-2026-OPENCLAW-ROUT
 
 ## 7. Evolutionary Changelog
 * **2026-05-13:** Initial Document Creation.
+
+### Update: 2026-05-17 - Transport-Layer Session Binding (TLSB)
+**Context:** Today's research has identified a new "Team Ghosting" exploit pattern where sibling agents in a parallel swarm hijack stale or un-authenticated named-pipe sessions to exfiltrate context.
+**Architecture Adjustment:**
+* Deprecating optional loopback listeners in Section 4.
+* Introducing **Transport-Layer Session Binding (TLSB)** for all named-pipe and local transport channels.
+* Mandatory cryptographic binding of every inter-agent connection to a unique, hardware-attested **Reasoning Session Token**.
+**Security Impact:** Prevents unauthorized context access or capability reuse by rogue sibling agents, ensuring session isolation even within the same mission root.
