@@ -217,8 +217,7 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
               }: {
                 item: VisibleRow;
                 context: { onClick: (t: Trace) => void };
-                [key: string]: unknown;
-              }) => (
+              } & React.HTMLAttributes<HTMLTableRowElement>) => (
                 <TableRow
                   {...props}
                   className="cursor-pointer hover:bg-muted/50"
