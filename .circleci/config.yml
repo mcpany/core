@@ -61,7 +61,7 @@ jobs:
           command: |
             export PATH=$PATH:$(go env GOPATH)/bin
             export GOLANGCI_LINT_BIN=golangci-lint
-            bazelisk run //:lint || true
+            bazelisk run //:lint || echo "Lint check completed with non-zero exit code but continuing..."
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:

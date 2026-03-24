@@ -134,7 +134,8 @@ if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     export GO111MODULE=on
     export GOTOOLCHAIN=auto
 
-    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
+    # Restrict memory/concurrency heavily to prevent OOM in CircleCI (and local Bazel sandboxes)
+    GOGC=20 "$GOLANGCI_LINT_BIN" run --concurrency 1 --timeout 20m --fix \
         ./cmd/... ./pkg/... ./tests/... ../examples/... || true
     cd "$PROJECT_ROOT"
     echo "    golangci-lint OK."
