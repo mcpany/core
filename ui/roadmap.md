@@ -596,3 +596,13 @@
 - [ ] Reason-Graph Integrity Monitor: Real-time visualization of structural graph validation and RGC alerts. (Added: 2026-06-18)
 - [ ] Mesh-Resident Policy Console: UI for reviewing and attesting to synthesized mesh policies (MRPS). (Added: 2026-06-18)
 - [ ] Entropy-Aware Attention Dashboard: Visualization of DAG-gated fragments and spectral jitter levels. (Added: 2026-06-18)
+
+### Upcoming: [2026-06-18]
+- [ ] **[P0] Reason-Graph Integrity Monitor**: (2026-06-18) Real-time structural graph validation.
+- [ ] **[P0] Mesh-Resident Policy Console**: (2026-06-18) UI for synthesized mesh policies.
+- [ ] **[P1] Entropy-Aware Attention Dashboard**: (2026-06-18) Visual noise-gating tracker.
+
+### Upcoming: [2026-06-18]
+- [ ] **[P0] Reason-Graph Integrity Monitor**: (2026-06-18) Real-time structural graph validation.
+- [ ] **[P0] Mesh-Resident Policy Console**: (2026-06-18) UI for synthesized mesh policies.
+- [ ] **[P1] Entropy-Aware Attention Dashboard**: (2026-06-18) Visual noise-gating tracker.
