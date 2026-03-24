@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Apply repository-specific compatibility tweaks to generated ts-proto files.
 
