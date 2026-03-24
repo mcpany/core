@@ -52,3 +52,11 @@ The Reasoning Provenance Validator acts as the authoritative verification engine
 
 ## 7. Evolutionary Changelog
 * **2026-06-29:** Initial Document Creation.
+
+### Update: 2026-06-30 - Streaming Reason-Chain Attestation (SRCA)
+**Context:** The emergence of "Logic-Grafting" (CVE-2026-91001) in deep swarms shows that post-hoc provenance verification is too slow to stop mid-generation hijacking.
+**Architecture Adjustment:**
+*   Implementing **SRCA** to support real-time, fragment-level attestation.
+*   The Validator now exposes a WebSocket-based "Reasoning-Tap" that signs reasoning fragments *as they are generated* by the LLM, rather than waiting for the final tool call.
+*   Integrating with the **Active Reasoning Interdiction (ARI)** Hub v2 to forcefully terminate sessions if a mid-chain signature fails or diverges.
+**Security Impact:** Prevents "Poisoned Mainlines" by detecting unauthorized reasoning paths at the sub-millisecond level.

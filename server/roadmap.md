@@ -831,6 +831,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] CFIA v2 (HITL Context Sovereignty)**: Mandatory human-in-the-loop hashing and hardware-signing for project context files. (Added: 2026-06-29)
 *   **[P1] Fast-Path Identity Resumption (FPIR)**: Time-bound hardware-attested trust leases to neutralize teammate rotation latency. (Added: 2026-06-29)
 
+#### Upcoming (2026-06-30 Evolution)
+*   **[P0] Streaming Reason-Chain Attestation (SRCA)**: Real-time, fragment-level reasoning signatures for sub-millisecond interdiction. (Added: 2026-06-30)
+*   **[P0] Context-Binding Identity (CBI) Middleware**: Cryptographically bind identity tokens to hardware-attested Attention Anchors. (Added: 2026-06-30)
+*   **[P1] Provenance Interop Bridge (PIB)**: Translation and verification of `x-gemini-provenance` across framework boundaries. (Added: 2026-06-30)
+*   **[P1] Attention-Density Sharding (ADS)**: Priority-based mailbox sharding to prevent security fragment eviction. (Added: 2026-06-30)
+
 #### Upcoming (2026-03-23 Evolution - v2)
 *   **[P0] A2A Authentication Proxy**: Mandatory HTTP authentication gate for remote subagent discovery and task proposals (Gemini CLI v0.34.0 alignment). (Added: 2026-03-23)
 *   **[P1] Dynamic Usage Quota Monitor**: Real-time tracking and automated throttling based on credit/token consumption across frameworks. (Added: 2026-03-23)

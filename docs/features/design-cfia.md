@@ -66,3 +66,11 @@ MCP Any needs to bridge the "Attestation Gap" for these non-structural context s
 * Mandating **Manual Hashing & Signing** (HITL) for all natural-language context ingestion.
 * Introducing **Attention-Anchor Matching**: The CFIA provider now provides a cryptographically signed "Attention Anchor" for each verified file, which is consumed by the ALT middleware to verify reasoning drivers.
 **Security Impact:** Prevents repository files from silently hijacking agent reasoning, even if they pass basic sandbox checks.
+
+### Update: 2026-06-30 - Context-Binding Identity (CBI)
+**Context:** ToxicSkills research (CVE-2026-91005) reveals that subagents can be manipulated into "echoing" sensitive parent context by mimicking reasoning styles.
+**Architecture Adjustment:**
+*   CFIA is now the authoritative provider for **Context-Binding Identity (CBI)** tokens.
+*   Every hardware-signed context file now issues a fragment-bound identity lease. This lease is strictly scoped to tool calls that can be semantically traced back to the specific "Attention Anchor" of the verified file.
+*   Implementing **Stylometric Mimicry Interdiction**: The CFIA signing flow now captures a "Behavioral Profile" of the expected reasoning path for a given instruction set, which the SMM middleware uses to detect divergence.
+**Security Impact:** Neutralizes context-stealing attacks by ensuring that identity is not just "Who is the agent" but "What specific context is driving this action."

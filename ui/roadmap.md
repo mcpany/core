@@ -668,6 +668,12 @@
 - [ ] **[P0] CFIA v2 Signing Workspace**: Interactive UI for human-in-the-loop hashing and hardware-signing of context files. (Added: 2026-06-29)
 - [ ] **[P1] FPIR Lease Monitor**: Dashboard for tracking fast-path identity resumption leases and teammate rotation latency. (Added: 2026-06-29)
 
+#### Upcoming (2026-06-30 Evolution)
+- [ ] **[P0] Streaming Attestation Tracker**: Real-time visualization of fragment-level reasoning signatures and interdiction events. (Added: 2026-06-30)
+- [ ] **[P0] Context-Binding Identity Manager**: UI for reviewing and managing identity leases bound to specific Attention Anchors. (Added: 2026-06-30)
+- [ ] **[P1] Provenance Translation Debugger**: Tool for inspecting and verifying cross-framework provenance headers. (Added: 2026-06-30)
+- [ ] **[P1] Attention-Density Shard Map**: Visual heat-map of mailbox shards prioritized by security fragment density. (Added: 2026-06-30)
+
 #### Upcoming (2026-03-23 Evolution - v2)
 - [ ] **[P0] A2A Auth Status Dashboard**: (2026-03-23) Visualize authenticated inter-agent handshakes and peer-to-peer security status.
 - [ ] **[P1] Usage Quota Dashboard**: (2026-03-23) Real-time visualization of mission budget consumption and quota burn rates.
