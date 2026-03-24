@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useWizard } from '../wizard-context';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -96,6 +96,12 @@ export function StepServiceType() {
         }
     };
 
+    // ⚡ BOLT: [Render Optimization] Memoize selected template data to prevent redundant O(N) array finds
+    // Randomized Selection from Top 5 High-Impact Targets
+    const selectedTemplateData = useMemo(() => {
+        return templates.find(t => t.id === (selectedTemplateId || 'manual'));
+    }, [templates, selectedTemplateId]);
+
     if (loading) {
         return (
             <div className="flex h-40 items-center justify-center">
@@ -134,10 +140,10 @@ export function StepServiceType() {
                 <Card className="mt-2 bg-muted/50">
                     <CardHeader>
                         <CardTitle className="text-base">
-                            {templates.find(t => t.id === (selectedTemplateId || 'manual'))?.name}
+                            {selectedTemplateData?.name}
                         </CardTitle>
                         <CardDescription>
-                            {templates.find(t => t.id === (selectedTemplateId || 'manual'))?.description}
+                            {selectedTemplateData?.description}
                         </CardDescription>
                     </CardHeader>
                 </Card>
