@@ -43,7 +43,11 @@ issues:
     - node_modules
     - .cache
     - proto
-    - bazel-*
+    - bazel-bin
+    - bazel-out
+    - bazel-server
+    - bazel-testlogs
+    - bazel-workspace
   exclude-rules:
     - path: "_test.go"
       linters:
