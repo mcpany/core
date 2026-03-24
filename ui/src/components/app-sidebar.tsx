@@ -130,6 +130,11 @@ const devItems = [
     icon: Workflow,
   },
   {
+    title: "Universal Agent Bus",
+    url: "/universal-agent-bus",
+    icon: Network,
+  },
+  {
     title: "Schema Validation",
     url: "/playground/schema",
     icon: ShieldCheck,
