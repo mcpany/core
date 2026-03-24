@@ -55,3 +55,11 @@ The **Attention-Density Firewall (ADF)** is a cognitive security middleware for 
 
 ## 7. Evolutionary Changelog
 *   **2026-06-25:** Initial Document Creation.
+
+### Update: 2026-06-30 - Neutralizing Attention-Density DoS (CVE-2026-91001)
+**Context:** Today's market sync revealed a new exploit pattern where subagents use high-entropy "Reasoning Noise" to evict Mission-Root instructions from the attention window.
+**Architecture Adjustment:**
+*   Introducing the **Semantic Entropy Analyzer** in Section 4 to distinguish between complex reasoning and attention-eviction noise.
+*   Mandating **Attention-Locked Pinning** for all instructions carrying the Mission-Root signature.
+*   Implementing **Real-time Entropy Gating** on all horizontal mailbox shards (AMS).
+**Security Impact:** Prevents malicious subagents from "blinding" the lead agent by flooding the shared coordination bus.

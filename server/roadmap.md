@@ -826,6 +826,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Multi-Tenant Context Isolation Middleware**: Enforce strict state separation between missions using OpenClaw v2026.3.7 hooks. (Added: 2026-06-28)
 *   **[P1] Intent-Preserving ODCS Gateway**: On-demand context summarization to prevent "Context Ghosting" in deep swarms. (Added: 2026-06-28)
 
+#### Upcoming (2026-06-30 Evolution)
+*   **[P0] Attention-Density Firewall (ADF)**: Cognitive security middleware to detect and block "Attention-Density" DoS attacks in horizontal Agent Teams. (Added: 2026-06-30)
+*   **[P0] Fast-Path Trust Relay (FPTR)**: Performance-optimizing service for propagating hardware-attested trust leases across multi-hop delegations. (Added: 2026-06-30)
+*   **[P0] SCS-Native Adapter Hub**: Authoritative host for OpenClaw Sovereign Context Sidecars, enforcing cryptographically bound "Intent-Bound Retrieval." (Added: 2026-06-30)
+*   **[P1] Reasoning-Step Attestation (RSA) Provider**: Identity extension for validating Gemini-compliant hardware-signed internal reasoning steps. (Added: 2026-06-30)
+
 #### Upcoming (2026-06-29 Evolution)
 *   **[P0] Reasoning Provenance Validator**: Implementation of `x-gemini-provenance` verification for hardware-signed reasoning steps. (Added: 2026-06-29)
 *   **[P0] CFIA v2 (HITL Context Sovereignty)**: Mandatory human-in-the-loop hashing and hardware-signing for project context files. (Added: 2026-06-29)

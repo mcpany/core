@@ -663,6 +663,12 @@
 - [ ] **[P0] Multi-Tenant Context Isolation Dashboard**: Visualize state boundaries and isolation status for sharded missions. (Added: 2026-06-28)
 - [ ] **[P1] ODCS Summarization Debugger**: Visualizer for on-demand context compression and intent-preservation scores. (Added: 2026-06-28)
 
+#### Upcoming (2026-06-30 Evolution)
+- [ ] **[P0] Attention-Density Heatmap**: Real-time visualization of cognitive entropy and blocked "Reasoning Noise" fragments. (Added: 2026-06-30)
+- [ ] **[P0] Trust-Relay Delegation Tree**: Visual tracker for hardware-attested trust leases across multi-hop delegations. (Added: 2026-06-30)
+- [ ] **[P0] SCS Sidecar Manager**: Dashboard for configuring "Intent-Bound Retrieval" policies and monitoring pluggable memory sidecars. (Added: 2026-06-30)
+- [ ] **[P1] Reasoning-Step Integrity Viewer**: Forensic UI for inspecting hardware-signed Chain-of-Thought steps (RSA compliance). (Added: 2026-06-30)
+
 #### Upcoming (2026-06-29 Evolution)
 - [ ] **[P0] Reasoning Lineage Inspector**: UI component for visualizing verified `x-gemini-provenance` reasoning steps. (Added: 2026-06-29)
 - [ ] **[P0] CFIA v2 Signing Workspace**: Interactive UI for human-in-the-loop hashing and hardware-signing of context files. (Added: 2026-06-29)

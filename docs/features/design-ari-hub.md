@@ -87,3 +87,10 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * Integrating the **Reasoning Provenance Validator** into the Hash-Chain Validator in Section 4.
 * Upgrading the Semantic Consistency Engine to perform **Step-Level Provenance Checks**, ensuring that every internal reasoning step in a fragment is cryptographically signed and hash-chained.
 **Security Impact:** Prevents subagents from "grafting" malicious reasoning steps inside a seemingly valid fragment, providing 100% visibility into the cognitive path.
+
+### Update: 2026-06-30 - ARI v3: Attention-Locked Reasoning (ALR)
+**Context:** Today's findings on "Attention-Density DoS" reveal that even valid reasoning can be weaponized to evict mission-root instructions.
+**Architecture Adjustment:**
+*   Introducing **Attention-Locked Reasoning (ALR)** in Section 4. The ARI Hub will now issue "Attention-Binding Tokens" for every signed fragment.
+*   Integrating the **RSA Provider** to perform hardware-signed reasoning-step verification (Gemini RPI compliance).
+**Security Impact:** Ensures that reasoning fragments not only follow the mainline but also respect the attention priorities of the mission root.

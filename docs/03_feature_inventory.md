@@ -1513,6 +1513,18 @@
 - **Project Configuration Security Guard**: (Re-affirmed P0) Now elevated with the requirement for mandatory **HLCA-compliant** attestation.
 - **ContextEngine Plugin Adapter**: (Re-affirmed P0) Designated as the primary host for **Multi-Tenant Isolation** and **ODCS** strategies.
 
+## Evolution: [2026-06-30] Updates
+
+### Proposed Additions
+- **Attention-Density Firewall (ADF)**: (P0) High-speed cognitive security middleware that performs real-time entropy analysis of coordination fragments to prevent "Attention-Density" DoS attacks and instruction eviction.
+- **Fast-Path Trust Relay (FPTR)**: (P0) Performance-optimizing security service that facilitates the propagation of hardware-attested trust leases across infinite delegation hops, neutralizing "Handshake Fatigue."
+- **SCS-Native Adapter Hub**: (P0) Authoritative adapter for the OpenClaw Sovereign Context Sidecar (SCS) v1.0 standard, mandating cryptographically bound "Intent-Bound Retrieval" for all pluggable memory engines.
+- **Reasoning-Step Attestation (RSA) Provider**: (P1) Identity extension for the SRM Provider that validates hardware-signed internal reasoning steps, ensuring Chain-of-Thought integrity at the thought-step level.
+
+### Priority Shifts
+- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Evolving to v3 with mandatory support for **RSA-compliant** thought-step verification.
+- **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Elevated with requirements for **Cross-Framework Stylometric Anchoring** to counter stylometric collision.
+
 ## Evolution: [2026-06-29] Updates
 
 ### Proposed Additions
