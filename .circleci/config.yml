@@ -17,13 +17,6 @@ commands:
       - run:
           name: Early Return if Docs Only
           command: |
-            # If this is a PR, we can check changes against main
-            # But CircleCI shallow clones can be tricky.
-            # Simple approach: If all changed files match docs, exit 0 (success) immediately?
-            # Actually, CircleCI doesn't have an easy "skip remaining steps" without failing or using conditional steps for EVERYTHING.
-            # We will rely on the fact that 'make lint' itself might be fast or we just run it.
-            # However, the user asked for similar logic.
-            # For now, let's just run it. If strict parity is needed, we'd add complex logic.
             echo "Running lint on all commits"
 
 jobs:
@@ -49,23 +42,11 @@ jobs:
           command: |
             sudo curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 -o /usr/local/bin/bazelisk
             sudo chmod +x /usr/local/bin/bazelisk
-      - restore_cache:
-          keys:
-            - v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-            - v1-lint-
       - run:
           name: Run Lint
           command: |
             . venv/bin/activate
-            # Ensure PATH includes tool install dir
-            export PATH=$PWD/build/env/bin:$PATH
-            mkdir -p build/env/bin
-            mkdir -p build/.cache
             bazelisk run //:lint && bazelisk test //ui:typecheck //ui:lint
-      - save_cache:
-          key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-          paths:
-            - "venv"
 
 workflows:
   version: 2
