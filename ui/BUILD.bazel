@@ -139,7 +139,7 @@ eslint_bin.eslint_test(
 # Typecheck
 tsc_bin.tsc_test(
     name = "typecheck",
-    args = ["--version"],
+    args = ["--noEmit"],
     chdir = package_name(),
     data = [
         ":node_modules",
