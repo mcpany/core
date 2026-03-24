@@ -134,7 +134,7 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	// Update redactor on config update (it uses global DLP config, which might also change,.
+	// Update redactor on config update (it uses global DLP config, which might also change,
 	// but UpdateConfig is usually called when config file changes, so good time to refresh).
 	m.redactor = NewRedactor(config.GlobalSettings().GetDlp(), nil)
 
@@ -312,7 +312,7 @@ func (m *AuditMiddleware) ClearHistory() {
 	}
 }
 
-// SubscribeWithHistory returns a channel that will receive broadcast messages,.
+// SubscribeWithHistory returns a channel that will receive broadcast messages,
 // and the current history of messages.
 //
 // Summary: Subscribes to audit events with history.

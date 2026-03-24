@@ -138,7 +138,7 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	var prevHash string
 	// Order by ID desc to get the last entry. FOR UPDATE locks the row(s).
 	// Even if table is empty, we need to ensure we are the next one.
-	// Since we can't lock a non-existent row, we might need a table lock or just rely on SERIALIZABLE if configured,.
+	// Since we can't lock a non-existent row, we might need a table lock or just rely on SERIALIZABLE if configured,
 	// but explicit locking the "tip" is standard. If table is empty, there is no row to lock.
 	// In that case, we might race on the very first insert.
 	// To solve the "empty table race", we can use an advisory lock or lock the table.
@@ -252,7 +252,7 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 		// Check hash version.
 		var calculatedHash string
 		tsStr := ts.Format(time.RFC3339Nano)
-		// Handle potential NULLs by treating as empty/default if that's how we wrote them,.
+		// Handle potential NULLs by treating as empty/default if that's how we wrote them,
 		// but we wrote them as string literals "{}" or "".
 		// If they come back as NULL from DB (legacy rows?), we treat as "".
 		// Our Write method writes actual strings.
