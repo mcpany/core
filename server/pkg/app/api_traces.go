@@ -287,8 +287,14 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 
 func generateMockTrace() Trace {
 	now := time.Now().UnixMilli()
-	n, _ := rand.Int(rand.Reader, big.NewInt(10000))
-	traceID := fmt.Sprintf("trace-seed-%d", n.Int64())
+	n, err := rand.Int(rand.Reader, big.NewInt(10000))
+	var traceSuffix int64
+	if err == nil {
+		traceSuffix = n.Int64()
+	} else {
+		traceSuffix = now % 10000 // Fallback if random fails
+	}
+	traceID := fmt.Sprintf("trace-seed-%d", traceSuffix)
 	return Trace{
 		ID:            traceID,
 		Timestamp:     time.Now().Format(time.RFC3339),
