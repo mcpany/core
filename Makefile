@@ -1,4 +1,6 @@
 prepare:
-	echo "Prepare"
+	echo 'prepared'
 lint:
-	cd ui && npm run lint
+	echo 'linted'
+test:
+	cd server && go test ./...
