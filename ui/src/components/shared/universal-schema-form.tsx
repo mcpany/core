@@ -124,19 +124,19 @@ function FieldLabel({ label, required, description, error, className, htmlFor }:
  * Recursive Schema Field Component
  */
 function SchemaField({ path, schema, value, onChange, errors, required, label, level = 0, isLast }: SchemaFieldProps) {
-    let type = schema?.type;
+    let type = schema.type;
     // Normalize type array (e.g., ["string", "null"] -> "string")
     if (Array.isArray(type)) {
         type = type.find((t: string) => t !== "null");
     }
 
-    const description = schema?.description;
+    const description = schema.description;
     const isRequired = required;
     const hasError = !!errors?.[path];
 
     // --- Handle oneOf / anyOf ---
-    if (schema?.oneOf || schema?.anyOf) {
-        const options = schema?.oneOf || schema?.anyOf || [];
+    if (schema.oneOf || schema.anyOf) {
+        const options = schema.oneOf || schema.anyOf || [];
         // Try to detect which option matches the current value
         const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -204,7 +204,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
     }
 
     // --- Enum (Select) ---
-    if (schema?.enum) {
+    if (schema.enum) {
         return (
             <div className="w-full">
                 <FieldLabel label={label} required={isRequired} description={description} error={errors?.[path]} htmlFor={path} />
@@ -213,7 +213,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                         <SelectValue placeholder="Select option..." />
                     </SelectTrigger>
                     <SelectContent>
-                        {schema?.enum.map((val: string) => (
+                        {schema.enum.map((val: string) => (
                             <SelectItem key={val} value={val}>{val}</SelectItem>
                         ))}
                     </SelectContent>
@@ -243,7 +243,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
 
         const isPassword = schema.format === "password" ||
                            (label && /password|secret|token|key/i.test(label));
-        const isMultiline = schema?.format === "multiline" || (label && /description|content/i.test(label));
+        const isMultiline = schema.format === "multiline" || (label && /description|content/i.test(label));
 
         return (
             <div className="w-full">
@@ -305,8 +305,8 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
 
     // --- Complex Types: Object ---
     if (type === "object") {
-        const properties = schema?.properties || {};
-        const requiredFields = schema?.required || [];
+        const properties = schema.properties || {};
+        const requiredFields = schema.required || [];
         const objectValue = (value as Record<string, unknown>) || {};
 
         const hasProperties = Object.keys(properties).length > 0;
@@ -477,7 +477,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
 
     // --- Complex Types: Array ---
     if (type === "array") {
-        const itemsSchema = schema?.items || {};
+        const itemsSchema = schema.items || {};
         const arrayValue: unknown[] = Array.isArray(value) ? value : [];
 
         const handleAdd = () => {
