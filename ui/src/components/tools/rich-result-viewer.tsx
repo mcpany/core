@@ -144,7 +144,8 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             }
         });
 
-        return Array.from(keys).map((key) => ({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return Array.from(keys).map((key): ColumnDef<any> => ({
             accessorKey: key,
             header: ({ column }) => {
                 return (

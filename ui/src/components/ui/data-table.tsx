@@ -86,6 +86,7 @@ export function DataTable<TData, TValue>({
     const header = columns
         .filter(c => c.id !== "select" && c.id !== "actions")
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .map(c => c.id || (c as any).accessorKey)
         .join(",")
 

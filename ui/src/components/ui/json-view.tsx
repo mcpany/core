@@ -253,6 +253,7 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400 
             Object.keys(row).forEach(k => allKeys.add(k));
         });
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const columns: ColumnDef<any>[] = Array.from(allKeys).map((key) => ({
             accessorKey: key,
             header: ({ column }) => {
