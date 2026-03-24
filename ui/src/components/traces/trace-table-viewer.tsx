@@ -18,14 +18,14 @@ export function TraceTableViewer({ data }: TraceTableViewerProps) {
 
     // Attempt to extract an array to tabulate
     if (Array.isArray(data)) {
-        items = data.filter(item => typeof item === "object" && item !== null);
+        items = data.filter(item => typeof item === "object" && item !== null) as Record<string, unknown>[];
     } else {
         // Sometimes responses wrap the list in a key like 'tools' or 'resources'
         for (const value of Object.values(data as Record<string, unknown>)) {
             if (Array.isArray(value)) {
                 const potentialItems = value.filter(item => typeof item === "object" && item !== null);
                 if (potentialItems.length > 0) {
-                    items = potentialItems;
+                    items = potentialItems as Record<string, unknown>[];
                     break;
                 }
             }
