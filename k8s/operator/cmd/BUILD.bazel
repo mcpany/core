@@ -6,11 +6,11 @@ load("@rules_go//go:def.bzl", "go_binary", "go_library")
 go_library(
     name = "cmd_lib",
     srcs = ["main.go"],
-    importpath = "github.com/mcpany/core/operator/cmd",
+    importpath = "github.com/mcpany/core/k8s/operator/cmd",
     visibility = ["//visibility:private"],
     deps = [
-        "//k8s/operator/api/v1alpha1",
-        "//k8s/operator/controllers",
+        "@com_github_mcpany_core//operator/api/v1alpha1",
+        "@com_github_mcpany_core//operator/controllers",
         "@io_k8s_apimachinery//pkg/runtime:go_default_library",
         "@io_k8s_apimachinery//pkg/util/runtime:go_default_library",
         "@io_k8s_client_go//kubernetes/scheme",

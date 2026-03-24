@@ -20,8 +20,4 @@ go_test(
 go_test(
     name = "tests_test",
     srcs = ["e2e_test.go"],
-    deps = [
-        "//k8s/operator/api/v1alpha1",
-        "//k8s/operator/controllers",
-    ],
 )
