@@ -53,7 +53,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                      if (Array.isArray(inner) || (typeof inner === 'object' && inner !== null)) {
                          content = inner;
                      }
-                 } catch (e) {
+                 } catch (_e) {
                      // stdout is not JSON
                  }
              }
@@ -103,7 +103,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                     if (Array.isArray(parsed) && parsed.every(item => typeof item === 'object')) {
                         return parsed;
                     }
-                } catch (e) {}
+                } catch (_e) {}
              }
              return null;
         }
@@ -136,7 +136,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                 if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
                     return parsed;
                 }
-            } catch (e) {}
+            } catch (_e) {}
         }
 
         return null;
@@ -177,7 +177,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                                                 return <JsonView data={parsed} maxHeight={400} />;
                                             }
                                         }
-                                    } catch (e) {}
+                                    } catch (_e) {}
                                     return item.text;
                                 })()}
                             </div>
