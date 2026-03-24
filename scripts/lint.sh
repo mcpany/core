@@ -130,6 +130,9 @@ fi
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     # Bypassing the root level //:lint inside the bash script as the github action runner runs out of memory processing proto bindings
+    # Force process bypass to prevent OOM
+    export GOGC=10
+    export GOMEMLIMIT=1000MiB
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
