@@ -284,7 +284,6 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 	}
 }
 
-
 func generateMockTrace() Trace {
 	now := time.Now().UnixMilli()
 	traceID := fmt.Sprintf("trace-seed-%d", rand.Int31n(10000)) //nolint:gosec // Testing only
