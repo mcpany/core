@@ -157,6 +157,12 @@
 *   **[P0] Multi-Signature Skill Attestation (MSSA)**: Mandatory auditor attestation for dynamic tool grafting and high-risk skill installation. (Added: 2026-06-27)
 *   **[P1] Reasoning Path Integrity (RPI) Validator**: Support for ARE v1.8 hardware-signed reasoning fragments and semantic hash-chaining. (Added: 2026-06-27)
 
+#### Upcoming (2026-06-30 Evolution)
+*   **[P0] Fast-Path Teammate Resume (FPTR)**: Authoritative mesh-resident identity cache that enables sub-10ms teammate rotation via pipe-bound trust leases. (Added: 2026-06-30)
+*   **[P0] Invisible Instruction Shield (IIS)**: Semantic security middleware that performs layout-aware parsing of natural-language context to detect hidden instructions. (Added: 2026-06-30)
+*   **[P0] Deterministic Loop Gate (DLG)**: Authoritative host for Gemini-compliant agentic hooks, ensuring sandboxed execution of deterministic loop validation scripts. (Added: 2026-06-30)
+*   **[P0] Recursive Skill Isolation v2**: Upgraded CGC provider for cryptographically isolated context shards for skills invoked by subagents (CVE-2026-91042 defense). (Added: 2026-06-30)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
