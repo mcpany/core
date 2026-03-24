@@ -11,31 +11,19 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ---
 
 ## Strategic Evolution: [2026-05-10]
-
 ### Focus: Active Fragment Sealing & Event-Driven CLA
-
 **Context**: The emergence of "EchoLeak" (CVE-2026-28192) and "Stealth-Pivot" vulnerabilities, alongside OpenClaw v2026.3.8 and Gemini CLI v0.32.0 updates, requires a shift toward "Hardware-Bound Semantic Security." We must move beyond simple isolation to active cryptographic sealing and real-time environment attestation.
-
 **Strategic Pivot**:
-
 - **Active Fragment Sealing**: MCP Any will implement "Sealed Context Fragments" for the ContextEngine. These fragments are cryptographically bound to the hardware enclave, preventing side-channel exfiltration (EchoLeak) by masking reasoning token generation patterns.
-
 - **Event-Driven Continuous Lifecycle Attestation (CLA)**: We are evolving CLA from periodic polling to real-time, event-driven verification using kernel-level watchers (eBPF/inotify). This ensures that unauthorized configuration injections are detected and neutralized the moment they occur.
-
 - **UACO Mission-Root Anchoring**: To mitigate "Stealth-Pivot" (gradual intent drift), MCP Any will mandate cryptographically signed "Mission Manifests" for all UACO task chains. Every tool call must be explicitly anchored to the verified mission root, ensuring reasoning stability across long-running agent sessions.
 
 ## Strategic Evolution: [2026-05-09]
-
 ### Focus: Pluggable Context Sovereignty & Continuous Lifecycle Attestation (CLA)
-
 **Context**: The maturation of OpenClaw v2026.3.7 and the disclosure of "Absence-as-Exploit" (CVE-2026-25725) mark a transition from "Gateway Connectivity" to "Sovereign State Governance." It is no longer enough to secure the tool; we must now secure the entire cognitive lifecycle, from context shards to post-boot environment integrity.
-
 **Strategic Pivot**:
-
 - **Pluggable Context Sovereignty**: MCP Any will evolve to act as the primary host for Sovereignty-Aware ContextEngine plugins. We will implement "Memory Sharding" where context fragments are cryptographically bound to the mission-root and sanitized for privacy before entering external training loops.
-
 - **Continuous Lifecycle Attestation (CLA)**: To neutralize the "Absence-as-Exploit" pattern, we are transitioning to CLA. MCP Any will perform background re-verification of "Absence Manifests" throughout the session, ensuring that forbidden configuration files cannot be created after the initial boot sequence.
-
 - **Asynchronous RL Telemetry Collection**: Leveraging the OpenClaw-RL v1.0 standard, MCP Any will provide the infrastructure for high-frequency, asynchronous rollout collection. This enables real-time policy optimization for agent swarms without injecting latency into the primary tool-execution path.
 
 ## Strategic Evolution: [2026-05-08]

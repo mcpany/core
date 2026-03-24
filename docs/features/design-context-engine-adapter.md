@@ -44,25 +44,17 @@ The release of OpenClaw v2026.3.7-beta.1's "ContextEngine" has introduced a stan
 ## 7. Evolutionary Changelog
 
 ### Update: 2026-05-10 - Active Fragment Sealing & Docker-Bound Named Pipes
-
 **Context:** Today's market sync revealed the "EchoLeak" (CVE-2026-28192) vulnerability, where malicious subagents can infer context contents via side-channel token patterns.
-
 **Architecture Adjustment:**
-
 - **Active Fragment Sealing**: Implementing hardware-bound sealing for memory-mapped context shards in Section 4.
 - **Isolated Comms**: Transitioning inter-agent fragment transfer from shared memory to isolated, Docker-bound named pipes.
-
 **Security Impact:** Neutralizes side-channel exfiltration (EchoLeak) by ensuring that even if a subagent observes token patterns, it cannot access the underlying sealed fragment without a mission-root attestation token.
 
 ### Update: 2026-05-09 - Implementing Sovereignty-Aware Memory Shards
-
 **Context:** Today's market sync revealed OpenClaw v2026.3.7's pluggable ContextEngine requires a deeper sovereignty layer to prevent "Context Splicing" during asynchronous handoffs.
-
 **Architecture Adjustment:**
-
 - Introducing "Sovereignty-Aware Memory Shards" in Section 4.
 - Memory shards are now cryptographically bound to the mission-root and sanitized for privacy before entering the OpenClaw training loop.
-
 **Security Impact:** Prevents "Intent Drift" where a subagent could inadvertently exfiltrate or pollute the parent's reasoning state.
 
 * **2026-04-25:** Initial Document Creation.

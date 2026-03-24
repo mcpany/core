@@ -12,19 +12,13 @@
 ### Status: Active Development
 
 #### Upcoming (2026-05-10 Evolution)
-
 *   **[P0] Event-Driven CLA Middleware**: Transition from periodic polling to real-time, event-driven attestation using kernel-level watchers (eBPF/inotify). (Added: 2026-05-10)
-
 *   **[P0] Active Fragment Sealing Hub**: Implementation of hardware-bound sealing for memory-mapped context shards to neutralize "EchoLeak" side-channels. (Added: 2026-05-10)
-
 *   **[P0] UACO Mission-Root Anchoring**: Enforcement of cryptographically signed "Mission Manifests" for all UACO task chains to prevent intent drift. (Added: 2026-05-10)
 
 #### Upcoming (2026-05-09 Evolution)
-
 *   **[P0] Pluggable Context Sovereignty Provider**: Implementation of Sovereignty-Aware Memory Shards for the OpenClaw ContextEngine. (Added: 2026-05-09)
-
 *   **[P0] Continuous Lifecycle Attestation (CLA) Middleware**: Background polling for "Absence Manifests" to prevent post-boot config injection. (Added: 2026-05-09)
-
 *   **[P1] Asynchronous RL Telemetry Collector**: Multi-agent rollout collection for OpenClaw-RL training synchronization. (Added: 2026-05-09)
 
 #### Upcoming (2026-02-23 Evolution)

@@ -9,17 +9,12 @@
 ## Evolution: [2026-05-10] Updates
 
 ### Proposed Additions
-
 - **Event-Driven CLA Middleware**: (P0) Real-time environment verification using kernel-level watchers (eBPF/inotify) to neutralize post-boot configuration injections.
-
 - **UACO Mission-Root Anchoring**: (P0) Mandatory cryptographic binding of all UACO task chains to a signed "Mission Manifest" to prevent Stealth-Pivot (intent drift).
-
 - **Active Fragment Sealing Hub**: (P0) Hardware-bound sealing for memory-mapped context fragments, providing a definitive defense against side-channel exfiltration (EchoLeak).
 
 ### Priority Shifts
-
 - **Continuous Lifecycle Attestation (CLA) Middleware**: (Promoted to P0) Designated as the primary infrastructure for neutralizing "Absence-as-Exploit" and environment drift.
-
 - **Asynchronous RL Rollout Collector**: (Re-affirmed P1) Evolved with the requirement for sub-millisecond telemetry synchronization for deep reasoning swarms.
 
 ## Evolution: [2026-05-08] Updates
