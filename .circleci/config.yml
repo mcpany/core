@@ -75,7 +75,9 @@ jobs:
             export GOPROXY=https://proxy.golang.org,direct
 
             bazel run //:lint
-            bazel test //server/pkg/lint/... //ui:lint //ui:typecheck
+
+            # Explicitly run bazel tests required for linting to pass CI. Avoid --disk_cache OOMs
+            bazel test //server/pkg/lint/... //ui:lint //ui:typecheck --disk_cache=
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
