@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package lint provides functionality for analyzing configuration files.
-// Package lint provides functionality for analyzing configuration files.
 package lint
 
 import (
