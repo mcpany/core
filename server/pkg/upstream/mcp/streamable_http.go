@@ -1649,11 +1649,11 @@ func buildSafeEnv(resolvedEnv map[string]string) []string {
 	env := make([]string, 0, len(allowedEnvVars)+len(resolvedEnv))
 	for _, key := range allowedEnvVars {
 		if val, ok := os.LookupEnv(key); ok {
-			env = append(env, fmt.Sprintf("%s=%s", key, val))
+			env = append(env, key + "=" + val)
 		}
 	}
 	for k, v := range resolvedEnv {
-		env = append(env, fmt.Sprintf("%s=%s", k, v))
+		env = append(env, k + "=" + v)
 	}
 	return env
 }

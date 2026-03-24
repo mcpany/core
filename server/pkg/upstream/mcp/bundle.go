@@ -183,7 +183,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 
 	envList := make([]string, 0, len(env))
 	for k, v := range env {
-		envList = append(envList, fmt.Sprintf("%s=%s", k, v))
+		envList = append(envList, k + "=" + v)
 	}
 
 	// 4. Construct Transport
