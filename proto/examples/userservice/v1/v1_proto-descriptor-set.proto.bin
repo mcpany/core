@@ -1,0 +1,23 @@
+
+\xd6
+/proto/examples/userservice/v1/userservice.protoexamples.userservice.v1&proto/mcp_options/v1/mcp_options.proto!google/protobuf/go_features.proto"H
+EchoRequest9
+message (	B\x82\x87\xa1\xfcThe message to be echoed.Rmessage"P
+EchoResponse@
+echoed_message (	B\x82\x87\xa1\xfcThe echoed message.RechoedMessage"\
+GetDetailsRequestG
+item_id (	B.\x82\x87\xa1\xfc(The ID of the item to fetch details for.RitemId"\x9c
+GetDetailsResponse2
+item_id (	B\x82\x87\xa1\xfcThe ID of the item.RitemIdF
+detail (	B.\x82\x87\xa1\xfc(The detailed information about the item.Rdetail\x84
+
+attributes (2;.examples.userservice.v1.GetDetailsResponse.AttributesEntryB'\x82\x87\xa1\xfc!A map of attributes for the item.R
+attributes=
+AttributesEntry
+key (	Rkey
+value (	Rvalue:8:D\xf2\x86\xa1\xfc
+ItemDetail\xfa\x86\xa1\xfc.Represents detailed information about an item.2\xd6
+EchoService\x9b
+Echo$.examples.userservice.v1.EchoRequest%.examples.userservice.v1.EchoResponse"Fʆ\xa1\xfcEchoTool҆\xa1\xfc2Echoes back the input message. Useful for testing.\xa8
+
+GetDetails*.examples.userservice.v1.GetDetailsRequest+.examples.userservice.v1.GetDetailsResponse"Aʆ\xa1\xfcItemDetailFetcher҆\xa1\xfc$Fetches details for a given item ID.B@Z4github.com/mcpany/core/proto/examples/userservice/v1\x92\xd2>beditionsp\xe8

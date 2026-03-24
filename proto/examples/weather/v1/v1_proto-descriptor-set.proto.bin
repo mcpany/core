@@ -1,0 +1,10 @@
+
+\xfe
+'proto/examples/weather/v1/weather.protoexamples.weather.v1!google/protobuf/go_features.proto"/
+GetWeatherRequest
+location (	Rlocation".
+GetWeatherResponse
+weather (	Rweather2o
+WeatherService]
+
+GetWeather&.examples.weather.v1.GetWeatherRequest'.examples.weather.v1.GetWeatherResponseB<Z0github.com/mcpany/core/proto/examples/weather/v1\x92\xd2>beditionsp\xe8

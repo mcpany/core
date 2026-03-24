@@ -1,0 +1,101 @@
+
+\xc6
+proto/admin/v1/admin.protomcpany.admin.v1google/api/annotations.proto&proto/config/v1/upstream_service.protoproto/config/v1/user.proto$proto/mcp_router/v1/mcp_router.proto!google/protobuf/go_features.proto"
+ClearCacheRequest"
+ClearCacheResponse"
+ListServicesRequest"\xa5
+ListServicesResponseG
+services (2'.mcpany.config.v1.UpstreamServiceConfigBRservicesD
+service_states (2.mcpany.admin.v1.ServiceStateRserviceStates"}
+ServiceState?
+config (2'.mcpany.config.v1.UpstreamServiceConfigRconfig
+status (	Rstatus
+error (	Rerror"2
+GetServiceRequest
+
+service_id (	R	serviceId"\x9f
+GetServiceResponseE
+service (2'.mcpany.config.v1.UpstreamServiceConfigBRserviceB
+service_state (2.mcpany.admin.v1.ServiceStateRserviceState"
+ListToolsRequest"E
+ListToolsResponse0
+tools (2.mcpany.mcp_router.v1.ToolRtools"-
+GetToolRequest
+	tool_name (	RtoolName"A
+GetToolResponse.
+tool (2.mcpany.mcp_router.v1.ToolRtool"?
+CreateUserRequest*
+user (2.mcpany.config.v1.UserRuser"@
+CreateUserResponse*
+user (2.mcpany.config.v1.UserRuser")
+GetUserRequest
+user_id (	RuserId"=
+GetUserResponse*
+user (2.mcpany.config.v1.UserRuser"
+ListUsersRequest"A
+ListUsersResponse,
+users (2.mcpany.config.v1.UserRusers"?
+UpdateUserRequest*
+user (2.mcpany.config.v1.UserRuser"@
+UpdateUserResponse*
+user (2.mcpany.config.v1.UserRuser",
+DeleteUserRequest
+user_id (	RuserId"
+DeleteUserResponse"
+GetDiscoveryStatusRequest"d
+GetDiscoveryStatusResponseF
+	providers (2(.mcpany.admin.v1.DiscoveryProviderStatusR	providers"\xaf
+DiscoveryProviderStatus
+name (	Rname
+status (	Rstatus
+
+last_error (	R	lastError
+last_run_at (	R	lastRunAt)
+discovered_count (RdiscoveredCount"\xd3
+ListAuditLogsRequest
+
+start_time (	R	startTime
+end_time (	RendTime
+	tool_name (	RtoolName
+user_id (	RuserId
+
+profile_id (	R	profileId
+limit (Rlimit
+offset (Roffset"Q
+ListAuditLogsResponse8
+entries (2.mcpany.admin.v1.AuditLogEntryRentries"\xdc
+AuditLogEntry
+	timestamp (	R	timestamp
+	tool_name (	RtoolName
+user_id (	RuserId
+
+profile_id (	R	profileId
+	arguments (	R	arguments
+result (	Rresult
+error (	Rerror
+duration (	Rduration
+duration_ms	 (R
+durationMs
+trace_id
+ (	RtraceId
+span_id (	RspanId
+	parent_id (	RparentId2\xcd
+AdminServiceU
+
+ClearCache".mcpany.admin.v1.ClearCacheRequest#.mcpany.admin.v1.ClearCacheResponse[
+ListServices$.mcpany.admin.v1.ListServicesRequest%.mcpany.admin.v1.ListServicesResponseU
+
+GetService".mcpany.admin.v1.GetServiceRequest#.mcpany.admin.v1.GetServiceResponseR
+	ListTools!.mcpany.admin.v1.ListToolsRequest".mcpany.admin.v1.ListToolsResponseL
+GetTool.mcpany.admin.v1.GetToolRequest .mcpany.admin.v1.GetToolResponseU
+
+CreateUser".mcpany.admin.v1.CreateUserRequest#.mcpany.admin.v1.CreateUserResponseL
+GetUser.mcpany.admin.v1.GetUserRequest .mcpany.admin.v1.GetUserResponseR
+	ListUsers!.mcpany.admin.v1.ListUsersRequest".mcpany.admin.v1.ListUsersResponseU
+
+UpdateUser".mcpany.admin.v1.UpdateUserRequest#.mcpany.admin.v1.UpdateUserResponseU
+
+DeleteUser".mcpany.admin.v1.DeleteUserRequest#.mcpany.admin.v1.DeleteUserResponsem
+GetDiscoveryStatus*.mcpany.admin.v1.GetDiscoveryStatusRequest+.mcpany.admin.v1.GetDiscoveryStatusResponsez
+ListAuditLogs%.mcpany.admin.v1.ListAuditLogsRequest&.mcpany.admin.v1.ListAuditLogsResponse"\x82\xd3\xe4\x93/api/v1/audit/logsB;B
+AdminProtoZ%github.com/mcpany/core/proto/admin/v1\x92\xd2>beditionsp\xe8

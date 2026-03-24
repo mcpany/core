@@ -1,0 +1,21 @@
+
+\xeb
+"proto/mcp_options/v1/content.protomcpany.mcp_options.v1!google/protobuf/go_features.proto"E
+Content
+content (	B\xaaRcontent
+role (	B\xaaRroleB7Z+github.com/mcpany/core/proto/mcp_options/v1\x92\xd2>beditionsp\xe8
+\x9f
+&proto/mcp_options/v1/mcp_options.protomcpany.mcp_options.v1 google/protobuf/descriptor.proto!google/protobuf/go_features.proto:?
+	tool_name.google.protobuf.MethodOptions\xe9\x90ď (	RtoolName:M
+tool_description.google.protobuf.MethodOptions\xea\x90ď (	RtoolDescription:C
+prompt_name.google.protobuf.MethodOptions\xeb\x90ď (	R
+promptName:Q
+prompt_description.google.protobuf.MethodOptions\xec\x90ď (	RpromptDescription:K
+prompt_template.google.protobuf.MethodOptions\xed\x90ď (	RpromptTemplate:H
+resource_name.google.protobuf.MessageOptions\xee\x90ď (	RresourceName:V
+resource_description.google.protobuf.MessageOptions\xef\x90ď (	RresourceDescription:N
+field_description.google.protobuf.FieldOptions\xf0\x90ď (	RfieldDescription:W
+mcp_tool_readonly_hint.google.protobuf.MethodOptions\xf1\x90ď (RmcpToolReadonlyHint:]
+mcp_tool_destructive_hint.google.protobuf.MethodOptions\xf2\x90ď (RmcpToolDestructiveHint:[
+mcp_tool_idempotent_hint.google.protobuf.MethodOptions\xf3\x90ď (RmcpToolIdempotentHint:Y
+mcp_tool_openworld_hint.google.protobuf.MethodOptions\xf4\x90ď (RmcpToolOpenworldHintB5Z+github.com/mcpany/core/proto/mcp_options/v1\x92\xd2>beditionsp\xe8

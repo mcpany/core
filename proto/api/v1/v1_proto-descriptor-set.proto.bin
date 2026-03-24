@@ -1,0 +1,104 @@
+
+\x9c
+"proto/api/v1/catalog_service.protomcpany.api.v1google/api/annotations.proto&proto/config/v1/upstream_service.proto!google/protobuf/go_features.proto"0
+ListCatalogServicesRequest
+tags (	Rtags"b
+ListCatalogServicesResponseC
+services (2'.mcpany.config.v1.UpstreamServiceConfigRservices2\x96
+CatalogService\x83
+ListServices).mcpany.api.v1.ListCatalogServicesRequest*.mcpany.api.v1.ListCatalogServicesResponse"\x82\xd3\xe4\x93/v1/catalog/servicesBBBCatalogServiceProtoZ#github.com/mcpany/core/proto/api/v1\x92\xd2>beditionsp\xe8
+\xd7
+proto/api/v1/registration.protomcpany.api.v1google/api/annotations.proto&proto/config/v1/upstream_service.protoproto/config/v1/resource.protoproto/config/v1/tool.proto!google/protobuf/go_features.proto"Y
+RegisterServiceRequest?
+config (2'.mcpany.config.v1.UpstreamServiceConfigRconfig"\xfa
+RegisterServiceResponse
+message (	RmessageK
+discovered_tools (2 .mcpany.config.v1.ToolDefinitionRdiscoveredTools
+service_key (	R
+serviceKeyW
+discovered_resources (2$.mcpany.config.v1.ResourceDefinitionRdiscoveredResources"Y
+ValidateServiceRequest?
+config (2'.mcpany.config.v1.UpstreamServiceConfigRconfig"\xef
+ValidateServiceResponse
+valid (Rvalid
+message (	RmessageK
+discovered_tools (2 .mcpany.config.v1.ToolDefinitionRdiscoveredToolsW
+discovered_resources (2$.mcpany.config.v1.ResourceDefinitionRdiscoveredResources"
+ListServicesRequest"[
+ListServicesResponseC
+services (2'.mcpany.config.v1.UpstreamServiceConfigRservices"\xa0
+InitiateOAuth2FlowRequest
+
+service_id (	R	serviceId
+	namespace (	R	namespace#
+credential_id (	RcredentialId!
+redirect_url (	RredirectUrl"_
+InitiateOAuth2FlowResponse+
+authorization_url (	RauthorizationUrl
+state (	Rstate"[
+UnregisterServiceRequest!
+service_name (	RserviceName
+	namespace (	R	namespace"5
+UnregisterServiceResponse
+message (	Rmessage"\x8f
+RegisterToolsRequest!
+service_name (	RserviceName
+	namespace (	R	namespace6
+tools (2 .mcpany.config.v1.ToolDefinitionRtools"\
+RegisterToolsResponse
+message (	Rmessage)
+tools_registered (RtoolsRegistered"6
+GetServiceRequest!
+service_name (	RserviceName"W
+GetServiceResponseA
+service (2'.mcpany.config.v1.UpstreamServiceConfigRservice"Z
+GetServiceStatusRequest!
+service_name (	RserviceName
+	namespace (	R	namespace"\xde
+GetServiceStatusResponse6
+tools (2 .mcpany.config.v1.ToolDefinitionRtoolsN
+metrics (24.mcpany.api.v1.GetServiceStatusResponse.MetricsEntryRmetrics:
+MetricsEntry
+key (	Rkey
+value (Rvalue:82\xbf
+RegistrationService\x82
+RegisterService%.mcpany.api.v1.RegisterServiceRequest&.mcpany.api.v1.RegisterServiceResponse" \x82\xd3\xe4\x93"/v1/services/register:*\x82
+ValidateService%.mcpany.api.v1.ValidateServiceRequest&.mcpany.api.v1.ValidateServiceResponse" \x82\xd3\xe4\x93"/v1/services/validate:*\x8a
+UnregisterService'.mcpany.api.v1.UnregisterServiceRequest(.mcpany.api.v1.UnregisterServiceResponse""\x82\xd3\xe4\x93"/v1/services/unregister:*\x92
+InitiateOAuth2Flow(.mcpany.api.v1.InitiateOAuth2FlowRequest).mcpany.api.v1.InitiateOAuth2FlowResponse"'\x82\xd3\xe4\x93!"/v1/services/oauth2/initiate:*\x82
+RegisterTools#.mcpany.api.v1.RegisterToolsRequest$.mcpany.api.v1.RegisterToolsResponse"&\x82\xd3\xe4\x93 "/v1/services/tools/register:*\x8f
+GetServiceStatus&.mcpany.api.v1.GetServiceStatusRequest'.mcpany.api.v1.GetServiceStatusResponse"*\x82\xd3\xe4\x93$"/v1/services/{service_name}/statusm
+ListServices".mcpany.api.v1.ListServicesRequest#.mcpany.api.v1.ListServicesResponse"\x82\xd3\xe4\x93/v1/servicesv
+
+GetService .mcpany.api.v1.GetServiceRequest!.mcpany.api.v1.GetServiceResponse"#\x82\xd3\xe4\x93/v1/services/{service_name}BBBRegistrationProtoZ#github.com/mcpany/core/proto/api/v1\x92\xd2>beditionsp\xe8
+\xcb
+
+ proto/api/v1/skill_service.protomcpany.api.v1google/api/annotations.protoproto/config/v1/skill.proto!google/protobuf/go_features.proto"
+ListSkillsRequest"E
+ListSkillsResponse/
+skills (2.mcpany.config.v1.SkillRskills"%
+GetSkillRequest
+name (	Rname"A
+GetSkillResponse-
+skill (2.mcpany.config.v1.SkillRskill"C
+CreateSkillRequest-
+skill (2.mcpany.config.v1.SkillRskill"D
+CreateSkillResponse-
+skill (2.mcpany.config.v1.SkillRskill"W
+UpdateSkillRequest
+name (	Rname-
+skill (2.mcpany.config.v1.SkillRskill"D
+UpdateSkillResponse-
+skill (2.mcpany.config.v1.SkillRskill"(
+DeleteSkillRequest
+name (	Rname"
+DeleteSkillResponse2\xb7
+SkillServicee
+
+ListSkills .mcpany.api.v1.ListSkillsRequest!.mcpany.api.v1.ListSkillsResponse"\x82\xd3\xe4\x93
+/v1/skillsf
+GetSkill.mcpany.api.v1.GetSkillRequest.mcpany.api.v1.GetSkillResponse"\x82\xd3\xe4\x93/v1/skills/{name}o
+CreateSkill!.mcpany.api.v1.CreateSkillRequest".mcpany.api.v1.CreateSkillResponse"\x82\xd3\xe4\x93"
+/v1/skills:skillv
+UpdateSkill!.mcpany.api.v1.UpdateSkillRequest".mcpany.api.v1.UpdateSkillResponse" \x82\xd3\xe4\x93/v1/skills/{name}:skillo
+DeleteSkill!.mcpany.api.v1.DeleteSkillRequest".mcpany.api.v1.DeleteSkillResponse"\x82\xd3\xe4\x93*/v1/skills/{name}BBBSkillServiceProtoZ#github.com/mcpany/core/proto/api/v1\x92\xd2>beditionsp\xe8
