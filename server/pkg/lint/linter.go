@@ -1,8 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package lint provides functionality for analyzing configuration files
-// to detect potential security issues and best practice violations.
+// Package lint provides configuration analysis tools.
 //
 // Summary: Package lint provides configuration analysis tools.
 package lint
@@ -222,14 +221,13 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 		case configv1.UpstreamServiceConfig_CommandLineService_case:
 			cmd := s.GetCommandLineService()
 			for k, v := range cmd.GetEnv() {
-				path := fmt.Sprintf("command_line_service.env[%s]", k)
-				checkSecret(v, path, s.GetName())
+				checkSecret(v, fmt.Sprintf("command_line_service.env[%s]", k),
+					s.GetName())
 			}
 			if ce := cmd.GetContainerEnvironment(); ce != nil {
 				for k, v := range ce.GetEnv() {
-					path := fmt.Sprintf("command_line_service."+
-						"container_environment.env[%s]", k)
-					checkSecret(v, path, s.GetName())
+					checkSecret(v, fmt.Sprintf("command_line_service."+
+						"container_environment.env[%s]", k), s.GetName())
 				}
 			}
 		case configv1.UpstreamServiceConfig_McpService_case:
@@ -238,14 +236,14 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 			case configv1.McpUpstreamService_StdioConnection_case:
 				stdio := mcp.GetStdioConnection()
 				for k, v := range stdio.GetEnv() {
-					path := fmt.Sprintf("mcp_service.stdio.env[%s]", k)
-					checkSecret(v, path, s.GetName())
+					checkSecret(v, fmt.Sprintf("mcp_service.stdio.env[%s]", k),
+						s.GetName())
 				}
 			case configv1.McpUpstreamService_BundleConnection_case:
 				bundle := mcp.GetBundleConnection()
 				for k, v := range bundle.GetEnv() {
-					path := fmt.Sprintf("mcp_service.bundle.env[%s]", k)
-					checkSecret(v, path, s.GetName())
+					checkSecret(v, fmt.Sprintf("mcp_service.bundle.env[%s]", k),
+						s.GetName())
 				}
 			}
 		}
