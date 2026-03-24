@@ -52,6 +52,9 @@ jobs:
           name: Run Lint
           command: |
             npm install -g @bazel/bazelisk
+            sudo npm install -g @bazel/bazelisk || true
+            sudo chown -R circleci:circleci /usr/local/lib/node_modules || true
+            npm install -g @bazel/bazelisk || sudo npm install -g @bazel/bazelisk
             bazelisk run //:lint
             bazelisk test //ui:lint //ui:typecheck
       - save_cache:
