@@ -115,7 +115,7 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
 		HttpService: configv1.HttpUpstreamService_builder{
-			Address: proto.String("http://127.0.0.1"),
+			Address: proto.String("https://accounts.google.com"),
 		}.Build(),
 		Authentication: configv1.Authentication_builder{
 			ApiKey: configv1.APIKeyAuth_builder{
@@ -157,7 +157,7 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 		serviceConfig := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String("oauth2-service"),
 			HttpService: configv1.HttpUpstreamService_builder{
-				Address: proto.String("http://127.0.0.1"),
+				Address: proto.String("https://accounts.google.com"),
 			}.Build(),
 			Authentication: configv1.Authentication_builder{
 				Oauth2: configv1.OAuth2Auth_builder{

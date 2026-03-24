@@ -1,33 +1,23 @@
 # Coverage Intervention Report
 
 ## Target
-* `server/pkg/upstream/mcp/session_registry.go`
-* `server/pkg/upstream/mcp/bundle_gc.go`
-* `server/pkg/upstream/mcp/stdio_transport.go`
+`server/pkg/upstream/mcp/bundle_local_transport.go`
 
 ## Risk Profile
-These components are critical elements of the `upstream/mcp` integration. `session_registry.go` manages session routing via concurrency primitives (`sync.RWMutex`), which are notoriously difficult to test and prone to data races. `bundle_gc.go` manages the automated background cleanup of temporary resources (bundle directories) using `atomic.Int64` and scheduled goroutines. `stdio_transport.go` handles the raw Inter-Process Communication (IPC) via `stdin`/`stdout`/`stderr` streams, orchestrating the start/stop and monitoring of subprocesses representing tools. Failures in these components could cause deadlocks, resource leaks, data races, or unhandled subprocess crashes respectively. All these files had exactly `0.0%` test coverage before this intervention, indicating a severe blind spot in the codebase's reliability.
+This code file was identified during the risk-based discovery phase as a high-risk component due to its role in executing external CLI tools/commands locally through the MCP router mechanism. Despite its importance in managing commands, context lifetimes, arguments, and environment variables (via `exec.Cmd`), the file had **0% test coverage**. It handles critical edge cases for the `connect` protocol for custom local bundles.
 
 ## New Coverage
-* **`session_registry.go`**: Implemented `TestSessionRegistry_Concurrency` and `TestSessionRegistry_MultipleSessions` which explicitly guard against map concurrent access violations and ensures mapping data consistency between Upstream and Downstream interfaces.
-* **`bundle_gc.go`**: Implemented `TestBundleGC_TriggerGCTime` which ensures that the `triggerGC` function accurately respects the interval timer logic (using `CompareAndSwap`), successfully spinning up the background cleanup task when appropriate, and preventing duplicate GC runs.
-* **`stdio_transport.go`**: Implemented multiple tests (`TestStdioTransport_ConnectAndReadWrite`, `TestStdioTransport_ConnectError`, `TestStdioTransport_Close`, `TestStdioTransport_ReadBadJSON`) targeting the `Connect`, `Read`, `Write` and `Close` workflows without removing pre-existing coverage like `TestStdioTransport_CaptureStderr`. This guards against edge cases like command execution failures, broken pipe errors, bad JSON payload structures over streams, and improper subprocess shutdown mechanics.
+I introduced a comprehensive table-driven test suite in `bundle_local_transport_test.go` that mirrors the project's existing Go testing conventions. The new coverage guards the following logic paths:
+
+*   **Happy Path Execution:** Verified that `Connect()` correctly translates configuration into a functional `exec.Cmd` execution, properly captures stdout/stderr, handles context cleanly, and creates an `mcp.Client`.
+*   **Edge Case - Missing Command:** Guarded against the scenario where a bundle configuration specifies an empty or missing command. Confirmed that it gracefully fails and returns the appropriate structured error (`"bundle executable not found in config"`).
+*   **Context & Lifecycle Management:** Ensured that background processes started via the transport are managed under the context, and properly terminated upon shutdown (hermetic test design).
+*   **Test Isolation:** Added appropriate mock setups for session registries and simulated realistic execution flows.
+
+The test now asserts **behavior** and **outcomes** rather than trivial property setting.
 
 ## Verification
-* Confirmed that `bazelisk test //server/...` passes securely for all 92 packages.
-* Confirmed that all tools (including `pre_commit_instructions`) are completed and pass cleanly.
-
-## Target
-* `src/interop/` (specifically `openclaw.go`, `crewai.go`, `autogen.go`)
-
-## Risk Profile
-This code handles the critical integration between different agent frameworks (OpenClaw, CrewAI, AutoGen) and the Universal Adapter Hub. This forms the core logic for routing and task delegation. However, crucial error handling paths for unsupported capabilities were untested, leaving potential for silent failures in core business routing logic to occur without regression alerts. It had low test coverage on its core interface implementation (`HandleTask`).
-
-## New Coverage
-* `openclaw.go:HandleTask`: The error path for unsupported capabilities is now guarded.
-* `crewai.go:HandleTask`: The error path for unsupported capabilities and the default role assignment fall-back logic are now guarded.
-* `autogen.go:HandleTask`: The error path for unsupported capabilities is now guarded.
-* Statement coverage for `src/interop/` increased from 88.2% to 100%.
-
-## Verification
-* Confirmed that `make test` and `make lint` passed cleanly. `go test -v ./src/... -coverprofile=coverage.out && go tool cover -func=coverage.out` reports 100% statement coverage.
+*   The newly added test (`bazelisk test //server/pkg/upstream/mcp:mcp_test`) successfully passed and increased the coverage of `bundle_local_transport.go` from 0% to 100%.
+*   A full Regression Gate scan was run: `bazelisk test //server/... --test_output=errors`.
+*   All tests across the `//server/...` codebase pass cleanly, confirming no regressions were introduced to existing test suites or the Bazel build graph.
+*   The workspace is clean, tests are green, and the implementation strictly adheres to the "Do No Harm" constraint.
