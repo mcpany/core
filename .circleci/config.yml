@@ -55,12 +55,20 @@ jobs:
           name: Install golangci-lint
           command: |
             curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.63.4
+
+            # Temporarily downgrade go so golangci-lint runs
+            find . -name go.mod -exec sed -i 's/go 1.26.1/go 1.24/g' {} +
+            find . -name go.mod -exec sed -i 's/toolchain go1.26.1/toolchain go1.24/g' {} +
+
       - run:
           name: Run Lint
           command: |
             export PATH=$PATH:$(go env GOPATH)/bin
             export GOLANGCI_LINT_BIN=golangci-lint
             bazelisk run //:lint || true
+
+            find . -name go.mod -exec sed -i 's/go 1.24/go 1.26.1/g' {} +
+            find . -name go.mod -exec sed -i 's/toolchain go1.24/toolchain go1.26.1/g' {} +
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
