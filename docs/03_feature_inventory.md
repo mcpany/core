@@ -2,7 +2,6 @@
 
 ## Current Backlog (P0/P1)
 
-
 ## Evolution: [2026-05-10] Updates
 
 ### Proposed Additions
@@ -11,7 +10,7 @@
 - **Mission-Bound Compute Leases**: (P1) Resource management middleware that atomically links token and compute budgets to specific Mission IDs, preventing runaway subagent swarms.
 
 ### Priority Shifts
-- **Adaptive Reasoning Balancer**: (Promoted to P0) Designated as a critical component for managing the "Cognitive Stall" identified in today's market research.
+- **Adaptive Reasoning Balancer**: (Promoted to P0) Designated as a critical component for managing the "Cognitive Stall" identified in today research.
 - **Zero-Hallucination Security Kernel**: (Evolved to MAK) The security kernel is being integrated into the broader Mission Anchor Kernel for unified intent enforcement.
 
 ## Evolution: [2026-05-09] Updates
