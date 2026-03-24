@@ -1534,3 +1534,26 @@
 ### Priority Shifts
 - **A2A Messaging Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Authenticated Discovery** to align with Gemini CLI v0.34.0.
 - **Policy Firewall**: (Re-affirmed P0) Expanded to include **Quota-Aware Execution** rules based on real-time usage metrics.
+
+## Evolution: [2026-06-30] Updates
+
+### Proposed Additions
+- **Cognitive Attestation Hub (CAH) Adapter**: (P0) Advanced security middleware for the Semantic Integrity Bridge that implements OpenClaw v3.3.0 consensus hooks.
+- **Priority-Aware Mailbox Sharding (PAMS)**: (P0) High-priority upgrade for the AMS middleware allowing lock-free "Urgent Interrupt" signals.
+- **Attention-Splicing Firewall (ASF)**: (P0) Security service for the ADF that performs semantic entropy analysis to detect stylized mimicry in noise fragments.
+- **Leased Mission Persistence (LMP) Provider**: (P0) Performance-optimizing identity service providing hardware-locked mission leases to neutralize rotation fatigue.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Promoted to P0) Critical for supporting the new **LMP** standard and solving teammate rotation latency.
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Evolving into **PAMS** to support interrupt-driven coordination.
+
+## Evolution: [2026-07-01] Updates
+
+### Proposed Additions
+- **Universal Multimodal Memory Bus (UMMB)**: (P0) A hardware-attested, intent-pinned memory bus for synchronizing state across disparate frameworks while performing real-time multimodal trace sanitization.
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (P0) Security middleware that mandates cryptographic capability masking until a mission-bound handshake is complete, preventing pre-flight shadow mapping.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (P0) Advanced attention governance middleware utilizing hardware-bound headers to pin mission-critical intent fragments, neutralizing context-window flooding.
+
+### Priority Shifts
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving to act as the primary backend for the **UMMB** state synchronization.
+- **Zero-Knowledge Discovery (ZKD) Proxy**: (Re-affirmed P0) Expanding into the **ZKDB** to support cross-framework capability negotiation.
