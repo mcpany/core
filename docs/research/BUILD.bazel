@@ -1,0 +1,6 @@
+# docs/research/BUILD.bazel
+filegroup(
+    name = "docs",
+    srcs = ["interop_blueprint.md"],
+    visibility = ["//visibility:public"],
+)

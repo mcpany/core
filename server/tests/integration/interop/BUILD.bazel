@@ -1,0 +1,10 @@
+load("@rules_go//go:def.bzl", "go_test")
+
+go_test(
+    name = "interop_integration_test",
+    srcs = ["interop_test.go", "e2e_interop_test.go"],
+    deps = [
+        "//src/interop",
+    ],
+    tags = ["integration"],
+)
