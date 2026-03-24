@@ -41,19 +41,17 @@ var (
 
 // SetGlobalAlertConfig sets the global alert configuration.
 //
-// Summary: SetGlobalAlertConfig sets the global alert configuration.
+// It updates the thread-safe global configuration used for sending alerts on health status changes.
 //
 // Parameters:
-//   - cfg (*configv1.AlertConfig): The configuration settings.
+//   - cfg: *configv1.AlertConfig. The new alert configuration.
 //
 // Returns:
-//   - None.
 //
-// Errors:
-//   - None.
+//	None.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - Updates a global variable protected by a mutex.
 func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 	globalAlertConfigMu.Lock()
 	defer globalAlertConfigMu.Unlock()
@@ -61,8 +59,6 @@ func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 }
 
 // HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
-//
-// Summary: HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
 type HTTPServiceWithHealthCheck interface {
 	// GetAddress returns the address of the service.
 	//
@@ -78,19 +74,17 @@ type HTTPServiceWithHealthCheck interface {
 
 // NewChecker creates a new health checker for the given upstream service.
 //
-// Summary: NewChecker creates a new health checker for the given upstream service.
+// It determines the type of service (HTTP, gRPC, etc.) and creates an appropriate
+// health check strategy wrapped with latency metrics and status change listeners.
 //
 // Parameters:
-//   - uc (*configv1.UpstreamServiceConfig): The provided uc data.
+//   - uc: *configv1.UpstreamServiceConfig. The configuration of the upstream service to check.
 //
 // Returns:
-//   - health.Checker: The resulting object or data structure.
-//
-// Errors:
-//   - None.
+//   - health.Checker: A configured health checker instance. Returns nil if the configuration is nil or invalid.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - Registers metrics for the health check.
 func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	if uc == nil {
 		return nil

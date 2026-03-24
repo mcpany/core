@@ -18,28 +18,25 @@ import (
 )
 
 // StdioTransport implements mcp.Transport for a local command,
-//
-// Summary: StdioTransport implements mcp.Transport for a local command,
+// capturing stderr to provide better error messages on failure.
 type StdioTransport struct {
 	Command *exec.Cmd
 }
 
 // Connect starts the command and returns a connection.
 //
-// Summary: Connect starts the command and returns a connection.
-//
 // Parameters:
-//   - _ (context.Context): The provided _ data.
+//   - _ (context.Context): The parameter.
 //
 // Returns:
-//   - mcp.Connection: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
+//   - mcp.Connection: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
@@ -104,20 +101,18 @@ type stdioConn struct {
 
 // Read reads a JSON-RPC message from the standard output of the command.
 //
-// Summary: Read reads a JSON-RPC message from the standard output of the command.
-//
 // Parameters:
-//   - _ (context.Context): The provided _ data.
+//   - _ (context.Context): The parameter.
 //
 // Returns:
-//   - jsonrpc.Message: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
+//   - jsonrpc.Message: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -206,20 +201,18 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 
 // Write writes a JSON-RPC message to the standard input of the command.
 //
-// Summary: Write writes a JSON-RPC message to the standard input of the command.
-//
 // Parameters:
-//   - _ (context.Context): The provided _ data.
-//   - msg (jsonrpc.Message): The provided msg data.
+//   - _ (context.Context): The parameter.
+//   - msg (jsonrpc.Message): The parameter.
 //
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -261,19 +254,14 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 
 // Close terminates the command and closes the streams.
 //
-// Summary: Close terminates the command and closes the streams.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func (c *stdioConn) Close() error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -291,19 +279,11 @@ func (c *stdioConn) Close() error {
 
 // SessionID returns a static session ID for the stdio connection.
 //
-// Summary: SessionID returns a static session ID for the stdio connection.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - string: The resulting text.
-//
-// Errors:
-//   - None.
+//   - string: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func (c *stdioConn) SessionID() string {
 	return "stdio-session"
 }

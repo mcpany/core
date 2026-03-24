@@ -89,44 +89,32 @@ const introspectionQuery = `
 `
 
 // Upstream implements the upstream.Upstream interface for GraphQL services.
-//
-// Summary: Upstream implements the upstream.Upstream interface for GraphQL services.
 type Upstream struct{}
 
 // NewGraphQLUpstream creates a new GraphQL upstream.
 //
-// Summary: NewGraphQLUpstream creates a new GraphQL upstream.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - upstream.Upstream: The resulting object or data structure.
-//
-// Errors:
-//   - None.
+//   - upstream.Upstream: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
 // Shutdown shuts down the upstream.
 //
-// Summary: Shutdown shuts down the upstream.
-//
 // Parameters:
-//   - _ (context.Context): The provided _ data.
+//   - _ (context.Context): The parameter.
 //
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func (g *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -151,10 +139,10 @@ type graphQLType struct {
 }
 
 type graphQLTypeWithFields struct {
-	Kind   string                 `json:"kind"`
-	Name   *string                `json:"name"`
+	Kind   string                  `json:"kind"`
+	Name   *string                 `json:"name"`
 	Fields []struct{ Name string } `json:"fields"`
-	OfType *graphQLTypeWithFields `json:"ofType"`
+	OfType *graphQLTypeWithFields  `json:"ofType"`
 }
 
 func getFieldsFromType(t *graphQLTypeWithFields) []struct{ Name string } {
@@ -209,8 +197,6 @@ func convertGraphQLTypeToJSONSchema(t *graphQLType) *structpb.Value {
 }
 
 // Callable implements the Callable interface for GraphQL queries.
-//
-// Summary: Callable implements the Callable interface for GraphQL queries.
 type Callable struct {
 	client        *graphql.Client
 	query         string
@@ -220,21 +206,19 @@ type Callable struct {
 
 // Call executes the GraphQL query.
 //
-// Summary: Call executes the GraphQL query.
-//
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - req (*tool.ExecutionRequest): The incoming request payload.
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The parameter.
 //
 // Returns:
-//   - any: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
+//   - any: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {
@@ -259,27 +243,25 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 
 // Register inspects the GraphQL upstream service and registers its capabilities. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
-// Summary: Register inspects the GraphQL upstream service and registers its capabilities. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
-//
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The provided serviceconfig data.
-//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
-//   - _ (prompt.ManagerInterface): The provided _ data.
-//   - _ (resource.ManagerInterface): The provided _ data.
-//   - _ (bool): A flag indicating whether _ is enabled.
+//   - ctx (context.Context): The context for the request.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - _ (prompt.ManagerInterface): The _ parameter.
+//   - _ (resource.ManagerInterface): The _ parameter.
+//   - _ (bool): The _ parameter.
 //
 // Returns:
-//   - string: The resulting text.
-//   - []*configv1.ToolDefinition: The resulting object or data structure.
-//   - []*configv1.ResourceDefinition: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
+//   - string: The resulting string.
+//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
+//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None
 func (g *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

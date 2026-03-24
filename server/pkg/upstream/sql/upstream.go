@@ -23,8 +23,6 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for SQL databases.
-//
-// Summary: Upstream implements the upstream.Upstream interface for SQL databases.
 type Upstream struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -32,38 +30,28 @@ type Upstream struct {
 
 // NewUpstream creates a new SQL upstream.
 //
-// Summary: NewUpstream creates a new SQL upstream.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - *Upstream: The resulting object or data structure.
-//
-// Errors:
-//   - None.
+//   - *Upstream: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func NewUpstream() *Upstream {
 	return &Upstream{}
 }
 
 // Shutdown closes the database connection.
 //
-// Summary: Shutdown closes the database connection.
-//
 // Parameters:
-//   - _ (context.Context): The provided _ data.
+//   - _ (context.Context): The parameter.
 //
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -79,27 +67,25 @@ func ptr(s string) *string {
 
 // Register discovers and registers tools from the SQL configuration. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
-// Summary: Register discovers and registers tools from the SQL configuration. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
-//
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The provided serviceconfig data.
-//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
-//   - _ (prompt.ManagerInterface): The provided _ data.
-//   - _ (resource.ManagerInterface): The provided _ data.
-//   - _ (bool): A flag indicating whether _ is enabled.
+//   - ctx (context.Context): The context for the request.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - _ (prompt.ManagerInterface): The _ parameter.
+//   - _ (resource.ManagerInterface): The _ parameter.
+//   - _ (bool): The _ parameter.
 //
 // Returns:
-//   - string: The resulting text.
-//   - []*configv1.ToolDefinition: The resulting object or data structure.
-//   - []*configv1.ResourceDefinition: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
+//   - string: The resulting string.
+//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
+//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

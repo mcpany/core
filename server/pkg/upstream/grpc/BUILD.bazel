@@ -55,7 +55,6 @@ go_test(
         "grpc_schema_bug_test.go",
         "grpc_test.go",
     ],
-    data = ["//proto/examples/weather/v1:weather_proto_src"],
     embed = [":grpc"],
     tags = ["integration"],
     deps = [

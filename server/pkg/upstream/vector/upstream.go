@@ -21,32 +21,20 @@ import (
 )
 
 // ClientFactory is a function that creates a VectorClient.
-//
-// Summary: ClientFactory is a function that creates a VectorClient.
 type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
 
 // Upstream implements the upstream.Upstream interface for vector database services.
-//
-// Summary: Upstream implements the upstream.Upstream interface for vector database services.
 type Upstream struct {
 	clientFactory ClientFactory
 }
 
 // NewUpstream creates a new instance of VectorUpstream.
 //
-// Summary: NewUpstream creates a new instance of VectorUpstream.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - upstream.Upstream: The resulting object or data structure.
-//
-// Errors:
-//   - None.
+//   - upstream.Upstream: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		clientFactory: defaultClientFactory,
@@ -65,46 +53,42 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 
 // Shutdown implements the upstream.Upstream interface.
 //
-// Summary: Shutdown implements the upstream.Upstream interface.
-//
 // Parameters:
-//   - _ (context.Context): The provided _ data.
+//   - _ (context.Context): The parameter.
 //
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
 // Register processes the configuration for a vector service. _ is an unused parameter. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
-// Summary: Register processes the configuration for a vector service. _ is an unused parameter. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
-//
 // Parameters:
-//   - _ (context.Context): The provided _ data.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The provided serviceconfig data.
-//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
-//   - _ (prompt.ManagerInterface): The provided _ data.
-//   - _ (resource.ManagerInterface): The provided _ data.
-//   - _ (bool): A flag indicating whether _ is enabled.
+//   - _ (context.Context): The _ parameter.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - _ (prompt.ManagerInterface): The _ parameter.
+//   - _ (resource.ManagerInterface): The _ parameter.
+//   - _ (bool): The _ parameter.
 //
 // Returns:
-//   - string: The resulting text.
-//   - []*configv1.ToolDefinition: The resulting object or data structure.
-//   - []*configv1.ResourceDefinition: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
+//   - string: The resulting string.
+//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
+//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None
 func (u *Upstream) Register(
 	_ context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -203,22 +187,22 @@ type vectorCallable struct {
 }
 
 // Call executes the vector tool with the given arguments.
-//
-// Summary: Call executes the vector tool with the given arguments.
+// It accepts a context and an execution request containing arguments,
+// and returns the result of the tool execution or an error.
 //
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - req (*tool.ExecutionRequest): The incoming request payload.
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The parameter.
 //
 // Returns:
-//   - any: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
+//   - any: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.handler(ctx, req.Arguments)
 }
@@ -232,8 +216,6 @@ type vectorToolDef struct {
 }
 
 // Client interface for different vector DB implementations.
-//
-// Summary: Client interface for different vector DB implementations.
 type Client interface {
 	// Query searches for the nearest vectors in the database.
 	// It accepts a context, a query vector, the number of results to return (topK),

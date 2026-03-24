@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
+	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/util"
-	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -23,8 +23,7 @@ const (
 )
 
 // ParsedOpenAPIData holds the high-level information extracted from an OpenAPI
-//
-// Summary: ParsedOpenAPIData holds the high-level information extracted from an OpenAPI
+// specification, such as metadata, server details, and the defined paths.
 type ParsedOpenAPIData struct {
 	Info    openapi3.Info
 	Servers openapi3.Servers
@@ -32,15 +31,14 @@ type ParsedOpenAPIData struct {
 }
 
 // PathItem represents a single path within an OpenAPI specification and holds a
-//
-// Summary: PathItem represents a single path within an OpenAPI specification and holds a
+// reference to its corresponding openapi3.PathItem.
 type PathItem struct {
 	PathRef *openapi3.PathItem
 }
 
 // McpOperation provides a simplified, MCP-centric representation of an OpenAPI
-//
-// Summary: McpOperation provides a simplified, MCP-centric representation of an OpenAPI
+// operation. It contains the essential details needed to convert an API
+// endpoint into an executable tool.
 type McpOperation struct {
 	OperationID string
 	Summary     string

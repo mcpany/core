@@ -64,8 +64,6 @@ const (
 )
 
 // ToolUsageStats represents usage statistics for a tool.
-//
-// Summary: ToolUsageStats represents usage statistics for a tool.
 type ToolUsageStats struct {
 	Name      string `json:"name"`
 	ServiceID string `json:"serviceId"`
@@ -212,8 +210,6 @@ func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 }
 
 // ToolFailureStats represents failure statistics for a tool.
-//
-// Summary: ToolFailureStats represents failure statistics for a tool.
 type ToolFailureStats struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -334,8 +330,6 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 }
 
 // ToolAnalytics represents detailed usage analytics for a tool.
-//
-// Summary: ToolAnalytics represents detailed usage analytics for a tool.
 type ToolAnalytics struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -450,16 +444,12 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 }
 
 // ServiceHealthResponse represents the response for the health dashboard.
-//
-// Summary: ServiceHealthResponse represents the response for the health dashboard.
 type ServiceHealthResponse struct {
-	Services []ServiceHealth                 `json:"services"`
+	Services []ServiceHealth                  `json:"services"`
 	History  map[string][]health.HistoryPoint `json:"history"`
 }
 
 // ServiceHealth represents the health status of a service.
-//
-// Summary: ServiceHealth represents the health status of a service.
 type ServiceHealth struct {
 	ID      string `json:"id"`
 	Name    string `json:"name"`

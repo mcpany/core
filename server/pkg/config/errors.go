@@ -22,38 +22,34 @@ type ActionableError struct {
 
 // Error implements the error interface. Side Effects: - None.
 //
-// Summary: Error implements the error interface. Side Effects: - None.
-//
 // Parameters:
-//   - None.
+//   - None
 //
 // Returns:
-//   - string: The resulting text.
+//   - string: The resulting string.
 //
 // Errors:
-//   - None.
+//   - None
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None
 func (e *ActionableError) Error() string {
 	return fmt.Sprintf("%v\n\t-> Fix: %s", e.Err, e.Suggestion)
 }
 
 // Unwrap returns the underlying error. Side Effects: - None.
 //
-// Summary: Unwrap returns the underlying error. Side Effects: - None.
-//
 // Parameters:
-//   - None.
+//   - None
 //
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None
 func (e *ActionableError) Unwrap() error {
 	return e.Err
 }

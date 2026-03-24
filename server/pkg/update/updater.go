@@ -20,7 +20,7 @@ import (
 
 // Updater handles the self-update process.
 //
-// Summary: Updater handles the self-update process.
+// It manages checking for updates on GitHub and applying them to the local executable.
 type Updater struct {
 	client     *github.Client
 	httpClient *http.Client
@@ -28,20 +28,12 @@ type Updater struct {
 
 // NewUpdater creates a new Updater.
 //
-// Summary: NewUpdater creates a new Updater.
-//
 // Parameters:
-//   - httpClient (*http.Client): The provided httpclient data.
-//   - githubAPIURL (string): The endpoint address.
+//   - httpClient: *http.Client. The HTTP client to use for network requests. If nil, http.DefaultClient is used.
+//   - githubAPIURL: string. Optional URL for the GitHub API (useful for Enterprise GitHub).
 //
 // Returns:
-//   - *Updater: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *Updater: A new Updater instance.
 func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -61,24 +53,18 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 
 // CheckForUpdate checks for a new release on GitHub.
 //
-// Summary: CheckForUpdate checks for a new release on GitHub.
+// It compares the provided current version tag with the latest release tag on the repository.
 //
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - owner (string): The textual representation of owner.
-//   - repo (string): The textual representation of repo.
-//   - currentVersion (string): The textual representation of currentversion.
+//   - ctx: context.Context. The context for the request.
+//   - owner: string. The GitHub repository owner (e.g., "mcpany").
+//   - repo: string. The GitHub repository name (e.g., "core").
+//   - currentVersion: string. The current version tag of the application.
 //
 // Returns:
-//   - *github.RepositoryRelease: The resulting object or data structure.
-//   - bool: True if successful or valid, false otherwise.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *github.RepositoryRelease: The release information if an update is available, nil otherwise.
+//   - bool: True if a newer version is available, false otherwise.
+//   - error: An error if the check fails (e.g., network error, API rate limit).
 func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersion string) (*github.RepositoryRelease, bool, error) {
 	release, _, err := u.client.Repositories.GetLatestRelease(ctx, owner, repo)
 	if err != nil {
@@ -94,24 +80,22 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 
 // UpdateTo downloads the new release, verifies its checksum, and replaces the current executable.
 //
-// Summary: UpdateTo downloads the new release, verifies its checksum, and replaces the current executable.
+// It handles downloading artifacts, verifying SHA256 checksums, and safely swapping the binary.
 //
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - fs (afero.Fs): The provided fs data.
-//   - executablePath (string): The textual representation of executablepath.
-//   - release (*github.RepositoryRelease): The provided release data.
-//   - assetName (string): The human-readable or system name.
-//   - checksumsAssetName (string): The human-readable or system name.
+//   - ctx: context.Context. The context for the request.
+//   - fs: afero.Fs. The file system abstraction (usually afero.NewOsFs()).
+//   - executablePath: string. The path to the currently running executable to replace.
+//   - release: *github.RepositoryRelease. The release object to update to.
+//   - assetName: string. The name of the binary asset to download.
+//   - checksumsAssetName: string. The name of the checksums file asset.
 //
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - error: An error if any step of the update process fails (download, verify, replace).
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - Writes temporary files to disk.
+//   - Modifies the executable file on disk.
 func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath string, release *github.RepositoryRelease, assetName, checksumsAssetName string) error {
 	var asset *github.ReleaseAsset
 	for _, a := range release.Assets {

@@ -12,20 +12,18 @@ import (
 
 // PrintResults prints the doctor check results in a structured table to the provided writer.
 //
-// Summary: PrintResults prints the doctor check results in a structured table to the provided writer.
+// It formats the check results with status icons and alignment for readability.
 //
 // Parameters:
-//   - w (io.Writer): The provided w data.
-//   - results ([]CheckResult): The provided results data.
+//   - w: io.Writer. The writer to output the results to (e.g., os.Stdout). If nil, defaults to os.Stdout.
+//   - results: []CheckResult. The list of check results to print.
 //
 // Returns:
-//   - None.
 //
-// Errors:
-//   - None.
+//	None.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - Writes formatted text to the provided writer.
 func PrintResults(w io.Writer, results []CheckResult) {
 	if w == nil {
 		w = os.Stdout

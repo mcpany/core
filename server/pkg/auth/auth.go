@@ -22,17 +22,14 @@ import (
 type authContextKey string
 
 const (
-// UserContextKey is the context key for the user ID.
-//
-// Summary: UserContextKey is the context key for the user ID.
+	// UserContextKey is the context key for the user ID.
+// UserContextKey Defines the global constant or variable UserContextKey.
 	UserContextKey authContextKey = "user_id"
-// ProfileIDContextKey is the context key for the profile ID.
-//
-// Summary: ProfileIDContextKey is the context key for the profile ID.
+	// ProfileIDContextKey is the context key for the profile ID.
+// ProfileIDContextKey Defines the global constant or variable ProfileIDContextKey.
 	ProfileIDContextKey authContextKey = "profile_id"
-// APIKeyContextKey is the context key for the API Key.
-//
-// Summary: APIKeyContextKey is the context key for the API Key.
+	// APIKeyContextKey is the context key for the API Key.
+// APIKeyContextKey Defines the global constant or variable APIKeyContextKey.
 	APIKeyContextKey authContextKey = "api_key"
 )
 

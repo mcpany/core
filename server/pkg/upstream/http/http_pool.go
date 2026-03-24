@@ -6,8 +6,8 @@ package http //nolint:revive,nolintlint // Package name 'http' is intentional fo
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"crypto/x509"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -28,19 +28,11 @@ type httpPool struct {
 
 // Close closes the connection pool and the idle connections.
 //
-// Summary: Close closes the connection pool and the idle connections.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - error: An error if the pool cannot be closed.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - Closes idle network connections.
 func (p *httpPool) Close() error {
 	if err := p.Pool.Close(); err != nil {
 		return err
@@ -51,7 +43,25 @@ func (p *httpPool) Close() error {
 
 // NewHTTPPool creates a new connection pool for HTTP clients.
 //
-// Summary: NewHTTPPool creates a new connection pool for HTTP clients.
+// It is defined as a variable to allow for easy mocking in tests.
+//
+// Parameters:
+//   - minSize (int): The initial number of clients to create.
+//   - maxSize (int): The maximum number of clients the pool can hold.
+//   - idleTimeout (time.Duration): The duration after which an idle client may be closed.
+//   - config (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
+//
+// Returns:
+//   - pool.Pool[*client.HTTPClientWrapper]: The created pool.
+//   - error: An error if the pool cannot be created.
+//
+// Errors:
+//   - Returns error if TLS configuration is invalid (e.g., certificate files missing).
+//   - Returns error if pool creation fails.
+//
+// Side Effects:
+//   - Reads certificate files if mTLS is configured.
+//   - Initializes a new http.Transport and http.Client.
 var NewHTTPPool = func(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

@@ -302,6 +302,13 @@ type Application struct {
 	statsCacheMu sync.RWMutex
 	statsCache   map[string]statsCacheEntry
 
+	// seededTraces for debug/demo
+	seededTracesMu sync.RWMutex
+	seededTraces   []*Trace
+
+	// seededTraceSubs for broadcasting seeded traces to active websockets
+	seededTraceSubsMu sync.RWMutex
+	seededTraceSubs   map[chan *Trace]struct{}
 }
 
 type statsCacheEntry struct {
@@ -330,8 +337,9 @@ func NewApplication() *Application {
 		configFiles:     make(map[string]string),
 		startupCh:       make(chan struct{}),
 		startTime:       time.Now(),
-		MetricsGatherer:   prometheus.DefaultGatherer,
-		statsCache:        make(map[string]statsCacheEntry),
+		MetricsGatherer: prometheus.DefaultGatherer,
+		statsCache:      make(map[string]statsCacheEntry),
+		seededTraceSubs: make(map[chan *Trace]struct{}),
 	}
 }
 
@@ -378,11 +386,6 @@ func (a *Application) Run(opts RunOptions) error {
 		switch dbDriver {
 		case "", "sqlite":
 			dbPath := opts.DBPath
-			if dbPath == "" {
-				if _, ok := opts.Fs.(*afero.MemMapFs); ok {
-					dbPath = ":memory:"
-				}
-			}
 			if dbPath == "" {
 				dbPath = config.GlobalSettings().DBPath()
 			}
@@ -716,9 +719,6 @@ func (a *Application) Run(opts RunOptions) error {
 	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
 		// Register default providers
 		a.DiscoveryManager.RegisterProvider(&discovery.OllamaProvider{Endpoint: "http://localhost:11434"})
-		a.DiscoveryManager.RegisterProvider(&discovery.OpenAPIProvider{Endpoint: "http://localhost:8080/openapi.json"})
-		a.DiscoveryManager.RegisterProvider(&discovery.GRPCProvider{Endpoint: "localhost:50051"})
-		a.DiscoveryManager.RegisterProvider(&discovery.GraphQLProvider{Endpoint: "http://localhost:8080/graphql"})
 
 		discovered := a.DiscoveryManager.Run(opts.Ctx)
 		for _, svc := range discovered {
@@ -1043,8 +1043,9 @@ func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
 	}
 }
 
-//nolint:gocyclo // complexity is fine here
 // reconcileServices reconciles the service registry with the new configuration.
+//
+//nolint:gocyclo // complexity is fine here
 func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpAnyServerConfig) {
 	log := logging.GetLogger()
 	// Get current active services
@@ -2151,10 +2152,10 @@ func (a *Application) runServerMode(
 		if standardMiddlewares.Debugger != nil {
 			finalHandler = standardMiddlewares.Debugger.Handler(finalHandler)
 		}
-			// Recursive Context
-			if standardMiddlewares.RecursiveContext != nil {
-				finalHandler = standardMiddlewares.RecursiveContext.HandleContext(finalHandler)
-			}
+		// Recursive Context
+		if standardMiddlewares.RecursiveContext != nil {
+			finalHandler = standardMiddlewares.RecursiveContext.HandleContext(finalHandler)
+		}
 	}
 
 	// Middleware order: SecurityHeaders -> CORS -> CSRF -> JSONRPCCompliance -> Recovery -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)

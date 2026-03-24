@@ -47,9 +47,7 @@ const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
 
-// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
-//
-// Summary: HealthStatusUnhealthy indicates that a service is in an unhealthy state.
+	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
 	HealthStatusUnhealthy = "unhealthy"
 
 	gitCommand = "git"
@@ -385,38 +383,18 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 
 // Tool returns the protobuf definition of the gRPC tool.
 //
-// Summary: Tool returns the protobuf definition of the gRPC tool.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - *v1.Tool: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *v1.Tool: The underlying protobuf definition.
 func (t *GRPCTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP-compliant tool definition.
 //
-// Summary: MCPTool returns the MCP-compliant tool definition.
-//
-// Parameters:
-//   - None.
+// It lazily converts the internal protobuf definition to the MCP format on first access.
 //
 // Returns:
-//   - *mcp.Tool: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *mcp.Tool: The MCP tool definition.
 func (t *GRPCTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -430,19 +408,8 @@ func (t *GRPCTool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the gRPC tool.
 //
-// Summary: GetCacheConfig returns the cache configuration for the gRPC tool.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - *configv1.CacheConfig: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *configv1.CacheConfig: The cache configuration, if any.
 func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -689,38 +656,18 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 
 // Tool returns the protobuf definition of the HTTP tool.
 //
-// Summary: Tool returns the protobuf definition of the HTTP tool.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - *v1.Tool: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *v1.Tool: The underlying protobuf definition.
 func (t *HTTPTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP-compliant tool definition.
 //
-// Summary: MCPTool returns the MCP-compliant tool definition.
-//
-// Parameters:
-//   - None.
+// It lazily converts the internal protobuf definition to the MCP format on first access.
 //
 // Returns:
-//   - *mcp.Tool: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *mcp.Tool: The MCP tool definition.
 func (t *HTTPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -734,19 +681,8 @@ func (t *HTTPTool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the HTTP tool.
 //
-// Summary: GetCacheConfig returns the cache configuration for the HTTP tool.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - *configv1.CacheConfig: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *configv1.CacheConfig: The cache configuration, if any.
 func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1427,38 +1363,18 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 
 // Tool returns the protobuf definition of the MCP tool.
 //
-// Summary: Tool returns the protobuf definition of the MCP tool.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - *v1.Tool: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *v1.Tool: The underlying protobuf definition.
 func (t *MCPTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP-compliant tool definition.
 //
-// Summary: MCPTool returns the MCP-compliant tool definition.
-//
-// Parameters:
-//   - None.
+// It lazily converts the internal protobuf definition to the MCP format on first access.
 //
 // Returns:
-//   - *mcp.Tool: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *mcp.Tool: The MCP tool definition.
 func (t *MCPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1472,19 +1388,8 @@ func (t *MCPTool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the MCP tool.
 //
-// Summary: GetCacheConfig returns the cache configuration for the MCP tool.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - *configv1.CacheConfig: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *configv1.CacheConfig: The cache configuration, if any.
 func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1700,38 +1605,18 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 
 // Tool returns the protobuf definition of the OpenAPI tool.
 //
-// Summary: Tool returns the protobuf definition of the OpenAPI tool.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - *v1.Tool: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *v1.Tool: The underlying protobuf definition.
 func (t *OpenAPITool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP-compliant tool definition.
 //
-// Summary: MCPTool returns the MCP-compliant tool definition.
-//
-// Parameters:
-//   - None.
+// It lazily converts the internal protobuf definition to the MCP format on first access.
 //
 // Returns:
-//   - *mcp.Tool: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *mcp.Tool: The MCP tool definition.
 func (t *OpenAPITool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1745,19 +1630,8 @@ func (t *OpenAPITool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the OpenAPI tool.
 //
-// Summary: GetCacheConfig returns the cache configuration for the OpenAPI tool.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - *configv1.CacheConfig: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *configv1.CacheConfig: The cache configuration, if any.
 func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -2090,38 +1964,18 @@ func NewLocalCommandTool(
 
 // Tool returns the protobuf definition of the command-line tool.
 //
-// Summary: Tool returns the protobuf definition of the command-line tool.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - *v1.Tool: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *v1.Tool: The underlying protobuf definition.
 func (t *LocalCommandTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP-compliant tool definition.
 //
-// Summary: MCPTool returns the MCP-compliant tool definition.
-//
-// Parameters:
-//   - None.
+// It lazily converts the internal protobuf definition to the MCP format on first access.
 //
 // Returns:
-//   - *mcp.Tool: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *mcp.Tool: The MCP tool definition.
 func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -2135,19 +1989,8 @@ func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the command-line tool.
 //
-// Summary: GetCacheConfig returns the cache configuration for the command-line tool.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - *configv1.CacheConfig: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *configv1.CacheConfig: The cache configuration, if any.
 func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil
@@ -2491,38 +2334,18 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 // Tool returns the protobuf definition of the command-line tool.
 //
-// Summary: Tool returns the protobuf definition of the command-line tool.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - *v1.Tool: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *v1.Tool: The underlying protobuf definition.
 func (t *CommandTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP-compliant tool definition.
 //
-// Summary: MCPTool returns the MCP-compliant tool definition.
-//
-// Parameters:
-//   - None.
+// It lazily converts the internal protobuf definition to the MCP format on first access.
 //
 // Returns:
-//   - *mcp.Tool: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *mcp.Tool: The MCP tool definition.
 func (t *CommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -2536,19 +2359,8 @@ func (t *CommandTool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the command-line tool.
 //
-// Summary: GetCacheConfig returns the cache configuration for the command-line tool.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - *configv1.CacheConfig: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *configv1.CacheConfig: The cache configuration, if any.
 func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil
@@ -2911,20 +2723,12 @@ type threadSafeBuffer struct {
 
 // Write writes bytes to the buffer in a thread-safe manner.
 //
-// Summary: Write writes bytes to the buffer in a thread-safe manner.
-//
 // Parameters:
-//   - p ([]byte): The provided p data.
+//   - p: The slice of bytes to write.
 //
 // Returns:
-//   - n (int): The calculated numeric value.
-//   - err (error): An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - n: The number of bytes written.
+//   - err: An error if one occurred.
 func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()
@@ -2933,19 +2737,8 @@ func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 
 // String returns the contents of the buffer as a string in a thread-safe manner.
 //
-// Summary: String returns the contents of the buffer as a string in a thread-safe manner.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - string: The resulting text.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - string: The contents of the buffer.
 func (tsb *threadSafeBuffer) String() string {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()

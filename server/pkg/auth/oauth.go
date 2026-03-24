@@ -13,30 +13,24 @@ import (
 )
 
 // OAuth2Authenticator implements the Authenticator interface for OAuth2-based
-//
-// Summary: OAuth2Authenticator implements the Authenticator interface for OAuth2-based
+// authentication using OpenID Connect (OIDC). It validates JWTs (JSON Web
+// Tokens) presented in the HTTP Authorization header.
 type OAuth2Authenticator struct {
 	verifier  *oidc.IDTokenVerifier
 	audiences []string
 }
 
 // NewOAuth2Authenticator creates a new OAuth2Authenticator with the provided
-//
-// Summary: NewOAuth2Authenticator creates a new OAuth2Authenticator with the provided
+// configuration. It initializes the OIDC provider and creates a verifier for
+// validating ID tokens.
 //
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - config (*OAuth2Config): The configuration settings.
+//   - ctx: The context for the OIDC provider initialization.
+//   - config: The OAuth2 configuration, including the issuer URL and client ID.
 //
 // Returns:
-//   - *OAuth2Authenticator: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - A new OAuth2Authenticator.
+//   - An error if the OIDC provider cannot be initialized.
 func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2Authenticator, error) {
 	provider, err := oidc.NewProvider(ctx, config.IssuerURL)
 	if err != nil {
@@ -66,22 +60,16 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 }
 
 // Authenticate validates the JWT from the Authorization header of the request.
-//
-// Summary: Authenticate validates the JWT from the Authorization header of the request.
+// It checks for a "Bearer" token and verifies its signature, expiration, and
+// claims against the OIDC provider.
 //
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - r (*http.Request): The provided r data.
+//   - ctx: The request context.
+//   - r: The HTTP request to authenticate.
 //
 // Returns:
-//   - context.Context: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - The context with the user's identity (email) on success.
+//   - An error if authentication fails.
 func (a *OAuth2Authenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {

@@ -11,27 +11,24 @@ import (
 )
 
 // WebsocketClientWrapper wraps a *websocket.Conn to adapt it for use in a
-//
-// Summary: WebsocketClientWrapper wraps a *websocket.Conn to adapt it for use in a
+// connection pool, implementing the pool.ClosableClient interface.
 type WebsocketClientWrapper struct {
 	Conn *websocket.Conn
 }
 
 // IsHealthy checks if the underlying WebSocket connection is still active. It sends a ping message with a short deadline to verify the connection's liveness.
 //
-// Summary: IsHealthy checks if the underlying WebSocket connection is still active. It sends a ping message with a short deadline to verify the connection's liveness.
-//
 // Parameters:
-//   - _ (context.Context): The provided _ data.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - bool: True if successful or valid, false otherwise.
+//   - bool: True if successful, false otherwise.
 //
 // Errors:
-//   - None.
+//   - None
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None
 func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 	// Send a ping to check the connection.
 	// A short deadline is used to prevent blocking.
@@ -41,19 +38,17 @@ func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 
 // Close terminates the underlying WebSocket connection. Returns an error if the operation fails.
 //
-// Summary: Close terminates the underlying WebSocket connection. Returns an error if the operation fails.
-//
 // Parameters:
-//   - None.
+//   - None
 //
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None
 func (w *WebsocketClientWrapper) Close() error {
 	return w.Conn.Close()
 }

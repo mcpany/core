@@ -13,9 +13,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/alexliesenfeld/health"
 	"github.com/mcpany/core/server/pkg/auth"
 	mcphealth "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -31,8 +31,8 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for services that
-//
-// Summary: Upstream implements the upstream.Upstream interface for services that
+// are exposed via a WebSocket connection. It manages a connection pool and
+// registers tools based on the service configuration.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
@@ -42,19 +42,17 @@ type Upstream struct {
 
 // CheckHealth performs a health check on the upstream service.
 //
-// Summary: CheckHealth performs a health check on the upstream service.
-//
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
+//   - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -71,20 +69,13 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 }
 
 // Shutdown gracefully terminates the WebSocket upstream service by shutting down
-//
-// Summary: Shutdown gracefully terminates the WebSocket upstream service by shutting down
+// the associated connection pool.
 //
 // Parameters:
-//   - _ (context.Context): The provided _ data.
+//   - ctx: The context for the shutdown operation.
 //
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - error: An error if the shutdown operation fails, or nil on success.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -101,19 +92,11 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of WebsocketUpstream.
 //
-// Summary: NewUpstream creates a new instance of WebsocketUpstream.
-//
 // Parameters:
-//   - poolManager (*pool.Manager): The provided poolmanager data.
+//   - poolManager: The connection pool manager to be used for managing WebSocket connections.
 //
 // Returns:
-//   - upstream.Upstream: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - upstream.Upstream: A new Upstream instance for WebSocket services.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,
@@ -121,28 +104,22 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 }
 
 // Register processes the configuration for a WebSocket service. It creates a
-//
-// Summary: Register processes the configuration for a WebSocket service. It creates a
+// connection pool and registers tools for each call definition specified in the
+// configuration.
 //
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The provided serviceconfig data.
-//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
-//   - promptManager (prompt.ManagerInterface): The provided promptmanager data.
-//   - resourceManager (resource.ManagerInterface): The provided resourcemanager data.
-//   - isReload (bool): A flag indicating whether isreload is enabled.
+//   - ctx: The context for the registration process.
+//   - serviceConfig: The configuration for the upstream service.
+//   - toolManager: The manager where discovered tools will be registered.
+//   - promptManager: The manager where discovered prompts will be registered.
+//   - resourceManager: The manager where discovered resources will be registered.
+//   - isReload: Indicates whether this is an initial registration or a reload.
 //
 // Returns:
-//   - string: The resulting text.
-//   - []*configv1.ToolDefinition: The resulting object or data structure.
-//   - []*configv1.ResourceDefinition: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - string: A unique service key.
+//   - []*configv1.ToolDefinition: A list of discovered tool definitions.
+//   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
+//   - error: An error if registration fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

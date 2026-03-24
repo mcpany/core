@@ -11,8 +11,7 @@ import (
 )
 
 // HTTPCORSMiddleware handles CORS for HTTP endpoints.
-//
-// Summary: HTTPCORSMiddleware handles CORS for HTTP endpoints.
+// It is thread-safe and supports dynamic updates.
 type HTTPCORSMiddleware struct {
 	mu              sync.RWMutex
 	allowedOrigins  map[string]struct{}

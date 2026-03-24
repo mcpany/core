@@ -15,8 +15,6 @@ import (
 )
 
 // DockerClient interface matching the subset of docker client methods used.
-//
-// Summary: DockerClient interface matching the subset of docker client methods used.
 type DockerClient interface {
 	// ImagePull requests the docker host to pull an image from a remote registry.
 	//

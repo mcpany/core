@@ -16,35 +16,29 @@ import (
 )
 
 // Seeder seeds the database with service templates.
-//
-// Summary: Seeder seeds the database with service templates.
 type Seeder struct {
 	Store       storage.Storage
 	ExamplesDir string
 }
 
 // ConfigFile represents the structure of the config.yaml in examples.
-//
-// Summary: ConfigFile represents the structure of the config.yaml in examples.
 type ConfigFile struct {
 	UpstreamServices []map[string]any `yaml:"upstream_services"`
 }
 
 // Seed walks the examples directory and saves service templates.
 //
-// Summary: Seed walks the examples directory and saves service templates.
-//
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
+//   - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None
 func (s *Seeder) Seed(ctx context.Context) error {
 	entries, err := os.ReadDir(s.ExamplesDir)
 	if err != nil {

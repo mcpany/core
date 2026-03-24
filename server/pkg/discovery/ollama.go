@@ -18,8 +18,6 @@ import (
 )
 
 // Provider defines the interface for auto-discovering local services.
-//
-// Summary: Provider defines the interface for auto-discovering local services.
 type Provider interface {
 	// Name returns the name of the discovery provider.
 	Name() string
@@ -28,8 +26,7 @@ type Provider interface {
 }
 
 // OllamaProvider discovers local Ollama instances.
-//
-// Summary: OllamaProvider discovers local Ollama instances.
+// OllamaProvider is a provider that discovers local Ollama instances.
 type OllamaProvider struct {
 	Endpoint   string // e.g., "http://localhost:11434"
 	client     *http.Client
@@ -38,39 +35,35 @@ type OllamaProvider struct {
 
 // Name returns the name of the provider.
 //
-// Summary: Name returns the name of the provider.
-//
 // Parameters:
-//   - None.
+//   - None
 //
 // Returns:
-//   - string: The resulting text.
+//   - string: The resulting string.
 //
 // Errors:
-//   - None.
+//   - None
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None
 func (p *OllamaProvider) Name() string {
 	return "ollama"
 }
 
 // Discover attempts to find local Ollama instances and return them as tools.
 //
-// Summary: Discover attempts to find local Ollama instances and return them as tools.
-//
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
+//   - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - []*configv1.UpstreamServiceConfig: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
+//   - []*configv1.UpstreamServiceConfig: The resulting []*configv1.UpstreamServiceConfig.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None
 func (p *OllamaProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	// ⚡ BOLT: Reuse http.Client to avoid socket exhaustion.
 	// Randomized Selection from Top 5 High-Impact Targets

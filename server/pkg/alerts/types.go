@@ -6,46 +6,34 @@ package alerts
 import "time"
 
 // Severity represents the severity level of an alert.
-//
-// Summary: Severity represents the severity level of an alert.
 type Severity string
 
 // Status represents the status of an alert.
-//
-// Summary: Status represents the status of an alert.
 type Status string
 
 const (
-// SeverityCritical indicates a critical issue.
-//
-// Summary: SeverityCritical indicates a critical issue.
+	// SeverityCritical indicates a critical issue.
+// SeverityCritical Defines the global constant or variable SeverityCritical.
 	SeverityCritical Severity = "critical"
-// SeverityWarning indicates a warning.
-//
-// Summary: SeverityWarning indicates a warning.
+	// SeverityWarning indicates a warning.
+// SeverityWarning Defines the global constant or variable SeverityWarning.
 	SeverityWarning Severity = "warning"
-// SeverityInfo indicates an informational alert.
-//
-// Summary: SeverityInfo indicates an informational alert.
+	// SeverityInfo indicates an informational alert.
+// SeverityInfo Defines the global constant or variable SeverityInfo.
 	SeverityInfo Severity = "info"
 
-// StatusActive indicates the alert is currently active.
-//
-// Summary: StatusActive indicates the alert is currently active.
+	// StatusActive indicates the alert is currently active.
+// StatusActive Defines the global constant or variable StatusActive.
 	StatusActive Status = "active"
-// StatusAcknowledged indicates the alert has been acknowledged.
-//
-// Summary: StatusAcknowledged indicates the alert has been acknowledged.
+	// StatusAcknowledged indicates the alert has been acknowledged.
+// StatusAcknowledged Defines the global constant or variable StatusAcknowledged.
 	StatusAcknowledged Status = "acknowledged"
-// StatusResolved indicates the alert has been resolved.
-//
-// Summary: StatusResolved indicates the alert has been resolved.
+	// StatusResolved indicates the alert has been resolved.
+// StatusResolved Defines the global constant or variable StatusResolved.
 	StatusResolved Status = "resolved"
 )
 
 // Alert represents a system alert.
-//
-// Summary: Alert represents a system alert.
 type Alert struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
@@ -58,8 +46,6 @@ type Alert struct {
 }
 
 // AlertRule defines a condition for triggering an alert.
-//
-// Summary: AlertRule defines a condition for triggering an alert.
 type AlertRule struct {
 	ID          string    `json:"id"`
 	Name        string    `json:"name"`
@@ -73,8 +59,6 @@ type AlertRule struct {
 }
 
 // AlertStats represents aggregated statistics for alerts.
-//
-// Summary: AlertStats represents aggregated statistics for alerts.
 type AlertStats struct {
 	ActiveCritical int    `json:"activeCritical"`
 	ActiveWarning  int    `json:"activeWarning"`

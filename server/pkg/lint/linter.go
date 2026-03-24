@@ -16,39 +16,24 @@ import (
 
 // Severity indicates the importance of a linting result.
 //
-// Summary: Severity indicates the importance of a linting result.
+// It is used to categorize findings based on their impact and urgency.
 type Severity int
 
 const (
-// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
-//
-// Summary: Error indicates a critical issue that must be fixed for the system to function correctly or securely.
+	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
 	Error Severity = iota
-// Warning indicates a potential issue or best practice violation that should be addressed.
-//
-// Summary: Warning indicates a potential issue or best practice violation that should be addressed.
+	// Warning indicates a potential issue or best practice violation that should be addressed.
 	Warning
-// Info indicates a suggestion or informational message for optimization or clarity.
-//
-// Summary: Info indicates a suggestion or informational message for optimization or clarity.
+	// Info indicates a suggestion or informational message for optimization or clarity.
 	Info
 )
 
 // String returns the string representation of the severity.
 //
-// Summary: String returns the string representation of the severity.
-//
-// Parameters:
-//   - None.
+// It converts the Severity enum to its string counterpart (ERROR, WARNING, INFO).
 //
 // Returns:
-//   - string: The resulting text.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - string: The string representation of the severity.
 func (s Severity) String() string {
 	switch s {
 	case Error:
@@ -64,7 +49,7 @@ func (s Severity) String() string {
 
 // Result represents a single linting finding.
 //
-// Summary: Result represents a single linting finding.
+// It encapsulates all details about a detected issue, including its severity, location, and description.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -78,19 +63,10 @@ type Result struct {
 
 // String returns the string representation of the result.
 //
-// Summary: String returns the string representation of the result.
-//
-// Parameters:
-//   - None.
+// It formats the result into a human-readable string suitable for CLI output.
 //
 // Returns:
-//   - string: The resulting text.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - string: A formatted string containing severity, service, path, and message.
 func (r Result) String() string {
 	pathStr := ""
 	if r.Path != "" {
@@ -105,46 +81,33 @@ func (r Result) String() string {
 
 // Linter performs static analysis on the configuration.
 //
-// Summary: Linter performs static analysis on the configuration.
+// It holds the configuration to be analyzed and provides methods to execute various checks.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
 
 // NewLinter creates a new Linter instance.
 //
-// Summary: NewLinter creates a new Linter instance.
-//
 // Parameters:
-//   - cfg (*configv1.McpAnyServerConfig): The configuration settings.
+//   - cfg: *configv1.McpAnyServerConfig. The server configuration to be linted.
 //
 // Returns:
-//   - *Linter: The calculated numeric value.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *Linter: A new Linter instance initialized with the provided configuration.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
 
 // Run executes all linting checks.
 //
-// Summary: Run executes all linting checks.
+// It aggregates results from multiple check categories including standard validation,
+// secret usage, shell injection risks, insecure HTTP, and cache settings.
 //
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
+//   - ctx: context.Context. The context for the request (currently unused but reserved for future async checks).
 //
 // Returns:
-//   - []Result: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - []Result: A list of linting findings.
+//   - error: An error if the linting process encounters a fatal issue (currently always nil).
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// Pre-allocate to avoid performance warnings, though initial size is a guess.
 	results := make([]Result, 0, 10)

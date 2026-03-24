@@ -15,8 +15,6 @@ import (
 )
 
 // MilvusClient implements VectorClient for Milvus.
-//
-// Summary: MilvusClient implements VectorClient for Milvus.
 type MilvusClient struct {
 	config *configv1.MilvusVectorDB
 	client client.Client
@@ -24,20 +22,18 @@ type MilvusClient struct {
 
 // NewMilvusClient creates a new Milvus client.
 //
-// Summary: NewMilvusClient creates a new Milvus client.
-//
 // Parameters:
-//   - config (*configv1.MilvusVectorDB): The configuration settings.
+//   - config (*configv1.MilvusVectorDB): The parameter.
 //
 // Returns:
-//   - *MilvusClient: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
+//   - *MilvusClient: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 	if config.GetAddress() == "" {
 		return nil, fmt.Errorf("address is required for Milvus")
@@ -80,24 +76,18 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 
 // Query searches for similar vectors.
 //
-// Summary: Query searches for similar vectors.
-//
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - vector ([]float32): The numeric value for vector.
-//   - topK (int64): The numeric value for topk.
-//   - filter (map[string]interface{}): The textual representation of filter.
-//   - namespace (string): The human-readable or system name.
+//   - ctx (context.Context): The context for the request.
+//   - vector ([]float32): The parameter.
+//   - topK (int64): The parameter.
+//   - filter (map[string]interface{}): The parameter.
+//   - namespace (string): The parameter.
 //
 // Returns:
-//   - map[string]interface{}: The resulting text.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - (map[string]interface: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	// Milvus uses partitions as namespaces usually, or just metadata fields.
 	// Assuming namespace maps to partition names if provided.
@@ -211,22 +201,16 @@ func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, 
 
 // Upsert inserts or updates vectors.
 //
-// Summary: Upsert inserts or updates vectors.
-//
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - vectors ([]map[string]interface{}): The textual representation of vectors.
-//   - namespace (string): The human-readable or system name.
+//   - ctx (context.Context): The context for the request.
+//   - vectors ([]map[string]interface{}): The parameter.
+//   - namespace (string): The parameter.
 //
 // Returns:
-//   - map[string]interface{}: The resulting text.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - (map[string]interface: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func (c *MilvusClient) Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	// Milvus Upsert (v2.3+)
 	if len(vectors) == 0 {
@@ -432,23 +416,17 @@ func fillMetadataColumn(col entity.Column, i int, val interface{}) {
 
 // Delete removes vectors.
 //
-// Summary: Delete removes vectors.
-//
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - ids ([]string): The textual representation of ids.
-//   - namespace (string): The human-readable or system name.
-//   - filter (map[string]interface{}): The textual representation of filter.
+//   - ctx (context.Context): The context for the request.
+//   - ids ([]string): The parameter.
+//   - namespace (string): The parameter.
+//   - filter (map[string]interface{}): The parameter.
 //
 // Returns:
-//   - map[string]interface{}: The resulting text.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - (map[string]interface: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error) {
 	// Construct expression
 	var expr string
@@ -509,21 +487,15 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 
 // DescribeIndexStats returns statistics about the index.
 //
-// Summary: DescribeIndexStats returns statistics about the index.
-//
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - _ (map[string]interface{}): The textual representation of _.
+//   - ctx (context.Context): The context for the request.
+//   - _ (map[string]interface{}): The parameter.
 //
 // Returns:
-//   - map[string]interface{}: The resulting text.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - (map[string]interface: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func (c *MilvusClient) DescribeIndexStats(ctx context.Context, _ map[string]interface{}) (map[string]interface{}, error) {
 	coll, err := c.client.DescribeCollection(ctx, c.config.GetCollectionName())
 	if err != nil {

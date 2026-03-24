@@ -25,31 +25,23 @@ import (
 
 // Status represents the status of a check.
 //
-// Summary: Status represents the status of a check.
+// It is an enumerated string type used to indicate the outcome of a health or connectivity check.
 type Status string
 
 const (
-// StatusOk indicates the check passed successfully.
-//
-// Summary: StatusOk indicates the check passed successfully.
+	// StatusOk indicates the check passed successfully.
 	StatusOk Status = "OK"
-// StatusWarning indicates a partial failure or non-critical issue that should be investigated.
-//
-// Summary: StatusWarning indicates a partial failure or non-critical issue that should be investigated.
+	// StatusWarning indicates a partial failure or non-critical issue that should be investigated.
 	StatusWarning Status = "WARNING"
-// StatusError indicates a critical failure that prevents the service from functioning correctly.
-//
-// Summary: StatusError indicates a critical failure that prevents the service from functioning correctly.
+	// StatusError indicates a critical failure that prevents the service from functioning correctly.
 	StatusError Status = "ERROR"
-// StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
-//
-// Summary: StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
+	// StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
 	StatusSkipped Status = "SKIPPED"
 )
 
 // CheckResult represents the result of a single service check.
 //
-// Summary: CheckResult represents the result of a single service check.
+// It aggregates the status, any message, and potential error encountered during the check.
 type CheckResult struct {
 	// ServiceName is the name of the service being checked.
 	ServiceName string
@@ -63,20 +55,18 @@ type CheckResult struct {
 
 // RunChecks performs connectivity and health checks on the provided configuration.
 //
-// Summary: RunChecks performs connectivity and health checks on the provided configuration.
+// It iterates through all upstream services defined in the configuration and executes
+// the appropriate check logic for each service type.
 //
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - config (*configv1.McpAnyServerConfig): The configuration settings.
+//   - ctx: context.Context. The context for the request, used for timeouts and cancellation.
+//   - config: *configv1.McpAnyServerConfig. The server configuration containing upstream service definitions.
 //
 // Returns:
-//   - []CheckResult: The resulting object or data structure.
-//
-// Errors:
-//   - None.
+//   - []CheckResult: A slice of results for each checked service.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - Performs network I/O to connect to upstream services.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
 	// Using 'services' variable to support existing loop
 	services := config.GetUpstreamServices()
@@ -103,20 +93,18 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 
 // CheckService performs a connectivity check for a single service.
 //
-// Summary: CheckService performs a connectivity check for a single service.
+// It dispatches the check to the specific handler based on the service type (HTTP, gRPC, etc.)
+// and handles upstream authentication checks if configured.
 //
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - service (*configv1.UpstreamServiceConfig): The provided service data.
+//   - ctx: context.Context. The context for the request.
+//   - service: *configv1.UpstreamServiceConfig. The configuration of the service to check.
 //
 // Returns:
-//   - CheckResult: The resulting object or data structure.
-//
-// Errors:
-//   - None.
+//   - CheckResult: The result of the connectivity check.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - Performs network I/O to connect to the upstream service.
 func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) CheckResult {
 	// 5 second timeout for checks
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)

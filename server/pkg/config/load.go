@@ -11,7 +11,6 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/validation"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -52,13 +51,6 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 	default:
 		log.Error("Unknown binary type", "binary_type", binaryType)
 		return nil, fmt.Errorf("unknown binary type: %s", binaryType)
-	}
-
-	// Apply allowed_file_paths from global_settings BEFORE validation so that
-	// cert paths (and other file references) specified alongside allowed_file_paths
-	// in the same config file pass the IsAllowedPath check during Validate.
-	if gs := fileConfig.GetGlobalSettings(); gs != nil && len(gs.GetAllowedFilePaths()) > 0 {
-		validation.SetAllowedPaths(gs.GetAllowedFilePaths())
 	}
 
 	validationErrors := Validate(ctx, fileConfig, bt)

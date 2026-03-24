@@ -27,8 +27,10 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for services that
+// are exposed as command-line tools.
 //
-// Summary: Upstream implements the upstream.Upstream interface for services that
+// It discovers and registers tools based on a list of commands defined in the
+// service configuration.
 type Upstream struct {
 	mu      sync.Mutex
 	checker health.Checker
@@ -36,19 +38,14 @@ type Upstream struct {
 
 // Shutdown implements the upstream.Upstream interface.
 //
-// Summary: Shutdown implements the upstream.Upstream interface.
-//
 // Parameters:
-//   - _ (context.Context): The provided _ data.
+//   - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - error: Always returns nil.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - Stops the health checker.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -61,46 +58,35 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of CommandUpstream.
 //
-// Summary: NewUpstream creates a new instance of CommandUpstream.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - upstream.Upstream: The resulting object or data structure.
-//
-// Errors:
-//   - None.
+//   - upstream.Upstream: A new instance of the command upstream.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
 // Register processes the configuration for a command-line service, creates a
-//
-// Summary: Register processes the configuration for a command-line service, creates a
+// new tool for each defined command, and registers them with the tool manager.
 //
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The provided serviceconfig data.
-//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
-//   - promptManager (prompt.ManagerInterface): The provided promptmanager data.
-//   - resourceManager (resource.ManagerInterface): The provided resourcemanager data.
-//   - isReload (bool): A flag indicating whether isreload is enabled.
+//   - ctx (context.Context): The context for the registration process.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
+//   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
+//   - promptManager (prompt.ManagerInterface): The manager where discovered prompts will be registered.
+//   - resourceManager (resource.ManagerInterface): The manager where discovered resources will be registered.
+//   - isReload (bool): Indicates whether this is a configuration reload.
 //
 // Returns:
-//   - string: The resulting text.
-//   - []*configv1.ToolDefinition: The resulting object or data structure.
-//   - []*configv1.ResourceDefinition: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - string: The unique service ID.
+//   - []*configv1.ToolDefinition: A list of registered tool definitions.
+//   - []*configv1.ResourceDefinition: A list of registered resource definitions.
+//   - error: An error if registration fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - Starts a health checker for the service.
+//   - Registers tools and prompts with their respective managers.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

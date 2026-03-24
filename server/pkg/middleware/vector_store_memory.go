@@ -11,8 +11,6 @@ import (
 )
 
 // SimpleVectorStore is a naive in-memory vector store.
-//
-// Summary: SimpleVectorStore is a naive in-memory vector store.
 type SimpleVectorStore struct {
 	mu         sync.RWMutex
 	items      map[string][]*VectorEntry
@@ -20,8 +18,6 @@ type SimpleVectorStore struct {
 }
 
 // VectorEntry represents a single entry in the vector store.
-//
-// Summary: VectorEntry represents a single entry in the vector store.
 type VectorEntry struct {
 	// Vector is the embedding vector.
 	Vector []float32
@@ -34,20 +30,10 @@ type VectorEntry struct {
 }
 
 // NewSimpleVectorStore creates a new SimpleVectorStore.
-//
-// Summary: NewSimpleVectorStore creates a new SimpleVectorStore.
-//
-// Parameters:
-//   - None.
+// It initializes the store with a default configuration.
 //
 // Returns:
-//   - *SimpleVectorStore: The resulting object or data structure.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - *SimpleVectorStore: A pointer to the newly created SimpleVectorStore.
 func NewSimpleVectorStore() *SimpleVectorStore {
 	return &SimpleVectorStore{
 		items:      make(map[string][]*VectorEntry),
@@ -56,24 +42,16 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 }
 
 // Add adds a new entry to the vector store.
-//
-// Summary: Add adds a new entry to the vector store.
+// It evicts the oldest entry if the store exceeds the maximum number of entries for the key.
 //
 // Parameters:
-//   - _ (context.Context): The provided _ data.
-//   - key (string): The textual representation of key.
-//   - vector ([]float32): The numeric value for vector.
-//   - result (any): The provided result data.
-//   - ttl (time.Duration): The provided ttl data.
+//   - key: The key associated with the entry.
+//   - vector: The embedding vector.
+//   - result: The result to cache.
+//   - ttl: The time-to-live for the entry.
 //
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - error: An error if the operation fails (currently always nil).
 func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -101,24 +79,16 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 }
 
 // Search searches for the most similar entry in the vector store for the given key and query vector.
-//
-// Summary: Search searches for the most similar entry in the vector store for the given key and query vector.
+// It returns the result, the similarity score, and a boolean indicating if a match was found.
 //
 // Parameters:
-//   - _ (context.Context): The provided _ data.
-//   - key (string): The textual representation of key.
-//   - query ([]float32): The numeric value for query.
+//   - key: The key to search for.
+//   - query: The query vector.
 //
 // Returns:
-//   - any: The resulting object or data structure.
-//   - float32: The calculated numeric value.
-//   - bool: True if successful or valid, false otherwise.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - any: The cached result if found.
+//   - float32: The similarity score (cosine similarity).
+//   - bool: True if a match was found, false otherwise.
 func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float32) (any, float32, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -156,20 +126,8 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 
 // Prune removes expired entries from the vector store for the given key.
 //
-// Summary: Prune removes expired entries from the vector store for the given key.
-//
 // Parameters:
-//   - _ (context.Context): The provided _ data.
-//   - key (string): The textual representation of key.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - key: The key to prune entries for.
 func (s *SimpleVectorStore) Prune(_ context.Context, key string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

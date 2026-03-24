@@ -33,19 +33,11 @@ type poolWithChecker[T pool.ClosableClient] struct {
 
 // Close stops the health checker and closes the underlying pool.
 //
-// Summary: Close stops the health checker and closes the underlying pool.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - error: An error if the operation fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - Stops the health checker.
 func (p *poolWithChecker[T]) Close() error {
 	if p.checker != nil {
 		p.checker.Stop()
@@ -55,26 +47,29 @@ func (p *poolWithChecker[T]) Close() error {
 
 // NewGrpcPool creates a new connection pool for gRPC clients.
 //
-// Summary: NewGrpcPool creates a new connection pool for gRPC clients.
+// It configures the pool with a factory function that establishes new gRPC connections with the
+// specified address, dialer, and credentials.
 //
 // Parameters:
-//   - minSize (int): The numeric value for minsize.
-//   - maxSize (int): The numeric value for maxsize.
-//   - idleTimeout (time.Duration): The provided idletimeout data.
-//   - dialer (func(context.Context, string) (net.Conn, error)): The textual representation of dialer.
-//   - creds (credentials.PerRPCCredentials): The provided creds data.
-//   - config (*configv1.UpstreamServiceConfig): The configuration settings.
-//   - disableHealthCheck (bool): A flag indicating whether disablehealthcheck is enabled.
+//   - minSize (int): The initial number of connections to create.
+//   - maxSize (int): The maximum number of connections the pool can hold.
+//   - idleTimeout (time.Duration): The duration after which an idle connection may be closed.
+//   - dialer (func(context.Context, string) (net.Conn, error)): An optional custom dialer.
+//   - creds (credentials.PerRPCCredentials): The per-RPC credentials to be used for authentication.
+//   - config (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
+//   - disableHealthCheck (bool): Whether to disable the health check.
 //
 // Returns:
-//   - pool.Pool[*client.GrpcClientWrapper]: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
+//   - pool.Pool[*client.GrpcClientWrapper]: The created pool.
+//   - error: An error if the pool cannot be created.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns error if config is nil or invalid.
+//   - Returns error if TLS configuration is invalid.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - Reads certificate files if mTLS is configured.
+//   - Initializes gRPC clients.
 func NewGrpcPool(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

@@ -12,8 +12,8 @@ import (
 	"fmt"
 	"sync"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/alexliesenfeld/health"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	mcphealth "github.com/mcpany/core/server/pkg/health"
@@ -32,8 +32,7 @@ import (
 type sanitizer func(string) (string, error)
 
 // Upstream implements the upstream.Upstream interface for services that
-//
-// Summary: Upstream implements the upstream.Upstream interface for services that
+// communicate over WebRTC data channels.
 type Upstream struct {
 	poolManager       *pool.Manager
 	toolNameSanitizer sanitizer
@@ -43,19 +42,17 @@ type Upstream struct {
 
 // CheckHealth performs a health check on the upstream service.
 //
-// Summary: CheckHealth performs a health check on the upstream service.
-//
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
+//   - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -72,20 +69,19 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 }
 
 // Shutdown is a no-op for the WebRTC upstream, as connections are transient
-//
-// Summary: Shutdown is a no-op for the WebRTC upstream, as connections are transient
+// and not managed by a persistent pool.
 //
 // Parameters:
-//   - _ (context.Context): The provided _ data.
+//   - _ (context.Context): The parameter.
 //
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -99,19 +95,14 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of WebrtcUpstream.
 //
-// Summary: NewUpstream creates a new instance of WebrtcUpstream.
-//
 // Parameters:
-//   - poolManager (*pool.Manager): The provided poolmanager data.
+//   - poolManager (*pool.Manager): The parameter.
 //
 // Returns:
-//   - upstream.Upstream: The resulting object or data structure.
-//
-// Errors:
-//   - None.
+//   - upstream.Upstream: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager:       poolManager,
@@ -121,27 +112,25 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 
 // Register processes the configuration for a WebRTC service, creating and registering tools for each call definition specified in the configuration.
 //
-// Summary: Register processes the configuration for a WebRTC service, creating and registering tools for each call definition specified in the configuration.
-//
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The provided serviceconfig data.
-//   - toolManager (tool.ManagerInterface): The provided toolmanager data.
-//   - promptManager (prompt.ManagerInterface): The provided promptmanager data.
-//   - resourceManager (resource.ManagerInterface): The provided resourcemanager data.
-//   - isReload (bool): A flag indicating whether isreload is enabled.
+//   - ctx (context.Context): The context for the request.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - promptManager (prompt.ManagerInterface): The promptManager parameter.
+//   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
+//   - isReload (bool): The isReload parameter.
 //
 // Returns:
-//   - string: The resulting text.
-//   - []*configv1.ToolDefinition: The resulting object or data structure.
-//   - []*configv1.ResourceDefinition: The resulting object or data structure.
-//   - error: An error if the execution fails, otherwise nil.
+//   - string: The resulting string.
+//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
+//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

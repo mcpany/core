@@ -7,15 +7,14 @@ import (
 	"context"
 
 	"github.com/alexliesenfeld/health"
-	healthChecker "github.com/mcpany/core/server/pkg/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	healthChecker "github.com/mcpany/core/server/pkg/health"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 )
 
 // Conn is an interface that represents a gRPC client connection.
-//
-// Summary: Conn is an interface that represents a gRPC client connection.
+// It is used to allow for mocking of the gRPC client in tests.
 type Conn interface {
 	grpc.ClientConnInterface
 	// Close closes the connection to the server.
@@ -29,8 +28,8 @@ type Conn interface {
 }
 
 // GrpcClientWrapper wraps a `Conn` to adapt it to the
-//
-// Summary: GrpcClientWrapper wraps a `Conn` to adapt it to the
+// `pool.ClosableClient` interface. This allows gRPC clients to be managed by a
+// connection pool, which can improve performance by reusing connections.
 type GrpcClientWrapper struct {
 	Conn
 	config *configv1.UpstreamServiceConfig
@@ -40,21 +39,19 @@ type GrpcClientWrapper struct {
 
 // NewGrpcClientWrapper creates a new GrpcClientWrapper. It accepts a shared health checker to avoid creating a new one for every client.
 //
-// Summary: NewGrpcClientWrapper creates a new GrpcClientWrapper. It accepts a shared health checker to avoid creating a new one for every client.
-//
 // Parameters:
-//   - conn (Conn): The provided conn data.
-//   - config (*configv1.UpstreamServiceConfig): The configuration settings.
-//   - checker (health.Checker): The provided checker data.
+//   - conn (Conn): The conn parameter.
+//   - config (*configv1.UpstreamServiceConfig): The config parameter.
+//   - checker (health.Checker): The checker parameter.
 //
 // Returns:
-//   - *GrpcClientWrapper: The resulting object or data structure.
+//   - *GrpcClientWrapper: The resulting *GrpcClientWrapper.
 //
 // Errors:
-//   - None.
+//   - None
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None
 func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, checker health.Checker) *GrpcClientWrapper {
 	// If no checker is provided, create a new one (backward compatibility or standalone usage).
 	if checker == nil {
@@ -69,19 +66,17 @@ func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, che
 
 // IsHealthy checks if the underlying gRPC connection is in a usable state. It returns `true` if the connection's state is not `connectivity.Shutdown`, indicating that it is still active and can be used for new RPCs.
 //
-// Summary: IsHealthy checks if the underlying gRPC connection is in a usable state. It returns `true` if the connection's state is not `connectivity.Shutdown`, indicating that it is still active and can be used for new RPCs.
-//
 // Parameters:
-//   - ctx (context.Context): The cancellation and deadline context.
+//   - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - bool: True if successful or valid, false otherwise.
+//   - bool: True if successful, false otherwise.
 //
 // Errors:
-//   - None.
+//   - None
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None
 func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.GetState() == connectivity.Shutdown {
 		return false
@@ -97,19 +92,17 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 
 // Close terminates the underlying gRPC connection, releasing any associated resources.
 //
-// Summary: Close terminates the underlying gRPC connection, releasing any associated resources.
-//
 // Parameters:
-//   - None.
+//   - None
 //
 // Returns:
-//   - error: An error if the execution fails, otherwise nil.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails, invalid input is provided, or a downstream dependency fails.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - May modify internal state or perform external network calls.
+//   - None
 func (w *GrpcClientWrapper) Close() error {
 	return w.Conn.Close()
 }
