@@ -1,4 +1,3 @@
-<!-- markdownlint-disable -->
 # Feature Inventory: MCP Any
 
 ## Current Backlog (P0/P1)
@@ -1362,19 +1361,19 @@
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
 
-## Evolution: [2026-06-18] Strategic Additions
+## Evolution: [2026-06-18] (Market Sync Integration)
 
-### Proposed Additions (Inventory 2026-06-18)
+### Proposed Additions (2026-06-18)
 
-* **Hardware-Locked Attention Governance (HLAG) Provider**: (P0) Authoritative attention guard.
-* **Lock-Free Mesh Coordination (LFMC) Hub**: (P0) Coordination service.
-* **Shadow Coordination Interceptor (SCI)**: (P0) Security extension.
+* **Hardware-Locked Attention Governance (HLAG) Provider**: (P0) Authoritative attention guard utilizing hardware-bound headers to protect mission-root anchors.
+* **Lock-Free Mesh Coordination (LFMC) Hub**: (P0) Coordination service implementing CRDT-based task list synchronization for parallel teammates.
+* **Shadow Coordination Interceptor (SCI)**: (P0) Security extension for the T2T Encryption Bridge.
 
-## Evolution: [2026-06-19] Strategic Additions
+## Evolution: [2026-06-19] (Market Sync Integration)
 
-### Proposed Additions (Inventory 2026-06-19)
+### Proposed Additions (2026-06-19)
 
-* **Hardware-Attested Intent Lineage (HAIL) Provider**: (P0) Authoritative security service.
-* **Attention-Locking Middleware**: (P0) Security extension.
-* **Sovereign Shard Controller**: (P0) Advanced extension.
-* **Stylometric Verification Hub**: (P0) Behavioral security.
+* **Hardware-Attested Intent Lineage (HAIL) Provider**: (P0) Authoritative security service cryptographically signing "Reasoning Fragments."
+* **Attention-Locking Middleware**: (P0) Security extension supporting `x-gemini-attention-lock` to protect critical intent fragments.
+* **Sovereign Shard Controller**: (P0) Advanced extension for the LFMC Hub enforcing intent-bound isolation for teammate shards.
+* **Stylometric Verification Hub**: (P0) Behavioral security middleware performing real-time stylometric analysis.

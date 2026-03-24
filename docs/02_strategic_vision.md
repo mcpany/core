@@ -1,4 +1,3 @@
-<!-- markdownlint-disable -->
 # Strategic Vision: MCP Any
 
 ## Mission Statement
@@ -1046,12 +1045,12 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Reasoning-Aware Garbage Collection (R-GC)**: To neutralize "Speculative Overload," MCP Any will implement R-GC for the Speculative Branching Guard. This service automatically purges speculative context fragments that exhibit high reasoning entropy but low mission utility, preventing cognitive stall in deep swarms.
 - **Temporal Shard Jitter (TSJ) Injection**: To counter CVE-2026-62001, we are upgrading the ESB to include TSJ Injection. This layer will inject hardware-attested timing jitter into entangled state synchronization for non-primary mission-root requests, ensuring absolute temporal isolation in sharded meshes.
 
-## Strategic Evolution: [2026-06-18] (Pivot to Attention Sovereignty)
+## Strategic Evolution: [2026-06-18]
 
-* **Attention Sovereignty**: Transitioning from transport-layer security to "Attention-Locked" context windows.
-* **Shadow Coordination Mitigation**: Implementing mandatory transport-metadata signing.
+* **Attention Sovereignty**: Transitioning from transport-layer security to "Attention-Locked" context windows. MCP Any must provide hardware-bound pinning for mission-critical intent fragments.
+* **Shadow Coordination Mitigation**: Implementing mandatory transport-metadata signing to neutralize out-of-band subagent collusion.
 
-## Strategic Evolution: [2026-06-19] (Behavioral Identity)
+## Strategic Evolution: [2026-06-19]
 
-* **Behavioral Zero Trust**: Pivoting toward hardware-attested reasoning lineage (HAIL).
+* **Behavioral Zero Trust**: Pivoting toward hardware-attested reasoning lineage (HAIL). Every sub-instruction must be cryptographically linked to the mission-root.
 * **Reasoning-Path Sovereignty**: Introducing stylometric verification for reasoning fragments.

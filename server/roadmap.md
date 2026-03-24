@@ -1,4 +1,3 @@
-<!-- markdownlint-disable -->
 # Server Roadmap
 
 ## 1. Top Priorities: The Universal Agent Bus (New Strategic Focus)
@@ -755,7 +754,7 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
 
-### Upcoming (2026-06-19 Strategic Priorities)
+### Upcoming: [2026-06-19] (Strategic Priorities)
 
-* [ ] **[P0] HAIL Lineage Provider**: Implement hardware-attested lineage tokens. (ID: HAIL-SRV-2026-06-19)
-* [ ] **[P0] LFMC Arbiter**: Port the Blackboard to support lock-free CRDT. (ID: LFMC-SRV-2026-06-19)
+- [ ] **[P0] HAIL Lineage Provider**: Implement hardware-attested lineage tokens for reasoning fragments. (ID: HAIL-SRV-2026-06-19)
+- [ ] **[P0] LFMC Arbiter**: Port the Blackboard to support lock-free CRDT coordination for teammate shards. (ID: LFMC-SRV-2026-06-19)
