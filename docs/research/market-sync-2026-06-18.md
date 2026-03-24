@@ -1,8 +1,9 @@
 # Market Sync: 2026-06-18
 
 ## Ecosystem Updates
-- **OpenClaw ACR (Autonomous Capability Revocation)**: OpenClaw v3.2.0 introduces
-  a hardware-attested protocol for real-time capability revocation. This allows
+- **OpenClaw ACR (Autonomous Capability Revocation)**: OpenClaw v3.2.0
+  introduces a hardware-attested protocol for real-time capability
+  revocation. This allows
   parent agents to instantly kill subagent tool access if mission drift or
   security violations are detected.
 - **Gemini CLI "Recursive Discovery"**: Gemini now supports multi-hop capability

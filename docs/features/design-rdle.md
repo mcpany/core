@@ -30,7 +30,8 @@ guardrails by initiating unauthorized handoffs beyond a user-defined depth.
 
 ## 4. Design & Architecture
 * **System Flow:**
-  - [Agent Call] -> [RDLE Middleware] -> [Depth Validation] -> [Handoff Approval]
+  - [Agent Call] -> [RDLE Middleware] -> [Depth Validation] ->
+    [Handoff Approval]
 * **APIs / Interfaces:**
   - Header: `X-UAB-Delegation-Depth` (Hardware-attested and monotonic).
 * **Data Storage/State:**
