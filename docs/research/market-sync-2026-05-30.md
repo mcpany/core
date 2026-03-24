@@ -4,23 +4,18 @@
 
 ### 1. Claude Code: Team-Wide Context Pinning
 
-* **Update**: Anthropic has introduced "Context Anchoring" for Agent Teams.
-* **Key Pattern**: Common mission constraints are now "pinned" across all
-  teammates, reducing repetitive coordination messages.
+- Update: Anthropic introduced "Context Anchoring" for Agent Teams.
+- Key Pattern: Common mission constraints are pinned across all teammates.
 
 ### 2. OpenClaw: Isolated Execution Contexts (IEC)
 
-* **Update**: OpenClaw is transitioning to IECs using micro-VM isolation
-  (e.g., Firecracker).
-* **Discovery**: Emergence of "Proof-of-Isolation" (PoI) headers to verify
-  that a tool execution was truly sandboxed.
+- Update: OpenClaw transitioning to IECs using micro-VM isolation.
+- Discovery: Emergence of "Proof-of-Isolation" (PoI) headers.
 
 ### 3. Market Vulnerability: Context Shadowing
 
-* **Findings**: New exploit pattern where subagents override parent system
-  instructions by injecting "semantic fragments" into the shared Blackboard.
+- Findings: Exploit where subagents override parent system instructions.
 
-## Summary of Unique Findings
+## Summary
 
-Today's ingestion confirms that the "Universal Agent Bus" must move to
-**Enforced Intent Hierarchies** and adopting micro-VM style isolation.
+Universal Agent Bus must move to Enforced Intent Hierarchies (EIH).
