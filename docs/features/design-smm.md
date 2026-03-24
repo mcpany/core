@@ -1,3 +1,4 @@
+<!-- markdownlint-disable -->
 # Design Doc: Stylometric Mimicry Mitigator (SMM)
 **Status:** Draft
 **Created:** 2026-06-16
