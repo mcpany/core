@@ -6,6 +6,28 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-22] Updates
+
+### Proposed Additions
+- **Cognitive Sovereignty Mediator**: (P0) Implementation of CSP-compatible "Monologue Enclaves" to isolate agent internal reasoning.
+- **Dynamic Capability Revocation (DCR) Engine**: (P0) Real-time grooming of an agent's "Active Capability Set" based on suspicion scores.
+- **Risk-Based Adaptive Attestation Gate**: (P1) Optimization service that scales hardware attestation requirements based on tool risk.
+- **Recursive Context Expander**: (P1) Security utility that force-expands compressed context to detect "Reasoning Shadowing."
+
+### Priority Shifts
+- **Injection-Shielding Middleware**: (Re-affirmed P0) Evolved with "Recursive Context Expansion" requirements for compressed swarms.
+
+## Evolution: [2026-05-21] Updates
+
+### Proposed Additions
+- **Inode-Locked Workspace Broker**: (P0) Hardware-bound filesystem sovereignty restricting tool execution to a verified Inode-root.
+- **Multimodal CoT Shield**: (P0) Advanced metadata inspector for SVG, EXIF, and binary data to block non-textual reasoning poisoning.
+- **Priority-Aware Hardware Leaser**: (P1) Resource-share policy for TPM slots, reserving hardware anchors for supervisor and auditor agents.
+- **Intent-Entropy (IE) Throttle**: (P1) Security middleware that scales agent resources based on reasoning divergence metrics.
+
+### Priority Shifts
+- **Reasoning-Guard Middleware**: (Re-affirmed P0) Evolved with "Deep Metadata Inspection" requirements for multimodal swarms.
+
 ## Evolution: [2026-05-20] Updates
 
 ### Proposed Additions

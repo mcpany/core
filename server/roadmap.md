@@ -582,3 +582,15 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware Intent Sharding Broker**: Scalable TPM slot management for massive recursive swarms. (Added: 2026-05-20)
 *   **[P1] Attention-Weighted Security Controller**: Real-time monitoring of model attention weights to detect context hijacking. (Added: 2026-05-20)
 *   **[P1] Atomic Rollback Handshake Engine**: Coordination for shared-memory BSH edits using state checkpoints. (Added: 2026-05-20)
+
+#### Upcoming (2026-05-21 Evolution)
+*   **[P0] Inode-Locked Workspace Broker**: Hardware-bound filesystem sovereignty restricting tools to verified Inode-roots. (Added: 2026-05-21)
+*   **[P0] Multimodal CoT Shield**: Metadata inspector for SVG/EXIF to block non-textual reasoning poisoning. (Added: 2026-05-21)
+*   **[P1] Priority-Aware Hardware Leaser**: Fair-share TPM slot management for massive recursive swarms. (Added: 2026-05-21)
+*   **[P1] Intent-Entropy (IE) Throttle**: Resource scaling based on Gemini-style reasoning divergence metrics. (Added: 2026-05-21)
+
+#### Upcoming (2026-05-22 Evolution)
+*   **[P0] Cognitive Sovereignty Mediator**: Implementation of CSP-compatible "Monologue Enclaves" for reasoning isolation. (Added: 2026-05-22)
+*   **[P0] Dynamic Capability Revocation (DCR) Engine**: Real-time grooming of an agent's active capability set. (Added: 2026-05-22)
+*   **[P1] Risk-Based Adaptive Attestation Gate**: Multi-tier hardware attestation scaling based on tool risk. (Added: 2026-05-22)
+*   **[P1] Recursive Context Expander**: Security utility forForce-expansion of compressed context fragments. (Added: 2026-05-22)

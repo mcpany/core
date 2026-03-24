@@ -429,3 +429,15 @@
 - [ ] **[P0] Hardware Slot Leaser**: Dashboard for monitoring TPM intent slot usage and managing shard leases. (Added: 2026-05-20)
 - [ ] **[P1] Attention Heatmap Explorer**: Visualizer for RT headers, showing model attention focus during tool calls. (Added: 2026-05-20)
 - [ ] **[P1] Rollback Handshake Monitor**: Real-time tracker for ARH consistency checkpoints in shared memory swarms. (Added: 2026-05-20)
+
+#### Upcoming (2026-05-21 Evolution)
+- [ ] **[P0] Inode Root Explorer**: UI for visualizing hardware-locked filesystem boundaries and ancestry. (Added: 2026-05-21)
+- [ ] **[P0] Metadata Integrity Report**: Dashboard for reviewing multimodal metadata scans and reasoning smuggling alerts. (Added: 2026-05-21)
+- [ ] **[P1] Slot Priority Manager**: Control interface for managing hardware anchor reservations and fair-share policies. (Added: 2026-05-21)
+- [ ] **[P1] Intent Entropy Gauge**: Security widget for tracking agent reasoning divergence and IRA handshake triggers. (Added: 2026-05-21)
+
+#### Upcoming (2026-05-22 Evolution)
+- [ ] **[P0] Monologue Enclave Monitor**: UI for visualizing the health and isolation status of hardware-encrypted reasoning enclaves. (Added: 2026-05-22)
+- [ ] **[P0] Capability Grooming Console**: Real-time dashboard for monitoring and manually overriding dynamic capability revocation events. (Added: 2026-05-22)
+- [ ] **[P1] Adaptive Attestation Status**: Visual indicator for current hardware attestation strength and latency optimizations. (Added: 2026-05-22)
+- [ ] **[P1] Context Expansion Debugger**: Tool for inspecting force-expanded context fragments and detected intent shadows. (Added: 2026-05-22)

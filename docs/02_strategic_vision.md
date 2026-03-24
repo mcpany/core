@@ -10,6 +10,28 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-22]
+### Focus: Cognitive Sovereignty & Dynamic Capability Revocation
+**Context**: The emergence of "Reasoning Shadowing" via compressed context and the release of OpenClaw's Cognitive Sovereignty Protocol (CSP) mark a move toward protecting the agent's "private reasoning space." As agents become more autonomous, infrastructure must not only secure their actions but also preserve the privacy of their internal monologue while maintaining the ability to revoke capabilities in real-time based on drift.
+**Strategic Pivot**:
+- **Cognitive Sovereignty Mediator**: MCP Any will implement CSP-compatible "Monologue Enclaves." This ensures that an agent's internal reasoning is cryptographically isolated from both its outputs and the gateway itself, preventing "Monologue Hijacking" by peers while still allowing for hardware-attested intent verification.
+- **Dynamic Capability Revocation (DCR) Engine**: We are introducing a DCR Engine that enforces "Real-time Capability Grooming." MCP Any will dynamically shrink an agent's "Active Capability Set" based on real-time Intent Entropy (IE) and suspicious reasoning signals, neutralizing threats without force-terminating the session.
+- **Risk-Based Adaptive Attestation**: To address "Attestation Exhaustion," we are implementing an Adaptive Attestation gate. The gateway will scale hardware-proof requirements based on tool risk scores, providing low-latency execution for verified "Safe" operations while mandating full TPM signatures for high-impact actions.
+- **Compressed Intent Inspection**: To counter "Reasoning Shadowing," we are upgrading our Injection Shield with "Recursive Context Expansion." The gateway will force-expand and semantically scan compressed context fragments before they are ingestion-ready, ensuring malicious intents cannot hide in optimized tokens.
+
+---
+
+## Strategic Evolution: [2026-05-21]
+### Focus: Multimodal CoT Shielding & Inode-Locked Sovereignty
+**Context**: The emergence of "Reasoning Smuggling" via EXIF and the challenge of "Lease Racing" in hardware slots highlight the need for full-spectrum intent analysis and managed hardware resources. As agents handle more complex data types, infrastructure must provide hardware-level filesystem locks while ensuring that multimodal data cannot hijack the agent's internal monologue.
+**Strategic Pivot**:
+- **Multimodal CoT Shielding**: MCP Any will evolve its Reasoning Guard to perform "Deep Metadata Inspection." We will scan EXIF, SVG, and binary data structures for imperative reasoning hints before they are ingested by multimodal subagents, neutralizing "Metadata Smuggling."
+- **Inode-Locked Workspace Broker**: Adopting the "Inode-Locked Workspaces" pattern, MCP Any will provide hardware-bound filesystem sovereignty. All tool execution for an intent branch will be physically restricted to an Inode-root, neutralizing symlink escapes and unauthorized path traversals.
+- **Fair-Share Hardware Leaser**: We are upgrading the Intent Sharding Broker with "Priority-Aware Leasing." MCP Any will reserve hardware-protected TPM slots for supervisor and auditor agents, ensuring that mission-root oversight is never compromised by slot-exhaustion attacks from sub-specialists.
+- **Intent Entropy (IE) Monitor**: Leveraging Gemini's IE metrics, we will implement "Drift-Responsive Throttling." The gateway will automatically scale down an agent's "Resource Lease" if its reasoning divergence exceeds a safety threshold, mandating an IRA (Intent Re-Alignment) handshake.
+
+---
+
 ## Strategic Evolution: [2026-05-20]
 ### Focus: Cognitive Isolation Zones & Hardware Intent Sharding
 **Context**: The emergence of "Context Fragment Hijacking" and the challenge of "TPM Slot Exhaustion" highlight the need for more granular and scalable intent protection. As swarms scale to thousands of agents, infrastructure must manage hardware security resources as dynamic leases while providing "Speculative Reasoning" zones that prevent unverified logic from polluting the mission root.
