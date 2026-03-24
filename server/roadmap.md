@@ -576,3 +576,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Cognitive Checkpoint Controller**: Atomic "Undo" capability for agent reasoning state and Blackboard snapshots. (Added: 2026-05-19)
 *   **[P1] Watermark Persistence Monitor**: Real-time tracking and validation of cryptographically verifiable model watermarks. (Added: 2026-05-19)
 *   **[P1] Intent-Bound Paging Hub**: Kernel-level security scope switcher for low-latency multi-specialist swarms. (Added: 2026-05-19)
+
+#### Upcoming (2026-05-20 Evolution)
+*   **[P0] Cognitive Isolation Zone (CIZ) Mediator**: Native middleware for Safe vs. Speculative reasoning context. (Added: 2026-05-20)
+*   **[P0] Hardware Intent Sharding Broker**: Scalable TPM slot management for massive recursive swarms. (Added: 2026-05-20)
+*   **[P1] Attention-Weighted Security Controller**: Real-time monitoring of model attention weights to detect context hijacking. (Added: 2026-05-20)
+*   **[P1] Atomic Rollback Handshake Engine**: Coordination for shared-memory BSH edits using state checkpoints. (Added: 2026-05-20)

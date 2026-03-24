@@ -423,3 +423,9 @@
 - [ ] **[P0] Cognitive Undo Console**: Interactive interface for managing reasoning snapshots and performing swarm-wide rollbacks. (Added: 2026-05-19)
 - [ ] **[P1] Data Provenance Map**: Visualizer for Gemini reasoning watermarks across context fragments and tool outputs. (Added: 2026-05-19)
 - [ ] **[P1] Intent Paging Status Widget**: Real-time monitor for sub-microsecond security scope switches in deep swarms. (Added: 2026-05-19)
+
+#### Upcoming (2026-05-20 Evolution)
+- [ ] **[P0] Cognitive Zone Manager**: UI for visualizing Safe vs. Speculative zones and orchestrating SCQ merge audits. (Added: 2026-05-20)
+- [ ] **[P0] Hardware Slot Leaser**: Dashboard for monitoring TPM intent slot usage and managing shard leases. (Added: 2026-05-20)
+- [ ] **[P1] Attention Heatmap Explorer**: Visualizer for RT headers, showing model attention focus during tool calls. (Added: 2026-05-20)
+- [ ] **[P1] Rollback Handshake Monitor**: Real-time tracker for ARH consistency checkpoints in shared memory swarms. (Added: 2026-05-20)

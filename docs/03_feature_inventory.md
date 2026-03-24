@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-20] Updates
+
+### Proposed Additions
+- **Cognitive Isolation Zone (CIZ) Mediator**: (P0) Middleware for segmenting reasoning context into "Safe" and "Speculative" zones.
+- **Hardware Intent Sharding Broker**: (P0) Scalable management of hardware-protected intent slots using a resource-lease model.
+- **Attention-Weighted Security Controller**: (P1) Real-time monitoring of model attention weights (RT headers) to detect context hijacking.
+- **Atomic Rollback Handshake (ARH) Engine**: (P1) High-consistency coordination for shared-memory BSH edits using state checkpoints.
+
+### Priority Shifts
+- **Swarm Consensus Broker (SCQ)**: (Promoted to P0) Critical requirement for the CIZ Mediator to audit speculative reasoning zones.
+
 ## Evolution: [2026-05-19] Updates
 
 ### Proposed Additions
