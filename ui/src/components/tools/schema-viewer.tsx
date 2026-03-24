@@ -84,15 +84,15 @@ export function SchemaViewer({ schema, name, required = false, depth = 0 }: Sche
 
   if (!schema) return <div className="text-muted-foreground italic text-xs">No schema defined</div>;
 
-  const isObject = schema?.type === "object" || !!schema?.properties;
-  const isArray = schema?.type === "array" || !!schema?.items;
+  const isObject = schema.type === "object" || !!schema.properties;
+  const isArray = schema.type === "array" || !!schema.items;
   const hasChildren = isObject || isArray;
 
   // Handle recursion for objects
-  const properties = schema?.properties ? Object.entries(schema?.properties) : [];
+  const properties = schema.properties ? Object.entries(schema.properties) : [];
 
   // Handle recursion for arrays
-  const items = schema?.items;
+  const items = schema.items;
 
   return (
     <div className={cn("font-mono text-sm", depth > 0 && "ml-3 border-l pl-3 border-border/50")}>
@@ -105,14 +105,14 @@ export function SchemaViewer({ schema, name, required = false, depth = 0 }: Sche
                </CollapsibleTrigger>
                {name && <span className="font-semibold text-foreground">{name}</span>}
                {required && <span className="text-red-500 text-xs font-bold" title="Required">*</span>}
-               <TypeBadge type={schema?.type} format={schema.format} />
-               {schema?.description && (
+               <TypeBadge type={schema.type} format={schema.format} />
+               {schema.description && (
                     <Tooltip delayDuration={300}>
                       <TooltipTrigger asChild>
                         <Info className="h-3 w-3 text-muted-foreground/70 hover:text-foreground transition-colors cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-[300px] text-xs">
-                        <p>{schema?.description}</p>
+                        <p>{schema.description}</p>
                       </TooltipContent>
                     </Tooltip>
                )}
@@ -125,7 +125,7 @@ export function SchemaViewer({ schema, name, required = false, depth = 0 }: Sche
                      key={key}
                      schema={propSchema}
                      name={key}
-                     required={schema?.required?.includes(key)}
+                     required={schema.required?.includes(key)}
                      depth={depth + 1}
                      isLast={idx === properties.length - 1}
                    />
@@ -148,19 +148,19 @@ export function SchemaViewer({ schema, name, required = false, depth = 0 }: Sche
              <span className="w-4"></span> {/* Spacer for alignment */}
              {name && <span className="font-semibold text-foreground">{name}</span>}
              {required && <span className="text-red-500 text-xs font-bold" title="Required">*</span>}
-             <TypeBadge type={schema?.type} format={schema.format} />
+             <TypeBadge type={schema.type} format={schema.format} />
              {schema.enum && (
                 <span className="text-xs text-muted-foreground ml-1">
                   Enum: [{schema.enum.join(", ")}]
                 </span>
              )}
-              {schema?.description && (
+              {schema.description && (
                     <Tooltip delayDuration={300}>
                       <TooltipTrigger asChild>
                         <Info className="h-3 w-3 text-muted-foreground/70 hover:text-foreground transition-colors cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-[300px] text-xs">
-                        <p>{schema?.description}</p>
+                        <p>{schema.description}</p>
                       </TooltipContent>
                     </Tooltip>
                )}
