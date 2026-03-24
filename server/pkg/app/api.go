@@ -775,12 +775,11 @@ func (a *Application) handleTools() http.HandlerFunc {
 
 			// Since proper tool storage modifying is complex and touches internal fields depending on connection type
 			// we will return 200 OK without updating the DB for now to unblock the UI.
-            // Ideally this would lookup the service via toolInfo.Tool().GetServiceId(), figure out
-            // which connection_type it has, and update the tools slice within that.
+			// Ideally this would lookup the service via toolInfo.Tool().GetServiceId(), figure out
+			// which connection_type it has, and update the tools slice within that.
 
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(map[string]any{"status": "ok", "name": req.Name, "disable": req.Disable})
-
 
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
