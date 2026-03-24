@@ -1,32 +1,25 @@
-# Audit Report: Truth Reconciliation
+# Truth Reconciliation Audit Report
 
 ## Executive Summary
-An extensive "Truth Reconciliation Audit" was performed comparing the features defined in `ui/docs` and `server/docs` (along with the product roadmap) against the codebase.
-
-Overall Health of the 10 Sampled Features: **Excellent**. Nine out of the 10 sampled features were found to be fully implemented and working as designed. One feature was identified as Roadmap Debt (Missing Logic) and was engineered to align with the roadmap.
+This audit evaluated 10 distinct features across the documentation, codebase, and roadmap. The overall health is strong, with 9 out of 10 sampled features functioning perfectly as documented. However, one feature (HITL Approval Interface) suffered from "Roadmap Debt" where the UI documentation claimed an interface existed, but the corresponding React code was missing. This has been remediated.
 
 ## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
-| :--- | :--- | :--- | :--- |
-| `ui/docs/features/native_file_upload_playground.md` | Verified | None | Feature correctly implemented in `ui/src/components/shared/universal-schema-form.tsx` mapping `contentEncoding: "base64"` to file uploads. |
-| `ui/docs/features/stack-composer.md` | Verified | None | Feature is present in `ui/src/app/stacks/page.tsx` and related components in `ui/src/components/stacks/`. |
-| `ui/docs/features/structured_log_viewer.md` | Verified | None | JSON parsing and expandable UI verified in `ui/src/components/logs/log-viewer.tsx`. |
-| `ui/docs/features/real-time-inspector.md` | Verified | None | WebSocket connections and live traces are functioning in `ui/src/app/inspector/page.tsx` and `inspector-table.tsx`. |
-| `ui/docs/features/tag-based-access-control.md` | Verified | None | Profiles accurately enforce access via Tags through `ui/src/components/profiles/profile-editor.tsx` and `server/pkg/tool/management.go`. |
-| `server/docs/features/dynamic_registration.md` | **Roadmap Debt** | Engineered Solution | Discovery logic was only partially present. Added `OpenAPIProvider`, `GRPCProvider`, and `GraphQLProvider` to `server/pkg/discovery/` as described by the feature documentation. |
-| `server/docs/features/security.md` | Verified | None | Tool Poisoning Mitigation (Integrity Check) logic acts correctly in `server/pkg/tool/integrity.go`. |
-| `ui/docs/features/policy_management.md` | Verified | None | Granular Tool Export Policies with Regex support are functional in `ui/src/components/services/editor/policy-editor.tsx`. |
-| `ui/docs/features/playground.md` | Verified | None | Session history Import/Export behaves properly in `ui/src/components/playground/pro/playground-client-pro.tsx`. |
-| `server/docs/features/wasm.md` | Verified | None | WASM Plugin system (mock/experimental phase) correctly exists inside `server/pkg/wasm/runtime.go`. |
+| --- | --- | --- | --- |
+| `ui/docs/features/dashboard.md` | Verified | None | `ui/src/components/dashboard` |
+| `ui/docs/features/services.md` | Verified | None | `ui/src/components/services` |
+| `ui/docs/features/playground.md` | Verified | None | `ui/src/components/playground` |
+| `ui/docs/features/stack-composer.md` | Verified | None | `ui/src/components/stacks` |
+| `ui/docs/features/hitl.md` | Discrepancy | Engineered UI | `ui/src/app/hitl/page.tsx`, `ui/src/components/hitl/hitl-dashboard.tsx` |
+| `server/docs/features/sso.md` | Verified | None | `server/pkg/middleware/sso.go` |
+| `server/docs/features/sql_upstream.md` | Verified | None | `server/pkg/upstream/sql/tool.go` |
+| `server/docs/features/theme_builder.md` | Verified | None | `ui/src/components/theme-provider.tsx` |
+| `server/docs/features/kafka.md` | Verified | None | `server/pkg/bus/kafka/kafka.go` |
+| `server/docs/features/admin_api.md` | Verified | None | `server/pkg/admin/server.go` |
 
 ## Remediation Log
-- **Dynamic Tool Registration**: The code only supported `Ollama` discovery despite the documentation (`server/docs/features/dynamic_registration.md`) claiming support for OpenAPI, gRPC, and GraphQL. Engineered Go discovery provider implementations for all 3 missing sources:
-  - `server/pkg/discovery/openapi.go`
-  - `server/pkg/discovery/grpc.go`
-  - `server/pkg/discovery/graphql.go`
-- Connected the newly created providers in the core server initialization loop (`server/pkg/app/server.go`).
-- Wrote full unit tests (`*_test.go`) for each provider to adhere to Google Style Guides and TDD requirements.
+- **HITL Approval Interface**: Discovered that `ui/docs/features/hitl.md` described an "Approvals or HITL dashboard", but `ui/src/app/hitl` and `ui/src/components/hitl` were missing. Implemented `HitlPage` and `HitlDashboard` React components with corresponding unit tests to fulfill the documented product requirement.
 
 ## Security Scrub
-This report has been reviewed to ensure it contains NO Personally Identifiable Information (PII), secrets, or internal IP addresses.
+- The report has been sanitized and contains NO PII, secrets, or internal IP addresses.
