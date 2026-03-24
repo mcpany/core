@@ -131,7 +131,6 @@ fi
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     # Bypassing the root level //:lint inside the bash script as the github action runner runs out of memory processing proto bindings
     echo "    golangci-lint OK."
-    exit 0
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
     echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."
