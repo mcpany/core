@@ -130,10 +130,10 @@ eslint_bin.eslint_test(
     ],
     chdir = package_name(),
     data = [
+        "eslint.config.mjs",
         ":node_modules",
         ":srcs",
         "//proto:ts_proto",
-        "eslint.config.mjs",
     ],
 )
 
