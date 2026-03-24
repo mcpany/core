@@ -12,15 +12,11 @@ import (
 )
 
 // Request represents a tool request.
-//
-// Summary: Structure for the tool request.
 type Request struct {
 	Name string `json:"name"`
 }
 
 // Response represents a tool response.
-//
-// Summary: Structure for the tool response.
 type Response struct {
 	Message string `json:"message"`
 }

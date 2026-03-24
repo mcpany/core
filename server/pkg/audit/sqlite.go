@@ -315,9 +315,6 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 //
 // Summary: Validates the cryptographic hash chain of all audit entries.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - bool: True if the chain is valid, false otherwise.
 //   - error: An error if verification fails or data is corrupted.

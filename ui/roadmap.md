@@ -586,7 +586,13 @@
 - [ ] **[P1] Attention-Locked Telemetry Viewer**: (2026-06-15) Security UI for reviewing sanitized reasoning traces and attention-mapping redactions.
 - [ ] **[P0] WASM-Hook Safety Reporter**: (2026-06-15) UI for viewing behavioral profiling results for un-attested configuration hooks.
 
+### Upcoming: [2026-06-17]
+- [ ] **[P0] Active Intent Alignment Monitor**: (2026-06-17) Visual indicator for AIA heartbeat status and semantic drift alerts.
+- [ ] **[P0] Multi-Modal Identity Dashboard**: (2026-06-17) Security workspace for visualizing MMBA-anchored stylometric profiles and multi-modal trace history.
+- [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
+- [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
 
 ### Upcoming: 2026-06-18 - Strategic Monitoring
-- **[P0] ALS Status Dashboard**: visualizing locked fragments and security boundaries.
-- **[P0] PBRB Budget Tracker**: monitoring agentic spend and reasoning effort.
+- **[P0] ALS Status Dashboard:** Visualizing locked fragments and security boundaries.
+- **[P0] PBRB Budget Tracker:** Monitoring agentic spend and reasoning effort.
+- **[P1] Reasoning effort Heatmap:** Visualizing ALS interrupts and budget-bound reasoning loops.

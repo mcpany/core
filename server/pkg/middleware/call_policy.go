@@ -1,0 +1,96 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+package middleware
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/armon/go-metrics"
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/tool"
+)
+
+// CallPolicyMiddleware is a middleware that enforces call policies (allow/deny)
+// based on tool name and arguments.
+//
+// Summary: Middleware that evaluates and enforces security policies for tool executions.
+type CallPolicyMiddleware struct {
+	toolManager tool.ManagerInterface
+}
+
+// NewCallPolicyMiddleware creates a new CallPolicyMiddleware.
+//
+// Summary: Initializes a new CallPolicyMiddleware.
+//
+// Parameters:
+//   - toolManager: tool.ManagerInterface. The tool manager to access tool and service information.
+//
+// Returns:
+//   - *CallPolicyMiddleware: The initialized middleware.
+func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
+	return &CallPolicyMiddleware{
+		toolManager: toolManager,
+	}
+}
+
+// Execute enforces call policies before proceeding to the next handler.
+//
+// Summary: Checks if the tool execution is allowed by the service's policies.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *tool.ExecutionRequest. The tool execution request.
+//   - next: tool.ExecutionFunc. The next handler in the chain.
+//
+// Returns:
+//   - any: The execution result if allowed.
+//   - error: An error if the policy blocks execution or policy evaluation fails.
+//
+// Errors:
+//   - Returns error if service info is not found (fail closed).
+//   - Returns error if policy evaluation fails.
+//   - Returns "execution denied by policy" if the policy denies the request.
+//
+// Side Effects:
+//   - Logs errors if service info is missing or policy evaluation fails.
+//   - Increments a metric counter when a call is blocked.
+func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
+	t, ok := m.toolManager.GetTool(req.ToolName)
+	if !ok {
+		// Tool not found, pass through (let other layers handle 404/error)
+		return next(ctx, req)
+	}
+
+	serviceID := t.Tool().GetServiceId()
+	serviceInfo, ok := m.toolManager.GetServiceInfo(serviceID)
+	if !ok {
+		// Service info not found, cannot enforce policies.
+		// We must fail closed to prevent policy bypass.
+		logging.GetLogger().Error("Service info not found for tool execution", "service_id", serviceID, "tool_name", req.ToolName)
+		return nil, fmt.Errorf("service info not found for service %s", serviceID)
+	}
+
+	compiledPolicies := serviceInfo.CompiledPolicies
+	if len(compiledPolicies) == 0 {
+		return next(ctx, req)
+	}
+
+	// For CompiledCallPolicy, we need arguments as []byte (req.ToolInputs is already json.RawMessage which is []byte)
+	allowed, err := tool.EvaluateCompiledCallPolicy(compiledPolicies, req.ToolName, "", req.ToolInputs)
+	if err != nil {
+		logging.GetLogger().Error("Failed to evaluate call policy", "error", err)
+		return nil, err
+	}
+
+	if !allowed {
+		metrics.IncrCounterWithLabels([]string{"call_policy", "blocked_total"}, 1, []metrics.Label{
+			{Name: "service_id", Value: serviceID},
+			{Name: "tool_name", Value: req.ToolName},
+		})
+		return nil, fmt.Errorf("execution denied by policy")
+	}
+
+	return next(ctx, req)
+}

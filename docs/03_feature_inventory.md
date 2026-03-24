@@ -1361,6 +1361,13 @@
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
 
-### Strategic Additions: 2026-06-18
-- **[P0] ALS Controller**: Attention-Locked Sovereignty for context protection.
-- **[P0] PBRB Firewall**: Phase-Bound Reasoning Budget firewall.
+### Evolution: [2026-06-18] Updates
+
+#### Proposed Additions
+- **ALS (Attention Limit System) Controller**: (P0) A high-performance middleware that enforces "Attention Quotas" for subagents, preventing Context-Window Ghosting by monitoring and capping real-time token footprints.
+- **PBRB (Phase-Bound Reasoning Budget) Firewall**: (P0) Authoritative economic gatekeeper that throttles subagent reasoning effort (ARE) based on mission priority, enforcing hard compute limits per agent turn.
+- **Reasoning Telemetry Exporter**: (P1) Standardized metrics sink for Prometheus/gRPC that exports real-time reasoning effort, attention utilization, and budget consumption across the swarm.
+
+#### Priority Shifts
+- **Active Intent Alignment (AIA) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Attention-Locked** trace fragments during heartbeat verification.
+- **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Designated as the primary semantic validator for **PBRB-compliant** reasoning budgets.

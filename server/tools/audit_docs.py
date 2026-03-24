@@ -121,7 +121,7 @@ def scan_dir(root_dir):
             continue
 
         for file in files:
-            if file.endswith('.go') and not file.endswith('_test.go') and not file.endswith('.pb.go'):
+            if file.endswith('.go') and not file.endswith('_test.go'):
                 path = os.path.join(root, file)
                 missing = check_file(path)
                 if missing:

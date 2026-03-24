@@ -317,9 +317,6 @@ func (m *AuditMiddleware) ClearHistory() {
 //
 // Summary: Subscribes to audit events with history.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - chan any: A channel receiving new audit entries.
 //   - []any: A slice of historical audit entries.
