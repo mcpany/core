@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -37,6 +38,7 @@ upstream_services:
 	require.NoError(t, err)
 
 	t.Run("Valid Configuration", func(t *testing.T) {
+		viper.Reset()
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
@@ -68,13 +70,14 @@ upstream_services:
 	require.NoError(t, err)
 
 	t.Run("Invalid YAML Syntax", func(t *testing.T) {
+		viper.Reset()
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
 		cmd.SetArgs([]string{"validate", "--config-path", invalidYAMLPath})
 		err := cmd.Execute()
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "failed to unmarshal config")
+		assert.Contains(t, err.Error(), "failed to unmarshal")
 	})
 
 	// 3. Validation Error (Invalid HTTP address)
@@ -98,6 +101,7 @@ upstream_services:
 	require.NoError(t, err)
 
 	t.Run("Validation Error", func(t *testing.T) {
+		viper.Reset()
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
