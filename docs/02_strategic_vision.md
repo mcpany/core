@@ -1047,11 +1047,11 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ## Strategic Evolution: [2026-06-18]
 ### Focus: Teammate Sovereignty & Logic-Path Interdiction
-**Context**: The official shift toward parallel teammate coordination (Claude Code Agent Teams) and the emergence of "Logic Bombs" in 15% of agent-generated PRs confirm that transport-layer security and output-only scanning are dead. As swarms move to horizontal teams, the risk of "State Smearing" and the active exploitation of CVE-2026-30741 (Request-Side RCE) demand a move toward **Logic-Sovereignty** and **Pre-Thought Governance**. Infrastructure must move beyond simple gating to active Interdiction of the reasoning path itself.
+**Context**: The shift toward parallel teammate coordination and the emergence of "Logic Bombs" confirm that transport-layer security and output-only scanning are dead. As swarms move to horizontal teams, the risk of "State Smearing" and the active exploitation of CVE-2026-30741 demand a move toward **Logic-Sovereignty** and **Pre-Thought Governance**.
 
 **Strategic Pivot**:
-- **Teammate Sovereignty Enforcer (TSE)**: MCP Any will evolve to act as the authoritative "Isolation Kernel" for parallel teams. We will implement TSE, providing cryptographically bound, mission-anchored isolation for every teammate in a mesh, ensuring that "State Smearing" is prevented at the transport and memory layers.
-- **Logic-Sovereignty Validator (LSV)**: To neutralize "Logic Bombs" and "Refinement Drift," we are introducing LSV. This service performs real-time semantic deconstruction of the agent's chain-of-thought to detect and block unauthorized logic paths before they can manifest as malicious code commits.
-- **Request-Side Injection Shield (RSIS)**: Supporting the "Pre-Thought Governance" model, we are upgrading the Injection-Shielding Middleware to include RSIS. This layer performs semantic analysis of all inputs and generated code fragments, specifically blocking "Request-Side" prompt injection patterns (CVE-2026-30741) before reasoning begins.
-- **Hardware-Attested Discovery Manifests (HADM)**: To counter "Shadow Capability" beacons and "Ghost Delegation," we are mandating HADM. Agent discovery is now "Mission-Locked"; only capabilities pre-declared in a TPM-signed mission manifest are visible to the swarm.
-- **Lock-Free Coordination Buffers**: To mitigate the "Attestation Tax" and solve "Cognitive Stall" in parallel teams, MCP Any will implement lock-free coordination buffers. This provides a high-speed, hardware-attested transport for teammate messages, ensuring non-blocking performance in deep swarms.
+- **Teammate Sovereignty Enforcer (TSE)**: MCP Any will evolve to act as the authoritative "Isolation Kernel" for parallel teams, providing cryptographically bound, mission-anchored isolation for every teammate.
+- **Logic-Sovereignty Validator (LSV)**: Performs real-time semantic deconstruction of the agent's chain-of-thought to detect and block unauthorized logic paths.
+- **Request-Side Injection Shield (RSIS)**: Upgrading middleware to include RSIS for semantic analysis of all inputs and generated code fragments to block CVE-2026-30741.
+- **Hardware-Attested Discovery Manifests (HADM)**: Mandating HADM to ensure only capabilities pre-declared in a TPM-signed mission manifest are visible.
+- **Lock-Free Coordination Buffers**: High-speed, hardware-attested transport for teammate messages, ensuring non-blocking performance in deep swarms.
