@@ -679,7 +679,20 @@
 - [ ] **[P0] Attention Entropy Heatmap**: Forensic UI for visualizing noise-to-utility scores and ASF detection alerts. (Added: 2026-06-30)
 - [ ] **[P0] Mission Lease Manager**: Dashboard for tracking LMP token lifetimes and hardware re-attestation status. (Added: 2026-06-30)
 
+#### Upcoming (2026-07-02 Evolution)
+- [ ] **[P0] Intent Reconciliation Hub**: (2026-07-02) Workspace for managing multi-agent instruction quorums and hardware-attested vote resolution.
+- [ ] **[P0] Multimodal Entanglement Auditor**: (2026-07-02) Forensic UI for reviewing cryptographically entangled non-textual shards and lineage alerts.
+- [ ] **[P0] Reasoning Entropy Dashboard**: (2026-07-02) Real-time visualization of swarm reasoning entropy and cognitive stall triggers.
+- [ ] **[P1] CRDT Mailbox Visualizer**: (2026-07-02) High-speed monitor for lock-free teammate synchronization and conflict-free state resolution.
+
 #### Upcoming (2026-07-01 Evolution)
 - [ ] **[P0] Multimodal Memory Bus Monitor**: (2026-07-01) Real-time visualization of intent-pinned state synchronization and multimodal sanitization events.
 - [ ] **[P0] ZK-Discovery Broker Workspace**: (2026-07-01) UI for reviewing masked capability cards and unmasking schemas via mission-handshakes.
 - [ ] **[P0] Attention Anchor Heatmap**: (2026-07-01) Visual tracker for ALRA-pinned intent fragments and attention-density alerts.
+
+#### Upcoming (2026-03-24 Evolution - v2)
+- [ ] **[P1] Intent Lineage Visualizer**: Real-time graph showing the chain of signed intents across the swarm. (Added: 2026-03-24)
+- [ ] **[P2] BSH Performance Monitor**: Metrics dashboard tracking binary state transfer latency and token savings. (Added: 2026-03-24)
+- [ ] **[P0] Discovery Sandbox Monitor**: Real-time visualization of sandboxed discovery command execution and safety attestation. (Added: 2026-03-24)
+- [ ] **[P0] Teammate Task List Viewer**: High-speed, CRDT-native visualization of the shared task list for horizontal swarms. (Added: 2026-03-24)
+- [ ] **[P0] ALSV Block List Explorer**: UI for reviewing and approving command arguments flagged by the semantic validator. (Added: 2026-03-24)

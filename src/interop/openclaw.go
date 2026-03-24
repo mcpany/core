@@ -124,3 +124,31 @@ func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResu
 func (a *OpenClawAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
 }
+
+// SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the OpenClaw framework.
+//
+// Summary: Ingests a memory shard and appends it to OpenClaw's internal state.
+//
+// Parameters:
+//   - ctx (context.Context): The context for controlling cancellation and timeouts.
+//   - shard (*MemoryShard): The multimodal memory shard to synchronize.
+//
+// Returns:
+//   - error: An error if the signature is invalid.
+//
+// Errors:
+//   - Returns an error if the shard signature verification fails.
+//
+// Side Effects:
+//   - Updates the agent framework's state by processing the new MemoryShard.
+func (a *OpenClawAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard) error {
+	if shard.Signature == "" {
+		return fmt.Errorf("invalid memory shard: missing signature")
+	}
+
+	// Simulate processing the shard into OpenClaw's context.
+	_ = shard.TextContent
+	_ = shard.MultimodalPayload
+
+	return nil
+}

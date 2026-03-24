@@ -129,7 +129,7 @@ func (c *CAHAdapter) ValidateWithQuorum(ctx context.Context, requestID string, i
 			if ok {
 				mu.Lock()
 				rejections = append(rejections, err)
-				if len(rejections) > len(c.monitors) - c.quorumThreshold {
+				if len(rejections) > len(c.monitors)-c.quorumThreshold {
 					mu.Unlock()
 					return nil, fmt.Errorf("cah quorum rejected request: got %d approvals, needed %d (rejections: %v)", len(signatures), c.quorumThreshold, rejections)
 				}
