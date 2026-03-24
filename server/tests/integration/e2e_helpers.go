@@ -1737,8 +1737,8 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 				callID: configv1.HttpCallDefinition_builder{
 					Id:           &callID,
 					EndpointPath: &endpointPath,
-					Method: configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName]).Enum(),
-					Parameters: params,
+					Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName]).Enum(),
+					Parameters:   params,
 				}.Build(),
 			},
 		}.Build(),
@@ -2075,7 +2075,7 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 				callID: configv1.HttpCallDefinition_builder{
 					Id:           &callID,
 					EndpointPath: &endpointPath,
-					Method: configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName]).Enum(),
+					Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName]).Enum(),
 				}.Build(),
 			},
 		}.Build(),
