@@ -736,15 +736,14 @@ These features represent the next logical steps for the product, focusing on Ent
 
 #### Upcoming (2026-05-30 Evolution)
 
-*   **[P0] Intent Hierarchy Enforcer (IHE)**: Authoritative security middleware
-    that enforces a strict "Intent Priority" for all state fragments,
-    preventing subagent semantic shadowing. (Added: 2026-05-30)
-*   **[P0] Kernel-Namespace (KNS) Command Runner**: High-security tool
-    execution engine utilizing Firecracker micro-VMs and ephemeral
-    kernel-namespaces. (Added: 2026-05-30)
-*   **[P0] Mission Anchor Host (MAH)**: Centralized coordination service for
-    "Context Anchoring," ensuring mission constraints are immutable and
-    universally inherited. (Added: 2026-05-30)
-*   **[P1] Zero-Knowledge Capability Discovery (ZKCD)**: Identity-bound
-    discovery service mandating ZK-proofs of capability possession.
-    (Added: 2026-05-30)
+* **[P0] Intent Hierarchy Enforcer (IHE)**: Authoritative security middleware
+  that enforces a strict "Intent Priority" for all state fragments, preventing
+  subagent semantic shadowing. (Added: 2026-05-30)
+* **[P0] Kernel-Namespace (KNS) Command Runner**: High-security tool execution
+  engine utilizing Firecracker micro-VMs and ephemeral kernel-namespaces.
+  (Added: 2026-05-30)
+* **[P0] Mission Anchor Host (MAH)**: Centralized coordination service for
+  "Context Anchoring," ensuring mission constraints are immutable and
+  universally inherited. (Added: 2026-05-30)
+* **[P1] Zero-Knowledge Capability Discovery (ZKCD)**: Identity-bound discovery
+  service mandating ZK-proofs of capability possession. (Added: 2026-05-30)
