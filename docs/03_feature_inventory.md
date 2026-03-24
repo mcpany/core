@@ -1371,3 +1371,15 @@
 #### Priority Shifts
 - **Active Intent Alignment (AIA) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Attention-Locked** trace fragments during heartbeat verification.
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Designated as the primary semantic validator for **PBRB-compliant** reasoning budgets.
+
+### Strategic Expansion: 2026-06-18
+- [P0] ALS Controller.
+- [P0] PBRB Firewall.
+
+### Strategic Expansion: 2026-06-18
+- [P0] ALS Controller.
+- [P0] PBRB Firewall.
+
+### Strategic Expansion: 2026-06-18
+- [P0] ALS Controller.
+- [P0] PBRB Firewall.

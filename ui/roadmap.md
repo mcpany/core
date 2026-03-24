@@ -596,3 +596,9 @@
 - **[P0] ALS Status Dashboard:** Visualizing locked fragments and security boundaries.
 - **[P0] PBRB Budget Tracker:** Monitoring agentic spend and reasoning effort.
 - **[P1] Reasoning effort Heatmap:** Visualizing ALS interrupts and budget-bound reasoning loops.
+
+- [2026-06-18] PBRB Dashboard (P1)
+
+- [2026-06-18] PBRB Tracker (P0)
+
+- [2026-06-18] PBRB Budget Tracker (P0)

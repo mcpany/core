@@ -105,7 +105,7 @@ func StartServer(addr string) error {
 
 	if tcpAddr, ok := ln.Addr().(*net.TCPAddr); ok {
 		// Log to stdout so E2E tests can parse the dynamically assigned port
-		fmt.Printf("Metrics server listening on port %d\n", tcpAddr.Port)
+		fmt.Printf("Metrics server listening on port %d\\n", tcpAddr.Port)
 	}
 
 	server := &http.Server{

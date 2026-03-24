@@ -758,3 +758,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **[P0] ALS Controller Implementation:** Enforcing attention sovereignty in the gateway. (Target: Q3 2026)
 - **[P0] PBRB Firewall Middleware:** Hard compute limits for autonomous agent turns. (Target: Q3 2026)
 - **[P1] Reasoning Telemetry Exporter:** Standardized sink for agentic reasoning effort metrics.
+
+- [2026-06-18] ALS Controller Implementation (P0)
+
+- [2026-06-18] ALS Controller (P0)
+
+- [2026-06-18] ALS Controller Implementation (P0)
