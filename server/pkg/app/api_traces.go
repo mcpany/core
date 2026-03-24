@@ -4,12 +4,11 @@
 package app
 
 import (
-	"math/rand"
-
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
@@ -264,9 +263,9 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 				argsBytes, _ := json.Marshal(span.Input)
 				durationMs := span.EndTime - span.StartTime
 				entry := audit.Entry{
-					Timestamp:  time.Unix(0, int64(span.StartTime)*int64(time.Millisecond)),
+					Timestamp:  time.UnixMilli(span.StartTime),
 					ToolName:   span.Name,
-					DurationMs: int64(durationMs),
+					DurationMs: durationMs,
 					Duration:   (time.Duration(durationMs) * time.Millisecond).String(),
 					TraceID:    trace.ID,
 					SpanID:     span.ID,
@@ -300,7 +299,7 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 
 func generateMockTrace() Trace {
 	now := time.Now().UnixMilli()
-	traceID := fmt.Sprintf("trace-seed-%d", rand.Intn(10000)) //nolint:gosec // Testing only
+	traceID := fmt.Sprintf("trace-seed-%d", rand.Int31n(10000)) //nolint:gosec // Testing only
 	return Trace{
 		ID:            traceID,
 		Timestamp:     time.Now().Format(time.RFC3339),
