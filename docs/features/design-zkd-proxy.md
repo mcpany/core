@@ -55,3 +55,11 @@ The Zero-Knowledge Discovery (ZKD) Proxy evolves the discovery process by mandat
 
 ## 7. Evolutionary Changelog
 * **2026-06-27:** Initial Document Creation.
+
+### Update: 2026-07-01 - Transition to Zero-Knowledge Discovery Broker (ZKDB)
+**Context:** Today's market sync revealed a new exploit pattern where subagents scan the discovery bus for unmasked schemas to identify high-trust targets for "Skill-Squatting".
+**Architecture Adjustment:**
+* Evolving the ZKD Proxy into the **ZKDB (Zero-Knowledge Discovery Broker)**.
+* Mandating hardware-attested **ZK-Capability Proofs** for all registered agents.
+* Deprecating plaintext schema indexing in the primary discovery loop.
+**Security Impact:** Prevents pre-flight shadow mapping by making tool parameters and descriptions cryptographically invisible until a verified mission-root handshake is completed.

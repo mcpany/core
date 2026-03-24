@@ -841,3 +841,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Priority-Aware Mailbox Sharding (PAMS)**: Upgrade to AMS allowing lock-free "Urgent Interrupt" signals for safety. (Added: 2026-06-30)
 *   **[P0] Attention-Splicing Firewall (ASF)**: Entropy-based defense against mimicry-based instruction injection (CVE-2026-91023). (Added: 2026-06-30)
 *   **[P0] Leased Mission Persistence (LMP)**: Time-bound hardware-locked mission leases to neutralize rotation fatigue. (Added: 2026-06-30)
+
+#### Upcoming (2026-07-01 Evolution)
+*   **[P0] Universal Multimodal Memory Bus (UMMB)**: Hardware-attested memory bus for state synchronization and multimodal trace sanitization. (Added: 2026-07-01)
+*   **[P0] Zero-Knowledge Discovery Broker (ZKDB)**: Advanced discovery gateway implementing ZK-Capability Proofs and cryptographic masking. (Added: 2026-07-01)
+*   **[P0] Attention-Locked Reasoning Anchors (ALRA)**: Hardware-bound attention governance middleware to prevent context-window flooding. (Added: 2026-07-01)

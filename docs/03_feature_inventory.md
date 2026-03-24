@@ -1557,3 +1557,12 @@
 ### Priority Shifts
 - **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving to act as the primary backend for the **UMMB** state synchronization.
 - **Zero-Knowledge Discovery (ZKD) Proxy**: (Re-affirmed P0) Expanding into the **ZKDB** to support cross-framework capability negotiation.
+
+## Evolution: [2026-07-01] Updates (Refined)
+
+### Proposed Additions
+- **Multimodal Trace Heatmap**: (P1) Advanced UI component for the Visual Attention Dashboard to visualize attention weights across non-textual inputs (e.g., image regions, audio segments).
+- **Zero-Copy Multimodal Streaming**: (P1) Performance optimization for the UMMB to facilitate low-latency transfer of high-resolution multimodal context fragments.
+
+### Priority Shifts
+- **Visual Attention Dashboard**: (Re-affirmed P1) Elevated to support multimodal attention visualization and integration with ALRA anchors.

@@ -678,3 +678,8 @@
 - [ ] **[P0] Priority Mailbox Visualizer**: Real-time monitor for PAMS interrupt signals and coordination bypasses. (Added: 2026-06-30)
 - [ ] **[P0] Attention Entropy Heatmap**: Forensic UI for visualizing noise-to-utility scores and ASF detection alerts. (Added: 2026-06-30)
 - [ ] **[P0] Mission Lease Manager**: Dashboard for tracking LMP token lifetimes and hardware re-attestation status. (Added: 2026-06-30)
+
+#### Upcoming (2026-07-01 Evolution)
+- [ ] **[P0] Multimodal Memory Inspector**: Real-time visualization of state synchronization and MTV-redacted traces on the UMMB. (Added: 2026-07-01)
+- [ ] **[P0] ZK-Discovery Broker Workspace**: UI for managing capability proofs and masking rules for the ZKDB. (Added: 2026-07-01)
+- [ ] **[P0] Attention-Locking Heatmap**: Visual debugger for monitoring mission-critical reasoning anchors and attention-density scores. (Added: 2026-07-01)
