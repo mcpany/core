@@ -10,6 +10,7 @@ load("//proto:ts_proto_rules.bzl", "ts_wkt_gen")
 # gazelle:exclude node_modules
 # gazelle:exclude ui
 # gazelle:exclude tests/integration/upstream/node_modules
+# gazelle:exclude server/examples
 
 # Resolve local proto imports to go_proto_library targets
 # gazelle:resolve go github.com/mcpany/core/proto/config/v1 //proto/config/v1:config
