@@ -15,7 +15,7 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// SessionState represents the shared state for a recursive context session.
+// SessionState stores session-bound context data and metadata for recursive agents.
 type SessionState struct {
 	ID        string         `json:"id"`
 	Data      map[string]any `json:"data"`
@@ -23,13 +23,19 @@ type SessionState struct {
 	ExpiresAt time.Time      `json:"expires_at"`
 }
 
-// RecursiveContextManager manages the shared context sessions.
+// RecursiveContextManager provides a thread-safe registry for managing recursive context sessions.
 type RecursiveContextManager struct {
 	mu       sync.RWMutex
 	sessions map[string]*SessionState
 }
 
-// NewRecursiveContextManager initializes a new manager with background cleanup.
+// NewRecursiveContextManager creates a new RecursiveContextManager and starts the background cleanup loop.
+//
+// Returns:
+//   - *RecursiveContextManager: The initialized manager.
+//
+// Side Effects:
+//   - Starts a background goroutine for periodic session cleanup.
 func NewRecursiveContextManager() *RecursiveContextManager {
 	m := &RecursiveContextManager{
 		sessions: make(map[string]*SessionState),
@@ -57,7 +63,18 @@ func (m *RecursiveContextManager) cleanup() {
 	}
 }
 
-// CreateSession generates a new session and performs a quick opportunistic cleanup.
+// CreateSession registers a new context session with the provided data and TTL.
+//
+// Parameters:
+//   - data (map[string]any): The context data to store.
+//   - ttl (time.Duration): Time-to-live for the session.
+//
+// Returns:
+//   - *SessionState: The created session state.
+//
+// Side Effects:
+//   - Modifies the internal sessions map.
+//   - Performs opportunistic cleanup if the map exceeds 1000 entries.
 func (m *RecursiveContextManager) CreateSession(data map[string]any, ttl time.Duration) *SessionState {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -78,7 +95,14 @@ func (m *RecursiveContextManager) CreateSession(data map[string]any, ttl time.Du
 	return s
 }
 
-// GetSession retrieves an active session.
+// GetSession returns the session state associated with the given ID if it is still active.
+//
+// Parameters:
+//   - id (string): The unique session ID.
+//
+// Returns:
+//   - *SessionState: The session state if found and active.
+//   - bool: True if the session exists and has not expired.
 func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -89,7 +113,10 @@ func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 	return s, true
 }
 
-// APIHandler returns an HTTP handler for context management.
+// APIHandler provides a REST API for creating and retrieving context sessions.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler for session operations.
 func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
@@ -140,7 +167,13 @@ type RecursiveContextKeyType string
 
 const RecursiveContextDataKey RecursiveContextKeyType = "recursive_context_data"
 
-// HandleContext intercepts requests to inject context with observability.
+// HandleContext is a middleware that injects session data into the request context based on parent context headers.
+//
+// Parameters:
+//   - next (http.Handler): The next handler in the chain.
+//
+// Returns:
+//   - http.Handler: The wrapped handler that injects context data.
 func (m *RecursiveContextManager) HandleContext(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		id := r.Header.Get("X-MCP-Parent-Context-ID")
