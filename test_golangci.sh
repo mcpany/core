@@ -1,0 +1,3 @@
+#!/bin/bash
+export PATH=$PWD/build/env/bin:$PATH
+golangci-lint run --timeout 20m --fix ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
