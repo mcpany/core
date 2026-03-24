@@ -10,7 +10,6 @@ import (
 	"log/slog"
 	"time"
 
-
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	"github.com/mcpany/core/server/pkg/api/rest"
 	"github.com/mcpany/core/server/pkg/appconsts"
@@ -36,7 +35,6 @@ var (
 	metricToolsCallErrors  = []string{"tools", "call", "errors"}
 	metricToolsCallLatency = []string{"tools", "call", "latency"}
 )
-
 
 // AddReceivingMiddlewareHook is a testing hook that allows inspection of the middleware chain.
 //
@@ -977,6 +975,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 
 	var finalResult *mcp.CallToolResult
 	var text string
+	var jsonBytes []byte
 	var marshalErr error
 	var isStructured bool
 
@@ -1024,10 +1023,12 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 
 	// 3. Fallback: If no structured result identified, treat as raw data
 	if finalResult == nil {
-		if text == "" && marshalErr == nil {
-			text, marshalErr = util.FastMarshalToString(result)
+		if len(jsonBytes) == 0 && marshalErr == nil {
+			jsonBytes, marshalErr = util.FastMarshal(result)
+			if marshalErr == nil {
+				text = util.BytesToString(jsonBytes)
+			}
 		}
-
 
 		if marshalErr != nil {
 			text = util.ToString(result)
@@ -1045,10 +1046,10 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		var logValue slog.Value
 		// If we have a structured result (either directly or converted), use the summarizer.
 		// If we fell back to raw JSON (isStructured=false), reuse the jsonBytes for redacted logging.
-		if !isStructured && text != "" && marshalErr == nil {
+		if !isStructured && len(jsonBytes) > 0 && marshalErr == nil {
 			// ⚡ Bolt Optimization: Reuse marshaled bytes for logging (redacted)
 			// This saves a second marshal operation for large maps.
-			logValue = slog.StringValue(util.BytesToString(util.RedactJSON([]byte(text))))
+			logValue = slog.StringValue(util.BytesToString(util.RedactJSON(jsonBytes)))
 		} else {
 			logValue = summarizeCallToolResult(finalResult)
 		}
