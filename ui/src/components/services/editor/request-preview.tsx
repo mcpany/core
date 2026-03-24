@@ -19,7 +19,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface RequestPreviewProps {
     call: HttpCallDefinition;
-    tool: any;
+    tool: ToolDefinition;
     serviceName?: string;
     onExecute?: (args: any) => void;
     executionResult?: any;
