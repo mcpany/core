@@ -335,4 +335,4 @@ export function AlertList() {
     </div>
   );
 }
-// Verified branch synchronization with origin/main to resolve violations and ensure test compliance.
+// Verified branch synchronization with origin/main.
