@@ -77,7 +77,7 @@ describe('ToolInspector', () => {
       </TooltipProvider>
     );
     expect(screen.getAllByText(/arg1/).length).toBeGreaterThan(0);
-    expect(screen.getByText(/string/)).toBeDefined();
+    expect(screen.getByText(/"string"/)).toBeDefined();
     // In a real DOM (not mocked Sheet), we would look for the input
   });
 });
