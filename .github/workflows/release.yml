@@ -69,46 +69,37 @@ jobs:
     timeout-minutes: 60
     strategy:
       matrix:
-        include:
-          - platform: linux/amd64
-            bazel_platform: k8
-          - platform: linux/arm64
-            bazel_platform: aarch64
-          - platform: linux/386
-            bazel_platform: //:linux_386 # Placeholder if needed
-          - platform: darwin/amd64
-            bazel_platform: darwin_x86_64
-          - platform: darwin/arm64
-            bazel_platform: darwin_arm64
-          - platform: windows/amd64
-            bazel_platform: windows_x86_64
+        platform:
+          [
+            linux/amd64,
+            linux/arm64,
+            linux/386,
+            darwin/amd64,
+            darwin/arm64,
+            windows/amd64,
+          ]
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Set up Bazel
-        uses: bazel-contrib/setup-bazel@0.18.0
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
-          bazelisk-cache: true
-          disk-cache: ${{ runner.os }}-bazel-disk-${{ hashFiles('**/BUILD', '**/BUILD.bazel', '**/*.bzl', 'WORKSPACE', 'MODULE.bazel') }}
-          repository-cache: true
+          go-version: "1.24"
+          cache: true
 
-      - name: Build binary
-        env:
-          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
+      - name: Prepare environment
+        id: prep
+        run: make prepare
+
+      - name: Build binaries
         run: |
-          GOOS=$(echo ${{ matrix.platform }} | cut -d'/' -f1)
-          GOARCH=$(echo ${{ matrix.platform }} | cut -d'/' -f2)
-          bazelisk build //server/cmd/server \
-            --config=remote \
-            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY \
-            --platforms=@rules_go//go/toolchain:${GOOS}_${GOARCH}
+          make release PLATFORMS=${{ matrix.platform }}
 
       - name: Package binaries
         id: package
         run: |
           RELEASE_DIR=./build/release
-          mkdir -p $RELEASE_DIR
           PLATFORM=${{ matrix.platform }}
           GOOS=${PLATFORM%/*}
           GOARCH=${PLATFORM#*/}
@@ -120,11 +111,6 @@ jobs:
           if [ "$GOOS" = "windows" ]; then
             BINARY_NAME=$BINARY_NAME.exe
           fi
-
-          # Find the built binary in bazel-out
-          # rules_go output for //server/cmd/server:server is usually server/cmd/server/server_/server
-          SRC_BIN=$(bazelisk cquery //server/cmd/server --output=files --platforms=@rules_go//go/toolchain:${GOOS}_${GOARCH})
-          cp $SRC_BIN $RELEASE_DIR/$BINARY_NAME
           zip -j $RELEASE_DIR/$BINARY_NAME.zip $RELEASE_DIR/$BINARY_NAME
 
       - name: Upload binaries artifact
@@ -170,119 +156,430 @@ jobs:
   # ==============================================================================
   docker-build:
     needs: setup
-    if: needs.setup.outputs.is_release == 'true'
-    name: Build & Push Docker Image (${{ matrix.platform }})
-    runs-on: ubuntu-latest
+    name: Docker Build ${{ matrix.platform }}
+    # Dynamic runner selection: Native ARM runner for arm64, Standard for amd64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
     strategy:
+      fail-fast: false
       matrix:
-        platform: [linux/amd64, linux/arm64]
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Set up Bazel
-        uses: bazel-contrib/setup-bazel@0.18.0
-        with:
-          bazelisk-cache: true
-          disk-cache: ${{ runner.os }}-bazel-docker-${{ hashFiles('**/BUILD', '**/BUILD.bazel', '**/*.bzl', 'WORKSPACE', 'MODULE.bazel') }}
-          repository-cache: true
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
+        shell: bash
 
-      - name: Log in to GHCR
+      - name: Cache Docker images
+        uses: ScribeMD/docker-cache@0.5.0
+        with:
+          key: docker-images-${{ runner.os }}-${{ matrix.platform }}-${{ steps.get-date.outputs.week }}
+
+      # Only setup QEMU if strictly necessary (e.g. if using ubuntu-latest for ARM)
+      # Since we are using native runners, this is mostly a fallback/safety.
+      - name: Set up QEMU
+        if: ${{ matrix.runner == 'ubuntu-latest' && matrix.platform != 'linux/amd64' }}
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          buildkitd-config-inline: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push Image
-        env:
-          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
+      - name: Prepare build context
         run: |
-          GOOS=$(echo ${{ matrix.platform }} | cut -d'/' -f1)
-          GOARCH=$(echo ${{ matrix.platform }} | cut -d'/' -f2)
-          TAG=$(echo ${{ github.ref_name }} | sed 's/^v//')
+          make -C server prepare-docker-context
 
-          bazelisk run //server/cmd/server:push \
-            --config=remote \
-            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY \
-            --platforms=@rules_go//go/toolchain:${GOOS}_${GOARCH} \
-            -- --remote_tags=latest,${TAG},${{ github.sha }}
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: server
+          file: server/docker/Dockerfile.server
+          platforms: ${{ matrix.platform }}
+          tags: |
+            ${{ needs.setup.outputs.tags_dockerhub }}
+            ${{ needs.setup.outputs.tags_ghcr }}
+          # Export as tarball for artifact upload
+          outputs: type=docker,dest=/tmp/server-image.tar
+          cache-from: type=gha,scope=${{ matrix.platform }}
+          # Optimized cache: use mode=max to cache layers
+          cache-to: type=gha,mode=max,scope=${{ matrix.platform }}
+
+      - name: Rename artifact
+        run: |
+          # Sanitize platform name for artifact filename
+          PLATFORM_SLUG=$(echo "${{ matrix.platform }}" | tr '/' '-')
+          mv /tmp/server-image.tar /tmp/server-image-${PLATFORM_SLUG}.tar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-image-${{ strategy.job-index }}
+          path: /tmp/server-image-*.tar
+          if-no-files-found: error
+          retention-days: 1
 
   # ==============================================================================
   # JOB 4: DOCKER MERGE
   # Combines the AMD64 and ARM64 digests into one "latest" tag
   # ==============================================================================
   docker-merge:
-    needs: [setup, docker-build]
-    if: needs.setup.outputs.is_release == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: [setup, docker-build]
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Log in to GHCR
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: server-image-*
+          merge-multiple: true
+          path: /tmp/images
+
+      - name: Load images
+        run: |
+          for tarball in /tmp/images/*.tar; do
+            echo "Loading $tarball..."
+            docker load --input "$tarball"
+          done
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          buildkitd-config-inline: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Finalize Multi-arch Manifest
+      - name: Push images and create manifest
+        if: github.event_name != 'pull_request'
         run: |
-          echo "Multi-arch images pushed via Bazel oci_push."
+          DOCKERHUB_IMAGE="${{ env.DOCKERHUB_IMAGE }}"
+          GHCR_IMAGE="${{ env.GHCR_IMAGE }}"
+          VERSION="${{ needs.setup.outputs.version }}"
+          IS_RELEASE="${{ needs.setup.outputs.is_release }}"
+
+          # Parse tags we expect to be on the loaded images
+          TAGS_DH="${{ needs.setup.outputs.tags_dockerhub }}"
+          TAGS_GH="${{ needs.setup.outputs.tags_ghcr }}"
+
+          # Convert comma-separated tags to arrays
+          IFS=',' read -ra ADDR_DH <<< "$TAGS_DH"
+          IFS=',' read -ra ADDR_GH <<< "$TAGS_GH"
+
+          # Arrays to hold the platform-specific tags for manifest creation
+          declare -A MANIFEST_TAGS_DH
+          declare -A MANIFEST_TAGS_GH
+
+          for tarball in /tmp/images/*.tar; do
+            # Extract platform slug from filename (e.g., server-image-linux-amd64.tar -> linux-amd64)
+            BASENAME=$(basename "$tarball" .tar)
+            PLATFORM_SLUG=${BASENAME#server-image-}
+
+            echo "Processing $tarball (Platform: $PLATFORM_SLUG)..."
+
+            # Load the image
+            # This restores the tags (e.g. mcpany/server:latest) pointing to this architecture's image
+            docker load --input "$tarball"
+
+            # Retag and Push DockerHub tags
+            for tag in "${ADDR_DH[@]}"; do
+              # tag is like mcpany/server:v1.2.3
+              ARCH_TAG="${tag}-${PLATFORM_SLUG}"
+              docker tag "$tag" "$ARCH_TAG"
+              docker push "$ARCH_TAG"
+
+              # Record this arch tag for the manifest of the base tag
+              MANIFEST_TAGS_DH["$tag"]="${MANIFEST_TAGS_DH["$tag"]} $ARCH_TAG"
+            done
+
+            # Retag and Push GHCR tags
+            for tag in "${ADDR_GH[@]}"; do
+              ARCH_TAG="${tag}-${PLATFORM_SLUG}"
+              docker tag "$tag" "$ARCH_TAG"
+              docker push "$ARCH_TAG"
+              MANIFEST_TAGS_GH["$tag"]="${MANIFEST_TAGS_GH["$tag"]} $ARCH_TAG"
+            done
+          done
+
+          # Create and Push Manifests for Docker Hub
+          for tag in "${!MANIFEST_TAGS_DH[@]}"; do
+            ARCH_TAGS=${MANIFEST_TAGS_DH["$tag"]}
+            echo "Creating manifest for $tag with: $ARCH_TAGS"
+            docker manifest create "$tag" $ARCH_TAGS
+            docker manifest push "$tag"
+          done
+
+          # Create and Push Manifests for GHCR
+          for tag in "${!MANIFEST_TAGS_GH[@]}"; do
+            ARCH_TAGS=${MANIFEST_TAGS_GH["$tag"]}
+            echo "Creating manifest for $tag with: $ARCH_TAGS"
+            docker manifest create "$tag" $ARCH_TAGS
+            docker manifest push "$tag"
+          done
+
+      - name: Inspect image
+        if: github.event_name != 'pull_request'
+        run: |
+          docker buildx imagetools inspect ${{ env.DOCKERHUB_IMAGE }}:${{ needs.setup.outputs.version }}
 
   # ==============================================================================
   # JOB 5: UI DOCKER BUILD (MATRIX)
   # ==============================================================================
   docker-build-ui:
     needs: setup
-    if: needs.setup.outputs.is_release == 'true'
-    name: Build & Push UI Docker Image (${{ matrix.platform }})
-    runs-on: ubuntu-latest
+    name: Docker Build UI ${{ matrix.platform }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
     strategy:
+      fail-fast: false
       matrix:
-        platform: [linux/amd64, linux/arm64]
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Set up Bazel
-        uses: bazel-contrib/setup-bazel@0.18.0
-        with:
-          bazelisk-cache: true
-          disk-cache: ${{ runner.os }}-bazel-ui-docker-${{ hashFiles('**/BUILD', '**/BUILD.bazel', '**/*.bzl', 'WORKSPACE', 'MODULE.bazel') }}
-          repository-cache: true
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
+        shell: bash
 
-      - name: Log in to GHCR
+      - name: Cache Docker images
+        uses: ScribeMD/docker-cache@0.5.0
+        with:
+          key: docker-images-ui-${{ runner.os }}-${{ matrix.platform }}-${{ steps.get-date.outputs.week }}
+
+      - name: Set up QEMU
+        if: ${{ matrix.runner == 'ubuntu-latest' && matrix.platform != 'linux/amd64' }}
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          buildkitd-config-inline: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push Image
-        env:
-          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ui/Dockerfile
+          platforms: ${{ matrix.platform }}
+          tags: |
+            ${{ needs.setup.outputs.tags_ui_dockerhub }}
+            ${{ needs.setup.outputs.tags_ui_ghcr }}
+          # Export as tarball for artifact upload
+          outputs: type=docker,dest=/tmp/ui-image.tar
+          cache-from: type=gha,scope=ui-${{ matrix.platform }}
+          cache-to: type=gha,mode=max,scope=ui-${{ matrix.platform }}
+
+      - name: Rename artifact
         run: |
-          GOOS=$(echo ${{ matrix.platform }} | cut -d'/' -f1)
-          GOARCH=$(echo ${{ matrix.platform }} | cut -d'/' -f2)
-          TAG=$(echo ${{ github.ref_name }} | sed 's/^v//')
+          # Sanitize platform name for artifact filename
+          PLATFORM_SLUG=$(echo "${{ matrix.platform }}" | tr '/' '-')
+          mv /tmp/ui-image.tar /tmp/ui-image-${PLATFORM_SLUG}.tar
 
-          bazelisk run //ui:push \
-            --config=remote \
-            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY \
-            --platforms=@rules_go//go/toolchain:${GOOS}_${GOARCH} \
-            -- --remote_tags=latest,${TAG},${{ github.sha }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-image-${{ strategy.job-index }}
+          path: /tmp/ui-image-*.tar
+          if-no-files-found: error
+          retention-days: 1
 
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests-ui
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests-ui/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-ui-${{ strategy.job-index }}
+          path: /tmp/digests-ui/*
+          if-no-files-found: error
+          retention-days: 1
+
+  # ==============================================================================
+  # JOB 6: UI DOCKER MERGE
+  # ==============================================================================
   docker-merge-ui:
-    needs: [setup, docker-build-ui]
-    if: needs.setup.outputs.is_release == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: [setup, docker-build-ui]
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Log in to GHCR
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ui-image-*
+          merge-multiple: true
+          path: /tmp/images-ui
+
+      - name: Load images
+        run: |
+          for tarball in /tmp/images-ui/*.tar; do
+            echo "Loading $tarball..."
+            docker load --input "$tarball"
+          done
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          buildkitd-config-inline: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Finalize Multi-arch Manifest
+      - name: Push images and create manifest
+        if: github.event_name != 'pull_request'
+        working-directory: /tmp/digests-ui
         run: |
-          echo "Multi-arch UI images pushed via Bazel oci_push."
+          VERSION="${{ needs.setup.outputs.version }}"
+          IS_RELEASE="${{ needs.setup.outputs.is_release }}"
+          DOCKERHUB_IMAGE="mcpany/ui"
+          # Assuming GHCR image follows pattern ghcr.io/mcpany/ui
+          GHCR_IMAGE="ghcr.io/mcpany/ui"
+
+          echo "Generating tags for Version: $VERSION (Is Release: $IS_RELEASE)"
+
+          TAGS_DH="${{ needs.setup.outputs.tags_ui_dockerhub }}"
+          TAGS_GH="${{ needs.setup.outputs.tags_ui_ghcr }}"
+
+
+          # Convert comma-separated tags to arrays
+          IFS=',' read -ra ADDR_DH <<< "$TAGS_DH"
+          IFS=',' read -ra ADDR_GH <<< "$TAGS_GH"
+
+          # Arrays to hold the platform-specific tags for manifest creation
+          declare -A MANIFEST_TAGS_DH
+          declare -A MANIFEST_TAGS_GH
+
+          for tarball in /tmp/images-ui/*.tar; do
+            # Extract platform slug from filename (e.g., ui-image-linux-amd64.tar -> linux-amd64)
+            BASENAME=$(basename "$tarball" .tar)
+            PLATFORM_SLUG=${BASENAME#ui-image-}
+
+            echo "Processing $tarball (Platform: $PLATFORM_SLUG)..."
+
+            # Load the image
+            docker load --input "$tarball"
+
+            # Retag and Push DockerHub tags
+            for tag in "${ADDR_DH[@]}"; do
+              ARCH_TAG="${tag}-${PLATFORM_SLUG}"
+              docker tag "$tag" "$ARCH_TAG"
+              docker push "$ARCH_TAG"
+              MANIFEST_TAGS_DH["$tag"]="${MANIFEST_TAGS_DH["$tag"]} $ARCH_TAG"
+            done
+
+            # Retag and Push GHCR tags
+            for tag in "${ADDR_GH[@]}"; do
+              ARCH_TAG="${tag}-${PLATFORM_SLUG}"
+              docker tag "$tag" "$ARCH_TAG"
+              docker push "$ARCH_TAG"
+              MANIFEST_TAGS_GH["$tag"]="${MANIFEST_TAGS_GH["$tag"]} $ARCH_TAG"
+            done
+          done
+
+          # Create and Push Manifests for Docker Hub
+          for tag in "${!MANIFEST_TAGS_DH[@]}"; do
+            ARCH_TAGS=${MANIFEST_TAGS_DH["$tag"]}
+            echo "Creating manifest for $tag with: $ARCH_TAGS"
+            docker manifest create "$tag" $ARCH_TAGS
+            docker manifest push "$tag"
+          done
+
+          # Create and Push Manifests for GHCR
+          for tag in "${!MANIFEST_TAGS_GH[@]}"; do
+            ARCH_TAGS=${MANIFEST_TAGS_GH["$tag"]}
+            echo "Creating manifest for $tag with: $ARCH_TAGS"
+            docker manifest create "$tag" $ARCH_TAGS
+            docker manifest push "$tag"
+          done
+
+      - name: Inspect image
+        if: github.event_name != 'pull_request'
+        run: |
+          docker buildx imagetools inspect mcpany/ui:${{ needs.setup.outputs.version }}
