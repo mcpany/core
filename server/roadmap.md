@@ -126,6 +126,10 @@
 *   **[P0] Relational PoI Enforcement**: Advanced intent-chain validation to prevent "Context-Mirroring" attacks. (Added: 2026-03-24)
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral profiling of un-attested configuration hooks. (Added: 2026-03-24)
 *   **[P1] BSH State Differential Sync**: Optimized binary state transfer that only sends deltas between agent handoffs. (Added: 2026-03-24)
+*   **[P0] Discovery-Phase Sandbox Middleware**: Ephemeral execution for discovery commands to neutralize startup-time RCE. (Added: 2026-03-24)
+*   **[P0] Lock-Free Teammate Coordination (LFTC)**: CRDT-based mailbox synchronization for horizontal swarms. (Added: 2026-03-24)
+*   **[P0] Argument-Level Semantic Validator (ALSV)**: Deep-inspection for command arguments to prevent shell-fallback exploits. (Added: 2026-03-24)
+*   **[P0] Task-Claim Integrity Provider**: Hardware-attested tokens for horizontal mesh task claiming. (Added: 2026-03-24)
 
 #### Upcoming (2026-03-20 Evolution)
 *   **[P0] Hardware-Attested Mission Manifest (HAMM) Provider**: Authoritative service for enforcing TPM-signed capability manifests. (Added: 2026-03-20)
@@ -852,3 +856,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Universal Multimodal Memory Bus (UMMB)**: Hardware-attested memory bus for state synchronization across disparate frameworks. (Added: 2026-07-01)
 *   **[P0] Zero-Knowledge Discovery Broker (ZKDB)**: Security middleware mandating cryptographic capability masking until mission-handshake. (Added: 2026-07-01)
 *   **[P0] Attention-Locked Reasoning Anchors (ALRA)**: Hardware-bound attention-pinning to prevent mission-root intent eviction. (Added: 2026-07-01)
+
+#### Upcoming (2026-03-24 Evolution - v2)
+*   **[P0] Relational PoI Validator**: Implementation of UACO v1.7 Intent Chain verification. (Added: 2026-03-24)
+*   **[P0] BSH State Buffer**: Memory-mapped binary transport for mitigation of "Token Storms". (Added: 2026-03-24)
+*   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral hook analysis. (Added: 2026-03-24)

@@ -689,3 +689,10 @@
 - [ ] **[P0] Multimodal Memory Bus Monitor**: (2026-07-01) Real-time visualization of intent-pinned state synchronization and multimodal sanitization events.
 - [ ] **[P0] ZK-Discovery Broker Workspace**: (2026-07-01) UI for reviewing masked capability cards and unmasking schemas via mission-handshakes.
 - [ ] **[P0] Attention Anchor Heatmap**: (2026-07-01) Visual tracker for ALRA-pinned intent fragments and attention-density alerts.
+
+#### Upcoming (2026-03-24 Evolution - v2)
+- [ ] **[P1] Intent Lineage Visualizer**: Real-time graph showing the chain of signed intents across the swarm. (Added: 2026-03-24)
+- [ ] **[P2] BSH Performance Monitor**: Metrics dashboard tracking binary state transfer latency and token savings. (Added: 2026-03-24)
+- [ ] **[P0] Discovery Sandbox Monitor**: Real-time visualization of sandboxed discovery command execution and safety attestation. (Added: 2026-03-24)
+- [ ] **[P0] Teammate Task List Viewer**: High-speed, CRDT-native visualization of the shared task list for horizontal swarms. (Added: 2026-03-24)
+- [ ] **[P0] ALSV Block List Explorer**: UI for reviewing and approving command arguments flagged by the semantic validator. (Added: 2026-03-24)
