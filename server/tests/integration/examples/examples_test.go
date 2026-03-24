@@ -4,11 +4,13 @@
 package examples_test
 
 import (
+	"context"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/config"
