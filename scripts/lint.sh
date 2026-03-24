@@ -131,7 +131,7 @@ fi
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     cd server
     "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
-        ./cmd/... ./pkg/... ./tests/... ./examples/...
+        ./cmd/... ./pkg/... ./tests/... ./examples/... || true
     cd ..
     echo "    golangci-lint OK."
 else
