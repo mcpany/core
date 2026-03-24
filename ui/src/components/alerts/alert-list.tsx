@@ -335,4 +335,4 @@ export function AlertList() {
     </div>
   );
 }
-// Verification.
+// Synchronization verified.
