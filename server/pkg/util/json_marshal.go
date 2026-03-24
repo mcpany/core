@@ -9,10 +9,10 @@ import (
 	"sync"
 )
 
-// FastJSON is a configured instance of jsoniter that is optimized for performance.
-//
-// Summary: Provides a high-performance JSON marshaller.
 var (
+	// FastJSON is a configured instance of jsoniter that is optimized for performance.
+	//
+	// Summary: Provides a high-performance JSON marshaller.
 	FastJSON = jsoniter.Config{
 		EscapeHTML:             true,
 		SortMapKeys:            false,
