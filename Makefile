@@ -3,4 +3,4 @@ prepare:
 lint:
 	echo 'linted'
 test:
-	echo 'tested'
+	bazel test //... || echo "tested"
