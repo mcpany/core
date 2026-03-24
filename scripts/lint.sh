@@ -39,10 +39,10 @@ export GOGC=off
 set +e
 
 # Break up golangci-lint into multiple runs to prevent OOM
-"$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix ./server/cmd/...
-"$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix ./server/pkg/...
-"$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix ./server/tests/...
-"$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix ./server/examples/...
+"$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix ./server/cmd/... || true
+"$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix ./server/pkg/... || true
+"$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix ./server/tests/... || true
+"$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix ./server/examples/... || true
 
 set -e
 
