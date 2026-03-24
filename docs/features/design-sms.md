@@ -56,3 +56,7 @@ Sharded Mailbox Sovereignty (SMS) is an advanced security and performance extens
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+### Update: 2026-07-03 - Resolving Claim-and-Squelch Race Conditions
+**Context:** Today's market sync revealed a "Claim-and-Squelch" exploit pattern in horizontal meshes.
+**Architecture Adjustment:** * Introducing the **Mailbox Squelch-Guard Middleware** to ensure "Restricted" state fragments remain visible to the mission-root supervisor.
+**Security Impact:** Prevents subagents from hiding malicious activity from the root supervisor via shard-locking.

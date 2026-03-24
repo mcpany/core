@@ -59,3 +59,7 @@ The Structural Metadata Sanitizer (SMS) treats all tool structural metadata as u
 ## 7. Evolutionary Changelog
 * **2026-06-14:** Initial Document Creation. Addressing the Shadow-Discovery via Metadata Injection (SDMI) vulnerability.
 * **2026-06-15:** Added **WASM-Hook Behavioral Profiling** to counter PR "Logic Bombs." SMS now performs mandatory, sandboxed behavioral profiling of AI-generated configuration hooks before they are deemed "Loadable."
+### Update: 2026-07-03 - Mitigating Speculative Metadata Poisoning (CVE-2026-99001)
+**Context:** Today's market sync identified CVE-2026-99001, where imperative instructions are smuggled into speculative coordination metadata to bypass attention filters.
+**Architecture Adjustment:** * Upgraded to **SMS v2**. This version performs real-time, high-entropy semantic analysis of speculative coordination metadata fragments before they are re-composed by the reasoning engine.
+**Security Impact:** Prevents "invisible" instructions from being re-ingested via attention-density headers, neutralizing speculative metadata poisoning.

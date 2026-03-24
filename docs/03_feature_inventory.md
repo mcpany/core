@@ -1559,6 +1559,18 @@
 - **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to act as the primary backend for the **AIR Hub** multi-agent quorums.
 - **Multimodal Inference-Time Sanitizer (MITS)**: (Re-affirmed P0) Upgraded with **MSE** capabilities for structural multimodal lineage.
 
+## Evolution: [2026-07-03] Updates
+
+### Proposed Additions
+- **Fluid Intent Re-composition (FIR) Guard**: (P0) Authoritative security service for validating hardware-attested mid-reasoning intent expansions to prevent "Bound-Drift."
+- **Stylometric-Locked Chain-of-Reason (SL-CoR)**: (P0) Advanced security middleware cryptographically binding agent stylometry to hardware-signed reasoning fragments.
+- **Speculative Metadata Sanitizer (SMS) v2**: (P0) Real-time, high-entropy semantic validator for speculative coordination metadata to neutralize CVE-2026-99001.
+- **Mailbox "Squelch-Guard" Middleware**: (P1) Security extension for the CRDT-native mailbox hub ensuring "Restricted" tasks remain visible to the mission-root supervisor.
+
+### Priority Shifts
+- **Reasoning Provenance Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SL-CoR** behavioral anchoring.
+- **Structural Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving to support the new **Speculative Metadata Sanitization** requirements.
+
 ## Evolution: [2026-07-01] Updates
 
 ### Proposed Additions

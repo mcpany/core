@@ -852,3 +852,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Universal Multimodal Memory Bus (UMMB)**: Hardware-attested memory bus for state synchronization across disparate frameworks. (Added: 2026-07-01)
 *   **[P0] Zero-Knowledge Discovery Broker (ZKDB)**: Security middleware mandating cryptographic capability masking until mission-handshake. (Added: 2026-07-01)
 *   **[P0] Attention-Locked Reasoning Anchors (ALRA)**: Hardware-bound attention-pinning to prevent mission-root intent eviction. (Added: 2026-07-01)
+
+#### Upcoming (2026-07-03 Evolution)
+*   **[P0] Fluid Intent Re-composition (FIR) Guard**: Authoritative security service for validating hardware-attested mid-reasoning intent expansions. (Added: 2026-07-03)
+*   **[P0] Stylometric-Locked Chain-of-Reason (SL-CoR)**: Advanced security middleware cryptographically binding agent stylometry to hardware-signed reasoning fragments. (Added: 2026-07-03)
+*   **[P0] Speculative Metadata Sanitizer (SMS) v2**: Real-time, high-entropy semantic validator for speculative coordination metadata. (Added: 2026-07-03)
+*   **[P1] Mailbox "Squelch-Guard" Middleware**: Security extension for the CRDT-native mailbox hub ensuring "Restricted" tasks remain visible to the mission-root supervisor. (Added: 2026-07-03)

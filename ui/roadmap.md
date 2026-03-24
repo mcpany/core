@@ -689,3 +689,9 @@
 - [ ] **[P0] Multimodal Memory Bus Monitor**: (2026-07-01) Real-time visualization of intent-pinned state synchronization and multimodal sanitization events.
 - [ ] **[P0] ZK-Discovery Broker Workspace**: (2026-07-01) UI for reviewing masked capability cards and unmasking schemas via mission-handshakes.
 - [ ] **[P0] Attention Anchor Heatmap**: (2026-07-01) Visual tracker for ALRA-pinned intent fragments and attention-density alerts.
+
+#### Upcoming (2026-07-03 Evolution)
+- [ ] **[P0] Fluid Intent Expansion Arbiter**: (2026-07-03) Interactive workspace for reviewing and approving hardware-attested intent re-compositions.
+- [ ] **[P0] Stylometric Alignment Dashboard v2**: (2026-07-03) Real-time tracker for SL-CoR consistency scores and behavioral mimicry alerts.
+- [ ] **[P0] Speculative Metadata Inspector**: (2026-07-03) Forensic UI for reviewing sanitized coordination metadata and CVE-2026-99001 alerts.
+- [ ] **[P1] Mailbox Squelch Monitor**: (2026-07-03) Visualization of "Restricted" task fragments to ensure mission-root oversight.
