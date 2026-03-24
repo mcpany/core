@@ -43,8 +43,10 @@ func TestLinter_Run_PlainTextSecrets(t *testing.T) {
 	assert.NoError(t, err)
 
 	found := false
+	msg := "Secret is stored in plain text. Use " +
+		"environment variables or file references for better security."
 	for _, r := range results {
-		if r.Severity == Warning && r.Message == "Secret is stored in plain text. Use environment variables or file references for better security." {
+		if r.Severity == Warning && r.Message == msg {
 			found = true
 			break
 		}
@@ -96,7 +98,8 @@ func TestLinter_Run_InsecureHTTP(t *testing.T) {
 
 	found := false
 	for _, r := range results {
-		if r.Severity == Warning && strings.Contains(r.Message, "insecure HTTP connection") {
+		if r.Severity == Warning &&
+			strings.Contains(r.Message, "insecure HTTP connection") {
 			found = true
 			break
 		}
@@ -125,7 +128,8 @@ func TestLinter_Run_CacheTTL(t *testing.T) {
 
 	found := false
 	for _, r := range results {
-		if r.Severity == Info && strings.Contains(r.Message, "Cache is configured but has 0 TTL") {
+		if r.Severity == Info &&
+			strings.Contains(r.Message, "Cache is configured but has 0 TTL") {
 			found = true
 			break
 		}

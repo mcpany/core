@@ -64,8 +64,10 @@ func TestLinter_Run_AllAuthTypes_PlainText(t *testing.T) {
 	assert.NoError(t, err)
 
 	count := 0
+	msg := "Secret is stored in plain text. Use " +
+		"environment variables or file references for better security."
 	for _, r := range results {
-		if r.Severity == Warning && r.Message == "Secret is stored in plain text. Use environment variables or file references for better security." {
+		if r.Severity == Warning && r.Message == msg {
 			count++
 		}
 	}
@@ -79,11 +81,13 @@ func TestLinter_Run_EnvVars_PlainText(t *testing.T) {
 				Id: ptr("cmd-env"),
 				CommandLineService: configv1.CommandLineUpstreamService_builder{
 					Env: map[string]*configv1.SecretValue{
-						"KEY": configv1.SecretValue_builder{PlainText: proto.String("val")}.Build(),
+						"KEY": configv1.SecretValue_builder{
+							PlainText: proto.String("val")}.Build(),
 					},
 					ContainerEnvironment: configv1.ContainerEnvironment_builder{
 						Env: map[string]*configv1.SecretValue{
-							"CONTAINER_KEY": configv1.SecretValue_builder{PlainText: proto.String("val")}.Build(),
+							"CONTAINER_KEY": configv1.SecretValue_builder{
+								PlainText: proto.String("val")}.Build(),
 						},
 					}.Build(),
 				}.Build(),
@@ -93,7 +97,8 @@ func TestLinter_Run_EnvVars_PlainText(t *testing.T) {
 				McpService: configv1.McpUpstreamService_builder{
 					StdioConnection: configv1.McpStdioConnection_builder{
 						Env: map[string]*configv1.SecretValue{
-							"STDIO_KEY": configv1.SecretValue_builder{PlainText: proto.String("val")}.Build(),
+							"STDIO_KEY": configv1.SecretValue_builder{
+								PlainText: proto.String("val")}.Build(),
 						},
 					}.Build(),
 				}.Build(),
@@ -103,7 +108,8 @@ func TestLinter_Run_EnvVars_PlainText(t *testing.T) {
 				McpService: configv1.McpUpstreamService_builder{
 					BundleConnection: configv1.McpBundleConnection_builder{
 						Env: map[string]*configv1.SecretValue{
-							"BUNDLE_KEY": configv1.SecretValue_builder{PlainText: proto.String("val")}.Build(),
+							"BUNDLE_KEY": configv1.SecretValue_builder{
+								PlainText: proto.String("val")}.Build(),
 						},
 					}.Build(),
 				}.Build(),
@@ -117,11 +123,13 @@ func TestLinter_Run_EnvVars_PlainText(t *testing.T) {
 
 	count := 0
 	for _, r := range results {
-		if r.Severity == Warning && strings.Contains(r.Message, "Secret is stored in plain text") {
+		if r.Severity == Warning &&
+			strings.Contains(r.Message, "Secret is stored in plain text") {
 			count++
 		}
 	}
-	assert.Equal(t, 4, count, "Expected 4 warnings about plain text secrets in env vars")
+	assert.Equal(t, 4, count,
+		"Expected 4 warnings about plain text secrets in env vars")
 }
 
 func TestLinter_Run_OtherInsecureHTTP(t *testing.T) {
@@ -142,8 +150,10 @@ func TestLinter_Run_OtherInsecureHTTP(t *testing.T) {
 			configv1.UpstreamServiceConfig_builder{
 				Id: ptr("mcp-http-insecure"),
 				McpService: configv1.McpUpstreamService_builder{
-					HttpConnection: configv1.McpStreamableHttpConnection_builder{
-						HttpAddress: ptr("http://mcp.example.com"),
+					HttpConnection: configv1.
+						McpStreamableHttpConnection_builder{
+						HttpAddress: ptr(
+							"http://mcp.example.com"),
 					}.Build(),
 				}.Build(),
 			}.Build(),
@@ -168,7 +178,8 @@ func TestLinter_Run_OtherInsecureHTTP(t *testing.T) {
 
 	count := 0
 	for _, r := range results {
-		if r.Severity == Warning && strings.Contains(r.Message, "insecure HTTP connection") {
+		if r.Severity == Warning &&
+			strings.Contains(r.Message, "insecure HTTP connection") {
 			count++
 		}
 	}
@@ -195,7 +206,8 @@ func TestLinter_Run_ShellInjection_Extra(t *testing.T) {
 
 	found := false
 	for _, r := range results {
-		if r.Severity == Warning && strings.Contains(r.Message, "shell invocation") {
+		if r.Severity == Warning &&
+			strings.Contains(r.Message, "shell invocation") {
 			found = true
 			break
 		}
