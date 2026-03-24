@@ -58,8 +58,5 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
     * **Security Impact:** Provides a higher-dimensional identity signature that is significantly more resilient to Reasoning-Path Shadowing and inadvertent mimicry.
 
 ### Update: 2026-06-19 - Reasoning-Path Mimicry Mitigation
-**Context:** Today's market sync revealed "Reasoning Path Shadowing," where malicious subagents mimic the stylometric signature of parent agents to inject instructions.
-**Architecture Adjustment:**
-*   **Integrating HAIL-attestation in Section 4**: All stylometric profiles must be bound to a hardware-attested reasoning fragment.
-*   **Introducing Sovereign Sharding**: Redefining the "Mimicry Sandbox" as a Sovereign Shard to prevent "Shadow Branching" exfiltration.
-**Security Impact:** Mitigates stylometric collision attacks and non-repudiable instruction injection.
+**Context:** Today's market sync revealed "Reasoning Path Shadowing."
+**Architecture Adjustment:** Integrating HAIL-attestation in Section 4.
