@@ -33,13 +33,4 @@ go_test(
         "integration",
         "manual",
     ],
-    deps = [
-        "@io_k8s_api//apps/v1:apps",
-        "@io_k8s_api//core/v1:core",
-        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
-        "@io_k8s_apimachinery//pkg/types",
-        "@io_k8s_client_go//kubernetes/scheme",
-        "@io_k8s_sigs_controller_runtime//pkg/client/fake",
-        "@io_k8s_sigs_controller_runtime//pkg/reconcile",
-    ],
 )
