@@ -29,20 +29,8 @@ go work sync
 
 CONFIG_PATH="${PROJECT_ROOT}/server/.golangci.yml"
 
-# We lint modules that have Go files and are part of the workspace.
-# We explicitly target directories with source code to avoid "no Go files" errors.
-
+# Lint everything via workspace
 echo "    Linting..."
-
-# server module
-"$LINT_BIN" run --timeout 10m --fix --config "$CONFIG_PATH" ./server/...
-
-# operator module
-"$LINT_BIN" run --timeout 10m --fix --config "$CONFIG_PATH" ./k8s/operator/...
-
-# greeter_server module (server package only)
-if [ -d "server/examples/upstream_service_demo/grpc/greeter_server/server" ]; then
-    "$LINT_BIN" run --timeout 5m --fix --config "$CONFIG_PATH" ./server/examples/upstream_service_demo/grpc/greeter_server/server/...
-fi
+"$LINT_BIN" run --timeout 20m --fix --config "$CONFIG_PATH" ./...
 
 echo "==> Lint complete."
