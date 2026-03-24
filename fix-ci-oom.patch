@@ -1,0 +1,12 @@
+--- .circleci/config.yml
++++ .circleci/config.yml
+@@ -5,7 +5,7 @@
+ executors:
+   default-executor:
+     docker:
+       - image: cimg/go:1.24
+-    resource_class: medium
++    resource_class: large
+
+ commands:
+   check-skip:

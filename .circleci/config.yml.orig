@@ -8,7 +8,7 @@ executors:
   default-executor:
     docker:
       - image: cimg/go:1.24
-    resource_class: large
+    resource_class: medium
 
 commands:
   check-skip:
