@@ -13,6 +13,7 @@ cd "$PROJECT_ROOT"
 
 echo "==> Running lint automation..."
 
+# Use Go 1.26.1 as it matches the project's go.work and go.mod files.
 export GOTOOLCHAIN=go1.26.1
 LINT_VERSION="v1.64.5"
 LINT_DIR="${PROJECT_ROOT}/build/env/bin"
@@ -36,11 +37,12 @@ echo "    Using linter: $($LINT_BIN --version)"
 CONFIG_PATH="${PROJECT_ROOT}/server/.golangci.yml"
 
 echo "    Linting modules from root with workspace enabled..."
-# Running from root with workspace should work.
-# We target all modules explicitly.
+# Running from root with workspace enabled.
+# We target each module to avoid directory patterns that might not contain Go files at the root level.
+# We skip the proto directory because it only contains generated files which are excluded by .golangci.yml anyway,
+# and it helps avoid errors if the linter sees it as an empty module.
 "$LINT_BIN" run --timeout 20m --fix --config "$CONFIG_PATH" \
     ./server/... \
-    ./proto/... \
     ./k8s/operator/... \
     ./server/examples/upstream_service_demo/grpc/greeter_server/...
 
