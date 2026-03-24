@@ -24,15 +24,15 @@ type Severity int
 const (
 	// Error indicates a critical issue that must be fixed.
 	//
-	// Summary: Defines the Error severity level.
+	// Summary: Defines Error.
 	Error Severity = iota
 	// Warning indicates a potential issue or best practice violation.
 	//
-	// Summary: Defines the Warning severity level.
+	// Summary: Defines Warning.
 	Warning
 	// Info indicates a suggestion or informational message.
 	//
-	// Summary: Defines the Info severity level.
+	// Summary: Defines Info.
 	Info
 )
 
@@ -222,13 +222,14 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 		case configv1.UpstreamServiceConfig_CommandLineService_case:
 			cmd := s.GetCommandLineService()
 			for k, v := range cmd.GetEnv() {
-				checkSecret(v, fmt.Sprintf("command_line_service.env[%s]", k),
-					s.GetName())
+				path := fmt.Sprintf("command_line_service.env[%s]", k)
+				checkSecret(v, path, s.GetName())
 			}
 			if ce := cmd.GetContainerEnvironment(); ce != nil {
 				for k, v := range ce.GetEnv() {
-					checkSecret(v, fmt.Sprintf("command_line_service."+
-						"container_environment.env[%s]", k), s.GetName())
+					path := fmt.Sprintf("command_line_service."+
+						"container_environment.env[%s]", k)
+					checkSecret(v, path, s.GetName())
 				}
 			}
 		case configv1.UpstreamServiceConfig_McpService_case:
@@ -237,14 +238,14 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 			case configv1.McpUpstreamService_StdioConnection_case:
 				stdio := mcp.GetStdioConnection()
 				for k, v := range stdio.GetEnv() {
-					checkSecret(v, fmt.Sprintf("mcp_service.stdio.env[%s]", k),
-						s.GetName())
+					path := fmt.Sprintf("mcp_service.stdio.env[%s]", k)
+					checkSecret(v, path, s.GetName())
 				}
 			case configv1.McpUpstreamService_BundleConnection_case:
 				bundle := mcp.GetBundleConnection()
 				for k, v := range bundle.GetEnv() {
-					checkSecret(v, fmt.Sprintf("mcp_service.bundle.env[%s]", k),
-						s.GetName())
+					path := fmt.Sprintf("mcp_service.bundle.env[%s]", k)
+					checkSecret(v, path, s.GetName())
 				}
 			}
 		}
