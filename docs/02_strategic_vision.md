@@ -1005,18 +1005,10 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Attention-Locked Context Windows**: Leveraging the HAAL standard, MCP Any will provide hardware-bound attention locking for mission-critical intent fragments, ensuring they remain "pinned" in the LLM context window despite high-entropy noise injections by subagents.
 
 ## Strategic Evolution: [2026-06-14]
-
 ### Focus: Coordination Sovereignty & Side-Channel Immunity
-
-**Context**: The emergence of "Identity-Decay Attacks" (IDA) confirms that
-attention pinning is no longer sufficient. Swarm security must now move to
-Coordination Sovereignty, utilizing hardware-locked handshakes and
-side-channel immunity filters.
-
-**Strategic Pivot**:
-- **Hardware-Locked Coordination Handshake (HLCH)**: MCP Any will mandate HLCH
-  v1.0 for all inter-agent task bidding and state fragments.
-- **Side-Channel Immunity Filtering**: We are upgrading the SCI interceptor to
-  include "Side-Channel Immunity" to detect hidden coordination signals.
-- **MRA-Backed Lineage Provider**: Every coordination fragment will be signed
-  using Mesh-Resident Attestation (MRA).
+The emergence of Identity-Decay Attacks (IDA) necessitates a transition from
+software-only "Attention Pinning" to hardware-locked "Coordination Sovereignty."
+We are prioritizing the implementation of HLCH (Hardware-Locked Coordination
+Handshake) to ensure that all inter-agent state fragments are cryptographically
+bound to the mission-root hardware lineage, neutralizing stylometric mimicry
+as an attack vector.
