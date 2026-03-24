@@ -63,5 +63,3 @@ repos:
             - -ignore
             - "**/*.pb.go"
             - -s=only
-
-# Force circleci cache bust
