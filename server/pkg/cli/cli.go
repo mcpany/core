@@ -47,6 +47,9 @@ func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 //
 // Returns:
 //   - (error): Result.
+// Errors:
+//   - Returns error on failure state.
+//
 func (e *JSONExecutor) Execute(data, result any) error {
 	if err := json.NewEncoder(e.in).Encode(data); err != nil {
 		return fmt.Errorf("failed to encode data: %w", err)

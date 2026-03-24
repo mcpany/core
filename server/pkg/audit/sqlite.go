@@ -169,6 +169,9 @@ func ensureColumn(db *sql.DB, colName string) error {
 // Returns:
 //   - error: An error if the write fails.
 //
+// Errors:
+//   - Returns error on failure state.
+//
 // Side Effects:
 //   - Inserts a row into the audit_logs table.
 func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
@@ -239,6 +242,9 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 // Returns:
 //   - []Entry: A slice of matching audit entries.
 //   - error: An error if the query fails.
+//
+// Errors:
+//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Executes a SELECT query on the database.
@@ -377,6 +383,9 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 //
 // Returns:
 //   - error: An error if closing fails.
+//
+// Errors:
+//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Closes the DB connection.

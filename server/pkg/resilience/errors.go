@@ -29,6 +29,9 @@ func (e *PermanentError) Error() string {
 //
 // Returns:
 //   - error: The original error.
+// Errors:
+//   - Returns error on failure state.
+//
 func (e *PermanentError) Unwrap() error {
 	return e.Err
 }

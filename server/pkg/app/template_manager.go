@@ -154,6 +154,9 @@ func (tm *TemplateManager) ListTemplates() []*configv1.UpstreamServiceConfig {
 //
 // Returns:
 //   - error: An error if persistence fails.
+// Errors:
+//   - Returns error on failure state.
+//
 func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig) error {
 	tm.mu.Lock()
 	found := false
@@ -188,6 +191,9 @@ func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig
 //
 // Returns:
 //   - error: An error if deletion or persistence fails.
+// Errors:
+//   - Returns error on failure state.
+//
 func (tm *TemplateManager) DeleteTemplate(idOrName string) error {
 	tm.mu.Lock()
 	newTemplates := make([]*configv1.UpstreamServiceConfig, 0, len(tm.templates))

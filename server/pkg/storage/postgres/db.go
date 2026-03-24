@@ -31,6 +31,9 @@ type DB struct {
 //   - *DB: The database connection.
 //   - error: An error if the connection fails.
 //
+// Errors:
+//   - Returns error on failure state.
+//
 // Side Effects:
 //   - Opens a network connection to the database.
 func NewDB(dsn string) (*DB, error) {
@@ -48,6 +51,9 @@ func NewDB(dsn string) (*DB, error) {
 // Returns:
 //   - *DB: The database connection.
 //   - error: An error if the connection fails.
+//
+// Errors:
+//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Opens a network connection to the database.
@@ -88,6 +94,9 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 // Returns:
 //   - *DB: The wrapped database connection.
 //   - error: An error if the connection is invalid (ping fails).
+//
+// Errors:
+//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Pings the database.

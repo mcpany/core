@@ -361,6 +361,9 @@ func (m *Manager) GetStats(serviceID string) Stats {
 //   - avgLatency (time.Duration): The average latency over the window.
 //   - errorRate (float64): The error rate over the window.
 //
+// Errors:
+//   - Returns error on failure state.
+//
 // Side Effects:
 //   - None.
 func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) (avgLatency time.Duration, errorRate float64) {

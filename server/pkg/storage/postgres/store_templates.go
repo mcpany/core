@@ -25,6 +25,9 @@ import (
 //   - []*configv1.ServiceTemplate: A list of service templates.
 //   - error: An error if the database operation fails.
 //
+// Errors:
+//   - Returns error on failure state.
+//
 // Side Effects:
 //   - Executes a SELECT query.
 func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error) {
@@ -64,6 +67,9 @@ func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTe
 // Returns:
 //   - *configv1.ServiceTemplate: The requested template, or nil if not found.
 //   - error: An error if the query fails.
+//
+// Errors:
+//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Executes a SELECT query.

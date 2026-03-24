@@ -26,6 +26,9 @@ import (
 //
 // Returns:
 //   - error: An error if validation fails.
+// Errors:
+//   - Returns error on failure state.
+//
 func IsValidBindAddress(s string) error {
 	_, port, err := net.SplitHostPort(s)
 	if err != nil {
@@ -384,6 +387,9 @@ func IsValidURL(s string) bool {
 //
 // Returns:
 //   - error: An error if validation fails.
+// Errors:
+//   - Returns error on failure state.
+//
 func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 	if def == nil {
 		return fmt.Errorf("http call definition cannot be nil")

@@ -70,6 +70,9 @@ func NewTextParser() *TextParser {
 // Returns:
 //   - []byte: The rendered output.
 //   - error: An error if transformation fails.
+// Errors:
+//   - Returns error on failure state.
+//
 func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 	return p.transformer.Transform(templateStr, data)
 }

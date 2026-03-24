@@ -30,6 +30,9 @@ type IPAllowlistMiddleware struct {
 // Returns:
 //   - *IPAllowlistMiddleware: The initialized middleware instance.
 //   - error: An error if any of the provided CIDRs are invalid.
+// Errors:
+//   - Returns error on failure state.
+//
 func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, error) {
 	m := &IPAllowlistMiddleware{}
 	if err := m.Update(allowedCIDRs); err != nil {
@@ -47,6 +50,9 @@ func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, er
 //
 // Returns:
 //   - error: An error if any of the provided CIDRs are invalid.
+// Errors:
+//   - Returns error on failure state.
+//
 func (m *IPAllowlistMiddleware) Update(allowedCIDRs []string) error {
 	nets := make([]*net.IPNet, 0, len(allowedCIDRs))
 	for _, cidr := range allowedCIDRs {

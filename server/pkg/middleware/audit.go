@@ -185,6 +185,9 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 //   - any: The result of the tool execution.
 //   - error: An error if the tool execution fails.
 //
+// Errors:
+//   - Returns error on failure state.
+//
 // Side Effects:
 //   - Writes an audit log entry to the configured store.
 func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
@@ -387,6 +390,9 @@ func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audi
 //
 // Returns:
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Closes the audit store connection.

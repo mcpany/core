@@ -127,6 +127,9 @@ type gzipResponseWriter struct {
 //   - int: The number of bytes written.
 //   - error: An error if the write fails.
 //
+// Errors:
+//   - Returns error on failure state.
+//
 // Side Effects:
 //   - Buffers data if the size is below the threshold.
 //   - Flushes buffer and writes to gzip writer if threshold is exceeded.

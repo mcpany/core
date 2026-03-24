@@ -112,6 +112,9 @@ func (s *WebhookAuditStore) worker() {
 // Returns:
 //   - error: An error if the queue is full.
 //
+// Errors:
+//   - Returns error on failure state.
+//
 // Side Effects:
 //   - Queues the entry for processing.
 func (s *WebhookAuditStore) Write(_ context.Context, entry Entry) error {
@@ -170,6 +173,9 @@ func (s *WebhookAuditStore) sendBatch(batch []Entry) {
 //   - []Entry: Always nil.
 //   - error: Always returns an error indicating not implemented.
 //
+// Errors:
+//   - Returns error on failure state.
+//
 // Side Effects:
 //   - None.
 func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
@@ -185,6 +191,9 @@ func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 //
 // Returns:
 //   - error: Always nil.
+//
+// Errors:
+//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Stops background workers and drains the queue.

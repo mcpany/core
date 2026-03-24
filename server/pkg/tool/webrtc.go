@@ -35,6 +35,9 @@ type peerConnectionWrapper struct {
 //
 // Returns:
 //   - error: An error if the operation fails.
+// Errors:
+//   - Returns error on failure state.
+//
 func (w *peerConnectionWrapper) Close() error {
 	if w.PeerConnection == nil {
 		return nil
@@ -202,6 +205,9 @@ func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The result of the execution.
 //   - error: An error if execution fails.
+// Errors:
+//   - Returns error on failure state.
+//
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized
@@ -358,6 +364,9 @@ func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *Executi
 //
 // Returns:
 //   - error: Always nil.
+// Errors:
+//   - Returns error on failure state.
+//
 func (t *WebrtcTool) Close() error {
 	if t.webrtcPool != nil {
 		_ = t.webrtcPool.Close()

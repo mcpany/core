@@ -37,6 +37,9 @@ type TextTemplate struct {
 //   - *TextTemplate: The parsed template.
 //   - error: An error if parsing fails.
 //
+// Errors:
+//   - Returns error on failure state.
+//
 // Side Effects:
 //   - Auto-detects if the template output is likely JSON to enable automatic escaping.
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {

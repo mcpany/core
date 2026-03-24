@@ -119,6 +119,9 @@ type localExecutor struct{}
 //   - <-chan int: A channel that receives the exit code.
 //   - error: An error if the operation fails.
 //
+// Errors:
+//   - Returns error on failure state.
+//
 // Side Effects:
 //   - Spawns a subprocess.
 func (e *localExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
@@ -183,6 +186,9 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 //   - io.ReadCloser: The standard error stream.
 //   - <-chan int: A channel that receives the exit code.
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Spawns a subprocess.
@@ -269,6 +275,9 @@ func newDockerExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 //   - io.ReadCloser: The standard error stream.
 //   - <-chan int: A channel that receives the exit code.
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Creates and starts a Docker container.
@@ -407,6 +416,9 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 //   - <-chan int: A channel that receives the exit code.
 //   - error: An error if the operation fails.
 //
+// Errors:
+//   - Returns error on failure state.
+//
 // Side Effects:
 //   - Creates and starts a Docker container.
 func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
@@ -539,6 +551,9 @@ type closeWriter struct {
 //   - int: The number of bytes written.
 //   - error: An error if the write fails.
 //
+// Errors:
+//   - Returns error on failure state.
+//
 // Side Effects:
 //   - Writes to the network connection.
 func (c *closeWriter) Write(p []byte) (n int, err error) {
@@ -554,6 +569,9 @@ func (c *closeWriter) Write(p []byte) (n int, err error) {
 //
 // Returns:
 //   - error: An error if closing fails.
+//
+// Errors:
+//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Closes the connection writer.

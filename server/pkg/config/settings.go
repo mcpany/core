@@ -93,6 +93,9 @@ func (s *Settings) ToProto() *configv1.GlobalSettings {
 // Returns:
 //   - error: An error if loading fails.
 //
+// Errors:
+//   - Returns error on failure state.
+//
 // Side Effects:
 //   - Modifies the global settings instance.
 //   - Initializes logging.

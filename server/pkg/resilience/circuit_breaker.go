@@ -77,6 +77,9 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 // Returns:
 //   - error: An error if the function fails or the breaker is open.
 //
+// Errors:
+//   - Returns error on failure state.
+//
 // Side Effects:
 //   - May change the state of the circuit breaker.
 //   - Executes the provided function.

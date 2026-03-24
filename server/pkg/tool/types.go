@@ -472,6 +472,9 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 //   - any: The execution result (usually a map or JSON string).
 //   - error: An error if execution fails.
 //
+// Errors:
+//   - Returns error on failure state.
+//
 // Side Effects:
 //   - Makes a gRPC call to the upstream service.
 //   - Updates metrics (latency, success/error counts).
@@ -786,6 +789,9 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
@@ -1536,6 +1542,9 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 //   - any: The execution result.
 //   - error: An error if execution fails.
 //
+// Errors:
+//   - Returns error on failure state.
+//
 // Side Effects:
 //   - Makes an MCP call to the upstream service.
 //   - Logs execution details.
@@ -1819,6 +1828,9 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
@@ -2223,6 +2235,9 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Executes a subprocess on the local system.
@@ -2641,6 +2656,9 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Executes a subprocess (potentially inside a container).

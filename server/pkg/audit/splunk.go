@@ -187,6 +187,9 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 // Returns:
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
+// Errors:
+//   - Returns error on failure state.
+//
 func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for splunk audit store")
 }
@@ -197,6 +200,9 @@ func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 //
 // Returns:
 //   - error: Always nil.
+//
+// Errors:
+//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Closes channels.

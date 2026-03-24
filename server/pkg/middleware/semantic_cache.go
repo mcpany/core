@@ -148,6 +148,9 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 // Returns:
 //   - error: An error if the storage operation fails.
 //
+// Errors:
+//   - Returns error on failure state.
+//
 // Side Effects:
 //   - Writes to the underlying VectorStore.
 func (c *SemanticCache) Set(ctx context.Context, key string, embedding []float32, result any, ttl time.Duration) error {
