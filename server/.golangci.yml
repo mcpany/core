@@ -42,6 +42,7 @@ issues:
     - vendor
     - node_modules
     - .cache
+    - bazel-.*
   exclude-rules:
     - path: "_test.go"
       linters:

@@ -4,7 +4,6 @@
 
 set -e
 
-# Support running from any directory
 PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 cd "$PROJECT_ROOT"
 
@@ -32,24 +31,8 @@ go work sync
 # Absolute path to config
 CONFIG_PATH="${PROJECT_ROOT}/server/.golangci.yml"
 
-# We run the linter on each module separately to be robust against CI environment differences.
-echo "    Linting modules..."
-
-lint_module() {
-    local mod_path=$1
-    echo "    -> Linting ${mod_path}..."
-    # Check if there are actually Go files that are not test files and not excluded
-    # We use a pattern that matches the module directory.
-    "$LINT_BIN" run --timeout 10m --fix --config "$CONFIG_PATH" "./${mod_path}/..."
-}
-
-lint_module "server"
-lint_module "k8s/operator"
-
-# Greeter server
-if [ -d "server/examples/upstream_service_demo/grpc/greeter_server/server" ]; then
-    echo "    -> Linting greeter_server..."
-    "$LINT_BIN" run --timeout 5m --fix --config "$CONFIG_PATH" ./server/examples/upstream_service_demo/grpc/greeter_server/server/...
-fi
+# With root (.) included in go.work, we can just run on ./...
+echo "    Linting all modules via workspace..."
+"$LINT_BIN" run --timeout 20m --fix --config "$CONFIG_PATH" ./...
 
 echo "==> Lint complete."
