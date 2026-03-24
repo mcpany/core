@@ -32,8 +32,8 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v35-lint-{{ checksum "server/go.sum" }}
-            - v35-lint-
+            - v38-lint-{{ checksum "server/go.sum" }}
+            - v38-lint-
       - run:
           name: Prepare and Run Lint
           command: |
@@ -41,9 +41,11 @@ jobs:
             export GOTOOLCHAIN=go1.26.1
             make prepare
             export PATH=$(pwd)/build/env/bin:$PATH
-            make lint VERBOSE=1
+            go version
+            go env
+            ./scripts/lint.sh
       - save_cache:
-          key: v35-lint-{{ checksum "server/go.sum" }}
+          key: v38-lint-{{ checksum "server/go.sum" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
@@ -70,8 +72,8 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v35-test-{{ checksum "server/go.sum" }}
-            - v35-test-
+            - v38-test-{{ checksum "server/go.sum" }}
+            - v38-test-
       - run:
           name: Run Tests
           command: |
@@ -83,7 +85,7 @@ jobs:
             make -C server test-fast
             make k8s-test || echo "k8s tests failed or skipped"
       - save_cache:
-          key: v35-test-{{ checksum "server/go.sum" }}
+          key: v38-test-{{ checksum "server/go.sum" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
