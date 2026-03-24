@@ -16,7 +16,7 @@ mkdir -p "$LINT_DIR"
 
 LINT_BIN="$LINT_DIR/golangci-lint"
 
-# Install golangci-lint if not present
+# Install golangci-lint if not present or wrong version/toolchain
 if [[ ! -x "$LINT_BIN" ]] || ! "$LINT_BIN" --version | grep -q "${LINT_VERSION}" || ! "$LINT_BIN" --version | grep -q "go1.26"; then
     echo "    Installing golangci-lint ${LINT_VERSION} with Go 1.26.1..."
     GOBIN="$LINT_DIR" go install github.com/golangci/golangci-lint/cmd/golangci-lint@${LINT_VERSION}
@@ -24,15 +24,15 @@ fi
 
 echo "    Using linter: $($LINT_BIN --version)"
 
-# Sync workspace
+# Sync workspace to ensure all dependencies are resolved
 echo "    Syncing workspace..."
 go work sync
 
 # Absolute path to config
 CONFIG_PATH="${PROJECT_ROOT}/server/.golangci.yml"
 
-# We run the linter separately for each module to avoid pattern mismatch issues.
-# We also avoid ./server/... if we can just point to the modules.
+# We run the linter on each module separately to be robust against CI environment differences.
+# We point to the configuration file explicitly.
 echo "    Linting modules..."
 
 echo "    -> Linting server..."
@@ -41,10 +41,8 @@ echo "    -> Linting server..."
 echo "    -> Linting k8s/operator..."
 "$LINT_BIN" run --timeout 10m --fix --config "$CONFIG_PATH" ./k8s/operator/...
 
-# Greeter server might not have Go files in its root
-if [ -d "server/examples/upstream_service_demo/grpc/greeter_server/server" ]; then
-    echo "    -> Linting greeter_server/server..."
-    "$LINT_BIN" run --timeout 5m --fix --config "$CONFIG_PATH" ./server/examples/upstream_service_demo/grpc/greeter_server/server/...
-fi
+echo "    -> Linting greeter_server..."
+# Note: we use ./server/examples/... because we are at the project root.
+"$LINT_BIN" run --timeout 5m --fix --config "$CONFIG_PATH" ./server/examples/upstream_service_demo/grpc/greeter_server/...
 
 echo "==> Lint complete."
