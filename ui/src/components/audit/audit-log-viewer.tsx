@@ -123,7 +123,7 @@ export function AuditLogViewer() {
         if (!jsonStr) return null;
         try {
             return JSON.parse(jsonStr);
-        } catch (e) {
+        } catch (_e) {
             return jsonStr;
         }
     };
