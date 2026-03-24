@@ -53,14 +53,7 @@ func TestHandleUserDetail_IDOR_Reproduction(t *testing.T) {
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, req)
 
-		// VULNERABILITY CHECK: Currently this likely returns 200 OK
-		if w.Code == http.StatusOK {
-			t.Logf("VULNERABILITY REPRODUCED: User 'victim-user' accessed 'admin-user' profile.")
-			t.Fail()
-			assert.Fail(t, "IDOR Vulnerability found!")
-		} else {
-			assert.Equal(t, http.StatusForbidden, w.Code)
-		}
+		assert.Equal(t, http.StatusForbidden, w.Code)
 	})
 
 	t.Run("Admin Access Victim Profile", func(t *testing.T) {
@@ -110,13 +103,9 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 		updatedUser, err := store.GetUser(context.Background(), "victim-user")
 		require.NoError(t, err)
 
-		// VULNERABILITY CHECK: The user should NOT have the admin role
-		for _, role := range updatedUser.GetRoles() {
-			if role == "admin" {
-				t.Logf("VULNERABILITY REPRODUCED: User 'victim-user' escalated privileges to 'admin'.")
-				t.Fail()
-				assert.Fail(t, "Privilege Escalation Vulnerability found!")
-			}
-		}
+		// Check that the role remains 'user'
+		roles := updatedUser.GetRoles()
+		assert.Equal(t, 1, len(roles))
+		assert.Equal(t, "user", roles[0])
 	})
 }
