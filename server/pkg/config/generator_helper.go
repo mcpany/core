@@ -5,21 +5,6 @@ package config
 
 import "strings"
 
-// normalizeHTTPMethod normalizes the HTTP method.
-//
-// Summary: Normalizes the HTTP method.
-//
-// Parameters:
-//   - input (string): The HTTP method to normalize.
-//
-// Returns:
-//   - string: The normalized HTTP method.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func normalizeHTTPMethod(input string) string {
 	upper := strings.ToUpper(strings.TrimSpace(input))
 	switch upper {

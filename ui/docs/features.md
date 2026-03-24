@@ -11,9 +11,6 @@ Detailed documentation for the MCP Any user interface capabilities.
 ## Observability
 - [Live Traces](features/traces.md) - Request lifecycle inspection.
 - [Logs](features/logs.md) - Centralized log streaming.
-- [Recursive Context](features/recursive_context.md) - Visualize state inheritance.
-- [HITL Approval](features/hitl.md) - Real-time approval flow.
-- [Universal Agent Bus](features/universal_agent_bus.md) - Multi-agent workflows.
 - [Network Graph](features/network.md) - Topology visualization.
 - [Alerts](features/alerts.md) - System notifications.
 

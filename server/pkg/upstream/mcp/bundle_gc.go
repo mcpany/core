@@ -35,60 +35,19 @@ var (
 )
 
 // trackBundle marks a service ID as active.
-//
-// Summary: Tracks a bundle.
-//
-// Parameters:
-//   - serviceID (string): The service ID.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Modifies global activeBundles map.
 func trackBundle(serviceID string) {
 	activeBundles.Store(serviceID, true)
 }
 
 // untrackBundle marks a service ID as inactive.
-//
-// Summary: Untracks a bundle.
-//
-// Parameters:
-//   - serviceID (string): The service ID.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Modifies global activeBundles map.
 func untrackBundle(serviceID string) {
 	activeBundles.Delete(serviceID)
 }
 
 // triggerGC checks if it's time to run garbage collection and starts it in a
 // background goroutine if necessary.
-// triggerGC checks if it's time to run garbage collection and starts it in a background goroutine if necessary.
-//
-// Summary: Triggers garbage collection.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Starts a goroutine.
+// triggerGC checks if it's time to run garbage collection and starts it in a
+// background goroutine if necessary.
 func triggerGC() {
 	now := time.Now().Unix()
 	last := lastGCTimestamp.Load()
@@ -103,21 +62,8 @@ func triggerGC() {
 	}
 }
 
-// runGC scans the bundle base directory and removes any directories that do not correspond to an active service ID.
-//
-// Summary: Runs garbage collection.
-//
-// Parameters:
-//   - baseDir (string): The base directory.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Deletes files and directories.
+// runGC scans the bundle base directory and removes any directories that do not
+// correspond to an active service ID.
 func runGC(baseDir string) {
 	log := logging.GetLogger()
 	entries, err := os.ReadDir(baseDir)
