@@ -9,7 +9,7 @@ import (
 
 // ToolSpec defines the desired state of Tool.
 type ToolSpec struct {
-	Name        string   `json:"name"`
+	Name        string   `json:"name" validate:"required"`
 	Description string   `json:"description"`
 	Command     []string `json:"command"`
 	Args        []string `json:"args"`

@@ -9,7 +9,7 @@ import (
 
 // MCPServerSpec defines the desired state of MCPServer.
 type MCPServerSpec struct {
-	Image       string `json:"image"`
+	Image       string `json:"image" validate:"required"`
 	Replicas    *int32 `json:"replicas"`
 	ConfigMap   string `json:"configMap"`
 	ServiceType string `json:"serviceType"`
