@@ -26,12 +26,14 @@ type MCPServerReconciler struct {
 	Scheme *runtime.Scheme
 }
 
+// Reconcile is part of the main kubernetes reconciliation loop which aims to
+// move the current state of the cluster closer to the desired state.
+//
 //+kubebuilder:rbac:groups=mcp.any,resources=mcpservers,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=mcp.any,resources=mcpservers/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=mcp.any,resources=mcpservers/finalizers,verbs=update
 //+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
-
 func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
@@ -175,6 +177,7 @@ func labelsForMCPServer(name string) map[string]string {
 	return map[string]string{"app": "mcp-server", "mcp_cr": name}
 }
 
+// SetupWithManager sets up the controller with the Manager.
 func (r *MCPServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&mcpv1alpha1.MCPServer{}).
