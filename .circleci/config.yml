@@ -65,8 +65,6 @@ jobs:
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
-            - "build/env/bin"
-            - "build/.cache"
             - "venv"
 
 workflows:
