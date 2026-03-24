@@ -50,13 +50,13 @@ var (
 // Summary: Executes Register operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -75,13 +75,13 @@ func Register(name string, factory Factory) {
 // Summary: Executes RegisterMCP operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -102,13 +102,13 @@ func RegisterMCP(name string, factory MCPFactory) {
 // Summary: Retrieves GetHTTPMiddlewares operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -146,13 +146,13 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 // Summary: Retrieves GetMCPMiddlewares operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -213,13 +213,13 @@ type StandardMiddlewares struct {
 // Summary: Executes InitStandardMiddlewares operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -410,6 +410,11 @@ func InitStandardMiddlewares(
 
 	// Smart Recovery
 	smartRecovery := NewSmartRecoveryMiddleware(smartRecoveryConfig, toolManager)
+
+	recursiveContext := NewRecursiveContextManager()
+	Register("recursive_context", func(_ *configv1.Middleware) func(http.Handler) http.Handler {
+		return recursiveContext.HandleContext
+	})
 	RegisterMCP("smart_recovery", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
 		return func(next mcp.MethodHandler) mcp.MethodHandler {
 			return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
@@ -433,11 +438,6 @@ func InitStandardMiddlewares(
 				return next(ctx, method, req)
 			}
 		}
-	})
-
-	recursiveContext := NewRecursiveContextManager()
-	Register("recursive_context", func(_ *configv1.Middleware) func(http.Handler) http.Handler {
-		return recursiveContext.HandleContext
 	})
 
 	a2aBridge := NewA2ABridgeMiddleware(recursiveContext)

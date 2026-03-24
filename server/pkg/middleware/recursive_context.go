@@ -32,114 +32,56 @@ type RecursiveContextManager struct {
 	sessions map[string]*SessionState
 }
 
-// NewRecursiveContextManager initializes and returns a new RecursiveContextManager.
-//
-// Parameters:
-//   - None.
+// NewRecursiveContextManager initializes a new manager.
 //
 // Returns:
-//   - *RecursiveContextManager: A pointer to the newly created manager instance.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Allocates memory for the manager and its internal session map.
-//
-// Summary: Initializes a new RecursiveContextManager.
+//   - *RecursiveContextManager: New instance.
 func NewRecursiveContextManager() *RecursiveContextManager {
 	return &RecursiveContextManager{
 		sessions: make(map[string]*SessionState),
 	}
 }
 
-// CreateSession generates a new recursive context session with the provided data.
+// CreateSession generates a new session.
 //
 // Parameters:
-//   - data (map[string]any): The initial state data to be stored.
-//   - ttl (time.Duration): The duration before the session expires.
+//   - data (map[string]any): Initial state.
+//   - ttl (time.Duration): Session expiration.
 //
 // Returns:
-//   - *SessionState: A pointer to the newly created session state.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Modifies the internal sessions map.
-//
-// Summary: Creates a new context session.
+//   - *SessionState: New session.
 func (m *RecursiveContextManager) CreateSession(data map[string]any, ttl time.Duration) *SessionState {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-
 	id := uuid.New().String()
 	now := time.Now()
-	session := &SessionState{
-		ID:        id,
-		Data:      data,
-		CreatedAt: now,
-		ExpiresAt: now.Add(ttl),
-	}
-	m.sessions[id] = session
-
-	// Simple cleanup of expired sessions during creation
-	for k, v := range m.sessions {
-		if now.After(v.ExpiresAt) {
-			delete(m.sessions, k)
-		}
-	}
-
-	return session
+	s := &SessionState{ID: id, Data: data, CreatedAt: now, ExpiresAt: now.Add(ttl)}
+	m.sessions[id] = s
+	return s
 }
 
-// GetSession retrieves an active context session by its unique identifier.
+// GetSession retrieves an active session.
 //
 // Parameters:
-//   - id (string): The unique UUID string of the session to retrieve.
+//   - id (string): Session UUID.
 //
 // Returns:
-//   - *SessionState: A pointer to the requested session state.
-//   - bool: True if the session was found and is active.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves an active context session by ID.
+//   - *SessionState: Session state if found and active.
+//   - bool: Success status.
 func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
-
-	session, exists := m.sessions[id]
-	if !exists {
+	s, e := m.sessions[id]
+	if !e || time.Now().After(s.ExpiresAt) {
 		return nil, false
 	}
-	if time.Now().After(session.ExpiresAt) {
-		return nil, false
-	}
-	return session, true
+	return s, true
 }
 
-// APIHandler constructs an HTTP handler for managing context sessions.
-//
-// Parameters:
-//   - None.
+// APIHandler constructs an HTTP handler for context management.
 //
 // Returns:
-//   - http.HandlerFunc: A handler function that processes context requests.
-//
-// Errors:
-//   - Returns HTTP 400 for invalid requests.
-//   - Returns HTTP 404 for missing sessions.
-//   - Returns HTTP 405 for unsupported methods.
-//
-// Side Effects:
-//   - Modifies the HTTP response writer.
-//
-// Summary: Returns an HTTP handler for the context session API.
+//   - http.HandlerFunc: Handler for POST/GET session requests.
 func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
@@ -148,81 +90,59 @@ func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 				TTL  int            `json:"ttl_seconds"`
 			}
 			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-				http.Error(w, "Invalid JSON body", http.StatusBadRequest)
+				http.Error(w, "Invalid JSON", 400)
 				return
 			}
 			ttl := time.Duration(req.TTL) * time.Second
 			if ttl == 0 {
-				ttl = 1 * time.Hour
+				ttl = time.Hour
 			}
-
-			session := m.CreateSession(req.Data, ttl)
+			s := m.CreateSession(req.Data, ttl)
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusCreated)
-			_ = json.NewEncoder(w).Encode(session)
+			_ = json.NewEncoder(w).Encode(s)
 			return
 		}
-
 		if r.Method == http.MethodGet {
 			id := r.URL.Query().Get("id")
 			if id == "" {
-				// Fallback to path segment
 				path := r.URL.Path
 				if idx := strings.LastIndex(path, "/"); idx != -1 {
 					id = path[idx+1:]
 				}
 			}
-
-			if id == "" || id == "session" {
-				http.Error(w, "Session ID required", http.StatusBadRequest)
-				return
-			}
-
-			session, exists := m.GetSession(id)
+			s, exists := m.GetSession(id)
 			if !exists {
-				http.Error(w, "Session not found", http.StatusNotFound)
+				http.Error(w, "Not found", 404)
 				return
 			}
-
 			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(session)
+			_ = json.NewEncoder(w).Encode(s)
 			return
 		}
-
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "Method not allowed", 405)
 	}
 }
 
 // RecursiveContextKeyType is a custom type for context keys.
 type RecursiveContextKeyType string
 
-const (
-	// RecursiveContextDataKey is the key for context data storage.
-	RecursiveContextDataKey RecursiveContextKeyType = "recursive_context_data"
-)
+// RecursiveContextDataKey is the key for context storage.
+const RecursiveContextDataKey RecursiveContextKeyType = "recursive_context_data"
 
-// HandleContext intercepts HTTP requests to inject recursive context state.
+// HandleContext intercepts requests to inject context.
 //
 // Parameters:
-//   - next (http.Handler): The next HTTP handler in the chain.
+//   - next (http.Handler): Chain successor.
 //
 // Returns:
-//   - http.Handler: A new HTTP handler with context injection logic.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Modifies the request context.
-//
-// Summary: Middleware for recursive context injection.
+//   - http.Handler: Wrapped handler.
 func (m *RecursiveContextManager) HandleContext(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		id := r.Header.Get("X-MCP-Parent-Context-ID")
 		if id != "" {
-			if session, exists := m.GetSession(id); exists {
-				ctx := context.WithValue(r.Context(), RecursiveContextDataKey, session.Data)
-				r = r.WithContext(ctx)
+			if s, exists := m.GetSession(id); exists {
+				r = r.WithContext(context.WithValue(r.Context(), RecursiveContextDataKey, s.Data))
 			}
 		}
 		next.ServeHTTP(w, r)

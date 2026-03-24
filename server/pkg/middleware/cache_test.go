@@ -479,7 +479,7 @@ func TestCachingMiddleware_SemanticCache(t *testing.T) {
 	assert.Equal(t, successResult, res1)
 	assert.Equal(t, 1, testTool.executeCount)
 
-	// ⚡ BOLT: Wait for async cache write to complete
+	// BOLT BOLT: Wait for async cache write to complete
 	// Retry until cache hit (executeCount doesn't increase)
 	req2 := &tool.ExecutionRequest{
 		ToolName:   testServiceToolName,

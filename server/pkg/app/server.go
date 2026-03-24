@@ -2110,11 +2110,6 @@ func (a *Application) runServerMode(
 		}
 	})))
 
-	// Register Debugger API if enabled
-	if standardMiddlewares != nil && standardMiddlewares.Debugger != nil {
-		mux.Handle("/debug/entries", authMiddleware(standardMiddlewares.Debugger.APIHandler()))
-	}
-
 	// Register Recursive Context Manager
 	if standardMiddlewares != nil && standardMiddlewares.RecursiveContext == nil {
 		standardMiddlewares.RecursiveContext = middleware.NewRecursiveContextManager()
@@ -2122,6 +2117,12 @@ func (a *Application) runServerMode(
 	if standardMiddlewares != nil {
 		mux.Handle("/context/session", authMiddleware(standardMiddlewares.RecursiveContext.APIHandler()))
 		mux.Handle("/context/session/", authMiddleware(standardMiddlewares.RecursiveContext.APIHandler()))
+	}
+
+	// Register Debugger API if enabled
+
+	if standardMiddlewares != nil && standardMiddlewares.Debugger != nil {
+		mux.Handle("/debug/entries", authMiddleware(standardMiddlewares.Debugger.APIHandler()))
 	}
 
 	httpBindAddress := bindAddress
@@ -2162,12 +2163,12 @@ func (a *Application) runServerMode(
 			finalHandler = standardMiddlewares.ContextOptimizer.Handler(finalHandler)
 		}
 		// Debugger (outer to capture optimized response)
-		if standardMiddlewares.Debugger != nil {
-			finalHandler = standardMiddlewares.Debugger.Handler(finalHandler)
-		}
 		// Recursive Context
 		if standardMiddlewares.RecursiveContext != nil {
 			finalHandler = standardMiddlewares.RecursiveContext.HandleContext(finalHandler)
+		}
+		if standardMiddlewares.Debugger != nil {
+			finalHandler = standardMiddlewares.Debugger.Handler(finalHandler)
 		}
 	}
 
@@ -2632,7 +2633,7 @@ func startGrpcServer(
 // wrapBindError checks if the error is a port conflict and returns a user-friendly error message.
 func wrapBindError(err error, serverType, address, flag string) error {
 	if strings.Contains(err.Error(), "address already in use") || strings.Contains(err.Error(), "bind: permission denied") {
-		return fmt.Errorf("❌ %s server failed to listen on %s: %w\n\n💡 Tip: The port is already in use or restricted. Try using a different port:\n   mcpany run %s <new_port>", serverType, address, err, flag)
+		return fmt.Errorf("[ERROR] %s server failed to listen on %s: %w\n\n[TIP] Tip: The port is already in use or restricted. Try using a different port:\n   mcpany run %s <new_port>", serverType, address, err, flag)
 	}
 	return fmt.Errorf("%s server failed to listen: %w", serverType, err)
 }
