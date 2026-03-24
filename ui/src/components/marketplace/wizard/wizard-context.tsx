@@ -29,6 +29,9 @@ export interface WizardWebhook {
     };
 }
 
+/**
+ * WizardState type definition.
+ */
 export interface WizardState {
     currentStep: WizardStep;
     config: Partial<UpstreamServiceConfig>;

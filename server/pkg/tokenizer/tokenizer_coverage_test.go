@@ -35,6 +35,21 @@ func TestSimpleTokenizeInt64Max(t *testing.T) {
 		{"digit_16", 9999999999999999, 4},
 		{"digit_17", 99999999999999999, 4},
 		{"digit_18", 999999999999999999, 4},
+		// Added coverage for negative large magnitudes (requires > 8 chars path)
+		{"min_int64_2", -9000000000000000000, 5},
+		{"digit_minus_8", -1000000, 2},
+		{"digit_minus_9", -10000000, 2},
+		{"digit_minus_10", -100000000, 2},
+		{"digit_minus_11", -1000000000, 2},
+		{"digit_minus_12", -10000000000, 3},
+		{"digit_minus_13", -100000000000, 3},
+		{"digit_minus_14", -1000000000000, 3},
+		{"digit_minus_15", -10000000000000, 3},
+		{"digit_minus_16", -100000000000000, 4},
+		{"digit_minus_17", -1000000000000000, 4},
+		{"digit_minus_18", -10000000000000000, 4},
+		{"digit_minus_19", -100000000000000000, 4},
+		{"digit_minus_20", -1000000000000000000, 5},
 	}
 
 	for _, tt := range tests {
