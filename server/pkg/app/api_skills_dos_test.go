@@ -26,7 +26,7 @@ func TestHandleUploadSkillAsset_DoS(t *testing.T) {
 	// Create a skill first so the request is valid otherwise
 	skillName := "dos-skill"
 	err := manager.CreateSkill(&skill.Skill{
-		Frontmatter: skill.Frontmatter{Name: skillName},
+		Frontmatter:  skill.Frontmatter{Name: skillName},
 		Instructions: "Test instructions",
 	})
 	require.NoError(t, err)

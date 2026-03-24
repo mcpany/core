@@ -40,7 +40,7 @@ func TestHandleUploadSkillAsset(t *testing.T) {
 	// Helper to create a skill
 	createSkill := func(name string) {
 		err := manager.CreateSkill(&skill.Skill{
-			Frontmatter: skill.Frontmatter{Name: name},
+			Frontmatter:  skill.Frontmatter{Name: name},
 			Instructions: "Test instructions",
 		})
 		require.NoError(t, err)
