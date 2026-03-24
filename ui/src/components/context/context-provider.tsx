@@ -102,21 +102,16 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
         setDisabledToolIds(new Set());
     };
 
-    // ⚡ BOLT: [Render Optimization] Combine array traversals to prevent O(2N) loop waste
-    // Randomized Selection from Top 5 High-Impact Targets
-    const { totalTokens, projectedTokens } = useMemo(() => {
-        let total = 0;
-        let projected = 0;
-        for (let i = 0; i < tools.length; i++) {
-            const tool = tools[i];
-            const cost = getToolCost(tool);
-            total += cost;
+    const totalTokens = useMemo(() => {
+        return tools.reduce((acc, tool) => acc + getToolCost(tool), 0);
+    }, [tools]);
+
+    const projectedTokens = useMemo(() => {
+        return tools.reduce((acc, tool) => {
             const id = `${tool.serviceId}.${tool.name}`;
-            if (!disabledToolIds.has(id)) {
-                projected += cost;
-            }
-        }
-        return { totalTokens: total, projectedTokens: projected };
+            if (disabledToolIds.has(id)) return acc;
+            return acc + getToolCost(tool);
+        }, 0);
     }, [tools, disabledToolIds]);
 
     const value = {
