@@ -129,7 +129,7 @@ fi
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    GOMEMLIMIT=1536MiB "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 2 \
+    GOMEMLIMIT=3072MiB GOGC=10 "$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 2 \
         ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
     echo "    golangci-lint OK."
 else
