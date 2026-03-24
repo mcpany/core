@@ -1534,3 +1534,14 @@
 ### Priority Shifts
 - **A2A Messaging Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Authenticated Discovery** to align with Gemini CLI v0.34.0.
 - **Policy Firewall**: (Re-affirmed P0) Expanded to include **Quota-Aware Execution** rules based on real-time usage metrics.
+
+## Evolution: [2026-06-30] Updates
+
+### Proposed Additions
+- **Hardware-Attested Intent Verification (HAIV)**: (P0) Authoritative "Intent Broker" service that cryptographically links teammate task-claims and mailbox messages to the mission root.
+- **Parallel Message Sovereignty (PMS)**: (P0) Infrastructure for cryptographically signed inter-teammate coordination, ensuring role-bound instruction validity.
+- **Multi-Modal Stylometric Anchoring**: (P1) Advanced identity extension for the SMM provider that anchors stylometric signatures to multi-modal traces (SVG/Audio).
+
+### Priority Shifts
+- **CRDT-Native Mailbox Sharding**: (Re-affirmed P0) Now elevated to a critical requirement for resolving the 2s+ coordination stall in Agent Teams.
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Evolving into the **PMS-compliant** sharded mailbox model.

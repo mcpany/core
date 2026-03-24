@@ -55,3 +55,11 @@ The Zero-Knowledge Discovery (ZKD) Proxy evolves the discovery process by mandat
 
 ## 7. Evolutionary Changelog
 * **2026-06-27:** Initial Document Creation.
+
+### Update: 2026-06-30 - Intent-Bound Discovery Verification
+**Context:** Today's market sync revealed that "Mailbox-Splicing" in parallel teams often begins with "Intent-Spoofing" during the discovery phase, where rogue teammates claim unauthorized roles.
+**Architecture Adjustment:**
+* Integrating with **Hardware-Attested Intent Verification (HAIV)** in Section 4.
+* Mandating that all ZKCP commitments include a cryptographically bound "Role-Intent" hash.
+* Unmasking the full schema now requires not only a hardware-bound mission token but also proof that the requesting agent's lineage is authorized for the specific "Role-Intent" claimed by the target.
+**Security Impact:** Prevents "Intent-Grafting" where a compromised specialist subagent attempts to discover and intercept tools intended for a different, higher-trust teammate.

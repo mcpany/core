@@ -672,3 +672,8 @@
 - [ ] **[P0] A2A Auth Status Dashboard**: (2026-03-23) Visualize authenticated inter-agent handshakes and peer-to-peer security status.
 - [ ] **[P1] Usage Quota Dashboard**: (2026-03-23) Real-time visualization of mission budget consumption and quota burn rates.
 - [ ] **[P1] Sandbox Identity Viewer**: (2026-03-23) Real-time status for gVisor-bound tools and execution environment integrity proofs.
+
+### Upcoming: [2026-06-30]
+- [ ] **[P0] Intent Continuity Dashboard**: (2026-06-30) Real-time visualization of HAIV-attested teammate task claims and mission-root alignment.
+- [ ] **[P0] Parallel Message Auditor**: (2026-06-30) Forensic UI for reviewing PMS-signed inter-teammate coordination logs.
+- [ ] **[P1] Multi-Modal Identity Heatmap**: (2026-06-30) Security visualizer for MMBA-anchored stylometric signatures.

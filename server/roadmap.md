@@ -835,3 +835,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Authentication Proxy**: Mandatory HTTP authentication gate for remote subagent discovery and task proposals (Gemini CLI v0.34.0 alignment). (Added: 2026-03-23)
 *   **[P1] Dynamic Usage Quota Monitor**: Real-time tracking and automated throttling based on credit/token consumption across frameworks. (Added: 2026-03-23)
 *   **[P1] gVisor-Bound Execution Identity**: Hardware-attested environment tokens for tools running in hardened gVisor sandboxes. (Added: 2026-03-23)
+
+#### Upcoming (2026-06-30 Evolution)
+*   **[P0] Hardware-Attested Intent Verification (HAIV)**: Authoritative intent broker linking teammate coordination to mission roots. (Added: 2026-06-30)
+*   **[P0] Parallel Message Sovereignty (PMS)**: Infrastructure for signed inter-teammate coordination. (Added: 2026-06-30)
+*   **[P1] Multi-Modal Stylometric Provider**: Identity extension for MMBA-anchored stylometric profiles. (Added: 2026-06-30)
