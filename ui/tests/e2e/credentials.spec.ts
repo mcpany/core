@@ -1,3 +1,4 @@
+import { seedGlobalState } from './test-data';
 /**
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -11,7 +12,7 @@ test.describe('Credentials Management', () => {
 
   test('should list, create, update and delete credentials', async ({ page }) => {
     // 1. Initial List (Empty)
-    await page.route('**/api/v1/credentials', async route => {
+
       if (route.request().method() === 'GET') {
         await route.fulfill({ json: [] });
       } else {
@@ -30,7 +31,7 @@ test.describe('Credentials Management', () => {
     };
 
     let created = false;
-    await page.route('**/api/v1/credentials', async route => {
+
       const method = route.request().method();
       if (method === 'POST') {
         created = true;
@@ -58,7 +59,7 @@ test.describe('Credentials Management', () => {
     await expect(page.locator('tbody').getByText('API Key', { exact: true })).toBeVisible();
 
     // 3. Update Credential
-    await page.route(`**/api/v1/credentials/${newCred.id}`, async route => {
+
         if (route.request().method() === 'PUT') {
              const data = route.request().postDataJSON();
              newCred.name = data.name;
@@ -69,7 +70,7 @@ test.describe('Credentials Management', () => {
     });
 
     // Refresh mock for list to return updated name
-    await page.route('**/api/v1/credentials', async route => {
+
         if (route.request().method() === 'GET') {
             await route.fulfill({ json: [newCred] });
         } else {
@@ -84,14 +85,14 @@ test.describe('Credentials Management', () => {
     await expect(page.getByText('Updated API Key')).toBeVisible();
 
     // 4. Delete Credential
-    await page.route(`**/api/v1/credentials/${newCred.id}`, async route => {
+
         if (route.request().method() === 'DELETE') {
              await route.fulfill({ status: 200 });
         }
     });
 
     // Refresh mock for list to return empty
-    await page.route('**/api/v1/credentials', async route => {
+
         if (route.request().method() === 'GET') {
             await route.fulfill({ json: [] });
         }

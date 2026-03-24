@@ -1,3 +1,4 @@
+import { seedGlobalState } from './test-data';
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -30,7 +31,7 @@ test.describe('Credential OAuth Flow E2E', () => {
 
     // We keep the OAuth mocking because we cannot easily integrate with real providers in this environment
     // But CRUD operations for credentials now go to the real backend.
-    await page.route((url) => url.pathname.includes('/auth/oauth/'), async route => {
+
         const urlStr = route.request().url();
         console.log(`OAuth mock hit for ${urlStr}`);
         if (urlStr.includes('/initiate')) {

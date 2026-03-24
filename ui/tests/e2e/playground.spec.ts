@@ -1,3 +1,4 @@
+import { seedGlobalState } from './test-data';
 /**
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -8,7 +9,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Playground Complex Schema Support', () => {
   test('should allow configuring and running a tool with complex nested schema', async ({ page }) => {
     // Mock the tools API to return a tool with complex schema
-    await page.route('**/api/v1/tools', async (route) => {
+
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -42,7 +43,7 @@ test.describe('Playground Complex Schema Support', () => {
     });
 
     // Mock the execute API
-    await page.route('**/api/v1/execute', async (route) => {
+
         const body = JSON.parse(route.request().postData() || '{}');
         await route.fulfill({
             status: 200,

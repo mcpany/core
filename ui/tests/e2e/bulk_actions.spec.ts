@@ -1,3 +1,4 @@
+import { seedGlobalState } from './test-data';
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -7,20 +8,15 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Bulk Service Actions', () => {
 
-  test.beforeEach(async ({ page }) => {
-    // Mock services API
-    await page.route('**/api/v1/services', async route => {
-        await route.fulfill({
-            json: [
-                { name: "service-1", httpService: { address: "http://localhost:8001" }, disable: false, tags: ["prod"] },
-                { name: "service-2", httpService: { address: "http://localhost:8002" }, disable: true, tags: ["dev"] },
-                { name: "service-3", httpService: { address: "http://localhost:8003" }, disable: false, tags: ["prod"] }
-            ]
-        });
-    });
+  test.beforeEach(async ({ page, request }) => {
+    await seedGlobalState(request);
+    await page.goto('/');
+});
+
+});
 
      // Mock doctor API
-    await page.route('**/doctor', async route => {
+
         await route.fulfill({
             status: 200,
             contentType: 'application/json',
@@ -64,7 +60,7 @@ test.describe('Bulk Service Actions', () => {
   test('should toggle services', async ({ page }) => {
       // Mock the toggle API
       const toggleRequests: string[] = [];
-      await page.route('**/api/v1/services/*', async route => {
+
           if (route.request().method() === 'PUT') {
               toggleRequests.push(route.request().url());
               await route.fulfill({ status: 200, json: {} });
@@ -92,7 +88,7 @@ test.describe('Bulk Service Actions', () => {
     test('should delete services', async ({ page }) => {
       // Mock the delete API
       const deleteRequests: string[] = [];
-      await page.route('**/api/v1/services/*', async route => {
+
           if (route.request().method() === 'DELETE') {
             deleteRequests.push(route.request().url());
             await route.fulfill({ status: 200 });

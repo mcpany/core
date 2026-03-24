@@ -1,3 +1,4 @@
+import { seedGlobalState } from './test-data';
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -9,7 +10,7 @@ test.describe('Resource Explorer', () => {
   test('should load resources and allow selection', async ({ page }) => {
     // Navigate to the resources page
     // Mock resources endpoint
-    await page.route('**/api/v1/resources', async route => {
+
         await route.fulfill({
             json: {
                 resources: [
@@ -22,7 +23,7 @@ test.describe('Resource Explorer', () => {
     });
 
     // Mock content endpoint
-    await page.route('**/api/v1/resources/read*', async route => {
+
         await route.fulfill({
             json: { contents: [{ mimeType: 'application/json', text: '{\n  "key": "value"\n}' }] }
         });
