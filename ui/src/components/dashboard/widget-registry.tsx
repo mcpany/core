@@ -132,6 +132,11 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
  * @param type - The widget type identifier.
  * @returns The widget definition if found, otherwise undefined.
  */
+// ⚡ BOLT: [Render Optimization] Use O(1) Map lookup instead of O(N) array search for widget definitions
+// Randomized Selection from Top 5 High-Impact Targets
+const _widgetDefMap = new Map<string, WidgetDefinition>();
+WIDGET_DEFINITIONS.forEach(w => _widgetDefMap.set(w.type, w));
+
 export const getWidgetDefinition = (type: string): WidgetDefinition | undefined => {
-    return WIDGET_DEFINITIONS.find(w => w.type === type);
+    return _widgetDefMap.get(type);
 };
