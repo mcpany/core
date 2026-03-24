@@ -12,11 +12,15 @@ import (
 )
 
 // Request represents a tool request.
+//
+// Summary: Represents the JSON-RPC request format accepted by this tool.
 type Request struct {
 	Name string `json:"name"`
 }
 
 // Response represents a tool response.
+//
+// Summary: Represents the JSON-RPC response format returned by this tool.
 type Response struct {
 	Message string `json:"message"`
 }

@@ -16,6 +16,8 @@ import (
 )
 
 // WebhookRequest matches the data payload sent by mcpany
+//
+// Summary: Represents the webhook payload sent from the MCP Any server containing tool execution context.
 type WebhookRequest struct {
 	Kind     int            `json:"kind"` // 1=PreCall, 2=PostCall
 	ToolName string         `json:"tool_name"`
@@ -23,6 +25,8 @@ type WebhookRequest struct {
 }
 
 // WebhookResponse matches the expected response data
+//
+// Summary: Represents the response sent back to MCP Any to allow or deny tool execution.
 type WebhookResponse struct {
 	Allowed bool    `json:"allowed"`
 	Status  *Status `json:"status,omitempty"`
@@ -30,6 +34,8 @@ type WebhookResponse struct {
 
 // Status represents the status of the webhook response.
 // It contains a code and a message.
+//
+// Summary: Represents the HTTP status code and message indicating the reason for the decision.
 type Status struct {
 	Code    int32  `json:"code"`
 	Message string `json:"message"`

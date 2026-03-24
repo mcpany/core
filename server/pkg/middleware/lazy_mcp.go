@@ -10,17 +10,29 @@ import (
 )
 
 // LazyMCPConfig defines the configuration for On-Demand Discovery filtering.
+//
+// Summary: Represents the configuration settings for the Lazy MCP middleware.
 type LazyMCPConfig struct {
 	Enabled   bool    `json:"enabled"`
 	Threshold float64 `json:"threshold"`
 }
 
 // LazyMCPMiddleware filters tools based on a simplistic similarity logic to prevent context pollution.
+//
+// Summary: Implements a middleware that filters available MCP tools based on request intent.
 type LazyMCPMiddleware struct {
 	config LazyMCPConfig
 }
 
 // NewLazyMCPMiddleware creates a new LazyMCPMiddleware.
+//
+// Summary: Initializes and returns a new LazyMCPMiddleware instance with the provided configuration.
+//
+// Parameters:
+//   - config (LazyMCPConfig): The configuration settings.
+//
+// Returns:
+//   - *LazyMCPMiddleware: A new instance of the middleware.
 func NewLazyMCPMiddleware(config LazyMCPConfig) *LazyMCPMiddleware {
 	return &LazyMCPMiddleware{
 		config: config,
@@ -29,6 +41,15 @@ func NewLazyMCPMiddleware(config LazyMCPConfig) *LazyMCPMiddleware {
 
 // FilterTools takes an original tool list result and an intent string (from the context or header),
 // and returns a new list of tools that are "similar" to the intent.
+//
+// Summary: Filters a list of MCP tools based on the user's current intent to reduce context size.
+//
+// Parameters:
+//   - res (*mcp.ListToolsResult): The original list of available tools.
+//   - intent (string): The detected intent or context to filter against.
+//
+// Returns:
+//   - *mcp.ListToolsResult: The filtered list of tools relevant to the intent.
 func (m *LazyMCPMiddleware) FilterTools(res *mcp.ListToolsResult, intent string) *mcp.ListToolsResult {
 	if !m.config.Enabled || intent == "" {
 		return res
