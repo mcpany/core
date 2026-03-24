@@ -1,5 +1,4 @@
 <!-- markdownlint-disable -->
-
 # Market Sync: [2026-06-18]
 
 ## Ecosystem Updates
