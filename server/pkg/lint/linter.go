@@ -18,11 +18,11 @@ import (
 type Severity int
 
 const (
-	// Error indicates a critical issue that must be fixed.
+	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
 	Error Severity = iota
-	// Warning indicates a potential issue or best practice violation.
+	// Warning indicates a potential issue or best practice violation that should be addressed.
 	Warning
-	// Info indicates a suggestion or informational message.
+	// Info indicates a suggestion or informational message for optimization or clarity.
 	Info
 )
 
@@ -48,7 +48,7 @@ type Result struct {
 	ServiceName string
 	// Message is the descriptive text of the finding.
 	Message string
-	// Path is the location in the configuration where the issue was found.
+	// Path is the location in the configuration where the issue was found (e.g., "upstream_services[0].auth").
 	Path string
 }
 

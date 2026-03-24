@@ -1,6 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package v1alpha1 contains API Schema definitions for the v1alpha1 API group.
 package v1alpha1
 
 import (
@@ -9,10 +10,14 @@ import (
 
 // ToolSpec defines the desired state of Tool.
 type ToolSpec struct {
-	Name        string   `json:"name" validate:"required"`
-	Description string   `json:"description"`
-	Command     []string `json:"command"`
-	Args        []string `json:"args"`
+	// Name is the unique name of the tool.
+	Name string `json:"name" validate:"required"`
+	// Description is a human-readable description of what the tool does.
+	Description string `json:"description"`
+	// Command is the command used to execute the tool.
+	Command []string `json:"command"`
+	// Args are the arguments passed to the tool command.
+	Args []string `json:"args"`
 }
 
 // ToolStatus defines the observed state of Tool.

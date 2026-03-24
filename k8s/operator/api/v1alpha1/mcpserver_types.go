@@ -1,6 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package v1alpha1 contains API Schema definitions for the v1alpha1 API group.
 package v1alpha1
 
 import (
@@ -9,14 +10,19 @@ import (
 
 // MCPServerSpec defines the desired state of MCPServer.
 type MCPServerSpec struct {
-	Image       string `json:"image" validate:"required"`
-	Replicas    *int32 `json:"replicas"`
-	ConfigMap   string `json:"configMap"`
+	// Image is the Docker image to run for the MCP Server.
+	Image string `json:"image" validate:"required"`
+	// Replicas is the number of desired instances of the MCP Server.
+	Replicas *int32 `json:"replicas"`
+	// ConfigMap is the name of the ConfigMap containing the MCP configuration.
+	ConfigMap string `json:"configMap"`
+	// ServiceType is the Kubernetes ServiceType for the MCP Server.
 	ServiceType string `json:"serviceType"`
 }
 
 // MCPServerStatus defines the observed state of MCPServer.
 type MCPServerStatus struct {
+	// AvailableReplicas is the number of available instances of the MCP Server.
 	AvailableReplicas int32 `json:"availableReplicas"`
 }
 
