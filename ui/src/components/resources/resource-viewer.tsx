@@ -65,7 +65,7 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
         if (src) {
             return (
                 <div className="flex items-center justify-center h-full bg-checkered p-4 overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    { }
                     <img
                         src={src}
                         alt={uri}
