@@ -42,6 +42,11 @@ issues:
     - node_modules
     - .cache
   exclude-rules:
+    - path: "pkg/tool/types.go"
+      linters:
+        - gocyclo
+        - gocognit
+        - funlen
     - path: "_test.go"
       linters:
         - "errcheck"
@@ -56,4 +61,3 @@ issues:
     - wsl
     - gci
     - gofumpt
-    - 'types\.go$'
