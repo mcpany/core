@@ -273,7 +273,7 @@ These features represent the next logical steps for the product, focusing on Ent
 
 ### Critical Areas (Refactoring Needed)
 
-*None at this time.*
+*   None at this time.*
 
 ### Warning Areas
 
