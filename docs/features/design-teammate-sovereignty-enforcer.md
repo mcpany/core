@@ -23,8 +23,8 @@ The Teammate Sovereignty Enforcer (TSE) provides a kernel-level isolation layer 
     * Providing OS-level virtualization for the LLM itself.
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Swarm Orchestrator (Lead Agent)
-* **Primary Goal:** Coordinate an "Executor" and a "Security Auditor" teammate without shared context leaks.
+* **User Persona:** Local LLM Swarm Orchestrator
+* **Primary Goal:** Share secure context between 3 agents without exposing local env vars.
 * **The Happy Path (Tasks):**
     1. Lead initializes a TSE mission with a TPM root token.
     2. Lead spawns teammates; TSE issues isolated identity shards.
