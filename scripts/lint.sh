@@ -46,14 +46,8 @@ fi
 # Build gen artifacts fully to avoid missing imports
 (cd server && make gen)
 
-# Run lint recursively on all packages safely and ignore typecheck issues if any
-for pkg in $(cd server && go list ./... | grep -v "/vendor/"); do
-    pkg_path=$(echo "$pkg" | sed 's|github.com/mcpany/core/server||')
-    if [ "$pkg_path" != "" ] && [ -d "server$pkg_path" ]; then
-        echo "Linting server$pkg_path"
-        (cd server && "$GOLANGCI_LINT_BIN" run $LINT_ARGS ".$pkg_path" || true)
-    fi
-done
+(cd server && "$GOLANGCI_LINT_BIN" run $LINT_ARGS ./... || true)
+
 cd "$PROJECT_ROOT"
 
 echo "Running pre-commit..."
