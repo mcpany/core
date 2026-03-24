@@ -3,35 +3,49 @@
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
-To prevent Recursive Shadow Handoffs (CVE-2026-71001), MCP Any needs a
-mechanism to track the depth of delegation chains.
+To neutralize Recursive Shadow Handoffs (CVE-2026-71001), MCP Any must track
+the depth of agent delegations. RDLE ensures that subagents cannot bypass
+guardrails by initiating unauthorized handoffs beyond a user-defined depth.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-  - Track recursive handoff depth.
-  - Enforce hard limits on delegation loops.
+  - Track recursive delegation depth via hardware-attested headers.
+  - Enforce hard-stop limits on handoff chains.
+  - Signal depth violations to the supervisor in real-time.
 * **Non-Goals:**
-  - Monitoring reasoning quality.
+  - Restricting horizontal swarm width (handled by the Reasoning-Budget
+    Firewall).
+  - Monitoring the *content* of the reasoning.
 
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Security Compliance Officer
-* **Primary Goal:** Prevent subagents from delegating tasks more than 3 levels
-  deep.
-* **Happy Path:**
-  1. Root agent initiates a task.
-  2. RDLE appends a signed depth-marker (d=0).
-  3. Subagent attempts level 4 delegation.
-  4. RDLE blocks the request and signals a guardrail violation.
+* **Primary Goal:** Prevent a coding agent from spawning a subagent that
+  spawns another deeper than 3 levels, ensuring human oversight for deep tasks.
+* **The Happy Path (Tasks):**
+  1. User sets a global `max_delegation_depth=3`.
+  2. A Level-2 subagent attempts to spawn a Level-3 agent.
+  3. RDLE appends a signed depth-marker (d=3) to the handoff token.
+  4. The Level-3 agent attempts a further spawn; RDLE blocks the request and
+     raises a P0 alert.
 
 ## 4. Design & Architecture
-RDLE utilizes hardware-attested headers to ensure markers cannot be stripped.
+* **System Flow:**
+  - [Agent Call] -> [RDLE Middleware] -> [Depth Validation] -> [Handoff
+  Approval]
+* **APIs / Interfaces:**
+  - Header: `X-UAB-Delegation-Depth` (Hardware-attested and monotonic).
+* **Data Storage/State:**
+  - Stateless validation via cryptographic lineage proofs.
 
 ## 5. Alternatives Considered
-* **Stateless Token Expire:** Rejected as it doesn't prevent horizontal branch
-  explosion.
+- **Stateless Token Expire**: Rejected because tokens can be stripped or
+  refreshed by compromised subagents; requires hardware-bound depth counters.
 
 ## 6. Cross-Cutting Concerns
-* **Observability:** Depth violations are exported to RL telemetry sinks.
+* **Security (Zero Trust):** Uses the SMI Relay to verify parentage and lineage
+  at each hop.
+* **Observability:** Depth-limit hits are visualized in the Swarm Anomaly
+  Dashboard and exported to RL telemetry sinks.
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.

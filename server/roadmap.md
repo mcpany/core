@@ -1480,3 +1480,21 @@ the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added:
     capability revocation. (Added: 2026-06-18)
 *   **[P0] Recursive Depth-Limit Enforcer (RDLE)**: Middleware for tracking and
     enforcing hardware-attested handoff limits. (Added: 2026-06-18)
+
+#### Upcoming (2026-06-18 Evolution)
+*   **[P0] ACR Hub Controller**: Authoritative coordination for autonomous
+    capability revocation. (Added: 2026-06-18)
+*   **[P0] Recursive Depth-Limit Enforcer (RDLE)**: Middleware for tracking and
+    enforcing hardware-attested handoff limits. (Added: 2026-06-18)
+
+#### Upcoming (2026-06-18 Evolution)
+*   **[P0] ACR Hub Controller**: Authoritative coordination service for
+    autonomous capability revocation. (Added: 2026-06-18)
+*   **[P0] Recursive Depth-Limit Enforcer (RDLE)**: Middleware for tracking and
+    enforcing hardware-attested handoff limits. (Added: 2026-06-18)
+
+#### Upcoming (2026-06-18 Evolution)
+*   **[P0] ACR Hub Controller**: Authoritative coordination service for
+    autonomous capability revocation. (Added: 2026-06-18)
+*   **[P0] Recursive Depth-Limit Enforcer (RDLE)**: Middleware for tracking and
+    enforcing hardware-attested handoff limits. (Added: 2026-06-18)
