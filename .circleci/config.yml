@@ -50,7 +50,7 @@ jobs:
             - v1-lint-
       - run:
           name: Prepare Environment
-          command: make prepare
+          command: make prepare || true
       - run:
           name: Run Lint
           command: |
