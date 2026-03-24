@@ -5,11 +5,10 @@
 
 
 import { test, expect } from '@playwright/test';
-import { seedPrompts, cleanupPrompts, seedUser, cleanupUser, seedGlobalState } from './test-data';
+import { seedPrompts, cleanupPrompts, seedUser, cleanupUser } from './test-data';
 
 test.describe('Prompts Workbench', () => {
   test.beforeEach(async ({ page, request }) => {
-      await seedGlobalState(request);
       await seedPrompts(request);
       await seedUser(request, "e2e-admin-prompts");
 
