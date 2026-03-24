@@ -18,7 +18,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, Download } from "lucide-react"
+import { ChevronDown, Download } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -85,6 +85,7 @@ export function DataTable<TData, TValue>({
 
     const header = columns
         .filter(c => c.id !== "select" && c.id !== "actions")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .map(c => c.id || (c as any).accessorKey)
         .join(",")
 
@@ -92,6 +93,7 @@ export function DataTable<TData, TValue>({
         return columns
             .filter(c => c.id !== "select" && c.id !== "actions")
             .map(c => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const val = row.getValue(c.id || (c as any).accessorKey)
                 return `"${String(val ?? "").replace(/"/g, '""')}"`
             })
