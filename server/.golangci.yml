@@ -1,7 +1,10 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 run:
-  timeout: 20m
-  tests: false
   go: "1.24"
+  timeout: 5m
+  tests: false
 
 linters:
   enable:
@@ -10,19 +13,47 @@ linters:
     - goconst
     - gocritic
     - gocyclo
-    - gofmt
-    - goimports
-    - gosimple
     - govet
-    - ineffassign
-    - misspell
+    - nolintlint
+    - prealloc
+    - revive
+    - gosec
     - staticcheck
-    - typecheck
+    - tparallel
     - unconvert
-    - unparam
     - unused
+    - misspell
+    - whitespace
+    - godot
+    - unparam
+    - nakedret
+    - dogsled
+    - asciicheck
+    - makezero
+    - nilerr
+    - noctx
+    - rowserrcheck
+    - sqlclosecheck
+    - wastedassign
 
 issues:
-  exclude-use-default: false
-  max-issues-per-linter: 0
-  max-same-issues: 0
+  exclude-dirs:
+    - build
+    - vendor
+    - node_modules
+    - .cache
+  exclude-rules:
+    - path: "_test.go"
+      linters:
+        - "errcheck"
+    - path: "pkg/util/"
+      linters:
+        - "revive"
+      text: "var-naming: avoid meaningless package names"
+  skip-files:
+    - '.*\.pb\.go$'
+    - lll
+    - funlen
+    - wsl
+    - gci
+    - gofumpt

@@ -593,8 +593,7 @@
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
 
-### Upcoming: [2026-06-19] (UI Strategic)
+### Upcoming (2026-06-19 UI Strategic Priorities)
 
-* [ ] **[P0] Lineage Inspector**: Visual "Chain of Command" tracer for HAIL fragments. (ID: HAIL-UI-2026-06-19)
-* [ ] **[P0] Stylometric Match Dashboard**: Real-time visualization of stylometric consistency scores for specialist teammates. (ID: SMM-UI-2026-06-19)
-* [ ] **[P0] Sovereign Shard Visualizer**: Interactive map of sharded mailbox isolation and mission-root anchoring. (ID: SMS-UI-2026-06-19)
+* [ ] **[P0] Lineage Inspector**: Visual "Chain of Command" tracer. (ID: HAIL-UI-2026-06-19)
+* [ ] **[P0] Sovereign Shard Visualizer**: Interactive map of isolation. (ID: SMS-UI-2026-06-19)
