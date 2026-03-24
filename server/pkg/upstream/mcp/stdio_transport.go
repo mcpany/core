@@ -34,31 +34,17 @@ type StdioTransport struct {
 	Command *exec.Cmd
 }
 
-// Connect starts the command and returns a connection.
+// Summary: Connect starts the command and returns a connection.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - mcp.Connection: The result.
+//   - mcp.Connection: The resulting mcp.Connection.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Connect operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -124,31 +110,17 @@ type stdioConn struct {
 	wg            sync.WaitGroup
 }
 
-// Read reads a JSON-RPC message from the standard output of the command.
+// Summary: Read reads a JSON-RPC message from the standard output of the command.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - jsonrpc.Message: The result.
+//   - jsonrpc.Message: The resulting jsonrpc.Message.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves Read operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -238,31 +210,17 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	return msg, nil
 }
 
-// Write writes a JSON-RPC message to the standard input of the command.
+// Summary: Write writes a JSON-RPC message to the standard input of the command.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
-//   - msg (jsonrpc.Message): The parameter.
+//   - _ (context.Context): The _ parameter.
+//   - msg (jsonrpc.Message): The msg parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Updates Write operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -305,27 +263,16 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	return c.encoder.Encode(wire)
 }
 
-// Close terminates the command and closes the streams.
+// Summary: Close terminates the command and closes the streams.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -344,24 +291,16 @@ func (c *stdioConn) Close() error {
 	return nil
 }
 
-// SessionID returns a static session ID for the stdio connection.
-//
-// Returns:
-//   - string: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes SessionID operation.
+// Summary: SessionID returns a static session ID for the stdio connection.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The resulting string.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -11,7 +11,7 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// HydrateFromFile reads the last N lines from the given log file, parses them (assuming JSON format), and populates the global broadcaster's history. This allows the UI to show historical logs upon connection, even after a server restart.
+// Summary: HydrateFromFile reads the last N lines from the given log file, parses them (assuming JSON format), and populates the global broadcaster's history. This allows the UI to show historical logs upon connection, even after a server restart.
 //
 // Parameters:
 //   - path (string): The path parameter.
@@ -21,20 +21,6 @@ import (
 //
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes HydrateFromFile operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

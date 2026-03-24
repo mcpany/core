@@ -28,29 +28,19 @@ import (
 //   - None.
 type Pool = pool.Pool[*client.WebsocketClientWrapper]
 
-// NewPool creates a new connection pool for WebSocket clients. It
-// configures the pool with a factory function that establishes new WebSocket
-// connections to the specified address.
+// Summary: NewPool creates a new connection pool for WebSocket clients. It configures the pool with a factory function that establishes new WebSocket connections to the specified address.
 //
 // Parameters:
-//   - maxSize: The maximum number of connections the pool can hold.
-//   - idleTimeout: The duration after which an idle connection may be closed.
-//   - address: The target URL of the WebSocket server.
+//   - maxSize (int): The maxSize parameter.
+//   - idleTimeout (time.Duration): The idleTimeout parameter.
+//   - address (string): The address parameter.
 //
 // Returns:
-//   - Pool: A new WebSocket client pool.
-//   - error: An error if the pool cannot be created.
-//
-// Summary: Initializes NewPool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Pool: The resulting Pool.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.

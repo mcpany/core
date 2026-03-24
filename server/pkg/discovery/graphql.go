@@ -27,18 +27,16 @@ type GraphQLProvider struct {
 	Endpoint string // e.g., "http://localhost:8080/graphql"
 }
 
-// Name returns the name of the provider.
-//
-// Summary: Executes Name operation.
+// Summary: Name returns the name of the provider. Executes Name operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The resulting string.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -46,18 +44,17 @@ func (p *GraphQLProvider) Name() string {
 	return "graphql"
 }
 
-// Discover attempts to find services and return their configurations.
-//
-// Summary: Executes Discover operation.
+// Summary: Discover attempts to find services and return their configurations. Executes Discover operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []*configv1.UpstreamServiceConfig: The resulting []*configv1.UpstreamServiceConfig.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.

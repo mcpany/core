@@ -50,30 +50,16 @@ type Upstream struct {
 	mu          sync.RWMutex
 }
 
-// CheckHealth performs a health check on the upstream service.
+// Summary: CheckHealth performs a health check on the upstream service.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes CheckHealth operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -92,25 +78,16 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return nil
 }
 
-// Shutdown gracefully terminates the WebSocket upstream service by shutting down
-// the associated connection pool.
+// Summary: Shutdown gracefully terminates the WebSocket upstream service by shutting down the associated connection pool.
 //
 // Parameters:
-//   - ctx: The context for the shutdown operation.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - error: An error if the shutdown operation fails, or nil on success.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -128,24 +105,16 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of WebsocketUpstream.
+// Summary: NewUpstream creates a new instance of WebsocketUpstream.
 //
 // Parameters:
-//   - poolManager: The connection pool manager to be used for managing WebSocket connections.
+//   - poolManager (*pool.Manager): The poolManager parameter.
 //
 // Returns:
-//   - upstream.Upstream: A new Upstream instance for WebSocket services.
-//
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - upstream.Upstream: The resulting upstream.Upstream.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -155,34 +124,24 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	}
 }
 
-// Register processes the configuration for a WebSocket service. It creates a
-// connection pool and registers tools for each call definition specified in the
-// configuration.
+// Summary: Register processes the configuration for a WebSocket service. It creates a connection pool and registers tools for each call definition specified in the configuration.
 //
 // Parameters:
-//   - ctx: The context for the registration process.
-//   - serviceConfig: The configuration for the upstream service.
-//   - toolManager: The manager where discovered tools will be registered.
-//   - promptManager: The manager where discovered prompts will be registered.
-//   - resourceManager: The manager where discovered resources will be registered.
-//   - isReload: Indicates whether this is an initial registration or a reload.
+//   - ctx (context.Context): The ctx parameter.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - promptManager (prompt.ManagerInterface): The promptManager parameter.
+//   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
+//   - isReload (bool): The isReload parameter.
 //
 // Returns:
-//   - string: A unique service key.
-//   - []*configv1.ToolDefinition: A list of discovered tool definitions.
-//   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
-//   - error: An error if registration fails.
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - string: The resulting string.
+//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
+//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.

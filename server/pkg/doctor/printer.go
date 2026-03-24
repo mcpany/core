@@ -10,31 +10,17 @@ import (
 	"text/tabwriter"
 )
 
-// PrintResults prints the doctor check results in a structured table to the provided writer.
-//
-// It formats the check results with status icons and alignment for readability.
+// Summary: PrintResults prints the doctor check results in a structured table to the provided writer. It formats the check results with status icons and alignment for readability.
 //
 // Parameters:
-//   - w: io.Writer. The writer to output the results to (e.g., os.Stdout). If nil, defaults to os.Stdout.
-//   - results: []CheckResult. The list of check results to print.
+//   - w (io.Writer): The w parameter.
+//   - results ([]CheckResult): The results parameter.
 //
 // Returns:
-//
-//	None.
-//
-// Side Effects:
-//   - Writes formatted text to the provided writer.
-//
-// Summary: Executes PrintResults operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

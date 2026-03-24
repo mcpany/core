@@ -87,27 +87,16 @@ type Server struct {
 	debug           bool
 }
 
-// Server returns the underlying *mcp.Server instance.
-//
-// It provides access to the core MCP server functionality, which can be used for advanced
-// configurations or direct interaction with the MCP server.
-//
-// Returns:
-//   - *mcp.Server: The underlying server instance.
-//
-// Side Effects:
-//   - Executes the middleware hook if configured.
-//
-// Summary: Executes Server operation.
+// Summary: Server returns the underlying *mcp.Server instance. It provides access to the core MCP server functionality, which can be used for advanced configurations or direct interaction with the MCP server.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *mcp.Server: The resulting *mcp.Server.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -120,42 +109,25 @@ func (s *Server) Server() *mcp.Server {
 	return s.server
 }
 
-// NewServer creates and initializes a new MCP Any Server.
-//
-// It sets up the necessary managers for tools, prompts, and resources, configures the router
-// with handlers for standard MCP methods, and establishes middleware for request processing,
-// such as routing and tool list filtering.
+// Summary: NewServer creates and initializes a new MCP Any Server. It sets up the necessary managers for tools, prompts, and resources, configures the router with handlers for standard MCP methods, and establishes middleware for request processing, such as routing and tool list filtering.
 //
 // Parameters:
-//   - ctx (context.Context): The application's root context.
-//   - toolManager (tool.ManagerInterface): Manages the lifecycle and access to tools.
-//   - promptManager (prompt.ManagerInterface): Manages the lifecycle and access to prompts.
-//   - resourceManager (resource.ManagerInterface): Manages the lifecycle and access to resources.
-//   - authManager (*auth.Manager): Handles authentication for incoming requests.
-//   - serviceRegistry (*serviceregistry.ServiceRegistry): Keeps track of all registered upstream services.
-//   - catalogManager (*catalog.Manager): Manages the dynamic service catalog.
-//   - bus (*bus.Provider): The event bus used for asynchronous communication between components.
-//   - debug (bool): Whether to enable debug mode.
+//   - _ (context.Context): The _ parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - promptManager (prompt.ManagerInterface): The promptManager parameter.
+//   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
+//   - authManager (*auth.Manager): The authManager parameter.
+//   - serviceRegistry (*serviceregistry.ServiceRegistry): The serviceRegistry parameter.
+//   - catalogManager (*catalog.Manager): The catalogManager parameter.
+//   - bus (*bus.Provider): The bus parameter.
+//   - debug (bool): The debug parameter.
 //
 // Returns:
-//   - *Server: A new instance of the Server.
-//   - error: An error if initialization fails.
-//
-// Side Effects:
-//   - Registers HTTP handlers.
-//   - Registers built-in tools.
-//   - Registers middleware.
-//
-// Summary: Initializes NewServer operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *Server: The resulting *Server.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -451,32 +423,18 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 	}
 }
 
-// ListPrompts handles the "prompts/list" MCP request.
-//
-// It retrieves the list of available prompts from the PromptManager, converts them to the MCP format,
-// and returns them to the client.
+// Summary: ListPrompts handles the "prompts/list" MCP request. It retrieves the list of available prompts from the PromptManager, converts them to the MCP format, and returns them to the client.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*mcp.ListPromptsRequest): The "prompts/list" request from the client.
+//   - _ (context.Context): The _ parameter.
+//   - _ (*mcp.ListPromptsRequest): The _ parameter.
 //
 // Returns:
-//   - *mcp.ListPromptsResult: A list of available prompts.
-//   - error: An error if the retrieval fails.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ListPrompts operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *mcp.ListPromptsResult: The resulting *mcp.ListPromptsResult.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -496,31 +454,18 @@ func (s *Server) ListPrompts(
 	}, nil
 }
 
-// CreateMessage requests a message creation from the client (sampling).
-//
-// This method exposes sampling to the Server instance if a session is available.
+// Summary: CreateMessage requests a message creation from the client (sampling). This method exposes sampling to the Server instance if a session is available.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - params (*mcp.CreateMessageParams): The parameters for the message creation.
+//   - ctx (context.Context): The ctx parameter.
+//   - params (*mcp.CreateMessageParams): The params parameter.
 //
 // Returns:
-//   - *mcp.CreateMessageResult: The result of the message creation.
-//   - error: An error if no active session is found in context or if the operation fails.
-//
-// Side Effects:
-//   - Sends a message creation request to the client.
-//
-// Summary: Initializes CreateMessage operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *mcp.CreateMessageResult: The resulting *mcp.CreateMessageResult.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -532,35 +477,18 @@ func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessagePar
 	return nil, fmt.Errorf("no active session found in context")
 }
 
-// GetPrompt handles the "prompts/get" MCP request.
-//
-// It retrieves a specific prompt by name from the PromptManager and executes it with the provided
-// arguments, returning the result.
+// Summary: GetPrompt handles the "prompts/get" MCP request. It retrieves a specific prompt by name from the PromptManager and executes it with the provided arguments, returning the result.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*mcp.GetPromptRequest): The "prompts/get" request from the client, containing the prompt name and arguments.
+//   - ctx (context.Context): The ctx parameter.
+//   - req (*mcp.GetPromptRequest): The req parameter.
 //
 // Returns:
-//   - *mcp.GetPromptResult: The result of the prompt execution.
-//   - error: An error if the prompt is not found or execution fails.
+//   - *mcp.GetPromptResult: The resulting *mcp.GetPromptResult.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - prompt.ErrPromptNotFound: If the requested prompt does not exist.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetPrompt operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -591,32 +519,18 @@ func (s *Server) GetPrompt(
 	return p.Get(ctx, argsBytes)
 }
 
-// ListResources handles the "resources/list" MCP request.
-//
-// It fetches the list of available resources from the ResourceManager, converts them to the MCP
-// format, and returns them to the client.
+// Summary: ListResources handles the "resources/list" MCP request. It fetches the list of available resources from the ResourceManager, converts them to the MCP format, and returns them to the client.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*mcp.ListResourcesRequest): The "resources/list" request from the client.
+//   - _ (context.Context): The _ parameter.
+//   - _ (*mcp.ListResourcesRequest): The _ parameter.
 //
 // Returns:
-//   - *mcp.ListResourcesResult: A list of available resources.
-//   - error: An error if the retrieval fails.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ListResources operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *mcp.ListResourcesResult: The resulting *mcp.ListResourcesResult.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -636,34 +550,18 @@ func (s *Server) ListResources(
 	}, nil
 }
 
-// ReadResource handles the "resources/read" MCP request.
-//
-// It retrieves a specific resource by its URI from the ResourceManager and returns its content.
+// Summary: ReadResource handles the "resources/read" MCP request. It retrieves a specific resource by its URI from the ResourceManager and returns its content.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*mcp.ReadResourceRequest): The "resources/read" request from the client, containing the URI of the resource.
+//   - ctx (context.Context): The ctx parameter.
+//   - req (*mcp.ReadResourceRequest): The req parameter.
 //
 // Returns:
-//   - *mcp.ReadResourceResult: The content of the resource.
-//   - error: An error if the resource is not found or reading fails.
+//   - *mcp.ReadResourceResult: The resulting *mcp.ReadResourceResult.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - resource.ErrResourceNotFound: If the requested resource does not exist.
-//
-// Side Effects:
-//   - Reads the resource content (may involve I/O).
-//
-// Summary: Retrieves ReadResource operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -688,27 +586,16 @@ func (s *Server) ReadResource(
 	return r.Read(ctx)
 }
 
-// AuthManager returns the server's authentication manager.
-//
-// It provides access to the authentication manager, which is responsible for handling
-// authentication for incoming requests.
-//
-// Returns:
-//   - *auth.Manager: The authentication manager instance.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes AuthManager operation.
+// Summary: AuthManager returns the server's authentication manager. It provides access to the authentication manager, which is responsible for handling authentication for incoming requests.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *auth.Manager: The resulting *auth.Manager.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -716,27 +603,16 @@ func (s *Server) AuthManager() *auth.Manager {
 	return s.authManager
 }
 
-// ToolManager returns the server's tool manager.
-//
-// It provides access to the tool manager, which is responsible for managing the lifecycle
-// and access to tools.
-//
-// Returns:
-//   - tool.ManagerInterface: The tool manager interface.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ToolManager operation.
+// Summary: ToolManager returns the server's tool manager. It provides access to the tool manager, which is responsible for managing the lifecycle and access to tools.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - tool.ManagerInterface: The resulting tool.ManagerInterface.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -744,27 +620,16 @@ func (s *Server) ToolManager() tool.ManagerInterface {
 	return s.toolManager
 }
 
-// PromptManager returns the server's prompt manager.
-//
-// It provides access to the prompt manager, which is responsible for managing the lifecycle
-// and access to prompts.
-//
-// Returns:
-//   - prompt.ManagerInterface: The prompt manager interface.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes PromptManager operation.
+// Summary: PromptManager returns the server's prompt manager. It provides access to the prompt manager, which is responsible for managing the lifecycle and access to prompts.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - prompt.ManagerInterface: The resulting prompt.ManagerInterface.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -772,27 +637,16 @@ func (s *Server) PromptManager() prompt.ManagerInterface {
 	return s.promptManager
 }
 
-// ResourceManager returns the server's resource manager.
-//
-// It provides access to the resource manager, which is responsible for managing the lifecycle
-// and access to resources.
-//
-// Returns:
-//   - resource.ManagerInterface: The resource manager interface.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ResourceManager operation.
+// Summary: ResourceManager returns the server's resource manager. It provides access to the resource manager, which is responsible for managing the lifecycle and access to resources.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - resource.ManagerInterface: The resulting resource.ManagerInterface.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -800,26 +654,16 @@ func (s *Server) ResourceManager() resource.ManagerInterface {
 	return s.resourceManager
 }
 
-// ServiceRegistry returns the server's service registry.
-//
-// It provides access to the service registry, which keeps track of all registered upstream services.
-//
-// Returns:
-//   - *serviceregistry.ServiceRegistry: The service registry instance.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ServiceRegistry operation.
+// Summary: ServiceRegistry returns the server's service registry. It provides access to the service registry, which keeps track of all registered upstream services.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *serviceregistry.ServiceRegistry: The resulting *serviceregistry.ServiceRegistry.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -827,25 +671,17 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 	return s.serviceRegistry
 }
 
-// AddServiceInfo adds information about a service to the tool manager.
+// Summary: AddServiceInfo adds information about a service to the tool manager.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier of the service.
-//   - info (*tool.ServiceInfo): The service information to add.
-//
-// Side Effects:
-//   - Updates the tool manager with service information.
-//
-// Summary: Executes AddServiceInfo operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - serviceID (string): The serviceID parameter.
+//   - info (*tool.ServiceInfo): The info parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -853,28 +689,17 @@ func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	s.toolManager.AddServiceInfo(serviceID, info)
 }
 
-// GetTool retrieves a tool by its name.
+// Summary: GetTool retrieves a tool by its name.
 //
 // Parameters:
-//   - toolName (string): The name of the tool to retrieve.
+//   - toolName (string): The toolName parameter.
 //
 // Returns:
-//   - tool.Tool: The tool instance if found.
-//   - bool: A boolean indicating whether the tool was found.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - tool.Tool: The resulting tool.Tool.
+//   - bool: The resulting bool.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -882,25 +707,16 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 	return s.toolManager.GetTool(toolName)
 }
 
-// ListTools returns a list of all available tools.
-//
-// Returns:
-//   - []tool.Tool: A slice of all available tools.
-//
-// Side Effects:
-//   - Logs the listing action.
-//   - Increments metrics counter.
-//
-// Summary: Executes ListTools operation.
+// Summary: ListTools returns a list of all available tools.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []tool.Tool: The resulting []tool.Tool.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -910,34 +726,18 @@ func (s *Server) ListTools() []tool.Tool {
 	return s.toolManager.ListTools()
 }
 
-// CallTool executes a tool with the provided request.
-//
-// It handles the execution of the tool, including logging, metrics collection, and profile-based
-// access control.
+// Summary: CallTool executes a tool with the provided request. It handles the execution of the tool, including logging, metrics collection, and profile-based access control.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the execution.
-//   - req (*tool.ExecutionRequest): The execution request containing tool name and arguments.
+//   - ctx (context.Context): The ctx parameter.
+//   - req (*tool.ExecutionRequest): The req parameter.
 //
 // Returns:
-//   - any: The result of the tool execution.
-//   - error: An error if the tool execution fails or access is denied.
-//
-// Side Effects:
-//   - Executes the tool (which may have side effects).
-//   - Logs execution details.
-//   - Updates metrics.
-//
-// Summary: Executes CallTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - any: The resulting any.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -1080,24 +880,16 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	return finalResult, nil
 }
 
-// SetMCPServer sets the MCP server provider for the tool manager.
+// Summary: SetMCPServer sets the MCP server provider for the tool manager.
 //
 // Parameters:
-//   - mcpServer (tool.MCPServerProvider): The MCP server provider to set.
-//
-// Side Effects:
-//   - Sets the MCP server provider in the tool manager.
-//
-// Summary: Updates SetMCPServer operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - mcpServer (tool.MCPServerProvider): The mcpServer parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1105,27 +897,16 @@ func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 	s.toolManager.SetMCPServer(mcpServer)
 }
 
-// AddTool registers a new tool with the tool manager.
+// Summary: AddTool registers a new tool with the tool manager.
 //
 // Parameters:
-//   - t (tool.Tool): The tool instance to register.
+//   - t (tool.Tool): The t parameter.
 //
 // Returns:
-//   - error: An error if the tool cannot be added (e.g., if it already exists).
-//
-// Side Effects:
-//   - Adds the tool to the tool manager.
-//
-// Summary: Executes AddTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -1133,28 +914,17 @@ func (s *Server) AddTool(t tool.Tool) error {
 	return s.toolManager.AddTool(t)
 }
 
-// GetServiceInfo retrieves information about a service by its ID.
+// Summary: GetServiceInfo retrieves information about a service by its ID.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier of the service.
+//   - serviceID (string): The serviceID parameter.
 //
 // Returns:
-//   - *tool.ServiceInfo: A pointer to the ServiceInfo if found.
-//   - bool: A boolean indicating whether the service was found.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetServiceInfo operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *tool.ServiceInfo: The resulting *tool.ServiceInfo.
+//   - bool: The resulting bool.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1166,24 +936,16 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 // This logic is removed as we moved to centralized profile management where loaded services are implicit.
 // If we need RBAC, it should be a separate concern.
 
-// ClearToolsForService removes all tools associated with a specific service.
+// Summary: ClearToolsForService removes all tools associated with a specific service.
 //
 // Parameters:
-//   - serviceKey (string): The identifier of the service whose tools should be cleared.
-//
-// Side Effects:
-//   - Removes tools associated with the service from the tool manager.
-//
-// Summary: Executes ClearToolsForService operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - serviceKey (string): The serviceKey parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1191,24 +953,16 @@ func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
 }
 
-// SetReloadFunc sets the function to be called when a configuration reload is triggered.
+// Summary: SetReloadFunc sets the function to be called when a configuration reload is triggered.
 //
 // Parameters:
-//   - f (func(context.Context) error): The function to execute on reload.
-//
-// Side Effects:
-//   - Stores the reload callback.
-//
-// Summary: Updates SetReloadFunc operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - f (func(context.Context) error): The f parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1216,27 +970,16 @@ func (s *Server) SetReloadFunc(f func(context.Context) error) {
 	s.reloadFunc = f
 }
 
-// Reload reloads the server's configuration and updates its state.
+// Summary: Reload reloads the server's configuration and updates its state.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the reload operation.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - error: An error if the reload function fails.
-//
-// Side Effects:
-//   - Executes the reload callback if set.
-//
-// Summary: Executes Reload operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -1363,26 +1106,16 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 //   - None.
 type LazyRedact []byte
 
-// LogValue implements slog.LogValuer.
-//
-// It returns a redacted log value.
-//
-// Returns:
-//   - slog.Value: The redacted value.
-//
-// Side Effects:
-//   - Performs JSON redaction on the byte slice.
-//
-// Summary: Executes LogValue operation.
+// Summary: LogValue implements slog.LogValuer. It returns a redacted log value.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - slog.Value: The resulting slog.Value.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1407,26 +1140,16 @@ type LazyLogResult struct {
 	Value any
 }
 
-// LogValue implements slog.LogValuer.
-//
-// It returns a summarized or redacted log value.
-//
-// Returns:
-//   - slog.Value: The log value.
-//
-// Side Effects:
-//   - May serialize or redact the result value.
-//
-// Summary: Executes LogValue operation.
+// Summary: LogValue implements slog.LogValuer. It returns a summarized or redacted log value.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - slog.Value: The resulting slog.Value.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

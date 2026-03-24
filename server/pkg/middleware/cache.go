@@ -71,7 +71,7 @@ type CachingMiddleware struct {
 	hasherPool      *sync.Pool
 }
 
-// NewCachingMiddleware creates a new CachingMiddleware. toolManager is the toolManager. Returns the result.
+// Summary: NewCachingMiddleware creates a new CachingMiddleware. toolManager is the toolManager. Returns the result.
 //
 // Parameters:
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
@@ -80,21 +80,7 @@ type CachingMiddleware struct {
 //   - *CachingMiddleware: The resulting *CachingMiddleware.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewCachingMiddleware operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -156,30 +142,16 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 	}
 }
 
-// SetProviderFactory allows overriding the default provider factory for testing. factory is the factory.
+// Summary: SetProviderFactory allows overriding the default provider factory for testing. factory is the factory.
 //
 // Parameters:
 //   - factory (ProviderFactory): The factory parameter.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Updates SetProviderFactory operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -187,11 +159,11 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 	m.providerFactory = factory
 }
 
-// Execute executes the caching middleware. ctx is the context for the request. req is the request object. next is the next. Returns the result. Returns an error if the operation fails.
+// Summary: Execute executes the caching middleware. ctx is the context for the request. req is the request object. next is the next. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The request object.
+//   - ctx (context.Context): The ctx parameter.
+//   - req (*tool.ExecutionRequest): The req parameter.
 //   - next (tool.ExecutionFunc): The next parameter.
 //
 // Returns:
@@ -200,20 +172,6 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 //
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Execute operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -509,30 +467,16 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	return sb.String()
 }
 
-// Clear clears the cache. ctx is the context for the request. Returns an error if the operation fails.
+// Summary: Clear clears the cache. ctx is the context for the request. Returns an error if the operation fails.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Clear operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

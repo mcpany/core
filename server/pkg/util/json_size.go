@@ -18,30 +18,16 @@ var jsonSizeVisitedPool = sync.Pool{
 	},
 }
 
-// EstimateJSONSize estimates the size of the JSON representation of a value. It avoids allocating the full JSON string by traversing the structure recursively. It supports standard Go types and respects basic JSON encoding rules.
+// Summary: EstimateJSONSize estimates the size of the JSON representation of a value. It avoids allocating the full JSON string by traversing the structure recursively. It supports standard Go types and respects basic JSON encoding rules.
 //
 // Parameters:
-//   - None
+//   - v (interface{}): The v parameter.
 //
 // Returns:
-//   - None
+//   - int: The resulting int.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes EstimateJSONSize operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -40,24 +40,16 @@ type Upstream struct {
 	mu sync.Mutex
 }
 
-// NewUpstream creates a new SQL upstream.
-//
-// Returns:
-//   - *Upstream: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewUpstream operation.
+// Summary: NewUpstream creates a new SQL upstream.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Upstream: The resulting *Upstream.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -65,30 +57,16 @@ func NewUpstream() *Upstream {
 	return &Upstream{}
 }
 
-// Shutdown closes the database connection.
+// Summary: Shutdown closes the database connection.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -105,10 +83,10 @@ func ptr(s string) *string {
 	return &s
 }
 
-// Register discovers and registers tools from the SQL configuration. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
+// Summary: Register discovers and registers tools from the SQL configuration. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //   - _ (prompt.ManagerInterface): The _ parameter.
@@ -123,20 +101,6 @@ func ptr(s string) *string {
 //
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

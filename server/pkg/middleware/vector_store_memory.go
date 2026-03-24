@@ -53,22 +53,16 @@ type VectorEntry struct {
 	Norm float32
 }
 
-// NewSimpleVectorStore creates a new SimpleVectorStore.
-// It initializes the store with a default configuration.
-//
-// Returns:
-//   - *SimpleVectorStore: A pointer to the newly created SimpleVectorStore.
-//
-// Summary: Initializes NewSimpleVectorStore operation.
+// Summary: NewSimpleVectorStore creates a new SimpleVectorStore. It initializes the store with a default configuration.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *SimpleVectorStore: The resulting *SimpleVectorStore.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -79,28 +73,20 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 	}
 }
 
-// Add adds a new entry to the vector store.
-// It evicts the oldest entry if the store exceeds the maximum number of entries for the key.
+// Summary: Add adds a new entry to the vector store. It evicts the oldest entry if the store exceeds the maximum number of entries for the key.
 //
 // Parameters:
-//   - key: The key associated with the entry.
-//   - vector: The embedding vector.
-//   - result: The result to cache.
-//   - ttl: The time-to-live for the entry.
+//   - _ (context.Context): The _ parameter.
+//   - key (string): The key parameter.
+//   - vector ([]float32): The vector parameter.
+//   - result (any): The result parameter.
+//   - ttl (time.Duration): The ttl parameter.
 //
 // Returns:
-//   - error: An error if the operation fails (currently always nil).
-//
-// Summary: Executes Add operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -130,28 +116,20 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 	return nil
 }
 
-// Search searches for the most similar entry in the vector store for the given key and query vector.
-// It returns the result, the similarity score, and a boolean indicating if a match was found.
+// Summary: Search searches for the most similar entry in the vector store for the given key and query vector. It returns the result, the similarity score, and a boolean indicating if a match was found.
 //
 // Parameters:
-//   - key: The key to search for.
-//   - query: The query vector.
+//   - _ (context.Context): The _ parameter.
+//   - key (string): The key parameter.
+//   - query ([]float32): The query parameter.
 //
 // Returns:
-//   - any: The cached result if found.
-//   - float32: The similarity score (cosine similarity).
-//   - bool: True if a match was found, false otherwise.
-//
-// Summary: Executes Search operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - any: The resulting any.
+//   - float32: The resulting float32.
+//   - bool: The resulting bool.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -190,21 +168,17 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 	return bestResult, bestScore, true
 }
 
-// Prune removes expired entries from the vector store for the given key.
+// Summary: Prune removes expired entries from the vector store for the given key.
 //
 // Parameters:
-//   - key: The key to prune entries for.
-//
-// Summary: Executes Prune operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
+//   - key (string): The key parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

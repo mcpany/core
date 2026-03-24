@@ -119,30 +119,16 @@ func isGitHubURL(rawURL string) bool {
 	return githubURLRe.MatchString(rawURL)
 }
 
-// ToRawContentURL constructs the raw content URL for the configured GitHub path.
+// Summary: ToRawContentURL constructs the raw content URL for the configured GitHub path.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - string: The resulting string.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes ToRawContentURL operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

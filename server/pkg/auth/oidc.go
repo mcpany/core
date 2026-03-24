@@ -54,10 +54,10 @@ type OIDCProvider struct {
 	oauth2Config oauth2.Config
 }
 
-// NewOIDCProvider creates a new OIDCProvider. ctx is the context for the request. config holds the configuration settings. Returns the result. Returns an error if the operation fails.
+// Summary: NewOIDCProvider creates a new OIDCProvider. ctx is the context for the request. config holds the configuration settings. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //   - config (OIDCConfig): The config parameter.
 //
 // Returns:
@@ -66,20 +66,6 @@ type OIDCProvider struct {
 //
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewOIDCProvider operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -107,31 +93,17 @@ func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, err
 	}, nil
 }
 
-// HandleLogin initiates the OIDC login flow. w is the HTTP response writer. r is the HTTP request.
+// Summary: HandleLogin initiates the OIDC login flow. w is the HTTP response writer. r is the HTTP request.
 //
 // Parameters:
 //   - w (http.ResponseWriter): The w parameter.
 //   - r (*http.Request): The r parameter.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes HandleLogin operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -157,31 +129,17 @@ func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, p.oauth2Config.AuthCodeURL(state), http.StatusFound)
 }
 
-// HandleCallback handles the OIDC provider callback. w is the HTTP response writer. r is the HTTP request.
+// Summary: HandleCallback handles the OIDC provider callback. w is the HTTP response writer. r is the HTTP request.
 //
 // Parameters:
 //   - w (http.ResponseWriter): The w parameter.
 //   - r (*http.Request): The r parameter.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes HandleCallback operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

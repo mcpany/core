@@ -48,24 +48,16 @@ type Upstream struct {
 	checker health.Checker
 }
 
-// NewUpstream creates a new instance of FilesystemUpstream.
-//
-// Returns:
-//   - upstream.Upstream: A new instance of the filesystem upstream.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewUpstream operation.
+// Summary: NewUpstream creates a new instance of FilesystemUpstream.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - upstream.Upstream: The resulting upstream.Upstream.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -75,28 +67,16 @@ func NewUpstream() upstream.Upstream {
 	}
 }
 
-// Shutdown implements the upstream.Upstream interface.
+// Summary: Shutdown implements the upstream.Upstream interface.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - error: Always returns nil.
-//
-// Side Effects:
-//   - Stops the health checker.
-//   - Closes all registered filesystem providers.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -113,37 +93,24 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// Register processes the configuration for a filesystem service.
+// Summary: Register processes the configuration for a filesystem service.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the registration process.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
-//   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
-//   - _ (prompt.ManagerInterface): Unused prompt manager.
-//   - _ (resource.ManagerInterface): Unused resource manager.
-//   - _ (bool): Unused reload flag.
+//   - ctx (context.Context): The ctx parameter.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - _ (prompt.ManagerInterface): The _ parameter.
+//   - _ (resource.ManagerInterface): The _ parameter.
+//   - _ (bool): The _ parameter.
 //
 // Returns:
-//   - string: The unique service ID.
-//   - []*configv1.ToolDefinition: A list of registered tool definitions.
-//   - []*configv1.ResourceDefinition: Always nil.
-//   - error: An error if registration fails.
-//
-// Side Effects:
-//   - Creates a filesystem provider.
-//   - Starts a health checker.
-//   - Registers tools with the tool manager.
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - string: The resulting string.
+//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
+//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.

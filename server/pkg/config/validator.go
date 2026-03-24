@@ -192,30 +192,16 @@ type ValidationError struct {
 	Err         error
 }
 
-// Error returns the formatted error message. Side Effects: - None.
+// Summary: Error returns the formatted error message. Side Effects: - None.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - string: The resulting string.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Error operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -37,7 +37,7 @@ type SmartRecoveryMiddleware struct {
 	mu          sync.RWMutex
 }
 
-// NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
+// Summary: NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
 //
 // Parameters:
 //   - config (*configv1.SmartRecoveryConfig): The config parameter.
@@ -47,21 +47,7 @@ type SmartRecoveryMiddleware struct {
 //   - *SmartRecoveryMiddleware: The resulting *SmartRecoveryMiddleware.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewSmartRecoveryMiddleware operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -72,11 +58,11 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 	}
 }
 
-// Execute executes the middleware logic.
+// Summary: Execute executes the middleware logic.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The request object.
+//   - ctx (context.Context): The ctx parameter.
+//   - req (*tool.ExecutionRequest): The req parameter.
 //   - next (tool.ExecutionFunc): The next parameter.
 //
 // Returns:
@@ -85,20 +71,6 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 //
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Execute operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

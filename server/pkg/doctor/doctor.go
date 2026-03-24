@@ -121,31 +121,17 @@ type CheckResult struct {
 	Error error
 }
 
-// RunChecks performs connectivity and health checks on the provided configuration.
-//
-// It iterates through all upstream services defined in the configuration and executes
-// the appropriate check logic for each service type.
+// Summary: RunChecks performs connectivity and health checks on the provided configuration. It iterates through all upstream services defined in the configuration and executes the appropriate check logic for each service type.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request, used for timeouts and cancellation.
-//   - config: *configv1.McpAnyServerConfig. The server configuration containing upstream service definitions.
+//   - ctx (context.Context): The ctx parameter.
+//   - config (*configv1.McpAnyServerConfig): The config parameter.
 //
 // Returns:
-//   - []CheckResult: A slice of results for each checked service.
-//
-// Side Effects:
-//   - Performs network I/O to connect to upstream services.
-//
-// Summary: Executes RunChecks operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - []CheckResult: The resulting []CheckResult.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -173,31 +159,17 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 	return results
 }
 
-// CheckService performs a connectivity check for a single service.
-//
-// It dispatches the check to the specific handler based on the service type (HTTP, gRPC, etc.)
-// and handles upstream authentication checks if configured.
+// Summary: CheckService performs a connectivity check for a single service. It dispatches the check to the specific handler based on the service type (HTTP, gRPC, etc.) and handles upstream authentication checks if configured.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - service: *configv1.UpstreamServiceConfig. The configuration of the service to check.
+//   - ctx (context.Context): The ctx parameter.
+//   - service (*configv1.UpstreamServiceConfig): The service parameter.
 //
 // Returns:
-//   - CheckResult: The result of the connectivity check.
-//
-// Side Effects:
-//   - Performs network I/O to connect to the upstream service.
-//
-// Summary: Executes CheckService operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - CheckResult: The resulting CheckResult.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

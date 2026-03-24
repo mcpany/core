@@ -34,25 +34,17 @@ type GrpcStatsHandler struct {
 	Wrapped stats.Handler
 }
 
-// TagRPC can be used to tag RPCs with custom information.
+// Summary: TagRPC can be used to tag RPCs with custom information.
 //
 // Parameters:
-//   - ctx: The context of the RPC.
-//   - info: Information about the RPC tag.
+//   - ctx (context.Context): The ctx parameter.
+//   - info (*stats.RPCTagInfo): The info parameter.
 //
 // Returns:
-//   - The context, potentially modified with new tags.
-//
-// Summary: Executes TagRPC operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - context.Context: The resulting context.Context.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -63,22 +55,17 @@ func (h *GrpcStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) c
 	return ctx
 }
 
-// HandleRPC processes RPC stats and increments counters for started and finished RPCs.
+// Summary: HandleRPC processes RPC stats and increments counters for started and finished RPCs.
 //
 // Parameters:
-//   - ctx: The context of the RPC.
-//   - s: The RPC stats.
-//
-// Summary: Executes HandleRPC operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The ctx parameter.
+//   - s (stats.RPCStats): The s parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -94,25 +81,17 @@ func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	}
 }
 
-// TagConn can be used to tag connections with custom information.
+// Summary: TagConn can be used to tag connections with custom information.
 //
 // Parameters:
-//   - ctx: The context of the connection.
-//   - info: Information about the connection tag.
+//   - ctx (context.Context): The ctx parameter.
+//   - info (*stats.ConnTagInfo): The info parameter.
 //
 // Returns:
-//   - The context, potentially modified with new tags.
-//
-// Summary: Executes TagConn operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - context.Context: The resulting context.Context.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -123,22 +102,17 @@ func (h *GrpcStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo)
 	return ctx
 }
 
-// HandleConn processes connection stats and increments counters for opened and closed connections.
+// Summary: HandleConn processes connection stats and increments counters for opened and closed connections.
 //
 // Parameters:
-//   - ctx: The context of the connection.
-//   - s: The connection stats.
-//
-// Summary: Executes HandleConn operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The ctx parameter.
+//   - s (stats.ConnStats): The s parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

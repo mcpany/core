@@ -51,7 +51,7 @@ type Worker struct {
 	config Config
 }
 
-// New creates a new GC Worker. config holds the configuration settings. Returns the result.
+// Summary: New creates a new GC Worker. config holds the configuration settings. Returns the result.
 //
 // Parameters:
 //   - config (Config): The config parameter.
@@ -60,21 +60,7 @@ type Worker struct {
 //   - *Worker: The resulting *Worker.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes New operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -90,30 +76,16 @@ func New(config Config) *Worker {
 	}
 }
 
-// Start runs the GC worker in the background. It returns immediately and runs cleanup periodically until the context is canceled.
+// Summary: Start runs the GC worker in the background. It returns immediately and runs cleanup periodically until the context is canceled.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Start operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

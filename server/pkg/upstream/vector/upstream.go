@@ -52,24 +52,16 @@ type Upstream struct {
 	clientFactory ClientFactory
 }
 
-// NewUpstream creates a new instance of VectorUpstream.
-//
-// Returns:
-//   - upstream.Upstream: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewUpstream operation.
+// Summary: NewUpstream creates a new instance of VectorUpstream.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - upstream.Upstream: The resulting upstream.Upstream.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -89,30 +81,16 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 	return nil, fmt.Errorf("unsupported vector database type")
 }
 
-// Shutdown implements the upstream.Upstream interface.
+// Summary: Shutdown implements the upstream.Upstream interface.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -120,7 +98,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// Register processes the configuration for a vector service. _ is an unused parameter. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
+// Summary: Register processes the configuration for a vector service. _ is an unused parameter. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
 //   - _ (context.Context): The _ parameter.
@@ -138,20 +116,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -252,34 +216,18 @@ type vectorCallable struct {
 	handler func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
-// Call executes the vector tool with the given arguments.
-// It accepts a context and an execution request containing arguments,
-// and returns the result of the tool execution or an error.
+// Summary: Call executes the vector tool with the given arguments. It accepts a context and an execution request containing arguments, and returns the result of the tool execution or an error.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The parameter.
+//   - ctx (context.Context): The ctx parameter.
+//   - req (*tool.ExecutionRequest): The req parameter.
 //
 // Returns:
-//   - any: The result.
+//   - any: The resulting any.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Call operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.

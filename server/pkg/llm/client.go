@@ -121,7 +121,7 @@ type OpenAIClient struct {
 	client  *http.Client
 }
 
-// NewOpenAIClient creates a new OpenAIClient.
+// Summary: NewOpenAIClient creates a new OpenAIClient.
 //
 // Parameters:
 //   - apiKey (string): The apiKey parameter.
@@ -131,21 +131,7 @@ type OpenAIClient struct {
 //   - *OpenAIClient: The resulting *OpenAIClient.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewOpenAIClient operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -176,11 +162,11 @@ type openAIChatResponse struct {
 	} `json:"error,omitempty"`
 }
 
-// ChatCompletion performs a chat completion request.
+// Summary: ChatCompletion performs a chat completion request.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (ChatRequest): The request object.
+//   - ctx (context.Context): The ctx parameter.
+//   - req (ChatRequest): The req parameter.
 //
 // Returns:
 //   - *ChatResponse: The resulting *ChatResponse.
@@ -188,20 +174,6 @@ type openAIChatResponse struct {
 //
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes ChatCompletion operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

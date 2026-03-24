@@ -435,28 +435,17 @@ func (m *AuditMiddleware) Close() error {
 	return nil
 }
 
-// Write writes an audit entry directly to the store.
+// Summary: Write writes an audit entry directly to the store.
 //
 // Parameters:
-//   - ctx: context.Context for the operation.
-//   - entry: The audit.Entry to write.
+//   - ctx (context.Context): The ctx parameter.
+//   - entry (audit.Entry): The entry parameter.
 //
 // Returns:
-//   - error: An error if the write fails, or nil on success.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the audit store is not initialized.
-//
-// Summary: Updates Write operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.

@@ -33,24 +33,16 @@ type RootsTool struct {
 	mcpTool *mcp.Tool
 }
 
-// NewRootsTool creates a new instance of the RootsTool.
-//
-// Returns:
-//   - *RootsTool: A new instance of RootsTool.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewRootsTool operation.
+// Summary: NewRootsTool creates a new instance of the RootsTool.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *RootsTool: The resulting *RootsTool.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -75,24 +67,16 @@ func NewRootsTool() *RootsTool {
 	}
 }
 
-// Tool returns the protobuf definition of the tool.
-//
-// Returns:
-//   - *v1.Tool: The protobuf tool definition.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Tool operation.
+// Summary: Tool returns the protobuf definition of the tool.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *v1.Tool: The resulting *v1.Tool.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -100,24 +84,16 @@ func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP-compliant tool definition.
-//
-// Returns:
-//   - *mcp.Tool: The MCP tool definition.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes MCPTool operation.
+// Summary: MCPTool returns the MCP-compliant tool definition.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *mcp.Tool: The resulting *mcp.Tool.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -125,32 +101,18 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// Execute executes the "mcp:list_roots" tool.
-//
-// It retrieves the current MCP session from the context and requests the client
-// to list its roots.
+// Summary: Execute executes the "mcp:list_roots" tool. It retrieves the current MCP session from the context and requests the client to list its roots.
 //
 // Parameters:
-//   - ctx (context.Context): The request context, must contain an active MCP session.
-//   - _ (*tool.ExecutionRequest): The execution request parameters (unused as this tool takes no inputs).
+//   - ctx (context.Context): The ctx parameter.
+//   - _ (*tool.ExecutionRequest): The _ parameter.
 //
 // Returns:
-//   - any: The result of the roots list operation (typically a list of roots).
-//   - error: An error if the session is missing or the list operation fails.
-//
-// Side Effects:
-//   - Sends a "roots/list" request to the client.
-//
-// Summary: Executes Execute operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - any: The resulting any.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -168,24 +130,16 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 	return rootsResult, nil
 }
 
-// GetCacheConfig returns the caching configuration for this tool.
-//
-// Returns:
-//   - *configv1.CacheConfig: Always nil (caching disabled).
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetCacheConfig operation.
+// Summary: GetCacheConfig returns the caching configuration for this tool.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *configv1.CacheConfig: The resulting *configv1.CacheConfig.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -37,50 +37,17 @@ type UpstreamAuthenticator interface {
 	Authenticate(req *http.Request) error
 }
 
-// NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
-// provided authentication configuration. It supports API key, bearer token, and
-// basic authentication, as well as substitution of environment variables in the
-// authentication parameters.
-//
-// If the `authConfig` is `nil`, no authenticator is created, and the function
-// returns `nil, nil`. If the configuration is invalid (e.g., missing required
-// fields), an error is returned.
+// Summary: NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the provided authentication configuration. It supports API key, bearer token, and basic authentication, as well as substitution of environment variables in the authentication parameters. If the `authConfig` is `nil`, no authenticator is created, and the function returns `nil, nil`. If the configuration is invalid (e.g., missing required fields), an error is returned.
 //
 // Parameters:
-//   - authConfig: The configuration that specifies the authentication method
-//     and its parameters.
+//   - authConfig (*configv1.Authentication): The authConfig parameter.
 //
 // Returns:
-//   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
-//   - An error if the configuration is invalid.
-//
-// NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
-// provided authentication configuration. It supports API key, bearer token, and
-// basic authentication, as well as substitution of environment variables in the
-// authentication parameters.
-//
-// If the `authConfig` is `nil`, no authenticator is created, and the function
-// returns `nil, nil`. If the configuration is invalid (e.g., missing required
-// fields), an error is returned.
-//
-// Parameters:
-//   - authConfig: The configuration that specifies the authentication method
-//     and its parameters.
-//
-// Returns:
-//   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
-//   - An error if the configuration is invalid.
-//
-// Summary: Initializes NewUpstreamAuthenticator operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - UpstreamAuthenticator: The resulting UpstreamAuthenticator.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -166,24 +133,16 @@ type APIKeyAuth struct {
 	Location  configv1.APIKeyAuth_Location
 }
 
-// Authenticate adds the configured API key to the request's header, query, or cookie.
+// Summary: Authenticate adds the configured API key to the request's header, query, or cookie.
 //
 // Parameters:
-//   - req: The HTTP request to be modified.
+//   - req (*http.Request): The req parameter.
 //
 // Returns:
-//   - nil on success, or an error if the secret cannot be resolved.
-//
-// Summary: Executes Authenticate operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -231,24 +190,16 @@ type BearerTokenAuth struct {
 	Token *configv1.SecretValue
 }
 
-// Authenticate adds the bearer token to the request's "Authorization" header.
+// Summary: Authenticate adds the bearer token to the request's "Authorization" header.
 //
 // Parameters:
-//   - req: The HTTP request to be modified.
+//   - req (*http.Request): The req parameter.
 //
 // Returns:
-//   - nil on success, or an error if the secret cannot be resolved.
-//
-// Summary: Executes Authenticate operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -282,24 +233,16 @@ type BasicAuth struct {
 	Password *configv1.SecretValue
 }
 
-// Authenticate sets the request's basic authentication credentials.
+// Summary: Authenticate sets the request's basic authentication credentials.
 //
 // Parameters:
-//   - req: The HTTP request to be modified.
+//   - req (*http.Request): The req parameter.
 //
 // Returns:
-//   - nil on success, or an error if the secret cannot be resolved.
-//
-// Summary: Executes Authenticate operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -360,24 +303,16 @@ func (o *OAuth2Auth) getTokenURL(ctx context.Context) (string, error) {
 	return "", errors.New("OAuth2 authentication requires a token URL (and no issuer provided)")
 }
 
-// Authenticate fetches a token and adds it to the request's "Authorization" header.
+// Summary: Authenticate fetches a token and adds it to the request's "Authorization" header.
 //
 // Parameters:
-//   - req: The HTTP request to be modified.
+//   - req (*http.Request): The req parameter.
 //
 // Returns:
-//   - nil on success, or an error if the token cannot be obtained.
-//
-// Summary: Executes Authenticate operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.

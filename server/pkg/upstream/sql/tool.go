@@ -46,31 +46,20 @@ type Tool struct {
 	initError   error
 }
 
-// NewTool creates a new SQL Tool.
+// Summary: NewTool creates a new SQL Tool.
 //
 // Parameters:
-//   - t (*v1.Tool): The parameter.
-//   - db (*sql.DB): The parameter.
-//   - callDef (*configv1.SqlCallDefinition): The parameter.
-//   - policies ([]*configv1.CallPolicy): The parameter.
-//   - callID (string): The parameter.
+//   - t (*v1.Tool): The t parameter.
+//   - db (*sql.DB): The db parameter.
+//   - callDef (*configv1.SqlCallDefinition): The callDef parameter.
+//   - policies ([]*configv1.CallPolicy): The policies parameter.
+//   - callID (string): The callID parameter.
 //
 // Returns:
-//   - *Tool: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *Tool: The resulting *Tool.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -89,24 +78,16 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 	return to
 }
 
-// Tool returns the protobuf definition of the tool.
-//
-// Returns:
-//   - *v1.Tool: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Tool operation.
+// Summary: Tool returns the protobuf definition of the tool.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *v1.Tool: The resulting *v1.Tool.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -114,24 +95,16 @@ func (t *Tool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP tool definition.
-//
-// Returns:
-//   - *mcp.Tool: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes MCPTool operation.
+// Summary: MCPTool returns the MCP tool definition.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *mcp.Tool: The resulting *mcp.Tool.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -146,24 +119,16 @@ func (t *Tool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig returns the cache configuration for the tool.
-//
-// Returns:
-//   - *configv1.CacheConfig: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetCacheConfig operation.
+// Summary: GetCacheConfig returns the cache configuration for the tool.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *configv1.CacheConfig: The resulting *configv1.CacheConfig.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -174,32 +139,18 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	return t.callDef.GetCache()
 }
 
-// Execute runs the SQL query with the provided inputs.
+// Summary: Execute runs the SQL query with the provided inputs.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The parameter.
+//   - ctx (context.Context): The ctx parameter.
+//   - req (*tool.ExecutionRequest): The req parameter.
 //
 // Returns:
-//   - any: The result.
+//   - any: The resulting any.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Execute operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.

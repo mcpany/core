@@ -17,10 +17,10 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// InitiateOAuth starts the OAuth2 flow for a given service or credential. It returns the authorization URL and the state parameter.
+// Summary: InitiateOAuth starts the OAuth2 flow for a given service or credential. It returns the authorization URL and the state parameter.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //   - userID (string): The userID parameter.
 //   - serviceID (string): The serviceID parameter.
 //   - credentialID (string): The credentialID parameter.
@@ -33,20 +33,6 @@ import (
 //
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes InitiateOAuth operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -148,10 +134,10 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 	return url, state, nil
 }
 
-// HandleOAuthCallback handles the OAuth2 callback code exchange.
+// Summary: HandleOAuthCallback handles the OAuth2 callback code exchange.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //   - userID (string): The userID parameter.
 //   - serviceID (string): The serviceID parameter.
 //   - credentialID (string): The credentialID parameter.
@@ -163,20 +149,6 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 //
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes HandleOAuthCallback operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

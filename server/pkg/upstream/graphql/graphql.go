@@ -103,24 +103,16 @@ const introspectionQuery = `
 //   - None.
 type Upstream struct{}
 
-// NewGraphQLUpstream creates a new GraphQL upstream.
-//
-// Returns:
-//   - upstream.Upstream: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewGraphQLUpstream operation.
+// Summary: NewGraphQLUpstream creates a new GraphQL upstream.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - upstream.Upstream: The resulting upstream.Upstream.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -128,30 +120,16 @@ func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
-// Shutdown shuts down the upstream.
+// Summary: Shutdown shuts down the upstream.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -256,32 +234,18 @@ type Callable struct {
 	address       string
 }
 
-// Call executes the GraphQL query.
+// Summary: Call executes the GraphQL query.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The parameter.
+//   - ctx (context.Context): The ctx parameter.
+//   - req (*tool.ExecutionRequest): The req parameter.
 //
 // Returns:
-//   - any: The result.
+//   - any: The resulting any.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Call operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -307,10 +271,10 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 	return respData, nil
 }
 
-// Register inspects the GraphQL upstream service and registers its capabilities. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
+// Summary: Register inspects the GraphQL upstream service and registers its capabilities. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //   - _ (prompt.ManagerInterface): The _ parameter.
@@ -325,20 +289,6 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 //
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

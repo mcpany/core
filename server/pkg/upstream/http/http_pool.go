@@ -26,24 +26,16 @@ type httpPool struct {
 	transport *http.Transport
 }
 
-// Close closes the connection pool and the idle connections.
-//
-// Returns:
-//   - error: An error if the pool cannot be closed.
-//
-// Side Effects:
-//   - Closes idle network connections.
-//
-// Summary: Executes Close operation.
+// Summary: Close closes the connection pool and the idle connections.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.

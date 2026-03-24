@@ -28,24 +28,16 @@ type SessionRegistry struct {
 	sessions map[mcp.Session]tool.Session
 }
 
-// NewSessionRegistry creates a new SessionRegistry.
-//
-// Returns:
-//   - *SessionRegistry: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewSessionRegistry operation.
+// Summary: NewSessionRegistry creates a new SessionRegistry.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *SessionRegistry: The resulting *SessionRegistry.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -55,28 +47,17 @@ func NewSessionRegistry() *SessionRegistry {
 	}
 }
 
-// Register registers a mapping between an upstream session and a downstream session.
+// Summary: Register registers a mapping between an upstream session and a downstream session.
 //
 // Parameters:
-//   - upstreamSession (mcp.Session): The parameter.
-//   - downstreamSession (tool.Session): The parameter.
+//   - upstreamSession (mcp.Session): The upstreamSession parameter.
+//   - downstreamSession (tool.Session): The downstreamSession parameter.
 //
 // Returns:
 //   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -86,27 +67,16 @@ func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSessio
 	r.sessions[upstreamSession] = downstreamSession
 }
 
-// Unregister removes the mapping for an upstream session.
+// Summary: Unregister removes the mapping for an upstream session.
 //
 // Parameters:
-//   - upstreamSession (mcp.Session): The parameter.
+//   - upstreamSession (mcp.Session): The upstreamSession parameter.
 //
 // Returns:
 //   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Unregister operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -116,28 +86,17 @@ func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 	delete(r.sessions, upstreamSession)
 }
 
-// Get retrieves the downstream session associated with an upstream session.
+// Summary: Get retrieves the downstream session associated with an upstream session.
 //
 // Parameters:
-//   - upstreamSession (mcp.Session): The parameter.
+//   - upstreamSession (mcp.Session): The upstreamSession parameter.
 //
 // Returns:
-//   - tool.Session: The result.
-//   - bool: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves Get operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - tool.Session: The resulting tool.Session.
+//   - bool: The resulting bool.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -58,7 +58,7 @@ type GrpcClientWrapper struct {
 	checker health.Checker
 }
 
-// NewGrpcClientWrapper creates a new GrpcClientWrapper. It accepts a shared health checker to avoid creating a new one for every client.
+// Summary: NewGrpcClientWrapper creates a new GrpcClientWrapper. It accepts a shared health checker to avoid creating a new one for every client.
 //
 // Parameters:
 //   - conn (Conn): The conn parameter.
@@ -69,21 +69,7 @@ type GrpcClientWrapper struct {
 //   - *GrpcClientWrapper: The resulting *GrpcClientWrapper.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewGrpcClientWrapper operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -99,30 +85,16 @@ func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, che
 	}
 }
 
-// IsHealthy checks if the underlying gRPC connection is in a usable state. It returns `true` if the connection's state is not `connectivity.Shutdown`, indicating that it is still active and can be used for new RPCs.
+// Summary: IsHealthy checks if the underlying gRPC connection is in a usable state. It returns `true` if the connection's state is not `connectivity.Shutdown`, indicating that it is still active and can be used for new RPCs.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - bool: True if successful, false otherwise.
+//   - bool: The resulting bool.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Checks IsHealthy operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -139,30 +111,16 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 	return w.checker.Check(ctx).Status == health.StatusUp
 }
 
-// Close terminates the underlying gRPC connection, releasing any associated resources.
+// Summary: Close terminates the underlying gRPC connection, releasing any associated resources.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

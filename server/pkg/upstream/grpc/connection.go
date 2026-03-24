@@ -31,25 +31,16 @@ type ConnectionFactory struct {
 	dialer func(context.Context, string) (net.Conn, error)
 }
 
-// NewConnectionFactory creates and returns a new ConnectionFactory with default
-// settings.
-//
-// Returns:
-//   - *ConnectionFactory: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewConnectionFactory operation.
+// Summary: NewConnectionFactory creates and returns a new ConnectionFactory with default settings.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *ConnectionFactory: The resulting *ConnectionFactory.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -57,30 +48,16 @@ func NewConnectionFactory() *ConnectionFactory {
 	return &ConnectionFactory{}
 }
 
-// WithDialer sets a custom dialer function for the ConnectionFactory. This is
-// useful for tests that need to mock the network connection.
+// Summary: WithDialer sets a custom dialer function for the ConnectionFactory. This is useful for tests that need to mock the network connection.
 //
 // Parameters:
-//   - dialer func(context.Context (string): The parameter.
-//   - (string): The parameter.
+//   - dialer (func(context.Context, string) (net.Conn, error)): The dialer parameter.
 //
 // Returns:
-//   - net.Conn: The result.
-//   - error): The result.
-//
-// Side Effects:
 //   - None.
 //
-// Summary: Executes WithDialer operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -88,34 +65,18 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 	f.dialer = dialer
 }
 
-// NewConnection establishes a new gRPC client connection to the specified
-// target address. It uses insecure credentials by default. If a custom dialer
-// has been set, it will be used for the connection.
+// Summary: NewConnection establishes a new gRPC client connection to the specified target address. It uses insecure credentials by default. If a custom dialer has been set, it will be used for the connection.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
-//   - targetAddress (string): The parameter.
+//   - _ (context.Context): The _ parameter.
+//   - targetAddress (string): The targetAddress parameter.
 //
 // Returns:
-//   - *grpc.ClientConn: The result.
+//   - *grpc.ClientConn: The resulting *grpc.ClientConn.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewConnection operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.

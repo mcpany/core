@@ -34,25 +34,17 @@ type UpstreamWorker struct {
 	wg          sync.WaitGroup
 }
 
-// NewUpstreamWorker creates a new UpstreamWorker.
+// Summary: NewUpstreamWorker creates a new UpstreamWorker.
 //
 // Parameters:
-//   - bus: The event bus used for receiving requests and publishing results.
-//   - toolManager: The tool manager that will handle the actual tool execution.
+//   - bus (*bus.Provider): The bus parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //
 // Returns:
-//   - *UpstreamWorker: A new upstream worker.
-//
-// Summary: Initializes NewUpstreamWorker operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *UpstreamWorker: The resulting *UpstreamWorker.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -63,23 +55,16 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 	}
 }
 
-// Start launches the worker in a new goroutine. It subscribes to tool execution
-// requests on the event bus and will continue to process them until the
-// provided context is canceled.
+// Summary: Start launches the worker in a new goroutine. It subscribes to tool execution requests on the event bus and will continue to process them until the provided context is canceled.
 //
 // Parameters:
-//   - ctx: The context that controls the lifecycle of the worker.
-//
-// Summary: Executes Start operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -134,30 +119,16 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 	}()
 }
 
-// Stop waits for the worker to stop.
+// Summary: Stop waits for the worker to stop.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Stop operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

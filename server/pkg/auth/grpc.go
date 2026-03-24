@@ -29,7 +29,7 @@ type PerRPCCredentials struct {
 	authenticator UpstreamAuthenticator
 }
 
-// NewPerRPCCredentials creates a new gRPC PerRPCCredentials from an UpstreamAuthenticator. It returns nil if the provided authenticator is nil. authenticator is the upstream authenticator to be used for generating gRPC request metadata.
+// Summary: NewPerRPCCredentials creates a new gRPC PerRPCCredentials from an UpstreamAuthenticator. It returns nil if the provided authenticator is nil. authenticator is the upstream authenticator to be used for generating gRPC request metadata.
 //
 // Parameters:
 //   - authenticator (UpstreamAuthenticator): The authenticator parameter.
@@ -38,21 +38,7 @@ type PerRPCCredentials struct {
 //   - credentials.PerRPCCredentials: The resulting credentials.PerRPCCredentials.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewPerRPCCredentials operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -63,10 +49,10 @@ func NewPerRPCCredentials(authenticator UpstreamAuthenticator) credentials.PerRP
 	return &PerRPCCredentials{authenticator: authenticator}
 }
 
-// GetRequestMetadata retrieves the authentication metadata for an outgoing gRPC request. It uses the wrapped UpstreamAuthenticator to generate the necessary headers and transforms them into gRPC metadata. ctx is the context for the request. uri is the URI of the gRPC service being called.
+// Summary: GetRequestMetadata retrieves the authentication metadata for an outgoing gRPC request. It uses the wrapped UpstreamAuthenticator to generate the necessary headers and transforms them into gRPC metadata. ctx is the context for the request. uri is the URI of the gRPC service being called.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //   - _ (...string): The _ parameter.
 //
 // Returns:
@@ -75,20 +61,6 @@ func NewPerRPCCredentials(authenticator UpstreamAuthenticator) credentials.PerRP
 //
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Retrieves GetRequestMetadata operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -116,30 +88,16 @@ func (c *PerRPCCredentials) GetRequestMetadata(ctx context.Context, _ ...string)
 	return metadata, nil
 }
 
-// RequireTransportSecurity indicates whether a secure transport (e.g., TLS) is required for the credentials. This implementation returns false, but should be updated if TLS is enabled for the gRPC connection.
+// Summary: RequireTransportSecurity indicates whether a secure transport (e.g., TLS) is required for the credentials. This implementation returns false, but should be updated if TLS is enabled for the gRPC connection.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - bool: True if successful, false otherwise.
+//   - bool: The resulting bool.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes RequireTransportSecurity operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

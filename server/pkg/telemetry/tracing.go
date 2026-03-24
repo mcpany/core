@@ -29,10 +29,10 @@ const (
 	exporterNone   = "none"
 )
 
-// InitTelemetry initializes OpenTelemetry tracing and metrics. It writes traces/metrics to the provided writer (e.g., os.Stderr) if stdout exporter is selected. It returns a shutdown function that should be called when the application exits.
+// Summary: InitTelemetry initializes OpenTelemetry tracing and metrics. It writes traces/metrics to the provided writer (e.g., os.Stderr) if stdout exporter is selected. It returns a shutdown function that should be called when the application exits.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //   - serviceName (string): The serviceName parameter.
 //   - version (string): The version parameter.
 //   - cfg (*config_v1.TelemetryConfig): The cfg parameter.
@@ -44,20 +44,6 @@ const (
 //
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes InitTelemetry operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

@@ -30,28 +30,18 @@ type OAuth2Authenticator struct {
 	audiences []string
 }
 
-// NewOAuth2Authenticator creates a new OAuth2Authenticator with the provided
-// configuration. It initializes the OIDC provider and creates a verifier for
-// validating ID tokens.
+// Summary: NewOAuth2Authenticator creates a new OAuth2Authenticator with the provided configuration. It initializes the OIDC provider and creates a verifier for validating ID tokens.
 //
 // Parameters:
-//   - ctx: The context for the OIDC provider initialization.
-//   - config: The OAuth2 configuration, including the issuer URL and client ID.
+//   - ctx (context.Context): The ctx parameter.
+//   - config (*OAuth2Config): The config parameter.
 //
 // Returns:
-//   - A new OAuth2Authenticator.
-//   - An error if the OIDC provider cannot be initialized.
-//
-// Summary: Initializes NewOAuth2Authenticator operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *OAuth2Authenticator: The resulting *OAuth2Authenticator.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -83,28 +73,18 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 	}, nil
 }
 
-// Authenticate validates the JWT from the Authorization header of the request.
-// It checks for a "Bearer" token and verifies its signature, expiration, and
-// claims against the OIDC provider.
+// Summary: Authenticate validates the JWT from the Authorization header of the request. It checks for a "Bearer" token and verifies its signature, expiration, and claims against the OIDC provider.
 //
 // Parameters:
-//   - ctx: The request context.
-//   - r: The HTTP request to authenticate.
+//   - ctx (context.Context): The ctx parameter.
+//   - r (*http.Request): The r parameter.
 //
 // Returns:
-//   - The context with the user's identity (email) on success.
-//   - An error if authentication fails.
-//
-// Summary: Executes Authenticate operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - context.Context: The resulting context.Context.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.

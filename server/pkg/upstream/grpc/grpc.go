@@ -58,27 +58,16 @@ type Upstream struct {
 	mu              sync.RWMutex
 }
 
-// CheckHealth performs a health check on the upstream service.
+// Summary: CheckHealth performs a health check on the upstream service.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the health check.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - error: An error if the service is unhealthy.
-//
-// Side Effects:
-//   - Performs a health check RPC.
-//
-// Summary: Executes CheckHealth operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -97,27 +86,16 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of Upstream.
+// Summary: NewUpstream creates a new instance of Upstream.
 //
 // Parameters:
-//   - poolManager (*pool.Manager): The connection pool manager to be used for managing gRPC connections.
+//   - poolManager (*pool.Manager): The poolManager parameter.
 //
 // Returns:
-//   - upstream.Upstream: An implementation of the upstream.Upstream interface.
-//
-// Side Effects:
-//   - Starts a background cache cleaner.
-//
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - upstream.Upstream: The resulting upstream.Upstream.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -133,30 +111,16 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	}
 }
 
-// Shutdown gracefully terminates the gRPC upstream service by shutting down the
-// associated connection pool.
+// Summary: Shutdown gracefully terminates the gRPC upstream service by shutting down the associated connection pool.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - error: Always returns nil.
-//
-// Side Effects:
-//   - Stops the health checker.
-//   - Stops the reflection cache.
-//   - Deregisters the connection pool.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -175,40 +139,24 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// Register handles the registration of a gRPC upstream service. It establishes a
-// connection pool, uses gRPC reflection to discover the service's protobuf
-// definitions, and then creates and registers tools based on the discovered
-// methods and any MCP annotations.
+// Summary: Register handles the registration of a gRPC upstream service. It establishes a connection pool, uses gRPC reflection to discover the service's protobuf definitions, and then creates and registers tools based on the discovered methods and any MCP annotations.
 //
 // Parameters:
-//   - ctx (context.Context): The registration context.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the service.
-//   - toolManager (tool.ManagerInterface): The manager for tools.
-//   - promptManager (prompt.ManagerInterface): The manager for prompts.
-//   - resourceManager (resource.ManagerInterface): The manager for resources.
-//   - isReload (bool): Indicates whether this is a reload.
+//   - ctx (context.Context): The ctx parameter.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - promptManager (prompt.ManagerInterface): The promptManager parameter.
+//   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
+//   - isReload (bool): The isReload parameter.
 //
 // Returns:
-//   - string: The unique service ID.
-//   - []*configv1.ToolDefinition: Discovered tools.
-//   - []*configv1.ResourceDefinition: Discovered resources (currently unused for gRPC).
-//   - error: An error if registration fails.
-//
-// Side Effects:
-//   - Creates a gRPC connection pool.
-//   - Fetches and caches service descriptors (via reflection or config).
-//   - Registers tools and prompts.
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - string: The resulting string.
+//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
+//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.

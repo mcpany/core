@@ -31,24 +31,16 @@ type TemporaryToolManager struct {
 	tools       map[string]tool.Tool
 }
 
-// NewTemporaryToolManager creates a new TemporaryToolManager.
-//
-// Returns:
-//   - *TemporaryToolManager: A new instance of TemporaryToolManager.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewTemporaryToolManager operation.
+// Summary: NewTemporaryToolManager creates a new TemporaryToolManager.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *TemporaryToolManager: The resulting *TemporaryToolManager.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -59,25 +51,17 @@ func NewTemporaryToolManager() *TemporaryToolManager {
 	}
 }
 
-// AddServiceInfo implements tool.ManagerInterface.
+// Summary: AddServiceInfo implements tool.ManagerInterface.
 //
 // Parameters:
-//   - serviceID (string): The ID of the service.
-//   - info (*tool.ServiceInfo): The service information.
-//
-// Side Effects:
-//   - Updates the internal service info map.
-//
-// Summary: Executes AddServiceInfo operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - serviceID (string): The serviceID parameter.
+//   - info (*tool.ServiceInfo): The info parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -90,28 +74,17 @@ func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.Servi
 	m.serviceInfo[serviceID] = info
 }
 
-// GetServiceInfo implements tool.ManagerInterface.
+// Summary: GetServiceInfo implements tool.ManagerInterface.
 //
 // Parameters:
-//   - serviceID (string): The ID of the service.
+//   - serviceID (string): The serviceID parameter.
 //
 // Returns:
-//   - *tool.ServiceInfo: The service information if found.
-//   - bool: True if the service information exists.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetServiceInfo operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *tool.ServiceInfo: The resulting *tool.ServiceInfo.
+//   - bool: The resulting bool.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -125,27 +98,16 @@ func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceIn
 	return info, ok
 }
 
-// AddTool implements tool.ManagerInterface.
+// Summary: AddTool implements tool.ManagerInterface.
 //
 // Parameters:
-//   - t (tool.Tool): The tool to add.
+//   - t (tool.Tool): The t parameter.
 //
 // Returns:
-//   - error: An error if the tool service ID is empty or name sanitization fails.
-//
-// Side Effects:
-//   - Updates the internal tool map.
-//
-// Summary: Executes AddTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -171,28 +133,17 @@ func (m *TemporaryToolManager) AddTool(t tool.Tool) error {
 	return nil
 }
 
-// GetTool implements tool.ManagerInterface.
+// Summary: GetTool implements tool.ManagerInterface.
 //
 // Parameters:
-//   - toolName (string): The name of the tool.
+//   - toolName (string): The toolName parameter.
 //
 // Returns:
-//   - tool.Tool: The tool if found.
-//   - bool: True if the tool exists.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - tool.Tool: The resulting tool.Tool.
+//   - bool: The resulting bool.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -206,24 +157,16 @@ func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	return t, ok
 }
 
-// ListTools implements tool.ManagerInterface.
-//
-// Returns:
-//   - []tool.Tool: A list of all tools.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ListTools operation.
+// Summary: ListTools implements tool.ManagerInterface.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []tool.Tool: The resulting []tool.Tool.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -240,27 +183,16 @@ func (m *TemporaryToolManager) ListTools() []tool.Tool {
 	return list
 }
 
-// GetToolCountForService implements tool.ManagerInterface.
+// Summary: GetToolCountForService implements tool.ManagerInterface.
 //
 // Parameters:
-//   - serviceID (string): The ID of the service.
+//   - serviceID (string): The serviceID parameter.
 //
 // Returns:
-//   - int: The number of tools for the service.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetToolCountForService operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

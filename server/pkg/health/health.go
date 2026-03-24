@@ -39,30 +39,16 @@ var (
 	globalAlertConfigMu sync.RWMutex
 )
 
-// SetGlobalAlertConfig sets the global alert configuration.
-//
-// It updates the thread-safe global configuration used for sending alerts on health status changes.
+// Summary: SetGlobalAlertConfig sets the global alert configuration. It updates the thread-safe global configuration used for sending alerts on health status changes.
 //
 // Parameters:
-//   - cfg: *configv1.AlertConfig. The new alert configuration.
+//   - cfg (*configv1.AlertConfig): The cfg parameter.
 //
 // Returns:
-//
-//	None.
-//
-// Side Effects:
-//   - Updates a global variable protected by a mutex.
-//
-// Summary: Updates SetGlobalAlertConfig operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -98,30 +84,16 @@ type HTTPServiceWithHealthCheck interface {
 	GetHealthCheck() *configv1.HttpHealthCheck
 }
 
-// NewChecker creates a new health checker for the given upstream service.
-//
-// It determines the type of service (HTTP, gRPC, etc.) and creates an appropriate
-// health check strategy wrapped with latency metrics and status change listeners.
+// Summary: NewChecker creates a new health checker for the given upstream service. It determines the type of service (HTTP, gRPC, etc.) and creates an appropriate health check strategy wrapped with latency metrics and status change listeners.
 //
 // Parameters:
-//   - uc: *configv1.UpstreamServiceConfig. The configuration of the upstream service to check.
+//   - uc (*configv1.UpstreamServiceConfig): The uc parameter.
 //
 // Returns:
-//   - health.Checker: A configured health checker instance. Returns nil if the configuration is nil or invalid.
-//
-// Side Effects:
-//   - Registers metrics for the health check.
-//
-// Summary: Initializes NewChecker operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - health.Checker: The resulting health.Checker.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -23,30 +23,16 @@ type ResourceMCPServer struct {
 	Enabled bool
 }
 
-// Schema returns the Terraform schema definition (Mock). Returns the result.
+// Summary: Schema returns the Terraform schema definition (Mock). Returns the result.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - map[string]interface: The resulting map[string]interface.
+//   - map[string]interface{}: The resulting map[string]interface{}.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Schema operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -72,7 +58,7 @@ func Schema() map[string]interface{} {
 	}
 }
 
-// Create mimics the Create operation of a Terraform resource. _ is an unused parameter. Returns an error if the operation fails.
+// Summary: Create mimics the Create operation of a Terraform resource. _ is an unused parameter. Returns an error if the operation fails.
 //
 // Parameters:
 //   - _ (*ResourceMCPServer): The _ parameter.
@@ -84,27 +70,13 @@ func Schema() map[string]interface{} {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Initializes Create operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
 //   - None.
 func Create(_ *ResourceMCPServer) error {
 	// Simulate API call to provision resources
 	return nil
 }
 
-// Read mimics the Read operation. name is the name of the resource. Returns the result. Returns an error if the operation fails.
+// Summary: Read mimics the Read operation. name is the name of the resource. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
 //   - name (string): The name parameter.
@@ -115,20 +87,6 @@ func Create(_ *ResourceMCPServer) error {
 //
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Retrieves Read operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

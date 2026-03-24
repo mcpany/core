@@ -37,7 +37,7 @@ type MockOAuth2Server struct {
 	ClientID   string
 }
 
-// NewMockOAuth2Server creates a new mock OAuth2 server. t is the t. Returns the result.
+// Summary: NewMockOAuth2Server creates a new mock OAuth2 server. t is the t. Returns the result.
 //
 // Parameters:
 //   - t (*testing.T): The t parameter.
@@ -46,21 +46,7 @@ type MockOAuth2Server struct {
 //   - *MockOAuth2Server: The resulting *MockOAuth2Server.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewMockOAuth2Server operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -134,7 +120,7 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 	return mock
 }
 
-// NewIDToken permits generating custom tokens signed by this server. t is the t. claims is the claims. Returns the result.
+// Summary: NewIDToken permits generating custom tokens signed by this server. t is the t. claims is the claims. Returns the result.
 //
 // Parameters:
 //   - t (*testing.T): The t parameter.
@@ -144,21 +130,7 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 //   - string: The resulting string.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewIDToken operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

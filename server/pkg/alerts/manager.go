@@ -83,30 +83,16 @@ type Manager struct {
 	webhookURL string
 }
 
-// NewManager creates a new Manager and seeds it with initial data.
+// Summary: NewManager creates a new Manager and seeds it with initial data.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - *Manager: The resulting *Manager.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewManager operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -133,30 +119,16 @@ func (m *Manager) seedData() {
 	m.CreateRule(&AlertRule{ID: "rule-2", Name: "High Latency", Metric: "http_latency_p99", Operator: ">", Threshold: 1000, Duration: "1m", Severity: SeverityWarning, Enabled: true, LastUpdated: now})
 }
 
-// ListAlerts returns all alerts sorted by timestamp descending.
+// Summary: ListAlerts returns all alerts sorted by timestamp descending.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - []*Alert: The resulting []*Alert.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes ListAlerts operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -174,7 +146,7 @@ func (m *Manager) ListAlerts() []*Alert {
 	return list
 }
 
-// GetAlert returns an alert by ID, or nil if not found.
+// Summary: GetAlert returns an alert by ID, or nil if not found.
 //
 // Parameters:
 //   - id (string): The id parameter.
@@ -183,21 +155,7 @@ func (m *Manager) ListAlerts() []*Alert {
 //   - *Alert: The resulting *Alert.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Retrieves GetAlert operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -207,7 +165,7 @@ func (m *Manager) GetAlert(id string) *Alert {
 	return m.alerts[id]
 }
 
-// CreateAlert creates a new alert.
+// Summary: CreateAlert creates a new alert.
 //
 // Parameters:
 //   - alert (*Alert): The alert parameter.
@@ -216,21 +174,7 @@ func (m *Manager) GetAlert(id string) *Alert {
 //   - *Alert: The resulting *Alert.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes CreateAlert operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -275,30 +219,16 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 	return alert
 }
 
-// GetAlertStats returns aggregated statistics for alerts.
+// Summary: GetAlertStats returns aggregated statistics for alerts.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - *AlertStats: The resulting *AlertStats.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Retrieves GetAlertStats operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -330,7 +260,7 @@ func (m *Manager) GetAlertStats() *AlertStats {
 	return stats
 }
 
-// UpdateAlert updates an existing alert.
+// Summary: UpdateAlert updates an existing alert.
 //
 // Parameters:
 //   - id (string): The id parameter.
@@ -340,21 +270,7 @@ func (m *Manager) GetAlertStats() *AlertStats {
 //   - *Alert: The resulting *Alert.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes UpdateAlert operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -403,30 +319,16 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 	return existing
 }
 
-// GetWebhookURL returns the configured global webhook URL.
+// Summary: GetWebhookURL returns the configured global webhook URL.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - string: The resulting string.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Retrieves GetWebhookURL operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -436,30 +338,16 @@ func (m *Manager) GetWebhookURL() string {
 	return m.webhookURL
 }
 
-// SetWebhookURL sets the configured global webhook URL.
+// Summary: SetWebhookURL sets the configured global webhook URL.
 //
 // Parameters:
 //   - url (string): The url parameter.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Updates SetWebhookURL operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -469,30 +357,16 @@ func (m *Manager) SetWebhookURL(url string) {
 	m.webhookURL = url
 }
 
-// ListRules returns all rules.
+// Summary: ListRules returns all rules.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - []*AlertRule: The resulting []*AlertRule.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes ListRules operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -509,7 +383,7 @@ func (m *Manager) ListRules() []*AlertRule {
 	return list
 }
 
-// GetRule returns a rule by ID.
+// Summary: GetRule returns a rule by ID.
 //
 // Parameters:
 //   - id (string): The id parameter.
@@ -518,21 +392,7 @@ func (m *Manager) ListRules() []*AlertRule {
 //   - *AlertRule: The resulting *AlertRule.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Retrieves GetRule operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -542,7 +402,7 @@ func (m *Manager) GetRule(id string) *AlertRule {
 	return m.rules[id]
 }
 
-// CreateRule creates a new rule.
+// Summary: CreateRule creates a new rule.
 //
 // Parameters:
 //   - rule (*AlertRule): The rule parameter.
@@ -551,21 +411,7 @@ func (m *Manager) GetRule(id string) *AlertRule {
 //   - *AlertRule: The resulting *AlertRule.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes CreateRule operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -580,7 +426,7 @@ func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 	return rule
 }
 
-// UpdateRule updates a rule.
+// Summary: UpdateRule updates a rule.
 //
 // Parameters:
 //   - id (string): The id parameter.
@@ -590,21 +436,7 @@ func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 //   - *AlertRule: The resulting *AlertRule.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes UpdateRule operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -626,7 +458,7 @@ func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 	return existing
 }
 
-// DeleteRule deletes a rule.
+// Summary: DeleteRule deletes a rule.
 //
 // Parameters:
 //   - id (string): The id parameter.
@@ -636,20 +468,6 @@ func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 //
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes DeleteRule operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

@@ -104,28 +104,17 @@ type Provider struct {
 //   - None.
 var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
-// NewProvider creates and returns a new Provider, which is used to manage
-// multiple topic-based bus instances.
+// Summary: NewProvider creates and returns a new Provider, which is used to manage multiple topic-based bus instances.
 //
 // Parameters:
-//
-//	messageBus: The configuration for the message bus.
-//
-// Returns:
-//
-//	*Provider: The created Provider.
-//	error: An error if creation fails.
-//
-// Summary: Initializes NewProvider operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - messageBus (*bus.MessageBus): The messageBus parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Provider: The resulting *Provider.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -177,33 +166,18 @@ func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 //   - None.
 var GetBusHook func(p *Provider, topic string) (any, error)
 
-// GetBus retrieves a bus for the given topic. If a bus for the given topic
-// already exists, it is returned; otherwise, a new one is created and stored for
-// future use.
-//
-// The type parameter T specifies the message type for the bus, ensuring
-// type safety for each topic.
+// Summary: GetBus retrieves a bus for the given topic. If a bus for the given topic already exists, it is returned; otherwise, a new one is created and stored for future use. The type parameter T specifies the message type for the bus, ensuring type safety for each topic.
 //
 // Parameters:
-//
-//	p: The Provider instance.
-//	topic: The topic name.
-//
-// Returns:
-//
-//	Bus[T]: The requested Bus instance.
-//	error: An error if retrieval or creation fails.
-//
-// Summary: Retrieves GetBus operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - p (*Provider): The p parameter.
+//   - topic (string): The topic parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Bus[T]: The resulting Bus[T].
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.

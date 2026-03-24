@@ -51,31 +51,16 @@ type OpenAPIUpstream struct { //nolint:revive
 	serviceID    string
 }
 
-// Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based
-// services, this typically means closing any persistent connections.
+// Summary: Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based services, this typically means closing any persistent connections.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
@@ -90,25 +75,16 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
-// cache for storing parsed OpenAPI documents to avoid redundant parsing.
-//
-// Returns:
-//   - upstream.Upstream: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewOpenAPIUpstream operation.
+// Summary: NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a cache for storing parsed OpenAPI documents to avoid redundant parsing.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - upstream.Upstream: The resulting upstream.Upstream.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -124,10 +100,10 @@ func NewOpenAPIUpstream() upstream.Upstream {
 	}
 }
 
-// Register processes an OpenAPI service configuration. It parses the OpenAPI specification, extracts the operations, converts them into tools, and registers them with the tool manager.
+// Summary: Register processes an OpenAPI service configuration. It parses the OpenAPI specification, extracts the operations, converts them into tools, and registers them with the tool manager.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx (context.Context): The ctx parameter.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //   - promptManager (prompt.ManagerInterface): The promptManager parameter.
@@ -142,20 +118,6 @@ func NewOpenAPIUpstream() upstream.Upstream {
 //
 // Errors:
 //   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -339,32 +301,17 @@ type httpClientImpl struct {
 	client *http.Client
 }
 
-// Do sends an HTTP request and returns an HTTP response, fulfilling the
-// client.HTTPClient interface.
+// Summary: Do sends an HTTP request and returns an HTTP response, fulfilling the client.HTTPClient interface.
 //
 // Parameters:
-//   - req (*http.Request): The parameter.
+//   - req (*http.Request): The req parameter.
 //
 // Returns:
-//   - *http.Response: The result.
+//   - *http.Response: The resulting *http.Response.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Do operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.
