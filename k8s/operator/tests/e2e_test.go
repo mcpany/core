@@ -196,8 +196,7 @@ nodes:
 	if err := playwrightCmd.Run(); err != nil {
 						cmd := exec.Command("sh", "-c", "kubectl get pods -n mcp-system; kubectl logs -n mcp-system -l app.kubernetes.io/name=server --all-containers=true --tail=1000")
 						out, _ := cmd.CombinedOutput()
-						t.Logf("Server Logs:
-%s", out)
+						t.Logf("Server Logs:\n%s", out)
 		t.Fatalf("UI Tests failed: %v", err)
 	}
 }
@@ -218,8 +217,7 @@ func clusterExists(t *testing.T, ctx context.Context, name string) bool {
 		t.Logf("Failed to get clusters: %v", err)
 		return false
 	}
-	clusters := strings.Split(string(out), "
-")
+	clusters := strings.Split(string(out), "\n")
 	for _, c := range clusters {
 		if c == name {
 			return true
@@ -302,8 +300,7 @@ func ensureBazelImageLoaded(t *testing.T, loaderRelPath, imageName string) {
 		cmd.Env = os.Environ()
 		out, err := cmd.CombinedOutput()
 		if err != nil {
-			t.Fatalf("Failed to load Bazel-built %s image: %v
-%s", imageName, err, string(out))
+			t.Fatalf("Failed to load Bazel-built %s image: %v\n%s", imageName, err, string(out))
 		}
 		t.Logf("Loaded %s image via %s", imageName, loader)
 		return
