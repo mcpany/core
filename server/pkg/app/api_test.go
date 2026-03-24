@@ -1505,6 +1505,14 @@ func (s *MockServiceStore) GetRecentLogs(ctx context.Context, limit int) ([]*log
 	return nil, nil
 }
 
+func (m *MockServiceStore) SaveMockData(ctx context.Context, id string, data string) error {
+	return nil
+}
+
+func (m *MockServiceStore) GetMockData(ctx context.Context, id string) (string, error) {
+	return "", nil
+}
+
 type TestMockServiceRegistry struct {
 	services []*configv1.UpstreamServiceConfig
 }

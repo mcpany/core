@@ -303,6 +303,7 @@ func TestInitializeDatabase_Empty(t *testing.T) {
 	// Template Init expectations
 	mockStore.On("ListServiceTemplates", mock.Anything).Return(([]*configv1.ServiceTemplate)(nil), nil)
 	mockStore.On("SaveServiceTemplate", mock.Anything, mock.Anything).Return(nil)
+	mockStore.On("SaveMockData", mock.Anything, mock.Anything, mock.Anything).Return(nil)
 	// Collection Init expectations
 	mockStore.On("ListServiceCollections", mock.Anything).Return(([]*configv1.Collection)(nil), nil)
 	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
@@ -327,6 +328,7 @@ func TestInitializeDatabase_AlreadyInitialized(t *testing.T) {
 
 	mockStore.AssertNotCalled(t, "SaveGlobalSettings")
 	mockStore.AssertNotCalled(t, "SaveService")
+	mockStore.AssertNotCalled(t, "SaveMockData")
 }
 
 func TestInitializeDatabase_SkipsWhenConfigProvidesGlobalSettings(t *testing.T) {
