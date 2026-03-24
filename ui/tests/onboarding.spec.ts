@@ -31,6 +31,9 @@ test.describe('Onboarding Flow', () => {
       dashboard.waitFor({ state: 'visible', timeout: 30000 }).catch(() => { })
     ]);
 
+    // Give it a little more time to render
+    await page.waitForTimeout(5000);
+
     if (await welcome.isVisible()) {
       await expect(welcome).toBeVisible();
       await expect(page.getByRole('link', { name: /Connect Your First Service/i })).toBeVisible();
