@@ -28,6 +28,8 @@ import (
 
 // ParsedMcpAnnotations holds the structured data extracted from MCP
 // (Model Context Protocol) annotations within a set of protobuf files.
+//
+// Summary: Represents ParsedMcpAnnotations.
 type ParsedMcpAnnotations struct {
 	Tools     []McpTool
 	Prompts   []McpPrompt
@@ -36,6 +38,8 @@ type ParsedMcpAnnotations struct {
 
 // McpTool represents the information extracted from a gRPC method that has been
 // annotated as an MCP tool.
+//
+// Summary: Represents McpTool.
 type McpTool struct {
 	Name            string
 	Description     string
@@ -54,6 +58,8 @@ type McpTool struct {
 
 // McpField represents a field within a protobuf message, including its name,
 // description, type, and whether it is repeated.
+//
+// Summary: Represents McpField.
 type McpField struct {
 	Name        string
 	Description string
@@ -68,6 +74,20 @@ type McpField struct {
 //
 // Side Effects:
 //   - None.
+//
+// Summary: Retrieves GetName operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (f *McpField) GetName() string {
 	return f.Name
 }
@@ -76,6 +96,20 @@ func (f *McpField) GetName() string {
 //
 // Returns:
 //   - string: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Retrieves GetDescription operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -90,6 +124,20 @@ func (f *McpField) GetDescription() string {
 //
 // Side Effects:
 //   - None.
+//
+// Summary: Retrieves GetType operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (f *McpField) GetType() string {
 	return f.Type
 }
@@ -98,6 +146,20 @@ func (f *McpField) GetType() string {
 //
 // Returns:
 //   - bool: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Retrieves GetIsRepeated operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -121,6 +183,20 @@ func (f *McpField) GetIsRepeated() bool {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes ParseProtoFromDefs operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func ParseProtoFromDefs(
 	ctx context.Context,
 	protoDefinitions []*configv1.ProtoDefinition,
@@ -333,6 +409,8 @@ func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, erro
 
 // McpPrompt represents the information extracted from a gRPC method that has
 // been annotated as an MCP prompt.
+//
+// Summary: Represents McpPrompt.
 type McpPrompt struct {
 	Name           string
 	Description    string
@@ -346,6 +424,8 @@ type McpPrompt struct {
 
 // McpResource represents a protobuf message that has been annotated as an MCP
 // resource.
+//
+// Summary: Represents McpResource.
 type McpResource struct {
 	Name        string
 	Description string
@@ -366,6 +446,20 @@ type McpResource struct {
 //
 // Errors:
 //   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes ParseProtoByReflection operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -564,6 +658,20 @@ func getFileDescriptorByFilename(stream reflectpb.ServerReflection_ServerReflect
 //
 // Errors:
 //   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes ExtractMcpDefinitions operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

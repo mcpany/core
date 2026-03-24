@@ -7,14 +7,16 @@ import (
 	"context"
 
 	"github.com/alexliesenfeld/health"
-	healthChecker "github.com/mcpany/core/server/pkg/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	healthChecker "github.com/mcpany/core/server/pkg/health"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 )
 
 // Conn is an interface that represents a gRPC client connection.
 // It is used to allow for mocking of the gRPC client in tests.
+//
+// Summary: Represents a Conn.
 type Conn interface {
 	grpc.ClientConnInterface
 	// Close closes the connection to the server.
@@ -30,6 +32,8 @@ type Conn interface {
 // GrpcClientWrapper wraps a `Conn` to adapt it to the
 // `pool.ClosableClient` interface. This allows gRPC clients to be managed by a
 // connection pool, which can improve performance by reusing connections.
+//
+// Summary: Represents a GrpcClientWrapper.
 type GrpcClientWrapper struct {
 	Conn
 	config *configv1.UpstreamServiceConfig
@@ -52,6 +56,20 @@ type GrpcClientWrapper struct {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Initializes NewGrpcClientWrapper operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, checker health.Checker) *GrpcClientWrapper {
 	// If no checker is provided, create a new one (backward compatibility or standalone usage).
 	if checker == nil {
@@ -77,6 +95,20 @@ func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, che
 //
 // Side Effects:
 //   - None
+//
+// Summary: Checks IsHealthy operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.GetState() == connectivity.Shutdown {
 		return false
@@ -103,6 +135,20 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes Close operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (w *GrpcClientWrapper) Close() error {
 	return w.Conn.Close()
 }

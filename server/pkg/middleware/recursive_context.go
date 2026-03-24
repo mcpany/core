@@ -15,6 +15,8 @@ import (
 )
 
 // SessionState represents the shared state for a recursive context session.
+//
+// Summary: Represents a SessionState.
 type SessionState struct {
 	ID        string                 `json:"id"`
 	Data      map[string]interface{} `json:"data"`
@@ -23,6 +25,8 @@ type SessionState struct {
 }
 
 // RecursiveContextManager manages the shared context sessions (Blackboard).
+//
+// Summary: Represents a RecursiveContextManager.
 type RecursiveContextManager struct {
 	mu       sync.RWMutex
 	sessions map[string]*SessionState
@@ -41,6 +45,20 @@ type RecursiveContextManager struct {
 //
 // Side Effects:
 //   - Allocates memory for the manager and its internal session map.
+//
+// Summary: Initializes NewRecursiveContextManager operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewRecursiveContextManager() *RecursiveContextManager {
 	return &RecursiveContextManager{
 		sessions: make(map[string]*SessionState),
@@ -62,6 +80,20 @@ func NewRecursiveContextManager() *RecursiveContextManager {
 // Side Effects:
 //   - Modifies the internal sessions map by adding a new session.
 //   - Performs a cleanup of expired sessions during insertion, removing them from the map.
+//
+// Summary: Initializes CreateSession operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl time.Duration) *SessionState {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -100,6 +132,20 @@ func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl
 //
 // Side Effects:
 //   - None.
+//
+// Summary: Retrieves GetSession operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -128,6 +174,20 @@ func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 // Side Effects:
 //   - Modifies the HTTP response writer based on the request logic, including sending JSON responses and error codes.
 //   - When processing a POST request, creates a new session in the manager.
+//
+// Summary: Executes APIHandler operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
@@ -184,12 +244,14 @@ func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 
 // contextKey is a custom type for context keys to avoid collisions.
 
-
 // RecursiveContextKeyType is a custom type for context keys to avoid collisions.
+//
+// Summary: Represents a RecursiveContextKeyType.
 type RecursiveContextKeyType string
 
 const (
 	// RecursiveContextDataKey is the key used to store the recursive context data in the request context.
+	// Summary: Defines RecursiveContextDataKe.
 	RecursiveContextDataKey RecursiveContextKeyType = "recursive_context_data"
 )
 
@@ -208,6 +270,20 @@ const (
 //   - Reads from the incoming HTTP request headers.
 //   - Modifies the request context by injecting session data if a valid context ID is found.
 //   - Logs debug or warning messages depending on the presence and validity of the context session.
+//
+// Summary: Executes HandleContext operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *RecursiveContextManager) HandleContext(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		contextID := r.Header.Get("X-MCP-Parent-Context-ID")

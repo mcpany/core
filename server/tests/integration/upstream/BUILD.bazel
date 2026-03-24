@@ -51,7 +51,11 @@ go_test(
         "//server/tests/integration/upstream/testdata/mock_mcp",
     ],
     embed = [":upstream"],
-    tags = ["integration"],
+    tags = [
+        "integration",
+        "local",
+        "requires-network",
+    ],
     deps = [
         "//proto/api/v1:api",
         "//proto/config/v1:config",

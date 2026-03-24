@@ -19,6 +19,8 @@ import (
 //
 // It provides a built-in tool ("mcp:list_roots") that allows the server to query the client
 // for available filesystem roots.
+//
+// Summary: Represents a RootsTool.
 type RootsTool struct {
 	tool    *v1.Tool
 	mcpTool *mcp.Tool
@@ -28,6 +30,20 @@ type RootsTool struct {
 //
 // Returns:
 //   - *RootsTool: A new instance of RootsTool.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewRootsTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -59,6 +75,20 @@ func NewRootsTool() *RootsTool {
 //
 // Side Effects:
 //   - None.
+//
+// Summary: Executes Tool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -67,6 +97,20 @@ func (t *RootsTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes MCPTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -89,6 +133,79 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - Sends a "roots/list" request to the client.
+//
+// Summary: Executes Execute operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+
+// IsStreaming indicates whether this tool supports streaming execution.
+//
+// Summary: Checks if the RootsTool supports streaming.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: Always false for this tool.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+func (t *RootsTool) IsStreaming() bool {
+	return false
+}
+
+// StreamExecute executes the tool in a streaming context.
+//
+// Summary: Executes the tool in a streaming context.
+//
+// Parameters:
+//   - ctx (context.Context): The context for execution.
+//   - req (*tool.ExecutionRequest): The execution request parameters.
+//
+// Returns:
+//   - <-chan any: Always nil for this tool.
+//   - error: Always nil for this tool.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+func (t *RootsTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
+// Execute executes the tool.
+//
+// Summary: Executes the "mcp:list_roots" tool.
+//
+// Parameters:
+//   - ctx (context.Context): The context for execution, containing an active MCP session.
+//   - _ (*tool.ExecutionRequest): The execution request parameters (unused).
+//
+// Returns:
+//   - any: The result of listing roots.
+//   - error: An error if the session is missing or the list operation fails.
+//
+// Errors:
+//   - Returns error if the active session is missing.
+//   - Returns error if listing roots fails.
+//
+// Side Effects:
+//   - Sends a "roots/list" request to the client.
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {
@@ -107,6 +224,20 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 //
 // Returns:
 //   - *configv1.CacheConfig: Always nil (caching disabled).
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Retrieves GetCacheConfig operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

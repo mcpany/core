@@ -176,7 +176,6 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 	}
 }
 
-
 // Read implements the Store interface.
 //
 // Summary: Reads audit entries (Not implemented).

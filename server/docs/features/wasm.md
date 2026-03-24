@@ -7,4 +7,4 @@ MCP Any provides a WebAssembly (WASM) plugin system for safe, sandboxed executio
 - **Sandboxed Execution**: Plugins run in a secure WASM environment.
 - **Dynamic Loading**: Load plugins from bytecode at runtime.
 
-*(Note: Currently in experimental/mock stage)*
+*(Note: Currently planned for a future roadmap stage)*
