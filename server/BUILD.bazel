@@ -1,3 +1,5 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
@@ -6,3 +8,17 @@ exports_files([
     "go.mod",
     "go.sum",
 ])
+
+go_library(
+    name = "server_lib",
+    srcs = ["test_seed.go"],
+    importpath = "github.com/mcpany/core/server",
+    visibility = ["//visibility:private"],
+    deps = ["//server/pkg/app"],
+)
+
+go_binary(
+    name = "server",
+    embed = [":server_lib"],
+    visibility = ["//visibility:public"],
+)
