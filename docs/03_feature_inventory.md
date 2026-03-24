@@ -6,20 +6,6 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
-## Evolution: [2026-06-21] Updates
-
-### Proposed Additions
-- **Active Intent Alignment (AIA) Hub**: (P0) Advanced alignment service that issues hardware-attested heartbeats to ensure specialist agent reasoning traces remain mission-anchored.
-- **Trace-Aware Identity (TAI) Bridge**: (P0) Identity service that binds teammate actions to their unique reasoning lineage and the hardware-attested mission-root.
-- **Mesh-Resident Reasoning-GC**: (P1) Decentralized stability middleware for horizontal meshes that purges redundant context fragments.
-- **Semantic Entropy Filter (SEF)**: (P0) Security middleware for the T2T Bridge that detects and blocks malicious "Trace-Injection" patterns in sharded caches.
-
-### Priority Shifts
-- **Active Intent Alignment (AIA) Broker**: (Evolved to AIA Hub) Now designated as the primary "Alignment Anchor" for all connected agents.
-- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SEF-compliant** trace analysis.
-
----
-
 ## Evolution: [2026-03-20] Updates
 
 ### Proposed Additions
@@ -1515,3 +1501,48 @@
 ### Priority Shifts
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Elevated with mandatory **CFSA** integration to counter mimicry-based hijacking.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SHI** and **MHL** integration for all agency-initiation signals.
+
+## Evolution: [2026-06-28] Updates
+
+### Proposed Additions
+- **Hardware-Locked Configuration Anchor (HLCA)**: (P0) Advanced security service for the Project Configuration Guard that cryptographically binds settings to hardware-attested user sessions, neutralizing CVE-2026-33068.
+- **Multi-Tenant Context Isolation Middleware**: (P0) Isolation extension for the ContextEngine Plugin Adapter that ensures strict state separation between different agent missions and frameworks.
+- **Intent-Preserving ODCS Gateway**: (P1) Optimization service for the ContextEngine that facilitates on-demand, intent-aware context summarization to prevent "Context Ghosting."
+
+### Priority Shifts
+- **Project Configuration Security Guard**: (Re-affirmed P0) Now elevated with the requirement for mandatory **HLCA-compliant** attestation.
+- **ContextEngine Plugin Adapter**: (Re-affirmed P0) Designated as the primary host for **Multi-Tenant Isolation** and **ODCS** strategies.
+
+## Evolution: [2026-06-29] Updates
+
+### Proposed Additions
+- **Reasoning Provenance Validator**: (P0) Security service supporting Gemini's `x-gemini-provenance` standard to verify hardware-signed internal reasoning steps.
+- **Context-File Integrity Attestation (CFIA) v2**: (P0) Advanced security service mandating "Human-in-the-Loop" hashing and hardware-attested signing for natural-language context files.
+- **Fast-Path Identity Resumption (FPIR)**: (P1) Performance-optimizing middleware providing time-bound trust leases for sub-100ms teammate rotation.
+
+### Priority Shifts
+- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Evolving to v2 with the requirement for fragment-level semantic hash-chaining to counter Logic Grafting.
+- **SRM Provider**: (Re-affirmed P0) Elevated with mandatory support for **Reasoning Provenance** verification.
+
+## Evolution: [2026-03-23] (v2) Updates
+
+### Proposed Additions
+- **A2A Authentication Proxy**: (P0) A zero-trust security layer that enforces HTTP authentication for all Agent-to-Agent discovery and coordination requests, neutralizing shadow mapping.
+- **Dynamic Usage Quota Monitor**: (P1) Resource management middleware that tracks real-time credit and token consumption, providing agents with economic constraints and automated throttling.
+- **gVisor-Bound Execution Identity**: (P1) Security extension for the CMD adapter that issues hardware-attested environment tokens for tools running in gVisor sandboxes.
+
+### Priority Shifts
+- **A2A Messaging Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Authenticated Discovery** to align with Gemini CLI v0.34.0.
+- **Policy Firewall**: (Re-affirmed P0) Expanded to include **Quota-Aware Execution** rules based on real-time usage metrics.
+
+## Evolution: [2026-06-21] Updates
+
+### Proposed Additions
+- **Active Intent Alignment (AIA) Hub**: (P0) Advanced alignment service utilizing hardware-attested heartbeats to ensure specialist reasoning remains mission-anchored.
+- **Trace-Aware Identity (TAI) Bridge**: (P0) Hardware-attested identity service binding teammate actions to their unique reasoning lineage.
+- **Mesh-Resident Reasoning-GC**: (P1) Decentralized stability middleware for purging redundant reasoning fragments from shared mesh memory.
+- **Semantic Entropy Filter (SEF)**: (P0) Transport-level security middleware for detecting "Trace-Injection" patterns in sharded caches.
+
+### Priority Shifts
+- **Active Intent Alignment (AIA) Broker**: (Evolved to AIA Hub) Now designated as the primary "Alignment Anchor" for all connected agents.
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SEF-compliant** trace analysis.

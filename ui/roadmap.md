@@ -658,8 +658,22 @@
 - [ ] **[P0] Auditor Attestation Portal**: Interactive workspace for third-party security auditors to review and sign dynamic skill grafts. (Added: 2026-06-27)
 - [ ] **[P1] Reasoning Path Integrity Viewer**: Visual debugger for hardware-signed RPI fragments and semantic hash-chain integrity. (Added: 2026-06-27)
 
+#### Upcoming (2026-06-28 Evolution)
+- [ ] **[P0] HLCA Configuration Anchor Manager**: UI for reviewing and hardware-signing project-local settings files. (Added: 2026-06-28)
+- [ ] **[P0] Multi-Tenant Context Isolation Dashboard**: Visualize state boundaries and isolation status for sharded missions. (Added: 2026-06-28)
+- [ ] **[P1] ODCS Summarization Debugger**: Visualizer for on-demand context compression and intent-preservation scores. (Added: 2026-06-28)
+
+#### Upcoming (2026-06-29 Evolution)
+- [ ] **[P0] Reasoning Lineage Inspector**: UI component for visualizing verified `x-gemini-provenance` reasoning steps. (Added: 2026-06-29)
+- [ ] **[P0] CFIA v2 Signing Workspace**: Interactive UI for human-in-the-loop hashing and hardware-signing of context files. (Added: 2026-06-29)
+- [ ] **[P1] FPIR Lease Monitor**: Dashboard for tracking fast-path identity resumption leases and teammate rotation latency. (Added: 2026-06-29)
+
+#### Upcoming (2026-03-23 Evolution - v2)
+- [ ] **[P0] A2A Auth Status Dashboard**: (2026-03-23) Visualize authenticated inter-agent handshakes and peer-to-peer security status.
+- [ ] **[P1] Usage Quota Dashboard**: (2026-03-23) Real-time visualization of mission budget consumption and quota burn rates.
+- [ ] **[P1] Sandbox Identity Viewer**: (2026-03-23) Real-time status for gVisor-bound tools and execution environment integrity proofs.
+
 ### Upcoming: [2026-06-21]
-- [ ] **[P0] Active Intent Alignment Monitor**: (Added: 2026-06-21) Visual indicator for AIA heartbeat status and semantic drift alerts.
-- [ ] **[P0] Trace-Aware Identity (TAI) Explorer**: (Added: 2026-06-21) Security workspace for visualizing teammate lineage and reasoning-bound identity proofs.
-- [ ] **[P1] Mesh Reasoning-GC Status**: (Added: 2026-06-21) Real-time visualization of redundant fragment pruning and attention window efficiency.
-- [ ] **[P0] Semantic Entropy Alert Center**: (Added: 2026-06-21) UI for inspecting sharded memory fragments flagged for trace-injection patterns.
+- **Reasoning Lineage Visualizer**: UI component for auditing hardware-attested reasoning traces.
+- **Alignment Heartbeat Monitor**: Real-time dashboard for swarm intent stability.
+- **Mesh Memory Shard Viewer**: Observability tool for R-GC activity in shared teammate memory.
