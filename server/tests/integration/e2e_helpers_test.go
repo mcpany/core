@@ -62,7 +62,6 @@ func TestWaitForText(t *testing.T) {
 }
 
 func TestDockerHelpers(t *testing.T) {
-	t.Skip("Skipping TestDockerHelpers due to DinD issues in test environment")
 	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
 		t.Log("Skipping TestDockerHelpers in CI environment (CI/GITHUB_ACTIONS=true)")
 		// t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")

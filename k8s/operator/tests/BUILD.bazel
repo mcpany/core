@@ -5,7 +5,6 @@ load("@rules_go//go:def.bzl", "go_test")
 
 go_test(
     name = "e2e_test",
-    size = "enormous",
     srcs = ["e2e_test.go"],
     data = [
         "//server/cmd/server:server_tarball",
@@ -14,10 +13,6 @@ go_test(
     env = {
         "E2E": "true",
     },
+    size = "enormous",
     tags = ["integration"],
-)
-
-go_test(
-    name = "tests_test",
-    srcs = ["e2e_test.go"],
 )

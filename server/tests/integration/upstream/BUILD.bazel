@@ -39,7 +39,7 @@ go_test(
     data = [
         "//marketplace:upstream_service_collection_files",
         "//server/cmd/server",
-        "//server/cmd/webhooks",
+        "//server/cmd/webhooks:webhooks",
         "//server/tests/integration/cmd/mocks/grpc_authed_weather_server",
         "//server/tests/integration/cmd/mocks/grpc_weather_server",
         "//server/tests/integration/cmd/mocks/http_authed_echo_server",
@@ -47,7 +47,7 @@ go_test(
         "//server/tests/integration/cmd/mocks/http_echo_server",
         "//server/tests/integration/cmd/mocks/openapi_weather_server",
         "//server/tests/integration/cmd/mocks/webrtc_weather_server",
-        "//server/tests/integration/upstream/testdata/mock_mcp",
+        "//server/tests/integration/upstream/testdata/mock_mcp:mock_mcp",
     ],
     embed = [":upstream"],
     tags = ["integration"],

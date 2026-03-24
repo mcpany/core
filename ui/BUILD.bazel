@@ -1,12 +1,12 @@
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-load("@npm//:defs.bzl", "npm_link_all_packages")
-load("@npm//ui:@playwright/test/package_json.bzl", playwright_bin = "bin")
-load("@npm//ui:eslint/package_json.bzl", eslint_bin = "bin")
 load("@npm//ui:next/package_json.bzl", next_bin = "bin")
-load("@npm//ui:typescript/package_json.bzl", tsc_bin = "bin")
+load("@npm//ui:@playwright/test/package_json.bzl", playwright_bin = "bin")
 load("@npm//ui:vitest/package_json.bzl", vitest_bin = "bin")
+load("@npm//ui:eslint/package_json.bzl", eslint_bin = "bin")
+load("@npm//ui:typescript/package_json.bzl", tsc_bin = "bin")
+load("@npm//:defs.bzl", "npm_link_all_packages")
 load("//ui:playwright_tests.bzl", "define_playwright_tests")
 
 npm_link_all_packages(name = "node_modules")
@@ -28,8 +28,8 @@ filegroup(
             "playwright.config.ts",
             "playwright.screenshots.config.ts",
         ],
-        allow_empty = True,
         exclude = ["node_modules/**"],
+        allow_empty = True,
     ),
     visibility = ["//visibility:public"],
 )
@@ -53,7 +53,6 @@ filegroup(
             "playwright.config.ts",
             "playwright.screenshots.config.ts",
         ],
-        allow_empty = True,
         exclude = [
             "node_modules/**",
             ".next/**",
@@ -61,6 +60,7 @@ filegroup(
             "test-results/**",
             ".audit/**",
         ],
+        allow_empty = True,
     ),
     visibility = ["//visibility:public"],
 )
@@ -69,8 +69,8 @@ filegroup(
     name = "playwright_support_srcs",
     srcs = glob(
         include = ["tests/**"],
-        allow_empty = True,
         exclude = ["tests/**/*.spec.ts"],
+        allow_empty = True,
     ),
     visibility = ["//visibility:public"],
 )

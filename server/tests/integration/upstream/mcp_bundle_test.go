@@ -232,7 +232,6 @@ func createE2EBundle(t *testing.T, dir string) string {
 }
 
 func TestE2E_Bundle_Filesystem(t *testing.T) {
-	t.Skip("Skipping TestE2E_Bundle_Filesystem due to DinD issues in test environment")
 	// If Docker is not available or disabled, fallback to local execution.
 	useLocal := false
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {

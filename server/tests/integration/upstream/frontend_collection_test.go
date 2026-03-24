@@ -126,7 +126,6 @@ func TestFrontendReactCollection(t *testing.T) {
 }
 
 func findWorkspaceRoot(t *testing.T) string {
-	t.Skip("Skipping TestFrontendReactCollection due to workspace root pathings")
 	t.Helper()
 	if _, file, _, ok := runtime.Caller(0); ok {
 		candidate := filepath.Clean(filepath.Join(filepath.Dir(file), "../../../../.."))
