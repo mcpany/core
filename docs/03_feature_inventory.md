@@ -1547,6 +1547,18 @@
 - **Fast-Path Identity Resumption (FPIR)**: (Promoted to P0) Critical for supporting the new **LMP** standard and solving teammate rotation latency.
 - **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Evolving into **PAMS** to support interrupt-driven coordination.
 
+## Evolution: [2026-07-02] Updates
+
+### Proposed Additions
+- **AIR (Autonomous Intent Reconciliation) Hub**: (P0) Authoritative swarm arbitration service utilizing hardware-attested "Intent Quorums" to resolve conflicting subagent instructions.
+- **Multimodal State Entanglement (MSE) Provider**: (P0) Advanced security service that cryptographically "entangles" non-textual reasoning traces (SVG, Audio) with the mission root.
+- **Reasoning Entropy Monitor (REM)**: (P0) Stability middleware performing real-time semantic analysis of agent outputs to detect "Cognitive Stalls" and trigger resolution policies.
+- **CRDT-Native Mailbox Hub**: (P1) High-performance coordination service using Conflict-Free Replicated Data Types to eliminate teammate mailbox locks.
+
+### Priority Shifts
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to act as the primary backend for the **AIR Hub** multi-agent quorums.
+- **Multimodal Inference-Time Sanitizer (MITS)**: (Re-affirmed P0) Upgraded with **MSE** capabilities for structural multimodal lineage.
+
 ## Evolution: [2026-07-01] Updates
 
 ### Proposed Additions
