@@ -39,6 +39,15 @@ func (m *mockBypassTool) MCPTool() *mcp.Tool {
 	return t
 }
 
+
+func (m *mockBypassTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockBypassTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
 func (m *mockBypassTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return "success", nil
 }

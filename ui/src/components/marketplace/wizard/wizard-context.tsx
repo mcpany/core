@@ -20,13 +20,25 @@ export enum WizardStep {
 /**
  * WizardState type definition.
  */
+export interface WizardWebhook {
+    name: string;
+    webhook: {
+        url: string;
+        timeout?: string;
+        webhookSecret?: string;
+    };
+}
+
+/**
+ * WizardState type definition.
+ */
 export interface WizardState {
     currentStep: WizardStep;
     config: Partial<UpstreamServiceConfig>;
     // Temporary state for the wizard that might not map 1:1 to config yet
     selectedTemplateId?: string;
     params: Record<string, string>; // Key-Value pairs for parameters/env vars
-    webhooks: any[]; // TODO: Define webhook type
+    webhooks: WizardWebhook[];
     transformers: any[];
     authType?: 'local' | 'new';
     authCredentialId?: string;
@@ -123,9 +135,14 @@ export function WizardProvider({ children }: { children: ReactNode }) {
                 }
                 return { valid: true }; // Parameters are usually optional
             case WizardStep.WEBHOOKS:
-                for (const hook of state.webhooks) {
+                for (const hook of (state.config.preCallHooks as WizardWebhook[] || [])) {
                      if (hook.webhook && !hook.webhook.url) {
-                         return { valid: false, error: "Webhook URL is required" };
+                         return { valid: false, error: "Pre-Call Webhook URL is required" };
+                     }
+                }
+                for (const hook of (state.config.postCallHooks as WizardWebhook[] || [])) {
+                     if (hook.webhook && !hook.webhook.url) {
+                         return { valid: false, error: "Post-Call Webhook URL is required" };
                      }
                 }
                 return { valid: true };

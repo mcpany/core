@@ -199,6 +199,9 @@ func TestOpenAPIUpstream_Register_SpecUrl(t *testing.T) {
 	}))
 	defer ts.Close()
 
+	// Need to allow loopback for the httptest server to work
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service-url"),
 		OpenapiService: configv1.OpenapiUpstreamService_builder{
@@ -215,6 +218,37 @@ func TestOpenAPIUpstream_Register_SpecUrl(t *testing.T) {
 	_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 	assert.NoError(t, err)
 	mockToolManager.AssertExpectations(t)
+}
+
+func TestOpenAPIUpstream_Register_SpecUrl_SSRF(t *testing.T) {
+	ctx := context.Background()
+	mockToolManager := new(MockToolManager)
+	upstream := NewOpenAPIUpstream()
+
+	// Start a test server to serve the spec
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = fmt.Fprint(w, sampleOpenAPISpecJSONForCacheTest)
+	}))
+	defer ts.Close()
+
+	// Ensure loopback is NOT allowed
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
+
+	config := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service-url-ssrf"),
+		OpenapiService: configv1.OpenapiUpstreamService_builder{
+			SpecUrl: proto.String(ts.URL),
+		}.Build(),
+	}.Build()
+
+	expectedKey, _ := util.SanitizeServiceName("test-service-url-ssrf")
+	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
+
+	// Register should fail to fetch spec due to SSRF protection
+	_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "OpenAPI spec content is missing")
 }
 
 func TestOpenAPIUpstream_Register_InvalidSpecUrl(t *testing.T) {

@@ -34,6 +34,15 @@ func (m *mockMapTool) Tool() *v1.Tool {
 	return m.tool
 }
 
+
+func (m *mockMapTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockMapTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
 func (m *mockMapTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return m.result, nil
 }
