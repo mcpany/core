@@ -46,7 +46,7 @@ test.describe('Skills Bulk Actions', () => {
 
         // Ensure both are selected by counting selected text or just hitting bulk delete.
         // Accept the confirm dialog
-        page.on('dialog', dialog => dialog.accept());
+        page.on('dialog', async dialog => await dialog.accept());
         await page.click('button:has-text("Bulk Delete")');
 
         // Wait for the deletion toast to indicate it happened.
