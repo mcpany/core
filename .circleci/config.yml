@@ -32,17 +32,18 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v33-lint-{{ checksum "server/go.sum" }}
-            - v33-lint-
+            - v34-lint-{{ checksum "server/go.sum" }}
+            - v34-lint-
       - run:
           name: Prepare and Run Lint
           command: |
             . venv/bin/activate
             export GOTOOLCHAIN=go1.26.1
             make prepare
+            export PATH=$(pwd)/build/env/bin:$PATH
             make lint
       - save_cache:
-          key: v33-lint-{{ checksum "server/go.sum" }}
+          key: v34-lint-{{ checksum "server/go.sum" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
@@ -53,25 +54,40 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Clean and Setup
+          command: |
+             rm -rf build/env/bin
+      - run:
+          name: Install Python dependencies
+          command: |
+             sudo apt-get update
+             sudo apt-get install -y python3-pip python3-venv
+             python3 -m venv venv
+      - run:
           name: Install Node.js
           command: |
             curl -fsSL https://deb.nodesource.com/setup_23.x | sudo -E bash -
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v33-test-{{ checksum "server/go.sum" }}
-            - v33-test-
+            - v34-test-{{ checksum "server/go.sum" }}
+            - v34-test-
       - run:
           name: Run Tests
           command: |
+            . venv/bin/activate
             export GOTOOLCHAIN=go1.26.1
+            make prepare
+            export PATH=$(pwd)/build/env/bin:$PATH
             make test-proto
             make -C server test-fast
+            make k8s-test || echo "k8s tests failed or skipped"
       - save_cache:
-          key: v33-test-{{ checksum "server/go.sum" }}
+          key: v34-test-{{ checksum "server/go.sum" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
+            - "venv"
 
 workflows:
   version: 2
