@@ -21,9 +21,6 @@ var redisClientCreator = redis.NewClient
 // Parameters:
 //   - creator: func(*redis.Options) *redis.Client. The factory function to create Redis clients.
 //
-// Returns:
-//   - *redis.Client): The output.
-//
 // Side Effects:
 //   - Modifies the global redisClientCreator variable.
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
