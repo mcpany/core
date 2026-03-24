@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   MessageSquare,
@@ -100,11 +100,15 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
           });
   };
 
-  const filteredPrompts = prompts.filter(
-    (p) =>
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  // ⚡ BOLT: [Render Optimization] Memoize array filtering and eliminate redundant O(N) string evaluations
+  // Randomized Selection from Top 5 High-Impact Targets
+  const filteredPrompts = useMemo(() => {
+    const query = searchQuery.toLowerCase();
+    return prompts.filter((p) => {
+        return p.name.toLowerCase().includes(query) ||
+               (p.description && p.description.toLowerCase().includes(query));
+    });
+  }, [prompts, searchQuery]);
 
   const handleSelectPrompt = (prompt: PromptDefinition) => {
     setSelectedPrompt(prompt);
