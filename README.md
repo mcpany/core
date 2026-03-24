@@ -5,7 +5,7 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/mcpany/core/ci.yml?branch=main)](https://github.com/mcpany/core/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mcpany/core)](https://goreportcard.com/report/github.com/mcpany/core)
 
-## Project Identity
+## Elevator Pitch
 
 **What is this?** MCP Any is the definitive Model Context Protocol (MCP) universal adapter designed to streamline and democratize API integration for AI agents.
 
@@ -88,7 +88,7 @@ Follow these steps to get up and running with MCP Any immediately.
 *   `bazelisk` (for build automation)
 *   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
 
-## Quick Start
+### Quick Start
 
 The exact commands to clone, install dependencies, and run the app:
 
@@ -122,7 +122,7 @@ Ask your agent:
 
 The agent will use the `get_weather` tool exposed by MCP Any (configured in `config.minimal.yaml`) to fetch the simulated data.
 
-## Developer Workflow
+## Development
 
 We adhere to a strict development workflow to ensure code quality and maintainability.
 
@@ -161,7 +161,7 @@ To work on the frontend dashboard (Next.js):
 ```bash
 cd ui
 npm install
-npm run dev
+npm run dev &
 ```
 
 ## Configuration

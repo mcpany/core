@@ -10,17 +10,33 @@ import (
 )
 
 // LazyMCPConfig defines the configuration for On-Demand Discovery filtering.
+//
+// Summary: Represents a LazyMCPConfig.
 type LazyMCPConfig struct {
 	Enabled   bool    `json:"enabled"`
 	Threshold float64 `json:"threshold"`
 }
 
 // LazyMCPMiddleware filters tools based on a simplistic similarity logic to prevent context pollution.
+//
+// Summary: Represents a LazyMCPMiddleware.
 type LazyMCPMiddleware struct {
 	config LazyMCPConfig
 }
 
 // NewLazyMCPMiddleware creates a new LazyMCPMiddleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewLazyMCPMiddleware(config LazyMCPConfig) *LazyMCPMiddleware {
 	return &LazyMCPMiddleware{
 		config: config,
@@ -29,6 +45,15 @@ func NewLazyMCPMiddleware(config LazyMCPConfig) *LazyMCPMiddleware {
 
 // FilterTools takes an original tool list result and an intent string (from the context or header),
 // and returns a new list of tools that are "similar" to the intent.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *LazyMCPMiddleware) FilterTools(res *mcp.ListToolsResult, intent string) *mcp.ListToolsResult {
 	if !m.config.Enabled || intent == "" {
 		return res

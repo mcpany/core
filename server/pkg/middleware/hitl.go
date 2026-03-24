@@ -16,6 +16,8 @@ import (
 )
 
 // HITLConfig defines the configuration for Human-In-The-Loop approval flows.
+//
+// Summary: Represents a HITLConfig.
 type HITLConfig struct {
 	Enabled        bool     `json:"enabled"`
 	SensitiveTools []string `json:"sensitive_tools"`
@@ -24,6 +26,8 @@ type HITLConfig struct {
 }
 
 // HITLApprovalRequest represents a request for human approval published to the bus.
+//
+// Summary: Represents a HITLApprovalRequest.
 type HITLApprovalRequest struct {
 	ExecutionID string `json:"execution_id"`
 	ToolName    string `json:"tool_name"`
@@ -31,18 +35,34 @@ type HITLApprovalRequest struct {
 }
 
 // HITLApprovalResponse represents the response from the human operator.
+//
+// Summary: Represents a HITLApprovalResponse.
 type HITLApprovalResponse struct {
 	ExecutionID string `json:"execution_id"`
 	Approved    bool   `json:"approved"`
 }
 
 // HITLMiddleware enforces Human-In-The-Loop approvals for sensitive actions.
+//
+// Summary: Represents a HITLMiddleware.
 type HITLMiddleware struct {
 	config HITLConfig
 	bus    *bus.Provider
 }
 
 // NewHITLMiddleware creates a new HITLMiddleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewHITLMiddleware(config HITLConfig, busProvider *bus.Provider) *HITLMiddleware {
 	return &HITLMiddleware{
 		config: config,
@@ -51,6 +71,18 @@ func NewHITLMiddleware(config HITLConfig, busProvider *bus.Provider) *HITLMiddle
 }
 
 // Execute checks if the tool requires HITL approval before proceeding.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *HITLMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if !m.config.Enabled {
 		return next(ctx, req)

@@ -13,11 +13,25 @@ import (
 )
 
 // BlackboardStore represents a shared key-value store with agent-aware row-level security.
+//
+// Summary: Represents a BlackboardStore.
 type BlackboardStore struct {
 	db *sql.DB
 }
 
 // NewBlackboardStore creates a new SQLite Blackboard store.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewBlackboardStore(path string) (*BlackboardStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -49,6 +63,18 @@ func NewBlackboardStore(path string) (*BlackboardStore, error) {
 }
 
 // Get retrieves a value from the blackboard for a specific agent.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *BlackboardStore) Get(ctx context.Context, agentID, key string) (string, error) {
 	var value string
 	err := s.db.QueryRowContext(ctx, "SELECT value FROM blackboard WHERE agent_id = ? AND key = ?", agentID, key).Scan(&value)
@@ -62,6 +88,18 @@ func (s *BlackboardStore) Get(ctx context.Context, agentID, key string) (string,
 }
 
 // Set stores a value in the blackboard for a specific agent.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *BlackboardStore) Set(ctx context.Context, agentID, key, value string) error {
 	_, err := s.db.ExecContext(ctx, `
 		INSERT INTO blackboard (agent_id, key, value) VALUES (?, ?, ?)
@@ -71,6 +109,18 @@ func (s *BlackboardStore) Set(ctx context.Context, agentID, key, value string) e
 }
 
 // Close closes the database connection.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *BlackboardStore) Close() error {
 	return s.db.Close()
 }
