@@ -195,9 +195,10 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 			results = append(results, Result{
 				Severity:    Warning,
 				ServiceName: serviceName,
-				Message: "Secret is stored in plain text. Use " +
-					"environment variables or file references for " +
-					"better security.",
+				Message: "Secret is stored in plain " +
+					"text. Use environment variables " +
+					"or file references for better " +
+					"security.",
 				Path: path,
 			})
 		}
@@ -230,15 +231,18 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 			cmd := s.GetCommandLineService()
 			for k, v := range cmd.GetEnv() {
 				checkSecret(v,
-					fmt.Sprintf("command_line_service.env[%s]", k),
+					fmt.Sprintf("command_line_service."+
+						"env[%s]", k),
 					s.GetName())
 			}
 			if ce := cmd.GetContainerEnvironment(); ce != nil {
 				for k, v := range ce.GetEnv() {
-					checkSecret(v,
-						fmt.Sprintf("command_line_service."+
-							"container_environment.env[%s]", k),
-						s.GetName())
+					path := fmt.Sprintf(
+						"command_line_service."+
+							"container_env."+
+							"env[%s]",
+						k)
+					checkSecret(v, path, s.GetName())
 				}
 			}
 		case configv1.UpstreamServiceConfig_McpService_case:
@@ -248,14 +252,16 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 				stdio := mcp.GetStdioConnection()
 				for k, v := range stdio.GetEnv() {
 					checkSecret(v,
-						fmt.Sprintf("mcp_service.stdio.env[%s]", k),
+						fmt.Sprintf("mcp_service."+
+							"stdio.env[%s]", k),
 						s.GetName())
 				}
 			case configv1.McpUpstreamService_BundleConnection_case:
 				bundle := mcp.GetBundleConnection()
 				for k, v := range bundle.GetEnv() {
 					checkSecret(v,
-						fmt.Sprintf("mcp_service.bundle.env[%s]", k),
+						fmt.Sprintf("mcp_service."+
+							"bundle.env[%s]", k),
 						s.GetName())
 				}
 			}
@@ -292,9 +298,11 @@ func (l *Linter) checkShellInjection() []Result {
 			command = s.GetCommandLineService().GetCommand()
 		case configv1.UpstreamServiceConfig_McpService_case:
 			mcp := s.GetMcpService()
-			if mcp.WhichConnectionType() ==
-				configv1.McpUpstreamService_StdioConnection_case {
-				command = mcp.GetStdioConnection().GetCommand()
+			stdioCase := configv1.
+				McpUpstreamService_StdioConnection_case
+			if mcp.WhichConnectionType() == stdioCase {
+				command = mcp.GetStdioConnection().
+					GetCommand()
 			}
 		}
 
@@ -306,9 +314,16 @@ func (l *Linter) checkShellInjection() []Result {
 						Severity:    Warning,
 						ServiceName: s.GetName(),
 						Message: fmt.Sprintf(
-							"Command uses shell invocation (%q). "+
-								"Ensure inputs are properly sanitized "+
-								"to prevent shell injection.",
+							"Command uses "+
+								"shell "+
+								"invocation "+
+								"(%q). Ensure "+
+								"inputs are "+
+								"properly "+
+								"sanitized to "+
+								"prevent "+
+								"shell "+
+								"injection.",
 							pattern),
 						Path: "command",
 					})
@@ -347,9 +362,14 @@ func (l *Linter) checkInsecureHTTP() []Result {
 						Severity:    Warning,
 						ServiceName: s.GetName(),
 						Message: fmt.Sprintf(
-							"Service uses insecure HTTP "+
-								"connection to %q. Consider using "+
-								"HTTPS.", url),
+							"Service uses "+
+								"insecure "+
+								"HTTP "+
+								"conn to "+
+								"%q. Consider "+
+								"using "+
+								"HTTPS.",
+							url),
 						Path: path,
 					})
 				}
@@ -368,11 +388,15 @@ func (l *Linter) checkInsecureHTTP() []Result {
 				"openapi_service.spec_url")
 		case configv1.UpstreamServiceConfig_McpService_case:
 			mcp := s.GetMcpService()
-			if mcp.WhichConnectionType() ==
-				configv1.McpUpstreamService_HttpConnection_case {
+			httpCase := configv1.
+				McpUpstreamService_HttpConnection_case
+			if mcp.WhichConnectionType() == httpCase {
 				checkInsecure(
-					mcp.GetHttpConnection().GetHttpAddress(),
-					"mcp_service.http_connection.http_address")
+					mcp.GetHttpConnection().
+						GetHttpAddress(),
+					"mcp_service."+
+						"http_connection."+
+						"http_address")
 			}
 		}
 	}
@@ -406,9 +430,10 @@ func (l *Linter) checkCacheSettings() []Result {
 			results = append(results, Result{
 				Severity:    Info,
 				ServiceName: s.GetName(),
-				Message: "Cache is configured but has 0 TTL " +
-					"(infinite or disabled depending on " +
-					"implementation). Verify this is intended.",
+				Message: "Cache is configured but has 0 " +
+					"TTL (infinite or disabled " +
+					"depending on implementation). " +
+					"Verify this is intended.",
 				Path: "cache.ttl",
 			})
 		}
