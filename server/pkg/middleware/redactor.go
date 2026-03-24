@@ -98,9 +98,6 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 //   - []byte: The redacted JSON data (or original if no redaction needed).
 //   - error: An error if JSON parsing fails (though often swallowed/ignored for safety).
 //
-// Errors:
-//   - Returns error on failure state.
-//
 // Side Effects:
 //   - Walks the JSON structure.
 //   - Unmarshals and remarshals strings if modification is needed.

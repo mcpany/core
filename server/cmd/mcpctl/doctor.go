@@ -39,9 +39,6 @@ type DoctorRunner struct {
 // Returns:
 //   - error: An error if a fatal check fails.
 //
-// Errors:
-//   - Returns error on failure state.
-//
 // Side Effects:
 //   - Prints check results to r.Out.
 //   - Makes HTTP requests to the running server.

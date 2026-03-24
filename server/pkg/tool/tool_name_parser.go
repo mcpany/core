@@ -21,9 +21,6 @@ import (
 //   - namespace: string. The service ID/namespace.
 //   - tool: string. The bare tool name.
 //   - err: error. An error if the tool name is invalid.
-// Errors:
-//   - Returns error on failure state.
-//
 func ParseToolName(toolName string) (namespace string, tool string, err error) {
 	namespace, tool, found := strings.Cut(toolName, consts.ToolNameServiceSeparator)
 	if !found {

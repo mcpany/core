@@ -133,9 +133,6 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 //   - any: The result of the tool execution.
 //   - error: An error if the execution fails.
 //
-// Errors:
-//   - Returns error on failure state.
-//
 // Side Effects:
 //   - Updates Prometheus counters, histograms, and gauges.
 //   - Measures execution duration.

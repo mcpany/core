@@ -21,9 +21,6 @@ var redisClientCreator = redis.NewClient
 // Parameters:
 //   - creator: func(*redis.Options) *redis.Client. The factory function to create Redis clients.
 //
-// Returns:
-//   - *redis.Client): Function return value.
-//
 // Side Effects:
 //   - Modifies the global redisClientCreator variable.
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
@@ -56,9 +53,6 @@ type RedisLimiter struct {
 // Returns:
 //   - *RedisLimiter: The initialized RedisLimiter, or nil if an error occurs.
 //   - error: An error if the configuration is invalid or the Redis connection fails.
-//
-// Errors:
-//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Creates a new Redis connection.
@@ -219,9 +213,6 @@ var redisRateLimitScript = redis.NewScript(RedisRateLimitScript)
 //   - bool: true if the request is allowed.
 //   - error: An error if the Redis operation fails.
 //
-// Errors:
-//   - Returns error on failure state.
-//
 // Side Effects:
 //   - Executes a Lua script on Redis to atomically consume tokens.
 func (l *RedisLimiter) Allow(ctx context.Context) (bool, error) {
@@ -240,9 +231,6 @@ func (l *RedisLimiter) Allow(ctx context.Context) (bool, error) {
 // Returns:
 //   - bool: true if the request is allowed.
 //   - error: An error if the Redis operation fails.
-//
-// Errors:
-//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Executes a Lua script on Redis to atomically consume tokens.
@@ -296,9 +284,6 @@ func (l *RedisLimiter) GetConfigHash() string {
 //
 // Returns:
 //   - error: An error if closing the client fails.
-//
-// Errors:
-//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Closes the TCP connection to Redis.

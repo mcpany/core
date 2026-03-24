@@ -82,9 +82,6 @@ func (r *StaticResource) Service() string {
 //   - *mcp.ReadResourceResult: The resource content.
 //   - error: An error if fetching fails.
 //
-// Errors:
-//   - Returns error on failure state.
-//
 // Side Effects:
 //   - Performs an HTTP GET request to the resource URI (if not inline content).
 func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
@@ -177,9 +174,6 @@ func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, err
 //
 // Returns:
 //   - error: Always returns an error indicating not implemented.
-// Errors:
-//   - Returns error on failure state.
-//
 func (r *StaticResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to static resources is not yet implemented")
 }

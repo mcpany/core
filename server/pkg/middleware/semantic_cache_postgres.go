@@ -255,9 +255,6 @@ func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 // Returns:
 //   - error: An error if closing the connection fails.
 //
-// Errors:
-//   - Returns error on failure state.
-//
 // Side Effects:
 //   - Closes the DB connection.
 func (s *PostgresVectorStore) Close() error {

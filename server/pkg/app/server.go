@@ -344,9 +344,6 @@ func NewApplication() *Application {
 // Returns:
 //   - (error): An error if execution fails.
 //
-// Errors:
-//   - Returns error on failure state.
-//
 // Side Effects:
 //   - Starts HTTP and gRPC servers.
 //   - Initializes background workers.
@@ -931,9 +928,6 @@ func (a *Application) Run(opts RunOptions) error {
 // Returns:
 //   - (error): An error if the configuration reload fails.
 //
-// Errors:
-//   - Returns error on failure state.
-//
 // Side Effects:
 //   - Reads configuration files.
 //   - Updates global settings, user auth, profiles, and service registry.
@@ -1369,9 +1363,6 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 //
 // Returns:
 //   - (error): nil if startup completes successfully, or a context error if canceled.
-// Errors:
-//   - Returns error on failure state.
-//
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1502,9 +1493,6 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
-// Errors:
-//   - Returns error on failure state.
-//
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()

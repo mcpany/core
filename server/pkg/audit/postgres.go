@@ -200,9 +200,6 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 // Returns:
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
-// Errors:
-//   - Returns error on failure state.
-//
 func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
@@ -290,9 +287,6 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 //
 // Returns:
 //   - error: An error if closing fails.
-//
-// Errors:
-//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Closes the DB connection.

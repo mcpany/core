@@ -69,9 +69,6 @@ func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTe
 //   - *configv1.ServiceTemplate: The requested template, or nil if not found.
 //   - error: An error if the query fails (excluding ErrNoRows).
 //
-// Errors:
-//   - Returns error on failure state.
-//
 // Side Effects:
 //   - Executes a SELECT query on the service_templates table.
 func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
@@ -148,9 +145,6 @@ func (s *Store) SaveServiceTemplate(ctx context.Context, template *configv1.Serv
 //
 // Returns:
 //   - error: An error if the deletion fails.
-//
-// Errors:
-//   - Returns error on failure state.
 //
 // Side Effects:
 //   - Deletes a row from the service_templates table.

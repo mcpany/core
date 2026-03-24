@@ -460,9 +460,6 @@ type SigningRoundTripper struct {
 //   - *http.Response: The received response.
 //   - error: An error if signing or transport fails.
 //
-// Errors:
-//   - Returns error on failure state.
-//
 // Side Effects:
 //   - Reads and buffers the request body for signing.
 //   - Modifies request headers.

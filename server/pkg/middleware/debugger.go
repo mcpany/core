@@ -134,9 +134,6 @@ type bodyLogWriter struct {
 //   - int: The number of bytes written.
 //   - error: An error if the write fails.
 //
-// Errors:
-//   - Returns error on failure state.
-//
 // Side Effects:
 //   - Writes to the underlying http.ResponseWriter.
 //   - Writes to the internal buffer for logging, truncating if necessary.

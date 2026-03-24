@@ -106,9 +106,6 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 //   - (any): The result of the execution.
 //   - (error): An error if the limit is exceeded or the operation fails.
 //
-// Errors:
-//   - Returns error on failure state.
-//
 // Side Effects:
 //   - Checks against rate limits in memory or Redis.
 //   - Increments counters.

@@ -89,9 +89,6 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 //   - ([]*configv1.UpstreamServiceConfig): A slice of merged service configurations.
 //   - (error): An error if any critical failure occurs during loading or merging.
 //
-// Errors:
-//   - Returns error on failure state.
-//
 // Side Effects:
 //   - May clear existing services if a replace strategy is configured.
 //   - Fetches remote collections via HTTP.

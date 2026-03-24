@@ -56,9 +56,6 @@ func NewManager(fs afero.Fs, catalogPath string) *Manager {
 // Returns:
 //   - error: An error if the directory walk fails (individual config load errors are logged but do not abort).
 //
-// Errors:
-//   - Returns error on failure state.
-//
 // Side Effects:
 //   - Updates the internal list of services.
 //   - Reads files from the filesystem.
@@ -140,9 +137,6 @@ func (m *Manager) Load(ctx context.Context) error {
 // Returns:
 //   - []*configv1.UpstreamServiceConfig: A slice of service configurations.
 //   - error: Always nil.
-// Errors:
-//   - Returns error on failure state.
-//
 func (m *Manager) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

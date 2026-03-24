@@ -279,9 +279,6 @@ func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 //
 // Returns:
 //   - error: An error if closing fails.
-// Errors:
-//   - Returns error on failure state.
-//
 func (s *SQLiteVectorStore) Close() error {
 	return s.db.Close()
 }
