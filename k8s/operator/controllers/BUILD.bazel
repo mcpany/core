@@ -9,7 +9,7 @@ go_library(
         "mcpserver_controller.go",
         "tool_controller.go",
     ],
-    importpath = "github.com/mcpany/core/k8s/operator/controllers",
+    importpath = "github.com/mcpany/core/operator/controllers",
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_mcpany_core//operator/api/v1alpha1",

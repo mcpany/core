@@ -6,7 +6,7 @@ load("@rules_go//go:def.bzl", "go_binary", "go_library")
 go_library(
     name = "cmd_lib",
     srcs = ["main.go"],
-    importpath = "github.com/mcpany/core/k8s/operator/cmd",
+    importpath = "github.com/mcpany/core/operator/cmd",
     visibility = ["//visibility:private"],
     deps = [
         "@com_github_mcpany_core//operator/api/v1alpha1",
