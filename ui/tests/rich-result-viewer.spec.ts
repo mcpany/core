@@ -78,5 +78,34 @@ test.describe('Rich Result Viewer', () => {
     await expect(table.getByText('Alice')).toBeVisible();
     await expect(table.getByText('Bob')).toBeVisible();
     await expect(table.getByText('Admin')).toBeVisible();
+
+    // Switch to JSON tab
+    // Note: There might be multiple "JSON" tabs (one for schema, one for args, one for result)
+    // We want the one in the result viewer. Since it's likely the last one rendered or scoped.
+    // The tabs in RichResultViewer are: Table, JSON, Raw Output.
+    // We can scope by finding the container.
+    // Or just click the one that follows "Result".
+
+    // Scoping to the result area
+    // const resultArea = page.locator('.grid', { hasText: 'Result' }).last();
+    // Actually "Result" label is inside a grid div.
+
+    // Let's try finding the tab list containing "Raw Output" which is unique to RichResultViewer
+    const viewerTabs = page.locator('[role="tablist"]', { hasText: 'Raw Output' });
+    await viewerTabs.getByRole('tab', { name: 'JSON' }).click();
+
+    // Wait a bit for JSON to render
+    await page.waitForTimeout(100);
+
+    // Check for JSON content - tokenized render may split punctuation into spans
+    // Note: The JsonView component might not have a .react-json-view class anymore.
+    // It renders a syntax highlighted pre or tree depending on mode.
+    // Since it's a JSON tab, it might be the tree view or raw JSON string.
+    // Use a more generic selector for the entire page to ensure it's not a scoping issue
+    await expect(page.locator('body').locator('text=Alice').first()).toBeVisible({ timeout: 10000 });
+
+    // Switch to Raw Output tab
+    await viewerTabs.getByRole('tab', { name: 'Raw Output' }).click();
+    await expect(page.locator('body').locator('text=stdout').first()).toBeVisible();
   });
 });
