@@ -130,8 +130,6 @@ fi
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     exit 0
-        ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
-    echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
     echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."
