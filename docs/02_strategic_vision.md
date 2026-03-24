@@ -1037,8 +1037,10 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 **Strategic Pivot**:
 
-- **Enforced Intent Hierarchies (EIH)**: MCP Any will evolve the Blackboard
-  into an Intent-Hierarchical store. State fragments will carry a "Lineage
-  Priority," ensuring that Mission Root instructions cannot be shadowed.
-- **Kernel-Namespace Tool Isolation (KNTI)**: To neutralize RCE vulnerabilities
-  we are transitioning our command runner to utilize ephemeral kernel-namespaces.
+- **EIH**: MCP Any will evolve the Blackboard into an Intent-Hierarchical store.
+
+  State fragments will carry a "Lineage Priority," ensuring that Mission Root
+  instructions cannot be shadowed.
+- **KNS**: To neutralize RCE vulnerabilities we are transitioning our command
+
+  runner to utilize ephemeral kernel-namespaces.

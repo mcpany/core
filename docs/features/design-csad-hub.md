@@ -22,6 +22,7 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 * **User Persona:** Enterprise Security Architect
 * **Primary Goal:** Detect and neutralize a coordinated "Hivenet" attack attempting lateral movement across the internal agent mesh.
 * **The Happy Path (Tasks):**
+
     1. Multiple agents in the mesh start performing "low-risk" discovery calls that, when aggregated, reveal a network mapping attempt.
     2. CSAD Hub identifies the correlation between these disparate calls in sub-milliseconds.
     3. CSAD triggers a "Mesh Lockdown," revoking discovery capabilities for all agents in the affected mission scope.
@@ -54,16 +55,19 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 
 * **2026-05-29:** Initial Document Creation.
 
-### Update: Intent Hierarchy Integration (2026-05-30)
+### Update (2026-05-30): Intent Hierarchy Integration
 
 **Context**: Today's research identified "Context Shadowing" where subagents
+
 override system instructions via the Shared Blackboard.
 
 **Architecture Adjustment**:
 
-- Integrating the **Intent Hierarchy Enforcer (IHE)** into the CSAD Pattern
+* Integrating the **Intent Hierarchy Enforcer (IHE)** into the CSAD Pattern
+
   Matcher to neutralize fragment injection.
-- Implementing **KNS Command Runner** for all CSAD-triggered diagnostic tools.
+* Implementing **KNS Command Runner** for all CSAD-triggered diagnostic tools.
 
 **Security Impact**: Prevents subversion of swarm-wide monitoring by
+
 compromised agents.
