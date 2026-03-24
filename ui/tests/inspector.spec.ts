@@ -17,6 +17,7 @@ test.describe('Inspector Page', () => {
     await expect(page.getByRole('heading', { name: 'Inspector' })).toBeVisible();
 
     // 1. Seed Real Trace Data via actual API backend
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const REAL_TRACE = {
       id: `real-trace-${Date.now()}`,
       timestamp: new Date().toISOString(),
