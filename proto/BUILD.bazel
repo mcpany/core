@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------------
 # Well-known-type TypeScript bindings are generated at the repo root so that
 # declare_file("google/protobuf/*.ts") produces files under
-# bazel-out/.../bin/google/protobuf/ — the path ts-proto emits relative imports
+# bazel-out/.../bin/google/protobuf/ - the path ts-proto emits relative imports
 # against (e.g. "../../../google/protobuf/duration" from proto/config/v1/).
 # See //:gen_wkt_ts_files in BUILD.bazel.
 # ---------------------------------------------------------------------------
