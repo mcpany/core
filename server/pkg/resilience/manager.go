@@ -69,9 +69,6 @@ func NewManager(config *configv1.ResilienceConfig) *Manager {
 // Returns:
 //   - error: An error if the operation fails after all resilience attempts.
 //
-// Errors:
-//   - error on Execute failure.
-//
 // Side Effects:
 //   - Applies timeout context.
 //   - Retries operation on failure.

@@ -47,9 +47,6 @@ func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddl
 //   - any: The execution result.
 //   - error: An error if the execution or resilience policy fails.
 //
-// Errors:
-//   - error on Execute failure.
-//
 // Side Effects:
 //   - Checks circuit breaker state.
 //   - May retry the execution on failure.

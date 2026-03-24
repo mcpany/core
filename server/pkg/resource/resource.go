@@ -288,9 +288,6 @@ func (rm *Manager) OnListChanged(f func()) {
 //
 // Returns:
 //   - error: An error if resource not found or subscription fails.
-// Errors:
-//   - error on Subscribe failure.
-//
 func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 	resource, ok := rm.GetResource(uri)
 	if !ok {

@@ -96,9 +96,6 @@ func (e *ActionableError) Unwrap() error {
 // Returns:
 //   - error: The wrapped error.
 //
-// Errors:
-//   - error on WrapActionableError failure.
-//
 // Side Effects:
 //   - None.
 func WrapActionableError(context string, err error) error {

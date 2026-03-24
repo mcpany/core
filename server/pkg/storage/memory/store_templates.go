@@ -20,9 +20,6 @@ import (
 // Returns:
 //   - []*configv1.ServiceTemplate: A list of service templates.
 //   - error: Always nil.
-// Errors:
-//   - error on ListServiceTemplates failure.
-//
 func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -44,9 +41,6 @@ func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemp
 // Returns:
 //   - *configv1.ServiceTemplate: The template, or nil if not found.
 //   - error: Always nil.
-// Errors:
-//   - error on GetServiceTemplate failure.
-//
 func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -67,9 +61,6 @@ func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.Serv
 // Returns:
 //   - error: Always nil.
 //
-// Errors:
-//   - error on SaveServiceTemplate failure.
-//
 // Side Effects:
 //   - Updates the internal service template map.
 func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.ServiceTemplate) error {
@@ -89,9 +80,6 @@ func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.Servic
 //
 // Returns:
 //   - error: Always nil.
-//
-// Errors:
-//   - error on DeleteServiceTemplate failure.
 //
 // Side Effects:
 //   - Removes from the internal service template map.

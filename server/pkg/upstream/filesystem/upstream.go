@@ -266,9 +266,6 @@ type fsCallable struct {
 // Returns:
 //   - any: The result of the execution.
 //   - error: An error if execution fails.
-// Errors:
-//   - error on Call failure.
-//
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

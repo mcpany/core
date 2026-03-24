@@ -98,9 +98,6 @@ type ConfigurableEngine interface {
 // Returns:
 //   - (Engine): An initialized Engine implementation.
 //   - (error): An error if the file extension is not supported.
-// Errors:
-//   - error on NewEngine failure.
-//
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -862,9 +859,6 @@ func (s *FileStore) HasConfigSources() bool {
 // Returns:
 //   - (*configv1.McpAnyServerConfig): The merged configuration.
 //   - (error): An error if loading or merging fails.
-// Errors:
-//   - error on Load failure.
-//
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	filePaths, err := s.collectFilePaths()
 	if err != nil {
@@ -1376,9 +1370,6 @@ func NewMultiStore(stores ...Store) *MultiStore {
 // Returns:
 //   - *configv1.McpAnyServerConfig: The merged configuration.
 //   - error: An error if loading fails.
-// Errors:
-//   - error on Load failure.
-//
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
 	for _, s := range ms.stores {

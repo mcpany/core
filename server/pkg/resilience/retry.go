@@ -60,9 +60,6 @@ func NewRetry(config *configv1.RetryConfig) *Retry {
 // Returns:
 //   - error: An error if all retries fail.
 //
-// Errors:
-//   - error on Execute failure.
-//
 // Side Effects:
 //   - Executes the provided function multiple times.
 func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) error {
