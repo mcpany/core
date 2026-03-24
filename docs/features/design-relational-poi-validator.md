@@ -1,5 +1,5 @@
 # Design Doc: Relational PoI Validator
-**Status:** Draft
+**Status:** Draft | In Review | Approved
 **Created:** 2026-05-15
 
 ## 1. Context and Scope
