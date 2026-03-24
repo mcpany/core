@@ -14,7 +14,7 @@ test.describe('Audit Log Viewer', () => {
 
     // 2. Trigger an action that creates an audit log
     // Execute a simple tool (if any is available in the seeded state)
-    const executeRes = await request.post('/api/v1/mcp/execute', {
+    const _executeRes = await request.post('/api/v1/mcp/execute', {
       data: {
         name: 'test_tool',
         arguments: { arg1: 'value1' }

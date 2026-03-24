@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import * as path from 'path';
 import * as fs from 'fs';
 import { seedGlobalState } from './e2e/test-data';
