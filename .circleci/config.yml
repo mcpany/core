@@ -32,8 +32,8 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v38-lint-{{ checksum "server/go.sum" }}
-            - v38-lint-
+            - v39-lint-{{ checksum "server/go.sum" }}
+            - v39-lint-
       - run:
           name: Prepare and Run Lint
           command: |
@@ -45,7 +45,7 @@ jobs:
             go env
             ./scripts/lint.sh
       - save_cache:
-          key: v38-lint-{{ checksum "server/go.sum" }}
+          key: v39-lint-{{ checksum "server/go.sum" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
@@ -72,8 +72,8 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v38-test-{{ checksum "server/go.sum" }}
-            - v38-test-
+            - v39-test-{{ checksum "server/go.sum" }}
+            - v39-test-
       - run:
           name: Run Tests
           command: |
@@ -85,7 +85,7 @@ jobs:
             make -C server test-fast
             make k8s-test || echo "k8s tests failed or skipped"
       - save_cache:
-          key: v38-test-{{ checksum "server/go.sum" }}
+          key: v39-test-{{ checksum "server/go.sum" }}
           paths:
             - "build/env/bin"
             - "build/.cache"

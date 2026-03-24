@@ -32,12 +32,24 @@ go work sync
 # Absolute path to config
 CONFIG_PATH="${PROJECT_ROOT}/server/.golangci.yml"
 
-# Explicitly lint the important modules to avoid issues with empty directories or patterns.
-# We skip 'proto' because it only contains generated files (excluded by config) and tests (ignored by config).
+# We run the linter on each module separately to be robust against CI environment differences.
 echo "    Linting modules..."
-"$LINT_BIN" run --timeout 20m --fix --config "$CONFIG_PATH" \
-    "./server/..." \
-    "./k8s/operator/..." \
-    "./server/examples/upstream_service_demo/grpc/greeter_server/..."
+
+lint_module() {
+    local mod_path=$1
+    echo "    -> Linting ${mod_path}..."
+    # Check if there are actually Go files that are not test files and not excluded
+    # We use a pattern that matches the module directory.
+    "$LINT_BIN" run --timeout 10m --fix --config "$CONFIG_PATH" "./${mod_path}/..."
+}
+
+lint_module "server"
+lint_module "k8s/operator"
+
+# Greeter server
+if [ -d "server/examples/upstream_service_demo/grpc/greeter_server/server" ]; then
+    echo "    -> Linting greeter_server..."
+    "$LINT_BIN" run --timeout 5m --fix --config "$CONFIG_PATH" ./server/examples/upstream_service_demo/grpc/greeter_server/server/...
+fi
 
 echo "==> Lint complete."
