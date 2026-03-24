@@ -51,12 +51,12 @@ jobs:
       - run:
           name: Run Lint
           command: |
-            npm install -g @bazel/bazelisk
-            sudo npm install -g @bazel/bazelisk || true
-            sudo chown -R circleci:circleci /usr/local/lib/node_modules || true
-            npm install -g @bazel/bazelisk || sudo npm install -g @bazel/bazelisk
-            sudo ln -s /usr/local/lib/node_modules/@bazel/bazelisk/bazelisk.js /usr/local/bin/bazelisk || true
-            bazelisk run //:lint || /usr/local/lib/node_modules/@bazel/bazelisk/bazelisk.js run //:lint || true
+            mkdir -p ~/bin
+            export PATH=~/bin:$PATH
+            curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.20.0/bazelisk-linux-amd64 -o ~/bin/bazelisk
+            chmod +x ~/bin/bazelisk
+            bazelisk run //:lint
+            bazelisk test //ui:lint //ui:typecheck
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
