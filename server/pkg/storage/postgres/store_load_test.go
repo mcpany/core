@@ -52,7 +52,7 @@ func TestStore_Load(t *testing.T) {
 		mock.ExpectQuery(".*").
 			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(userBytes))
 
-		settings := configv1.GlobalSettings_builder{McpListenAddress: proto.String("instance-1")}.Build()
+		settings := configv1.GlobalSettings_builder{McpListenAddress: proto.String("LOG_LEVEL_INFO")}.Build()
 		settingsBytes, err := protojson.MarshalOptions{}.Marshal(settings)
 		require.NoError(t, err)
 		mock.ExpectQuery(".*").
