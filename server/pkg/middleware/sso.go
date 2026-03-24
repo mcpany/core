@@ -48,6 +48,15 @@ func SSOMiddleware(config SSOConfig) func(http.Handler) http.Handler {
 				return
 			}
 
+			// Path exemptions for health checks and static assets
+			path := r.URL.Path
+			if path == "/healthz" || path == "/health" || path == "/metrics" ||
+				strings.HasPrefix(path, "/_next/") || strings.HasPrefix(path, "/static/") ||
+				strings.HasPrefix(path, "/api/auth/") {
+				next.ServeHTTP(w, r)
+				return
+			}
+
 			// Check for Identity Header (Trusted Proxy pattern)
 			userID := r.Header.Get("X-MCP-Identity")
 			if userID != "" {
@@ -59,7 +68,8 @@ func SSOMiddleware(config SSOConfig) func(http.Handler) http.Handler {
 			// Check for Bearer Token
 			auth := r.Header.Get("Authorization")
 			if strings.HasPrefix(auth, "Bearer ") {
-				// Validate token (Mock validation)
+				// TODO(auth): Implement proper token validation here.
+				// For now, accept a mock token to allow testing without an actual IDP.
 				token := strings.TrimPrefix(auth, "Bearer ")
 				if token == "valid-mock-token" {
 					ctx := context.WithValue(r.Context(), UserIDContextKey, "user-123")

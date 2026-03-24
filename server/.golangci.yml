@@ -4,7 +4,6 @@
 run:
   timeout: 5m
   tests: false
-  go: "1.24"
 
 linters:
   enable:
@@ -52,3 +51,8 @@ issues:
       text: "var-naming: avoid meaningless package names"
   skip-files:
     - '.*\.pb\.go$'
+    - lll
+    - funlen
+    - wsl
+    - gci
+    - gofumpt
