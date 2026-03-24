@@ -7,43 +7,50 @@ import (
 	"github.com/mcpany/core/server/pkg/middleware"
 )
 
-// handleDebugSeedToolUsage seeds tool usage stats directly into the Prometheus registry.
-//
-// Summary: Returns a handler that seeds tool usage data for testing.
-//
-// Returns:
-//   - http.HandlerFunc: The HTTP handler.
-//
-// Side Effects:
-//   - Modifies global prometheus metrics.
-func (a *Application) handleDebugSeedToolUsage() http.HandlerFunc {
+// SeedToolUsageRequest represents the body of the seeding request
+type SeedToolUsageRequest struct {
+	Count       int     `json:"count"`
+	SuccessRate float64 `json:"successRate"`
+	ToolName    string  `json:"toolName,omitempty"`
+}
+
+// SeedToolUsageHandler creates a handler for the debug endpoint to seed metrics
+func SeedToolUsageHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 
-		var stats []ToolAnalytics
-		if err := json.NewDecoder(r.Body).Decode(&stats); err != nil {
-			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		var req SeedToolUsageRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
 
-		for _, stat := range stats {
-			if stat.TotalCalls > 0 {
-				successCount := int(float64(stat.TotalCalls) * (stat.SuccessRate / 100.0))
-				errorCount := int(stat.TotalCalls) - successCount
+		// Calculate successes and failures based on the success rate
+		successes := int(float64(req.Count) * (req.SuccessRate / 100.0))
+		if req.SuccessRate <= 1.0 { // If it was passed as a fraction like 0.85 instead of 85.0
+			successes = int(float64(req.Count) * req.SuccessRate)
+		}
+		failures := req.Count - successes
 
-				if successCount > 0 {
-					middleware.InjectToolExecutionForTesting(stat.Name, stat.ServiceID, "success", "", successCount)
-				}
-				if errorCount > 0 {
-					middleware.InjectToolExecutionForTesting(stat.Name, stat.ServiceID, "error", "mock_error", errorCount)
-				}
-			}
+		toolName := req.ToolName
+		if toolName == "" {
+			toolName = "builtin.mcp:list_roots" // default test tool
 		}
 
+		// Inject metrics
+		middleware.InjectToolExecutionForTesting(toolName, "test-service", successes, failures)
+
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("OK"))
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":    "success",
+			"seeded":    req.Count,
+			"successes": successes,
+			"failures":  failures,
+			"tool":      toolName,
+		})
 	}
 }

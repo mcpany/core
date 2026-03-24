@@ -28,6 +28,7 @@ go_library(
         "auth_test_endpoint.go",
         "dashboard.go",
         "dashboard_stats.go",
+        "dashboard_stats_seed.go",
         "logging_persistence.go",
         "seed.go",
         "seeds.go",

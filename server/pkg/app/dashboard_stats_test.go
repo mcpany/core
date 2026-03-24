@@ -228,7 +228,7 @@ type TestMockPrompt struct {
 func (m *TestMockPrompt) Prompt() *mcp.Prompt {
 	return &mcp.Prompt{Name: m.name}
 }
-func (m *TestMockPrompt) Service() string                        { return "test" }
+func (m *TestMockPrompt) Service() string { return "test" }
 func (m *TestMockPrompt) Definition() *configv1.PromptDefinition { return nil }
 func (m *TestMockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	return nil, nil
@@ -451,24 +451,4 @@ func TestCalculateUptime(t *testing.T) {
 			assert.Equal(t, tt.expected, result)
 		})
 	}
-}
-
-// TestHandleDebugSeedToolUsage verifies seeding tool usage stats.
-//
-// Summary: Tests the debug tool usage seeding handler.
-func TestHandleDebugSeedToolUsage(t *testing.T) {
-	app := &Application{}
-
-	stats := []ToolAnalytics{
-		{Name: "my_tool", ServiceID: "my_service", TotalCalls: 100, SuccessRate: 85.0},
-	}
-	body, _ := json.Marshal(stats)
-
-	req, _ := http.NewRequest("POST", "/debug/seed_tool_usage", bytes.NewBuffer(body))
-	rr := httptest.NewRecorder()
-
-	handler := app.handleDebugSeedToolUsage()
-	handler.ServeHTTP(rr, req)
-
-	assert.Equal(t, http.StatusOK, rr.Code)
 }

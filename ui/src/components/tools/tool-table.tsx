@@ -191,10 +191,16 @@ export const ToolTable = memo(function ToolTable({
                       const stats = usageStats?.[`${tool.name}@${tool.serviceId}`];
                       if (!stats || stats.totalCalls === 0) return "-";
                       const rate = stats.successRate;
-                      let color = "text-green-500";
-                      if (rate < 50) color = "text-red-500";
-                      else if (rate < 90) color = "text-yellow-500";
-                      return <span className={cn("font-bold", color)}>{rate.toFixed(1)}%</span>;
+                      let bgColor = "bg-emerald-500/15";
+                      let textColor = "text-emerald-500";
+                      if (rate < 50) {
+                          bgColor = "bg-red-500/15";
+                          textColor = "text-red-500";
+                      } else if (rate < 90) {
+                          bgColor = "bg-amber-500/15";
+                          textColor = "text-amber-500";
+                      }
+                      return <span className={cn("inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold backdrop-blur-sm", bgColor, textColor)}>{rate.toFixed(1)}%</span>;
                   })()}
               </TableCell>
               <TableCell className={isCompact ? "py-0 px-2" : ""}>
