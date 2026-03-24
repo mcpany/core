@@ -49,7 +49,53 @@ test.describe('Feature Screenshot', () => {
     // We can't rely on the backend being alive or correctly seeded in this specific test
     // environment, so we intercept the API calls to guarantee the UI has data to render.
 
+    await page.route('**/api/v1/audit', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: [
+            {
+              id: 'log-1',
+              timestamp: new Date().toISOString(),
+              method: 'tools/call',
+              params: { name: 'echo_tool', arguments: { text: 'hello world' } },
+              result: { result: 'hello world' },
+              error: null
+            }
+          ],
+          total: 1
+        })
+      });
+    });
+
     await page.goto('/audit');
+
+    // We can't guarantee backend seed worked, so we intercept the API call and provide mock data.
+    // This allows the test to pass reliably even in environments where the backend seed failed
+    // or took too long to propagate.
+    await page.route('**/api/v1/audit', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: [
+            {
+              id: 'log-1',
+              timestamp: new Date().toISOString(),
+              method: 'tools/call',
+              params: { name: 'echo_tool', arguments: { text: 'hello world' } },
+              result: { result: 'hello world' },
+              error: null
+            }
+          ],
+          total: 1
+        })
+      });
+    });
+
+    await page.goto('/audit'); // reload with mock
+    await page.waitForTimeout(3000);
 
     // Wait for the mock to populate the list
     await expect(page.locator('text=echo_tool').first()).toBeVisible({ timeout: 15000 });
