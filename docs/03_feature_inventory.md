@@ -1,4 +1,5 @@
 <!-- markdownlint-disable -->
+
 # Feature Inventory: MCP Any
 
 ## Current Backlog (P0/P1)
@@ -1364,7 +1365,7 @@
 
 ## Evolution: [2026-06-18] Updates
 
-### Proposed Additions (109)
+### Proposed Additions [2026-06-18]
 
 * **Hardware-Locked Attention Governance (HLAG) Provider**: (P0) Authoritative attention guard utilizing hardware-bound headers to protect mission-root anchors.
 * **Lock-Free Mesh Coordination (LFMC) Hub**: (P0) Coordination service implementing CRDT-based task list synchronization for parallel teammates.
@@ -1372,7 +1373,7 @@
 
 ## Evolution: [2026-06-19] Updates
 
-### Proposed Additions (110)
+### Proposed Additions [2026-06-19]
 
 * **Hardware-Attested Intent Lineage (HAIL) Provider**: (P0) Authoritative security service cryptographically signing "Reasoning Fragments" to link sub-instructions back to the mission root.
 * **Attention-Locking Middleware**: (P0) Security extension supporting `x-gemini-attention-lock` to protect critical intent fragments.

@@ -1,4 +1,5 @@
 <!-- markdownlint-disable -->
+
 # Market Sync: [2026-06-19]
 
 ## Ecosystem Updates
@@ -10,6 +11,7 @@ Anthropic is testing "Sovereign Sharding" for teammate context. This allows peer
 ### OpenClaw "Sovereign" 3.0 GA
 
 OpenClaw has moved their Sovereign architecture to GA. Notable features:
+
 * **HAIL (Hardware-Attested Intent Lineage)**: A standardized protocol for signing reasoning fragments.
 * **Spectral Reasoning**: Support for reasoning-aware timing jitter to neutralize cache-timing side-channel attacks in shared enclaves.
 

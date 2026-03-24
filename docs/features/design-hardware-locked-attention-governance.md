@@ -4,9 +4,11 @@
 **Created:** 2026-06-19
 
 ## 1. Context and Scope
+
 Autonomous swarms are vulnerable to Reasoning Entropy Exhaustion (REE) attacks, where malicious subagents flood the shared context with noise to "push out" mission-critical anchors. HLAG utilizes hardware-bound headers to cryptographically "pin" critical intent fragments in the attention tier.
 
 ## 2. Goals & Non-Goals
+
 * **Goals:**
     * Prevent context-window eviction of hardware-locked mission anchors.
     * Neutralize REE attacks by prioritizing "HAAL-locked" fragments.
@@ -15,6 +17,7 @@ Autonomous swarms are vulnerable to Reasoning Entropy Exhaustion (REE) attacks, 
     * General-purpose context compression (handled by the ContextEngine).
 
 ## 3. Critical User Journey (CUJ)
+
 * **User Persona:** Sovereign Agent Security Auditor
 * **Primary Goal:** Ensure that "Zero Trust" policy anchors remain in the context window even during high-frequency teammate coordination.
 * **The Happy Path (Tasks):**
@@ -25,6 +28,7 @@ Autonomous swarms are vulnerable to Reasoning Entropy Exhaustion (REE) attacks, 
     5. The mission remains anchored to the security policy.
 
 ## 4. Design & Architecture
+
 * **System Flow:**
     `[Sovereign Policy] -> [HLAG Pinning Engine] -> [Attention Tier (Locked)] <- [Subagent Noise]`
 * **APIs / Interfaces:**
@@ -32,11 +36,14 @@ Autonomous swarms are vulnerable to Reasoning Entropy Exhaustion (REE) attacks, 
 * **Data Storage/State:** Attention pins are managed in the local HLAG state-store, anchored to the mission-root.
 
 ## 5. Alternatives Considered
+
 * **Software-only pinning**: Rejected because the agent reasoning engine could be coerced into "un-pinning" the anchor. Hardware-locking requires external revocation.
 
 ## 6. Cross-Cutting Concerns
+
 * **Security (Zero Trust):** HLAG prevents "Intent Smearing" by maintaining the dominance of the parent mission-root.
 * **Observability:** Attention-utilization metrics are exported to the telemetry proxy.
 
 ## 7. Evolutionary Changelog
+
 * **2026-06-19:** Initial Document Creation.
