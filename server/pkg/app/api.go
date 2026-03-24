@@ -125,8 +125,8 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	// If I register `/skills/` for `handleSkillDetail`, I can't easily register `/skills/{name}/assets` separately without 1.22.
 	// Let's assume `handleSkillDetail` needs to handle sub-paths or I merge them.
 
-	mux.HandleFunc("/templates", a.handleTemplates())
-	mux.HandleFunc("/templates/", a.handleTemplateDetail())
+	mux.Handle("/templates", rbacAdmin(a.handleTemplates()))
+	mux.Handle("/templates/", rbacAdmin(a.handleTemplateDetail()))
 
 	mux.HandleFunc("/profiles", a.handleProfiles(store))
 	mux.HandleFunc("/profiles/", a.handleProfileDetail(store))

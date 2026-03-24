@@ -1637,7 +1637,12 @@ func TestSecretLeak(t *testing.T) {
 	app.fs = afero.NewMemMapFs()
 
 	handler := app.createAPIHandler(store)
-	ts := httptest.NewServer(handler)
+	// Create middleware that injects the admin role manually for testing
+	adminHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := auth.ContextWithRoles(r.Context(), []string{"admin"})
+		handler.ServeHTTP(w, r.WithContext(ctx))
+	})
+	ts := httptest.NewServer(adminHandler)
 	defer ts.Close()
 
 	secretID := "sensitive-secret-123"
@@ -1819,4 +1824,35 @@ func TestHandleSecretDetail_Put_InvalidJSON(t *testing.T) {
 	if w.Code != http.StatusBadRequest {
 		t.Errorf("Expected 400 Bad Request, got %d", w.Code)
 	}
+}
+
+func TestHandleSecrets_RBAC_Enforcement(t *testing.T) {
+	tempDir := t.TempDir()
+	dbPath := filepath.Join(tempDir, "test_secrets_rbac.db")
+	db, _ := sqlite.NewDB(dbPath)
+	defer db.Close()
+	store := sqlite.NewStore(db)
+
+	app := NewApplication()
+	app.fs = afero.NewMemMapFs()
+
+	handler := app.createAPIHandler(store)
+	ts := httptest.NewServer(handler)
+	defer ts.Close()
+
+	// Try to get secrets without admin role
+	resp, _ := http.Get(ts.URL + "/secrets")
+	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+
+	// Try to POST secrets without admin role
+	secretID := "sensitive-secret-123"
+	body := map[string]interface{}{
+		"id":   secretID,
+		"name": "My Secret",
+		"key":  "my_secret_key",
+		"value": "SUPER_SECRET_VALUE",
+	}
+	bodyBytes, _ := json.Marshal(body)
+	respPost, _ := http.Post(ts.URL+"/secrets", "application/json", bytes.NewReader(bodyBytes))
+	assert.Equal(t, http.StatusForbidden, respPost.StatusCode)
 }
