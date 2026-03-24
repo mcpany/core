@@ -121,6 +121,7 @@ go_test(
         "debugger_test.go",
         "dlp_extended_test.go",
         "dlp_test.go",
+        "esb_test.go",
         "global_ratelimit_test.go",
         "guardrails_test.go",
         "gzip_bypass_test.go",
