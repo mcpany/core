@@ -1524,6 +1524,17 @@
 - **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Evolving to v2 with the requirement for fragment-level semantic hash-chaining to counter Logic Grafting.
 - **SRM Provider**: (Re-affirmed P0) Elevated with mandatory support for **Reasoning Provenance** verification.
 
+## Evolution: [2026-06-30] Updates
+
+### Proposed Additions
+- **Fast-Path Teammate Resume (FPTR)**: (P0) Authoritative mesh-resident identity cache that enables sub-10ms teammate rotation via pipe-bound trust leases.
+- **Invisible Instruction Shield (IIS)**: (P0) Semantic security middleware that performs layout-aware parsing of natural-language context to detect zero-width or hidden instructions.
+- **Deterministic Loop Gate (DLG)**: (P0) Authoritative host for Gemini-compliant agentic hooks, ensuring sandboxed execution of deterministic loop validation scripts.
+
+### Priority Shifts
+- **Capability Garbage Collection (CGC) Provider**: (Re-affirmed P0) Elevated to support **Recursive Skill Isolation v2** for neutralizing context smearing in deep swarms.
+- **Fast-Path Identity Resumption (FPIR)**: (Evolved to FPTR) Now designated as a mandatory mesh-resident requirement for horizontal Agent Teams.
+
 ## Evolution: [2026-03-23] (v2) Updates
 
 ### Proposed Additions

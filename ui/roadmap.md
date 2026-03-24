@@ -668,6 +668,11 @@
 - [ ] **[P0] CFIA v2 Signing Workspace**: Interactive UI for human-in-the-loop hashing and hardware-signing of context files. (Added: 2026-06-29)
 - [ ] **[P1] FPIR Lease Monitor**: Dashboard for tracking fast-path identity resumption leases and teammate rotation latency. (Added: 2026-06-29)
 
+#### Upcoming (2026-06-30 Evolution)
+- [ ] **[P0] Mesh-Resident Fast-Path Monitor**: UI for visualizing pipe-bound trust leases and sub-10ms teammate rotation latency. (Added: 2026-06-30)
+- [ ] **[P0] Invisible Instruction Alert Center**: Security dashboard for reviewing flagged natural-language files with hidden instruction patterns. (Added: 2026-06-30)
+- [ ] **[P0] Agentic Hook Sandbox Viewer**: Real-time logs and status for sandboxed DLG hook execution. (Added: 2026-06-30)
+
 #### Upcoming (2026-03-23 Evolution - v2)
 - [ ] **[P0] A2A Auth Status Dashboard**: (2026-03-23) Visualize authenticated inter-agent handshakes and peer-to-peer security status.
 - [ ] **[P1] Usage Quota Dashboard**: (2026-03-23) Real-time visualization of mission budget consumption and quota burn rates.
