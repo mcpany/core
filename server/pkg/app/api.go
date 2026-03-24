@@ -955,7 +955,6 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 				secret.SetName(secret.GetId())
 			}
 
-
 			// Force ID
 			secret.SetId(path)
 
