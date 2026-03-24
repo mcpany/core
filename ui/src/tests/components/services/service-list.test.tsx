@@ -48,7 +48,7 @@ describe('ServiceList', () => {
         loadBalancingStrategy: 0,
     } as unknown as UpstreamServiceConfig;
 
-    it('renders dropdown menu with duplicate and export actions', { timeout: 15000 }, async () => {
+    it('renders dropdown menu with duplicate and export actions', async () => {
         const user = userEvent.setup();
         const onEdit = vi.fn();
         const onDuplicate = vi.fn();
@@ -74,7 +74,7 @@ describe('ServiceList', () => {
         await user.click(trigger);
 
         // Check if items are visible (awaiting because of portal/animation)
-        expect(await screen.findByText('Edit', {}, { timeout: 10000 })).toBeInTheDocument();
+        expect(await screen.findByText('Edit', undefined, { timeout: 10000 })).toBeInTheDocument();
         expect(screen.getByText('Duplicate')).toBeInTheDocument();
         expect(screen.getByText('Export')).toBeInTheDocument();
         expect(screen.getByText('Delete')).toBeInTheDocument();
