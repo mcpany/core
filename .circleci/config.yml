@@ -63,7 +63,8 @@ jobs:
             # Bypassing golangci-lint entirely since this pipeline is consistently running OOM for Go 1.26 in this project.
             echo "Skipping memory-intensive golangci-lint in CircleCI. Relying on local pre-commit checks and branch rules."
             # Run buildifier and other simple lints.
-            bazelisk run //:lint -- --skip-go || exit 0
+            bazelisk run //:lint -- --skip-go
+            exit 0
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
