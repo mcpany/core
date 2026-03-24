@@ -1534,3 +1534,15 @@
 ### Priority Shifts
 - **A2A Messaging Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Authenticated Discovery** to align with Gemini CLI v0.34.0.
 - **Policy Firewall**: (Re-affirmed P0) Expanded to include **Quota-Aware Execution** rules based on real-time usage metrics.
+
+## Evolution: [2026-06-30] Updates
+
+### Proposed Additions
+- **Cognitive Attestation Hub (CAH) Adapter**: (P0) Advanced security middleware for the Semantic Integrity Bridge that implements OpenClaw v3.3.0 consensus hooks.
+- **Priority-Aware Mailbox Sharding (PAMS)**: (P0) High-priority upgrade for the AMS middleware allowing lock-free "Urgent Interrupt" signals.
+- **Attention-Splicing Firewall (ASF)**: (P0) Security service for the ADF that performs semantic entropy analysis to detect stylized mimicry in noise fragments.
+- **Leased Mission Persistence (LMP) Provider**: (P0) Performance-optimizing identity service providing hardware-locked mission leases to neutralize rotation fatigue.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Promoted to P0) Critical for supporting the new **LMP** standard and solving teammate rotation latency.
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Evolving into **PAMS** to support interrupt-driven coordination.
