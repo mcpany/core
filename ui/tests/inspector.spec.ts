@@ -47,7 +47,7 @@ test.describe('Inspector Page', () => {
     // mock the WS at the browser level to ensure the trace is delivered to the
     // InspectorTable without depending on proxy-level WS tunnelling.
     let wsSend: ((data: string) => void) | null = null;
-    await page.routeWebSocket('**/api/v1/ws/traces', (ws: any) => {
+    await page.routeWebSocket('**/api/v1/ws/traces', (ws) => {
       wsSend = (data: string) => ws.send(data);
     });
 
