@@ -8,9 +8,6 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Prompt Studio', () => {
   test.beforeAll(async ({ request }) => {
-    const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
-    const HEADERS = { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' };
-
     // Seed a service for the test
     const response = await request.post('/api/v1/services', {
       data: {
@@ -21,8 +18,7 @@ test.describe('Prompt Studio', () => {
           working_directory: '/tmp'
         },
         disable: false
-      },
-      headers: HEADERS
+      }
     });
     // We expect 201 Created or 200 OK. Even 400 if it already exists is fine-ish?
     // Better to ensure it works.
@@ -32,33 +28,7 @@ test.describe('Prompt Studio', () => {
     }
   });
 
-  test.beforeEach(async ({ page, request }) => {
-    const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
-    const HEADERS = { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' };
-
-    const user = {
-        id: 'e2e-admin-core',
-        authentication: {
-            basic_auth: {
-                username: 'e2e-admin-core',
-                password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a" // password
-            }
-        },
-        roles: ["admin"],
-        profile_ids: ["dev"]
-    };
-
-    await request.post('/api/v1/users', { data: user, headers: HEADERS });
-
-    // Login
-    await page.goto('/login');
-    await page.fill('input[name="username"]', 'e2e-admin-core');
-    await page.fill('input[name="password"]', 'password');
-    await Promise.all([
-      page.waitForURL('/', { timeout: 30000 }),
-      page.click('button[type="submit"]', { force: true })
-    ]);
-
+  test.beforeEach(async ({ page }) => {
     // Navigate to Prompts page
     await page.goto('/prompts');
   });
@@ -67,7 +37,7 @@ test.describe('Prompt Studio', () => {
     // 1. Click "Create New Prompt" (or the + button in empty state)
     // We wait for the page to load and check if we are in empty state or list state
     // We look for any button that resembles "Create"
-    const createBtn = page.getByRole('button', { name: /Create.*Prompt/ }).first();
+    const createBtn = page.getByRole('button', { name: /Create.*Prompt|New Prompt/ }).first();
     await createBtn.click();
 
     // 2. Fill the form

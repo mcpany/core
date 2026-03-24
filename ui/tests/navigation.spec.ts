@@ -12,7 +12,7 @@ test.describe('Navigation Coverage', () => {
     { path: '/marketplace', title: 'Marketplace' },
     { path: '/playground', title: 'Console' },
     { path: '/profiles', title: 'Profiles' },
-    { path: '/prompts', title: 'Prompts' },
+    { path: '/prompts', title: 'Prompt Library' },
     { path: '/resources', title: 'Resources' },
     { path: '/secrets', title: 'API Keys & Secrets' },
     { path: '/upstream-services', title: 'Upstream Services' },
