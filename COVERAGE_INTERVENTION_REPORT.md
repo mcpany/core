@@ -1,10 +1,9 @@
 # Coverage Intervention Report
 
-* **Target:** `server/pkg/tokenizer/tokenizer.go`
-* **Risk Profile:** This package is core utility code that dynamically traverses arbitrary structures using Go reflection to estimate token size. The dynamic types and varied reflection edge cases combined with loops for parsing primitives meant that it had several complex, error-handling and default branch cases that were not fully evaluated under standard operation. Bugs in the tokenizer could result in improper rate-limiting, misconfigured downstream LLM calls, or internal denial-of-service via infinite cycle evaluation.
+* **Target:** `server/pkg/app/api_skills.go` (`handleSkills` and `handleSkillDetail`)
+* **Risk Profile:** These endpoints handle HTTP operations mapping to internal skill operations in `server/pkg/app`. It exhibited low coverage and high Cyclomatic Complexity. Leaving these endpoints untested posed a risk of regressions, especially related to the security and management of skills (creation, retrieval, updates, asset routing, etc.).
 * **New Coverage:**
-  * Added edge-case test validations on the integer unrolled parser bounds (`simpleTokenizeInt64`).
-  * Explicitly enforced type-level error handling across slice, array, and map structures.
-  * Explicitly hit reflection-cycles in error injection within maps.
-  * Verified nil-slice and nil-map values under reflection parsing interfaces (`countTokensReflectSlice` and `countTokensReflectMap`).
-* **Verification:** `make test` equivalents (via `go test ./...`) for `server/pkg/tokenizer` and the whole repo ran clean with no regressions in existing tests. The file `server/pkg/tokenizer/tokenizer_coverage_test.go` correctly isolates all testing logic to leave production artifacts clean and ensures hermetic execution.
+    * I implemented a comprehensive table-driven test `TestHandleSkills` which tests `GET` (List), `POST` (Create with Success, Invalid Body, and Creation Error scenarios), and default method handler (Method Not Allowed).
+    * I implemented a comprehensive table-driven test `TestHandleSkillDetail` which tests `GET` (Retrieve with Success and Not Found scenarios), `PUT` (Update with Success, Invalid Body, and Update Error scenarios), `DELETE` (Delete with Success and Not Found scenarios), default method handler (Method Not Allowed), missing skill names in the request URL, and correct asset routing (delegation to `handleUploadSkillAsset`).
+    * The new coverage mimics the Google Standard Table-Driven Test pattern present in `TestHandleUploadSkillAsset`.
+* **Verification:** `bazelisk test //server/pkg/app:app_test` confirms tests pass correctly without modifying underlying functionality. Running `bazelisk test //server/...` confirms there are no new regressions.

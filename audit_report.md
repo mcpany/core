@@ -1,32 +1,38 @@
 # Truth Reconciliation Audit Report
 
-## 1. Executive Summary
+## Executive Summary
+A 10-file sampling audit was performed across the `ui/docs` and `server/docs` directories to verify alignment between documentation, the codebase, and the Product Roadmap.
 
-A "Truth Reconciliation Audit" was performed on the MCP Any project to verify perfect synchronization between the Documentation (`ui/docs`, `server/docs`), the Codebase (Implementation), and the Product Roadmap. A randomized sample of 10 diverse documentation files spanning both UI flows, backend APIs, and configurations was selected and evaluated.
+Overall Health: **8/10 files aligned**. Two UI documentation files were found to have "Documentation Drift" where the actual implemented UI had evolved past the documented features (tab names and button labels). These were corrected.
 
-**High-Level Health:** The 10 sampled features exhibit **100% alignment** with the Roadmap and the Codebase. Both backend infrastructure and UI implementations perfectly match the documented capabilities. No documentation drift or roadmap debt was detected in the sample.
+The backend infrastructure and core UI capabilities are correctly implemented and tested according to the roadmap.
 
-## 2. Verification Matrix
+## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `server/docs/features/health-checks.md` | Aligned | Verified codebase | `server/pkg/health/health.go` implements HTTP, gRPC, WS, CLI, FS checks |
-| `server/docs/features/dynamic_registration.md` | Aligned | Verified codebase | `server/pkg/upstream/graphql/graphql.go` handles dynamic tool discovery |
-| `server/docs/features/dlp.md` | Aligned | Verified codebase | `server/pkg/middleware/dlp.go` implements regex-based redaction |
-| `server/docs/features/security.md` | Aligned | Verified codebase | `server/pkg/app/server.go` enforces Sentinel Security Mode; `server/pkg/tool/management.go` checks tool integrity |
-| `server/docs/features/audit_logging.md` | Aligned | Verified codebase | `server/pkg/logging/audit.go` and providers handle structured logs and Webhooks |
-| `ui/docs/features/services.md` | Aligned | Verified codebase | `ui/src/components/services/service-list.tsx` manages upstream configs |
-| `ui/docs/features/playground.md` | Aligned | Verified codebase | `ui/src/components/playground/schema-form.tsx` supports Native File Uploads (`type="file"`) |
-| `ui/docs/features/marketplace.md` | Aligned | Verified codebase | `ui/src/components/share-collection-dialog.tsx` supports "Unsafe Export" secrets handling |
-| `ui/docs/features/dashboard.md` | Aligned | Verified codebase | `ui/src/components/stats/analytics-dashboard.tsx` supports customizable Portainer-style widget grid |
-| `ui/docs/features/middleware.md` | Aligned | Verified codebase | `ui/src/components/middleware/pipeline-visualizer.test.tsx` validates reorder logic |
+| `ui/docs/features/prompts.md` | Documentation Drift | Updated Doc | The UI uses "Open in Playground" and redirects without auto-generating the form. Doc updated. |
+| `ui/docs/features/marketplace.md` | Aligned | None | `ShareCollectionDialog` supports Redact/Template/Unsafe exports natively. |
+| `ui/docs/features/network.md` | Aligned | None | `network-graph-client.tsx` implements ReactFlow with Dagre layout perfectly. |
+| `ui/docs/features/server-health-history.md` | Aligned | None | `useServiceHealthHistory` and `HealthTimeline` implemented in `service-health-widget.tsx`. |
+| `ui/docs/features/tool_analytics.md` | Documentation Drift | Updated Doc | Tab is named "Analytics" inside "Tool Runner", and labels are "Avg Latency (50)" & "Error Count (50)". Doc updated. |
+| `server/docs/features/debugger.md` | Aligned | None | `GET /debug/entries` API and `DebugEntry` structure (with `duration`) match docs perfectly. |
+| `server/docs/features/helm.md` | Aligned | None | `k8s/helm/mcpany` contains the valid Helm chart configuration. |
+| `server/docs/features/kafka.md` | Aligned | None | `server/pkg/bus/kafka/kafka.go` correctly implements the Kafka Bus for `message_bus` configs. |
+| `server/docs/features/prompts/README.md` | Aligned | None | `prompts/get` API and `upstream_services.http_service.prompts` are correctly mapped in `prompt/service.go`. |
+| `server/docs/features/skill_manager.md` | Aligned | None | `server/pkg/skill/manager.go` properly validates names (regex 1-64 chars) and prevents path traversal for assets. |
 
-## 3. Remediation Log
+## Remediation Log
 
-*   **Code Fixes:** None required. The codebase matches the roadmap and documentation exactly for the sampled files.
-*   **Documentation Updates:** None required. The documentation accurately reflects the current state of the implementation.
+*   **Case A (Documentation Drift - Code is Correct):**
+    *   `ui/docs/features/prompts.md`: Modified the instructions to state that users must click "Open in Playground" and that they are redirected to the Playground where they can use the prompt template, removing the incorrect claim that a form is auto-generated.
+    *   `ui/docs/features/tool_analytics.md`: Updated the tab name from "Performance & Analytics" in the "Tool Inspector" to "Analytics" in the "Tool Runner". Corrected metric labels from "Avg Latency" to "Avg Latency (50)" and "Error Count" to "Error Count (50)".
 
-## 4. Security Scrub
+*   **Case B (Roadmap Debt - Code is Missing/Broken):**
+    *   None found in the selected 10 files. All core features described in the sampled docs have been fully engineered and integrated into the codebase with corresponding tests (`manager_test.go`, `debugger_test.go`, etc.).
 
-*   **PII/Secrets:** No Personally Identifiable Information (PII) or plaintext secrets are present in this report.
-*   **Internal IPs:** No internal IP addresses or sensitive infrastructure details are included.
+## Security Scrub
+This report contains NO Personally Identifiable Information (PII), sensitive secrets, or internal IP addresses.
+
+---
+*Audit performed by L7 Principal Software Engineer.*

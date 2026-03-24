@@ -183,7 +183,9 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 
 	envList := make([]string, 0, len(env))
 	for k, v := range env {
-		envList = append(envList, fmt.Sprintf("%s=%s", k, v))
+		// ⚡ BOLT: Replace fmt.Sprintf with string concatenation for environment variable construction to avoid reflection overhead in hot paths
+		// Randomized Selection from Top 5 High-Impact Targets
+		envList = append(envList, k + "=" + v)
 	}
 
 	// 4. Construct Transport

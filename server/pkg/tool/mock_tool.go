@@ -58,24 +58,6 @@ func (m *MockTool) MCPTool() *mcp.Tool {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
-func (m *MockTool) IsStreaming() bool {
-	return false
-}
-
-func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
-	ch := make(chan any, 1)
-	go func() {
-		defer close(ch)
-		res, err := m.Execute(ctx, req)
-		if err != nil {
-			ch <- err
-		} else {
-			ch <- res
-		}
-	}()
-	return ch, nil
-}
-
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)

@@ -1649,11 +1649,15 @@ func buildSafeEnv(resolvedEnv map[string]string) []string {
 	env := make([]string, 0, len(allowedEnvVars)+len(resolvedEnv))
 	for _, key := range allowedEnvVars {
 		if val, ok := os.LookupEnv(key); ok {
-			env = append(env, fmt.Sprintf("%s=%s", key, val))
+			// ⚡ BOLT: Replace fmt.Sprintf with string concatenation for environment variable construction to avoid reflection overhead in hot paths
+			// Randomized Selection from Top 5 High-Impact Targets
+			env = append(env, key + "=" + val)
 		}
 	}
 	for k, v := range resolvedEnv {
-		env = append(env, fmt.Sprintf("%s=%s", k, v))
+		// ⚡ BOLT: Replace fmt.Sprintf with string concatenation for environment variable construction to avoid reflection overhead in hot paths
+		// Randomized Selection from Top 5 High-Impact Targets
+		env = append(env, k + "=" + v)
 	}
 	return env
 }

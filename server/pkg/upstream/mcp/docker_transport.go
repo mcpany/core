@@ -143,7 +143,9 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 
 	envVars := make([]string, 0, len(resolvedEnv))
 	for k, v := range resolvedEnv {
-		envVars = append(envVars, fmt.Sprintf("%s=%s", k, v))
+		// ⚡ BOLT: Replace fmt.Sprintf with string concatenation for environment variable construction to avoid reflection overhead in hot paths
+		// Randomized Selection from Top 5 High-Impact Targets
+		envVars = append(envVars, k + "=" + v)
 	}
 
 	resp, err := cli.ContainerCreate(ctx, &container.Config{

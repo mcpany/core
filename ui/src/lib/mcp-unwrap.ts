@@ -50,7 +50,7 @@ export function unwrapMcpResult(result: any): any {
                 try {
                     const parsed = JSON.parse(content[0].text);
                     if (typeof parsed === 'object' && parsed !== null) {
-                        return unwrapMcpResult(parsed);
+                        return parsed;
                     }
                 } catch (e) {
                     // Not JSON inside text

@@ -11,7 +11,7 @@ import (
 	"time"
 
 	// Use json-iterator for faster JSON operations.
-
+	json "github.com/json-iterator/go"
 
 	"github.com/google/uuid"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -1031,7 +1031,7 @@ func (tm *Manager) AddTool(tool Tool) error {
 					)
 				}
 
-				jsonResult, err := util.FastMarshalToString(result.Result)
+				jsonResult, err := json.Marshal(result.Result)
 				if err != nil {
 					return nil, fmt.Errorf("failed to marshal tool result: %w", err)
 				}
@@ -1040,7 +1040,7 @@ func (tm *Manager) AddTool(tool Tool) error {
 					Content: []mcp.Content{
 						&mcp.TextContent{
 							// ⚡ Bolt Optimization: Use Zero-copy conversion for large JSON payloads
-							Text: jsonResult,
+							Text: util.BytesToString(jsonResult),
 						},
 					},
 				}, nil
