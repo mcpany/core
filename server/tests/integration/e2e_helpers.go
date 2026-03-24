@@ -1727,7 +1727,7 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
 	callID := "call-" + toolDef.GetName()
-	callDef := configv1.HttpCallDefinition_builder{
+	_ = configv1.HttpCallDefinition_builder{
 		Id:           &callID,
 		EndpointPath: &endpointPath,
 		Method:       &method,
@@ -1768,7 +1768,7 @@ func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceC
 	t.Logf("Registering Websocket service '%s' with endpoint: %s", serviceID, baseURL)
 
 	callID := "call-" + operationID
-	callDef := configv1.WebsocketCallDefinition_builder{
+	_ = configv1.WebsocketCallDefinition_builder{
 		Id: &callID,
 	}.Build()
 
@@ -1812,7 +1812,7 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 	t.Logf("Registering Webrtc service '%s' with endpoint: %s", serviceID, baseURL)
 
 	callID := "call-" + operationID
-	callDef := configv1.WebrtcCallDefinition_builder{
+	_ = configv1.WebrtcCallDefinition_builder{
 		Id: &callID,
 	}.Build()
 
@@ -1859,7 +1859,7 @@ func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServ
 	}.Build()
 
 	callID := "call-hello"
-	callDef := configv1.MCPCallDefinition_builder{
+	_ = configv1.MCPCallDefinition_builder{
 		Id: &callID,
 	}.Build()
 
@@ -2067,7 +2067,7 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 
 	toolDef := configv1.ToolDefinition_builder{Name: &operationID}.Build()
 	callID := "call-" + toolDef.GetName()
-	callDef := configv1.HttpCallDefinition_builder{
+	_ = configv1.HttpCallDefinition_builder{
 		Id:           &callID,
 		EndpointPath: &endpointPath,
 		Method:       &method,
