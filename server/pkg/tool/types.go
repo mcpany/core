@@ -4184,16 +4184,15 @@ func checkUnquotedInjection(val, command string, isShell bool) error {
 		dangerousChars += " "
 	}
 
-	charsToCheck := dangerousChars
 	// Space is always dangerous for 'env' command, regardless of isShell,
 	// because 'env' takes variable assignments and then executes a command.
 	// Allowing spaces allows executing arbitrary commands via 'env <injected_cmd>'.
 	// Additionally, '=' is dangerous as it allows setting arbitrary environment variables.
 	if filepath.Base(command) == "env" {
-		charsToCheck += " ="
+		dangerousChars += " ="
 	}
 
-	if idx := strings.IndexAny(val, charsToCheck); idx != -1 {
+	if idx := strings.IndexAny(val, dangerousChars); idx != -1 {
 		return fmt.Errorf("shell injection detected: value contains dangerous character %q", val[idx])
 	}
 	return nil
