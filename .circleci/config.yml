@@ -7,7 +7,7 @@ version: 2.1
 executors:
   default-executor:
     docker:
-      - image: cimg/go:1.24
+      - image: cimg/go:1.26
     resource_class: medium
 
 commands:
@@ -54,11 +54,7 @@ jobs:
       - run:
           name: Install golangci-lint
           command: |
-            curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.63.4
-
-            # Temporarily downgrade go so golangci-lint runs
-            find . -name go.mod -exec sed -i 's/go 1.26.1/go 1.24/g' {} +
-            find . -name go.mod -exec sed -i 's/toolchain go1.26.1/toolchain go1.24/g' {} +
+            curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.64.6
 
       - run:
           name: Run Lint
@@ -66,9 +62,6 @@ jobs:
             export PATH=$PATH:$(go env GOPATH)/bin
             export GOLANGCI_LINT_BIN=golangci-lint
             bazelisk run //:lint || true
-
-            find . -name go.mod -exec sed -i 's/go 1.24/go 1.26.1/g' {} +
-            find . -name go.mod -exec sed -i 's/toolchain go1.24/toolchain go1.26.1/g' {} +
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
