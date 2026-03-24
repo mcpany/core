@@ -15,9 +15,8 @@ repos:
     -   id: detect-private-key
         exclude: ^server/tests/tls/
     -   id: end-of-file-fixer
-        exclude: ^server/pkg/upstream/mcp/s1/manifest.json|^\.github/workflows/.*
+        exclude: ^server/pkg/upstream/mcp/s1/manifest.json
     -   id: trailing-whitespace
-        exclude: ^\.github/workflows/.*
 -   repo: local
     hooks:
     -   id: shellcheck
