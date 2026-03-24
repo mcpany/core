@@ -501,8 +501,6 @@
 - [ ] **[P0] Mesh Command Sovereignty Dashboard**: Visual "Chain of Mesh-Command" tracer for inter-teammate mailbox validation. (Added: 2026-05-29)
 - [ ] **[P0] Teammate Handshake Monitor**: Real-time status indicator for ATH identity exchange in horizontal swarms. (Added: 2026-05-29)
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
-
-#### Upcoming (2026-03-21 Evolution)
-- [ ] **[P0] Handshake Portal**: UI for reviewing and authorizing Cognitive Handshake delegations. (Added: 2026-03-21)
-- [ ] **[P0] Blackboard Lock Inspector**: Real-time visualization of SSA wait-graphs and contention heatmaps. (Added: 2026-03-21)
-- [ ] **[P1] Ephemeral Sandbox Monitor**: Visual tracker for task-bound sandbox lifecycle and mission attestation. (Added: 2026-03-21)
+- [ ] **[P0] Relational Intent Chain Viewer**: (2026-03-24) Visual debugger for verifying the lineage and relational scoping of agent intents. (Added: 2026-03-24)
+- [ ] **[P0] Blackboard Lock Inspector**: (2026-03-24) Real-time visualization of the SSA Wait-Graph and active state locks. (Added: 2026-03-24)
+- [ ] **[P1] BSH Performance Monitor**: (2026-03-24) Real-time metrics for Binary State Handoff throughput and latency. (Added: 2026-03-24)

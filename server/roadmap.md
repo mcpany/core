@@ -661,8 +661,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Cross-Mesh Command Sovereignty (CMCS) Provider**: Hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms. (Added: 2026-05-29)
 *   **[P0] Atomic Teammate Handshake (ATH) Gateway**: Mandatory identity exchange before teammate task delegation in horizontal teams. (Added: 2026-05-29)
 *   **[P0] Mesh-Bound Context Sovereignty Bridge**: Semantic fragment analysis across teammate boundaries for horizontal team stability. (Added: 2026-05-29)
-
-#### Upcoming (2026-03-21 Evolution)
-*   **[P0] Attested Handshake Provider**: JIT authority delegation for Cognitive Handshakes. (Added: 2026-03-21)
-*   **[P0] Shared State Arbiter (SSA)**: Real-time wait-graph analysis for the Blackboard. (Added: 2026-03-21)
-*   **[P1] Spectral Mitigator Middleware**: Reasoning-aware timing jitter for inter-agent transport. (Added: 2026-03-21)
+*   **[P0] Relational PoI Validator**: Implementation of Relational Intent Integrity to bind tool calls to verified mission-root intents. (Added: 2026-03-24)
+*   **[P0] Shared State Arbiter (SSA)**: Authoritative lock manager and deadlock resolver for the Shared KV Store. (Added: 2026-03-24)
+*   **[P1] BSH State Buffer**: High-speed memory-mapped buffer for binary state transfer in deep swarms. (Added: 2026-03-24)

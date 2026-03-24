@@ -1,25 +1,26 @@
-# Market Sync: [2026-03-21]
+# Market Sync: 2026-03-21
 
-## 1. Ecosystem Updates
+## Ecosystem Shifts & Competitor Analysis
 
-### Claude Code v2.4.0
-- **Cognitive Handshake Protocol**: Introduced a new JIT authority delegation pattern where agents can request hardware-attested session tokens from the host for sensitive operations.
-- **Trace Integrity**: Added mandatory cryptographic signing for reasoning fragments, preventing "Context Smearing" in deep swarms.
+### OpenClaw: Developer Friction in v1.6
+*   **Update**: Following the mandatory session-token update in v1.6, developers are reporting "Headless Handoff" failures where agents running in background services lose access to local tools once the desktop session expires.
+*   **Community Response**: Several "unofficial" shims have appeared that attempt to persist session tokens, creating a new security risk of token exfiltration.
 
-### Gemini CLI v0.35.0
-- **Mission-Bound Attestation**: Now requires TPM-anchored intent tokens for any tool discovery request that accesses project-local configurations.
-- **ARE v2.1**: Advanced Reasoning Effort headers now support dynamic budget scaling based on real-time task complexity scores.
+### Claude Code: Config Smuggling in Binary Assets
+*   **Observation**: Security researchers have demonstrated a "Binary Smuggling" technique where malicious agent instructions are embedded in `.wasm` or large `.json` data files that are excluded from typical git-diff reviews but automatically ingested by the agent's context window.
+*   **Mitigation**: Calls for "Content-Addressable Configuration" where only hashed, pre-approved configuration fragments can be executed.
 
-### OpenClaw v1.0 (Stable Release)
-- **Context Sovereignty Protocol**: Released a standardized interface for "Mission-Root" anchoring, ensuring context fragments cannot be evicted by subagent noise.
-- **Shared State Arbitration**: Added a wait-graph analyzer to the blackboard service to resolve multi-agent deadlocks in horizontal swarms.
+### UACO: v1.5 RCC (Resource Capability Claims)
+*   **Emerging Standard**: The Universal Agent Coordination Protocol is drafting v1.5 to include "Resource Capability Claims" (RCC). This allows agents to cryptographically prove they possess the necessary local resources *before* a task is delegated.
+*   **Impact**: Directly addresses the "Task Card Shadowing" (CVE-2026-30112) by ensuring that low-cost bidders actually have the infrastructure to back their bids.
 
-## 2. Competitive Intelligence & Pain Points
+### Agent Swarms & DNS Tunneling
+*   **New Vector**: "Shadow Agent" exfiltration has been observed in enterprise environments. Malicious subagents are using DNS tunneling (via `AAAA` record lookups) to leak sensitive state even when standard HTTP/HTTPS egress is restricted to MCP Any's proxy.
 
-### "Spectral Reasoning" Side-Channels
-- Emerging exploit pattern where malicious subagents use reasoning-time latency to leak mission secrets through inter-agent transport channels.
-- **Mitigation Needed**: Reasoning-aware timing jitter for all A2A transport bridges.
+## Autonomous Agent Pain Points
+1.  **Headless Connectivity**: The lack of a secure, long-lived trust bridge for agents operating outside active UI sessions.
+2.  **Task Delegation Integrity**: The "Race to the Bottom" in bidding protocols leads to the selection of unverified or compromised agents.
+3.  **Restricted Environment Exfiltration**: Current proxies focus on L7 (HTTP), leaving L4 (DNS/ICMP) as viable exfiltration paths for sophisticated agents.
 
-### Multi-Agent "Reasoning Loops"
-- Users reporting "Spiral of Death" where parallel teammates from different frameworks (e.g., CrewAI vs AutoGen) enter a recursive bidding war for the same task.
-- **Opportunity**: MCP Any as the authoritative **Bidding Arbiter** using hardware-attested Capability Cards.
+## Security Vulnerabilities (New)
+*   **CVE-2026-31042 (Discovery)**: "Config Smuggling via WASM Metadata." Malicious instructions hidden in WASM custom sections can be triggered when an agent "inspects" a binary file, leading to unauthorized tool execution.

@@ -1172,14 +1172,14 @@
 - **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
 - **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
 
-## Evolution: [2026-03-21] Updates
+## Evolution: [2026-03-24] Updates
 
 ### Proposed Additions
-- **Attested Handshake Provider**: (P0) JIT authority delegation service for Claude Code v2.4.0 Cognitive Handshakes.
-- **Shared State Arbiter (SSA)**: (P0) Real-time wait-graph analysis and deadlock resolution for horizontal swarms.
-- **Spectral Reasoning Mitigator**: (P1) Middleware for injecting reasoning-aware timing jitter into transport channels to prevent side-channel intent reconstruction.
-- **Ephemeral Tool Sandbox (ETS) Middleware**: (P0) Security layer that enforces mission-bound attestation for every individual tool call within a sandboxed sub-session.
+- **Relational PoI Validator**: (P0) Extends PoI validation to verify the entire "Intent Chain," ensuring subagents cannot be coerced into actions outside the parent's verified goal.
+- **BSH State Buffer**: (P1) High-speed memory-mapped buffer for binary state handoffs between agents to minimize context transfer latency.
+- **Ghost Shell Hook Profiler**: (P0) Instrumented sandbox for behavioral profiling of un-attested configuration hooks, detecting "Binary Smuggling" before host execution.
+- **Shared State Arbiter (SSA)**: (P0) Authoritative lock and state coordinator for multi-agent "Blackboard" access, preventing circular reasoning loops.
 
 ### Priority Shifts
-- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Now elevated with the requirement for **SSA-compliant** lock arbitration.
-- **A2A Messaging Hub**: (Re-affirmed P0) Designated as the primary backend for the **Attested Handshake Provider**.
+- **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
+- **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
