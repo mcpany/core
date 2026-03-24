@@ -223,7 +223,7 @@ func runfilesWorkspaceName() string {
 
 func runfilesRoots() []string {
 	workspace := runfilesWorkspaceName()
-	var roots []string
+	roots := make([]string, 0, 2)
 	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
 		if base == "" {
 			continue
@@ -234,7 +234,8 @@ func runfilesRoots() []string {
 }
 
 func runfilesServerRoot() string {
-	for _, root := range runfilesRoots() {
+	roots := runfilesRoots()
+	for _, root := range roots {
 		candidate := filepath.Join(root, "server")
 		if isServerProjectRoot(candidate) {
 			return candidate
@@ -244,7 +245,8 @@ func runfilesServerRoot() string {
 }
 
 func runfilesBinaryPath(relParts ...string) string {
-	for _, root := range runfilesRoots() {
+	roots := runfilesRoots()
+	for _, root := range roots {
 		candidate := filepath.Join(append([]string{root}, relParts...)...)
 		if _, err := os.Stat(candidate); err == nil {
 			return candidate
@@ -270,7 +272,7 @@ func isServerProjectRoot(dir string) bool {
 
 func symlinkIfPresent(src, dst string) error {
 	if _, err := os.Stat(src); err != nil {
-		return nil
+		return nil //nolint:nilerr // It is intentional to ignore missing files
 	}
 	return os.Symlink(src, dst)
 }
