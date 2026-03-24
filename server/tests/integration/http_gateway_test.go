@@ -24,14 +24,7 @@ func TestHTTPGateway_RegisterService(t *testing.T) {
 	operationID := "test-op"
 	endpointPath := "/test"
 
-	method := configv1.HttpCallDefinition_HTTP_METHOD_GET
 	callID := "call-" + operationID
-	callDef := configv1.HttpCallDefinition_builder{
-		Id:           &callID,
-		EndpointPath: &endpointPath,
-		Method:       &method,
-	}.Build()
-
 	toolDef := configv1.ToolDefinition_builder{
 		Name:   &operationID,
 		CallId: &callID,
@@ -42,7 +35,13 @@ func TestHTTPGateway_RegisterService(t *testing.T) {
 		HttpService: configv1.HttpUpstreamService_builder{
 			Address: &baseURL,
 			Tools:   []*configv1.ToolDefinition{toolDef},
-			Calls:   map[string]*configv1.HttpCallDefinition{callID: callDef},
+			Calls: map[string]*configv1.HttpCallDefinition{
+				callID: configv1.HttpCallDefinition_builder{
+					Id:           &callID,
+					EndpointPath: &endpointPath,
+					Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+				}.Build(),
+			},
 		}.Build(),
 	}
 	config := upstreamServiceConfigBuilder.Build()
