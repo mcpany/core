@@ -132,80 +132,78 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
             data={visibleRows}
             context={{ onClick: setSelectedTrace }}
             components={{
-                // Use shadcn/ui Table components where possible.
-                // Table: The root table element. shadcn Table is a wrapper. We need the table element.
+                EmptyPlaceholder: () => (
+                    <tbody>
+                        <tr>
+                            <td colSpan={5}>
+                                <div className="flex items-center justify-center h-24 text-muted-foreground text-sm">
+                                    {loading ? 'Loading traces...' : 'No traces found.'}
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                ),
                 Table: ({ style, ...props }) => (
                     <table {...props} style={{...style, width: '100%', borderCollapse: 'collapse'}} className="w-full caption-bottom text-sm" />
                 ),
                 TableHead: TableHeader,
                 TableBody: TableBody,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 TableRow: ({ item, context, ...props }: any) => (
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
                     <TableRow {...props} className="cursor-pointer hover:bg-muted/50" onClick={() => context.onClick(item.trace)} />
                 ),
-                EmptyPlaceholder: () => (
-                    <TableBody>
-                        <TableRow>
-                            <TableCell colSpan={5} className="h-24 text-center">
-                                <div className="flex items-center justify-center text-muted-foreground text-sm">
-                                    {loading ? "Loading traces..." : "No traces found."}
-                                </div>
-                            </TableCell>
-                        </TableRow>
-                    </TableBody>
-                ),
             }}
-            fixedHeaderContent={() => (
-                <TableRow>
-                <TableHead className="w-[180px] bg-card z-10">Timestamp</TableHead>
-                <TableHead className="w-[50px] bg-card z-10">Type</TableHead>
-                <TableHead className="bg-card z-10">Method / Name</TableHead>
-                <TableHead className="w-[100px] bg-card z-10">Status</TableHead>
-                <TableHead className="w-[100px] text-right bg-card z-10">Duration</TableHead>
-                </TableRow>
-            )}
-            itemContent={(index, row: VisibleRow) => (
-                <>
-                <TableCell className="font-mono text-xs text-muted-foreground">
-                    {row.depth === 0 ? (
-                        <>
-                        {new Date(row.trace.timestamp).toLocaleTimeString()}
-                        <br />
-                        <span className="opacity-50 text-[10px]">
-                            {formatDistanceToNow(new Date(row.trace.timestamp), { addSuffix: true })}
-                        </span>
-                        <br />
-                        <span className="opacity-50 text-[10px] font-mono">{row.trace.id}</span>
-                        </>
-                    ) : null}
-                </TableCell>
-                <TableCell>
-                    <TypeIcon type={row.span.type} className="h-4 w-4 text-muted-foreground" />
-                </TableCell>
-                <TableCell>
-                    <div className="flex items-center gap-2" style={{ paddingLeft: `${row.depth * 1.5}rem` }}>
-                        {row.hasChildren ? (
-                            <div className="cursor-pointer p-1 hover:bg-muted rounded-md -ml-1" onClick={(e) => { e.stopPropagation(); toggleExpand(row.span.id); }}>
-                                {row.isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                fixedHeaderContent={() => (
+                    <TableRow>
+                    <TableHead className="w-[180px] bg-card z-10">Timestamp</TableHead>
+                    <TableHead className="w-[50px] bg-card z-10">Type</TableHead>
+                    <TableHead className="bg-card z-10">Method / Name</TableHead>
+                    <TableHead className="w-[100px] bg-card z-10">Status</TableHead>
+                    <TableHead className="w-[100px] text-right bg-card z-10">Duration</TableHead>
+                    </TableRow>
+                )}
+                itemContent={(index, row: VisibleRow) => (
+                    <>
+                    <TableCell className="font-mono text-xs text-muted-foreground">
+                        {row.depth === 0 ? (
+                            <>
+                            {new Date(row.trace.timestamp).toLocaleTimeString()}
+                            <br />
+                            <span className="opacity-50 text-[10px]">
+                                {formatDistanceToNow(new Date(row.trace.timestamp), { addSuffix: true })}
+                            </span>
+                            <br />
+                            <span className="opacity-50 text-[10px] font-mono">{row.trace.id}</span>
+                            </>
+                        ) : null}
+                    </TableCell>
+                    <TableCell>
+                        <TypeIcon type={row.span.type} className="h-4 w-4 text-muted-foreground" />
+                    </TableCell>
+                    <TableCell>
+                        <div className="flex items-center gap-2" style={{ paddingLeft: `${row.depth * 1.5}rem` }}>
+                            {row.hasChildren ? (
+                                <div className="cursor-pointer p-1 hover:bg-muted rounded-md -ml-1" onClick={(e) => { e.stopPropagation(); toggleExpand(row.span.id); }}>
+                                    {row.isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                                </div>
+                            ) : <div className="w-5" />}
+                            <div className="flex flex-col">
+                                <span className="font-medium">{row.span.name}</span>
+                                <span className="text-xs text-muted-foreground font-mono">{row.span.id}</span>
                             </div>
-                        ) : <div className="w-5" />}
-                        <div className="flex flex-col">
-                            <span className="font-medium">{row.span.name}</span>
-                            <span className="text-xs text-muted-foreground font-mono">{row.span.id}</span>
                         </div>
-                    </div>
-                </TableCell>
-                <TableCell>
-                    <Badge variant={row.span.status === 'success' ? 'outline' : 'destructive'} className="gap-1">
-                        <StatusIcon status={row.span.status} className="h-3 w-3" />
-                        {row.span.status}
-                    </Badge>
-                </TableCell>
-                <TableCell className="text-right font-mono text-xs">
-                    {row.span.endTime - row.span.startTime < 1000 ? `${row.span.endTime - row.span.startTime}ms` : `${((row.span.endTime - row.span.startTime) / 1000).toFixed(2)}s`}
-                </TableCell>
-                </>
-            )}
+                    </TableCell>
+                    <TableCell>
+                        <Badge variant={row.span.status === 'success' ? 'outline' : 'destructive'} className="gap-1">
+                            <StatusIcon status={row.span.status} className="h-3 w-3" />
+                            {row.span.status}
+                        </Badge>
+                    </TableCell>
+                    <TableCell className="text-right font-mono text-xs">
+                        {row.span.endTime - row.span.startTime < 1000 ? `${row.span.endTime - row.span.startTime}ms` : `${((row.span.endTime - row.span.startTime) / 1000).toFixed(2)}s`}
+                    </TableCell>
+                    </>
+                )}
         />
       </div>
 

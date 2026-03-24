@@ -45,17 +45,8 @@ export enum ExportPolicy_Action {
  * Mock type placeholders for policy-related proto messages.
  */
 export const CallPolicy = {};
-/**
- * Mock type placeholders for CallPolicyRule proto messages.
- */
 export const CallPolicyRule = {};
-/**
- * Mock type placeholders for ExportPolicy proto messages.
- */
 export const ExportPolicy = {};
-/**
- * Mock type placeholders for ExportRule proto messages.
- */
 export const ExportRule = {};
 
 /**

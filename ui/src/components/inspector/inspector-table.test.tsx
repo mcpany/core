@@ -15,23 +15,18 @@ vi.mock('@/components/traces/trace-detail', () => ({
 
 // Mock TableVirtuoso to render items immediately in tests
 vi.mock('react-virtuoso', () => ({
-  TableVirtuoso: (props: { data?: unknown[], itemContent: (index: number, item: unknown) => React.ReactNode, components?: { TableRow?: React.ElementType, EmptyPlaceholder?: React.ElementType }, context?: unknown }) => {
+  TableVirtuoso: (props: any) => {
     const { data, itemContent, components, context } = props;
     const TableRow = components?.TableRow || 'tr';
-    const EmptyPlaceholder = components?.EmptyPlaceholder;
     return (
       <table>
-        {data && data.length > 0 ? (
-          <tbody>
-            {data.map((item: unknown, index: number) => (
-              <TableRow key={index} item={item} context={context}>
-                {itemContent(index, item)}
-              </TableRow>
-            ))}
-          </tbody>
-        ) : (
-          EmptyPlaceholder ? <EmptyPlaceholder /> : null
-        )}
+        <tbody>
+          {data.map((item: any, index: number) => (
+            <TableRow key={index} item={item} context={context}>
+              {itemContent(index, item)}
+            </TableRow>
+          ))}
+        </tbody>
       </table>
     );
   }
