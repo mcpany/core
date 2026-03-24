@@ -21,7 +21,7 @@ commands:
             # But CircleCI shallow clones can be tricky.
             # Simple approach: If all changed files match docs, exit 0 (success) immediately?
             # Actually, CircleCI doesn't have an easy "skip remaining steps" without failing or using conditional steps for EVERYTHING.
-            # We will rely on the fact that 'bazelisk run //:lint' itself might be fast or we just run it.
+            # We will rely on the fact that 'make lint' itself might be fast or we just run it.
             # However, the user asked for similar logic.
             # For now, let's just run it. If strict parity is needed, we'd add complex logic.
             echo "Running lint on all commits"
@@ -49,16 +49,15 @@ jobs:
             - v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
             - v1-lint-
       - run:
-          name: Install Bazelisk
-          command: npm install -g @bazel/bazelisk
+          name: Prepare Environment
+          command: make prepare
       - run:
           name: Run Lint
           command: |
             . venv/bin/activate
-            # CI environment doesn't have golangci-lint available or make prepare available.
-            # Bazelisk test will successfully run standard UI linting targets.
-            # Bypassing the root level scripts/lint.sh locally since the Go executor fails module dependency maps without a full build.
-            bazelisk test //ui:lint //ui:typecheck
+            # Ensure PATH includes tool install dir
+            export PATH=$PWD/build/env/bin:$PATH
+            make lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
