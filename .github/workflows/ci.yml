@@ -27,7 +27,49 @@ defaults:
     shell: bash
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      src: ${{ steps.filter.outputs.src }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Check for changes
+        id: filter
+        run: |
+          set -e
+          git config --global --add safe.directory "*"
+          # Ensure we have the base branch for comparison
+          git fetch origin ${{ github.base_ref || 'main' }}
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # Compare against the base branch
+            DIFF=$(git diff --name-only origin/${{ github.base_ref }} HEAD)
+          else
+            # Push event: compare against previous commit
+            DIFF=$(git diff --name-only HEAD~1 HEAD)
+          fi
+
+          echo "$DIFF"
+          SRC_CHANGED="false"
+          echo "$DIFF" | while IFS= read -r file; do
+            if [ -z "$file" ]; then continue; fi
+            # Ignore markdown, txt, docs, license
+            case "$file" in
+              *.md|*.txt|docs/*|LICENSE) continue ;;
+              *) echo "true" > /tmp/src_changed; break ;;
+            esac
+          done
+          if [ -f /tmp/src_changed ]; then SRC_CHANGED="true"; rm /tmp/src_changed; fi
+
+          echo "src=$SRC_CHANGED" >> $GITHUB_OUTPUT
+        shell: bash
+
   lint:
+    needs: changes
+    if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -60,6 +102,8 @@ jobs:
   bazel-test:
     runs-on: ubuntu-latest
     timeout-minutes: 180
+    needs: [changes]
+    if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
@@ -103,3 +147,31 @@ jobs:
             --test_env=PATH \
             --test_env=HOME \
             --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
+
+  ci-success:
+    runs-on: ubuntu-latest
+    needs: [changes, bazel-test]
+    if: always()
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Auto-Squash
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
+        run: |
+          gh pr merge --auto --squash "${{ github.event.pull_request.html_url }}" || echo "Failed to enable auto-merge (check permissions/settings)"
+
+      - name: Check Results and Comment
+        env:
+          GH_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
+          NEEDS_JSON: ${{ toJson(needs) }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          ./.github/scripts/check-results-and-comment.sh
