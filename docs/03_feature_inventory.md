@@ -1,6 +1,8 @@
 # Feature Inventory: MCP Any
 
 ## Current Backlog (P0/P1)
+
+
 ## Evolution: [2026-05-10] Updates
 
 ### Proposed Additions
