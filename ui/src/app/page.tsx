@@ -70,9 +70,4 @@ export default function DashboardPage() {
     </DashboardProvider>
   );
 }
-// Bump CI
-// trigger circle ci
-
-
-
-// trigger ci bump 2
+// bump 3
