@@ -768,8 +768,7 @@ func (a *Application) handleTools() http.HandlerFunc {
 			buf = append(buf, ']')
 
 			w.Header().Set("Content-Type", "application/json")
-			_, err := w.Write(buf)
-			if err != nil {
+			if _, err := w.Write(buf); err != nil {
 				logging.GetLogger().Error("failed to write response", "error", err.Error())
 			}
 
@@ -890,8 +889,7 @@ func (a *Application) handleTools() http.HandlerFunc {
 			}
 
 			w.WriteHeader(http.StatusOK)
-			_, err = w.Write([]byte("{}"))
-			if err != nil {
+			if _, err := w.Write([]byte("{}")); err != nil {
 				logging.GetLogger().Error("failed to write response", "error", err.Error())
 			}
 
