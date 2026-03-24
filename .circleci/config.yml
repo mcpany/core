@@ -49,6 +49,7 @@ jobs:
           command: |
              export PATH=$PWD/build/env/bin:$PATH
              golangci-lint cache clean || true
+             go clean -modcache || true
              bazel clean --expunge || true
       - run:
           name: Run Lint
