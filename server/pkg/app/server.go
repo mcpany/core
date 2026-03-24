@@ -302,9 +302,6 @@ type Application struct {
 	statsCacheMu sync.RWMutex
 	statsCache   map[string]statsCacheEntry
 
-	// seededTraces for debug/demo
-	seededTracesMu sync.RWMutex
-	seededTraces   []*Trace
 }
 
 type statsCacheEntry struct {

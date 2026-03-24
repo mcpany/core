@@ -4,11 +4,12 @@
 package app
 
 import (
+	"math/rand"
+
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
@@ -142,18 +143,6 @@ func (a *Application) handleTraces() http.HandlerFunc {
 				}
 			}
 		}
-
-		// 2. Append seeded traces
-		a.seededTracesMu.RLock()
-		if len(a.seededTraces) > 0 {
-			// Seeded traces are stored [Oldest...Newest].
-			// We want to prepend them to the list so they appear at the top (Newest First).
-			// Iterating forwards and prepending achieves LIFO order in the final list.
-			for _, t := range a.seededTraces {
-				traces = append([]*Trace{t}, traces...)
-			}
-		}
-		a.seededTracesMu.RUnlock()
 
 		if traces == nil {
 			traces = []*Trace{}
