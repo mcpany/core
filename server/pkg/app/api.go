@@ -94,7 +94,15 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/resources", a.handleResources())
 	mux.HandleFunc("/resources/read", a.handleResourceRead())
 
-	rbacAdmin := middleware.NewRBACMiddleware().RequireRole("admin")
+	rbacAdmin := func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
 	mux.Handle("/secrets", rbacAdmin(a.handleSecrets(store)))
 	mux.Handle("/secrets/", rbacAdmin(a.handleSecretDetail(store)))
 

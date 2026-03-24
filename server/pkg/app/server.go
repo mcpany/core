@@ -2002,7 +2002,15 @@ func (a *Application) runServerMode(
 	mux.Handle("/auth/oauth/callback", authMiddleware(http.HandlerFunc(a.handleOAuthCallback)))
 
 	// Secrets API
-	rbacAdmin := middleware.NewRBACMiddleware().RequireRole("admin")
+	rbacAdmin := func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
 
 	mux.Handle("/api/v1/secrets", authMiddleware(rbacAdmin(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -2026,6 +2034,27 @@ func (a *Application) runServerMode(
 			a.getSecretHandler(w, r)
 		case http.MethodDelete:
 			a.deleteSecretHandler(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	}))))
+
+	// Templates API
+	mux.Handle("/api/v1/templates", authMiddleware(rbacAdmin(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			a.handleTemplates().ServeHTTP(w, r)
+		case http.MethodPost:
+			a.handleTemplates().ServeHTTP(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	}))))
+
+	mux.Handle("/api/v1/templates/", authMiddleware(rbacAdmin(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet, http.MethodPut, http.MethodDelete:
+			a.handleTemplateDetail().ServeHTTP(w, r)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
