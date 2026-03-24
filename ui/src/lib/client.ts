@@ -2543,5 +2543,30 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to trigger discovery');
         return {};
+    },
+
+    /**
+     * Retrieves user preferences.
+     */
+    getUserPreferences: async (): Promise<Record<string, unknown>> => {
+        const res = await fetchWithAuth('/api/v1/user/preferences', {
+            method: 'GET'
+        });
+        if (!res.ok) throw new Error('Failed to get preferences');
+        return await res.json() as Record<string, unknown>;
+    },
+
+    /**
+     * Updates user preferences.
+     */
+    updateUserPreferences: async (prefs: Record<string, unknown>): Promise<void> => {
+        const res = await fetchWithAuth('/api/v1/user/preferences', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(prefs)
+        });
+        if (!res.ok) throw new Error('Failed to update preferences');
     }
 };

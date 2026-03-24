@@ -12,8 +12,8 @@ test('dashboard layout persistence', async ({ page, request }) => {
 
   // 1. Login to get authenticated session
   await page.goto('/login');
-  await page.fill('input[type="text"]', 'e2e-admin-core');
-  await page.fill('input[type="password"]', 'secure-password');
+  await page.fill('input[name="username"]', 'e2e-admin-core');
+  await page.fill('input[name="password"]', 'password');
   await page.click('button[type="submit"]');
 
   // Wait for successful login and redirect to home
