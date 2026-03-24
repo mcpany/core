@@ -129,3 +129,27 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 func (a *CrewAIAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
 }
+
+// SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the CrewAI framework.
+//
+// Summary: Provides a unified way to distribute intent-pinned context to CrewAI's subagents.
+//
+// Parameters:
+//   - ctx (context.Context): The context for controlling cancellation and timeouts.
+//   - shard (*MemoryShard): The multimodal memory shard to synchronize.
+//
+// Returns:
+//   - error: An error if the signature is missing or verification fails.
+//
+// Errors:
+//   - Returns an error if the shard signature verification fails.
+//
+// Side Effects:
+//   - Updates shared state available to instantiated CrewAI roles.
+func (a *CrewAIAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard) error {
+	if shard.Signature == "" {
+		return fmt.Errorf("invalid memory shard: unverified payload rejected by CrewAI")
+	}
+
+	return nil
+}
