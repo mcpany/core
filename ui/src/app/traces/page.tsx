@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { TraceList } from "@/components/traces/trace-list";
 import { TraceDetail } from "@/components/traces/trace-detail";
 import { Trace } from "@/app/api/traces/route";
@@ -58,7 +58,11 @@ export default function TracesPage() {
       return () => clearInterval(interval);
   }, [isLive]);
 
-  const selectedTrace = traces.find(t => t.id === selectedId) || null;
+  // ⚡ BOLT: [Render Optimization] Memoize selected trace lookup to prevent O(N) array search on every render
+  // Randomized Selection from Top 5 High-Impact Targets
+  const selectedTrace = useMemo(() => {
+      return traces.find(t => t.id === selectedId) || null;
+  }, [traces, selectedId]);
 
   if (loading) {
       return (
