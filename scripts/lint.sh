@@ -97,7 +97,7 @@ buildifier_files=(
         2>/dev/null)
 )
 if [[ ${#buildifier_files[@]} -gt 0 ]]; then
-    "$BUILDIFIER_BIN" "${buildifier_files[@]}"
+    "$BUILDIFIER_BIN" -lint=fix "${buildifier_files[@]}"
 fi
 echo "    Buildifier OK."
 
