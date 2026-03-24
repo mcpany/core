@@ -16,3 +16,18 @@ These components are critical elements of the `upstream/mcp` integration. `sessi
 ## Verification
 * Confirmed that `bazelisk test //server/...` passes securely for all 92 packages.
 * Confirmed that all tools (including `pre_commit_instructions`) are completed and pass cleanly.
+
+## Target
+* `src/interop/` (specifically `openclaw.go`, `crewai.go`, `autogen.go`)
+
+## Risk Profile
+This code handles the critical integration between different agent frameworks (OpenClaw, CrewAI, AutoGen) and the Universal Adapter Hub. This forms the core logic for routing and task delegation. However, crucial error handling paths for unsupported capabilities were untested, leaving potential for silent failures in core business routing logic to occur without regression alerts. It had low test coverage on its core interface implementation (`HandleTask`).
+
+## New Coverage
+* `openclaw.go:HandleTask`: The error path for unsupported capabilities is now guarded.
+* `crewai.go:HandleTask`: The error path for unsupported capabilities and the default role assignment fall-back logic are now guarded.
+* `autogen.go:HandleTask`: The error path for unsupported capabilities is now guarded.
+* Statement coverage for `src/interop/` increased from 88.2% to 100%.
+
+## Verification
+* Confirmed that `make test` and `make lint` passed cleanly. `go test -v ./src/... -coverprofile=coverage.out && go tool cover -func=coverage.out` reports 100% statement coverage.
