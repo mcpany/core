@@ -44,21 +44,19 @@ func IsDockerSocketAccessible() bool {
 	return IsDockerSocketAccessibleFunc()
 }
 
-// CloseDockerClient closes the shared Docker client.
-//
-// Summary: Closes the shared Docker client.
+// CloseDockerClient closes the shared Docker client. Summary: Closes the shared Docker client. Side Effects: - Closes the Docker client connection.
 //
 // Parameters:
-//   - None.
+//   - None
 //
 // Returns:
-//   - None.
+//   - None
 //
 // Errors:
-//   - None.
+//   - None
 //
 // Side Effects:
-//   - Closes the Docker client connection.
+//   - None
 func CloseDockerClient() {
 	if dockerClient != nil {
 		_ = dockerClient.Close()

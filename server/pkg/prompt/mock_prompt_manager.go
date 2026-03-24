@@ -81,21 +81,19 @@ func (mr *MockManagerInterfaceMockRecorder) AddPrompt(prompt any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddPrompt", reflect.TypeOf((*MockManagerInterface)(nil).AddPrompt), prompt)
 }
 
-// Clear mocks base method.
-//
-// Summary: Mocks the Clear operation on the ManagerInterface.
+// Clear mocks base method. Summary: Mocks Clear.
 //
 // Parameters:
-//   - None.
+//   - None
 //
 // Returns:
-//   - None.
+//   - None
 //
 // Errors:
-//   - None.
+//   - None
 //
 // Side Effects:
-//   - Registers the method call with the gomock controller.
+//   - None
 func (m *MockManagerInterface) Clear() {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "Clear")

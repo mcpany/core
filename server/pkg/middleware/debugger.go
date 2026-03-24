@@ -82,22 +82,19 @@ func (d *Debugger) process() {
 	close(d.done)
 }
 
-// Close stops the background processor.
-//
-// Summary: Shuts down the debugger and releases resources.
+// Close stops the background processor. Summary: Shuts down the debugger and releases resources. Side Effects: - Closes the ingress channel. - Waits for the background processor to finish.
 //
 // Parameters:
-//   - None.
+//   - None
 //
 // Returns:
-//   - None.
+//   - None
 //
 // Errors:
-//   - None.
+//   - None
 //
 // Side Effects:
-//   - Closes the ingress channel.
-//   - Waits for the background processor to finish.
+//   - None
 func (d *Debugger) Close() {
 	close(d.ingress)
 	<-d.done

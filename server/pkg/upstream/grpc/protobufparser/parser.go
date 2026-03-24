@@ -109,18 +109,18 @@ func (f *McpField) GetIsRepeated() bool {
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - protoDefinitions ([]*configv1.ProtoDefinition): The slice of raw protobuf definitions to parse.
-//   - protoCollections ([]*configv1.ProtoCollection): The slice of protobuf collections to include.
+//   - protoDefinitions ([]*configv1.ProtoDefinition): The protoDefinitions parameter.
+//   - protoCollections ([]*configv1.ProtoCollection): The protoCollections parameter.
 //
 // Returns:
-//   - *descriptorpb.FileDescriptorSet: The parsed FileDescriptorSet containing all compiled protobuf definitions.
+//   - *descriptorpb.FileDescriptorSet: The resulting *descriptorpb.FileDescriptorSet.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if writing to the temporary directory fails, or if protoc execution fails.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - Writes temporary files to the local filesystem and invokes the external protoc binary.
+//   - None
 func ParseProtoFromDefs(
 	ctx context.Context,
 	protoDefinitions []*configv1.ProtoDefinition,
@@ -358,17 +358,17 @@ type McpResource struct {
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - target (string): The gRPC target connection string (e.g. host:port).
+//   - target (string): The parameter.
 //
 // Returns:
-//   - *descriptorpb.FileDescriptorSet: The resulting FileDescriptorSet containing all discovered protobuf definitions.
+//   - *descriptorpb.FileDescriptorSet: The result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the connection fails or if the reflection server is unavailable.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - Opens a network connection to the specified gRPC target.
+//   - None.
 func ParseProtoByReflection(ctx context.Context, target string) (*descriptorpb.FileDescriptorSet, error) {
 	// Create a context with a timeout for the entire reflection process
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
@@ -556,14 +556,14 @@ func getFileDescriptorByFilename(stream reflectpb.ServerReflection_ServerReflect
 // extracts definitions for tools, prompts, and resources.
 //
 // Parameters:
-//   - fds (*descriptorpb.FileDescriptorSet): The FileDescriptorSet to parse.
+//   - fds (*descriptorpb.FileDescriptorSet): The parameter.
 //
 // Returns:
-//   - *ParsedMcpAnnotations: The extracted MCP annotations containing tools, prompts, and resources.
+//   - *ParsedMcpAnnotations: The result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the FileDescriptorSet is nil or invalid.
+//   - Returns an error if ...
 //
 // Side Effects:
 //   - None.

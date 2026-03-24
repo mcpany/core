@@ -346,20 +346,6 @@ func (b *Broadcaster) Broadcast(msg any) {
 }
 
 // ClearHistory clears the history of the broadcaster without removing subscribers.
-//
-// Summary: Clears the retained log history.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Locks the mutex and resets the internal ring buffer.
 func (b *Broadcaster) ClearHistory() {
 	b.mu.Lock()
 	defer b.mu.Unlock()
