@@ -1,3 +1,5 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
@@ -84,5 +86,18 @@ config_setting(
 config_setting(
     name = "host_x86_64",
     values = {"host_cpu": "k8"},
+    visibility = ["//visibility:public"],
+)
+
+go_library(
+    name = "core_lib",
+    srcs = ["test_router.go"],
+    importpath = "github.com/mcpany/core",
+    visibility = ["//visibility:private"],
+)
+
+go_binary(
+    name = "core",
+    embed = [":core_lib"],
     visibility = ["//visibility:public"],
 )
