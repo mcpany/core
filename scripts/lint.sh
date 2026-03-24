@@ -142,10 +142,11 @@ else
         export GO111MODULE=on
         export GOTOOLCHAIN=auto
 
+        # For now, let golangci-lint OOM gracefully since CI runner doesn't have 8gb
         "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
-            ./cmd/... ./pkg/... ./tests/... ../examples/... || true
+            ./cmd/... ./pkg/... ./tests/... ../examples/... || echo "golangci-lint exited with error (likely OOM), but continuing"
         cd "$PROJECT_ROOT"
-        echo "    golangci-lint OK."
+        echo "    golangci-lint finished."
     else
         echo "    Warning: golangci-lint not found (skipping Go linting)."
         echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."
