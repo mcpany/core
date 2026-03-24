@@ -50,18 +50,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-05-23]
-
-### Focus: Local Zero-Trust (LOWA) & Peer-to-Peer Agent Orchestration
-
-**Context**: The disclosure of "ClawJacked" (CVE-2026-25253) proves that "Implicit Local Trust" for loopback WebSocket traffic is a critical failure point. Simultaneously, the rise of Claude Code's "Agent Teams" signals a shift toward horizontal (mesh) collaboration. The "Universal Agent Bus" must now act as the secure, authenticated bridge for both local control and peer-to-peer teammate communication.
-**Strategic Pivot**:
-
-- **Local-Only WebSocket Auth (LOWA)**: MCP Any will evolve to mandate session-bound authentication for all local WebSocket listeners. This neutralizes cross-site brute-force attacks and ensures that only verified local applications—not malicious browser scripts—can command the gateway.
-- **Teammate-to-Teammate (T2T) Encryption Bridge**: Supporting horizontal swarms, MCP Any will implement a T2T Encryption Bridge. This service provides the infrastructure for teammates from disparate frameworks (Claude Code, OpenClaw, AutoGen) to securely exchange mailbox messages and synchronize their views of a "Shared Task List."
-- **Full-Mesh Discovery Authorization**: We are mandating "Auth-before-Discovery" for all A2A-compliant agents. Capabilities and "Agent Cards" will only be visible to peers who have completed a cryptographically bound handshake within a verified mission scope.
-- **Mailbox Integrity Middleware**: To prevent "Mailbox Injection" by rogue subagents, we are introducing a message-validation layer. Every inter-agent message must be signed and validated against the "Mission Root" intent before reaching the target teammate's mailbox.
-
 ## Strategic Evolution: [2026-05-21]
 
 ### Focus: Reasoning Stability & Temporal Integrity
@@ -622,19 +610,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-03-14]
-
-### Focus: Browser-Origin Validation & Intent-Preserving Context
-
-**Context**: The OpenClaw security crisis (CVE-2026-25253) reveals that "Local Trust" is a flawed assumption when browser-based attacks can bridge the gap. Simultaneously, the rise of "Context Ghosting" in swarms emphasizes that context compression must be intent-aware to maintain mission stability.
-**Strategic Pivot**:
-
-- **Zero-Trust Browser Origin Validation**: MCP Any will implement mandatory `Origin` and `Sec-Fetch-Site` header verification for all local API/WebSocket endpoints. This ensures that only authorized local applications (not malicious websites) can communicate with the gateway.
-- **Intent-Preserving Context Lifecycle**: Our Context Bridge will evolve to support "Intent-Scoped" summaries. Instead of generic compression, it will use the parent agent's verified intent to guide the summarization process, ensuring critical goals are never "ghosted."
-- **Optimized Swarm mTLS**: Introducing a lightweight "Session-Bound" mTLS implementation for A2A communications, reducing handshake overhead while maintaining cryptographic isolation between agents.
-
----
-
 ## Strategic Evolution: [2026-03-15]
 
 ### Focus: Recursive Loop Protection & Cryptographic Identity Provenance
@@ -661,19 +636,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-03-17]
-
-### Focus: Swarm Messaging Integrity & Verifiable Reward Infrastructure
-
-**Context**: The rapid adoption of "Agent Teams" (Claude Code) and the pivot to "RL-driven Reasoning" (DeepSeek/OpenClaw) confirm that the "Universal Agent Bus" must move from simple connectivity to **Active Inter-Agent Governance**. As swarms become deeper and more autonomous, the security frontier is no longer just the "tool," but the **Inbox** where agents coordinate and the **Reward** that optimizes their reasoning.
-**Strategic Pivot**:
-
-- **Inter-Agent Mailbox Guard (IAMG)**: MCP Any will evolve to act as the authoritative gatekeeper for inter-agent messaging (Mailboxes). We are mandating the use of "Intent-Bound Messaging" where every teammate-to-teammate request must be cryptographically signed and validated against a "Parental Mission Root." This ensures that a compromised subagent cannot "Mailbox Inject" a sibling into an unauthorized action.
-- **Verifiable Reward Provider (VRP)**: Supporting the next generation of RL-driven agents, MCP Any will act as the authoritative source for "Truth Attestation." We will provide the infrastructure for agents to request verifiable, binary rewards (e.g., "Was this shell command successful?" or "Does this file match this hash?") to optimize their internal reasoning loops without hallucination.
-- **Identity-Bound Discovery (IBD)**: To counter autonomous GitHub compromises, we are mandating "IBD." No capability (tool or subagent) will be exposed in the "Discovery Bus" unless the requester provides a cryptographically bound mission-token. This ensures that agents only "see" tools relevant to their specific, supervised task.
-
----
-
 ## Strategic Evolution: [2026-03-16]
 
 ### Focus: Zero-Trust Local Transport & Cross-Framework Relational Integrity
@@ -684,19 +646,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Mandatory Origin Enforcement**: MCP Any will move to a "Verify Everything" model for local transport. All WebSocket and HTTP interfaces will mandate `Origin` and `Sec-Fetch-Site` validation to prevent cross-site hijacking.
 - **Relational Identity Mapping**: We are evolving the Signed Context Chain into a full "Relational Hub." MCP Any will map identities across different frameworks (OpenClaw, AutoGen, Gemini), allowing a "Subagent in Framework A" to securely inherit context and permissions from a "Parent in Framework B."
 - **UAB-First Orchestration**: Positioning UAB as the primary internal transport for inter-agent communication, with MCP Any acting as the universal translator and security enforcement point for all UAB-compliant swarms.
-
----
-
-## Strategic Evolution: [2026-03-17]
-
-### Focus: Local Zero-Trust & Behavioral Skill Attestation
-
-**Context**: The Oasis Security report on OpenClaw's loopback vulnerability and the "Delayed Payload" tactics in ClawHavoc skills demonstrate that the "Local Intranet" is the new frontier for AI agent exploits.
-**Strategic Pivot**:
-
-- **Local Zero-Trust Enforcement**: MCP Any will treat all loopback traffic as potentially hostile. We are mandating rate limiting, mandatory logging, and cryptographic origin validation for all local listeners, eliminating the "Trusted Loopback" loophole.
-- **Behavioral Attestation for Skills**: Moving beyond static analysis to "Behavioral Guardrails." Skills will be subjected to isolated "Burn-In" periods where their activity is profiled against a baseline before gaining access to sensitive resources.
-- **UAB-Native Task Delegation**: We are promoting the Universal Agent Bus (UAB) to a core strategic priority. MCP Any will act as the authoritative "Task Card" validator, ensuring all cross-framework delegations are authenticated and scoped.
 
 ---
 
