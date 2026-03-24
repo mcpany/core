@@ -34,7 +34,6 @@ export function DownloadReportButton() {
                     toolFailures: failures.length,
                 },
                 metrics,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 services: services.map((s: any) => ({ name: s.name, version: s.version, type: s.httpService ? "HTTP" : s.grpcService ? "gRPC" : "Other" })),
                 topTools: tools,
                 recentFailures: failures
