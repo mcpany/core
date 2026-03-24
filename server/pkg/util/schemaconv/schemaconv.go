@@ -19,19 +19,16 @@ const (
 	// Summary: Defines TypeNumber.
 	TypeNumber = "number"
 	// TypeInteger represents a JSON integer type.
-	// Summary: Defines TypeInteger.
 	TypeInteger = "integer"
 	// TypeBoolean represents a JSON boolean type.
 	// Summary: Defines TypeBoolean.
 	TypeBoolean = "boolean"
 	// TypeObject represents a JSON object type.
-	// Summary: Defines TypeObject.
 	TypeObject = "object"
 	// TypeArray represents a JSON array type.
 	// Summary: Defines TypeArray.
 	TypeArray = "array"
 	// TypeString represents a JSON string type.
-	// Summary: Defines TypeString.
 	TypeString = "string"
 )
 

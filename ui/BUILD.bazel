@@ -16,7 +16,7 @@ load("@npm//ui:vitest/package_json.bzl", vitest_bin = "bin")
 # proxies all /api/v1, /mcpany., etc. paths to BACKEND_URL.
 # Scale both frontend and backend deployments independently in Kubernetes.
 # ---------------------------------------------------------------------------
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_image_index", "oci_load", "oci_push")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
 load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 load("//ui:playwright_tests.bzl", "define_playwright_tests")
@@ -215,18 +215,4 @@ oci_load(
         "mcpany/ui:1.0.0",
     ],
     visibility = ["//visibility:public"],
-)
-
-oci_push(
-    name = "push",
-    image = ":ui_index",
-    remote_tags = ["latest"],
-    repository = "ghcr.io/mcpany/ui",
-)
-
-oci_image_index(
-    name = "ui_index",
-    images = [
-        ":ui_image",
-    ],
 )

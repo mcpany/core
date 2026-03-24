@@ -35,13 +35,11 @@ const (
 	// Summary: Defines StatusO.
 	StatusOk Status = "OK"
 	// StatusWarning indicates a partial failure or non-critical issue that should be investigated.
-	// Summary: Defines StatusWarnin.
 	StatusWarning Status = "WARNING"
 	// StatusError indicates a critical failure that prevents the service from functioning correctly.
 	// Summary: Defines StatusErro.
 	StatusError Status = "ERROR"
 	// StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
-	// Summary: Defines StatusSkippe.
 	StatusSkipped Status = "SKIPPED"
 )
 

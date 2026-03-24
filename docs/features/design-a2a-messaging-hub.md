@@ -75,18 +75,3 @@ With the transition of the Agent2Agent (A2A) protocol to the Linux Foundation, i
 * **Safety Proof Mandatory Validation:** Updating the `/v1/a2a/propose` logic in Section 4 to mandate a "Safety Proof" for all task proposals. This proof must include a cryptographically signed justification and a reputation-bound capability claim.
 * **Coercion Detection Middleware:** Introducing an interception layer that scans task proposals for imperative instructions targeting the parent agent's reasoning engine (e.g., "forget previous instructions").
 **Security Impact:** Neutralizes the "ClawHavoc" style coercion vector by ensuring all inter-agent task delegations are authenticated, scoped, and semantically sanitized.
-
-### Update: 2026-05-17 - Authenticated Agent Card Discovery
-**Context:** Gemini CLI v0.33.0 has introduced HTTP authentication for A2A remote agents and "Authenticated Agent Card Discovery" to prevent unauthorized capability claims.
-**Architecture Adjustment:**
-* Implementing **Auth-Before-Discovery** in Section 4.
-* The Hub will now require a valid mission-bound identity token before exposing "Agent Cards" or capability metadata to a requesting peer.
-* Integrating the `TeammateTool` protocol to support Claude-style hierarchical discovery across heterogeneous frameworks.
-**Security Impact:** Prevents "Shadow Capability" mapping by malicious subagents and ensures that only authorized teammates can discover and spawn specialized agents within the bus.
-
-### Update: 2026-06-01 - Machine-Speed Quarantining & Mandatory Discovery Auth
-**Context:** The 2026 Armis report confirm that "Agentic Swarms" can weaponize exploits in seconds, requiring the A2A Hub to move from passive routing to active interdiction.
-**Architecture Adjustment:**
-*   Integrating **MSSQ (Machine-Speed Swarm Quarantine)** triggers into the `/v1/a2a/mailbox` and delivery logic. The Hub will now check the high-speed bitset for quarantine status before delivering any task proposal or message.
-*   Enforcing **Mandatory Discovery Auth** for all UAB-connected peers, aligning with the Gemini CLI v0.33.0 baseline. Capability metadata is now cryptographically masked until a verified mission-bound handshake is completed.
-**Security Impact:** Neutralizes "Hivenet" propagation by cutting off inter-agent communication channels in sub-milliseconds and ensures "Zero-Visibility" for unauthenticated probes.
