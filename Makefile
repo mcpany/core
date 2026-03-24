@@ -5,11 +5,7 @@ prepare:
 	@echo "Preparation complete"
 
 lint:
-	@if command -v pre-commit >/dev/null 2>&1; then \
-		pre-commit run --all-files -c server/.pre-commit-config.yaml || true; \
-	else \
-		echo "pre-commit not found, skipping pre-commit hooks"; \
-	fi
+	echo "Running lint on all commits"
 	bazel run //:lint
 
 test:
