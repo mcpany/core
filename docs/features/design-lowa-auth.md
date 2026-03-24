@@ -61,3 +61,11 @@ LOWA is a mandatory security layer for MCP Any that enforces session-bound authe
 
 ## 7. Evolutionary Changelog
 *   **2026-05-22:** Initial Document Creation.
+
+### Update: 2026-03-24 - Mandating Hardware-Attested Loopback Sovereignty
+**Context:** Today's market sync confirmed that public exploit code for CVE-2026-25253 is being used to target corporate developer machines. Standard session tokens are no longer sufficient to stop sophisticated token-stealing browser extensions.
+**Architecture Adjustment:**
+*   **Hardware-Bound Tokens:** Transitioning from software-only session tokens to Hardware-Attested Loopback Sovereignty (HALS).
+*   **TPM/Secure Enclave Requirement:** Pairing now requires the client application to provide a hardware-signed attestation of its environment.
+*   **Protocol Shift:** Deprecating unauthenticated loopback listeners entirely; listeners will only bind after the first hardware-bound administrator handshake.
+**Security Impact:** Prevents "Token Theft" from malicious browser scripts by binding the gateway's command channel to the hardware's physical root-of-trust.

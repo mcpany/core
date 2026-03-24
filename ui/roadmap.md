@@ -691,5 +691,6 @@
 - [ ] **[P0] Attention Anchor Heatmap**: (2026-07-01) Visual tracker for ALRA-pinned intent fragments and attention-density alerts.
 
 #### Upcoming (2026-03-24 Evolution - v2)
-- [ ] **[P1] Intent Lineage Visualizer**: Real-time graph showing the chain of signed intents across the swarm. (Added: 2026-03-24)
+- [ ] **[P0] Intent Lineage Visualizer**: (2026-03-24) Real-time graph showing the chain of signed intents across the swarm.
+- [ ] **[P1] BSH Zero-Copy Monitor**: (2026-03-24) Metrics dashboard tracking memory-mapped buffer utilization and coordination latency.
 - [ ] **[P2] BSH Performance Monitor**: Metrics dashboard tracking binary state transfer latency and token savings. (Added: 2026-03-24)

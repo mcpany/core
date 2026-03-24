@@ -1,21 +1,24 @@
 # Market Sync: 2026-03-24
 
-## Ecosystem Shifts & Findings
+## Ecosystem Updates
 
-### 1. The "Intent Integrity" Paradigm (UACO v1.7)
-The Universal Agent Coordination Protocol (UACO) has officially released the v1.7 draft, which introduces **Proof-of-Intent (PoI)**. This marks a shift from simple identity-based access control to relational integrity. Tool calls must now be cryptographically bound to a "Signed Intent" generated at the start of a session or task delegation. This prevents "Context-Mirroring" attacks where a subagent is tricked into using its parent's credentials for an unaligned task.
+### 1. OpenClaw: RCE Exploit Crisis (CVE-2026-25253)
+*   **Context:** Public exploit code for CVE-2026-25253 is now circulating. The vulnerability allows an unauthenticated remote attacker to steal authentication tokens via a malicious `gatewayUrl` query parameter in the Control UI.
+*   **Impact:** One-click Remote Code Execution (RCE) on developer machines. Researchers report "Shadow AI" deployments in corporate networks are being actively targeted.
+*   **Pain Point:** "Implicit Local Trust" for loopback WebSocket traffic is officially a catastrophic failure point.
 
-### 2. Configuration-as-Execution Exploits (Post-Claude Code CVEs)
-Analysis of recent Claude Code vulnerabilities (CVE-2025-59536) confirms that project-local configuration files are the primary vector for "Silent Hacking." Attackers are now using "Binary Smuggling" in WASM-based hooks. MCP Any's pivot to **Content-Addressable Configuration (CAC)** is timely, but needs to be extended to support "Ghost Shell" profiling for un-attested hooks.
+### 2. Claude Code: Agent Teams & Mailbox Bottlenecks
+*   **Context:** Claude Code's horizontal swarm model (Agent Teams) is gaining traction, but users are reporting significant latency due to "Mailbox Locks" during state synchronization.
+*   **Pain Point:** The emergence of "Context-Mirroring" attacks (CVE-2026-34015), where a specialist subagent is coerced into echoing the entire parent context window to an untrusted tool output.
 
-### 3. Token Storms & Binary State Handoffs (BSH)
-As agent swarms grow deeper (10+ agents), the overhead of JSON-based state transfer (Context Ghosting) is causing significant latency and cost spikes, termed "Token Storms." OpenClaw v2.4 has introduced **Binary State Handoff (BSH)** using Protobuf/gRPC for inter-agent state. MCP Any must support BSH to remain the performant bus for high-frequency swarms.
+### 3. Gemini CLI: Hardware-Attested Provenance
+*   **Context:** Gemini CLI v0.34.0 has introduced `x-gemini-provenance` headers. Models now sign their internal reasoning steps cryptographically.
+*   **Trend:** Infrastructure must now move from simple "Tool Gating" to "Reasoning Verification."
 
-### 4. Skill-Squatting & Dynamic Grafting
-A new attack pattern, "Skill-Squatting," has been identified in the wild. Malicious tools are being dynamically "grafted" into legitimate agent sessions via supply-chain vulnerabilities in MCP discovery. This reinforces the need for **Multi-Signature Skill Attestation**, where both the framework and the user's local policy must sign off on any dynamic tool loading.
+### 4. Swarm Efficiency: The "Token Storm" Problem
+*   **Context:** Large swarms (10+ agents) using JSON for state handoffs are hitting context limits and performance ceilings.
+*   **Shift:** Deep swarms are pivoting to Binary State Handoffs (BSH) utilizing Protobuf or memory-mapped buffers to reduce serialization overhead.
 
-## Summary of Findings
-- **Discovery**: Gemini CLI's new `discoverMcpTools()` implementation highlights a trend toward "lazy" tool registration.
-- **Security**: "Intent-Aware" permissions are replacing static capability tokens.
-- **Performance**: JSON is becoming a bottleneck; Binary transports (BSH) are the new standard for A2A.
-- **Pain Points**: Multi-agent "Reasoning Loops" still lack deterministic circuit breakers in most frameworks.
+## Unique Findings for Today
+*   **Relational Intent Integrity:** Discovery that "Identity-Only" security models fail when a valid agent is coerced into divergent actions. We need a "Relational" model that validates tool calls against the entire signed intent chain.
+*   **Ghost Shell Profiling:** Emerging need for behavioral profiling of un-attested configuration hooks before they are allowed to execute on the host, specifically targeting WASM-based binary smuggling.

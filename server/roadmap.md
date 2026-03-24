@@ -123,8 +123,9 @@
 *   **[P0] Binary State Handoff (BSH) Gateway**: High-performance binary transport layer for agent state transfer. (Added: 2026-03-23 - Promoted to P0 on 2026-03-24)
 
 #### Upcoming (2026-03-24 Evolution)
-*   **[P0] Relational PoI Enforcement**: Advanced intent-chain validation to prevent "Context-Mirroring" attacks. (Added: 2026-03-24)
-*   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral profiling of un-attested configuration hooks. (Added: 2026-03-24)
+*   **[P0] Relational PoI Validator**: Advanced security middleware extending UACO v1.7 to verify the complete cryptographically signed intent chain for every tool call. (Added: 2026-03-24)
+*   **[P0] BSH Zero-Copy Buffer**: High-performance state-transfer bridge using memory-mapped regions to eliminate "Token Storms" in large Agent Teams. (Added: 2026-03-24)
+*   **[P0] Ghost Shell Hook Profiler**: Mandatory behavioral sandbox for un-attested project-local configuration hooks (e.g., WASM). (Added: 2026-03-24)
 *   **[P1] BSH State Differential Sync**: Optimized binary state transfer that only sends deltas between agent handoffs. (Added: 2026-03-24)
 
 #### Upcoming (2026-03-20 Evolution)

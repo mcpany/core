@@ -1580,3 +1580,15 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+
+## Evolution: [2026-03-24] Updates
+
+### Proposed Additions
+- **Relational PoI Validator**: (P0) Advanced security middleware extending UACO v1.7 to verify the complete cryptographically signed intent chain for every tool call.
+- **BSH Zero-Copy Buffer**: (P0) High-performance state-transfer bridge using memory-mapped regions to eliminate "Token Storms" in large Agent Teams.
+- **Ghost Shell Hook Profiler**: (P0) Mandatory behavioral sandbox for un-attested project-local configuration hooks (e.g., WASM).
+
+### Priority Shifts
+- **Proof-of-Intent (PoI) Validator**: (Re-affirmed P0) Elevated with requirement for mandatory **Relational PoI** mapping.
+- **Binary State Handoff (BSH) Gateway**: (Promoted to P0) Now a critical performance requirement for Claude Code Agent Teams coordination.
+- **Local-Loopback Rate Limiter**: (Re-affirmed P0) Now designated as a prerequisite for **Hardware-Attested Loopback Sovereignty**.
