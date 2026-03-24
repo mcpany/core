@@ -61,3 +61,18 @@ The **Mission-Root Continuity Provider (MRCP)** is an infrastructure layer for M
 
 ## 7. Evolutionary Changelog
 *   **2026-06-21:** Initial Document Creation.
+
+### Update: 2026-06-25 - Monotonic Lineage Attestation
+**Context:** Today's market sync revealed "Snapshot Corruption" risks in AMR and "Identity Leakage via Process Environment."
+**Architecture Adjustment:**
+*   Integrating **Monotonic Mission Lineage (MML)** into the resumption flow.
+*   Resumption tokens now require a TPM-signed monotonic counter to prevent replay and leakage.
+*   Deprecating plain environment variables for identity transport in favor of kernel-bound HLES buffers.
+**Security Impact:** Prevents subagents from "squatting" on stale resumption tokens and ensures environmental sovereignty for headless handoffs.
+
+### Update: 2026-06-23 - Recursive Mission-Root Attestation & AIS Integration
+**Context**: Today's market sync revealed "Governance Gaps" in headless handoffs and "Teammate Mailbox Splicing" (CVE-2026-81042).
+**Architecture Adjustment**:
+*   Mandating **Recursive Mission-Root Attestation (RMRA)** for all process-based subagent handoffs in Section 4.
+*   Integrating the **Active Intent Sanitizer (AIS)** into the coordination bus to block cross-channel side-channel exfiltration.
+**Security Impact**: Neutralizes intent drift during deep sub-process chains and prevents mailbox splicing via higher-dimensional behavioral anchoring.

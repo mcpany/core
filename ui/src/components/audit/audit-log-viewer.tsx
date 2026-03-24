@@ -28,7 +28,6 @@ import { useToast } from "@/hooks/use-toast";
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
 import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
-import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 
 interface AuditLogEntry {
     timestamp: string;
@@ -122,13 +121,13 @@ export function AuditLogViewer() {
         }
     };
 
-
-    const safeParse = (str: string | undefined | null) => {
-        if (!str) return null;
+    const formatJson = (jsonStr: string) => {
+        if (!jsonStr) return null;
         try {
-            return JSON.parse(str);
+            const obj = JSON.parse(jsonStr);
+            return JSON.stringify(obj, null, 2);
         } catch (e) {
-            return str;
+            return jsonStr;
         }
     };
 
@@ -311,14 +310,26 @@ export function AuditLogViewer() {
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Arguments</h4>
                                 <div className="rounded-md overflow-hidden border">
-                                    <RichResultViewer result={safeParse(selectedLog.arguments) || {}} />
+                                    <SyntaxHighlighter
+                                        language="json"
+                                        style={vs2015}
+                                        customStyle={{ margin: 0, fontSize: '12px' }}
+                                    >
+                                        {formatJson(selectedLog.arguments) || "{}"}
+                                    </SyntaxHighlighter>
                                 </div>
                             </div>
 
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Result</h4>
                                 <div className="rounded-md overflow-hidden border">
-                                    <RichResultViewer result={safeParse(selectedLog.result) || (selectedLog.error ? null : {})} />
+                                    <SyntaxHighlighter
+                                        language="json"
+                                        style={vs2015}
+                                        customStyle={{ margin: 0, fontSize: '12px', maxHeight: '300px' }}
+                                    >
+                                        {formatJson(selectedLog.result) || (selectedLog.error ? "null" : "{}")}
+                                    </SyntaxHighlighter>
                                 </div>
                             </div>
                         </div>

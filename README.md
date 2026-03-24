@@ -5,17 +5,15 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/mcpany/core/ci.yml?branch=main)](https://github.com/mcpany/core/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mcpany/core)](https://goreportcard.com/report/github.com/mcpany/core)
 
-## The Ultimate Developer Entry Point
+## Elevator Pitch
 
-Welcome to **MCP Any**, the definitive Model Context Protocol (MCP) universal adapter designed to streamline and democratize API integration for AI agents.
+**What is this?**
 
-Our mission is to eliminate "binary fatigue" by ensuring you never have to write another single-purpose MCP server. With MCP Any, your existing infrastructure—whether REST, gRPC, OpenAPI, or local Command-line scripts—becomes instantly discoverable and operable by AI through elegant, configuration-driven policies.
+**MCP Any** is a universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It acts as a configuration-driven gateway, bridging the gap between your backend services (REST, gRPC, OpenAPI, Command-line) and AI agents.
 
-### Why MCP Any is Your New Gold Standard
-- **Zero-Code Integration:** Transform legacy APIs into MCP tools using lightweight YAML/JSON templates.
-- **Universal Compatibility:** Out-of-the-box support for HTTP/REST, gRPC via reflection, OpenAPI specs, and secure command execution.
-- **Enterprise Security:** Built-in authentication proxying, strict rate limiting, Data Loss Prevention (DLP) middleware, and comprehensive audit logs.
-- **Deploy Anywhere:** Run it locally, as a containerized central gateway, or as a Kubernetes sidecar.
+**Why does it exist?**
+
+Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and significant maintenance overhead. MCP Any solves this problem by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint, allowing you to focus on capabilities rather than plumbing.
 
 ## Architecture
 
@@ -33,8 +31,6 @@ MCP Any utilizes a modular, adapter-based architecture to decouple the MCP proto
     *   **Command**: Safely executes local CLI tools or scripts in a controlled environment.
     *   **Filesystem**: Provides secure access to local or remote (S3, GCS) filesystems.
 4.  **Policy Engine & Middleware**: A security layer that enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging.
-
-### Component Diagram
 
 ```mermaid
 graph TD
@@ -85,7 +81,7 @@ Follow these steps to get up and running with MCP Any immediately.
 ### Prerequisites
 
 *   [Go 1.23+](https://go.dev/doc/install) (for building from source)
-*   `bazelisk` (for build automation)
+*   `make` (for build automation)
 *   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
 
 ### One-Shot Setup
@@ -95,8 +91,9 @@ The exact commands to clone, install dependencies, and run the app:
 ```bash
 git clone https://github.com/mcpany/core.git
 cd core
-bazelisk build //...
-# Run the built binary appropriately based on Bazel output
+make prepare
+make build
+./build/bin/server run --config-path server/config.minimal.yaml
 ```
 
 ### Hello World
@@ -121,14 +118,14 @@ Ask your agent:
 
 The agent will use the `get_weather` tool exposed by MCP Any (configured in `config.minimal.yaml`) to fetch the simulated data.
 
-## Development
+## Developer Workflow
 
 We adhere to a strict development workflow to ensure code quality and maintainability.
 
 ### Testing
 Run all unit and integration tests to ensure code correctness. We practice proactive testing and continuous integration.
 ```bash
-bazelisk test //...
+make test
 ```
 
 ### Linting
@@ -146,7 +143,7 @@ make lint
 ### Building
 Compile the server binary and UI assets.
 ```bash
-bazelisk build //...
+make build
 ```
 
 ### Code Generation
