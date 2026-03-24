@@ -64,4 +64,6 @@ repos:
             - "**/*.pb.go"
             - -ignore
             - "ui/pnpm-lock.yaml"
+            - -ignore
+            - "ui/package.json"
             - -s=only
