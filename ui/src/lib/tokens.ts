@@ -34,14 +34,37 @@ export function estimateTokens(input: any): number {
  * @param messages - Array of message objects with content.
  * @returns Total estimated tokens.
  */
+// ⚡ BOLT: [Render Optimization] Use WeakMap caching for token estimation
+// Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
+const _tokenCache = new WeakMap<any, number>();
+
 export function estimateMessageTokens(messages: any[]): number {
-    return messages.reduce((acc, msg) => {
+    let total = 0;
+    for (let i = 0; i < messages.length; i++) {
+        const msg = messages[i];
+
+        // Handle primitive primitives properly, since WeakMap only accepts objects
+        if (msg === null || typeof msg !== 'object') {
+            let content = typeof msg === 'string' ? msg : JSON.stringify(msg || "");
+            total += estimateTokens(content);
+            continue;
+        }
+
+        if (_tokenCache.has(msg)) {
+            total += _tokenCache.get(msg)!;
+            continue;
+        }
+
         let content = typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content || "");
         if (msg.toolName) content += ` ${msg.toolName}`;
         if (msg.toolArgs) content += ` ${JSON.stringify(msg.toolArgs)}`;
         if (msg.toolResult) content += ` ${JSON.stringify(msg.toolResult)}`;
-        return acc + estimateTokens(content);
-    }, 0);
+
+        const cost = estimateTokens(content);
+        _tokenCache.set(msg, cost);
+        total += cost;
+    }
+    return total;
 }
 
 /**
