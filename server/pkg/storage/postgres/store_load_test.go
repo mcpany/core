@@ -37,7 +37,6 @@ func TestStore_Load(t *testing.T) {
 
 		pgDB := &DB{db}
 		store := NewStore(pgDB)
-		_ = store
 
 		opts := protojson.MarshalOptions{UseProtoNames: true}
 
@@ -83,7 +82,6 @@ func TestStore_Load(t *testing.T) {
 
 		pgDB := &DB{db}
 		store := NewStore(pgDB)
-		_ = store
 
 		mock.ExpectQuery(".*").
 			WillReturnError(errors.New("db error"))
@@ -108,7 +106,6 @@ func TestStore_Load(t *testing.T) {
 
 		pgDB := &DB{db}
 		store := NewStore(pgDB)
-		_ = store
 
 		mock.ExpectQuery(".*").
 			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow([]byte("invalid json")))
@@ -134,7 +131,6 @@ func TestStore_Load(t *testing.T) {
 
 		pgDB := &DB{db}
 		store := NewStore(pgDB)
-		_ = store
 
 		mock.ExpectQuery(".*").
 			WillReturnError(sql.ErrNoRows)
