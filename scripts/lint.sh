@@ -13,33 +13,36 @@ cd "$PROJECT_ROOT"
 
 echo "==> Running lint automation..."
 
+# Use Go 1.26.1 as it matches the project's go.work and go.mod files.
+# If we are in the cimg/go:1.26.1 image, this should be fine.
 export GOTOOLCHAIN=go1.26.1
 LINT_VERSION="v1.64.5"
-LINT_DIR="$PROJECT_ROOT/build/linter"
+
+# If we are in CircleCI or a similar environment, we might want to use a specific cache dir.
+LINT_DIR="${PROJECT_ROOT}/build/env/bin"
 mkdir -p "$LINT_DIR"
 
-if [[ ! -x "$LINT_DIR/golangci-lint" ]]; then
-    echo "    Building golangci-lint ${LINT_VERSION} from source..."
-    GOWORK=off GOTOOLCHAIN=go1.26.1 GOBIN="$LINT_DIR" go install github.com/golangci/golangci-lint/cmd/golangci-lint@${LINT_VERSION}
+LINT_BIN="$LINT_DIR/golangci-lint"
+
+# Re-install if version or toolchain changed
+LINT_VER_CHECK=$("$LINT_BIN" --version 2>/dev/null | grep "${LINT_VERSION}" | grep "go1.26") || true
+if [[ -z "$LINT_VER_CHECK" ]]; then
+    echo "    Installing golangci-lint ${LINT_VERSION} built with Go 1.26.1 to $LINT_DIR..."
+    GOBIN="$LINT_DIR" go install github.com/golangci/golangci-lint/cmd/golangci-lint@${LINT_VERSION}
 fi
 
-LINT_BIN="$LINT_DIR/golangci-lint"
 echo "    Using linter: $($LINT_BIN --version)"
 
-# To avoid "directory is outside module roots" error, we must NOT use ./... from root if go.work is active but we want module-level context,
-# OR we must ensure go.work is handled correctly.
-# golangci-lint supports workspaces, but sometimes it's finicky in CI.
-# Let's try running it on each module with GOWORK=off to be safe.
+# To avoid "outside module roots" or "no Go files" errors, we run the linter
+# using the workspace, but we point it at the module directories.
+# We also ensure the config path is absolute to avoid any relative path issues.
+CONFIG_PATH="$(pwd)/server/.golangci.yml"
 
-export GOWORK=off
-MODULES=("server" "proto" "k8s/operator")
-
-for mod in "${MODULES[@]}"; do
-    if [ -d "$mod" ]; then
-        echo "    Linting module: $mod"
-        # We must use absolute path to config or relative from the module dir
-        (cd "$mod" && "$LINT_BIN" run --timeout 20m --fix --config ../server/.golangci.yml ./...)
-    fi
-done
+echo "    Linting modules from root with workspace enabled..."
+"$LINT_BIN" run --timeout 20m --fix --config "$CONFIG_PATH" \
+    ./server/... \
+    ./proto/... \
+    ./k8s/operator/... \
+    ./server/examples/upstream_service_demo/grpc/greeter_server/...
 
 echo "==> Lint complete."

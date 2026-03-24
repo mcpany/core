@@ -15,11 +15,10 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Clean State
+          name: Clean and Setup
           command: |
-            sudo rm -f /usr/local/bin/golangci-lint
-            rm -rf build/env/bin
-            rm -rf build/linter
+             sudo rm -f /usr/local/bin/golangci-lint
+             rm -rf build/env/bin
       - run:
           name: Install Python dependencies
           command: |
@@ -33,25 +32,50 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v31-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-            - v31-lint-
+            - v33-lint-{{ checksum "server/go.sum" }}
+            - v33-lint-
       - run:
           name: Prepare and Run Lint
           command: |
             . venv/bin/activate
             export GOTOOLCHAIN=go1.26.1
             make prepare
-            ./scripts/lint.sh
+            make lint
       - save_cache:
-          key: v31-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+          key: v33-lint-{{ checksum "server/go.sum" }}
           paths:
             - "build/env/bin"
-            - "build/linter"
             - "build/.cache"
             - "venv"
+
+  test:
+    executor: default-executor
+    steps:
+      - checkout
+      - run:
+          name: Install Node.js
+          command: |
+            curl -fsSL https://deb.nodesource.com/setup_23.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+      - restore_cache:
+          keys:
+            - v33-test-{{ checksum "server/go.sum" }}
+            - v33-test-
+      - run:
+          name: Run Tests
+          command: |
+            export GOTOOLCHAIN=go1.26.1
+            make test-proto
+            make -C server test-fast
+      - save_cache:
+          key: v33-test-{{ checksum "server/go.sum" }}
+          paths:
+            - "build/env/bin"
+            - "build/.cache"
 
 workflows:
   version: 2
   ci:
     jobs:
       - lint
+      - test
