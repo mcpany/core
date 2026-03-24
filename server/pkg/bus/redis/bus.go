@@ -16,7 +16,7 @@ import (
 
 // Bus is a Redis-backed implementation of the Bus interface.
 //
-// Summary: Represents a Bus.
+// Summary: Redis-backed message bus implementation.
 type Bus[T any] struct {
 	client *redis.Client
 }

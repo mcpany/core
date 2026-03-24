@@ -12,14 +12,14 @@ import (
 
 // GraphQLProvider discovers services via GraphQL introspection.
 //
-// Summary: Represents a GraphQLProvider.
+// Summary: Discovery provider that uses GraphQL introspection.
 type GraphQLProvider struct {
 	Endpoint string // e.g., "http://localhost:8080/graphql"
 }
 
 // Name returns the name of the provider.
 //
-// Summary: Executes Name operation.
+// Summary: Returns the canonical name for this GraphQL discovery provider.
 //
 // Returns:
 //   - string: The name of the provider.
@@ -29,7 +29,7 @@ func (p *GraphQLProvider) Name() string {
 
 // Discover attempts to find services and return their configurations.
 //
-// Summary: Executes Discover operation.
+// Summary: Generates a dynamic service configuration for a GraphQL upstream by targeting the configured endpoint for introspection.
 //
 // Parameters:
 //   - ctx: context.Context. The execution context.

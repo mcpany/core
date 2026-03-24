@@ -18,7 +18,7 @@ import (
 
 const (
 	// SkillFileName is the name of the main skill file.
-	// Summary: Defines SkillFileName.
+	// Summary: Canonical filename for skill definitions.
 	SkillFileName = "SKILL.md"
 )
 
@@ -30,7 +30,7 @@ var (
 
 // Manager handles the storage and retrieval of skills.
 //
-// Summary: Represents a Manager.
+// Summary: Manager for Agent Skill storage, retrieval, and lifecycle.
 type Manager struct {
 	rootDir string
 	mu      sync.RWMutex
@@ -39,7 +39,7 @@ type Manager struct {
 
 // NewManager creates a new Skill Manager.
 //
-// Summary: Initializes NewManager operation.
+// Summary: Initializes a new Skill Manager by creating the root storage directory if it does not already exist.
 //
 // Parameters:
 //   - rootDir: string. The directory where skills are stored.
@@ -58,7 +58,7 @@ func NewManager(rootDir string) (*Manager, error) {
 
 // ListSkills returns all available skills.
 //
-// Summary: Executes ListSkills operation.
+// Summary: Retrieves a list of all currently available agent skills, utilizing an internal cache for performance.
 //
 // Returns:
 //   - []*Skill: A slice of all available skills.
@@ -105,7 +105,7 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 
 // GetSkill retrieves a specific skill by name.
 //
-// Summary: Retrieves GetSkill operation.
+// Summary: Loads and returns a single skill definition from the filesystem based on its unique name.
 //
 // Parameters:
 //   - name: string. The unique name of the skill.
@@ -121,7 +121,7 @@ func (m *Manager) GetSkill(name string) (*Skill, error) {
 
 // CreateSkill creates a new skill.
 //
-// Summary: Initializes CreateSkill operation.
+// Summary: Persists a new skill definition to the filesystem, creating the necessary directory structure and initial SKILL.md file.
 //
 // Parameters:
 //   - skill: *Skill. The skill object to create.
@@ -158,7 +158,7 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 
 // UpdateSkill updates an existing skill.
 //
-// Summary: Executes UpdateSkill operation.
+// Summary: Modifies an existing skill's definition and instructions, handling renames by moving the skill's directory if necessary.
 //
 // Parameters:
 //   - originalName: string. The current name of the skill.
@@ -199,7 +199,7 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 
 // DeleteSkill deletes a skill.
 //
-// Summary: Executes DeleteSkill operation.
+// Summary: Permanently removes a skill and all its associated assets from the filesystem.
 //
 // Parameters:
 //   - name: string. The name of the skill to delete.
@@ -224,7 +224,7 @@ func (m *Manager) DeleteSkill(name string) error {
 
 // SaveAsset saves an asset file for a skill.
 //
-// Summary: Executes SaveAsset operation.
+// Summary: Writes a raw content asset to a skill's directory, ensuring secure path handling to prevent directory traversal.
 //
 // Parameters:
 //   - skillName: string. The name of the skill.

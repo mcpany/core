@@ -27,7 +27,7 @@ import (
 
 // ProviderFactory is a function that creates an EmbeddingProvider.
 //
-// Summary: Represents a ProviderFactory.
+// Summary: Function type for creating an EmbeddingProvider from configuration.
 type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error)
 
 // CachingMiddleware is a tool execution middleware that provides caching
@@ -41,7 +41,7 @@ var (
 
 // CachingMiddleware handles caching of tool execution results.
 //
-// Summary: Represents a CachingMiddleware.
+// Summary: Middleware that handles caching of tool execution results.
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface
@@ -53,7 +53,7 @@ type CachingMiddleware struct {
 
 // NewCachingMiddleware creates a new CachingMiddleware.
 //
-// Summary: Initializes NewCachingMiddleware operation.
+// Summary: Factory function that initializes a CachingMiddleware with an internal go-cache store and a default embedding provider factory for semantic caching.
 //
 // Parameters:
 //   - toolManager: tool.ManagerInterface. The tool manager interface for looking up tools.
@@ -120,7 +120,7 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 
 // SetProviderFactory allows overriding the default provider factory for testing.
 //
-// Summary: Updates SetProviderFactory operation.
+// Summary: Replaces the default embedding provider creation logic with a custom factory, useful for injecting mocks during testing.
 //
 // Parameters:
 //   - factory: ProviderFactory. The embedding provider factory.
@@ -130,7 +130,7 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 
 // Execute executes the caching middleware.
 //
-// Summary: Executes Execute operation.
+// Summary: Wraps tool execution with caching logic, supporting both exact-match hashing and semantic similarity strategies.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the request.
@@ -434,7 +434,7 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 
 // Clear clears the cache.
 //
-// Summary: Executes Clear operation.
+// Summary: Evicts all entries from the underlying cache store.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the request.

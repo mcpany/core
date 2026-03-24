@@ -3,45 +3,44 @@
 **Created:** 2026-05-30
 
 ## 1. Context and Scope
-As swarms move from hierarchical to horizontal (mesh) coordination, the risk of "Teammate Impersonation" has emerged. A compromised specialist agent can spoof headers in the shared mailbox to send unauthorized instructions to a more privileged sibling. MCP Any needs a hardware-attested identity layer that binds every inter-agent message to a verified mission role.
+In high-density horizontal swarms, specialist agents communicate via inter-agent mailboxes. Market sync reports show a rising exploit pattern where compromised subagents impersonate more privileged teammates by spoofing mailbox headers. MCP Any must mandate hardware-attested identity for every coordination message to secure the horizontal mesh.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Implement per-message cryptographic signing for all teammate-to-teammate (T2T) communication.
-    * Mandate hardware-attested (TPM/Secure Enclave) identity tokens for session-bound agency.
-    * Provide automated "Identity Quarantine" for messages with failed attestation.
+    * Provide hardware-bound (TPM/Secure Enclave) identity signatures for every teammate-to-teammate (T2T) message.
+    * Neutralize "Mailbox Injection" and teammate impersonation attacks.
+    * Implement sub-millisecond attestation validation to prevent coordination latency.
 * **Non-Goals:**
-    * Managing human user identities (Identity Provider/IdP role).
-    * Providing long-lived agent identities (identities are mission-bound).
+    * Replacing the mission-root's global authentication to the model provider.
+    * Managing persistent identities across different mission roots.
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Security Auditor
-* **Primary Goal:** Prevent a "Refactor Agent" from being coerced by a compromised "Test Agent" into deleting production code.
+* **User Persona:** Security-Conscious Enterprise Architect
+* **Primary Goal:** Ensure that a specialist "Database Agent" cannot be commanded by an unauthorized "Frontend Agent" even if they share the same T2T bridge.
 * **The Happy Path (Tasks):**
-    1. "Test Agent" attempts to send a `delete_file` command to the "Refactor Agent" via the shared mailbox.
-    2. TIA Enforcer intercepts the message and requests a hardware-attested signature from the "Test Agent."
-    3. The signature is validated against the mission root; TIA detects that the "Test Agent" role is not authorized for this instruction.
-    4. TIA blocks the message, quarantines the "Test Agent," and alerts the auditor.
+    1. Agent A (Frontend) sends a coordination request to Agent B (Database) via MCP Any.
+    2. MCP Any intercepts the request and mandates a TIA signature from Agent A.
+    3. Agent A signs the message with its hardware-attested Teammate Token.
+    4. Agent B verifies the signature and mission-binding before executing the task.
 
 ## 4. Design & Architecture
 * **System Flow:**
-    * Every T2T message must include a `x-mcp-tia-token`.
-    * The token contains a TPM-signed hash of the message content and the agent's hardware-bound identity.
-    * The T2T Encryption Bridge verifies the token before delivering the message to the target teammate's mailbox.
+    * TIA is integrated as a mandatory middleware in the T2T Encryption Bridge.
+    * Every `mailbox.send` call requires a `x-tia-attestation` header.
+    * The SMI Relay acts as the local Certificate Authority, validating teammate tokens against the Mission Root.
 * **APIs / Interfaces:**
-    * `tia.v1.SignMessage(message_body)`: Returns a hardware-attested signature.
-    * `tia.v1.VerifyMessage(message_body, signature)`: Validates the lineage and authority of the sender.
+    * `tia.v1.SignMessage(payload)`: Returns a hardware-bound signature for a mailbox message.
+    * `tia.v1.VerifyIdentity(signature, mission_id)`: Validates the sender's identity within the mission scope.
 * **Data Storage/State:**
-    * Mission-bound public keys are stored in the secure TIA registry.
-    * Attestation logs are pushed to the immutable PR integrity gate (APRIG).
+    * The SMI Relay maintains an in-memory cache of hardware-verified teammate pubkeys.
 
 ## 5. Alternatives Considered
-* **Shared Symmetric Keys:** Rejected because a single compromised agent would reveal the key for the entire swarm.
-* **Software-only JWTs:** Rejected because they are susceptible to token theft and replay if the local environment is partially compromised.
+* **Shared Symmetric Keys:** Rejected because a single compromised teammate would expose the entire mesh.
+* **Centralized Auth Server:** Rejected due to the "High-Frequency Tax" (latency) and the risk of a single point of failure in local-first swarms.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** TIA is the foundation for horizontal Zero Trust; no message is trusted without hardware-bound proof of origin.
-* **Observability:** Visualizes the "Chain of Command" in the UI, showing the verified lineage of every teammate instruction.
+* **Security (Zero Trust):** TIA enforces the "Mission-Bound Identity" (MBI) standard; tokens are cryptographically invalid outside their specific mission scope.
+* **Observability:** Logs "Identity Anomalies" (spoofing attempts) to the Audit Log.
 
 ## 7. Evolutionary Changelog
 * **2026-05-30:** Initial Document Creation.

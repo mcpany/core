@@ -13,38 +13,23 @@ import (
 // WebsocketClientWrapper wraps a *websocket.Conn to adapt it for use in a
 // connection pool, implementing the pool.ClosableClient interface.
 //
-// Summary: Represents a WebsocketClientWrapper.
+// Summary: Wrapper for WebSocket connections to support pooling.
 type WebsocketClientWrapper struct {
 	Conn *websocket.Conn
 }
 
-// IsHealthy checks if the underlying WebSocket connection is still active. It sends a ping message with a short deadline to verify the connection's liveness.
+// IsHealthy checks if the underlying WebSocket connection is still active.
+//
+// Summary: Evaluates the connection status by sending a WebSocket ping.
+//
+// It sends a ping message with a short deadline (2 seconds) to verify
+// the connection's liveness.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
+//   - _: context.Context. Unused.
 //
 // Returns:
-//   - bool: True if successful, false otherwise.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Checks IsHealthy operation.
-//
-// Parameters:
-//   - arg: The parameter.
-//
-// Returns:
-//   - result: The result.
-//
-// Errors:
-//   - err: The error if any.
-//
-// Side Effects:
-//   - None.
+//   - bool: True if the ping was successful, false otherwise.
 func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 	// Send a ping to check the connection.
 	// A short deadline is used to prevent blocking.
@@ -52,33 +37,12 @@ func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 	return err == nil
 }
 
-// Close terminates the underlying WebSocket connection. Returns an error if the operation fails.
+// Close terminates the underlying WebSocket connection.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - arg: The parameter.
+// Summary: Releases resources associated with the WebSocket connection.
 //
 // Returns:
-//   - result: The result.
-//
-// Errors:
-//   - err: The error if any.
-//
-// Side Effects:
-//   - None.
+//   - error: An error if the closure fails.
 func (w *WebsocketClientWrapper) Close() error {
 	return w.Conn.Close()
 }

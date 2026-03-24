@@ -22,7 +22,7 @@ type Manager struct {
 
 // NewManager creates a new Profile Manager.
 //
-// Summary: Initializes a new Profile Manager.
+// Summary: Initializes a new Profile Manager and populates it with a set of base profile definitions.
 //
 // Parameters:
 //   - profiles: []*configv1.ProfileDefinition. Initial profile definitions.
@@ -55,7 +55,7 @@ func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 
 // GetProfileDefinition returns the profile definition by name.
 //
-// Summary: Retrieves a profile definition.
+// Summary: Searches for and returns a profile definition by its unique name from the internal registry.
 //
 // Parameters:
 //   - name: string. The name of the profile.

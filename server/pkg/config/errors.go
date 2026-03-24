@@ -22,7 +22,7 @@ type ActionableError struct {
 
 // Error implements the error interface.
 //
-// Summary: Executes Error operation.
+// Summary: Returns a formatted error string that includes both the original error message and the suggested fix.
 //
 // Returns:
 //   - string: The formatted error message with suggestion.
@@ -32,7 +32,7 @@ func (e *ActionableError) Error() string {
 
 // Unwrap returns the underlying error.
 //
-// Summary: Executes Unwrap operation.
+// Summary: Provides access to the original error object wrapped within the ActionableError.
 //
 // Returns:
 //   - error: The underlying error.

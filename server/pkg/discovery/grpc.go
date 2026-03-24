@@ -12,14 +12,14 @@ import (
 
 // GRPCProvider discovers services via gRPC reflection.
 //
-// Summary: Represents a GRPCProvider.
+// Summary: Discovery provider that uses gRPC reflection.
 type GRPCProvider struct {
 	Endpoint string // e.g., "localhost:50051"
 }
 
 // Name returns the name of the provider.
 //
-// Summary: Executes Name operation.
+// Summary: Returns the canonical name for this gRPC discovery provider.
 //
 // Returns:
 //   - string: The name of the provider.
@@ -29,7 +29,7 @@ func (p *GRPCProvider) Name() string {
 
 // Discover attempts to find services and return their configurations.
 //
-// Summary: Executes Discover operation.
+// Summary: Generates a dynamic service configuration for a gRPC upstream by targeting the configured endpoint with reflection enabled.
 //
 // Parameters:
 //   - ctx: context.Context. The execution context.

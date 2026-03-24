@@ -13,7 +13,7 @@ import (
 // GlobalSettingsManager manages the global settings of the application in a thread-safe manner.
 // It allows for dynamic updates to configuration values that are used across the application.
 //
-// Summary: Represents a GlobalSettingsManager.
+// Summary: Thread-safe manager for global application settings.
 type GlobalSettingsManager struct {
 	mu             sync.RWMutex
 	apiKey         atomic.Value // stores string
@@ -23,7 +23,7 @@ type GlobalSettingsManager struct {
 
 // NewGlobalSettingsManager creates a new GlobalSettingsManager with initial values.
 //
-// Summary: Initializes the global settings manager.
+// Summary: Initializes a new settings manager with the provided API key, IP allowlist, and CORS origins.
 //
 // Parameters:
 //   - apiKey: string. The initial API key.
@@ -86,7 +86,7 @@ func (m *GlobalSettingsManager) Update(settings *config_v1.GlobalSettings, expli
 
 // GetAPIKey returns the current API key.
 //
-// Summary: Retrieves the active API key.
+// Summary: Returns the security key currently active for the application, typically used for authentication.
 //
 // Returns:
 //   - string: The API key.
@@ -100,7 +100,7 @@ func (m *GlobalSettingsManager) GetAPIKey() string {
 
 // GetAllowedIPs returns the current allowed IPs.
 //
-// Summary: Retrieves the list of allowed IP addresses.
+// Summary: Returns the list of IP addresses or CIDR blocks permitted to access the application.
 //
 // Returns:
 //   - []string: A list of allowed IP CIDRs or addresses.
@@ -114,7 +114,7 @@ func (m *GlobalSettingsManager) GetAllowedIPs() []string {
 
 // GetAllowedOrigins returns the current allowed origins.
 //
-// Summary: Retrieves the list of allowed CORS origins.
+// Summary: Returns the list of web origins permitted to make cross-origin requests to the application.
 //
 // Returns:
 //   - []string: A list of allowed origins.

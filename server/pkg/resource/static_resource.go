@@ -18,7 +18,7 @@ import (
 // StaticResource implements the Resource interface for resources that are
 // defined statically in the configuration (e.g. pointing to a URL).
 //
-// Summary: Represents a StaticResource.
+// Summary: Resource implementation for statically defined or URL-based content.
 type StaticResource struct {
 	resource      *mcp.Resource
 	serviceID     string
@@ -28,7 +28,7 @@ type StaticResource struct {
 
 // NewStaticResource creates a new instance of StaticResource.
 //
-// Summary: Initializes a static resource.
+// Summary: Initializes a static resource with pre-defined content or a URL for external retrieval.
 //
 // Parameters:
 //   - def: *configv1.ResourceDefinition. The resource definition.
@@ -53,7 +53,7 @@ func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *Stat
 
 // Resource returns the MCP representation of the resource.
 //
-// Summary: Retrieves the MCP resource metadata.
+// Summary: Returns the MCP-compliant resource metadata, including URI and MIME type.
 //
 // Returns:
 //   - *mcp.Resource: The MCP resource definition.
@@ -63,7 +63,7 @@ func (r *StaticResource) Resource() *mcp.Resource {
 
 // Service returns the ID of the service that provides this resource.
 //
-// Summary: Retrieves the service ID.
+// Summary: Returns the unique identifier of the upstream service that owns this static resource.
 //
 // Returns:
 //   - string: The service ID.

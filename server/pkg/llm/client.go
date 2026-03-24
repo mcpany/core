@@ -16,7 +16,7 @@ import (
 
 // Client is the interface for an LLM client.
 //
-// Summary: Represents a Client.
+// Summary: Interface for interacting with Large Language Model providers.
 type Client interface {
 	// ChatCompletion sends a chat request to the LLM and returns the response.
 	//
@@ -41,7 +41,7 @@ type Client interface {
 
 // ChatRequest represents a chat completion request.
 //
-// Summary: Represents a ChatRequest.
+// Summary: Data structure for LLM chat completion requests.
 type ChatRequest struct {
 	Model    string    `json:"model"`
 	Messages []Message `json:"messages"`
@@ -49,7 +49,7 @@ type ChatRequest struct {
 
 // Message represents a chat message.
 //
-// Summary: Represents a Message.
+// Summary: Data structure for a single message within an LLM chat request.
 type Message struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
@@ -57,14 +57,14 @@ type Message struct {
 
 // ChatResponse represents a chat completion response.
 //
-// Summary: Represents a ChatResponse.
+// Summary: Data structure for LLM chat completion responses.
 type ChatResponse struct {
 	Content string `json:"content"`
 }
 
 // OpenAIClient implements Client for OpenAI.
 //
-// Summary: Represents a OpenAIClient.
+// Summary: Client implementation for the OpenAI API.
 type OpenAIClient struct {
 	apiKey  string
 	baseURL string
@@ -73,7 +73,7 @@ type OpenAIClient struct {
 
 // NewOpenAIClient creates a new OpenAIClient.
 //
-// Summary: Initializes NewOpenAIClient operation.
+// Summary: Initializes a new client for the OpenAI API with a default timeout and base URL.
 //
 // Parameters:
 //   - apiKey: string. The API key for OpenAI.
@@ -110,7 +110,7 @@ type openAIChatResponse struct {
 
 // ChatCompletion performs a chat completion request.
 //
-// Summary: Executes ChatCompletion operation.
+// Summary: Sends a chat request to the OpenAI-compatible API endpoint and returns the generated content.
 //
 // Parameters:
 //   - ctx: context.Context. The request context.

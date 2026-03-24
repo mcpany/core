@@ -15,7 +15,7 @@ import (
 
 // Retry implements a retry policy for failed operations.
 //
-// Summary: Represents a Retry.
+// Summary: Provides a configurable mechanism for re-attempting failed operations with exponential backoff.
 type Retry struct {
 	config *configv1.RetryConfig
 }
@@ -23,10 +23,10 @@ type Retry struct {
 // NewRetry creates a new Retry instance with the given configuration.
 // It sets default values for base and max backoff if they are not provided.
 //
-// Summary: Creates a new retry policy.
+// Summary: Initializes a retry policy with defaults for missing configuration fields.
 //
 // Parameters:
-//   - config (*configv1.RetryConfig): The configuration for the retry policy.
+//   - config: *configv1.RetryConfig. The desired retry parameters.
 //
 // Returns:
 //   - *Retry: A new Retry instance.
@@ -51,11 +51,11 @@ func NewRetry(config *configv1.RetryConfig) *Retry {
 // Execute runs the provided work function, retrying it if it fails according
 // to the configured policy.
 //
-// Summary: Executes a function with retries.
+// Summary: Runs an operation with automatic retries and exponential backoff until success or max attempts.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - work (func(context.Context) error): The function to execute.
+//   - ctx: context.Context. The execution context for managing timeouts.
+//   - work: func(context.Context) error. The operation to be attempted.
 //
 // Returns:
 //   - error: An error if all retries fail.

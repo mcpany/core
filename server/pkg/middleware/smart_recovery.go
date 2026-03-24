@@ -19,7 +19,7 @@ import (
 
 // SmartRecoveryMiddleware handles automatic error recovery using LLM.
 //
-// Summary: Represents a SmartRecoveryMiddleware.
+// Summary: Middleware that handles automatic recovery from tool failures.
 type SmartRecoveryMiddleware struct {
 	config      *configv1.SmartRecoveryConfig
 	llmClient   llm.Client
@@ -29,7 +29,7 @@ type SmartRecoveryMiddleware struct {
 
 // NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
 //
-// Summary: Initializes NewSmartRecoveryMiddleware operation.
+// Summary: Factory function that initializes a SmartRecoveryMiddleware for automatic correction of tool execution errors using a Large Language Model.
 //
 // Parameters:
 //   - config: *configv1.SmartRecoveryConfig. The smart recovery configuration.
@@ -46,7 +46,7 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 
 // Execute executes the middleware logic.
 //
-// Summary: Executes Execute operation.
+// Summary: Intercepts tool execution failures and attempts to recover by generating corrected arguments via the configured LLM client.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the request.

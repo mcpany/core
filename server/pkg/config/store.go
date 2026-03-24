@@ -120,31 +120,31 @@ type yamlEngine struct {
 
 // SetSkipValidation sets whether to skip schema validation.
 //
-// Summary: Updates SetSkipValidation operation.
+// Summary: Configures the YAML engine to bypass schema validation during unmarshaling.
 //
 // Parameters:
-//   - skip: bool. True to skip validation.
+//   - skip: bool. True to disable validation checks.
 func (e *yamlEngine) SetSkipValidation(skip bool) {
 	e.skipValidation = skip
 }
 
 // SetIgnoreEnv sets whether to ignore environment variables.
 //
-// Summary: Updates SetIgnoreEnv operation.
+// Summary: Configures the YAML engine to ignore environment variable overrides.
 //
 // Parameters:
-//   - ignore: bool. True to ignore environment variables.
+//   - ignore: bool. True to bypass environment variable application.
 func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 	e.ignoreEnv = ignore
 }
 
 // Unmarshal parses a YAML byte slice into a proto.Message.
 //
-// Summary: Executes Unmarshal operation.
+// Summary: Parses YAML data into a protobuf message, applying environment and set overrides.
 //
 // Parameters:
-//   - b: []byte. The YAML bytes to parse.
-//   - v: proto.Message. The destination protobuf message.
+//   - b: []byte. The raw YAML content.
+//   - v: proto.Message. The target protobuf message to populate.
 //
 // Returns:
 //   - error: An error if unmarshaling fails.
@@ -168,12 +168,12 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 
 // UnmarshalFromMap populates the provided proto.Message from a raw map.
 //
-// Summary: Executes UnmarshalFromMap operation.
+// Summary: Populates a protobuf message from a map structure, applying necessary type fixes and overrides.
 //
 // Parameters:
-//   - yamlMap: map[string]interface{}. The raw map data.
-//   - v: proto.Message. The destination protobuf message.
-//   - originalBytes: []byte. The original bytes for error reporting.
+//   - yamlMap: map[string]interface{}. The source map data.
+//   - v: proto.Message. The target protobuf message.
+//   - originalBytes: []byte. The original source bytes for error context.
 //
 // Returns:
 //   - error: An error if unmarshaling fails.
@@ -283,11 +283,11 @@ type textprotoEngine struct{}
 
 // Unmarshal parses a textproto byte slice into a proto.Message.
 //
-// Summary: Executes Unmarshal operation.
+// Summary: Parses text-format protobuf data into a message object.
 //
 // Parameters:
-//   - b: []byte. The textproto bytes to parse.
-//   - v: proto.Message. The destination protobuf message.
+//   - b: []byte. The textproto bytes.
+//   - v: proto.Message. The destination message.
 //
 // Returns:
 //   - error: An error if unmarshaling fails.
@@ -300,11 +300,11 @@ type jsonEngine struct{}
 
 // Unmarshal parses a JSON byte slice into a proto.Message.
 //
-// Summary: Executes Unmarshal operation.
+// Summary: Parses JSON data into a protobuf message with enhanced error reporting for common mistakes.
 //
 // Parameters:
-//   - b: []byte. The JSON bytes to parse.
-//   - v: proto.Message. The destination protobuf message.
+//   - b: []byte. The raw JSON bytes.
+//   - v: proto.Message. The target message.
 //
 // Returns:
 //   - error: An error if unmarshaling fails.
@@ -634,20 +634,20 @@ type FileStore struct {
 
 // SetSkipValidation configures whether to skip schema validation during loading.
 //
-// Summary: Updates SetSkipValidation operation.
+// Summary: Enables or disables schema validation for all configurations loaded by this FileStore.
 //
 // Parameters:
-//   - skip: bool. True to skip validation.
+//   - skip: bool. True to bypass schema checks.
 func (s *FileStore) SetSkipValidation(skip bool) {
 	s.skipValidation = skip
 }
 
 // SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
 //
-// Summary: Updates SetIgnoreMissingEnv operation.
+// Summary: Configures the store's behavior when environment variables referenced in config are missing.
 //
 // Parameters:
-//   - ignore: bool. True to ignore missing environment variables.
+//   - ignore: bool. True to proceed despite missing environment variables.
 func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 	s.IgnoreMissingEnv = ignore
 }
@@ -682,10 +682,10 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 
 // HasConfigSources returns true if the store has configuration paths configured.
 //
-// Summary: Checks HasConfigSources operation.
+// Summary: Determines if the FileStore has any target paths to scan for configuration.
 //
 // Returns:
-//   - bool: True if sources are configured, false otherwise.
+//   - bool: True if at least one path is configured.
 func (s *FileStore) HasConfigSources() bool {
 	return len(s.paths) > 0
 }
@@ -1302,10 +1302,10 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 
 // HasConfigSources returns true if any of the underlying stores have configuration sources.
 //
-// Summary: Checks HasConfigSources operation.
+// Summary: Aggregates configuration source availability across all nested stores.
 //
 // Returns:
-//   - bool: True if any underlying store has sources, false otherwise.
+//   - bool: True if at least one underlying store has sources.
 func (ms *MultiStore) HasConfigSources() bool {
 	for _, s := range ms.stores {
 		if s.HasConfigSources() {

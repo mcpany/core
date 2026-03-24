@@ -35,7 +35,7 @@ type AuditMiddleware struct {
 
 // NewAuditMiddleware creates a new AuditMiddleware.
 //
-// Summary: Initializes the audit middleware with the provided configuration.
+// Summary: Factory function that initializes an AuditMiddleware with the specified configuration, audit store, and redactor for sensitive data protection.
 //
 // Parameters:
 //   - auditConfig (*configv1.AuditConfig): The configuration for audit logging.
@@ -332,7 +332,7 @@ func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 
 // GetHistory returns the current broadcast history.
 //
-// Summary: Retrieves the audit history from the broadcaster.
+// Summary: Returns a slice of the most recent audit entries captured by the broadcaster's in-memory buffer.
 //
 // Returns:
 //   - []any: A slice of audit entries.

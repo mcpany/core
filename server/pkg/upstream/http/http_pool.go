@@ -77,7 +77,7 @@ func (p *httpPool) Close() error {
 //   - Reads certificate files if mTLS is configured.
 //   - Initializes a new http.Transport and http.Client.
 //
-// Summary: Represents a NewHTTPPool.
+// Summary: Factory function for creating HTTP client connection pools.
 var NewHTTPPool = func(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

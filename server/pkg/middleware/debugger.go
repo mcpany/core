@@ -49,7 +49,7 @@ type Debugger struct {
 
 // NewDebugger creates a new Debugger middleware.
 //
-// Summary: Initializes the debugger with a fixed-size ring buffer.
+// Summary: Factory function that initializes a Debugger with a fixed-size circular buffer and a background processing loop for asynchronous capture.
 //
 // Parameters:
 //   - size: int. The number of recent requests to keep in memory.
@@ -298,7 +298,7 @@ func isTextContent(contentType string) bool {
 
 // Entries returns the last captured entries.
 //
-// Summary: Retrieves the list of captured debug entries from the ring buffer.
+// Summary: Returns a thread-safe copy of all currently buffered HTTP debug entries in chronological order.
 //
 // Returns:
 //   - []DebugEntry: A slice of the most recent captured requests and responses.

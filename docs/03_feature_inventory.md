@@ -1146,3 +1146,11 @@
 ### Priority Shifts
 - **T2T Encryption Bridge**: (Re-affirmed P0) Now elevated with the requirement for **Mandatory TIA** for all inter-teammate communication.
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Evolving to support the new **RBA** for dynamic budget arbitration in deep swarms.
+
+## Evolution: [2026-05-30] Refinement
+### Proposed Additions
+- **ARE-Capability Revocation Bus**: (P0) High-speed internal signaling bus for the RBA to broadcast sub-millisecond capability revocation to distributed subagents.
+- **Mission-Bound Credential Vault**: (P0) Hardware-secured ephemeral storage for MBI tokens that auto-zeroes memory upon mission termination.
+
+### Deprecations
+- **Shared KV Store (Global)**: Deprecating global Blackboard access in favor of **AMS Shards** to eliminate task list contention at scale.

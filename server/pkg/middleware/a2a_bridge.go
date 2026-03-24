@@ -16,7 +16,7 @@ import (
 // A2ABridgeMiddleware represents the Agent-to-Agent (A2A) Bridge middleware.
 // It intercepts tool calls prefixed with "call_agent_" and bridges them to the A2A protocol.
 //
-// Summary: Represents a A2ABridgeMiddleware.
+// Summary: Middleware that intercepts and bridges Agent-to-Agent tool calls.
 type A2ABridgeMiddleware struct {
 	contextManager *RecursiveContextManager
 }
@@ -41,7 +41,7 @@ func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeM
 
 // Execute processes the MCP request and intercepts A2A agent calls.
 //
-// Summary: Executes Execute operation.
+// Summary: Detects "call_agent_" tool names, creating asynchronous sessions in the RecursiveContextManager and returning bridged responses.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the request.

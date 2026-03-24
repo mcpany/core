@@ -21,7 +21,7 @@ import (
 
 // Span represents a span in a trace.
 //
-// Summary: Represents a Span.
+// Summary: Single operational unit within a distributed trace.
 type Span struct {
 	ID           string         `json:"id"`
 	Name         string         `json:"name"`
@@ -38,7 +38,7 @@ type Span struct {
 
 // Trace represents a full trace.
 //
-// Summary: Represents a Trace.
+// Summary: Full execution path consisting of multiple spans.
 type Trace struct {
 	ID            string `json:"id"`
 	RootSpan      Span   `json:"rootSpan"`

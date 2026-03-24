@@ -12,7 +12,7 @@ import (
 // Session defines the interface for tools to interact with the client session.
 // It includes capabilities like Sampling (CreateMessage) and Roots inspection.
 //
-// Summary: Represents a Session.
+// Summary: Interface for interacting with an MCP client session.
 type Session interface {
 	// CreateMessage requests a message creation (sampling) from the client.
 	//
@@ -42,7 +42,7 @@ type Session interface {
 
 // Sampler is an alias for Session for backward compatibility.
 //
-// Summary: Represents a Sampler.
+// Summary: Alias for the Session interface for backward compatibility.
 type Sampler = Session
 
 type sessionContextKey struct{}

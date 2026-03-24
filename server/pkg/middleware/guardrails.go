@@ -21,7 +21,7 @@ type GuardrailsConfig struct {
 
 // NewGuardrailsMiddleware creates a new Guardrails middleware.
 //
-// Summary: Initializes the guardrails middleware for blocking malicious prompts.
+// Summary: Factory function that initializes a Gin middleware handler for inspect POST request bodies and blocking specified malicious phrases or injection patterns.
 //
 // Parameters:
 //   - config: GuardrailsConfig. The configuration for blocking patterns.

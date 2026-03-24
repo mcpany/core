@@ -16,7 +16,7 @@ import (
 
 // OIDCConfig holds the configuration for the OIDC provider.
 //
-// Summary: Represents a OIDCConfig.
+// Summary: Configuration settings for an OIDC provider.
 type OIDCConfig struct {
 	Issuer       string
 	ClientID     string
@@ -26,7 +26,7 @@ type OIDCConfig struct {
 
 // OIDCProvider handles OIDC authentication flow.
 //
-// Summary: Represents a OIDCProvider.
+// Summary: Component for managing the OpenID Connect (OIDC) authentication flow.
 type OIDCProvider struct {
 	config       OIDCConfig
 	provider     *oidc.Provider

@@ -22,7 +22,7 @@ const (
 // It uses channels to deliver messages to subscribers, with each subscriber
 // having its own dedicated goroutine for message processing.
 //
-// Summary: Represents a DefaultBus.
+// Summary: In-memory implementation of the message bus.
 type DefaultBus[T any] struct {
 	mu             sync.RWMutex
 	subscribers    map[string]map[uintptr]chan T

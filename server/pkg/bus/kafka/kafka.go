@@ -30,7 +30,7 @@ type readerInterface interface {
 
 // Bus is a Kafka-backed implementation of the Bus interface.
 //
-// Summary: Represents a Bus.
+// Summary: Kafka-backed message bus implementation.
 type Bus[T any] struct {
 	writer        writerInterface
 	brokers       []string

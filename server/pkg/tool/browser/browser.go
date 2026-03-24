@@ -17,7 +17,7 @@ import (
 // It is an interface so tests can inject a lightweight implementation without
 // requiring a real browser installation.
 //
-// Summary: Represents a PageFetcher.
+// Summary: Interface for fetching web page content.
 type PageFetcher interface {
 	// FetchText retrieves the text content of a URL.
 	//
@@ -88,7 +88,7 @@ func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 
 // ToolDefinition returns the MCP tool definition.
 //
-// Summary: Defines the metadata for the browse_page tool.
+// Summary: Returns the JSON schema metadata for the browse_page tool.
 //
 // Returns:
 //   - map[string]interface{}: The JSON schema definition of the tool.

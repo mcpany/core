@@ -34,7 +34,7 @@ import (
 // It provides tools for interacting with various filesystem backends (local,
 // S3, GCS, etc.) as defined in the service configuration.
 //
-// Summary: Represents a Upstream.
+// Summary: Upstream implementation for filesystem services.
 type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer

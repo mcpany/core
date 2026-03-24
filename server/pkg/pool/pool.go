@@ -19,11 +19,11 @@ import (
 
 var (
 	// ErrPoolClosed is returned when an operation is attempted on a closed pool.
-	// Summary: Defines ErrPoolClosed.
+	// Summary: Error indicating that the pool is closed.
 	ErrPoolClosed = fmt.Errorf("pool has been closed")
 	// ErrPoolFull is returned when the pool has reached its maximum capacity and
 	// cannot create new clients.
-	// Summary: Defines the ErrPoolFull constant or variable.
+	// Summary: Error indicating that the pool is at maximum capacity.
 	ErrPoolFull = fmt.Errorf("pool is full")
 
 	// retryBackoff is the duration to wait before retrying to create a new client

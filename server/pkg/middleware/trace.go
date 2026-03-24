@@ -38,7 +38,7 @@ func WithTraceContext(ctx context.Context, traceID, spanID, parentID string) con
 
 // GetTraceID returns the trace ID from the context.
 //
-// Summary: Retrieves the trace ID from the context.
+// Summary: Extracts the unique trace identifier from the provided context if it has been previously injected.
 //
 // Parameters:
 //   - ctx: context.Context. The context to check.
@@ -54,7 +54,7 @@ func GetTraceID(ctx context.Context) string {
 
 // GetSpanID returns the span ID from the context.
 //
-// Summary: Retrieves the span ID from the context.
+// Summary: Extracts the current span identifier from the provided context if it has been previously injected.
 //
 // Parameters:
 //   - ctx: context.Context. The context to check.
@@ -70,7 +70,7 @@ func GetSpanID(ctx context.Context) string {
 
 // GetParentID returns the parent span ID from the context.
 //
-// Summary: Retrieves the parent span ID from the context.
+// Summary: Extracts the parent span identifier from the provided context, which represents the caller's span.
 //
 // Parameters:
 //   - ctx: context.Context. The context to check.

@@ -13,7 +13,7 @@ import (
 // HTTPCORSMiddleware handles CORS for HTTP endpoints.
 // It is thread-safe and supports dynamic updates.
 //
-// Summary: Represents a HTTPCORSMiddleware.
+// Summary: Middleware that handles Cross-Origin Resource Sharing (CORS) for HTTP endpoints.
 type HTTPCORSMiddleware struct {
 	mu              sync.RWMutex
 	allowedOrigins  map[string]struct{}
@@ -22,7 +22,7 @@ type HTTPCORSMiddleware struct {
 
 // NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware.
 //
-// Summary: Initializes HTTP CORS middleware.
+// Summary: Factory function that initializes a thread-safe HTTP CORS middleware with an optimized lookup map for permitted origins.
 //
 // If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin).
 // To allow all, pass []string{"*"}.

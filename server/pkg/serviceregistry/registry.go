@@ -26,7 +26,7 @@ import (
 
 // ErrServiceAlreadyRegistered is returned when attempting to register a service that is already active.
 //
-// Summary: Represents a ErrServiceAlreadyRegistered.
+// Summary: Error returned when a service with the same name already exists.
 var ErrServiceAlreadyRegistered = errors.New("service already registered")
 
 // ServiceRegistryInterface defines the interface for a service registry.
@@ -34,7 +34,7 @@ var ErrServiceAlreadyRegistered = errors.New("service already registered")
 // It manages the registration, lifecycle, and discovery of upstream services
 // and their associated capabilities (tools, resources, prompts).
 //
-// Summary: Represents a ServiceRegistryInterface.
+// Summary: Interface for the central service and capability registry.
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
 	//
@@ -106,7 +106,7 @@ type ServiceRegistryInterface interface { //nolint:revive
 // It serves as the central hub for managing upstream services, coordinating
 // with tool, prompt, and resource managers.
 //
-// Summary: Represents a ServiceRegistry.
+// Summary: Concrete implementation of the service registry.
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig
@@ -123,7 +123,7 @@ type ServiceRegistry struct {
 
 // New creates and initializes a new ServiceRegistry.
 //
-// Summary: Initializes New operation.
+// Summary: Factory function that initializes a new ServiceRegistry with associated tool, prompt, and resource managers.
 //
 // Parameters:
 //   - factory: factory.Factory. The factory used to create upstream connections.
@@ -151,7 +151,7 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 
 // RegisterService handles the registration of a new upstream service.
 //
-// Summary: Executes RegisterService operation.
+// Summary: Validates service configuration, creates a new upstream client, and registers discovered capabilities while enforcing name uniqueness and injecting provenance data.
 //
 // Parameters:
 //   - ctx: context.Context. The registration context.
@@ -291,7 +291,7 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 
 // AddServiceInfo stores metadata about a service.
 //
-// Summary: Executes AddServiceInfo operation.
+// Summary: Persists descriptive metadata for a specific service ID in the registry's internal store.
 //
 // Parameters:
 //   - serviceID: string. The unique service identifier.
@@ -304,7 +304,7 @@ func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInf
 
 // GetServiceInfo retrieves the metadata for a registered service.
 //
-// Summary: Retrieves GetServiceInfo operation.
+// Summary: Returns metadata and a sanitized configuration for a service identified by its unique ID.
 //
 // Parameters:
 //   - serviceID: string. The unique identifier of the service.
@@ -333,7 +333,7 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 
 // GetServiceConfig retrieves the configuration for a registered service.
 //
-// Summary: Retrieves GetServiceConfig operation.
+// Summary: Returns a cloned and sanitized version of the original service configuration, including injected runtime information.
 //
 // Parameters:
 //   - serviceID: string. The unique identifier of the service.
@@ -356,7 +356,7 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 
 // UnregisterService removes a service from the registry.
 //
-// Summary: Executes UnregisterService operation.
+// Summary: Gracefully shuts down the target upstream service and removes all its associated tools, prompts, and resources from the registry.
 //
 // Parameters:
 //   - ctx: context.Context. The shutdown context.
@@ -399,7 +399,7 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 
 // GetServiceError returns the last known error for a service.
 //
-// Summary: Retrieves GetServiceError operation.
+// Summary: Returns the most recent registration failure or health check error for a given service ID.
 //
 // Parameters:
 //   - serviceID: string. The unique identifier of the service.
@@ -419,7 +419,7 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 
 // StartHealthChecks initiates a background loop to periodically check the health of services.
 //
-// Summary: Executes StartHealthChecks operation.
+// Summary: Starts a background goroutine that triggers concurrent health checks for all registered upstream services at the specified interval.
 //
 // Parameters:
 //   - ctx: context.Context. The execution context.
@@ -499,7 +499,7 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 
 // Close gracefully shuts down the registry and all registered services.
 //
-// Summary: Executes Close operation.
+// Summary: Initiates a graceful shutdown of all active upstream connections and returns an aggregated error if any fail.
 //
 // Parameters:
 //   - ctx: context.Context. The shutdown context.
@@ -525,7 +525,7 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 
 // GetAllServices returns a list of all registered services.
 //
-// Summary: Retrieves GetAllServices operation.
+// Summary: Returns a slice containing cloned and sanitized configuration objects for every service currently active in the registry.
 //
 // Returns:
 //   - []*config.UpstreamServiceConfig: A slice of all registered service configurations.

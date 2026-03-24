@@ -29,7 +29,7 @@ import (
 
 // Server implements the AdminServiceServer interface.
 //
-// Summary: Represents a Server.
+// Summary: gRPC server implementation for the Admin service.
 type Server struct {
 	pb.UnimplementedAdminServiceServer
 	cache            *middleware.CachingMiddleware

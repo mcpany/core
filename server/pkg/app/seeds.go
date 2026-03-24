@@ -11,12 +11,12 @@ import (
 // BuiltinTemplates contains the seed configurations for high-value MCP servers.
 // Deprecated: Use BuiltinServiceTemplates instead.
 //
-// Summary: Represents a BuiltinTemplates.
+// Summary: Predefined service configurations (Legacy).
 var BuiltinTemplates []*configv1.UpstreamServiceConfig
 
 // BuiltinServiceTemplates contains the rich seed configurations for the UI wizard.
 //
-// Summary: Represents a BuiltinServiceTemplates.
+// Summary: Rich service templates for UI-driven configuration.
 var BuiltinServiceTemplates []*configv1.ServiceTemplate
 
 func init() {

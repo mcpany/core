@@ -20,7 +20,7 @@ import (
 
 // MockOAuth2Server serves as a mock OIDC/OAuth2 provider.
 //
-// Summary: Represents a MockOAuth2Server.
+// Summary: Mock OIDC and OAuth2 provider for testing purposes.
 type MockOAuth2Server struct {
 	*httptest.Server
 	PrivateKey *rsa.PrivateKey

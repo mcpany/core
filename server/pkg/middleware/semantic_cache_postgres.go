@@ -23,7 +23,7 @@ type PostgresVectorStore struct {
 
 // NewPostgresVectorStore creates a new PostgresVectorStore.
 //
-// Summary: Initializes a new PostgresVectorStore with a connection string.
+// Summary: Factory function that initializes a PostgresVectorStore by establishing a new database connection and ensuring the required pgvector extension and tables exist.
 //
 // Parameters:
 //   - dsn: string. The Data Source Name for connecting to the PostgreSQL database.
@@ -60,7 +60,7 @@ func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 
 // NewPostgresVectorStoreWithDB creates a new PostgresVectorStore using an existing database connection.
 //
-// Summary: Initializes a new PostgresVectorStore with an existing sql.DB connection.
+// Summary: Factory function that initializes a PostgresVectorStore using a pre-existing database connection, verifying connectivity and setting up the necessary schema.
 //
 // Parameters:
 //   - db: *sql.DB. The existing database connection.

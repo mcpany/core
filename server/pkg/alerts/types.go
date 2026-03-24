@@ -7,39 +7,39 @@ import "time"
 
 // Severity represents the severity level of an alert.
 //
-// Summary: Represents a Severity.
+// Summary: Type representing the severity level of an alert (critical, warning, info).
 type Severity string
 
 // Status represents the status of an alert.
 //
-// Summary: Represents a Status.
+// Summary: Type representing the lifecycle status of an alert (active, acknowledged, resolved).
 type Status string
 
 const (
 	// SeverityCritical indicates a critical issue.
-	// Summary: Defines SeverityCritica.
+	// Summary: Severity level for critical alerts requiring immediate attention.
 	SeverityCritical Severity = "critical"
 	// SeverityWarning indicates a warning.
-	// Summary: Defines SeverityWarnin.
+	// Summary: Severity level for warning alerts.
 	SeverityWarning Severity = "warning"
 	// SeverityInfo indicates an informational alert.
-	// Summary: Defines SeverityInf.
+	// Summary: Severity level for informational alerts.
 	SeverityInfo Severity = "info"
 
 	// StatusActive indicates the alert is currently active.
-	// Summary: Defines StatusActiv.
+	// Summary: Status indicating the alert is currently triggered and active.
 	StatusActive Status = "active"
 	// StatusAcknowledged indicates the alert has been acknowledged.
-	// Summary: Defines StatusAcknowledge.
+	// Summary: Status indicating the alert has been acknowledged by a user.
 	StatusAcknowledged Status = "acknowledged"
 	// StatusResolved indicates the alert has been resolved.
-	// Summary: Defines StatusResolve.
+	// Summary: Status indicating the alert has been resolved.
 	StatusResolved Status = "resolved"
 )
 
 // Alert represents a system alert.
 //
-// Summary: Represents a Alert.
+// Summary: Data structure representing a system-level alert or incident.
 type Alert struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
@@ -53,7 +53,7 @@ type Alert struct {
 
 // AlertRule defines a condition for triggering an alert.
 //
-// Summary: Represents a AlertRule.
+// Summary: Configuration for a metric-based alert triggering rule.
 type AlertRule struct {
 	ID          string    `json:"id"`
 	Name        string    `json:"name"`
@@ -68,7 +68,7 @@ type AlertRule struct {
 
 // AlertStats represents aggregated statistics for alerts.
 //
-// Summary: Represents a AlertStats.
+// Summary: Aggregated metrics and statistics for system alerts.
 type AlertStats struct {
 	ActiveCritical int    `json:"activeCritical"`
 	ActiveWarning  int    `json:"activeWarning"`

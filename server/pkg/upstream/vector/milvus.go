@@ -16,7 +16,7 @@ import (
 
 // MilvusClient implements VectorClient for Milvus.
 //
-// Summary: Represents a MilvusClient.
+// Summary: A client implementation for interacting with a Milvus vector database.
 type MilvusClient struct {
 	config *configv1.MilvusVectorDB
 	client client.Client
@@ -24,14 +24,14 @@ type MilvusClient struct {
 
 // NewMilvusClient creates a new Milvus client.
 //
-// Summary: Initializes NewMilvusClient operation.
+// Summary: Establishes a connection to a Milvus instance and validates the specified collection.
 //
 // Parameters:
-//   - config: *configv1.MilvusVectorDB. The Milvus configuration.
+//   - config: *configv1.MilvusVectorDB. The configuration containing address, credentials, and collection name.
 //
 // Returns:
-//   - *MilvusClient: The initialized Milvus client.
-//   - error: An error if the client cannot be created.
+//   - *MilvusClient: A pointer to the initialized MilvusClient.
+//   - error: Returns an error if connection fails or the collection does not exist.
 func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 	if config.GetAddress() == "" {
 		return nil, fmt.Errorf("address is required for Milvus")
@@ -74,18 +74,18 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 
 // Query searches for similar vectors in Milvus.
 //
-// Summary: Executes Query operation.
+// Summary: Performs a vector similarity search within the configured collection, optionally filtered by metadata.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - vector: []float32. The query vector.
-//   - topK: int64. The number of nearest neighbors to return.
-//   - filter: map[string]interface{}. The search filter.
-//   - namespace: string. The target partition/namespace.
+//   - ctx: context.Context. The request context for cancellation and timeouts.
+//   - vector: []float32. The target vector to find neighbors for.
+//   - topK: int64. The maximum number of nearest neighbors to retrieve.
+//   - filter: map[string]interface{}. A map of equality-based filters applied during the search.
+//   - namespace: string. The Milvus partition name, used as a namespace for isolation.
 //
 // Returns:
-//   - map[string]interface{}: The search results.
-//   - error: An error if the query fails.
+//   - map[string]interface{}: A map containing matched vectors, scores, and their metadata.
+//   - error: Returns an error if collection loading, schema discovery, or the search itself fails.
 func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	// Milvus uses partitions as namespaces usually, or just metadata fields.
 	// Assuming namespace maps to partition names if provided.
@@ -199,16 +199,16 @@ func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, 
 
 // Upsert inserts or updates vectors in Milvus.
 //
-// Summary: Executes Upsert operation.
+// Summary: Batch inserts or updates records in the collection, including their vector data and metadata.
 //
 // Parameters:
 //   - ctx: context.Context. The request context.
-//   - vectors: []map[string]interface{}. The vectors to upsert.
-//   - namespace: string. The target partition/namespace.
+//   - vectors: []map[string]interface{}. A slice of records containing "id", "values", and "metadata".
+//   - namespace: string. The Milvus partition name to upsert into.
 //
 // Returns:
-//   - map[string]interface{}: The result of the upsert operation.
-//   - error: An error if the upsert fails.
+//   - map[string]interface{}: A map containing the count of upserted records.
+//   - error: Returns an error if schema discovery or the upsert operation fails.
 func (c *MilvusClient) Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	// Milvus Upsert (v2.3+)
 	if len(vectors) == 0 {
@@ -414,17 +414,17 @@ func fillMetadataColumn(col entity.Column, i int, val interface{}) {
 
 // Delete removes vectors from Milvus.
 //
-// Summary: Executes Delete operation.
+// Summary: Deletes records from the collection based on a list of IDs or a specific metadata filter.
 //
 // Parameters:
 //   - ctx: context.Context. The request context.
-//   - ids: []string. The IDs of the vectors to delete.
-//   - namespace: string. The target partition/namespace.
-//   - filter: map[string]interface{}. A filter to select vectors for deletion.
+//   - ids: []string. A slice of primary key IDs to remove.
+//   - namespace: string. The Milvus partition name to delete from.
+//   - filter: map[string]interface{}. A metadata filter identifying records for deletion.
 //
 // Returns:
-//   - map[string]interface{}: The result of the delete operation.
-//   - error: An error if deletion fails.
+//   - map[string]interface{}: A map indicating success of the operation.
+//   - error: Returns an error if the primary key field cannot be identified or deletion fails.
 func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error) {
 	// Construct expression
 	var expr string
@@ -485,15 +485,15 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 
 // DescribeIndexStats returns statistics about the Milvus index.
 //
-// Summary: Executes DescribeIndexStats operation.
+// Summary: Retrieves collection-level statistics and metadata from Milvus.
 //
 // Parameters:
 //   - ctx: context.Context. The request context.
-//   - _: map[string]interface{}. Unused.
+//   - _: map[string]interface{}. Unused, maintained for interface compatibility.
 //
 // Returns:
-//   - map[string]interface{}: The index statistics.
-//   - error: An error if retrieval fails.
+//   - map[string]interface{}: A map containing collection description and statistics.
+//   - error: Returns an error if collection description or statistics retrieval fails.
 func (c *MilvusClient) DescribeIndexStats(ctx context.Context, _ map[string]interface{}) (map[string]interface{}, error) {
 	coll, err := c.client.DescribeCollection(ctx, c.config.GetCollectionName())
 	if err != nil {

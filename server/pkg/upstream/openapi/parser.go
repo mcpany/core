@@ -25,7 +25,7 @@ const (
 // ParsedOpenAPIData holds the high-level information extracted from an OpenAPI
 // specification, such as metadata, server details, and the defined paths.
 //
-// Summary: Represents a ParsedOpenAPIData.
+// Summary: Data structure containing extracted OpenAPI specification information.
 type ParsedOpenAPIData struct {
 	Info    openapi3.Info
 	Servers openapi3.Servers
@@ -35,7 +35,7 @@ type ParsedOpenAPIData struct {
 // PathItem represents a single path within an OpenAPI specification and holds a
 // reference to its corresponding openapi3.PathItem.
 //
-// Summary: Represents a PathItem.
+// Summary: Wrapper for an individual OpenAPI path item.
 type PathItem struct {
 	PathRef *openapi3.PathItem
 }
@@ -44,7 +44,7 @@ type PathItem struct {
 // operation. It contains the essential details needed to convert an API
 // endpoint into an executable tool.
 //
-// Summary: Represents a McpOperation.
+// Summary: Simplified representation of an OpenAPI operation for MCP conversion.
 type McpOperation struct {
 	OperationID string
 	Summary     string

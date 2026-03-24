@@ -46,7 +46,7 @@ type Doctor struct {
 
 // NewDoctor creates a new Doctor.
 //
-// Summary: Initializes a new Doctor instance.
+// Summary: Initializes a new Doctor instance with an empty check registry and a default HTTP client for connectivity testing.
 //
 // Returns:
 //   - *Doctor: The initialized doctor registry.

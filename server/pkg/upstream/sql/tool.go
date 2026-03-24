@@ -24,7 +24,7 @@ import (
 
 // Tool implements the Tool interface for a tool that executes a SQL query.
 //
-// Summary: Represents a Tool.
+// Summary: Tool implementation that executes SQL queries.
 type Tool struct {
 	tool        *v1.Tool
 	mcpTool     *mcp.Tool

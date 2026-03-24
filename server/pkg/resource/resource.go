@@ -13,7 +13,7 @@ import (
 
 // ErrResourceNotFound is returned when a requested resource cannot be found.
 //
-// Summary: Represents a ErrResourceNotFound.
+// Summary: Error returned when a requested resource cannot be found.
 var ErrResourceNotFound = errors.New("resource not found")
 
 // Resource defines the interface for a resource that can be managed by the Manager.
@@ -142,7 +142,7 @@ func NewManager() *Manager {
 
 // GetResource retrieves a resource from the manager by its URI.
 //
-// Summary: Retrieves a resource by URI.
+// Summary: Returns a specific resource instance identified by its unique Uniform Resource Identifier (URI).
 //
 // Parameters:
 //   - uri: string. The URI of the resource.

@@ -15,25 +15,25 @@ import (
 
 // State represents the current state of the circuit breaker.
 //
-// Summary: Represents a State.
+// Summary: Enumeration of circuit breaker states (Closed, Open, Half-Open).
 type State int32
 
 const (
 	// StateClosed represents the state where the circuit breaker allows requests to pass through.
-	// Summary: Defines StateClose.
+	// Summary: State indicating the circuit is closed and requests are allowed.
 	StateClosed State = iota
 	// StateOpen represents the state where the circuit breaker blocks requests immediately.
-	// Summary: Defines StateOpe.
+	// Summary: State indicating the circuit is open and requests are blocked.
 	StateOpen
 	// StateHalfOpen represents the state where the circuit breaker allows a limited number of requests to test if the service has recovered.
-	// Summary: Defines StateHalfOpe.
+	// Summary: State indicating the circuit is testing for recovery.
 	StateHalfOpen
 )
 
 // CircuitBreaker implements the circuit breaker pattern. It prevents the
 // application from performing operations that are likely to fail.
 //
-// Summary: Represents a CircuitBreaker.
+// Summary: Implementation of the circuit breaker resilience pattern.
 type CircuitBreaker struct {
 	mutex sync.Mutex
 
@@ -233,7 +233,7 @@ func (cb *CircuitBreaker) onFailure(originState State) {
 
 // CircuitBreakerOpenError is returned when the circuit breaker is in the Open state.
 //
-// Summary: Represents a CircuitBreakerOpenError.
+// Summary: Error indicating that an operation was blocked by an open circuit breaker.
 type CircuitBreakerOpenError struct{}
 
 // Error returns the error message for a CircuitBreakerOpenError.

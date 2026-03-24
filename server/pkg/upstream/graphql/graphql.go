@@ -90,7 +90,7 @@ const introspectionQuery = `
 
 // Upstream implements the upstream.Upstream interface for GraphQL services.
 //
-// Summary: Represents a Upstream.
+// Summary: Upstream implementation for GraphQL services.
 type Upstream struct{}
 
 // NewGraphQLUpstream creates a new GraphQL upstream.
@@ -195,7 +195,7 @@ func convertGraphQLTypeToJSONSchema(t *graphQLType) *structpb.Value {
 
 // Callable implements the Callable interface for GraphQL queries.
 //
-// Summary: Represents a Callable.
+// Summary: Callable implementation for executing GraphQL queries.
 type Callable struct {
 	client        *graphql.Client
 	query         string

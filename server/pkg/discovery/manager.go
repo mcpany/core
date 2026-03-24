@@ -14,7 +14,7 @@ import (
 
 // ProviderStatus represents the status of a discovery provider.
 //
-// Summary: Represents a ProviderStatus.
+// Summary: Current operational status of a discovery provider.
 type ProviderStatus struct {
 	Name            string
 	Status          string // "OK", "ERROR"
@@ -25,7 +25,7 @@ type ProviderStatus struct {
 
 // Manager manages auto-discovery providers.
 //
-// Summary: Represents a Manager.
+// Summary: Manager for orchestrating multiple service discovery providers.
 type Manager struct {
 	providers []Provider
 	mu        sync.RWMutex
@@ -34,7 +34,7 @@ type Manager struct {
 
 // NewManager creates a new discovery manager.
 //
-// Summary: Initializes NewManager operation.
+// Summary: Initializes a new Discovery Manager for coordinating multiple service discovery providers.
 //
 // Returns:
 //   - *Manager: The initialized discovery manager.
@@ -46,7 +46,7 @@ func NewManager() *Manager {
 
 // RegisterProvider registers a new discovery provider.
 //
-// Summary: Executes RegisterProvider operation.
+// Summary: Attaches a discovery provider to the manager and initializes its status tracking.
 //
 // Parameters:
 //   - p: Provider. The discovery provider to register.
@@ -62,7 +62,7 @@ func (m *Manager) RegisterProvider(p Provider) {
 
 // Run runs all registered providers and returns the aggregated discovered services.
 //
-// Summary: Executes Run operation.
+// Summary: Concurrently executes all registered discovery providers and merges their results into a single service list.
 //
 // Parameters:
 //   - ctx: context.Context. The execution context.
@@ -118,7 +118,7 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 
 // GetStatuses returns the current status of all discovery providers.
 //
-// Summary: Retrieves GetStatuses operation.
+// Summary: Returns a slice containing deep copies of the current operational status for every registered discovery provider.
 //
 // Returns:
 //   - []*ProviderStatus: A slice of provider statuses.
@@ -139,7 +139,7 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 
 // GetProviderStatus returns the status of a specific provider.
 //
-// Summary: Retrieves GetProviderStatus operation.
+// Summary: Returns the operational status of a single discovery provider identified by its name.
 //
 // Parameters:
 //   - name: string. The name of the provider.

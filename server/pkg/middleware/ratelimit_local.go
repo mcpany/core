@@ -81,7 +81,7 @@ type LocalStrategy struct{}
 
 // NewLocalStrategy creates a new LocalStrategy.
 //
-// Summary: Initializes a new LocalStrategy.
+// Summary: Factory function that initializes a LocalStrategy for creating in-memory rate limiters.
 //
 // Returns:
 //   - *LocalStrategy: The initialized strategy.

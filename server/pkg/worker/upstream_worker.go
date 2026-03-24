@@ -20,7 +20,7 @@ import (
 // tool manager to execute the requested tool, and then publishes the outcome as
 // a ToolExecutionResult message.
 //
-// Summary: Represents a UpstreamWorker.
+// Summary: Background worker for executing tools via the event bus.
 type UpstreamWorker struct {
 	bus         *bus.Provider
 	toolManager tool.ManagerInterface

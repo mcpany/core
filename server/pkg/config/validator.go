@@ -36,13 +36,13 @@ const (
 
 const (
 	// Server represents the server binary.
-	// Summary: Defines Serve.
+	// Summary: Context for validating the server component.
 	Server BinaryType = iota
 	// Worker represents the worker binary.
-	// Summary: Defines Worke.
+	// Summary: Context for validating the worker component.
 	Worker
 	// Client represents the client binary.
-	// Summary: Defines Clien.
+	// Summary: Context for validating the client component.
 	Client
 )
 
@@ -53,10 +53,10 @@ type AuthValidationContext int
 
 const (
 	// AuthValidationContextIncoming represents incoming authentication (e.g., Users).
-	// Summary: Defines AuthValidationContextIncomin.
+	// Summary: Context for validating incoming (client-to-server) authentication.
 	AuthValidationContextIncoming AuthValidationContext = iota
 	// AuthValidationContextOutgoing represents outgoing authentication (e.g., Upstream Services).
-	// Summary: Defines AuthValidationContextOutgoin.
+	// Summary: Context for validating outgoing (server-to-upstream) authentication.
 	AuthValidationContextOutgoing
 )
 
@@ -65,12 +65,12 @@ type contextKey string
 const (
 	// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
 	// Value should be a boolean.
-	// Summary: Defines SkipSecretValidationKey.
+	// Summary: Context key to bypass secret existence checks.
 	SkipSecretValidationKey contextKey = "skip_secret_validation"
 
 	// SkipFilesystemCheckKey is the context key to skip filesystem existence checks (e.g. for config check API).
 	// Value should be a boolean.
-	// Summary: Defines SkipFilesystemCheckKey.
+	// Summary: Context key to bypass filesystem existence checks.
 	SkipFilesystemCheckKey contextKey = "skip_filesystem_check"
 )
 
@@ -81,7 +81,7 @@ var (
 
 // ValidationError encapsulates a validation error for a specific service.
 //
-// Summary: Represents a configuration validation error.
+// Summary: Data structure representing a single configuration validation error.
 type ValidationError struct {
 	ServiceName string
 	Err         error
@@ -89,7 +89,7 @@ type ValidationError struct {
 
 // Error returns the formatted error message.
 //
-// Summary: Executes Error operation.
+// Summary: Returns a string representation of the validation error, including the service name and the underlying error.
 //
 // Returns:
 //   - string: The formatted error message.
@@ -506,7 +506,7 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 
 // ValidateOrError validates a single upstream service configuration and returns an error if it's invalid.
 //
-// Summary: Validates a single upstream service.
+// Summary: Performs a full validation check on an individual upstream service configuration.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the validation.

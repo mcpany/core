@@ -18,7 +18,7 @@ import (
 // It can be configured with a custom dialer for testing or special connection
 // scenarios.
 //
-// Summary: Represents a ConnectionFactory.
+// Summary: Factory component for establishing gRPC connections.
 type ConnectionFactory struct {
 	dialer func(context.Context, string) (net.Conn, error)
 }

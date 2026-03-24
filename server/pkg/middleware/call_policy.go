@@ -22,7 +22,7 @@ type CallPolicyMiddleware struct {
 
 // NewCallPolicyMiddleware creates a new CallPolicyMiddleware.
 //
-// Summary: Initializes a new CallPolicyMiddleware.
+// Summary: Factory function that initializes a CallPolicyMiddleware for managing and enforcing tool execution permissions.
 //
 // Parameters:
 //   - toolManager: tool.ManagerInterface. The tool manager to access tool and service information.

@@ -19,7 +19,7 @@ import (
 // registering its capabilities, such as tools, prompts, and resources, with the
 // appropriate managers.
 //
-// Summary: Represents a Upstream.
+// Summary: Interface for backend service upstream integrations.
 type Upstream interface {
 	// Shutdown gracefully terminates the upstream service.
 	//
@@ -72,7 +72,7 @@ type Upstream interface {
 // HealthChecker is an optional interface that Upstreams can implement to provide
 // runtime health status.
 //
-// Summary: Represents a HealthChecker.
+// Summary: Interface for upstream services that support health checks.
 type HealthChecker interface {
 	// CheckHealth performs a health check on the upstream service.
 	//

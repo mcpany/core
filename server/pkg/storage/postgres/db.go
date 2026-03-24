@@ -15,7 +15,7 @@ import (
 
 // DB wraps the sql.DB connection.
 //
-// Summary: Represents a DB.
+// Summary: PostgreSQL database connection wrapper.
 type DB struct {
 	*sql.DB
 }

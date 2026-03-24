@@ -16,7 +16,7 @@ import (
 //
 // It manages the lifecycle, registration, and retrieval of prompts within the system.
 //
-// Summary: Represents a ManagerInterface.
+// Summary: Interface for prompt lifecycle management.
 type ManagerInterface interface {
 	// AddPrompt registers a new prompt.
 	//
@@ -63,7 +63,7 @@ type ManagerInterface interface {
 //
 // It supports concurrent access and uses caching for efficient list operations.
 //
-// Summary: Represents a Manager.
+// Summary: Thread-safe implementation of a prompt manager.
 type Manager struct {
 	prompts       *xsync.Map[string, Prompt]
 	mcpServer     MCPServerProvider

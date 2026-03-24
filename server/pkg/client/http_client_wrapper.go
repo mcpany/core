@@ -17,7 +17,7 @@ import (
 // connection pool, which can help control the number of concurrent connections
 // and reuse them where appropriate.
 //
-// Summary: Represents a HTTPClientWrapper.
+// Summary: Wrapper for http.Client to support connection pooling.
 type HTTPClientWrapper struct {
 	*http.Client
 	config *configv1.UpstreamServiceConfig

@@ -34,7 +34,7 @@ type Watcher struct {
 
 // NewWatcher creates a new file watcher.
 //
-// Summary: Initializes NewWatcher operation.
+// Summary: Factory function that initializes a new configuration file watcher with a debounced reload mechanism.
 //
 // Returns:
 //   - *Watcher: The initialized watcher.
@@ -182,7 +182,7 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 
 // Close stops the file watcher and releases resources.
 //
-// Summary: Executes Close operation.
+// Summary: Shuts down the file watcher, stops the event processing loop, and closes the underlying system watcher.
 //
 // Side Effects:
 //   - Closes the done channel and the underlying watcher.

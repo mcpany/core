@@ -20,7 +20,7 @@ import (
 // communication between different parts of the application. The type parameter T
 // specifies the type of message that the bus will handle.
 //
-// Summary: Represents a Bus.
+// Summary: Interface for a type-safe message bus.
 type Bus[T any] interface {
 	// Publish sends a message to all subscribers of a given topic. The message
 	// is sent to each subscriber's channel, and the handler is invoked by a
@@ -72,7 +72,7 @@ type Bus[T any] interface {
 // message type and topic without needing to manage the lifecycle of the bus
 // instances themselves.
 //
-// Summary: Represents a Provider.
+// Summary: Multi-topic message bus provider.
 type Provider struct {
 	buses  *xsync.Map[string, any]
 	config *bus.MessageBus
@@ -80,7 +80,7 @@ type Provider struct {
 
 // NewProviderHook is a test hook for overriding the NewProvider logic.
 //
-// Summary: Represents a NewProviderHook.
+// Summary: Testing hook for customizing Provider initialization.
 var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
 // NewProvider creates and returns a new Provider.
@@ -128,7 +128,7 @@ func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 
 // GetBusHook is a test hook for overriding the bus retrieval logic.
 //
-// Summary: Represents a GetBusHook.
+// Summary: Testing hook for customizing topic-specific bus retrieval.
 var GetBusHook func(p *Provider, topic string) (any, error)
 
 // GetBus retrieves a bus for the given topic.

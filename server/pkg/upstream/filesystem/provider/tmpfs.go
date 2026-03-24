@@ -9,25 +9,25 @@ import (
 	"github.com/spf13/afero"
 )
 
-// TmpfsProvider provides access to a temporary in-memory filesystem.
+// TmpfsProvider provides access to a volatile, temporary in-memory filesystem.
 //
-// Summary: Represents a TmpfsProvider.
+// Summary: Implements the FilesystemProvider for in-memory storage (MemMapFs).
 type TmpfsProvider struct {
 	fs afero.Fs
 }
 
-// NewTmpfsProvider creates a new TmpfsProvider.
+// NewTmpfsProvider creates a new TmpfsProvider with an empty memory-backed filesystem.
+//
+// Summary: Initializes a new in-memory filesystem provider.
 //
 // Returns:
-//   - *TmpfsProvider: The result.
+//   - *TmpfsProvider: A pointer to the newly created TmpfsProvider instance.
 //
-// Side Effects:
+// Errors:
 //   - None.
 //
-// Summary: Initializes NewTmpfsProvider operation.
-//
-// Returns:
-//   - *TmpfsProvider: The new tmpfs provider instance.
+// Side Effects:
+//   - Allocates memory for the in-memory filesystem state.
 func NewTmpfsProvider() *TmpfsProvider {
 	return &TmpfsProvider{
 		fs: afero.NewMemMapFs(),
@@ -36,63 +36,53 @@ func NewTmpfsProvider() *TmpfsProvider {
 
 // GetFs returns the underlying filesystem.
 //
+// Summary: Retrieves the underlying afero in-memory filesystem.
+//
 // Returns:
-//   - afero.Fs: The result.
+//   - afero.Fs: An afero.Fs implementation backed by system memory.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Retrieves GetFs operation.
-//
-// Returns:
-//   - afero.Fs: The underlying afero filesystem.
 func (p *TmpfsProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
-// ResolvePath resolves the virtual path to a real path.
+// ResolvePath resolves the virtual path to a cleaned internal path.
+//
+// Summary: Cleans and returns the internal path for the in-memory filesystem.
 //
 // Parameters:
-//   - virtualPath (string): The parameter.
+//   - virtualPath (string): The virtual path provided by the agent.
 //
 // Returns:
-//   - string: The result.
-//   - error: An error if the operation fails.
+//   - string: The cleaned internal path.
+//   - error: Nil, as tmpfs paths are internal and relative.
 //
 // Errors:
-//   - Returns an error if ...
+//   - None.
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes ResolvePath operation.
-//
-// Parameters:
-//   - virtualPath (string): The virtual path to resolve.
-//
-// Returns:
-//   - string: The resolved local path.
-//   - error: An error if resolution fails.
 func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 	// For MemMapFs, just clean the path. It's virtual.
 	return filepath.Clean(virtualPath), nil
 }
 
-// Close closes the provider.
+// Close closes the provider and releases any resources.
+//
+// Summary: Closes the tmpfs provider.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: Nil, as in-memory filesystems don't require explicit closure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - None.
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes Close operation.
-//
-// Returns:
-//   - error: Nil.
 func (p *TmpfsProvider) Close() error {
 	return nil
 }

@@ -16,38 +16,35 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// SftpProvider provides access to files via SFTP.
+// SftpProvider provides access to files via the SFTP protocol.
 //
-// Summary: Represents a SftpProvider.
+// Summary: Implements the FilesystemProvider for remote SFTP servers.
 type SftpProvider struct {
 	fs     afero.Fs
 	client *sftp.Client
 	conn   *ssh.Client
 }
 
-// NewSftpProvider creates a new SftpProvider from the given configuration.
+// NewSftpProvider creates a new SftpProvider and establishes an SSH connection.
+//
+// Summary: Initializes a new SFTP filesystem provider and dials the remote host.
 //
 // Parameters:
-//   - config (*configv1.SftpFs): The parameter.
+//   - config (*configv1.SftpFs): The SFTP configuration including address, username, and authentication details.
 //
 // Returns:
-//   - *SftpProvider: The result.
-//   - error: An error if the operation fails.
+//   - *SftpProvider: A pointer to the newly created SFTP provider instance.
+//   - error: An error if the SSH connection or SFTP session fails to initialize.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the configuration object is nil.
+//   - Returns an error if the private key file cannot be read or parsed.
+//   - Returns an error if the SSH dial operation fails.
+//   - Returns an error if the SFTP client creation fails.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Initializes NewSftpProvider operation.
-//
-// Parameters:
-//   - config (*configv1.SftpFs): The SFTP configuration.
-//
-// Returns:
-//   - *SftpProvider: The new SFTP provider instance.
-//   - error: An error if initialization fails.
+//   - Establishes a persistent TCP connection to the remote SFTP server.
+//   - Reads the private key file from the host filesystem if configured.
 func NewSftpProvider(config *configv1.SftpFs) (*SftpProvider, error) {
 	if config == nil {
 		return nil, fmt.Errorf("sftp config is nil")
@@ -102,43 +99,36 @@ func NewSftpProvider(config *configv1.SftpFs) (*SftpProvider, error) {
 
 // GetFs returns the underlying filesystem.
 //
+// Summary: Retrieves the underlying afero SFTP filesystem.
+//
 // Returns:
-//   - afero.Fs: The result.
+//   - afero.Fs: An afero.Fs implementation backed by the remote SFTP server.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Retrieves GetFs operation.
-//
-// Returns:
-//   - afero.Fs: The underlying afero filesystem.
 func (p *SftpProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
-// ResolvePath resolves the virtual path to a real path.
+// ResolvePath resolves the virtual path to a cleaned remote path.
+//
+// Summary: Cleans and returns the remote path for use in SFTP operations.
 //
 // Parameters:
-//   - virtualPath (string): The parameter.
+//   - virtualPath (string): The virtual path provided by the agent.
 //
 // Returns:
-//   - string: The result.
-//   - error: An error if the operation fails.
+//   - string: The cleaned remote path.
+//   - error: Nil, as SFTP paths are treated as absolute or relative to the user's home on the remote host.
 //
 // Errors:
-//   - Returns an error if ...
+//   - None.
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes ResolvePath operation.
-//
-// Parameters:
-//   - virtualPath (string): The virtual path to resolve.
-//
-// Returns:
-//   - string: The resolved remote path.
-//   - error: An error if resolution fails.
 func (p *SftpProvider) ResolvePath(virtualPath string) (string, error) {
 	// SFTP paths are remote paths. We assume they are absolute or relative to user home.
 	// But `clean` is probably good enough for now.
@@ -148,21 +138,18 @@ func (p *SftpProvider) ResolvePath(virtualPath string) (string, error) {
 	return filepath.Clean(virtualPath), nil
 }
 
-// Close closes the SFTP client and connection.
+// Close closes the SFTP client and the underlying SSH connection.
+//
+// Summary: Releases SFTP and SSH resources.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: An error if either the SFTP client or SSH connection fails to close.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the SFTP client or SSH connection closure fails.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Executes Close operation.
-//
-// Returns:
-//   - error: An error if closure fails.
+//   - Terminates the TCP connection to the remote host.
 func (p *SftpProvider) Close() error {
 	if p.client != nil {
 		_ = p.client.Close()

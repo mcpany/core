@@ -50,7 +50,7 @@ type UpstreamServiceManager struct {
 
 // NewUpstreamServiceManager creates a new instance of UpstreamServiceManager.
 //
-// Summary: Initializes a new UpstreamServiceManager with the specified profiles.
+// Summary: Factory function that creates an UpstreamServiceManager, which manages the lifecycle, validation, and merging of service configurations for the specified active profiles.
 //
 // Parameters:
 //   - enabledProfiles ([]string): A list of profile names that are active. Services must match one of these profiles to be loaded.

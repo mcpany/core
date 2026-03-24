@@ -12,14 +12,14 @@ import (
 
 // OpenAPIProvider discovers services via OpenAPI specifications.
 //
-// Summary: Represents a OpenAPIProvider.
+// Summary: Discovery provider that uses OpenAPI specifications.
 type OpenAPIProvider struct {
 	Endpoint string // e.g., "http://localhost:8080/openapi.json"
 }
 
 // Name returns the name of the provider.
 //
-// Summary: Executes Name operation.
+// Summary: Returns the canonical name for this OpenAPI discovery provider.
 //
 // Returns:
 //   - string: The name of the provider.
@@ -29,7 +29,7 @@ func (p *OpenAPIProvider) Name() string {
 
 // Discover attempts to find services and return their configurations.
 //
-// Summary: Executes Discover operation.
+// Summary: Generates a dynamic service configuration for an OpenAPI upstream based on the provided specification endpoint.
 //
 // Parameters:
 //   - ctx: context.Context. The execution context.

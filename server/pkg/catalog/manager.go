@@ -31,7 +31,7 @@ type Manager struct {
 
 // NewManager creates a new Catalog Manager.
 //
-// Summary: Initializes a new Catalog Manager.
+// Summary: Initializes a new Catalog Manager for scanning and managing service configuration files in a catalog directory.
 //
 // Parameters:
 //   - fs: afero.Fs. The filesystem to scan.
@@ -129,10 +129,10 @@ func (m *Manager) Load(ctx context.Context) error {
 
 // ListServices returns the list of loaded services.
 //
-// Summary: Retrieves the list of loaded services.
+// Summary: Returns a thread-safe copy of all currently loaded upstream service configurations from the catalog.
 //
 // Parameters:
-//   - _ context.Context: The context (unused).
+//   - _: context.Context. Unused.
 //
 // Returns:
 //   - []*configv1.UpstreamServiceConfig: A slice of service configurations.

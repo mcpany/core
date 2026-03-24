@@ -5,7 +5,7 @@ package config
 
 // MockWatcher is a mock implementation of the Watcher for testing.
 //
-// Summary: Represents a MockWatcher.
+// Summary: Mock implementation of the configuration watcher for unit tests.
 type MockWatcher struct {
 	WatchFunc func(paths []string, reloadFunc func())
 	CloseFunc func()
@@ -13,57 +13,24 @@ type MockWatcher struct {
 
 // NewMockWatcher creates a new mock watcher.
 //
-// Returns:
-//   - *MockWatcher: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewMockWatcher operation.
-//
-// Parameters:
-//   - arg: The parameter.
+// Summary: Initializes a new MockWatcher instance for testing.
 //
 // Returns:
-//   - result: The result.
-//
-// Errors:
-//   - err: The error if any.
-//
-// Side Effects:
-//   - None.
+//   - *MockWatcher: A pointer to the newly created mock watcher.
 func NewMockWatcher() *MockWatcher {
 	return &MockWatcher{}
 }
 
 // Watch mocks the Watch method.
 //
-// Parameters:
-//   - paths ([]string): The parameter.
-//   - reloadFunc (func(): The parameter.
-//
-// Returns:
-//   - ) (error): An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Watch operation.
+// Summary: Invokes the mock's WatchFunc if defined.
 //
 // Parameters:
-//   - arg: The parameter.
+//   - paths: []string. The file paths to monitor for changes.
+//   - reloadFunc: func(). The callback function to execute when a change is detected.
 //
 // Returns:
-//   - result: The result.
-//
-// Errors:
-//   - err: The error if any.
-//
-// Side Effects:
-//   - None.
+//   - error: Nil.
 func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 	if m.WatchFunc != nil {
 		m.WatchFunc(paths, reloadFunc)
@@ -73,25 +40,7 @@ func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 
 // Close mocks the Close method.
 //
-// Parameters:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - arg: The parameter.
-//
-// Returns:
-//   - result: The result.
-//
-// Errors:
-//   - err: The error if any.
-//
-// Side Effects:
-//   - None.
+// Summary: Invokes the mock's CloseFunc if defined.
 func (m *MockWatcher) Close() {
 	if m.CloseFunc != nil {
 		m.CloseFunc()

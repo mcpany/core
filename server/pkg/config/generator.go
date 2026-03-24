@@ -27,7 +27,7 @@ type Generator struct {
 
 // NewGenerator creates a new Generator instance that reads from standard input.
 //
-// Summary: Initializes NewGenerator operation.
+// Summary: Factory function that initializes a configuration Generator using os.Stdin for interactive user input.
 //
 // Returns:
 //   - *Generator: The initialized configuration generator.
@@ -39,7 +39,7 @@ func NewGenerator() *Generator {
 
 // Generate prompts the user for service details and returns the generated configuration.
 //
-// Summary: Executes Generate operation.
+// Summary: Initiates the interactive configuration generation process, branching to specific service type logic based on user input.
 //
 // Returns:
 //   - []byte: The generated configuration as a YAML byte slice.

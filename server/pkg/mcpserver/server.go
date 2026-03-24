@@ -52,7 +52,7 @@ var fastJSON = jsoniter.Config{
 // Side Effects:
 //   - When set, this function is called synchronously during Server() access.
 //
-// Summary: Represents a AddReceivingMiddlewareHook.
+// Summary: Testing hook for inspecting the middleware chain.
 var AddReceivingMiddlewareHook func(name string)
 
 // Server is the core of the MCP Any application.
@@ -61,7 +61,7 @@ var AddReceivingMiddlewareHook func(name string)
 // tools, prompts, resources, and services. It uses an internal router to delegate requests to the appropriate
 // handlers and communicates with backend workers via an event bus.
 //
-// Summary: Represents a Server.
+// Summary: Core server orchestration component for MCP Any.
 type Server struct {
 	server          *mcp.Server
 	router          *Router
@@ -962,7 +962,7 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 // LazyRedact is a byte slice that implements slog.LogValuer to lazily redact
 // its JSON content only when logged.
 //
-// Summary: Represents a LazyRedact.
+// Summary: Byte slice wrapper for lazy JSON redaction in logs.
 type LazyRedact []byte
 
 // LogValue implements slog.LogValuer to lazily redact JSON content.
@@ -980,7 +980,7 @@ func (l LazyRedact) LogValue() slog.Value {
 // It avoids expensive serialization of large payloads (e.g. images, huge text)
 // and lazily computes the string representation only when logging is enabled.
 //
-// Summary: Represents a LazyLogResult.
+// Summary: Wrapper for efficient and lazy logging of tool results.
 type LazyLogResult struct {
 	Value any
 }

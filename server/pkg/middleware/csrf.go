@@ -23,7 +23,7 @@ type CSRFMiddleware struct {
 
 // NewCSRFMiddleware creates a new CSRFMiddleware.
 //
-// Summary: Initializes a new CSRFMiddleware with a list of allowed origins.
+// Summary: Factory function that initializes a CSRFMiddleware with a set of permitted origins to prevent unauthorized cross-origin state-changing requests.
 //
 // Parameters:
 //   - allowedOrigins: []string. A list of origin strings (e.g., "https://example.com") allowed to make requests.

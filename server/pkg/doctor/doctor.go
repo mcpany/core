@@ -27,21 +27,21 @@ import (
 //
 // It is an enumerated string type used to indicate the outcome of a health or connectivity check.
 //
-// Summary: Represents a Status.
+// Summary: Represents the health status of a service check.
 type Status string
 
 const (
 	// StatusOk indicates the check passed successfully.
-	// Summary: Defines StatusO.
+	// Summary: Indicates a successful health check.
 	StatusOk Status = "OK"
 	// StatusWarning indicates a partial failure or non-critical issue that should be investigated.
-	// Summary: Defines StatusWarnin.
+	// Summary: Indicates a non-critical issue found during health check.
 	StatusWarning Status = "WARNING"
 	// StatusError indicates a critical failure that prevents the service from functioning correctly.
-	// Summary: Defines StatusErro.
+	// Summary: Indicates a critical failure in the service health check.
 	StatusError Status = "ERROR"
 	// StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
-	// Summary: Defines StatusSkippe.
+	// Summary: Indicates that the health check was intentionally skipped.
 	StatusSkipped Status = "SKIPPED"
 )
 
@@ -49,7 +49,7 @@ const (
 //
 // It aggregates the status, any message, and potential error encountered during the check.
 //
-// Summary: Represents a CheckResult.
+// Summary: Container for the outcome and metadata of a service check.
 type CheckResult struct {
 	// ServiceName is the name of the service being checked.
 	ServiceName string
@@ -63,14 +63,14 @@ type CheckResult struct {
 
 // RunChecks performs connectivity and health checks on the provided configuration.
 //
-// Summary: Executes RunChecks operation.
+// Summary: Iterates through all configured upstream services and executes connectivity checks.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - config: *configv1.McpAnyServerConfig. The server configuration to check.
+//   - ctx: context.Context. The execution context for the checks.
+//   - config: *configv1.McpAnyServerConfig. The server configuration containing upstream service definitions.
 //
 // Returns:
-//   - []CheckResult: A slice of check results for all upstream services.
+//   - []CheckResult: A slice of check results for all upstream services, including those skipped.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
 	// Using 'services' variable to support existing loop
 	services := config.GetUpstreamServices()
@@ -97,14 +97,14 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 
 // CheckService performs a connectivity check for a single service.
 //
-// Summary: Executes CheckService operation.
+// Summary: Validates the reachability and authentication configuration of a specific upstream service.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - service: *configv1.UpstreamServiceConfig. The service configuration to check.
+//   - ctx: context.Context. The execution context for the service check.
+//   - service: *configv1.UpstreamServiceConfig. The specific service configuration to validate.
 //
 // Returns:
-//   - CheckResult: The result of the check.
+//   - CheckResult: The resulting status, message, and error for the service check.
 func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) CheckResult {
 	// 5 second timeout for checks
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)

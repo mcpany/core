@@ -24,15 +24,15 @@ type authContextKey string
 const (
 	// UserContextKey is the context key for the user ID.
 	//
-	// Summary: Defines UserContextKey.
+	// Summary: Context key for storing the authenticated user ID.
 	UserContextKey authContextKey = "user_id"
 	// ProfileIDContextKey is the context key for the profile ID.
 	//
-	// Summary: Defines ProfileIDContextKey.
+	// Summary: Context key for storing the active profile ID.
 	ProfileIDContextKey authContextKey = "profile_id"
 	// APIKeyContextKey is the context key for the API Key.
 	//
-	// Summary: Defines APIKeyContextKey.
+	// Summary: Context key for storing the provided API key.
 	APIKeyContextKey authContextKey = "api_key"
 )
 

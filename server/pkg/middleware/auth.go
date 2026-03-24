@@ -17,7 +17,7 @@ import (
 
 // AuthMiddleware creates an MCP middleware for handling authentication.
 //
-// Summary: Executes AuthMiddleware operation.
+// Summary: Factory function that returns an MCP middleware for validating request credentials against the AuthManager, supporting service-prefixed tool and prompt names.
 //
 // Parameters:
 //   - authManager: *auth.Manager. The authentication manager used to verify credentials.

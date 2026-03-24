@@ -27,7 +27,7 @@ type activityEvent struct {
 
 // Manager handles topology state tracking.
 //
-// Summary: Represents a Manager.
+// Summary: Orchestrates the tracking, aggregation, and visualization of network topology state.
 type Manager struct {
 	mu              sync.RWMutex
 	sessions        map[string]*SessionStats
@@ -41,7 +41,7 @@ type Manager struct {
 
 // SessionStats contains statistics about a topology session.
 //
-// Summary: Represents a SessionStats.
+// Summary: Aggregates performance metrics and metadata for an individual topology session.
 type SessionStats struct {
 	ID             string
 	Metadata       map[string]string
@@ -57,7 +57,7 @@ type SessionStats struct {
 
 // Stats aggregated metrics.
 //
-// Summary: Represents a Stats.
+// Summary: Represents high-level performance indicators including latency and error rates.
 type Stats struct {
 	TotalRequests int64
 	AvgLatency    time.Duration
@@ -66,7 +66,7 @@ type Stats struct {
 
 // MinuteStats tracks stats for a single minute.
 //
-// Summary: Represents a MinuteStats.
+// Summary: Records throughput and error metrics within a sixty-second temporal bucket.
 type MinuteStats struct {
 	Requests     int64
 	Errors       int64
@@ -77,7 +77,7 @@ type MinuteStats struct {
 
 // ServiceTrafficStats tracks stats for a single service in a minute.
 //
-// Summary: Represents a ServiceTrafficStats.
+// Summary: Captures per-service request counts and performance data for a one-minute window.
 type ServiceTrafficStats struct {
 	Requests int64
 	Errors   int64
@@ -87,7 +87,7 @@ type ServiceTrafficStats struct {
 
 // TrafficPoint represents a data point for the traffic chart.
 //
-// Summary: Represents a TrafficPoint.
+// Summary: Defines the structure for time-series data used to render traffic visualizations in the UI.
 type TrafficPoint struct {
 	Time    string `json:"time"`
 	Total   int64  `json:"requests"` // mapped to "requests" for UI
@@ -98,11 +98,11 @@ type TrafficPoint struct {
 
 // NewManager creates a new Topology Manager.
 //
-// Summary: Creates a new Topology Manager instance.
+// Summary: Initializes a new Topology Manager with background cleanup and processing loops.
 //
 // Parameters:
-//   - registry (serviceregistry.ServiceRegistryInterface): The service registry interface.
-//   - tm (tool.ManagerInterface): The tool manager interface.
+//   - registry: serviceregistry.ServiceRegistryInterface. The service registry for node discovery.
+//   - tm: tool.ManagerInterface. The tool manager for tool-level topology mapping.
 //
 // Returns:
 //   - *Manager: A new instance of the Topology Manager.

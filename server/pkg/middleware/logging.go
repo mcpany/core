@@ -15,7 +15,7 @@ import (
 
 // LoggingMiddleware creates an MCP middleware that logs information about each incoming request.
 //
-// Summary: Executes LoggingMiddleware operation.
+// Summary: Factory function that returns an MCP middleware for structured logging of request execution, duration, and outcomes.
 //
 // Parameters:
 //   - log: *slog.Logger. The logger to be used. If nil, the default global logger is used.

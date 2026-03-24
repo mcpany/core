@@ -490,3 +490,10 @@
 - [ ] **[P0] Teammate Token Inspector**: Forensic UI for verifying hardware-attested TIA tokens on coordination messages. (Added: 2026-05-30)
 - [ ] **[P1] Budget Arbiter Console**: Real-time monitor of reasoning effort (ARE) and arbiter-triggered capability revocations (RBA). (Added: 2026-05-30)
 - [ ] **[P0] Mission Identity Lifecycle Tracker**: UI for tracking the creation and expiration of mission-bound identity tokens (MBI). (Added: 2026-05-30)
+- [ ] **[P0] Revocation Bus Monitor**: Real-time visualization of capability revocation signals across the agent mesh. (Added: 2026-05-30)
+- [ ] **[P0] MBI Vault Status**: Security indicator for hardware-secured identity storage and zero-out events. (Added: 2026-05-30)
+
+#### Upcoming (2026-05-30 Evolution)
+- [ ] **[P0] Contention Heatmap Dashboard**: Visual indicator of task list contention and mailbox sharding efficiency (AMS). (Added: 2026-05-30)
+- [ ] **[P0] Teammate Token Inspector**: Forensic UI for verifying hardware-attested TIA tokens on coordination messages. (Added: 2026-05-30)
+- [ ] **[P1] Budget Arbiter Console**: Real-time monitor of reasoning effort (ARE) and arbiter-triggered capability revocations (RBA). (Added: 2026-05-30)

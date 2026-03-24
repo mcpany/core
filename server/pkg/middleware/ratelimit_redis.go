@@ -150,7 +150,7 @@ func NewRedisLimiterWithClient(client *redis.Client, serviceID, limitScopeKey, p
 // It handles token refill based on time elapsed, checks against burst capacity, and manages
 // the expiration of unused keys to prevent memory leaks in Redis.
 //
-// Summary: Represents a RedisRateLimitScript.
+// Summary: Lua script for atomic token bucket rate limiting in Redis.
 const RedisRateLimitScript = `
     -- ⚡ BOLT: Use server time to prevent clock skew issues in distributed systems.
     -- Randomized Selection from Top 5 High-Impact Targets

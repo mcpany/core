@@ -13,14 +13,14 @@ import (
 
 // MockServiceRegistry is a mock implementation of ServiceRegistryInterface.
 //
-// Summary: Represents a MockServiceRegistry.
+// Summary: Mock implementation of the service registry for testing.
 type MockServiceRegistry struct {
 	mock.Mock
 }
 
 // RegisterService registers a new upstream service based on the provided configuration.
 //
-// Summary: Executes RegisterService operation.
+// Summary: Mock implementation that records the registration call and returns configured mock values.
 //
 // Parameters:
 //   - ctx (context.Context): The registration context.
@@ -38,7 +38,7 @@ func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig
 
 // UnregisterService removes a service from the registry.
 //
-// Summary: Executes UnregisterService operation.
+// Summary: Mock implementation that records the unregistration call for testing purposes.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the unregistration.
@@ -53,7 +53,7 @@ func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName
 
 // GetAllServices returns a list of all currently registered services.
 //
-// Summary: Retrieves GetAllServices operation.
+// Summary: Mock implementation that returns the pre-configured slice of service configurations.
 //
 // Returns:
 //   - []*configv1.UpstreamServiceConfig: A list of all registered service configurations.
@@ -68,7 +68,7 @@ func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfi
 
 // GetServiceInfo retrieves the metadata for a service by its ID.
 //
-// Summary: Retrieves GetServiceInfo operation.
+// Summary: Mock implementation that returns pre-configured service metadata for the specified ID.
 //
 // Parameters:
 //   - serviceID (string): The unique identifier of the service.
@@ -86,7 +86,7 @@ func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInf
 
 // GetServiceConfig returns the configuration for a given service ID.
 //
-// Summary: Retrieves GetServiceConfig operation.
+// Summary: Mock implementation that returns the pre-configured service configuration for testing.
 //
 // Parameters:
 //   - serviceID (string): The unique identifier of the service.
@@ -104,7 +104,7 @@ func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 
 // GetServiceError returns the last known registration or health error for a service.
 //
-// Summary: Retrieves GetServiceError operation.
+// Summary: Mock implementation that returns the pre-configured error string for a service.
 //
 // Parameters:
 //   - serviceID (string): The unique identifier of the service.

@@ -76,7 +76,7 @@ func AddHealthStatus(serviceName string, status string) {
 
 // GetHealthHistory returns the history for all services.
 //
-// Summary: Retrieves the complete health history map.
+// Summary: Returns a copy of the historical health data points for all monitored upstream services.
 //
 // Returns:
 //   - map[string][]HistoryPoint: A map of service names to their health history points.

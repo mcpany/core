@@ -18,18 +18,18 @@ import (
 //
 // It is used to categorize findings based on their impact and urgency.
 //
-// Summary: Represents a Severity.
+// Summary: Type representing the severity level of a linting finding.
 type Severity int
 
 const (
 	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
-	// Summary: Defines Erro.
+	// Summary: Severity level for critical linting errors.
 	Error Severity = iota
 	// Warning indicates a potential issue or best practice violation that should be addressed.
-	// Summary: Defines Warnin.
+	// Summary: Severity level for potential issues or best practice violations.
 	Warning
 	// Info indicates a suggestion or informational message for optimization or clarity.
-	// Summary: Defines Inf.
+	// Summary: Severity level for suggestions or informational findings.
 	Info
 )
 
@@ -56,7 +56,7 @@ func (s Severity) String() string {
 //
 // It encapsulates all details about a detected issue, including its severity, location, and description.
 //
-// Summary: Represents a Result.
+// Summary: Data structure for a single linting issue or suggestion.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -90,7 +90,7 @@ func (r Result) String() string {
 //
 // It holds the configuration to be analyzed and provides methods to execute various checks.
 //
-// Summary: Represents a Linter.
+// Summary: Static analysis engine for configuration files.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }

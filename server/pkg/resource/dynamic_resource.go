@@ -17,7 +17,7 @@ import (
 // DynamicResource implements the Resource interface for resources that are
 // fetched dynamically by executing a tool.
 //
-// Summary: Represents a DynamicResource.
+// Summary: Resource implementation that fetches content by executing a tool.
 type DynamicResource struct {
 	resource *mcp.Resource
 	tool     tool.Tool
@@ -25,7 +25,7 @@ type DynamicResource struct {
 
 // NewDynamicResource creates a new instance of DynamicResource.
 //
-// Summary: Initializes a dynamic resource backed by a tool.
+// Summary: Initializes a dynamic resource that resolves its content at runtime by executing a specific MCP tool.
 //
 // Parameters:
 //   - def: *configv1.ResourceDefinition. The resource definition.
@@ -56,7 +56,7 @@ func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*Dynamic
 
 // Resource returns the MCP representation of the resource.
 //
-// Summary: Retrieves the MCP resource metadata.
+// Summary: Returns the underlying MCP resource object containing URI, name, and description.
 //
 // Returns:
 //   - *mcp.Resource: The MCP resource definition.
@@ -66,7 +66,7 @@ func (r *DynamicResource) Resource() *mcp.Resource {
 
 // Service returns the ID of the service that provides this resource.
 //
-// Summary: Retrieves the service ID.
+// Summary: Identifies the upstream service responsible for providing this specific dynamic resource.
 //
 // Returns:
 //   - string: The service ID.

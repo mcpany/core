@@ -56,7 +56,7 @@ var (
 
 // PrometheusMetricsMiddleware provides protocol-level metrics for all MCP requests.
 //
-// Summary: Executes PrometheusMetricsMiddleware operation.
+// Summary: Factory function that returns an MCP middleware for capturing protocol-level Prometheus metrics including duration, payload size, and token usage.
 //
 // Parameters:
 //   - t: tokenizer.Tokenizer. The tokenizer to use for estimating token counts.

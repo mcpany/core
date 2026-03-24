@@ -25,7 +25,7 @@ type SQLiteVectorStore struct {
 
 // NewSQLiteVectorStore creates a new SQLiteVectorStore.
 //
-// Summary: Initializes a new SQLiteVectorStore from the specified file path.
+// Summary: Factory function that initializes a persistent vector store, setting up the SQLite schema, optimizing database parameters, and hydrating the in-memory search index.
 //
 // Parameters:
 //   - path: string. The file path to the SQLite database.
@@ -177,7 +177,7 @@ func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 
 // Add adds a new entry to both memory and DB.
 //
-// Summary: Inserts a cache entry into the in-memory store and the persistent SQLite database.
+// Summary: Atomically persists a vector entry to the SQLite database and updates the in-memory search index, with periodic background cleanup of expired records.
 //
 // Parameters:
 //   - ctx: context.Context. The request context.
@@ -240,7 +240,7 @@ func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float3
 
 // Search searches in memory.
 //
-// Summary: Searches the in-memory store for the nearest neighbor.
+// Summary: Performs a high-performance vector similarity search against the in-memory index, returning the best match for the query.
 //
 // Parameters:
 //   - ctx: context.Context. The request context.
@@ -257,7 +257,7 @@ func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []floa
 
 // Prune removes expired entries from both memory and DB.
 //
-// Summary: Manually triggers removal of expired entries from memory and disk.
+// Summary: Executes a synchronous cleanup operation that purges stale cache entries from both the memory index and the persistent SQLite storage.
 //
 // Parameters:
 //   - ctx: context.Context. The request context.

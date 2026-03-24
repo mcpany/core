@@ -15,7 +15,7 @@ import (
 
 // LocalProvider provides access to the local filesystem.
 //
-// Summary: Represents a LocalProvider.
+// Summary: Filesystem provider for accessing the local host filesystem.
 type LocalProvider struct {
 	fs           afero.Fs
 	rootPaths    map[string]string
@@ -26,30 +26,23 @@ type LocalProvider struct {
 
 // NewLocalProvider creates a new LocalProvider from the given configuration.
 //
+// Summary: Initializes a new LocalProvider.
+//
 // Parameters:
-//   - _ (*configv1.OsFs): The parameter.
-//   - rootPaths (map[string]string): The parameter.
-//   - (allowedPaths): The parameter.
-//   - deniedPaths ([]string): The parameter.
-//   - symlinkMode (configv1.FilesystemUpstreamService_SymlinkMode): The parameter.
+//   - _ (*configv1.OsFs): Unused configuration object.
+//   - rootPaths (map[string]string): Mapping of virtual paths to real local directory paths.
+//   - allowedPaths ([]string): List of glob patterns for paths that are explicitly allowed.
+//   - deniedPaths ([]string): List of glob patterns for paths that are explicitly denied.
+//   - symlinkMode (configv1.FilesystemUpstreamService_SymlinkMode): Strategy for handling symlinks (ALLOW, DENY, etc.).
 //
 // Returns:
-//   - *LocalProvider: The result.
+//   - *LocalProvider: A pointer to the newly created LocalProvider instance.
 //
-// Side Effects:
+// Errors:
 //   - None.
 //
-// Summary: Initializes NewLocalProvider operation.
-//
-// Parameters:
-//   - _ (*configv1.OsFs): Unused config.
-//   - rootPaths (map[string]string): The root paths mapping.
-//   - allowedPaths ([]string): List of allowed path patterns.
-//   - deniedPaths ([]string): List of denied path patterns.
-//   - symlinkMode (configv1.FilesystemUpstreamService_SymlinkMode): Symlink handling mode.
-//
-// Returns:
-//   - *LocalProvider: The new local provider instance.
+// Side Effects:
+//   - Allocates memory for the provider and its internal maps.
 func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPaths, deniedPaths []string, symlinkMode configv1.FilesystemUpstreamService_SymlinkMode) *LocalProvider {
 	return &LocalProvider{
 		fs:           afero.NewOsFs(),
@@ -62,43 +55,38 @@ func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPath
 
 // GetFs returns the underlying filesystem.
 //
+// Summary: Retrieves the underlying afero filesystem.
+//
 // Returns:
-//   - afero.Fs: The result.
+//   - afero.Fs: The afero.Fs implementation used by this provider.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Retrieves GetFs operation.
-//
-// Returns:
-//   - afero.Fs: The underlying afero filesystem.
 func (p *LocalProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
 // ResolvePath resolves the virtual path to a real path in the local filesystem.
 //
+// Summary: Resolves and validates a virtual path against local root mappings.
+//
 // Parameters:
-//   - virtualPath (string): The parameter.
+//   - virtualPath (string): The virtual path provided by the agent.
 //
 // Returns:
-//   - string: The result.
-//   - error: An error if the operation fails.
+//   - string: The absolute real path on the host filesystem.
+//   - error: An error if the path is outside allowed roots, contains prohibited symlinks, or fails security checks.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if no root path matches the virtual path.
+//   - Returns an error if symlinks are detected in DENY mode.
+//   - Returns an error if path traversal (..) is attempted.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Executes ResolvePath operation.
-//
-// Parameters:
-//   - virtualPath (string): The virtual path to resolve.
-//
-// Returns:
-//   - string: The resolved local path.
-//   - error: An error if resolution fails or security check fails.
+//   - Performs multiple filesystem Lstat and EvalSymlinks calls to ensure path integrity.
 func (p *LocalProvider) ResolvePath(virtualPath string) (string, error) {
 	if len(p.rootPaths) == 0 {
 		return "", fmt.Errorf("no root paths defined")
@@ -348,21 +336,18 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 	return false, nil
 }
 
-// Close closes the provider.
+// Close closes the provider and releases any resources.
+//
+// Summary: Closes the local filesystem provider.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - error: Nil, as local providers don't hold open persistent connections.
 //
 // Errors:
-//   - Returns an error if ...
+//   - None.
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes Close operation.
-//
-// Returns:
-//   - error: Nil.
 func (p *LocalProvider) Close() error {
 	return nil
 }

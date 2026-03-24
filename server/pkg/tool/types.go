@@ -48,7 +48,7 @@ const (
 	redactedPlaceholder = "[REDACTED]"
 
 	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
-	// Summary: Defines HealthStatusUnhealthy.
+	// Summary: Constant representing an unhealthy service state.
 	HealthStatusUnhealthy = "unhealthy"
 
 	gitCommand = "git"

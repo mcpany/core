@@ -17,7 +17,7 @@ import (
 
 // Bus is a message bus implementation using NATS.
 //
-// Summary: Represents a Bus.
+// Summary: NATS-backed message bus implementation.
 type Bus[T any] struct {
 	nc     *natsgo.Conn
 	config *bus.NatsBus

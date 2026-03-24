@@ -310,7 +310,7 @@ type statsCacheEntry struct {
 
 // NewApplication creates a new Application with default dependencies.
 //
-// Summary: Initializes a new Application instance.
+// Summary: Factory function that initializes the main Application container with all necessary managers and default providers.
 //
 // Returns:
 //   - (*Application): The initialized application.
@@ -336,7 +336,7 @@ func NewApplication() *Application {
 
 // Run starts the MCP Any server and all its components.
 //
-// Summary: Executes the application.
+// Summary: The main entry point for the application, responsible for setting up storage, loading configuration, and starting HTTP and gRPC servers.
 //
 // Parameters:
 //   - opts (RunOptions): The runtime options.

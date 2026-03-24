@@ -16,7 +16,7 @@ import (
 
 // DB wraps the sql.DB connection.
 //
-// Summary: Represents a DB.
+// Summary: SQLite database connection wrapper.
 type DB struct {
 	*sql.DB
 }
