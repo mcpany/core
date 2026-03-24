@@ -1134,20 +1134,6 @@
 - **Mesh-Bound Context Sovereignty Bridge**: (Re-affirmed P0) Now elevated with the requirement for **Hardware-Attested Identity Rotation**.
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now designated as the primary backend for the **Teammate Task-List Arbiter**.
 
-## Evolution: [2026-06-01] Updates
-
-### Proposed Additions
-- **Machine-Speed Swarm Quarantine (MSSQ)**: (P0) Advanced security middleware extension for the CSAD Hub that performs sub-millisecond, autonomous revocation of agent capabilities across a compromised mission scope.
-- **Adaptive Context Lifecycle Orchestrator**: (P0) Authoritative sidecar host for OpenClaw-compatible ContextEngine plugins, enforcing mission-root security policies across pluggable state management strategies.
-- **Autonomous Verification Quorum (AVQ) Hub**: (P0) Distributed security middleware that facilitates hardware-attested, multi-agent quorums for high-stakes tasks, bridging the "Delegation Gap."
-- **Authenticated A2A Discovery Enforcer**: (P0) Mandatory discovery gate that implements the Gemini CLI v0.33.0 baseline, ensuring agent capabilities are cryptographically invisible to unauthenticated peers.
-
-### Priority Shifts
-- **Collective Swarm Anomaly Detection (CSAD) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory MSSQ integration to support machine-speed response.
-- **ContextEngine Lifecycle Adapter**: (Re-affirmed P0) Evolving into the **Adaptive Context Lifecycle Orchestrator** to support full plugin hosting and security enforcement.
-
----
-
 ## Evolution: [2026-05-31] Updates
 
 ### Proposed Additions
@@ -1171,15 +1157,3 @@
 ### Priority Shifts
 - **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
 - **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
-
-## Evolution: [2026-06-02] Updates
-
-### Proposed Additions
-- **Reasoning Path Attestation (RPA) Provider**: (P0) Advanced extension for the SRM Provider that cryptographically signs every step in an agent's chain-of-thought using hardware (TPM) attestation.
-- **Spectral Reasoning Mitigator**: (P0) Security middleware that injects reasoning-aware timing jitter into ARE headers to neutralize timing-based side-channel attacks in autonomous swarms.
-- **CSP v1.0 Native Bridge**: (P0) Authoritative adapter for the OpenClaw Context Sovereignty Protocol, providing recursive redaction and ownership hooks for context sidecars.
-- **Dynamic Context Sharding Adapter**: (P0) High-efficiency coordination middleware that enables granular context streaming between teammates, neutralizing "Mailbox Lock" bottlenecks.
-
-### Priority Shifts
-- **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hardware-Bound RPA** to ensure cognitive path integrity.
-- **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support **CSP-compliant recursive redaction** for sharded teammate meshes.

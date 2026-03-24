@@ -490,20 +490,8 @@
 - [ ] **[P1] Autonomous Task Reaper (ATR) Log**: Real-time tracker for "Ghost" task reclamation and re-auction events. (Added: 2026-05-31)
 - [ ] **[P0] HAIR Identity Widget**: Status monitor for hardware-attested identity rotation sessions. (Added: 2026-05-31)
 
-#### Upcoming (2026-06-01 Evolution)
-- [ ] **[P0] Swarm Quarantine Monitor**: Real-time visualization of MSSQ-isolated mission scopes and revocation events. (Added: 2026-06-01)
-- [ ] **[P0] Adaptive Context Hub**: Dashboard for managing pluggable ContextEngine plugins and monitoring "Cognitive Anchoring" health. (Added: 2026-06-01)
-- [ ] **[P0] Autonomous Quorum Workspace**: Authorization UI for multi-agent verification quorums and AVQ attestation status. (Added: 2026-06-01)
-- [ ] **[P0] Authenticated Discovery Widget**: Security status indicator for masked agent capability cards and A2A auth-gate actions. (Added: 2026-06-01)
-
 #### Upcoming (2026-05-29 Evolution)
 - [ ] **[P0] Swarm Anomaly Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and CSAD neutralization events. (Added: 2026-05-29)
 - [ ] **[P0] Mesh Command Sovereignty Dashboard**: Visual "Chain of Mesh-Command" tracer for inter-teammate mailbox validation. (Added: 2026-05-29)
 - [ ] **[P0] Teammate Handshake Monitor**: Real-time status indicator for ATH identity exchange in horizontal swarms. (Added: 2026-05-29)
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
-
-#### Upcoming (2026-06-02 Evolution)
-- [ ] **[P0] Reasoning Path Auditor**: UI for inspecting hardware-attested RPA tokens and cognitive lineages. (Added: 2026-06-02)
-- [ ] **[P0] Spectral Jitter Monitor**: Real-time visualization of timing jitter injected by the Spectral Mitigator. (Added: 2026-06-02)
-- [ ] **[P0] Context Sovereignty Hub**: Dashboard for managing CSP-compliant redaction rules and state ownership. (Added: 2026-06-02)
-- [ ] **[P0] Granular Shard Streamer**: Visual monitor for dynamic context fragments streaming between teammates. (Added: 2026-06-02)

@@ -650,20 +650,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Autonomous Task Reaper (ATR)**: Stability service for proactive reclamation and re-auction of "Ghost" tasks. (Added: 2026-05-31)
 *   **[P0] Hardware-Attested Identity Rotation (HAIR)**: Security middleware mandating periodic, hardware-bound identity rotation for inter-teammate requests. (Added: 2026-05-31)
 
-#### Upcoming (2026-06-01 Evolution)
-*   **[P0] Machine-Speed Swarm Quarantine (MSSQ)**: Autonomous, sub-millisecond revocation of agent capabilities based on CSAD triggers. (Added: 2026-06-01)
-*   **[P0] Adaptive Context Lifecycle Orchestrator**: Authoritative host for pluggable ContextEngine strategies with security policy enforcement. (Added: 2026-06-01)
-*   **[P0] Autonomous Verification Quorum (AVQ) Hub**: Distributed security middleware for hardware-attested, multi-agent task validation. (Added: 2026-06-01)
-*   **[P0] Authenticated A2A Discovery Enforcer**: Mandatory cryptographic masking of agent capability cards for unauthenticated peers. (Added: 2026-06-01)
-
 #### Upcoming (2026-05-29 Evolution)
 *   **[P0] Collective Swarm Anomaly Detection (CSAD) Hub**: Cross-agent behavioral analysis middleware to detect "Hivenet" swarm attacks. (Added: 2026-05-29)
 *   **[P0] Cross-Mesh Command Sovereignty (CMCS) Provider**: Hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms. (Added: 2026-05-29)
 *   **[P0] Atomic Teammate Handshake (ATH) Gateway**: Mandatory identity exchange before teammate task delegation in horizontal teams. (Added: 2026-05-29)
 *   **[P0] Mesh-Bound Context Sovereignty Bridge**: Semantic fragment analysis across teammate boundaries for horizontal team stability. (Added: 2026-05-29)
-
-#### Upcoming (2026-06-02 Evolution)
-*   **[P0] Reasoning Path Attestation (RPA)**: Cryptographically sign every step of the cognitive path using hardware TPM. (Added: 2026-06-02)
-*   **[P0] Spectral Reasoning Mitigator**: Inject reasoning-aware timing jitter into ARE headers to neutralize side-channel leaks. (Added: 2026-06-02)
-*   **[P0] CSP v1.0 Native Bridge**: Authoritative support for OpenClaw Context Sovereignty Protocol hooks. (Added: 2026-06-02)
-*   **[P0] Dynamic Context Sharding Adapter**: Implement granular context streaming to eliminate teammate mailbox locks. (Added: 2026-06-02)
