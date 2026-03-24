@@ -21,7 +21,7 @@ bazel_dep(name = "rules_nodejs", version = "6.7.3")
 bazel_dep(name = "aspect_rules_js", version = "3.0.3")
 bazel_dep(name = "aspect_rules_ts", version = "3.8.7")
 bazel_dep(name = "toolchains_buildbuddy", version = "0.0.4")
-bazel_dep(name = "rules_python", version = "1.3.0")
+bazel_dep(name = "rules_python", version = "1.7.0")
 
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(version = "1.26.1")
@@ -42,6 +42,26 @@ go_deps.gazelle_override(
 )
 go_deps.gazelle_override(
     path = "google.golang.org/genproto/googleapis/api",
+)
+
+# Disable proto generation for grpc-gateway so Gazelle uses pre-generated .pb.go
+# files directly and does not try to resolve @googleapis (which is not visible
+# from the grpc-gateway Go dep context in Bzlmod).
+# Use build_file_generation=off to preserve the original BUILD files and apply
+# our patch on top, which replaces the proto-based apiconfig target with one
+# that uses the pre-generated apiconfig.pb.go source file directly.
+go_deps.gazelle_override(
+    build_file_generation = "off",
+    path = "github.com/grpc-ecosystem/grpc-gateway/v2",
+)
+
+go_deps.module_override(
+    patch_strip = 1,
+    patches = [
+        "//patches:grpc_gateway_apiconfig.patch",
+        "//patches:grpc_gateway_pure.patch",
+    ],
+    path = "github.com/grpc-ecosystem/grpc-gateway/v2",
 )
 
 # Add required direct dependencies from go.mod manually or via use_repo
@@ -124,7 +144,10 @@ use_repo(
     "in_gopkg_square_go_jose_v2",
     "in_gopkg_yaml_v2",
     "in_gopkg_yaml_v3",
+    "io_k8s_api",
+    "io_k8s_apimachinery",
     "io_k8s_client_go",
+    "io_k8s_sigs_controller_runtime",
     "io_k8s_sigs_yaml",
     "io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc",
     "io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp",
@@ -135,9 +158,6 @@ use_repo(
     "io_opentelemetry_go_otel_exporters_stdout_stdouttrace",
     "io_opentelemetry_go_otel_sdk",
     "io_opentelemetry_go_otel_sdk_metric",
-    "io_k8s_api",
-    "io_k8s_apimachinery",
-    "io_k8s_sigs_controller_runtime",
     "org_golang_google_api",
     "org_golang_google_genproto_googleapis_api",
     "org_golang_google_grpc",
@@ -321,3 +341,21 @@ pip.parse(
     requirements_lock = "//server/tests/integration/examples:requirements_lock.txt",
 )
 use_repo(pip, "cowsay_server_deps", "timeserver_deps")
+
+http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
+
+http_file(
+    name = "bazelisk_linux_amd64",
+    downloaded_file_path = "bazelisk",
+    executable = True,
+    sha256 = "22e7d3a188699982f661cf4687137ee52d1f24fec1ec893d91a6c4d791a75de8",
+    urls = ["https://github.com/bazelbuild/bazelisk/releases/download/v1.28.1/bazelisk-linux-amd64"],
+)
+
+http_file(
+    name = "bazelisk_linux_arm64",
+    downloaded_file_path = "bazelisk",
+    executable = True,
+    sha256 = "8ded44b58a0d9425a4178af26cf17693feac3b87bdcfef0a2a0898fcd1afc9f2",
+    urls = ["https://github.com/bazelbuild/bazelisk/releases/download/v1.28.1/bazelisk-linux-arm64"],
+)

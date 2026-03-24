@@ -46,6 +46,7 @@ export enum ExportPolicy_Action {
  */
 export const CallPolicy = {};
 
+<<<<<<< HEAD
 /** Mock type placeholder. */
 export const CallPolicyRule = {};
 
@@ -53,6 +54,21 @@ export const CallPolicyRule = {};
 export const ExportPolicy = {};
 
 /** Mock type placeholder. */
+=======
+/**
+ * Mock type placeholder for CallPolicyRule.
+ */
+export const CallPolicyRule = {};
+
+/**
+ * Mock type placeholder for ExportPolicy.
+ */
+export const ExportPolicy = {};
+
+/**
+ * Mock type placeholder for ExportRule.
+ */
+>>>>>>> origin/main
 export const ExportRule = {};
 
 /**
