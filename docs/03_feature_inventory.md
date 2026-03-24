@@ -1569,3 +1569,14 @@
 ### Priority Shifts
 - **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving to act as the primary backend for the **UMMB** state synchronization.
 - **Zero-Knowledge Discovery (ZKD) Proxy**: (Re-affirmed P0) Expanding into the **ZKDB** to support cross-framework capability negotiation.
+
+## Evolution: [2026-03-24] Updates
+
+### Proposed Additions
+- **Relational PoI Validator**: (P0) Extends PoI validation to verify the entire "Intent Chain," ensuring subagents cannot be coerced into actions outside the parent's verified goal.
+- **BSH State Buffer**: (P1) High-speed memory-mapped buffer for binary state handoffs between agents to minimize context transfer latency.
+- **Ghost Shell Hook Profiler**: (P0) Instrumented sandbox for behavioral profiling of un-attested configuration hooks, detecting "Binary Smuggling" before host execution.
+
+### Priority Shifts
+- **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
+- **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.

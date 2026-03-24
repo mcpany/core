@@ -852,3 +852,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Universal Multimodal Memory Bus (UMMB)**: Hardware-attested memory bus for state synchronization across disparate frameworks. (Added: 2026-07-01)
 *   **[P0] Zero-Knowledge Discovery Broker (ZKDB)**: Security middleware mandating cryptographic capability masking until mission-handshake. (Added: 2026-07-01)
 *   **[P0] Attention-Locked Reasoning Anchors (ALRA)**: Hardware-bound attention-pinning to prevent mission-root intent eviction. (Added: 2026-07-01)
+
+#### Upcoming (2026-03-24 Evolution - v2)
+*   **[P0] Relational PoI Validator**: Implementation of UACO v1.7 Intent Chain verification. (Added: 2026-03-24)
+*   **[P0] BSH State Buffer**: Memory-mapped binary transport for mitigation of "Token Storms". (Added: 2026-03-24)
+*   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral hook analysis. (Added: 2026-03-24)
