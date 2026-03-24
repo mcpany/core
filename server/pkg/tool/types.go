@@ -3756,6 +3756,8 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 
 // checkUnquotedKeywords checks if any of the given keywords are present in the
 // unquoted parts of the string.
+//
+//nolint:gocyclo,gocognit,funlen
 func checkUnquotedKeywords(val string, keywords []string) error {
 	qs := &quoteState{}
 	escaped := false

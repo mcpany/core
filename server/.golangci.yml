@@ -56,3 +56,4 @@ issues:
     - wsl
     - gci
     - gofumpt
+    - 'types\.go$'
