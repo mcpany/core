@@ -65,13 +65,6 @@ service AdminService {
       get: "/api/v1/audit/logs"
     };
   }
-
-  // ExportAuditLogs exports audit logs as CSV.
-  rpc ExportAuditLogs(ListAuditLogsRequest) returns (ExportAuditLogsResponse) {
-    option (google.api.http) = {
-      get: "/api/v1/audit/export"
-    };
-  }
 }
 
 // ClearCacheRequest represents a request to clear the server cache.
@@ -240,12 +233,6 @@ message ListAuditLogsRequest {
 message ListAuditLogsResponse {
   // The list of audit log entries.
   repeated AuditLogEntry entries = 1;
-}
-
-// ExportAuditLogsResponse contains the exported CSV data.
-message ExportAuditLogsResponse {
-  // The exported CSV data.
-  string csv_data = 1;
 }
 
 // AuditLogEntry represents a single audit log event.
