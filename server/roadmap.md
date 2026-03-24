@@ -552,3 +552,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
 *   **[P1] Cognitive Fragment Reconciler**: Background service for synchronizing encrypted monologues across agent sessions. (Added: 2026-04-22)
+
+#### Upcoming (2026-05-16 Evolution)
+*   **[P0] Hardware-Locked Memory Mesh**: Implementation of TPM/SEP-backed memory isolation for Zero-Copy BSH. (Added: 2026-05-16)
+*   **[P0] Mission Alignment Token (MAT) Provider**: Middleware to inject hardware-attested alignment tokens into context fragments. (Added: 2026-05-16)
+*   **[P1] Correction Ledger (CPE) Service**: Hardware-protected persistence for user corrections to prevent agentic ghosting. (Added: 2026-05-16)
+*   **[P1] Dynamic Reasoning Verifier (DRV)**: Security middleware to detect reasoning shadowing by cross-referencing ARE headers. (Added: 2026-05-16)

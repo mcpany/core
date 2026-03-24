@@ -399,3 +399,9 @@
 - [ ] **[P0] A2A Replay Security Dashboard**: Visualize nonce status and replay attempt alerts in the A2A hub. (Added: 2026-04-22)
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)
 - [ ] **[P1] Encrypted Monologue Explorer**: Secure UI fragment for user-authorized decryption and review of subagent reasoning. (Added: 2026-04-22)
+
+#### Upcoming (2026-05-16 Evolution)
+- [ ] **[P0] Memory Mesh Security Visualizer**: Real-time monitor for hardware-locked memory shards and access violation traps. (Added: 2026-05-16)
+- [ ] **[P0] Mission Persistence Dashboard**: Visualizer for mission alignment scores and hardware-attested MAT distribution. (Added: 2026-05-16)
+- [ ] **[P1] Correction Ledger Auditor**: Secure interface for reviewing hard-locked user corrections and agent compliance. (Added: 2026-05-16)
+- [ ] **[P1] Reasoning Shadow Detector**: Security widget for tracking ARE header discrepancies and reasoning shadowing alerts. (Added: 2026-05-16)

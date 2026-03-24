@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-16] Updates
+
+### Proposed Additions
+- **Hardware-Locked Memory Mesh**: (P0) Hardware-backed (TPM/SEP) memory isolation for Zero-Copy BSH to prevent parallel Inode racing and leaks.
+- **Mission Alignment Token (MAT) Provider**: (P0) Middleware that injects hardware-attested alignment tokens into context fragments to prevent mission drift in deep swarms.
+- **Correction Ledger (CPE) Service**: (P1) Hardware-protected persistence for user corrections to prevent "Agentic Ghosting" and mandate correction attestation.
+- **Dynamic Reasoning Verifier (DRV)**: (P1) Security middleware that cross-references ARE headers against tool performance to detect reasoning shadowing.
+
+### Priority Shifts
+- **Zero-Copy BSH Shared Memory Transport**: (Promoted to P0) Designated as a mandatory prerequisite for Hardware-Locked Memory Mesh integration.
+
 ## Evolution: [2026-05-15] Updates
 
 ### Proposed Additions
