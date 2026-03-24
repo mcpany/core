@@ -1,5 +1,3 @@
-load("@rules_go//go:def.bzl", "go_library")
-
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
@@ -112,19 +110,4 @@ config_setting(
     name = "host_x86_64",
     values = {"host_cpu": "k8"},
     visibility = ["//visibility:public"],
-)
-
-go_library(
-    name = "core",
-    srcs = ["test_load.go"],
-    importpath = "github.com/mcpany/core",
-    visibility = ["//visibility:public"],
-    deps = [
-        "//proto/config/v1:config",
-        "@com_github_data_dog_go_sqlmock//:go-sqlmock",
-        "@com_github_stretchr_testify//assert",
-        "@com_github_stretchr_testify//require",
-        "@org_golang_google_protobuf//encoding/protojson",
-        "@org_golang_google_protobuf//proto",
-    ],
 )
