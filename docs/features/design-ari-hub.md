@@ -66,3 +66,10 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * Mandating integration with the **Shadow Coordination Interceptor (SCI)** in Section 4.
 * Upgrading hash-chaining to require **MRA-compliant** hardware-bound hashes to prevent legacy collision spoofing.
 **Security Impact:** Prevents subagents from colluding via metadata while appearing to follow the "Reasoning Mainline."
+
+### Update: 2026-06-16 - Neutralizing Monologue Splicing
+**Context:** Today's market sync revealed "Monologue Splicing" attacks, where malicious subagents inject instructions into the parent's reasoning trace.
+**Architecture Adjustment:**
+* Introducing the **Monologue Splicing Detector (MSD)** within the Semantic Consistency Engine (Section 4).
+* The Hub now performs real-time validation of the "Agent Monologue" fragment against the hardware-attested **Common Trust Root (CTR)**.
+**Security Impact:** Ensures the sanctity and immutability of the reasoning monologue, preventing internal reasoning hijacking.

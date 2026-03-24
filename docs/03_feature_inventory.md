@@ -1340,3 +1340,15 @@
   defense against SDMI.
 - **PNTD Discovery Provider**: Re-prioritized to require mandatory SDP
   integration.
+
+## Evolution: [2026-06-16] Updates
+
+### Proposed Additions [2026-06-16]
+- **Cross-Framework Identity Relay (CFIR)**: (P0) Advanced identity middleware that provides hardware-attested "Identity Glue" to maintain mission strength across disparate frameworks (Claude Code/OpenClaw).
+- **Monologue Splicing Detector (MSD)**: (P0) Security service for the Semantic Integrity Bridge that performs semantic hash-chaining of internal monologue traces to prevent instruction splicing.
+- **Shadowing Protection for SMS**: (P1) Security extension for the Sharded Mailbox Sovereignty (SMS) middleware to prevent Recursive Task-Card Shadowing (RTCS) in UACO mailboxes.
+- **Common Trust Root (CTR) Provider**: (P0) Authoritative authority that reconciles identity strength across heterogeneous swarms, providing a unified trust signal for deep delegations.
+
+### Priority Shifts [2026-06-16]
+- **Sovereign Mesh Identity (SMI) Relay**: (Re-affirmed P0) Now elevated with the requirement for mandatory **CFIR** integration to solve identity fragmentation.
+- **Sharded Mailbox Sovereignty (SMS) Middleware**: (Re-affirmed P0) Evolving to support **RTCS-Resilient** discovery tokens.

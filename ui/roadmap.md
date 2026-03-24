@@ -576,3 +576,9 @@
 - [ ] **[P0] SDP Policy Editor**: UI for managing hardware-attested discovery rules. (Added: 2026-06-15)
 - [ ] **[P0] Trust Persistence Monitor**: Visual tracker for MHPR trust-lease propagation and MSHE-latency gains. (Added: 2026-06-15)
 - [ ] **[P0] RMA Lifecycle Viewer**: (2026-06-15) UI for auditing recursive metadata attestation and nested SDMI payloads.
+
+### Upcoming: [2026-06-16]
+- [ ] **[P0] Cross-Framework Identity Visualizer**: Real-time graph showing identity fragment lineage across Claude and OpenClaw agents. (Added: 2026-06-16)
+- [ ] **[P0] Monologue Integrity Monitor**: Forensic UI for reviewing semantic hash-chains and monologue splicing alerts. (Added: 2026-06-16)
+- [ ] **[P0] CTR Trust Authority Dashboard**: Authoritative UI for managing and reviewing Common Trust Root attestation events. (Added: 2026-06-16)
+- [ ] **[P1] RTCS Shadowing Alerts**: Real-time visualization of UACO mailbox conflicts and shadowing attempts. (Added: 2026-06-16)

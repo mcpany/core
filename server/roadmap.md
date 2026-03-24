@@ -738,3 +738,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative discovery gateway for hardware-attested tool capability card validation. (Added: 2026-06-15)
 - **Multi-Hop Persistence Relay (MHPR)**: (P0) Trust-lease propagation service to neutralize MSHE-driven cognitive stall in deep swarms. (Added: 2026-06-15)
 - **Recursive Metadata Attestation (RMA)**: (P0) Security update for SMS to detect nested SDMI payloads. (Added: 2026-06-15)
+
+### Upcoming: [2026-06-16]
+- **Cross-Framework Identity Relay (CFIR)**: (P0) High-performance identity glue service for framework-neutral mission persistence. (Added: 2026-06-16)
+- **Monologue Splicing Detector (MSD)**: (P0) Security middleware for the ARI Hub to protect the immutability of reasoning traces. (Added: 2026-06-16)
+- **Common Trust Root (CTR) Authority**: (P0) Authoritative authority for reconciling identity strength across heterogeneous swarms. (Added: 2026-06-16)
+- **RTCS Shadowing Guard**: (P1) Extension for UACO mailbox sharding to prevent malicious capability card shadowing. (Added: 2026-06-16)
