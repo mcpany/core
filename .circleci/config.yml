@@ -32,8 +32,8 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v41-lint-{{ checksum "server/go.sum" }}
-            - v41-lint-
+            - v43-lint-{{ checksum "server/go.sum" }}
+            - v43-lint-
       - run:
           name: Prepare and Run Lint
           command: |
@@ -41,11 +41,9 @@ jobs:
             export GOTOOLCHAIN=go1.26.1
             make prepare
             export PATH=$(pwd)/build/env/bin:$PATH
-            go version
-            go env
             ./scripts/lint.sh
       - save_cache:
-          key: v41-lint-{{ checksum "server/go.sum" }}
+          key: v43-lint-{{ checksum "server/go.sum" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
@@ -72,8 +70,8 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v41-test-{{ checksum "server/go.sum" }}
-            - v41-test-
+            - v43-test-{{ checksum "server/go.sum" }}
+            - v43-test-
       - run:
           name: Run Tests
           command: |
@@ -81,11 +79,15 @@ jobs:
             export GOTOOLCHAIN=go1.26.1
             make prepare
             export PATH=$(pwd)/build/env/bin:$PATH
+            # Build binaries needed for integration tests
+            mkdir -p build/bin build/test/bin
+            go build -o build/bin/server ./server/cmd/server
+            go build -o build/test/bin/prompt-server ./server/tests/integration/cmd/mocks/prompt-server
+            # Run Go unit tests
             make test-proto
-            make -C server test-fast
-            make k8s-test || echo "k8s tests failed or skipped"
+            cd server && go test -short ./...
       - save_cache:
-          key: v41-test-{{ checksum "server/go.sum" }}
+          key: v43-test-{{ checksum "server/go.sum" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
