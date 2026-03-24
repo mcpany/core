@@ -24,7 +24,7 @@ const protoPath = fs.existsSync(localProto)
 // Resolve the @bufbuild/protobuf/wire sub-path (needed by generated proto files)
 const bufbuildWirePath = path.join(
   __dirname,
-  "node_modules/.pnpm/@bufbuild+protobuf@2.11.0/node_modules/@bufbuild/protobuf/dist/esm/wire/index.js"
+  "node_modules/.pnpm/@bufbuild+protobuf@2.10.2/node_modules/@bufbuild/protobuf/dist/esm/wire/index.js"
 );
 const bufbuildWire = fs.existsSync(bufbuildWirePath)
   ? bufbuildWirePath

@@ -18,6 +18,7 @@
       "@/*": ["./src/*"],
       "github.com/mcpany/core/*": ["../*"],
       "@proto/*": [
+        "../bazel-bin/proto/*",
         "../proto/*"
       ],
       "@bufbuild/protobuf/wire": ["./node_modules/@bufbuild/protobuf/dist/esm/wire/index.js"],
