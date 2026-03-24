@@ -129,10 +129,8 @@ fi
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    # Bypassing the root level //:lint inside the bash script as the github action runner runs out of memory processing proto bindings
-    # Force process bypass to prevent OOM
-    export GOGC=10
-    export GOMEMLIMIT=1000MiB
+    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
+        ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
