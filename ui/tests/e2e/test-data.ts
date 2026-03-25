@@ -4,6 +4,9 @@
  */
 
 import { request, APIRequestContext } from '@playwright/test';
+import { ServiceTemplate } from '../../../proto/config/v1/service_template';
+import { UpstreamServiceConfig } from '../../../proto/config/v1/upstream_service';
+import { User } from '../../../proto/config/v1/user';
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
@@ -100,7 +103,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-    ];
+    ].map((service) => UpstreamServiceConfig.toJSON(UpstreamServiceConfig.fromJSON(service)));
 
     const templates = [
         {
@@ -157,7 +160,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-    ];
+    ].map((template) => ServiceTemplate.toJSON(ServiceTemplate.fromJSON(template)));
 
     const users = [
         {
@@ -172,34 +175,43 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             roles: ["admin"],
             profile_ids: ["dev", "prod"]
         }
-    ];
+    ].map((user) => User.toJSON(User.fromJSON(user)));
 
-        const traces = [
+    const auditLogs = [
         {
-            id: 'trace-1',
-            rootSpan: {
-              id: 'span-1',
-              name: 'calculate_sum',
-              serviceName: 'Math',
-              type: 'tool',
-              status: 'success',
-              startTime: Date.now() - 150,
-              endTime: Date.now(),
-              children: [],
-            },
             timestamp: new Date().toISOString(),
-            totalDuration: 150,
-            status: 'success',
-            trigger: 'user'
+            tool_name: "process_payment",
+            user_id: "e2e-admin-core",
+            profile_id: "default",
+            arguments: "{\"amount\": 100, \"currency\": \"USD\"}",
+            result: "[{\"id\": \"ch_123\", \"amount\": 100, \"status\": \"succeeded\"}]",
+            error: "",
+            duration_ms: 150,
+            trace_id: "trace-1",
+            span_id: "span-1"
+        },
+        {
+            timestamp: new Date(Date.now() - 100000).toISOString(),
+            tool_name: "get_user",
+            user_id: "e2e-admin-core",
+            profile_id: "default",
+            arguments: "{\"id\": \"user-1\"}",
+            result: "",
+            error: "User not found",
+            duration_ms: 50,
+            trace_id: "trace-2",
+            span_id: "span-2"
         }
     ];
+
     const seedRequest = {
         upstream_services: services,
         service_templates: templates,
         users: users,
         credentials: [],
         secrets: [],
-        profiles: []
+        profiles: [],
+        audit_logs: auditLogs
     };
 
     try {
@@ -325,31 +337,5 @@ export const cleanupCollection = async (name?: string, requestContext?: APIReque
         await context.delete(`/api/v1/collections/${name}`, { headers: HEADERS });
     } catch (e) {
         // Ignore cleanup errors (collection may not exist)
-    }
-};
-
-export const seedTraces = async (requestContext?: APIRequestContext) => {
-    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    const trace = {
-        id: 'trace-1',
-        rootSpan: {
-            id: 'span-1',
-            name: 'calculate_sum',
-            serviceName: 'Math',
-            type: 'tool',
-            status: 'success',
-            startTime: Date.now() - 150,
-            endTime: Date.now(),
-            children: []
-        },
-        timestamp: new Date().toISOString(),
-        totalDuration: 150,
-        status: 'success',
-        trigger: 'user'
-    };
-    try {
-        await context.post('/api/v1/debug/traces', { data: [trace], headers: HEADERS });
-    } catch (e) {
-        console.log(`Failed to seed trace: ${e}`);
     }
 };
