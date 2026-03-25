@@ -121,6 +121,13 @@ fi
 #    the path set by $GOLANGCI_LINT_BIN, then a local install, then
 #    build/env/bin/ (populated by `make prepare`).
 # ---------------------------------------------------------------------------
+SKIP_GO=0
+for arg in "$@"; do
+    if [[ "$arg" == "--skip-go" ]]; then
+        SKIP_GO=1
+    fi
+done
+
 echo "==> Running golangci-lint..."
 if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
     GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
@@ -132,11 +139,16 @@ if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     export GO111MODULE=on
     export GOTOOLCHAIN=auto
 
-    # Run golangci-lint directly but skip errors, as it keeps OOM'ing in circleci
-    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
-        ./cmd/... ./pkg/... ./tests/... ../examples/... || true
+    # Determine if we should run golangci-lint (skip in circleci)
+    if [[ "$CI" == "true" || "$CIRCLECI" == "true" || "$SKIP_GO" == "1" ]]; then
+         echo "    Skipping golangci-lint in CI environment (OOM avoidance)."
+    else
+         # Run golangci-lint directly but skip errors, as it keeps OOM'ing in circleci
+         "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
+             ./cmd/... ./pkg/... ./tests/... ../examples/... || true
+         echo "    golangci-lint finished."
+    fi
     cd "$PROJECT_ROOT"
-    echo "    golangci-lint finished."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
     echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."
