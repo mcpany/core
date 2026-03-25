@@ -12,6 +12,7 @@ prepare:
 	@mkdir -p build/.cache
 
 lint:
+	python3 server/tools/check_ts_doc.py ui/src
 	bazelisk run //:lint
 	bazelisk test //ui:typecheck //ui:lint
 
