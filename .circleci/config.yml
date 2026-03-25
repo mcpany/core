@@ -45,7 +45,7 @@ jobs:
           name: Run Lint
           command: |
             bazelisk run //:lint
-            bazelisk test //ui:lint //ui:typecheck
+            bazelisk test //ui:lint //ui:typecheck --test_output=errors
       - save_cache:
           key: v1-bazel-lint-{{ checksum "MODULE.bazel" }}
           paths:
