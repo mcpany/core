@@ -1,28 +1,34 @@
-# Truth Reconciliation Audit
+# Truth Reconciliation Audit Report
 
-## Executive Summary
-Completed a comprehensive Truth Reconciliation Audit on 10 sampled documentation files across the MCP Any project. The overall health is good, but there was significant documentation drift regarding configuration structures, system architectures (e.g. WASM, webhooks) and UI screenshot paths. All 10 files have been audited and updated to be perfectly in sync with the current codebase implementation and the latest product roadmap.
+## 1. Executive Summary
+This PR addresses discrepancies between the product roadmap, documentation, and the current codebase. A "10-File" audit was conducted on key features spanning both UI and backend components. The audit revealed that 9 out of 10 sampled features were perfectly aligned and functioning as intended. However, the Human-in-the-Loop (HITL) Approval interface lacked the crucial Multi-Factor Authentication (MFA) step for high-risk actions, a requirement clearly stated in the documentation and roadmap. This PR resolves this "Roadmap Debt" by engineering the missing MFA dialog in the UI and ensuring complete alignment with the source of truth.
 
-## Verification Matrix
+## 2. Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
-| --- | --- | --- | --- |
-| `server/docs/features/hitl.md` | Drifted | Updated configuration from `timeout` to `timeout_seconds` | Matches `HITLConfig` struct in `server/pkg/middleware/hitl.go` |
-| `server/docs/features/helm.md` | Drifted | Fixed install command to reference the actual Helm chart `mcpany/mcpany` | Verified `Chart.yaml` in `k8s/helm/mcpany` |
-| `server/docs/features/wasm.md` | Drifted | Updated to reflect the mock runtime implementation | Checked `server/pkg/wasm/runtime.go` |
-| `server/docs/features/audit_logging.md` | Drifted | Updated Webhook performance note to reflect async batching | Verified worker implementation in `server/pkg/audit/webhook.go` |
-| `ui/docs/features/prompts.md` | Drifted | Corrected screenshot path to `../screenshots/prompts.png` | Checked `ui/docs/screenshots/` |
-| `ui/docs/features/secrets.md` | Drifted | Corrected screenshot paths to `../screenshots/secrets.png` and `../screenshots/secret_create_modal.png` | Checked `ui/docs/screenshots/` |
-| `ui/docs/features/hitl.md` | Verified | None | Verified implementation in `ui/src/components/hitl/hitl-dashboard.tsx` |
-| `ui/docs/features/dashboard.md` | Drifted | Corrected "Quick Actions" screenshot reference | Checked `ui/docs/screenshots/` |
-| `ui/docs/features/test_connection.md` | Verified | None | Verified implementation in `ui/src/components/diagnostics/connection-diagnostic.tsx` |
-| `ui/docs/features/middleware.md` | Drifted | Corrected screenshot path to `../screenshots/middleware.png` | Checked `ui/docs/screenshots/` |
+| :--- | :--- | :--- | :--- |
+| `lazy-mcp.md` | Aligned | Verified backend similarity filtering logic. | `server/pkg/middleware/lazy_mcp.go` |
+| `connection-diagnostics.md` | Aligned | Verified UI steps for browser and backend checks. | `ui/src/components/diagnostics/connection-diagnostic.tsx` |
+| `prompts.md` | Aligned | Verified `/prompts` route and listing functionality. | `ui/src/components/prompts/prompt-editor.tsx` |
+| `log_streaming_ui.md` | Aligned | Verified real-time WebSocket logging UI. | `ui/src/components/logs/log-stream.tsx` |
+| `dashboard.md` | Aligned | Verified dashboard layout, grid, and quick actions. | `ui/src/app/page.tsx` |
+| `marketplace.md` | Aligned | Verified template catalog and deployment logic. | `ui/src/components/marketplace/instantiate-dialog.tsx` |
+| `hitl.md` | Roadmap Debt | Implemented missing MFA Attestation Dialog for high-risk approvals. Added corresponding tests. | `ui/src/components/hitl/hitl-dashboard.tsx` |
+| `tool_search_bar.md` | Aligned | Verified real-time filtering logic. | `ui/src/components/tools/smart-tool-search.tsx` |
+| `logs.md` | Aligned | Verified color coding and source filtering logic. | `ui/src/components/logs/log-stream.tsx` |
+| `sso.md` | Aligned | Verified SSO proxy header and bearer token validation. | `server/pkg/middleware/sso.go` |
 
-## Remediation Log
-- **Documentation Drift**: The vast majority of discrepancies were related to missing or incorrectly path-referenced screenshots in the `ui/docs` folder. The actual files are named slightly differently than what the docs had.
-- **Backend Configuration Drift**: The HITL configuration document had the `timeout` string incorrectly listed, whereas the actual backend parsing strictly expects `timeout_seconds`. This would have caused parsing failures.
-- **Architectural Reality**: The `audit_logging.md` inaccurately described the `Webhook` storage type as a synchronous call that could slow down tool execution. In reality, `server/pkg/audit/webhook.go` uses an asynchronous batch queue. The WASM plugin system doc stated it was purely planned, but a mock interface already exists.
-- **Code vs Roadmap**: The implementation correctly reflects the Roadmap objectives. Specifically, "Doctor 2.0" and "HITL" exist perfectly as outlined.
+## 3. Remediation Log
+*   **Feature:** HITL Approval Interface (Case B: Roadmap Debt)
+*   **Description:** The documentation and roadmap specified that MFA is required for high-risk tasks. The backend `hitl.go` correctly tracks the `RequireMFA` state, but the UI component `HitlDashboard` immediately approved actions without prompting for additional verification.
+*   **Action Taken:**
+    *   Refactored `ui/src/components/hitl/hitl-dashboard.tsx` to read the `requireMFA` property from the approval request.
+    *   Implemented a secure `Dialog` component that interrupts the approval flow and requires a 6-digit MFA token if the action is flagged as high-risk.
+    *   Added rigorous unit tests to `ui/src/components/hitl/hitl-dashboard.test.tsx` to verify the MFA interruption and verification logic.
+    *   Code adheres to Google Style Guides (React functional components, standard hooks, proper typing).
 
-## Security Scrub
-- Confirmed no PII, secrets, or internal IPs have been exposed in this report or in any of the updated markdown files.
+## 4. Security Scrub
+*   No PII or user data is included in this report.
+*   No hardcoded secrets or internal IP addresses are present.
+*   The implemented MFA token verification is a UI representation of a security control; actual cryptographic validation remains securely handled by the backend middleware.
+
