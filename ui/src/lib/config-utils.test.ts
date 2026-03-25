@@ -20,7 +20,7 @@ describe('sanitizeServiceConfig', () => {
             },
             workingDirectory: '/tmp'
         }
-    } as UpstreamServiceConfig;
+    } as unknown as UpstreamServiceConfig;
 
     it('should redact secrets when mode is redact', () => {
         const sanitizedRedact = sanitizeServiceConfig(baseMockService, 'redact');
@@ -48,7 +48,7 @@ describe('sanitizeServiceConfig', () => {
 
     it('should handle missing env', () => {
         const serviceNoEnv = { ...baseMockService, commandLineService: { command: 'cmd' } };
-        const sanitizedMissing = sanitizeServiceConfig(serviceNoEnv as UpstreamServiceConfig, 'redact');
+        const sanitizedMissing = sanitizeServiceConfig(serviceNoEnv as unknown as UpstreamServiceConfig, 'redact');
         expect(sanitizedMissing.commandLineService?.env).toBeUndefined();
     });
 });
