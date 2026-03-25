@@ -10,16 +10,14 @@ prepare:
 	@sudo chmod +x /usr/local/bin/bazelisk
 	@mkdir -p build/env/bin
 	@mkdir -p build/.cache
-	@touch build/env/bin/.keep
-	@touch build/.cache/.keep
 
-lint: prepare
+lint:
 	python3 server/tools/check_ts_doc.py ui/src
 	bazelisk run //:lint
 	bazelisk test //ui:typecheck //ui:lint
 
-test: prepare
+test:
 	bazelisk test //...
 
-build: prepare
+build:
 	bazelisk build //...
