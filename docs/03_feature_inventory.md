@@ -1,6 +1,16 @@
 # Feature Inventory: MCP Any
 
-## Evolution: [2026-03-24] Updates
+## Evolution: [2026-03-25] Updates
+
+### Proposed Additions
+- **Recursive Intent Delegation (RID) Validator**: (P0) Middleware for enforcing depth-limited intent mutations and cryptographic mission boundaries.
+- **WASM-BSH State Sanitizer**: (P0) Pluggable WASM sandbox for binary context validation and schema-based state sanitization.
+- **Zero-Copy Shared Memory Transport**: (P0) High-performance BSH transport using Linux `memfd_create` to eliminate serialization overhead.
+
+### Priority Shifts
+- **Relational PoI Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory mission-root chain verification to counter "Intent Ghosting".
+- **Binary State Handoff (BSH) Gateway**: (Re-affirmed P0) Evolving into the **Zero-Copy Transport** architecture.
+
 
 ### Proposed Additions
 - **Discovery-Phase Sandbox Middleware**: (P0) A secure, ephemeral execution environment for MCP discovery commands, preventing host-level "Ghost-Execution" exploits (Gemini CLI / OpenClaw CVE defense).
