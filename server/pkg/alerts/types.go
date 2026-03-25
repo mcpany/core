@@ -20,6 +20,7 @@ const (
 	// Summary: Defines SeverityCritica.
 	SeverityCritical Severity = "critical"
 	// SeverityWarning indicates a warning.
+	// Summary: Defines SeverityWarnin.
 	SeverityWarning Severity = "warning"
 	// SeverityInfo indicates an informational alert.
 	// Summary: Defines SeverityInf.
@@ -29,6 +30,7 @@ const (
 	// Summary: Defines StatusActiv.
 	StatusActive Status = "active"
 	// StatusAcknowledged indicates the alert has been acknowledged.
+	// Summary: Defines StatusAcknowledge.
 	StatusAcknowledged Status = "acknowledged"
 	// StatusResolved indicates the alert has been resolved.
 	// Summary: Defines StatusResolve.

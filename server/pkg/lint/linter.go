@@ -26,6 +26,7 @@ const (
 	// Summary: Defines Erro.
 	Error Severity = iota
 	// Warning indicates a potential issue or best practice violation that should be addressed.
+	// Summary: Defines Warnin.
 	Warning
 	// Info indicates a suggestion or informational message for optimization or clarity.
 	// Summary: Defines Inf.

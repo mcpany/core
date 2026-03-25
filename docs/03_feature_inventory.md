@@ -6,6 +6,164 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-03-20] Updates
+
+### Proposed Additions
+- **Intent-Bound Memory Shards**: (P0) Cryptographically isolated memory regions within the Shared KV Store (Blackboard) to prevent "Memory Smearing" and "EchoLeak" exfiltration during multi-hop reasoning.
+- **Ephemeral Discovery Sandbox**: (P0) A zero-trust, isolated environment for all discovery-time execution (e.g., `discoveryCommand`) to neutralize "Ghost-Execution" exploits.
+- **Multimodal Inference-Time Sanitizer (MITS)**: (P0) Real-time sanitization of non-textual reasoning traces (SVG, CSS, audio metadata) using matured OpenClaw `ContextEngine` hooks to detect and neutralize "Context Smuggling" via polyglot payloads.
+
+### Priority Shifts
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Elevated to support **Intent-Bound Memory Shards** as the primary state persistence model.
+- **Semantic Integrity Bridge**: (Re-affirmed P0) Evolving into the **MITS** to support multimodal trace sanitization.
+- **Negative Discovery Attestation Provider**: (Re-affirmed P0) Designated as a critical component of the **Ephemeral Discovery Sandbox** for pre-flight safety proofs.
+
+## Evolution: [2026-06-16] Updates
+
+### Proposed Additions
+- **Entangled State Broker (ESB)**: (P0) Authoritative coordination service for "Entanglement Shards" that are cryptographically bound to the mission-root intent.
+- **Stylometric Mimicry Mitigator (SMM)**: (P0) Security middleware that performs real-time stylometric analysis of inter-agent messages to detect reasoning-path shadowing.
+- **Speculative Branching Guard (SBG)**: (P1) Isolation service for un-executed reasoning paths that prevents speculative attention leakage.
+- **Mesh-Resident Key Exchange (MRKE) Provider**: (P0) Hardware-bound session key rotation service for sub-100ms inter-teammate coordination.
+
+## Evolution: [2026-06-19] Updates
+
+### Proposed Additions
+- **Context-File Integrity Attestation (CFIA)**: (P0) Core security service requiring hardware-attested hash signatures for all project-local natural language context files.
+- **Attention-Locked Tooling (ALT)**: (P0) Security middleware that cryptographically locks high-risk tool calls to user-verified reasoning anchors, neutralizing context-hijacking.
+- **Visual Attention Dashboard**: (P1) Advanced UI component for visualizing reasoning drivers and attention-level heatmaps.
+
+### Priority Shifts
+- **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ESB-compliant** state entanglement.
+- **Stylometric Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving to support the new **Stylometric Mimicry** defense requirements.
+
+## Evolution: [2026-06-08] Updates
+
+### Proposed Additions
+- **Atomic Reasoning Integrity (ARI) Validator**: (P0) Advanced security middleware for the Mailbox Integrity Middleware that performs fragment-level semantic validation of shared teammate state.
+- **HAMM-Locked MLE Gateway**: (P0) Upgrade for the MLE Gateway to support "Hardware-Attested Mission Manifests," providing an immutable, hardware-locked boundary for tool discovery and execution.
+- **Temporal Decay Orchestrator**: (P1) Lifecycle management service for the Temporal Sovereignty Controller that handles "Graceful Mission Decay" signals and manages restricted agency transitions.
+- **Fragment-Level Sovereignty Attestation Provider**: (P0) Advanced security service mandating ARI-attestation for all A2A-compliant teammates to access shared shards.
+
+### Priority Shifts
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ARI** integration to counter fragment-level state-splicing.
+- **Mission-Locked Execution (MLE) Gateway**: (Re-affirmed P0) Designated as the primary enforcement point for **HAMM-compliant** mission manifests.
+
+## Evolution: [2026-06-07] Updates
+
+### Proposed Additions
+- **Semantic Shadowing Mitigator (SSM)**: (P0) A behavioral security middleware for the AID Hub that performs stylometric and contextual consistency checks to detect mimicry-based intent hijacking.
+- **Mission-Locked Execution (MLE) Gateway**: (P0) Core security service that enforces cryptographic locking of tool calls and sub-delegations to a hardware-attested mission-root intent.
+- **STR-Native Discovery Provider**: (P1) Upgrade for the PNTD Provider to support "Sovereign Tool Registry" manifests and TPM-signed behavioral baselines.
+- **Temporal Sovereignty Controller**: (P1) Lifecycle management service implementing "Ephemeral Mission Roots" to prevent long-term session hijacking.
+
+### Priority Shifts
+- **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SSM** integration to counter mimicry attacks.
+- **Capability Garbage Collection (CGC) Provider**: (Re-affirmed P0) Designated as a critical mechanism for supporting the new **Temporal Sovereignty** requirements.
+
+## Evolution: [2026-05-23] Updates
+
+### Proposed Additions
+- **Federated Swarm Identity (FSI) Provider**: (P0) A local identity service that issues hardware-attested, cross-framework tokens for secure teammate verification in heterogeneous meshes.
+- **Intent-Leakage Shielding (ILS) Middleware**: (P0) Security extension for the MRP middleware that monitors semantic entropy and blocks subagent requests designed to probe mission-root constraints.
+- **Hardware-Attested Discovery Handshake (HADH) Gateway**: (P0) Advanced discovery service that mandates hardware-bound handshakes before revealing any agent capabilities to peers.
+- **Reasoning-Effort Quota Controller**: (P0) Resource management middleware that dynamically throttles high-intensity reasoning (e.g., `x-gemini-reasoning-effort`) to prevent Agentic DoS.
+
+## Evolution: [2026-05-24] Updates
+
+### Proposed Additions
+- **Active Negotiation Broker (ANB)**: (P0) Authoritative bidding bus for multi-agent auctions, utilizing hardware-attested Capability Cards to filter and validate bids locally.
+- **Differential Context Guarding (DCG) Middleware**: (P0) Security extension for the Mailbox Integrity Middleware that performs semantic analysis of tool outputs to prevent context-dump exfiltration.
+- **Zero-Knowledge Capability Proof (ZKCP) Provider**: (P1) Advanced discovery service allowing agents to prove skill possession without revealing sensitive implementation details during the discovery phase.
+- **Self-Correction Loop Arbiter**: (P0) Lifecycle security middleware that monitors subagent refinement drift and terminates sessions bypassing parent intent constraints.
+
+### Priority Shifts
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory DCG to counter CVE-2026-39102.
+- **`TeammateTool` Orchestration Adapter**: (Re-affirmed P0) Evolving to support ANB-native task auctions.
+
+## Evolution: [2026-05-23] Updates
+
+### Proposed Additions
+- **Local-Only WebSocket Auth (LOWA) Gateway**: (P0) A mandatory security layer for all local listeners that enforces session-bound authentication to neutralize "ClawJacked" style brute-force attacks.
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: (P0) Infrastructure for secure, peer-to-peer mailbox messaging and task list synchronization between teammates from disparate frameworks.
+- **Mailbox Integrity Middleware**: (P0) Security extension for the T2T Bridge that validates inter-agent messages against the "Mission Root" intent to prevent malicious mailbox injection.
+- **Full-Mesh Discovery Auth Provider**: (P0) Advanced discovery service that mandates hardware-attested handshakes before revealing agent capability cards in a mesh environment.
+
+### Priority Shifts
+- **Inter-Agent Mailbox Guard (IAMG)**: (Evolved to Mailbox Integrity Middleware) Now designated as a mandatory requirement for all mesh-based teammate coordination.
+- **Origin-Locked Agent Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory session-bound LOWA authentication.
+
+## Evolution: [2026-05-21] Updates
+
+### Proposed Additions
+- **Cognitive Load Shedding (CLS) Controller**: (P0) A high-speed stability middleware that dynamically throttles or revokes subagent capabilities based on real-time reasoning intensity and mission stability scores.
+- **Temporal Reasoning Attestation (TRA) Provider**: (P0) Security extension for the SRM Provider that adds hardware-attested monotonic timestamps to reasoning fragments to neutralize "Reasoning Timing Attacks."
+- **CFRR Reconciliation Adapter**: (P1) Orchestration bridge for OpenClaw's Conflict-Free Replicated Reasoning engine, enabling MCP Any to merge non-conflicting reasoning traces in parallel teams.
+- **Hardware-Attested Privacy Enclave (HAPE) Adapter**: (P0) Infrastructure for local, hardware-bound processing of sensitive PII context, providing only sanitized intent fragments to cloud providers.
+
+### Priority Shifts
+- **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory TRA to prevent context-switch hijacking.
+- **TeammateTool Orchestration Adapter**: (Re-affirmed P0) Evolving to support CFRR-native state reconciliation.
+
+## Evolution: [2026-05-20] Updates
+
+### Proposed Additions
+- **Policy-Bound Reasoning (PBR) Adapter**: (P0) Infrastructure for hosting and enforcing immutable "Policy Anchors" at the pre-reasoning layer, ensuring cross-framework cognitive governance.
+- **Multi-modal Integrity Bridge (MIB)**: (P0) Upgrade for the Semantic Integrity Bridge providing real-time sanitization of non-textual traces (SVG, CSS, Audio metadata) to prevent context smuggling.
+- **AIR Reconciliation Broker**: (P1) Decentralized intent reconciliation service utilizing hardware-attested multi-signature quorums to resolve conflicting swarm objectives.
+
+### Priority Shifts
+- **Semantic Integrity Bridge**: (Evolved to MIB) Now designated as the primary defense against multi-modal "Context Smuggling" exploits.
+- **Cognitive Truth Attestation Hub**: (Promoted to P0) Critical for providing the verifiable proof required for AIR-mediated intent reconciliation.
+
+## Evolution: [2026-05-19] Updates
+
+### Proposed Additions
+- **Signed Reasoning Monologue (SRM) Provider**: (P0) A core security middleware that cryptographically binds internal monologues to hardware-attested sessions, neutralizing "Reasoning Hijacking."
+- **Namespace-Locked Discovery (NLD) Gateway**: (P0) Advanced extension for the PNTD Provider that ensures deterministic and collision-free capability mapping across registries.
+- **HASS-Compliant PLSS Manager**: (P0) Upgrade for the Project-Local Snapshot Sync supporting TPM-signed environment snapshots for "Deterministic Sandbox Recovery."
+- **Cognitive Truth Attestation Hub**: (P1) Advanced orchestration service that provides verifiable proof of reasoning integrity across heterogeneous agent swarms.
+
+### Priority Shifts
+- **Project-Local Snapshot (PLSS) Sync**: (Promoted to P0) Now critical for implementing HASS-compliant "Point-in-Time Integrity."
+- **PNTD Discovery Provider**: (Re-affirmed P0) Now designated as the mandatory registry for all enterprise swarms to support NLD.
+
+## Evolution: [2026-05-18] Updates
+
+### Proposed Additions
+- **Mission-Root Pinning (MRP) Middleware**: (P0) A transport-level security component that protects the "Mission Root" from context-window eviction during high-frequency "noise" injections (MRE defense).
+- **State-Trust Labeling (STL) Provider**: (P0) Security extension for the Blackboard that tags all KV data with the trust level of its origin framework, neutralizing PASI (Protocol-Agnostic State Injection).
+- **Wait-Graph Deadlock Resolver**: (P1) Advanced orchestration service for the `TeammateTool` Adapter that proactively breaks circular task dependencies in parallel swarms.
+- **Intent-Weighted Context Summarizer**: (P1) Upgrade for the ContextEngine Adapter supporting RCE v2.0 logic for mission-anchored context compression.
+
+### Priority Shifts
+- **TeammateTool Orchestration Adapter**: (Re-affirmed P0) Now elevated with the requirement for "Multi-Agent Quorum" (MAQ) cross-framework coordination.
+- **Contextual Quorum (CQ) Hub**: (Promoted to P0) Critical for supporting the new Claude-led MAQ protocol for high-risk actions.
+
+## Evolution: [2026-05-17] Updates
+
+### Proposed Additions
+- **`TeammateTool` Orchestration Adapter**: (P0) Infrastructure for cross-framework "Agent Teams," facilitating Claude-style delegation and synchronization for heterogeneous swarms.
+- **Transport-Layer Session Binder (TLSB)**: (P0) A security middleware that cryptographically binds inter-agent transport channels (Named Pipes/WebSockets) to hardware-attested reasoning session tokens.
+- **Authenticated Agent Card Discovery**: (P0) Identity-bound discovery service for the A2A Messaging Hub that enforces "Auth-Before-Discovery" for agent capabilities.
+- **ContextEngine Lifecycle Adapter (v2026.3.7)**: (P0) Upgrade for the ContextEngine Adapter to support the full OpenClaw v2026.3.7 lifecycle hooks for third-party context plugins.
+
+### Priority Shifts
+- **A2A Messaging Hub**: (Re-affirmed P0) Designated as the primary gateway for the new "Authenticated Agent Card Discovery."
+- **Isolated Named-Pipe Transport Middleware**: (Re-affirmed P0) Elevated with the requirement for mandatory TLSB to prevent "Team Ghosting."
+
+## Evolution: [2026-05-16] Updates
+
+### Proposed Additions
+- **Reasoning Quorum Middleware**: (P0) Infrastructure for agents to reach a cryptographically bound quorum on non-deterministic reasoning outputs, neutralizing "Hallucination Variance."
+- **Transport-Layer Session Binder**: (P0) Security middleware that cryptographically binds every named-pipe and local transport connection to a unique hardware-attested reasoning session token.
+- **RRRA Budget Controller**: (P1) Advanced resource manager implementing Reasoning-Responsive Resource Allocation, scaling compute/token budgets based on real-time reasoning intensity.
+- **Intent-Aware Transport Proxy**: (P1) Efficiency middleware that performs semantic deduplication of coordination messages between parallel agents sharing a mission root.
+
+### Priority Shifts
+- **Coordination Token Optimizer**: (Promoted to P0) Critical for neutralizing the overhead and "Team Ghosting" risks in parallel swarm coordination.
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to support the new Reasoning-Level Consensus (RLC) requirements.
+
 ## Evolution: [2026-05-15] Updates
 
 ### Proposed Additions
@@ -332,6 +490,7 @@
 - **Resident Integrity Monitor (RIM)**: (Re-affirmed P0) Now elevated to the primary mechanism for supporting "Continuous Sandbox Persistence Proofs."
 - **LFTA Trust Lease Manager**: Promoted to **P0**. Essential for scaling high-frequency attestation in deep swarms.
 
+---
 ---
 
 ## Evolution: [2026-04-17] Updates
@@ -684,6 +843,18 @@
 ### Deprecations / Monitoring
 - **Framework-Specific Feedback Logs**: Monitoring for deprecation. Feedback should be normalized via the Unified Telemetry Bridge.
 
+## Evolution: [2026-03-20] Updates
+
+### Proposed Additions
+- **Hardware-Attested Mission Manifest (HAMM) Provider**: (P0) Authoritative service for enforcing TPM-signed, immutable capability manifests for subagent mission branches.
+- **Asynchronous Mailbox Sharding (AMS) Middleware**: (P0) Coordination service for horizontal swarms that hosts granular, task-bound mailbox shards to eliminate coordination locks.
+- **Mission-Root Budget Enforcer**: (P0) Resource management layer that enforces hardware-attested reasoning and token limits based on Claude Code "effort" and "maxTurns" patterns.
+- **A2A Multi-Channel Inbox Bridge**: (P1) Extension for the A2A Messaging Hub that facilitates secure coordination across 20+ messaging platforms with session-bound context preservation.
+
+### Priority Shifts
+- **A2A Messaging Hub**: (Re-affirmed P0) Now designated as the primary backend for the **A2A Multi-Channel Inbox Bridge**.
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving to support **AMS-compliant** granular state synchronization.
+
 ---
 
 ## Evolution: [2026-03-21] Updates
@@ -699,13 +870,15 @@
 ## Evolution: [2026-03-22] Updates
 
 ### Proposed Additions
-- **UACO Agentic SLA Middleware**: (P0) Enforcement layer for resource contracts (token budget, reasoning time) during UACO task delegation.
+- **UACO Agentic SLA Middleware**: (P0) Enforcement layer for hardware-attested resource contracts (token budget, reasoning time) during task delegation.
+- **Lock-Free Mesh Coordination**: (P0) Sharded, CRDT-based mailbox synchronization to eliminate "Mailbox Lock" bottlenecks in horizontal swarms.
+- **ARL (Attestation Revocation List) Provider**: (P0) Real-time, hardware-bound capability revocation service to neutralize "Trust Lease" vulnerabilities.
 - **Federated Policy Synchronizer**: (P1) A secure bus for synchronizing CAC hashes and allowed-origin lists across multiple MCP Any instances.
 - **Ghost Shell Execution Mode**: (P0) Isolated, instrumented profiling environment for un-attested hooks, providing behavioral insights before attestation.
 
 ### Priority Shifts
-- **UACO v1.5 RCC Validator**: Re-affirmed as **P0**. Essential foundation for the new SLA middleware.
-- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Expanded to support "SLA-Aware State Locking" to prevent resource-heavy contention.
+- **UACO v1.5 RCC Validator**: Re-affirmed as **P0**. Essential foundation for the new SLA middleware and capability revocation.
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving to support **Lock-Free Sharding** and CRDT-based state reconciliation.
 
 ### Deprecations / Monitoring
 - **Unbounded Task Delegation**: Moving toward total deprecation. All UACO delegations must eventually include a resource contract (SLA).
@@ -972,3 +1145,359 @@
 ### Priority Shifts
 - **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Now elevated as the primary solution for the "Approval Fatigue" scaling bottleneck.
 - **Pluggable Context Bridge**: (Re-affirmed P0) Expanded to support the new Standardized Context Sidecar Interface.
+
+## Evolution: [2026-05-25] Updates
+
+### Proposed Additions
+- **Reasoning-Budget Firewall (RBF)**: (P0) Authoritative economic gatekeeper that enforces strictly scoped, hardware-attested token and ARE budgets for subagents to prevent Reasoning-Budget Hijacking.
+- **Asynchronous Mailbox Sharding (AMS) Middleware**: (P0) Upgrade for the T2T Encryption Bridge that hosts granular, task-bound mailbox shards to eliminate "Mailbox Lock" bottlenecks.
+- **Cognitive Stall Arbitrator (CSA)**: (P0) Stability middleware that monitors semantic entropy and refinement drift to detect and terminate non-convergent subagent loops.
+- **Identity Fragment Attestation (IFA) Provider**: (P0) Security extension for the T2T Bridge mandating hardware-attested, session-bound tokens for every mailbox request to prevent identity spoofing.
+
+### Priority Shifts
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Now elevated with the requirement for AMS to support high-density parallel swarms.
+- **Reasoning-Effort Quota Controller**: (Evolved to Reasoning-Budget Firewall) Now designated as a mandatory defense against Reasoning-Budget Hijacking (RBH).
+
+## Evolution: [2026-05-26] Updates
+
+### Proposed Additions
+- **Foundation Governance Sync**: (P0) Neutral coordination middleware for cross-framework agent coordination, implementing OpenClaw Foundation standards.
+- **Asynchronous Mailbox Sharding (AMS) Middleware**: (P0) Scaling extension for the T2T Bridge that hosts granular, task-bound mailbox shards to eliminate "Mailbox Lock" bottlenecks.
+- **Hardware-Attested Monologue Provider**: (P0) Advanced security service mandating hardware-bound encryption for subagent reasoning monologues to ensure cognitive privacy.
+
+### Priority Shifts
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for **Intent-Scoped ARE Enforcement** to counter subagent spoofing.
+- **T2T Encryption Bridge**: (Re-affirmed P0) Designated as the primary infrastructure for AMS-based non-blocking teammate coordination.
+
+## Evolution: [2026-05-27] Updates
+
+### Proposed Additions
+- **Sovereign Mesh Identity (SMI) Relay**: (P0) Federated identity service that provides hardware-attested identity fragments that persist across local and multi-cloud environments.
+- **Fragment-Aware Mailbox Isolation (FAMI)**: (P0) Security extension for the Mailbox Integrity Middleware that performs semantic analysis of state fragments to prevent "State Splicing" exfiltration.
+- **Recursive Delegation Reaper (RDR)**: (P0) Stability middleware that monitors branching depth and semantic redundancy to prune non-convergent or redundant subagent branches.
+- **Cross-Mission Budget Continuity Provider**: (P1) Resource management service allowing reasoning budgets to be reconciled across mission phases and framework-neutral handoffs.
+
+### Priority Shifts
+- **Federated Swarm Identity (FSI) Provider**: (Re-affirmed P0) Evolving to act as the authoritative "SMI Relay" for cross-cloud agent swarms.
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for "Cross-Mission Budget Continuity."
+
+## Evolution: [2026-05-28] Updates
+
+### Proposed Additions
+- **Command Traceability Provider (CTP)**: (P0) Authoritative security middleware that issues cryptographically signed "Chain of Command" tokens for every instruction.
+- **Autonomous PR Integrity Gate (APRIG)**: (P0) Multi-agent security quorum for code-generating tool calls, requiring independent attestation for pull request safety.
+- **Trace-Aware Identity Propagation (TAIP)**: (P0) Extension for the SMI Relay that ensures hardware-attested identities carry full lineage metadata.
+- **Reasoning-Effort Attribution Middleware**: (P1) Resource management service that cryptographically attributes token and compute usage to specific mission-root branches.
+
+### Priority Shifts
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Reasoning-Effort Attribution**.
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to support the new APRIG multi-agent quorum for PR safety.
+
+## Evolution: [2026-05-30] Updates
+
+### Proposed Additions
+- **T2T Identity Rotation Provider**: (P0) Advanced security service for the T2T Bridge that manages hardware-attested, session-bound identity rotation to neutralize teammate impersonation.
+- **Teammate Task-List Arbiter**: (P0) Coordination middleware for horizontal swarms that provides lock-free, asynchronous task-claiming logic to resolve "Mailbox Lock" bottlenecks.
+- **Hardware-Attested Mesh Snapshot (HAMS)**: (P1) Stability service that provides cryptographically signed snapshots of the entire mesh state for mission-root consistency.
+
+### Priority Shifts
+- **Mesh-Bound Context Sovereignty Bridge**: (Re-affirmed P0) Now elevated with the requirement for **Hardware-Attested Identity Rotation**.
+- **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now designated as the primary backend for the **Teammate Task-List Arbiter**.
+
+## Evolution: [2026-06-01] Updates
+
+### Proposed Additions
+- **Machine-Speed Swarm Quarantine (MSSQ)**: (P0) Advanced security middleware extension for the CSAD Hub that performs sub-millisecond, autonomous revocation of agent capabilities across a compromised mission scope.
+- **Adaptive Context Lifecycle Orchestrator**: (P0) Authoritative sidecar host for OpenClaw-compatible ContextEngine plugins, enforcing mission-root security policies across pluggable state management strategies.
+- **Autonomous Verification Quorum (AVQ) Hub**: (P0) Distributed security middleware that facilitates hardware-attested, multi-agent quorums for high-stakes tasks, bridging the "Delegation Gap."
+- **Authenticated A2A Discovery Enforcer**: (P0) Mandatory discovery gate that implements the Gemini CLI v0.33.0 baseline, ensuring agent capabilities are cryptographically invisible to unauthenticated peers.
+
+### Priority Shifts
+- **Collective Swarm Anomaly Detection (CSAD) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory MSSQ integration to support machine-speed response.
+- **ContextEngine Lifecycle Adapter**: (Re-affirmed P0) Evolving into the **Adaptive Context Lifecycle Orchestrator** to support full plugin hosting and security enforcement.
+
+---
+
+## Evolution: [2026-05-31] Updates
+
+### Proposed Additions
+- **Lock-Free Mesh Arbiter (LFMA)**: (P0) A core coordination service implementing CRDT-based task list synchronization for non-blocking teammate coordination in horizontal swarms.
+- **Sharded Mailbox Sovereignty (SMS) Middleware**: (P0) Advanced extension for the T2T Bridge providing task-bound mailbox shards to eliminate global coordination locks.
+- **Autonomous Task Reaper (ATR)**: (P1) Stability service that monitors teammate liveness and reasoning monologues to reclaim and re-auction "Ghost" tasks.
+- **Hardware-Attested Identity Rotation (HAIR) Provider**: (P0) Security middleware mandating periodic, hardware-bound identity rotation for inter-teammate requests in sharded meshes.
+
+### Priority Shifts
+- **Teammate Task-List Arbiter**: (Evolved to Lock-Free Mesh Arbiter) Now designated as the primary mechanism for lock-free horizontal coordination.
+- **Asynchronous Mailbox Sharding (AMS) Middleware**: (Evolved to Sharded Mailbox Sovereignty) Now elevated with mission-root intent anchoring.
+
+## Evolution: [2026-05-29] Updates
+
+### Proposed Additions
+- **Collective Swarm Anomaly Detection (CSAD) Hub**: (P0) Advanced security middleware that performs cross-agent behavioral analysis to detect coordinated "Hivenet" swarm attacks.
+- **Cross-Mesh Command Sovereignty (CMCS) Provider**: (P0) Identity service that issues hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms.
+- **Atomic Teammate Handshake (ATH) Gateway**: (P0) Security middleware mandating hardware-attested identity exchange before teammate task delegation.
+- **Mesh-Bound Context Sovereignty Bridge**: (P0) Security extension for the DCG middleware that performs semantic fragment analysis across teammate boundaries.
+
+### Priority Shifts
+- **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
+- **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
+
+## Evolution: [2026-06-02] Updates
+
+### Proposed Additions
+- **Reasoning Path Attestation (RPA) Provider**: (P0) Advanced extension for the SRM Provider that cryptographically signs every step in an agent's chain-of-thought using hardware (TPM) attestation.
+- **Spectral Reasoning Mitigator**: (P0) Security middleware that injects reasoning-aware timing jitter into ARE headers to neutralize timing-based side-channel attacks in autonomous swarms.
+- **CSP v1.0 Native Bridge**: (P0) Authoritative adapter for the OpenClaw Context Sovereignty Protocol, providing recursive redaction and ownership hooks for context sidecars.
+- **Dynamic Context Sharding Adapter**: (P0) High-efficiency coordination middleware that enables granular context streaming between teammates, neutralizing "Mailbox Lock" bottlenecks.
+
+### Priority Shifts
+- **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hardware-Bound RPA** to ensure cognitive path integrity.
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support **CSP-compliant recursive redaction** for sharded teammate meshes.
+
+## Evolution: [2026-06-03] Updates
+
+### Proposed Additions
+- **Cross-Framework Attestation Translator (CFAT)**: (P0) Advanced bridge for the SRM Provider that translates Gemini's proprietary attestation format into OpenClaw-compliant signatures.
+- **Atomic Shard Lock-Manager (ASLM)**: (P0) A kernel-level locking service for the Context Sharding middleware that prevents parallel write collisions during granular state streaming.
+- **Zero-Latency Shard Prefetcher**: (P1) Optimization service that speculative loads context shards based on real-time intent analysis to reduce streaming latency.
+
+### Priority Shifts
+- **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for **CFAT** to ensure trust continuity across heterogeneous frameworks.
+- **Live Context Sharding Middleware**: (Re-affirmed P0) Now elevated with the requirement for **ASLM** to prevent state corruption in horizontal meshes.
+
+## Evolution: [2026-06-05] Updates
+
+### Proposed Additions
+- **Intent-Splicing Detector (ISD)**: (P0) Security extension for the Semantic Integrity Bridge that performs active deconstruction and structural validation of inter-agent messages to prevent instruction splicing.
+- **Recursive Accountability Tracker (RAT)**: (P0) Lifecycle security service that recursively tracks capability lineage and enforces immediate revocation upon sub-intent termination.
+- **HAIL Lineage Provider**: (P0) Identity extension for the SRM Provider supporting Hardware-Attested Intent Lineage for non-repudiable mission-root attestation.
+- **Synthetic Policy Synthesizer**: (P1) Experimental middleware for swarm-local generation and hardware-attestation of dynamic security policies based on mesh behavior.
+
+### Priority Shifts
+- **Semantic Integrity Bridge**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ISD** to counter OpenClaw v3.0.0-rc1 style intent-splicing.
+- **Pre-Commit Speculative Sanitizer (PCSS)**: (Re-affirmed P0) Evolving to support active intent-deconstruction for "Speculative Splicing" defense.
+
+## Evolution: [2026-06-04] Updates
+
+### Proposed Additions
+- **Pre-Commit Speculative Sanitizer (PCSS)**: (P0) A high-performance security middleware for the Speculative Execution Guard that performs real-time semantic analysis and sanitization of context fragments before they are ingested by the reasoning engine.
+- **Mission-Root Gravity (MRG) Middleware**: (P0) Advanced extension for the Live Context Sharding middleware that "pins" the primary mission intent to every sharded context fragment to prevent "Semantic Drift" in granular meshes.
+- **Multi-Hop Persistence Relay (MHPR)**: (P0) Performance-optimizing security service for the LFTA Trust Lease Manager that allows hardware-attested trust leases to persist across multiple delegation hops.
+- **Sub-Millisecond ARL Synchronizer**: (P1) High-speed listener for the LFTA ARL Middleware that synchronizes with global ARL v3.0 repositories in sub-100ms intervals to prevent "Stale-Token Hijacking."
+
+### Priority Shifts
+- **Speculative Execution Guard**: (Re-affirmed P0) Now elevated with the requirement for mandatory **PCSS** to counter speculative fragment poisoning.
+- **Live Context Sharding Middleware**: (Re-affirmed P0) Now elevated with the requirement for **MRG** to maintain mission-root sovereignty in horizontal meshes.
+
+## Evolution: [2026-06-06] Updates
+
+### Proposed Additions
+- **Active Intent-Deconstruction (AID) Hub**: (P0) Advanced security middleware extension for the Semantic Integrity Bridge that performs real-time deconstruction and structural validation of all inter-agent messages.
+- **Capability Garbage Collection (CGC) Provider**: (P0) Authoritative security service for the EPM and LFTA providers that recursively tracks capability lineage and enforces immediate revocation upon sub-intent termination.
+- **HAIL v0.36.1 Lineage Provider**: (P0) Identity extension for the SRM Provider supporting hardware-attested intent lineage for non-repudiable mission-root attestation.
+- **Mission-Root Lineage Attestation (MRLA) Gateway**: (P0) Advanced A2A handshake gateway mandating proof of mission-root lineage before capability discovery.
+
+### Priority Shifts
+- **Semantic Integrity Bridge**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Active Intent-Deconstruction (AID)** to counter semantic splicing.
+- **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Evolving to support mandatory **Capability Garbage Collection (CGC)** for all task-bound leases.
+
+## Evolution: [2026-06-09] Updates
+
+### Proposed Additions
+- **Recursive Integrity Verification (RIV) Provider**: (P0) Advanced security service evolving the ARI Validator to support lineage-aware proofs across infinite delegation hops, neutralizing Logic Drift.
+- **Context-Window Pinning (CWP) Middleware**: (P0) Attention-governance middleware that utilizes hardware-bound headers to protect mission-root anchors from Context-Window Flooding (CWF).
+- **Ephemeral Credential Manager (ECM)**: (P1) Lifecycle extension for the EPM that issues task-specific, mission-bound JWTs to neutralize Credential Squatting in specialist agents.
+- **Mesh-Resident Lineage Tracker**: (P0) Orchestration UI component for visualizing and auditing the hardware-attested Chain-of-Thought Lineage across deep swarms.
+
+### Priority Shifts
+- **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RIV** integration to support multi-hop mission-root sovereignty.
+- **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Designated as the primary infrastructure for **EMC-compliant** credential issuance.
+
+## Evolution: [2026-06-10] Updates
+
+### Proposed Additions
+- **Layer-7 Semantic Inspection Hub (L7SIH)**: (P0) Advanced security middleware for the ISD Hub that performs real-time, high-entropy semantic analysis of inter-teammate coordination to neutralize REE.
+- **Environment Sovereignty Enforcer (ESE)**: (P0) Core security service for the EPM and LOWA providers that mandates hardware-attested "Environment Scrubbing" to prevent ILPE exfiltration.
+- **Continuous Fragment-Integrity Attestation (CFIA) Provider**: (P1) Lifecycle management service for sharded meshes that provides cryptographically signed proofs of shard-level integrity to counter MRLB.
+- **Mission-Root Attestation Registry**: (P0) Authoritative registry for hardware-attested identity fragments and their environmental bounds, ensuring non-repudiable mission-root sovereignty.
+
+### Priority Shifts
+- **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **L7SIH** integration to counter high-entropy noise injection.
+- **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Evolving to act as the primary enforcement point for **ESE-compliant** environment scrubbing.
+
+## Evolution: [2026-06-11] Updates
+
+### Proposed Additions
+- **Active Reasoning Interdiction (ARI) Hub**: (P0) Authoritative reasoning validator utilizing semantic hash-chaining to detect and block "Logic Grafting" at the coordination fragment level.
+- **Hardware-Attested Attention Locking (HAAL)**: (P0) Core attention governance middleware utilizing hardware-bound headers to cryptographically lock mission-critical fragments.
+- **DTAI Bridge**: (P1) Performance-optimizing identity bridge supporting "Distributed Trace-Aware Identity" for sub-millisecond teammate verification.
+- **Reasoning Provenance Validator**: (P0) Security extension for the MAQ Hub mandating hardware-attested, hash-chained reasoning lineages for all high-risk actions.
+
+### Priority Shifts
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for **Mission-Root Budget Continuity** (ARE v1.6 compliance).
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving into the **Reasoning Provenance Validator** to counter swarm coordination breakdowns.
+
+## Evolution: [2026-06-12] Updates
+
+### Proposed Additions
+- **Shadow Coordination Interceptor (SCI)**: (P0) Advanced security middleware for the T2T Bridge that monitors non-primary channels (metadata, tags) for out-of-band subagent collusion.
+- **Mesh-Resident Attestation (MRA) Provider**: (P0) Core security service utilizing hardware-bound (TPM) primitives to generate and verify collision-resistant semantic hashes for the ARI Hub.
+- **Dynamic Attention Gating (DAG) Middleware**: (P0) Stability middleware that dynamically gates subagent reasoning fragments based on parent attention-utilization to prevent REE.
+
+### Priority Shifts
+- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MRA-compliant** hash-chaining to counter spoofing.
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Designated as the primary integration point for the **SCI** to neutralize shadow coordination.
+
+## Evolution: [2026-06-13] Updates
+
+### Proposed Additions
+- **Shadow Coordination Interceptor (SCI)**: (P0) Authoritative security service for the T2T Bridge that monitors transport metadata and state-tags to neutralize out-of-band collusion.
+- **Dynamic Attention Gating (DAG) Middleware**: (P0) Stability middleware that performs real-time attention-utilization analysis and dynamically prunes noise to prevent REE-driven intent eviction.
+- **Hardware-Locked Coordination Handshake**: (P0) Core security standard mandating hardware-bound session attestation for all inter-agent state fragments and task bidding.
+
+### Priority Shifts
+- **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Designated as the primary enforcement mechanism for **Attention-Locked Context Windows**.
+- **Mesh-Resident Attestation (MRA) Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SCI-compliant** metadata signing.
+
+## Evolution: [2026-06-14] Updates
+
+### Proposed Additions
+- **Structural Metadata Sanitizer (SMS)**: (P0) Advanced security service for the PNTD Provider that performs real-time semantic sanitization of tool descriptions and examples to neutralize SDMI.
+- **Multi-Hop Persistence Relay (MHPR)**: (P0) Performance-optimizing security middleware for the SMI Relay that facilitates hardware-attested trust lease propagation across deep swarms.
+- **Attention-Locked Context Sharding (ALCS)**: (P0) Security extension for the SMS and HAAL providers that cryptographically pins mission-critical fragments to protected attention tiers.
+- **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative gateway for the Discovery Bus that performs hardware-attested validation of all tool capability cards.
+
+### Priority Shifts
+- **PNTD Discovery Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SMS** integration to counter metadata-based reasoning hijacking.
+- **Sovereign Mesh Identity (SMI) Relay**: (Re-affirmed P0) Evolving to act as the primary backend for the **Multi-Hop Persistence Relay (MHPR)**.
+
+## Evolution: [2026-06-15] Updates
+
+### Proposed Additions
+- **Intent-Resumption Gateway (IRG)**: (P0) Authoritative resumption broker implementing OpenClaw-compliant "Intent-Resumption Tokens" to eliminate cognitive stall during teammate rotation.
+- **Side-Channel Timing Mitigator (SCTM)**: (P0) Advanced security middleware for the ASLM that injects hardware-attested timing jitter to neutralize shard-collision timing attacks.
+- **Attention-Locked Telemetry Proxy**: (P1) Authoritative telemetry sanitizer for Gemini-compliant reasoning traces, ensuring attention-mapping privacy during RL feedback export.
+- **WASM-Hook Behavioral Profiler**: (P0) Mandatory extension for the SMS that performs sandboxed profiling of AI-generated configuration hooks to counter PR "Logic Bombs."
+
+### Priority Shifts
+- **Atomic Shard Lock-Manager (ASLM)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SCTM** integration to counter timing-based side-channel attacks.
+- **Structural Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving to support the new **WASM-Hook Behavioral Profiling** requirement.
+
+## Evolution: [2026-06-17] Updates
+
+### Proposed Additions
+- **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment service that issues hardware-attested heartbeats to ensure specialist agent reasoning traces remain mission-anchored.
+- **Multi-Modal Behavioral Attestation (MMBA) Provider**: (P0) Advanced identity service anchoring stylometric profiles to multi-modal trace history (SVG/Audio) to neutralize stylometric collision.
+- **Reasoning-Aware Garbage Collection (R-GC) Manager**: (P1) Stability middleware for the Speculative Branching Guard that purges low-utility context fragments.
+- **Temporal Shard Jitter (TSJ) Injector**: (P0) Security extension for the ESB that injects hardware-attested timing jitter to neutralize CVE-2026-62001.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **Autonomous Mission Resumption (AMRA) Hub**: (P0) Authoritative resumption service that provides hardware-locked, monotonic re-attestation for long-running agent missions.
+- **Semantic Entanglement Sanitizer (SES)**: (P0) Security middleware for the Entangled State Broker that redacts private reasoning monologues before mesh synchronization.
+- **Logic-Grafting Interceptor (LGI)**: (P0) Advanced security extension for the ARI Hub that performs fragment-level semantic hash-chaining to detect unauthorized reasoning paths.
+- **Hardware-Locked Monotonic Re-Attestation Provider**: (P0) Advanced security service mandating TPM-bound monotonic counters for all mission-resumption handshakes.
+
+### Priority Shifts
+- **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SES-compliant** state sanitization to protect monologue privacy and mandatory **TSJ Injection** for all cross-mission synchronization.
+- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Evolving to support the new **Logic-Grafting Interceptor** to counter CVE-2026-71002.
+- **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
+
+## Evolution: [2026-06-20] Updates
+
+### Proposed Additions
+- **Context-File Integrity Attestation (CFIA)**: (P0) Authoritative security service mandating hardware-attested hash signatures for all project-local natural language context files (e.g., `GEMINI.md`).
+- **Attention-Locked Tooling (ALT)**: (P0) Security middleware that cryptographically locks high-risk tool calls to user-verified reasoning anchors, neutralizing context-hijacking.
+- **Semantic Lineage Tracking**: (P1) Security extension providing a cryptographically signed "Chain of Reason" for tool calls.
+
+### Priority Shifts
+- **Visual Attention Dashboard**: (P1) Now elevated to a critical requirement for supporting the **ALT** user-verification flow.
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support the new **Teammate Mailbox** security requirements.
+
+## Evolution: [2026-06-21] Updates
+
+### Proposed Additions
+- **Mission-Root Continuity Provider (MRCP)**: (P0) Authoritative resumption hub for long-running swarms, facilitating hardware-locked reasoning-path persistence across teammate rotations and framework handoffs.
+- **Mailbox Injection Shield (MIS)**: (P0) Advanced security extension for the Mailbox Integrity Middleware that performs real-time hardware-attested validation of task-claiming metadata to neutralize "Mailbox Splicing."
+- **Hardware-Attested Budget Persistence**: (P0) Compliance extension for the Reasoning-Budget Firewall (RBF) that cryptographically binds reasoning and token budgets to hardware sessions.
+- **Mesh-Resident Logic-Grafting Interceptor**: (P1) Stability middleware for the ARI Hub that monitors semantic entropy in shared shards to prevent unauthorized logic grafting.
+
+### Priority Shifts
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MIS** integration to counter horizontal mesh exploits.
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with mandatory support for **ARE v1.7** hardware-attested budget persistence.
+- **Intent-Resumption Gateway (IRG)**: (Re-affirmed P0) Designated as the primary infrastructure for implementing **MRCP-compliant** mission resumption.
+
+## Evolution: [2026-06-22] Updates
+
+### Proposed Additions
+- **Channel-Bound Session Isolation (CBSI) Provider**: (P0) Security middleware mandating absolute sovereignty between multi-channel sessions (WhatsApp, Slack, Discord) using platform-bound session tokens.
+- **Attention-Density Guard (ADG)**: (P0) Cognitive security service utilizing hardware-bound attention-locking headers to "pin" mission-critical intent fragments at the LLM attention layer.
+- **Headless Handoff Continuity (HHC) Bridge**: (P0) Orchestration middleware facilitating cryptographically signed parent-to-child intent transfers for process-based subagent handoffs.
+- **Multi-Modal Attention Sanitizer**: (P1) Security extension for the MIB performing real-time analysis of non-textual traces to block attention-eviction probes.
+
+### Priority Shifts
+- **Multi-modal Integrity Bridge (MIB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Attention Sanitization** to counter high-entropy multimodal probes.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to support the new **HHC-compliant** headless handoff patterns.
+
+## Evolution: [2026-06-23] Updates
+
+### Proposed Additions
+- **Recursive Mission-Root Attestation (RMRA) Provider**: (P0) Advanced security service mandating hardware-bound re-attestation of sub-process lineage back to the primary mission-root at each turn.
+- **Attention-Density Guard (ADG) v2**: (P0) Upgrade for the ADG utilizing hardware-attested "Attention Masks" to prioritize mission-critical fragments and filter high-entropy noise.
+- **Active Intent Sanitizer (AIS)**: (P0) Semantic security middleware for the CBSI provider that performs real-time deconstruction of coordination messages crossing platform boundaries.
+- **Stylometric Mimicry Mitigator (SMM) v2**: (P0) Behavioral security extension performing higher-dimensional anchoring of reasoning traces against the hardware-attested mission-root manifest.
+
+### Priority Shifts
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RMRA** integration for all headless missions.
+- **Channel-Bound Session Isolation (CBSI) Provider**: (Re-affirmed P0) Designated as the primary enforcement point for **AIS-compliant** cross-channel sanitization.
+
+## Evolution: [2026-06-24] Updates
+
+### Proposed Additions
+- **Atomic Mission-Resumption (AMR) Gateway**: (P0) Authoritative resumption broker utilizing hardware-locked "Context Snapshots" to facilitate sub-100ms cold-boot recovery.
+- **Stylometric Mesh Sovereignty (SMS) Provider**: (P0) Behavioral security middleware for the AID Hub that performs real-time stylometric analysis to detect mimicry-based intent hijacking.
+- **Lock-Free Sharded Mailbox Hub**: (P0) High-performance coordination service implementing CRDT-based task list synchronization for non-blocking horizontal Agent Teams.
+- **Zero-Knowledge Discovery (ZKD) Proxy**: (P1) Advanced discovery gate that mandates cryptographic capability masking until a mission-bound handshake is completed.
+
+### Priority Shifts
+- **Asynchronous Mailbox Sharding (AMS) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Lock-Free Sharded Mailbox Hub** integration.
+- **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Evolving to support **SMS-compliant** stylometric verification.
+
+## Evolution: [2026-06-25] Updates
+
+### Proposed Additions
+- **Attention-Density Firewall (ADF)**: (P0) High-speed security middleware that performs entropy analysis on coordination messages to prevent "Attention-Density" DoS attacks.
+- **Hardware-Locked Environment Sovereignty (HLES)**: (P0) Core security service that isolates hardware-attested identity tokens from process environment variables.
+- **Monotonic Mission Lineage (MML) Provider**: (P0) Identity extension for the SRM Provider that implements hardware-bound monotonic counters for reasoning provenance.
+- **CRDT-Native Mailbox Shards**: (P1) Performance upgrade for the SMS middleware utilizing Conflict-Free Replicated Data Types for lock-free horizontal coordination.
+
+### Priority Shifts
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Elevated to support **CRDT-native** synchronization to resolve the 2s+ coordination stall in Agent Teams.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to support mandatory **MML-compliant** monotonic attestation.
+
+---
+
+## Evolution: [2026-06-27] Updates
+
+### Proposed Additions
+- **Zero-Knowledge Discovery (ZKD) Proxy**: (P0) Authoritative discovery gateway implementing cryptographic capability masking until a mission-bound handshake is completed.
+- **CRDT-Native Mailbox Sharding**: (P0) High-performance coordination architecture utilizing Conflict-Free Replicated Data Types to eliminate teammate mailbox locks.
+- **Multi-Signature Skill Attestation (MSSA)**: (P0) Security middleware requiring cryptographically bound approval tokens from framework and third-party auditors for dynamic tool grafting.
+- **Reasoning Path Integrity (RPI) Validator**: (P1) Security extension for the SRM Provider that validates hardware-signed internal reasoning steps (ARE v1.8 compliance).
+
+### Priority Shifts
+- **Zero-Knowledge Discovery (ZKD) Proxy**: (Promoted to P0) Critical for satisfying new Gemini CLI v0.43.0 discovery requirements and neutralizing shadow mapping.
+- **CRDT-Native Mailbox Shards**: (Promoted to P0) Designated as the primary solution for the 2s+ coordination stall in high-density horizontal Agent Teams.
+
+## Evolution: [2026-06-26] Updates
+
+### Proposed Additions
+- **Cross-Framework Stylometric Arbiter (CFSA)**: (P0) Behavioral security middleware for the SMM provider that performs real-time stylometric analysis of inter-agent messages.
+- **Shadow-Handshake Interceptor (SHI)**: (P0) Security middleware for the SRM and MRCP providers that monitors and interdicts unauthorized agency-initiation signals.
+- **Differential Reasoning Validator (DRV)**: (P0) Advanced state-governance service for the BSH Gateway that performs framework-aware sanity checks on state fragments.
+- **Monotonic Handshake Lineage (MHL) Provider**: (P0) Identity extension for the MRCP provider that implements non-reusable lineage tokens for all agency-initiation signals.
+
+### Priority Shifts
+- **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Elevated with mandatory **CFSA** integration to counter mimicry-based hijacking.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SHI** and **MHL** integration for all agency-initiation signals.

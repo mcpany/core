@@ -23,6 +23,7 @@ var (
 		prometheus.HistogramOpts{
 			// Summary: Defines Nam.
 			Name: "mcp_operation_duration_seconds",
+			// Summary: Defines Hel.
 			Help: "Histogram of MCP operation duration in seconds.",
 			// Summary: Defines Bucket.
 			Buckets: prometheus.DefBuckets,
@@ -34,6 +35,7 @@ var (
 		prometheus.CounterOpts{
 			// Summary: Defines Nam.
 			Name: "mcp_operations_total",
+			// Summary: Defines Hel.
 			Help: "Total number of MCP operations.",
 		},
 		[]string{"method", "status", "error_type"},
@@ -43,6 +45,7 @@ var (
 		prometheus.HistogramOpts{
 			// Summary: Defines Nam.
 			Name: "mcp_payload_size_bytes",
+			// Summary: Defines Hel.
 			Help: "Histogram of MCP payload size in bytes.",
 			// Summary: Defines Bucket.
 			Buckets: prometheus.ExponentialBuckets(100, 10, 6),
@@ -54,6 +57,7 @@ var (
 		prometheus.CounterOpts{
 			// Summary: Defines Nam.
 			Name: "mcp_operation_tokens_total",
+			// Summary: Defines Hel.
 			Help: "Total number of tokens in MCP operations.",
 		},
 		[]string{"method", "direction", "status"}, // direction: request, response
