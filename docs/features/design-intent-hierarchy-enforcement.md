@@ -1,7 +1,6 @@
 # Design Doc: Intent Hierarchy Enforcement
 
 **Status:** Draft
-
 **Created:** 2026-05-30
 
 ## 1. Context and Scope
