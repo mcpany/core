@@ -9,8 +9,8 @@ test('dashboard layout persistence', async ({ page, request }) => {
   // 1. Initial Load
   await page.goto('/');
 
-  // Wait for loading to finish
-  await expect(page.locator('.lucide-loader-circle.animate-spin').first()).not.toBeVisible();
+  // Wait for loading to finish. Use first() to avoid strict mode violations if multiple spinners exist
+  await expect(page.locator('.animate-spin').first()).not.toBeVisible();
 
   // If dashboard is empty, we see "Your dashboard is empty"
   // If defaults are loaded, we might see widgets.
@@ -22,7 +22,7 @@ test('dashboard layout persistence', async ({ page, request }) => {
   });
 
   await page.reload();
-  await expect(page.locator('.lucide-loader-circle.animate-spin').first()).not.toBeVisible();
+  await expect(page.locator('.animate-spin').first()).not.toBeVisible();
   await expect(page.getByText('Your dashboard is empty')).toBeVisible();
 
   // 2. Add a widget
@@ -42,7 +42,7 @@ test('dashboard layout persistence', async ({ page, request }) => {
 
   // 5. Reload page
   await page.reload();
-  await expect(page.locator('.lucide-loader-circle.animate-spin').first()).not.toBeVisible();
+  await expect(page.locator('.animate-spin').first()).not.toBeVisible();
 
   // 6. Verify widget persists
   await expect(page.getByText('Recent Activity').first()).toBeVisible();
