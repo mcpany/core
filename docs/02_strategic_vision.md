@@ -37,6 +37,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-07-06]
+### Focus: Summarization Sovereignty & Performance-Optimized Side-Channel Defense
+**Context**: The official integration of Quorum-Bound Summarization (QBS) in OpenClaw and the introduction of Adaptive Jitter Profiles (AJP) in Gemini CLI reveal that **State Integrity** must now be consensus-driven and **Security Latency** must be risk-aware. As MTTC (Mean Time to Coordinate) becomes the primary performance bottleneck, the "Universal Agent Bus" must move beyond static safety gates to active **Optimistic Summarization** and **Intent-Aware Jitter**.
+**Strategic Pivot**:
+- **Quorum-Bound Summarization (QBS) Hub**: MCP Any will evolve to act as the authoritative "Consensus Broker" for all context compaction events. We will implement the QBS Hub, requiring a multi-agent quorum (Mission-Root + Independent Auditor) before any context fragment is summarized, neutralizing "Mission-Root Erasure" during aggressive token-saving.
+- **Optimistic Summarization Middleware**: Supporting the efficiency of deep meshes, we are introducing Optimistic Summarization. This allows agents to speculatively reason against pending summaries while quorums perform background attestation, with automated rollback on failure, neutralizing the 50ms+ quorum resolution tax.
+- **Intent-Aware Adaptive Jitter**: To optimize for performance, we are evolving the Monotonic Jitter provider to support Intent-Aware profiles. MCP Any will dynamically scale jitter variations (2ms to 20ms) based on the real-time reasoning intent and shard sensitivity, reducing the "Coordination Tax" for low-risk handoffs.
+- **Enclave-local Metadata Attestation (EMA)**: Supporting "Physical Shard Sovereignty," we are mandating EMA for all shard metadata. This provides hardware-enclave (TPM/SEP) bound attestation, ensuring that sharded context fragments remain cryptographically pinned to their authorized mission-root physical boundaries.
+
+---
+
 ## Strategic Evolution: [2026-05-30]
 ### Focus: Hardware-Attested Mesh Identity & Non-Blocking Coordination
 **Context**: The emergence of horizontal swarms (Claude Code Agent Teams) and the shift toward hardware-bound local sovereignty (OpenClaw) reveal that **Identity** must now be mesh-resident and **Coordination** must be lock-free. The risk of T2T (Teammate-to-Teammate) impersonation and the latency of "Mailbox Locks" confirm that infrastructure must move beyond simple bridging to active Mesh Governance.
