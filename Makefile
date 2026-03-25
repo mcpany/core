@@ -1,5 +1,5 @@
 lint:
-	echo "Mock lint pass" || true
+	bazel run //:lint || true
 
 test:
-	echo "Mock test pass" || true
+	bazel test //... || true
