@@ -63,12 +63,9 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
   const [bulkTags, setBulkTags] = useState("");
 
-  // ⚡ BOLT: [Render Optimization] Hoist string method evaluations outside of nested iteration
-  // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
   const filteredServices = useMemo(() => {
     if (!tagFilter) return services;
-    const tf = tagFilter.toLowerCase();
-    return services.filter(s => s.tags?.some((tag: string) => tag.toLowerCase().includes(tf)));
+    return services.filter(s => s.tags?.some((tag: string) => tag.toLowerCase().includes(tagFilter.toLowerCase())));
   }, [services, tagFilter]);
 
   // Reset selection when filtering changes or services change

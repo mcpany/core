@@ -199,17 +199,25 @@ export function DashboardGrid() {
         return () => clearTimeout(timer);
     }, [widgets, isMounted, loading]);
 
+    // ⚡ BOLT: [Render Optimization] Eliminate redundant Array.filter calls during drag and drop
+    // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;
 
-        const visibleWidgets = widgets.filter(w => !w.hidden);
-        const hiddenWidgets = widgets.filter(w => w.hidden);
+        const visibleWidgets = [];
+        const hiddenWidgets = [];
+        for (let i = 0; i < widgets.length; i++) {
+            if (widgets[i].hidden) {
+                hiddenWidgets.push(widgets[i]);
+            } else {
+                visibleWidgets.push(widgets[i]);
+            }
+        }
 
-        const items = Array.from(visibleWidgets);
-        const [reorderedItem] = items.splice(result.source.index, 1);
-        items.splice(result.destination.index, 0, reorderedItem);
+        const [reorderedItem] = visibleWidgets.splice(result.source.index, 1);
+        visibleWidgets.splice(result.destination.index, 0, reorderedItem);
 
-        saveWidgets([...items, ...hiddenWidgets]);
+        saveWidgets([...visibleWidgets, ...hiddenWidgets]);
     };
 
     const updateWidgetSize = (instanceId: string, newSize: WidgetSize) => {
