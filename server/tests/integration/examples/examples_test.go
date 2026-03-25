@@ -33,11 +33,9 @@ func TestExampleConfigs(t *testing.T) {
 	require.NoError(t, chdirErr)
 
 	// Ensure stdio example binary is built, as Config validation checks for its existence.
-	// This makes the test robust against sharding/environment where build-examples might not have run.
 	stdioBinPath := filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool-bin")
 	if _, statErr := os.Stat(stdioBinPath); os.IsNotExist(statErr) {
 		t.Logf("Building missing stdio example binary: %s", stdioBinPath)
-		// Set GO111MODULE=off because we are building a simple main.go in a temp dir without a go.mod.
 		cmd := exec.Command("go", "build", "-o", stdioBinPath, filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool", "main.go"))
 		cmd.Env = append(os.Environ(), "GOCACHE="+filepath.Join(t.TempDir(), "gocache"), "GO111MODULE=off")
 		cmd.Dir = runtimeRoot
@@ -49,14 +47,12 @@ func TestExampleConfigs(t *testing.T) {
 	}
 
 	// Walk through examples directory.
-	walkErr := filepath.Walk(examplesDir, func(path string, info os.FileInfo, walkDirErr error) error {
+	walkResultErr := filepath.Walk(examplesDir, func(path string, info os.FileInfo, walkDirErr error) error {
 		if walkDirErr != nil {
 			return walkDirErr
 		}
 
-		// Check for config.yaml.
 		if !info.IsDir() && filepath.Base(path) == "config.yaml" {
-			// Trim project root from path for cleaner test name.
 			testName := path
 			if strings.HasPrefix(path, projectRoot) {
 				testName = strings.TrimPrefix(path, projectRoot)
@@ -67,7 +63,7 @@ func TestExampleConfigs(t *testing.T) {
 		}
 		return nil
 	})
-	require.NoError(t, walkErr)
+	require.NoError(t, walkResultErr)
 }
 
 func sourceProjectRoot() (string, error) {
@@ -122,8 +118,6 @@ func copyDir(src, dst string) error {
 func validateConfig(t *testing.T, configPath string) {
 	osFs := afero.NewOsFs()
 
-	// Set dummy values for all required environment variables found in failure logs.
-	// This allows the strict config validation to pass during tests.
 	requiredEnvVars := []string{
 		"AIRTABLE_API_TOKEN",
 		"FIGMA_API_TOKEN",
@@ -148,17 +142,12 @@ func validateConfig(t *testing.T, configPath string) {
 		t.Setenv(v, "dummy-val")
 	}
 
-	// Create a store that points to this config file.
 	store := config.NewFileStore(osFs, []string{configPath})
-
-	// Load services.
-	// The second argument "server" matches what the CLI uses for validation context if any.
-	configs, configLoadErr := config.LoadServices(context.Background(), store, "server")
-	if configLoadErr != nil {
-		t.Fatalf("Failed to load config %s: %v", configPath, configLoadErr)
+	configs, loadErr := config.LoadServices(context.Background(), store, "server")
+	if loadErr != nil {
+		t.Fatalf("Failed to load config %s: %v", configPath, loadErr)
 	}
 
-	// Validate.
 	validationErrors := config.Validate(context.Background(), configs, config.Server)
 	assert.Empty(t, validationErrors, "Config validation failed for %s", configPath)
 }

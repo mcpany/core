@@ -50,23 +50,21 @@ export function sanitizeServiceConfig(service: UpstreamServiceConfig, mode: Secr
     }
 
     // Process upstreamAuth (if it exists in the type, though client.ts shows mapping logic, let's be safe)
-    // Based on client.ts: upstreamAuth: s.upstream_auth
-    // Looking at proto/config/v1/auth.proto (implied), it might have apiKey, basicAuth etc.
-    // If upstreamAuth exists and has fields like 'apiKey', 'token', we should redact them.
     if (clone.upstreamAuth) {
-        const auth = clone.upstreamAuth as Record<string, unknown>;
-        if (typeof auth.apiKey === 'string') {
-             if (mode === 'redact') (auth as Record<string, string>).apiKey = '<REDACTED>';
-             else if (mode === 'template') (auth as Record<string, string>).apiKey = '${API_KEY}';
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const auth = clone.upstreamAuth as any;
+        if (auth.apiKey) {
+             if (mode === 'redact') auth.apiKey = '<REDACTED>';
+             else if (mode === 'template') auth.apiKey = '${API_KEY}';
         }
-        if (typeof auth.token === 'string') {
-             if (mode === 'redact') (auth as Record<string, string>).token = '<REDACTED>';
-             else if (mode === 'template') (auth as Record<string, string>).token = '${TOKEN}';
+        if (auth.token) {
+             if (mode === 'redact') auth.token = '<REDACTED>';
+             else if (mode === 'template') auth.token = '${TOKEN}';
         }
-        if (auth.basicAuth && typeof auth.basicAuth === 'object') {
-             if ((auth.basicAuth as Record<string, string>).password) {
-                 if (mode === 'redact') (auth.basicAuth as Record<string, string>).password = '<REDACTED>';
-                 else if (mode === 'template') (auth.basicAuth as Record<string, string>).password = '${PASSWORD}';
+        if (auth.basicAuth) {
+             if (auth.basicAuth.password) {
+                 if (mode === 'redact') auth.basicAuth.password = '<REDACTED>';
+                 else if (mode === 'template') auth.basicAuth.password = '${PASSWORD}';
              }
         }
     }
