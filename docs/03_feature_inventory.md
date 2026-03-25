@@ -36,6 +36,17 @@
 - **Relational PoI Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory mission-root chain verification to counter "Intent Ghosting" vulnerabilities.
 - **Binary State Handoff (BSH) Gateway**: (Re-affirmed P0) Evolving into the **Zero-Copy Transport** architecture with integrated WASM-based "Point-in-Time" binary scanning.
 
+## Evolution: [2026-03-25] (Iteration 3) Updates
+
+### Proposed Additions
+- **Optimistic Attestation Gate**: (P1) Speculative security middleware allowing parallel context preparation and background discovery attestation to minimize reasoning latency.
+- **Relational PoI Chain Validator**: (P0) Core security service mandating cryptographic verification of the entire intent lineage back to the hardware-attested mission root.
+- **Hardware-Attested Monotonic Depth-Counters**: (P0) Physical constraint enforcement for recursive delegations to prevent infinite resource exhaustion loops.
+
+### Priority Shifts
+- **Memfd-Bound BSH Sanitizer**: (Re-affirmed P0) Now elevated with the requirement for **Read-Only Memfd mappings** to ensure zero-copy Active State Sanitization.
+- **RID Validator**: (Re-affirmed P0) Evolving into the **Relational PoI Chain Validator** to neutralize "Intent Ghosting" vulnerabilities.
+
 ## Evolution: [2026-03-25] (Iteration 2) Updates
 
 ### Proposed Additions
