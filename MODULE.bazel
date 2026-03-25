@@ -341,3 +341,21 @@ pip.parse(
     requirements_lock = "//server/tests/integration/examples:requirements_lock.txt",
 )
 use_repo(pip, "cowsay_server_deps", "timeserver_deps")
+
+http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
+
+http_file(
+    name = "bazelisk_linux_amd64",
+    downloaded_file_path = "bazelisk",
+    executable = True,
+    sha256 = "22e7d3a188699982f661cf4687137ee52d1f24fec1ec893d91a6c4d791a75de8",
+    urls = ["https://github.com/bazelbuild/bazelisk/releases/download/v1.28.1/bazelisk-linux-amd64"],
+)
+
+http_file(
+    name = "bazelisk_linux_arm64",
+    downloaded_file_path = "bazelisk",
+    executable = True,
+    sha256 = "8ded44b58a0d9425a4178af26cf17693feac3b87bdcfef0a2a0898fcd1afc9f2",
+    urls = ["https://github.com/bazelbuild/bazelisk/releases/download/v1.28.1/bazelisk-linux-arm64"],
+)

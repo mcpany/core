@@ -6,7 +6,7 @@ MCP Any provides a built-in "Test Connection" feature for upstream services, enh
 
 1.  Navigate to **Upstream Services** in the sidebar.
 2.  Click on the service you want to test.
-3.  In the service detail header, click the **Test Connection** button (play icon).
+3.  In the service detail header, click the **Troubleshoot** button (activity icon).
 
 The system will attempt to connect to the service or verify the configuration resources and display the result.
 
