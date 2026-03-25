@@ -28,14 +28,7 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
 
 ## 4. Design & Architecture
 * **System Flow:**
-    ```mermaid
-    graph TD
-        P[Parent Agent] -->|Instruction| SMM[Stylometric Mimicry Mitigator]
-        SMM -->|Extract Profile| Trace[Reasoning Trace]
-        SMM -->|Compare Profile| Enclave[Hardware-Bound Profiler]
-        Enclave -->|Match| Pass[Issue Stylometric Attestation]
-        Enclave -->|Mismatch| Block[Trigger Reasoning-Path Shadowing Alert]
-    ```
+    * Parent Agent -> Instruction -> SMM -> Extract Profile -> Compare Profile -> Hardware Enclave -> Stylometric Attestation -> Teammate.
 * **APIs / Interfaces:**
     * `POST /v1/stylometric/profile/init`: Initialize a hardware-bound stylometric profile for the parent agent.
     * `POST /v1/stylometric/verify`: Verify the stylometric integrity of an inter-agent message.
