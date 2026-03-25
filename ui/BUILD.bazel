@@ -8,14 +8,6 @@ load("@npm//ui:ts-proto/package_json.bzl", ts_proto_bin = "bin")
 load("@npm//ui:typescript/package_json.bzl", tsc_bin = "bin")
 load("@npm//ui:vite/package_json.bzl", vite_bin = "bin")
 load("@npm//ui:vitest/package_json.bzl", vitest_bin = "bin")
-
-# ---------------------------------------------------------------------------
-# OCI container image for the UI (cloud-native, Dockerfile-free).
-#
-# The image runs `vite preview` which serves the pre-built static SPA and
-# proxies all /api/v1, /mcpany., etc. paths to BACKEND_URL.
-# Scale both frontend and backend deployments independently in Kubernetes.
-# ---------------------------------------------------------------------------
 load("@rules_oci//oci:defs.bzl", "oci_image", "oci_image_index", "oci_load", "oci_push")
 load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
@@ -24,8 +16,6 @@ load("//ui:vitest_tests.bzl", "define_vitest_tests")
 
 npm_link_all_packages(name = "node_modules")
 
-# Exposes the protoc-gen-ts_proto binary from the ts-proto npm package so that
-# //proto:ts_proto_rules.bzl can use it as a protoc plugin in Bazel actions.
 ts_proto_bin.protoc_gen_ts_proto_binary(
     name = "ts_proto_plugin",
     visibility = ["//visibility:public"],
@@ -55,48 +45,6 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
-filegroup(
-    name = "playwright_runtime_srcs",
-    srcs = glob(
-        include = [
-            "src/**",
-            "index.html",
-            "vite.config.ts",
-            "package.json",
-            "tsconfig.json",
-            "postcss.config.mjs",
-            "tailwind.config.ts",
-            "components.json",
-            "vitest.config.mts",
-            "eslint.config.mjs",
-            ".eslintrc.json",
-            ".npmrc",
-            "playwright.config.ts",
-            "playwright.screenshots.config.ts",
-        ],
-        allow_empty = True,
-        exclude = [
-            "node_modules/**",
-            "dist/**",
-            "playwright-report/**",
-            "test-results/**",
-            ".audit/**",
-        ],
-    ),
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "playwright_support_srcs",
-    srcs = glob(
-        include = ["tests/**"],
-        allow_empty = True,
-        exclude = ["tests/**/*.spec.ts"],
-    ),
-    visibility = ["//visibility:public"],
-)
-
-# Build target (Vite replaces Next.js)
 vite_bin.vite(
     name = "build",
     srcs = [
@@ -109,25 +57,11 @@ vite_bin.vite(
     out_dirs = ["dist"],
 )
 
-playwright_bin.playwright_binary(
-    name = "playwright_cli",
-    data = [
-        ":node_modules",
-        ":playwright_runtime_srcs",
-        ":playwright_support_srcs",
-        "//proto:ts_proto",
-    ],
-)
-
-# Vitest unit tests split by file to maximize remote cache reuse.
 define_vitest_tests(vitest_bin)
 
-# Linting
 eslint_bin.eslint_test(
     name = "lint",
-    args = [
-        "src/",
-    ],
+    args = ["src/"],
     chdir = package_name(),
     data = [
         ":node_modules",
@@ -136,7 +70,6 @@ eslint_bin.eslint_test(
     ],
 )
 
-# Typecheck
 tsc_bin.tsc_test(
     name = "typecheck",
     args = ["--noEmit"],
@@ -150,21 +83,20 @@ tsc_bin.tsc_test(
 
 define_playwright_tests()
 
-# Package the pre-built Vite dist into a tar layer.
 pkg_files(
     name = "ui_dist_files",
     srcs = [":build"],
     prefix = "/app/dist",
 )
 
-# Package the minimal node_modules needed by vite preview (vite itself + proxy deps).
+# We wrap node_modules in a tarball to avoid path collision errors in pkg_files.
+# pkg_tar handles the internal symlinks of aspect_rules_js more gracefully.
 pkg_tar(
     name = "ui_node_modules_tar",
     srcs = [":node_modules"],
     package_dir = "/app/node_modules",
 )
 
-# Static config files required by `vite preview` at runtime.
 pkg_files(
     name = "ui_config_files",
     srcs = [
@@ -199,7 +131,6 @@ oci_image(
         "3000",
     ],
     env = {
-        # Override at deploy-time (k8s env, docker run --env, Helm values).
         "BACKEND_URL": "http://localhost:50050",
         "PORT": "3000",
     },
@@ -211,23 +142,6 @@ oci_image(
 oci_load(
     name = "ui_tarball",
     image = ":ui_image",
-    repo_tags = [
-        "mcpany/ui:latest",
-        "mcpany/ui:1.0.0",
-    ],
+    repo_tags = ["mcpany/ui:latest"],
     visibility = ["//visibility:public"],
-)
-
-oci_push(
-    name = "push",
-    image = ":ui_index",
-    remote_tags = ["latest"],
-    repository = "ghcr.io/mcpany/ui",
-)
-
-oci_image_index(
-    name = "ui_index",
-    images = [
-        ":ui_image",
-    ],
 )
