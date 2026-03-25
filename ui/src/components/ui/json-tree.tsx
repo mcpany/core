@@ -105,7 +105,7 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
 
       {expanded && (
         <div className="border-l border-white/10 ml-2 pl-2 flex flex-col">
-          {entries.map(([key, value]) => (
+          {entries.map(([key, value], idx) => (
             <div key={key} className="flex items-start gap-1">
                {/* Key */}
                <div className="pt-[2px] shrink-0 text-purple-400">
