@@ -69,12 +69,15 @@ fi
 
 # Run lint for each module in go.work
 echo "    Checking modules..."
-for m in $(find . -name go.mod -not -path "./build/*" -not -path "./bazel-*" -not -path "*/node_modules/*"); do
-    dir=$(dirname "$m")
+LINT_FAILED=0
+# Explicitly list modules to be sure
+MODULES="./ ./k8s/operator ./server ./server/examples/upstream_service_demo/grpc/client ./server/examples/upstream_service_demo/grpc/greeter_server"
+for dir in $MODULES; do
     echo "    Checking $dir..."
     (
         cd "$dir"
         CONFIG=""
+        # Use absolute path for config to be safe
         if [ -f ".golangci.yml" ]; then
             CONFIG=".golangci.yml"
         elif [ -f "$PROJECT_ROOT/server/.golangci.yml" ]; then
@@ -86,7 +89,13 @@ for m in $(find . -name go.mod -not -path "./build/*" -not -path "./bazel-*" -no
         else
             "$GOLANGCI_LINT_BIN" run --timeout 10m ./...
         fi
-    )
+    ) || LINT_FAILED=1
 done
+
+if [ "$LINT_FAILED" -ne 0 ]; then
+    echo "==> Lint FAILED."
+    # Use a safe way to fail that works in the sandbox
+    false
+fi
 
 echo "==> Lint complete."
