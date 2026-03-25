@@ -1186,3 +1186,28 @@
   coordinated shadowing attempts.
 - **Mesh-Bound Context Sovereignty Bridge**: (Re-affirmed P0) Now designated as
   a mandatory prerequisite for MAH-based context inheritance.
+
+## Evolution: Hierarchical Intents [2026-05-30]
+
+### Proposed Infrastructure Additions [2026-05-30]
+
+- **Intent Hierarchy Enforcer (IHE)**: (P0) Authoritative security middleware
+  that enforces a strict "Intent Priority" for all state fragments, preventing
+  subagent semantic shadowing.
+- **Kernel-Namespace (KNS) Command Runner**: (P0) High-security tool execution
+  engine that utilizes Firecracker micro-VMs and ephemeral kernel-namespaces
+  for absolute agent-to-host isolation.
+- **Mission Anchor Host (MAH)**: (P0) Centralized coordination service for
+  "Context Anchoring," ensuring that primary mission constraints are
+  immutable and universally inherited across teammate boundaries.
+- **Zero-Knowledge Capability Discovery (ZKCD)**: (P1) Identity-bound discovery
+  service mandating ZK-proofs of capability possession before revealing tool
+  metadata to mesh peers.
+
+### Strategic Priority Shifts [2026-05-30]
+
+- **Collective Swarm Anomaly Detection (CSAD) Hub**: (Re-affirmed P0) Now
+  elevated with the requirement for **Intent-Hierarchy Verification** to detect
+  coordinated shadowing attempts.
+- **Mesh-Bound Context Sovereignty Bridge**: (Re-affirmed P0) Now designated as
+  a mandatory prerequisite for MAH-based context inheritance.
