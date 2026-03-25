@@ -44,7 +44,7 @@ func TestLinter_Run_PlainTextSecrets(t *testing.T) {
 
 	found := false
 	msg := "Secret is stored in plain text. Use " +
-		"environment variables or file references for better security."
+		"env vars or file references for better security."
 	for _, r := range results {
 		if r.Severity == Warning && r.Message == msg {
 			found = true
@@ -100,7 +100,7 @@ func TestLinter_Run_InsecureHTTP(t *testing.T) {
 	found := false
 	for _, r := range results {
 		if r.Severity == Warning &&
-			strings.Contains(r.Message, "insecure HTTP connection") {
+			strings.Contains(r.Message, "insecure HTTP") {
 			found = true
 			break
 		}

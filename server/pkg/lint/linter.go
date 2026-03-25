@@ -26,7 +26,8 @@ const (
 	//
 	// Summary: Defines the Error severity level.
 	Error Severity = iota
-	// Warning indicates a potential issue or best practice violation.
+	// Warning indicates a potential issue or best
+	// practice violation.
 	//
 	// Summary: Defines the Warning severity level.
 	Warning
@@ -45,9 +46,6 @@ const (
 //
 // Returns:
 //   - string: The string representation (e.g., "ERROR").
-//
-// Errors:
-//   - None.
 //
 // Side Effects:
 //   - None.
@@ -70,11 +68,13 @@ func (s Severity) String() string {
 type Result struct {
 	// Severity indicates how critical the finding is.
 	Severity Severity
-	// ServiceName is the name of the service associated with the finding.
+	// ServiceName is the name of the service
+	// associated with the finding.
 	ServiceName string
 	// Message is the descriptive text of the finding.
 	Message string
-	// Path is the location in the configuration where the issue was found.
+	// Path is the location in the configuration
+	// where the issue was found.
 	Path string
 }
 
@@ -88,9 +88,6 @@ type Result struct {
 // Returns:
 //   - string: A formatted string containing result details.
 //
-// Errors:
-//   - None.
-//
 // Side Effects:
 //   - None.
 func (r Result) String() string {
@@ -100,7 +97,7 @@ func (r Result) String() string {
 	}
 	serviceStr := ""
 	if r.ServiceName != "" {
-		serviceStr = fmt.Sprintf(" (service: %s)", r.ServiceName)
+		serviceStr = fmt.Sprintf(" (svc: %s)", r.ServiceName)
 	}
 	return fmt.Sprintf("[%s]%s%s: %s",
 		r.Severity, serviceStr, pathStr, r.Message)
@@ -123,9 +120,6 @@ type Linter struct {
 // Returns:
 //   - *Linter: A new Linter instance.
 //
-// Errors:
-//   - None.
-//
 // Side Effects:
 //   - None.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
@@ -141,10 +135,7 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 //
 // Returns:
 //   - []Result: A slice of linting findings.
-//   - error: Encounters a fatal issue.
-//
-// Errors:
-//   - None.
+//   - error: An error if a fatal issue occurs.
 //
 // Side Effects:
 //   - None.
@@ -172,14 +163,8 @@ func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 //
 // Summary: Executes checkPlainTextSecrets operation.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - []Result: A slice of findings.
-//
-// Errors:
-//   - None.
 //
 // Side Effects:
 //   - None.
@@ -191,14 +176,15 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 		if sv == nil {
 			return
 		}
-		if sv.WhichValue() == configv1.SecretValue_PlainText_case {
+		secretCase := configv1.SecretValue_PlainText_case
+		if sv.WhichValue() == secretCase {
 			results = append(results, Result{
 				Severity:    Warning,
 				ServiceName: serviceName,
-				Message: "Secret is stored in plain " +
-					"text. Use environment variables " +
-					"or file references for better " +
-					"security.",
+				Message: "Secret is stored in " +
+					"plain text. Use env vars " +
+					"or file refs for " +
+					"better security.",
 				Path: path,
 			})
 		}
@@ -206,34 +192,38 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 
 	for _, s := range l.cfg.GetUpstreamServices() {
 		if auth := s.GetUpstreamAuth(); auth != nil {
+			aName := s.GetName()
 			switch auth.WhichAuthMethod() {
 			case configv1.Authentication_ApiKey_case:
 				checkSecret(auth.GetApiKey().GetValue(),
 					"upstream_auth.api_key.value",
-					s.GetName())
+					aName)
 			case configv1.Authentication_BearerToken_case:
 				checkSecret(auth.GetBearerToken().GetToken(),
 					"upstream_auth.bearer_token.token",
-					s.GetName())
+					aName)
 			case configv1.Authentication_BasicAuth_case:
-				checkSecret(auth.GetBasicAuth().GetPassword(),
+				checkSecret(
+					auth.GetBasicAuth().GetPassword(),
 					"upstream_auth.basic_auth.password",
-					s.GetName())
+					aName)
 			case configv1.Authentication_Oauth2_case:
-				checkSecret(auth.GetOauth2().GetClientSecret(),
+				checkSecret(
+					auth.GetOauth2().GetClientSecret(),
 					"upstream_auth.oauth2.client_secret",
-					s.GetName())
+					aName)
 			}
 		}
 
+		sName := s.GetName()
 		switch s.WhichServiceConfig() {
-		case configv1.UpstreamServiceConfig_CommandLineService_case:
+		case configv1.
+			UpstreamServiceConfig_CommandLineService_case:
 			cmd := s.GetCommandLineService()
 			for k, v := range cmd.GetEnv() {
-				checkSecret(v,
-					fmt.Sprintf("command_line_service."+
-						"env[%s]", k),
-					s.GetName())
+				p := fmt.Sprintf(
+					"command_line_service.env[%s]", k)
+				checkSecret(v, p, sName)
 			}
 			if ce := cmd.GetContainerEnvironment(); ce != nil {
 				for k, v := range ce.GetEnv() {
@@ -242,27 +232,30 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 							"container_env."+
 							"env[%s]",
 						k)
-					checkSecret(v, path, s.GetName())
+					checkSecret(v, path, sName)
 				}
 			}
-		case configv1.UpstreamServiceConfig_McpService_case:
+		case configv1.
+			UpstreamServiceConfig_McpService_case:
 			mcp := s.GetMcpService()
 			switch mcp.WhichConnectionType() {
-			case configv1.McpUpstreamService_StdioConnection_case:
+			case configv1.
+				McpUpstreamService_StdioConnection_case:
 				stdio := mcp.GetStdioConnection()
 				for k, v := range stdio.GetEnv() {
-					checkSecret(v,
-						fmt.Sprintf("mcp_service."+
-							"stdio.env[%s]", k),
-						s.GetName())
+					p := fmt.Sprintf(
+						"mcp_service."+
+							"stdio.env[%s]", k)
+					checkSecret(v, p, sName)
 				}
-			case configv1.McpUpstreamService_BundleConnection_case:
+			case configv1.
+				McpUpstreamService_BundleConnection_case:
 				bundle := mcp.GetBundleConnection()
 				for k, v := range bundle.GetEnv() {
-					checkSecret(v,
-						fmt.Sprintf("mcp_service."+
-							"bundle.env[%s]", k),
-						s.GetName())
+					p := fmt.Sprintf(
+						"mcp_service."+
+							"bundle.env[%s]", k)
+					checkSecret(v, p, sName)
 				}
 			}
 		}
@@ -275,14 +268,8 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 //
 // Summary: Executes checkShellInjection operation.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - []Result: A slice of findings.
-//
-// Errors:
-//   - None.
 //
 // Side Effects:
 //   - None.
@@ -294,9 +281,11 @@ func (l *Linter) checkShellInjection() []Result {
 	for _, s := range l.cfg.GetUpstreamServices() {
 		var command string
 		switch s.WhichServiceConfig() {
-		case configv1.UpstreamServiceConfig_CommandLineService_case:
+		case configv1.
+			UpstreamServiceConfig_CommandLineService_case:
 			command = s.GetCommandLineService().GetCommand()
-		case configv1.UpstreamServiceConfig_McpService_case:
+		case configv1.
+			UpstreamServiceConfig_McpService_case:
 			mcp := s.GetMcpService()
 			stdioCase := configv1.
 				McpUpstreamService_StdioConnection_case
@@ -338,14 +327,8 @@ func (l *Linter) checkShellInjection() []Result {
 //
 // Summary: Executes checkInsecureHTTP operation.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - []Result: A slice of findings.
-//
-// Errors:
-//   - None.
 //
 // Side Effects:
 //   - None.
@@ -353,34 +336,38 @@ func (l *Linter) checkInsecureHTTP() []Result {
 	var results []Result
 	for _, s := range l.cfg.GetUpstreamServices() {
 		checkInsecure := func(url, path string) {
-			if url != "" &&
-				strings.HasPrefix(
-					strings.ToLower(url), "http://") {
-				if !strings.Contains(url, "localhost") &&
-					!strings.Contains(url, "127.0.0.1") {
-					results = append(results, Result{
-						Severity:    Warning,
-						ServiceName: s.GetName(),
-						Message: fmt.Sprintf(
-							"Service uses "+
-								"insecure "+
-								"HTTP "+
-								"conn to "+
-								"%q. Consider "+
-								"using "+
-								"HTTPS.",
-							url),
-						Path: path,
-					})
-				}
+			if url == "" {
+				return
 			}
+			lowURL := strings.ToLower(url)
+			if !strings.HasPrefix(lowURL, "http://") {
+				return
+			}
+			if strings.Contains(url, "localhost") ||
+				strings.Contains(url, "127.0.0.1") {
+				return
+			}
+			results = append(results, Result{
+				Severity:    Warning,
+				ServiceName: s.GetName(),
+				Message: fmt.Sprintf(
+					"Service uses "+
+						"insecure "+
+						"HTTP "+
+						"conn to "+
+						"%q. Use "+
+						"HTTPS.",
+					url),
+				Path: path,
+			})
 		}
 
 		switch s.WhichServiceConfig() {
 		case configv1.UpstreamServiceConfig_HttpService_case:
 			checkInsecure(s.GetHttpService().GetAddress(),
 				"http_service.address")
-		case configv1.UpstreamServiceConfig_OpenapiService_case:
+		case configv1.
+			UpstreamServiceConfig_OpenapiService_case:
 			openapi := s.GetOpenapiService()
 			checkInsecure(openapi.GetAddress(),
 				"openapi_service.address")
@@ -407,14 +394,8 @@ func (l *Linter) checkInsecureHTTP() []Result {
 //
 // Summary: Executes checkCacheSettings operation.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - []Result: A slice of findings.
-//
-// Errors:
-//   - None.
 //
 // Side Effects:
 //   - None.
