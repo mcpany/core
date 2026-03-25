@@ -22,8 +22,8 @@ import (
 func TestExampleConfigs(t *testing.T) {
 	// Set dummy API key for validation to pass.
 	t.Setenv("GEMINI_API_KEY", "dummy-key")
-	projectRoot, rootErr := sourceProjectRoot()
-	require.NoError(t, rootErr)
+	projectRoot, rootFetchErr := sourceProjectRoot()
+	require.NoError(t, rootFetchErr)
 	runtimeRoot := filepath.Join(t.TempDir(), "server")
 	examplesDir := filepath.Join(runtimeRoot, "examples")
 	require.NoError(t, copyDir(filepath.Join(projectRoot, "examples"), examplesDir))
@@ -34,31 +34,31 @@ func TestExampleConfigs(t *testing.T) {
 
 	// Ensure stdio example binary is built, as Config validation checks for its existence.
 	stdioBinPath := filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool-bin")
-	if _, statErr := os.Stat(stdioBinPath); os.IsNotExist(statErr) {
+	if _, binStatErr := os.Stat(stdioBinPath); os.IsNotExist(binStatErr) {
 		t.Logf("Building missing stdio example binary: %s", stdioBinPath)
-		cmd := exec.Command("go", "build", "-o", stdioBinPath, filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool", "main.go"))
-		cmd.Env = append(os.Environ(), "GOCACHE="+filepath.Join(t.TempDir(), "gocache"), "GO111MODULE=off")
-		cmd.Dir = runtimeRoot
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if runErr := cmd.Run(); runErr != nil {
-			t.Logf("Failed to build stdio example binary (continuing, but validation might fail): %v", runErr)
+		buildCmd := exec.Command("go", "build", "-o", stdioBinPath, filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool", "main.go"))
+		buildCmd.Env = append(os.Environ(), "GOCACHE="+filepath.Join(t.TempDir(), "gocache"), "GO111MODULE=off")
+		buildCmd.Dir = runtimeRoot
+		buildCmd.Stdout = os.Stdout
+		buildCmd.Stderr = os.Stderr
+		if buildRunErr := buildCmd.Run(); buildRunErr != nil {
+			t.Logf("Failed to build stdio example binary (continuing, but validation might fail): %v", buildRunErr)
 		}
 	}
 
 	// Walk through examples directory.
-	walkResultErr := filepath.Walk(examplesDir, func(path string, info os.FileInfo, walkDirErr error) error {
+	walkResultErr := filepath.Walk(examplesDir, func(examplePath string, exampleInfo os.FileInfo, walkDirErr error) error {
 		if walkDirErr != nil {
 			return walkDirErr
 		}
 
-		if !info.IsDir() && filepath.Base(path) == "config.yaml" {
-			testName := path
-			if strings.HasPrefix(path, projectRoot) {
-				testName = strings.TrimPrefix(path, projectRoot)
+		if !exampleInfo.IsDir() && filepath.Base(examplePath) == "config.yaml" {
+			testCaseName := examplePath
+			if strings.HasPrefix(examplePath, projectRoot) {
+				testCaseName = strings.TrimPrefix(examplePath, projectRoot)
 			}
-			t.Run(testName, func(t *testing.T) {
-				validateConfig(t, path)
+			t.Run(testCaseName, func(subT *testing.T) {
+				validateConfig(subT, examplePath)
 			})
 		}
 		return nil
@@ -71,47 +71,47 @@ func sourceProjectRoot() (string, error) {
 	if workspace == "" {
 		workspace = "_main"
 	}
-	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
-		if base == "" {
+	for _, searchBase := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
+		if searchBase == "" {
 			continue
 		}
-		candidate := filepath.Join(base, workspace, "server")
-		if _, candidateStatErr := os.Stat(filepath.Join(candidate, "examples")); candidateStatErr == nil {
-			return candidate, nil
+		candidatePath := filepath.Join(searchBase, workspace, "server")
+		if _, candidateStatErr := os.Stat(filepath.Join(candidatePath, "examples")); candidateStatErr == nil {
+			return candidatePath, nil
 		}
 	}
-	_, file, _, ok := runtime.Caller(0)
+	_, currentFile, _, ok := runtime.Caller(0)
 	if !ok {
 		return "", os.ErrNotExist
 	}
-	return filepath.Abs(filepath.Clean(filepath.Join(filepath.Dir(file), "../../..")))
+	return filepath.Abs(filepath.Clean(filepath.Join(filepath.Dir(currentFile), "../../..")))
 }
 
 func copyDir(src, dst string) error {
-	return filepath.Walk(src, func(path string, info os.FileInfo, copyWalkErr error) error {
+	return filepath.Walk(src, func(itemPath string, itemInfo os.FileInfo, copyWalkErr error) error {
 		if copyWalkErr != nil {
 			return copyWalkErr
 		}
-		relPath, relErr := filepath.Rel(src, path)
+		itemRelPath, relErr := filepath.Rel(src, itemPath)
 		if relErr != nil {
 			return relErr
 		}
-		target := filepath.Join(dst, relPath)
-		if info.IsDir() {
-			return os.MkdirAll(target, info.Mode())
+		targetPath := filepath.Join(dst, itemRelPath)
+		if itemInfo.IsDir() {
+			return os.MkdirAll(targetPath, itemInfo.Mode())
 		}
-		in, openErr := os.Open(path)
+		inputFile, openErr := os.Open(itemPath)
 		if openErr != nil {
 			return openErr
 		}
-		defer in.Close()
-		out, createErr := os.OpenFile(target, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, info.Mode())
+		defer inputFile.Close()
+		outputFile, createErr := os.OpenFile(targetPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, itemInfo.Mode())
 		if createErr != nil {
 			return createErr
 		}
-		defer out.Close()
-		_, copyErr := io.Copy(out, in)
-		return copyErr
+		defer outputFile.Close()
+		_, copyIoErr := io.Copy(outputFile, inputFile)
+		return copyIoErr
 	})
 }
 
@@ -138,16 +138,16 @@ func validateConfig(t *testing.T, configPath string) {
 		"TWILIO_API_SECRET",
 	}
 
-	for _, v := range requiredEnvVars {
-		t.Setenv(v, "dummy-val")
+	for _, envVarName := range requiredEnvVars {
+		t.Setenv(envVarName, "dummy-val")
 	}
 
-	store := config.NewFileStore(osFs, []string{configPath})
-	configs, loadErr := config.LoadServices(context.Background(), store, "server")
-	if loadErr != nil {
-		t.Fatalf("Failed to load config %s: %v", configPath, loadErr)
+	configStore := config.NewFileStore(osFs, []string{configPath})
+	serviceConfigs, configLoadErr := config.LoadServices(context.Background(), configStore, "server")
+	if configLoadErr != nil {
+		t.Fatalf("Failed to load config %s: %v", configPath, configLoadErr)
 	}
 
-	validationErrors := config.Validate(context.Background(), configs, config.Server)
+	validationErrors := config.Validate(context.Background(), serviceConfigs, config.Server)
 	assert.Empty(t, validationErrors, "Config validation failed for %s", configPath)
 }
