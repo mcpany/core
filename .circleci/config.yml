@@ -8,7 +8,7 @@ executors:
   default-executor:
     docker:
       - image: cimg/go:1.24
-    resource_class: medium
+    resource_class: large
 
 commands:
   check-skip:
@@ -17,20 +17,43 @@ commands:
       - run:
           name: Early Return if Docs Only
           command: |
-            # If this is a PR, we can check changes against main
-            # But CircleCI shallow clones can be tricky.
-            # Simple approach: If all changed files match docs, exit 0 (success) immediately?
-            # Actually, CircleCI doesn't have an easy "skip remaining steps" without failing or using conditional steps for EVERYTHING.
-            # We will rely on the fact that 'make lint' itself might be fast or we just run it.
-            # However, the user asked for similar logic.
-            # For now, let's just run it. If strict parity is needed, we'd add complex logic.
-            echo "Running lint on all commits"
+            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+              echo "Pull Request detected: $CIRCLE_PULL_REQUEST"
+              # Ensure we have the base branch to compare against
+              git fetch origin main:main || true
+              BASE_BRANCH="main"
+              CHANGED_FILES=$(git diff --name-only main...HEAD)
+              echo "Files changed in this PR:"
+              echo "$CHANGED_FILES"
+
+              # Identify non-documentation files.
+              # We treat .md files and everything in docs/ as documentation.
+              # We also exclude roadmap.md in server/ and ui/ directories.
+              NON_DOC_FILES=$(echo "$CHANGED_FILES" | grep -v "^docs/" | grep -v "\.md$" | grep -v "roadmap\.md$" | grep -v "^.circleci/" | grep -v "^scripts/lint.sh" || true)
+
+              if [ -z "$NON_DOC_FILES" ]; then
+                echo "Only documentation or CI-related changes detected. Skipping expensive Go linting."
+                # Halt the current job successfully
+                if command -v circleci-agent >/dev/null 2>&1; then
+                  circleci-agent step halt
+                else
+                  echo "circleci-agent not found, but we will exit 0."
+                  exit 0
+                fi
+              else
+                echo "Non-documentation files detected. Proceeding with full linting."
+                echo "Affected files: $NON_DOC_FILES"
+              fi
+            else
+              echo "Not a pull request. Running full linting suite."
+            fi
 
 jobs:
   lint:
     executor: default-executor
     steps:
       - checkout
+      - check-skip
       - run:
           name: Install Python dependencies
           command: |
