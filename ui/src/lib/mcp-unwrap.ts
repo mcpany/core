@@ -79,6 +79,18 @@ export function deepParseJson(obj: any): any {
             if (typeof parsed === 'object' && parsed !== null) {
                 return deepParseJson(parsed);
             }
+            // Only recurse for strings if the parsed string is still valid JSON
+            // and it is different from the original string.
+            // But if it's a primitive string (e.g. "just a string"), we shouldn't return parsed,
+            // we should return obj to match previous behavior unless it's double escaped JSON.
+            if (typeof parsed === 'string' && parsed !== obj) {
+                 try {
+                     const innerParsed = JSON.parse(parsed);
+                     if (typeof innerParsed === 'object' && innerParsed !== null) {
+                          return deepParseJson(parsed);
+                     }
+                 } catch (e) {}
+            }
         } catch (e) {
             // Not a JSON string
         }

@@ -78,7 +78,7 @@ def main():
 
         for filename in filenames:
             if filename.endswith('.ts') or filename.endswith('.tsx'):
-                if filename.endswith('.d.ts') or filename.endswith('.test.ts') or filename.endswith('.test.tsx') or 'mock-proto' in filename:
+                if filename.endswith('.d.ts') or filename.endswith('.test.ts') or filename.endswith('.test.tsx'):
                     continue
 
                 filepath = os.path.join(dirpath, filename)
