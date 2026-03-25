@@ -129,8 +129,11 @@ fi
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
-        ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
+    # We cd into server to pick up the golangci.yml configuration accurately without getting
+    # confused by missing export data or proto files located higher up.
+    cd server && "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
+        ./cmd/... ./pkg/... ./tests/... ./examples/...
+    cd "$PROJECT_ROOT"
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
