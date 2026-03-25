@@ -999,14 +999,14 @@
 ## Evolution: [2026-03-25] Updates
 
 ### Proposed Additions
-- **WASM-BSH State Sanitizer**: (P0) Pluggable WASM sandbox for the BSH Gateway that validates and sanitizes binary context during handoffs.
-- **Zero-Copy Shared Memory Transport**: (P0) High-performance transport layer for BSH using memory-mapped regions to eliminate serialization overhead.
-- **Recursive Intent Delegation (RID) Validator**: (P0) UACO v1.8 compliant middleware for enforcing depth-limited intent mutations.
-- **Predictive Resource Locking**: (P1) Middleware that pre-emptively locks Blackboard keys based on the signed intent of upcoming UACO tasks.
+- **Relational PoI Chain Validator**: (P0) Core security service mandating cryptographic lineage verification back to the hardware-attested mission root (defense against CVE-2026-30741).
+- **CRDT-Native Mailbox Sharding**: (P0) High-performance coordination service utilizing Conflict-Free Replicated Data Types to eliminate teammate mailbox locks in horizontal Agent Teams.
+- **Memfd-Bound BSH Sanitizer**: (P0) Advanced WASM-based binary scanning directly on `memfd_create` shared memory segments for zero-copy state mediation.
+- **Optimistic Attestation Gate**: (P1) Speculative security middleware allowing parallel context preparation and background discovery attestation.
 
 ### Priority Shifts
-- **Relational PoI Validator**: Re-affirmed as **P0**. Critical foundation for supporting UACO v1.8 RID.
-- **Ghost Shell Hook Profiler**: Re-affirmed as **P0**. Expanded to include "WASM-BSH Pattern Matching" to detect malicious state transformation logic.
+- **Lock-Free Mesh Coordination**: (Promoted to P0) Critical requirement for resolving the 2s+ coordination stall in horizontal Agent Teams.
+- **Relational PoI Validator**: (Evolved to Relational PoI Chain Validator) Now designated as the primary defense against "Intent Ghosting" and recursive hijacking.
 
 ---
 

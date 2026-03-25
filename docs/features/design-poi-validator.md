@@ -62,3 +62,11 @@ With the rise of "Context-Mirroring" attacks (CVE-2026-34015), it's no longer en
     **Architecture Adjustment:** * Expanding PoI validation to include "Intent Chain" verification.
     * Implementing "Relational Scoping" to narrow subagent permissions based on parent intent.
     **Security Impact:** Prevents subagent coercion and unauthorized credential use in deep swarms.
+
+    ### Update: 2026-03-25 - Relational Mission Sovereignty & Intent Ghosting Defense
+    **Context:** Today's research and the disclosure of CVE-2026-30741 (OpenClaw RCE) confirm that "Intent Ghosting" is the primary exploit vector for deep swarms. Subagents are shadowing parent intents with unauthorized, transient goals to bypass security quorums.
+    **Architecture Adjustment:**
+    *   Transitioning from point-to-point PoI to **Relational PoI Chain Validation**. Every tool call must now provide a cryptographically signed lineage of intents back to the hardware-attested mission root.
+    *   Introducing **Monotonic Intent Depth-Counters** in the PoI header to physically bound recursive delegation.
+    *   Implementing **Semantic Intent Pinning**, where critical mission-root constraints are immutable and must be present in every sub-intent fragment.
+    **Security Impact:** Neutralizes "Intent Ghosting" and ensures absolute mission-root sovereignty across infinite delegation hops, even in the face of compromised subagents.

@@ -151,19 +151,10 @@
 *   **[P1] Context Compaction Quorum Hub**: Consensus-based state summarization service for large mesh efficiency. (Added: 2026-07-04)
 
 #### Upcoming (2026-03-25 Evolution)
-*   **[P0] Hardware-Attested Monotonic Depth-Counters**: physical constraint enforcement for recursive delegations to prevent infinite resource loops. (Added: 2026-03-25)
-*   **[P0] Relational PoI Chain Validator**: cryptographic lineage verification for every tool call to neutralize "Intent Ghosting" vulnerabilities. (Added: 2026-03-25)
-*   **[P0] Memfd-Bound Zero-Copy Sanitizer**: implementation of active state sanitization directly on kernel-mediated shared memory segments. (Added: 2026-03-25)
-*   **[P1] Optimistic Attestation Gate**: speculative security middleware allowing parallel context preparation and background discovery attestation. (Added: 2026-03-25)
-*   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary context handoffs to align with OpenClaw v2.5. (Added: 2026-03-25)
-*   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer using `memfd_create` for sub-millisecond swarm handoffs. (Added: 2026-03-25)
-*   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation and preventing "Intent Ghosting." (Added: 2026-03-25)
-*   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
-
-#### Upcoming (2026-03-25 Iteration 2)
-*   **[P0] Relational PoI Chain Validator**: Cryptographic lineage verification for every tool call to prevent "Intent Ghosting." (Added: 2026-03-25)
-*   **[P0] Memfd-Bound WASM Sanitizer**: Implementation of zero-copy binary scanning directly on kernel-mediated shared memory segments. (Added: 2026-03-25)
-*   **[P1] Optimistic Attestation Middleware**: Predictive tool registry allowing parallel context preparation and background discovery attestation. (Added: 2026-03-25)
+*   **[P0] Relational PoI Chain Validator**: Core security service mandating cryptographic lineage verification back to the mission root (defense against CVE-2026-30741). (Added: 2026-03-25)
+*   **[P0] CRDT-Native Mailbox Sharding**: High-performance coordination service utilizing CRDTs to eliminate teammate mailbox locks. (Added: 2026-03-25)
+*   **[P0] Memfd-Bound BSH Sanitizer**: Advanced WASM-based binary scanning directly on `memfd_create` shared memory segments. (Added: 2026-03-25)
+*   **[P1] Optimistic Attestation Gate**: Speculative security middleware allowing parallel context preparation and background discovery attestation. (Added: 2026-03-25)
 
 #### Upcoming (2026-06-23 Evolution)
 *   **[P0] Recursive Mission-Root Attestation (RMRA)**: Mandatory hardware-bound re-attestation of sub-process lineage for headless handoffs. (Added: 2026-06-23)

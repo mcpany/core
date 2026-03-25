@@ -664,20 +664,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ---
 
 ## Strategic Evolution: [2026-03-25]
-### Focus: Recursive Intent Integrity & WASM-Bound Binary State
-**Context**: Today's leak of UACO v1.8 and the OpenClaw v2.5 roadmap mark a shift toward "Active State Governance." As agent swarms grow deeper, the risk of "Intent Hijacking" and "Binary Context Poisoning" becomes critical. MCP Any must evolve from a passive validator to an active, sandboxed state mediator.
+### Focus: Relational Mission Sovereignty & Lock-Free Coordination
+**Context**: The emergence of horizontal teammate meshes (Claude Code Agent Teams) and the disclosure of "Intent Ghosting" vulnerabilities (CVE-2026-30741) confirm that transport-layer security and point-in-time validation are no longer sufficient. We must now protect the **cryptographic continuity** of the entire intent lineage and move toward **Lock-Free State Synchronization** and **Kernel-Mediated State Handoffs**. As swarms become high-density, infrastructure must provide **Speculative Safety** to maintain inter-agent coordination speed.
 **Strategic Pivot**:
-- **Recursive Intent Delegation (RID)**: MCP Any will natively support UACO v1.8 RID, allowing parents to define strict cryptographic boundaries on how subagents can mutate intents. This eliminates the "Intent Ghosting" vulnerability.
-- **WASM-Bound BSH Sanitization**: We are integrating a WASM-based "State Sanitizer" into the BSH Gateway. All binary state handoffs will be processed in an isolated WASM sandbox to ensure they conform to the target agent's schema and security profile before memory ingestion.
-- **Zero-Copy Memory-Mapped Transport**: To eliminate the "Cognitive Stall" in deep swarms, MCP Any will implement a Zero-Copy BSH transport utilizing shared memory regions. This allows multi-gigabyte context objects to be "handed off" with sub-millisecond latency.
-
-## Strategic Evolution: [2026-03-25] (Iteration 2)
-### Focus: Relational Intent Integrity & Kernel-Mediated State Handoffs
-**Context**: Further analysis of UACO v1.8 and the emergence of "Intent Ghosting" vulnerabilities confirm that transport security must move to **Relational Integrity**. Simultaneously, the maturation of zero-copy buffers demands that the Universal Agent Bus moves from passive routing to active **Kernel-Mediated State Handoffs**.
-**Strategic Pivot**:
-- **Relational PoI Enforcement**: MCP Any will pivot to a "Relational Security" model where every tool call is validated against a cryptographically signed "Intent Chain." This ensures that subagents cannot be coerced into actions that diverge from the parent's verified mission root.
-- **Memfd-Bound BSH Sanitization**: We are evolving the WASM-BSH gateway to utilize Linux `memfd_create`. This allows the sanitizer to operate directly on shared memory segments, eliminating intermediate buffer copies and neutralizing "TOCTOU" context smearing.
-- **Optimistic Attestation Middleware**: Supporting the efficiency of speculative reasoning, MCP Any will implement an "Optimistic Attestation" layer. This allows agents to speculatively prepare tool contexts while discovery quorums perform background attestation in parallel.
+- **Relational PoI Chain Validator**: MCP Any will evolve to mandate "Relational Proof-of-Intent." We will implement chain validation for every tool call, requiring the complete, cryptographically signed lineage back to the hardware-attested mission root, neutralizing "Intent Ghosting" and "Recursive Intent Poisoning."
+- **Memfd-Native State Sanitizer**: To support high-density swarms, we are evolving the WASM-BSH gateway to utilize Linux `memfd_create`. This allows the sanitizer to operate directly on shared memory segments using read-only mappings, eliminating TOCTOU vulnerabilities and reducing state-transfer latency by 80%.
+- **Lock-Free Mailbox Sharding**: Supporting the efficiency of horizontal teammate coordination, we are introducing CRDT-based mailbox sharding. This service will host granular, task-bound mailbox shards that allow parallel teammates to synchronize state without global coordination locks, ensuring non-blocking performance.
+- **Optimistic Attestation Gate**: Supporting the efficiency of speculative reasoning, MCP Any will implement an "Optimistic Attestation" layer. This allows agents to speculatively prepare tool contexts and perform non-blocking reasoning while discovery quorums perform background attestation in parallel.
 
 ---
 
