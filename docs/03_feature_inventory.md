@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-03-25] - Addendum
+
+### Proposed Additions
+- **Deterministic Configuration Anchor**: (P0) Advanced security service that verifies the integrity and *absence* of unauthorized project-local configuration files before agent execution, neutralizing CVE-2026-25725 style sandbox escapes.
+- **RID Validator**: (P0) Core security middleware implementing UACO v1.8 Recursive Intent Delegation, enforcing cryptographic depth limits and mutation boundaries on subagent intents.
+- **WASM-BSH State Sanitizer**: (P0) Active binary state validation service that executes sanitization logic within a WASM sandbox during inter-agent context handoffs.
+- **Zero-Copy Shared Memory Transport**: (P0) High-performance BSH transport utilizing `memfd_create` or equivalent memory-mapping to reduce swarm coordination latency.
+
+### Priority Shifts
+- **Binary State Handoff (BSH) Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory **WASM-BSH** active sanitization.
+- **Project Configuration Security Guard**: (Re-affirmed P0) Evolving to support **Deterministic Configuration Anchoring**.
+
 ## Evolution: [2026-03-24] Updates
 
 ### Proposed Additions

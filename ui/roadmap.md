@@ -162,6 +162,7 @@
 - [ ] **[P0] Zero-Copy Transport Monitor**: (2026-03-25) Real-time performance metrics for memory-mapped BSH buffers.
 - [ ] **[P0] RID Lineage Inspector**: (2026-03-25) Security UI for visualizing UACO v1.8 recursive delegation depths and mutation boundaries.
 - [ ] **[P1] Predictive Locking Visualizer**: (2026-03-25) Gantt-style view of projected Blackboard resource locks based on agent intents.
+- [ ] **[P0] Deterministic Config Anchor Manager**: (2026-03-25) UI for reviewing pre-attested configuration paths and authorized files.
 - [ ] **[P0] Context Hook Interop Viewer**: (2026-03-26) Visualize how MCP Any state maps to external framework lifecycle hooks (e.g., OpenClaw).
 - [ ] **[P0] RID Delegation Graph**: (2026-03-26) Interactive visualization of UACO v1.8 intent lineages, showing depth limits and mutation boundaries.
 - [ ] **[P0] WASM Sanitization Dashboard**: (2026-03-26) Monitor and configure active WASM-BSH sanitization rules and rejected buffers.
