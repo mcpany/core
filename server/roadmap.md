@@ -721,7 +721,7 @@ These features represent the next logical steps for the product, focusing on Ent
 
 ### Upcoming: [2026-06-12]
 *   **Shadow Coordination Interceptor (SCI)**: (P0) Advanced security middleware for the T2T Bridge that monitors non-primary channels (metadata, tags) for anomalous entropy and hidden instruction patterns. (Added: 2026-06-12)
-*   **Mesh-Resident Attestation (MRA) Provider**: (P0) Core security service utilizing hardware-bound (TPM) primitives to generate and verify collision-resistant semantic hashes for the ARI Hub. (Added: 2026-06-12)
+*   **[P0] Mesh-Resident Attestation (MRA) Provider**: (P0) Core security service utilizing hardware-bound (TPM) primitives to generate and verify collision-resistant semantic hashes for the ARI Hub. (Added: 2026-06-12)
 *   **Dynamic Attention Gating (DAG) Middleware**: (P1) Stability middleware that dynamically "gates" subagent reasoning fragments based on parent attention-utilization to prevent REE. (Added: 2026-06-12)
 *   **Hardware-Locked Coordination Handshake**: (P0) Mandatory hardware-locked handshake for all inter-agent coordination to ensure mission-root sovereignty. (Added: 2026-06-12)
 
@@ -754,7 +754,7 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 *   **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
 
-### Upcoming: [2026-06-18]
+#### Upcoming (2026-06-18 Evolution)
 *   **Reason-Graph Integrity (RGI) Provider**: (P0) Hardware-attested graph validation for multi-agent reasoning (Added: 2026-06-18).
 *   **Mesh-Resident Policy Manager (MRPM)**: (P0) Federated policy service for MRPS compliance (Added: 2026-06-18).
 *   **AAG Middleware**: (P1) Entropy-aware attention gating for DAG middleware (Added: 2026-06-18).
