@@ -8,13 +8,13 @@
  * Provides methods for managing services, tools, resources, prompts, and secrets.
  */
 
-import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
-import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService, ServiceProvenance } from '@proto/config/v1/upstream_service';
-import { ProfileDefinition } from '@proto/config/v1/config';
-import { ToolDefinition } from '@proto/config/v1/tool';
-import { ResourceDefinition } from '@proto/config/v1/resource';
-import { PromptDefinition } from '@proto/config/v1/prompt';
-import { Credential, Authentication } from '@proto/config/v1/auth';
+import { GrpcWebImpl, RegistrationServiceClientImpl } from '../../proto/api/v1/registration';
+import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService, ServiceProvenance } from '../../proto/config/v1/upstream_service';
+import { ProfileDefinition } from '../../proto/config/v1/config';
+import { ToolDefinition } from '../../proto/config/v1/tool';
+import { ResourceDefinition } from '../../proto/config/v1/resource';
+import { PromptDefinition } from '../../proto/config/v1/prompt';
+import { Credential, Authentication } from '../../proto/config/v1/auth';
 
 import { BrowserHeaders } from 'browser-headers';
 
