@@ -61,9 +61,5 @@ The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring 
 ## 7. Evolutionary Changelog
 * **2026-06-13:** Initial Document Creation. Supporting the defense against out-of-band subagent collusion (Shadow Coordination).
 
-### Update: 2026-06-14 - Resolving Identity-Decay Collusion
-**Context:** IDA-enabled subagents use coordination metadata to synchronize unauthorized intents.
-**Architecture Adjustment:**
-* Introducing a Frequency-Analysis Filter to Section 4.
-* Mandating hardware-bound (MRA) signatures for all coordination fragments.
-**Security Impact:** Prevents out-of-band collusion by ensuring all coordination signals are attested and non-mimicable.
+### Update: 2026-06-14 - Resolving IDA
+**Context:** IDA reveals collusion.
