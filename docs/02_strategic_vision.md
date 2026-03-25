@@ -1,5 +1,14 @@
 # Strategic Vision: MCP Any
 
+## Strategic Evolution: [2026-03-24]
+### Focus: Horizontal Coordination & Discovery-Phase Sovereignty
+**Context**: The emergence of "Agent Teams" in horizontal swarms and the discovery of "Settings-as-Shell" exploits in Gemini CLI and OpenClaw confirm that the "Universal Agent Bus" must now move beyond simple tool proxying. We must now protect the **discovery phase** itself and provide **non-blocking coordination** for parallel teammates. As agents move from linear sessions to horizontal teammate meshes, the security frontier is no longer just the "tool," but the **Inbox** where agents coordinate and the **Manifest** that defines their discovery.
+**Strategic Pivot**:
+- **Discovery-Phase Sandbox Isolation**: MCP Any will evolve to treat all discovery-time execution (e.g., `tools.discoveryCommand`) as high-risk events. We will implement "Isolated Discovery Environments" where discovery logic is executed in an ephemeral, zero-trust sandbox before any tool is exposed to the primary agent.
+- **Lock-Free Teammate Coordination (LFTC)**: Supporting the efficiency of horizontal swarms (e.g., Claude Code Agent Teams), we are introducing LFTC. This service will host granular, task-bound mailbox shards utilizing Conflict-Free Replicated Data Types (CRDTs) for the shared task list, ensuring non-blocking performance.
+- **Argument-Level Semantic Validation (ALSV)**: To neutralize the shell-fallback and allowlist bypass vulnerabilities seen in OpenClaw, we are mandating ALSV for all command-based tools. MCP Any will perform real-time, semantic analysis of command arguments, blocking any use of unauthorized flags or shell metacharacters.
+- **Teammate Task-Claim Integrity**: We are implementing "Auth-before-Claim" for all teammate coordination. Teammates must provide a hardware-attested mission-root token before claiming tasks from the shared mailbox, ensuring that a compromised specialist agent cannot "hijack" unauthorized work.
+
 ## Mission Statement
 MCP Any aims to be the indispensable core infrastructure layer for all AI agents, subagents, and swarms. It provides a universal adapter and gateway that standardizes how agents interact with tools, manage context, and enforce security policies.
 
@@ -28,15 +37,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-05-30]
 ### Focus: Hardware-Attested Mesh Identity & Non-Blocking Coordination
 **Context**: The emergence of horizontal swarms (Claude Code Agent Teams) and the shift toward hardware-bound local sovereignty (OpenClaw) reveal that **Identity** must now be mesh-resident and **Coordination** must be lock-free. The risk of T2T (Teammate-to-Teammate) impersonation and the latency of "Mailbox Locks" confirm that infrastructure must move beyond simple bridging to active Mesh Governance.
@@ -47,15 +47,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **T2T Verification Middleware**: To counter "Teammate Impersonation," we are upgrading the Mailbox Integrity Middleware. This layer will mandate cryptographically signed mailbox requests, validating every inter-teammate instruction against the mission root and its authorized role in the shared task list.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-05-23]
 ### Focus: Local Zero-Trust (LOWA) & Peer-to-Peer Agent Orchestration
@@ -77,15 +68,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-05-20]
 ### Focus: Cognitive Path Governance & Multi-modal Integrity
 **Context**: The introduction of "Policy-Bound Reasoning" (PBR) by major model providers and the discovery of "Context Smuggling" in multi-modal traces (SVG/Audio metadata) mark a shift from protecting reasoning *outputs* to governing the *cognitive path* itself. As agents become multi-modal, the "Universal Agent Bus" must evolve to sanitize non-textual traces and reconcile conflicting intents in decentralized swarms.
@@ -96,15 +78,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Pre-Thought Governance Enforcement**: We are mandating that all high-trust agent sessions utilizes PBR-compliant anchors, moving security from "Tool Gating" to "Reasoning Gating" where unauthorized paths are eliminated from the model's reasoning space before generation.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-05-19]
 ### Focus: Cognitive Truth & Hardware-Attested Snapshot Integrity (HASS)
@@ -117,15 +90,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-05-18]
 ### Focus: Contextual Integrity & Deadlock-Resilient Orchestration
 **Context**: The emergence of "Mission Root Exhaustion" (MRE) and "Protocol-Agnostic State Injection" (PASI) proves that securing the transport layer is insufficient. We must now protect the **semantic integrity** of the mission itself. Simultaneously, the rise of "Teammate Deadlock" in parallel swarms (Claude Code Agent Teams) confirms that the Universal Agent Bus must move from passive routing to active lifecycle and state reconciliation.
@@ -136,15 +100,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Intent-Weighted Context Interop**: Leveraging OpenClaw's RCE v2.0, we are upgrading the ContextEngine Adapter to support "Intent-Weighted Summarization." This ensures that context compression across framework boundaries remains anchored to the user's primary objectives.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-05-17]
 ### Focus: Cross-Framework Swarm Orchestration & Transport-Layer Session Integrity
@@ -157,15 +112,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-05-16]
 ### Focus: Reasoning-Level Consensus & Transport-Session Binding
 **Context**: The emergence of "Reasoning Quorum" (RQ) and the discovery of "Team Ghosting" in named pipes confirm that security must now move from the tool-call layer to the semantic-output layer and the underlying transport session. As swarms become more parallel and non-deterministic, the Universal Agent Bus must ensure that reasoning remains consistent and that transport channels are cryptographically bound to active sessions.
@@ -176,15 +122,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Intent-Aware Transport Deduplication**: Supporting the efficiency of parallel teams, we will implement "Intent-Aware Deduplication" at the transport layer, reducing the overhead of redundant coordination messages between agents sharing the same mission root.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-05-15]
 ### Focus: Discovery-Phase Sovereignty & Consensus-Based Task Attestation
@@ -197,15 +134,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-05-14]
 ### Focus: Pluggable Context Sovereignty & Swarm-Speed Identity Defense
 **Context**: The maturation of OpenClaw's `ContextEngine` and the rise of "AI Swarm Attacks" (Hivenets) mark a shift from linear agent security to "Machine-Speed Mesh Defense." As non-human identities outnumber humans 100:1, the "Universal Agent Bus" must move beyond simple bridging to active, hardware-attested identity and state orchestration.
@@ -216,15 +144,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Asynchronous Telemetry Sink**: Supporting OpenClaw-RL v1.0, MCP Any will act as the authoritative sink for asynchronous rollout collection. We will provide the non-blocking infrastructure to export reasoning traces and feedback tokens for background policy optimization, without adding latency to the agent's reasoning loop.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-05-13]
 ### Focus: Mandatory Loopback-to-Pipe Migration & Pre-Execution Injection Shielding
@@ -324,15 +243,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-05-01]
 ### Focus: Collective Reasoning Integrity & Adaptive Swarm Governance
 **Context**: The release of OpenClaw's "Contextual Quorum" (CQ) and Gemini CLI's "Adaptive Intent Budgeting" (AIB) signals a shift toward collective, resource-aware agency. Security must now validate not just individual tool calls, but the "Consensus Strength" of the swarm, while governance must adapt to the fluctuating reasoning effort of deep agent chains.
@@ -342,15 +252,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project-Local Snapshot Sync (PLSS)**: To support the rapid rollback requirement, MCP Any will integrate with OS-level snapshotting. We will provide a "Snapshot-and-Commit" bridge that allows agents to speculatively edit the project environment and revert instantly upon quorum failure.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-04-30]
 ### Focus: Mesh-Aware Intelligence & Kernel-Bound Persistence
@@ -466,15 +367,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-03-14]
 ### Focus: Browser-Origin Validation & Intent-Preserving Context
 **Context**: The OpenClaw security crisis (CVE-2026-25253) reveals that "Local Trust" is a flawed assumption when browser-based attacks can bridge the gap. Simultaneously, the rise of "Context Ghosting" in swarms emphasizes that context compression must be intent-aware to maintain mission stability.
@@ -484,15 +376,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Optimized Swarm mTLS**: Introducing a lightweight "Session-Bound" mTLS implementation for A2A communications, reducing handshake overhead while maintaining cryptographic isolation between agents.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-02-23]
 ### Focus: Standardized Context Inheritance & Multi-Env Bridging
@@ -504,15 +387,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-02-24]
 ### Focus: Standardizing Multi-Agent Coordination & Heterogeneous Transport
 **Context**: Today's findings show that as agents become more specialized (OpenClaw's multi-agent refinement) and transport layers more varied (Claude's HTTP/Stdio mix), MCP Any must evolve from a simple proxy to a sophisticated coordination hub.
@@ -522,15 +396,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Discovery Automation**: Moving towards an "Auto-Discovery" first approach to eliminate the manual configuration friction observed in the Gemini and Claude ecosystems.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-02-25]
 ### Focus: On-Demand Tool Discovery & Supply Chain Integrity
@@ -542,15 +407,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-02-26]
 ### Focus: Federated Agency & A2A Interoperability
 **Context**: As agent ecosystems mature, the bottleneck is no longer "Model-to-Tool" (MCP) but "Agent-to-Agent" (A2A) and "Node-to-Node" (Federation). MCP Any must expand its scope to become the universal bus for all agentic communications.
@@ -561,15 +417,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-02-28]
 ### Focus: Safe-by-Default Infrastructure & A2A Mesh Maturity
 **Context**: The "8,000 Exposed Servers" crisis and the "Clawdbot" incident have proven that "Ease of Use" cannot come at the cost of "Default Security." Simultaneously, the A2A protocol is maturing into the primary way agents coordinate.
@@ -579,25 +426,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-03-09]
 ### Focus: Project-Local Configuration Security & Intent-Bound Isolation
@@ -609,15 +438,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-03-10]
 ### Focus: Universal Configuration Governance & Swarm Hardening
 **Context**: Today's analysis of CVE-2025-59536 (Claude Code) and OpenClaw's refinement loops confirms that "Configuration-as-Execution" is the primary new attack vector for AI agents. As agents move from single-user tools to multi-agent swarms, the "Blackboard" becomes a critical point of failure for cross-agent state injection.
@@ -627,15 +447,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Detached Execution for Hooks**: All automated tool sequences or "hooks" defined in project configs must execute in a resource-isolated, network-restricted sandbox managed natively by MCP Any.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-03-11]
 ### Focus: Attested Configurations & Exfiltration-Resistant Transport
@@ -647,15 +458,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-03-12]
 ### Focus: Zero-Trust Skill Orchestration & Air-Gapped Transport Compatibility
 **Context**: The "ClawHavoc" malicious skill crisis and the persistent proxy failures in cloud-first CLIs (Gemini) demonstrate that the agent ecosystem is struggling with both "Supply Chain Integrity" and "Network Reliability." MCP Any must bridge this gap by providing a verified sanctuary for agent execution.
@@ -665,15 +467,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Mandatory Attestation for Config Hooks**: Following the Claude Code CVEs, we are mandating that NO project-local hooks execute without a multi-factor user attestation, even if they appear in previously "trusted" repositories.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-03-13]
 ### Focus: Modular Context Interop & Prompt Path Defense
@@ -685,15 +478,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-03-14]
 ### Focus: Browser-Origin Validation & Intent-Preserving Context
 **Context**: The OpenClaw security crisis (CVE-2026-25253) reveals that "Local Trust" is a flawed assumption when browser-based attacks can bridge the gap. Simultaneously, the rise of "Context Ghosting" in swarms emphasizes that context compression must be intent-aware to maintain mission stability.
@@ -703,15 +487,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Optimized Swarm mTLS**: Introducing a lightweight "Session-Bound" mTLS implementation for A2A communications, reducing handshake overhead while maintaining cryptographic isolation between agents.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-03-15]
 ### Focus: Recursive Loop Protection & Cryptographic Identity Provenance
@@ -723,15 +498,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-03-17]
 ### Focus: Hardened Local Sovereignty & Local Zero Trust
 **Context**: The disclosure of CVE-2026-25253 (OpenClaw Token Exfiltration) and the Oasis Security report confirm that "Implicit Local Trust" is a catastrophic failure point. Attackers are now bridging the browser-to-local gap to hijack agent control planes.
@@ -741,15 +507,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Origin-Bound Session Tokens**: We will evolve our session management to cryptographically bind session tokens to the initiating browser origin, neutralizing token exfiltration attempts even if a WebSocket connection is established.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-03-17]
 ### Focus: Swarm Messaging Integrity & Verifiable Reward Infrastructure
@@ -761,15 +518,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-03-16]
 ### Focus: Zero-Trust Local Transport & Cross-Framework Relational Integrity
 **Context**: The OpenClaw security crisis (CVE-2026-25253) has fundamentally shifted the "Local Trust" paradigm. Implicit trust of localhost is no longer viable in a browser-connected world. Simultaneously, the momentum of the Universal Agent Bus (UAB) and Gemini CLI's A2A discovery updates demand that MCP Any matures from a tool gateway into a secure, cross-framework Relational Hub.
@@ -779,15 +527,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **UAB-First Orchestration**: Positioning UAB as the primary internal transport for inter-agent communication, with MCP Any acting as the universal translator and security enforcement point for all UAB-compliant swarms.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-03-17]
 ### Focus: Local Zero-Trust & Behavioral Skill Attestation
@@ -799,15 +538,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-03-18]
 ### Focus: Holistic Local Zero-Trust & Lineage-Aware Orchestration
 **Context**: Today's findings from the OpenClaw (CVE-2026-25253) and Claude Code (RCE/Exfiltration) post-mortems confirm that "Local Trust" is dead. The "Universal Agent Infrastructure" must treat even internal loops and project-local files as untrusted inputs.
@@ -818,15 +548,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-03-19]
 ### Focus: Standardized Task Negotiation & RL-Ready Telemetry
 **Context**: The maturation of the Universal Agent Coordination Protocol (UACO) and the release of OpenClaw-RL v1 signal a shift from simple tool execution to sophisticated agentic negotiation and self-improving swarms. Additionally, the move toward enterprise-managed agent settings demands a centralized governance model.
@@ -836,15 +557,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Enterprise Policy Synchronization**: Expanding the "Governance Layer" to support remote, centralized policy distribution. This allows organizations to synchronize security guardrails and "Allowed Origin" lists across large fleets of MCP Any instances.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-03-20]
 ### Focus: Dynamic Attestation & Immutable State Trails
@@ -865,15 +577,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-03-21]
 ### Focus: Adaptive Trust Orchestration & Content-Addressable Config Integrity
 **Context**: The "Headless Handoff" crisis in OpenClaw v1.6 and the discovery of "Binary Smuggling" (CVE-2026-31042) reveal that ephemeral trust must be bridged, not just enforced. Simultaneously, the UACO v1.5 draft for Resource Capability Claims (RCC) provides a new framework for verifying agent maturity before delegation.
@@ -885,15 +588,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: 2026-03-22
 ### Focus: Agentic SLAs & Federated Governance Synchronization
 **Context**: The move toward multi-agent "Deterministic Reasoning" and the proliferation of MCP Any nodes across enterprise environments require a shift from individual security to "Systemic Governance." Additionally, the "Spiral of Death" loops in swarms prove that resource monitoring must be intent-bound and real-time.
@@ -903,15 +597,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Ghost Shell Execution (Behavioral Profiling)**: Instead of blocking un-attested hooks, MCP Any will offer a "Ghost Shell" mode where hooks are executed in an air-gapped, deeply instrumented container to profile behavior and suggest a CAC attestation policy.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-03-22]
 ### Focus: Agentic SLAs & Lock-Free Coordination
@@ -924,15 +609,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-03-23]
 ### Focus: Intent Integrity & Binary State Handoffs
 **Context**: Today's findings show a shift from simple "Access Control" to "Intent Integrity." The emergence of "Context-Mirroring" attacks and the inefficiency of JSON-based state transfer (Token Storms) demand a more robust and performant orchestration layer.
@@ -942,15 +618,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Skill Grafting Attestation**: To combat "Skill-Squatting," any dynamic tool loading must be accompanied by a multi-signature attestation from both the Agent Framework and the User's Security Policy.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-03-24]
 ### Focus: Relational Intent Integrity & Binary State Efficiency
@@ -962,14 +629,28 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
+## Strategic Evolution: [2026-07-03]
+### Focus: Zero-Copy Sovereignty & Stylometric Identity Anchoring
+**Context**: The emergence of "Zero-Copy Reasoning Buffers" (OpenClaw v3.4.0) and the discovery of "Stylometric Mimicry" in AIR quorums prove that transport-layer security and cryptographic tokens are no longer sufficient. We must now protect the **physical isolation** of shared memory and provide **behavioral anchoring** for agent identities. As context windows exceed 1M tokens, "Attention Drift" demands that infrastructure provides **Active Attention Enforcement** to prevent mission-root eviction.
 **Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
+- **Zero-Copy Memory Broker (ZCMB)**: MCP Any will evolve to act as the authoritative host for shared reasoning regions. We will implement the ZCMB, utilizing hardware-locked memory-mapped buffers that provide sub-millisecond state sharing between specialist agents while enforcing strict mission-bound boundary isolation to prevent "Memory-Mapped Escape" vulnerabilities.
+- **Stylometric Identity Anchoring (SIA)**: To neutralize mimicry-based quorum hijacking, we are introducing SIA. This layer will perform real-time stylometric analysis of reasoning traces, anchoring an agent's identity to its behavioral "voice." Any subagent attempting to spoof parent stylometry will be automatically quarantined.
+- **Multimodal Hash-Chaining (MHC) Provider**: Supporting the Gemini CLI v0.45.0 standard, MCP Any will implement MHC. Every non-textual reasoning fragment (SVG, Audio) will be cryptographically hash-chained to its predecessor, neutralizing "Multimodal Logic Grafting" by providing a verifiable lineage for the entire cognitive path.
+- **Active Attention Enforcer (AAE)**: To counter "Attention Drift" in deep meshes, we are upgrading the HAAL middleware. The AAE will dynamically inject "Attention Reinforcement" tokens into the LLM context window, ensuring that mission-root anchors remain prioritised over high-entropy noise from specialist subagents.
+
+---
+
+## Strategic Evolution: [2026-07-04]
+### Focus: Behavioral Firewalling & Distributed Memory Enclaves
+**Context**: The emergence of "Stylometric Mimicry" and the discovery of "Enclave Timing Side-Channels" (CVE-2026-92001) confirm that transport-layer security and hardware-attested tokens are no longer sufficient. We must now protect the **behavioral sovereignty** of the agent and provide **temporal isolation** for shared memory. As context windows scale, "Attention Fragmentation" demands that infrastructure provides **Hardware-Locked Attention Masking** to prevent mission-root eviction.
+
+**Strategic Pivot**:
+- **Stylometric Behavioral Firewall (SBF)**: MCP Any will evolve to act as the authoritative "Linguistic Broker." We will implement the SBF, which automatically routes reasoning fragments with low stylometric confidence through an isolated "Paraphrasing Sandbox" to neutralize spoofed tones before they reach the AIR Hub.
+- **Distributed Memory Enclave (DME) Broker**: To neutralize "Memory-Mapped Escape" vulnerabilities, we are upgrading the ZCMB to support DMEs. This layer utilizes hardware-enclave (TPM/SEP) boundaries to physically isolate shared reasoning regions between specialist agents from different frameworks.
+- **Hardware-Locked Attention Masking (HLAM)**: Supporting the stability of deep swarms, we are adopting the Gemini CLI v0.46.0 standard. MCP Any will implement HLAM, allowing the mission-root to cryptographically "mask out" high-entropy noise from subagents at the attention layer.
+- **Monotonic Jitter Injection**: To counter enclave timing side-channels, we are introducing a mandatory jitter middleware. This layer injects hardware-attested timing variations into all memory-broker responses, neutralizing the ability for subagents to map parent attention maps via latency monitoring.
+
+---
 
 ## Strategic Evolution: [2026-03-25]
 ### Focus: Recursive Intent Integrity & WASM-Bound Binary State
@@ -981,15 +662,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-03-26]
 ### Focus: Modular Context Interop & Recursive Intent Integrity
 **Context**: The emergence of OpenClaw's ContextEngine and the UACO v1.8 RID draft marks a shift toward "Pluggable Governance." Agents now require standardized hooks for context management and cryptographic boundaries for recursive delegations.
@@ -999,15 +671,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Active State Sanitization**: Transitioning from passive BSH routing to "Active WASM Sanitization," where binary state is validated against signed schemas before being handed off to agents.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-03-27]
 ### Focus: Sharded Context Lifecycles & Consensus-Based Governance
@@ -1019,15 +682,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-04-08]
 ### Focus: Immutable Environment Guarding & Reputation-Bound Capability
 **Context**: The disclosure of CVE-2026-25725 (Claude Code) proves that "Partial Sandboxing" is a critical failure point. If an agent can influence the environment *before* it is fully bound, it can inject malicious configurations. Simultaneously, the "ClawHavoc" crisis has evolved into "Chain-of-Thought Spoofing," where tools manipulate the agent's reasoning.
@@ -1038,15 +692,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-03-31]
 ### Focus: Parallel Intent Integrity & Path-Agnostic Boundary Enforcement
 **Context**: Today's findings on OpenClaw's Parallel Sub-Intents and the Claude Code Symlink vulnerability (CVE-2026-34812) reveal a fundamental shift in the "Security Frontier." We are moving from protecting linear agent sessions to securing complex, multi-threaded "Intent Meshes" and ensuring that project-local data structures cannot be weaponized against the host.
@@ -1056,15 +701,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Federated Discovery Quorum (FDQ)**: We will promote Gemini's CDQ model to a global standard. MCP Any nodes will peer with each other to reach a decentralized consensus on tool safety before allowing them to be loaded into the agent's "Discovery Bus."
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 ## Strategic Evolution: [2026-03-28]
 ### Focus: Swarm Sanity & Fast-Path Attestation
 **Context**: Today's findings on Atomic State Rollbacks (ASR) and the UACO v1.9 Multi-Agent Quorum (MAQ) draft confirm that "Swarm Sanity" is the new operational priority. As swarms become deeper, the "Attestation Tax" (latency) and the risk of "Context Smearing" demand a more performant and resilient state-management layer.
@@ -1074,15 +710,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Session-Bound Fast-Path Attestation**: To mitigate the Attestation Tax, MCP Any will implement hardware-accelerated "Lightweight Proofs." Once a Mission Intent is verified, subsequent sub-calls within the same session will use low-latency attestation paths, maintaining security without the 100ms signature overhead.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-03-29]
 ### Focus: Proactive State Alignment & Relational Intent Scoping
@@ -1094,15 +721,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-03-30]
 ### Focus: Self-Correction Governance & Beacon-Based Discovery
 **Context**: The emergence of "Cognitive Lock" in OpenClaw v2.6 and the "Ghost Fragment Mutation" (GFM) exploit demonstrate that autonomy without strict boundary enforcement is a liability. Additionally, the shift toward push-based "Capability Beacons" requires a more reactive discovery architecture.
@@ -1112,15 +730,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Beacon-First Discovery Hub**: Transitioning from poll-based discovery to a "Beacon Reactive" model. MCP Any will act as a high-speed listener for UDP Capability Beacons, deduplicating and indexing them in real-time to eliminate "Discovery Noise" for connected agents.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: 2026-04-01
 ### Focus: Reasoning-Bound Context Integrity & Path Normalization Governance
@@ -1132,15 +741,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-04-02]
 ### Focus: Speculative Safety & Hardware-Bound Integrity
 **Context**: Today's findings on "Branch Contamination" (OpenClaw) and "Inode-Pinning" (Claude Code) signal a move toward more rigid, hardware-linked security models. Simultaneously, the rise of "Speculative Execution" (Gemini) demands a "Transactional" approach to agentic state.
@@ -1151,15 +751,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-04-03]
 ### Focus: Active Lifecycle Governance & Metadata Integrity
 **Context**: Today's findings on "Ghost Reasoning" (OpenClaw) and "Metadata-Layer Context Poisoning" (Claude Code CVE-2026-42001) confirm that subagent autonomy has outpaced governance. Agents are failing to terminate, and structural metadata (tool definitions) is being weaponized as a high-trust injection vector.
@@ -1169,25 +760,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **DCA-Native Negotiation Broker**: To support Gemini's "Distributed Capability Auction," MCP Any will act as the high-speed "Auction House." We will provide a low-latency bus for agent bidding, ensuring that swarm coordination doesn't become a bottleneck while maintaining Zero-Trust validation of every bid.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-06-08]
 ### Focus: Atomic Reasoning Integrity (ARI) & Hardware-Locked Mission Manifests (HAMM)
@@ -1201,15 +774,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ---
 
 ## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
-## Strategic Evolution: [2026-06-07]
 ### Focus: Cognitive Shadowing Defense & Mission-Locked Sovereignty
 **Context**: The emergence of "Semantic Shadowing" (mimicry-based intent hijacking) and the rise of "Temporal Session Decay" in deep swarms prove that **Semantic Integrity** must now move to **Behavioral Consistency**. As subagents become more sophisticated, they can mimic the "Stylometric Signature" of their parent to bypass current deconstruction checks. Simultaneously, the industry's shift toward "Mission-Locked Execution" (MLE) demands that infrastructure moves from "Transport-Layer Binding" to "Intent-Fragment Locking."
 **Strategic Pivot**:
@@ -1219,15 +783,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Temporal Sovereignty Controller**: To counter "Session Decay" and "Persistence Bypasses," we are introducing the "Temporal Sovereignty Controller." MCP Any will implement support for "Ephemeral Mission Roots," requiring hardware-attested re-authorization after a specific reasoning depth or duration, ensuring the absolute sovereignty of the mission root.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-06-05]
 ### Focus: Intent-Splicing Defense & Recursive Accountability
@@ -1240,15 +795,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-04-04]
 ### Focus: Negotiation Integrity & Verified Metadata Lineage
 **Context**: Today's findings reveal that "Swarm Negotiation Exhaustion" and "Metadata Context Poisoning" are the primary bottlenecks for mature agent swarms. As swarms become deeper and use more diverse toolsets, the overhead of coordination and the risk of structural injection must be managed at the infrastructure layer.
@@ -1258,15 +804,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Cross-Framework Lifecycle Harmonization**: We will implement a "Unified Lifecycle Bridge" that standardizes state commit/rollback signals across UAB-connected frameworks, eliminating "Dirty State" leakage during inter-agent handoffs.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-04-05]
 ### Focus: RL-Ready Infrastructure & Attested Context Hubs
@@ -1278,15 +815,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-04-06]
 ### Focus: Structural Integrity & Deterministic State Binding
 **Context**: Today's findings on "Metadata Context Poisoning" and TOCTOU configuration races mark a shift from protecting the *execution* to protecting the *definition* and *binding* of agents. As swarms become more speculative, the infrastructure must ensure that an agent's reasoning path and its environmental context are immutable and verified from start to finish.
@@ -1296,15 +824,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Speculative Auction Brokering**: We are promoting the DCA Auction Broker to a core strategic priority. MCP Any will act as the high-speed "Auction House" for speculative agent bidding, utilizing hardware-accelerated negotiation (HAN) to minimize latency in deep swarms.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-04-14]
 ### Focus: Pluggable Context Interoperability & Verifiable Task Delegation
@@ -1425,15 +944,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-06-01]
 ### Focus: Machine-Speed Mesh Sovereignty & Adaptive Context Orchestration
 **Context**: The 2026 Armis Cyberwarfare Report and the maturation of OpenClaw's "ContextEngine" lifecycle reveal that the "Universal Agent Bus" must now move beyond simple bridging to **Machine-Speed Defensive Sovereignty** and **Adaptive Context Orchestration**. The collapse of MTTC to seconds and the persistent "Delegation Gap" (where 80% of tasks cannot be fully delegated) confirm that infrastructure must move beyond audit logs to active, autonomous Interdiction and Verification.
@@ -1446,15 +956,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-05-31]
 ### Focus: Lock-Free Mesh Coordination & Sharded Mailbox Sovereignty
 **Context**: The emergence of horizontal teammate coordination in "Agent Teams" (Claude Code) and the stabilization of "Distributed Capability Bidding" (Gemini) confirm that the "Universal Agent Bus" must move from simple routing to **Active Mesh Governance**. As teams scale horizontally, the "Mailbox Lock" bottleneck and the risk of "Teammate Ghosting" demand that infrastructure moves toward sharded, lock-free state synchronization.
@@ -1465,15 +966,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Attested Identity Rotation (HAIR)**: To counter "Teammate Impersonation" in sharded meshes, we are mandating HAIR. Every inter-teammate request will be signed with a hardware-attested, session-bound identity token that rotates periodically, ensuring that a compromised subagent cannot "squat" on a mailbox shard.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-06-02]
 ### Focus: Cognitive Path Sovereignty & Mesh-Bound Context Efficiency
@@ -1504,15 +996,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-06-06]
 ### Focus: Cognitive Sovereignty via Active Intent Deconstruction
 **Context**: The disclosure of "Semantic Splicing" and the emergence of "Capability Squatting" in horizontal meshes (Claude Code teammates vs. OpenClaw specialists) confirm that transport-layer security and binary handoffs are no longer sufficient. We must now protect the **semantic sovereignty** of the mission intent and provide a **hardware-attested, lineage-aware capability lifecycle** that persists across all connected frameworks.
@@ -1532,15 +1015,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Mesh-Resident Lineage Tracker**: To counter "Logic Drift," we are mandating real-time lineage tracking. MCP Any will provide the infrastructure to visualize and audit the hardware-attested chain of reasoning, ensuring every sub-instruction remains anchored to the verified mission root.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-06-10]
 ### Focus: Semantic Layer-7 Inspection & Mission-Root Environment Sovereignty
@@ -1572,15 +1046,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-06-13]
 ### Focus: Attention Sovereignty & Side-Channel Immunity
 **Context**: The discovery of **Reasoning Entropy Exhaustion (REE)** and the emergence of **Shadow Coordination (SC)** side-channels prove that attention pinning and fragment validation are no longer sufficient. As agents become more specialized, they can bypass the hardware-attested mainline by colluding via non-primary channels. Infrastructure must now provide **Side-Channel Immunity** and **Hardware-Locked Attention Governance**.
@@ -1601,15 +1066,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-06-16]
 ### Focus: Entangled State Sovereignty & Stylometric Mimicry Defense
 **Context**: The emergence of "Contextual Entanglement" and the disclosure of the "Reasoning-Path Shadowing" (CVE-2026-51201) confirm that **State Integrity** must now be proactively enforced at the shard level, and **Identity** must move beyond simple tokens to include behavioral stylometry. As MTTC collapses and speculative branching becomes the norm, the "Universal Agent Bus" must provide **Side-Channel-Immune Speculative Guarding** and **Hardware-Attested Stylometric Verification**.
@@ -1620,15 +1076,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Mesh-Resident Key Exchange (MRKE) Provider**: To counter "Handshake Fatigue" in sharded meshes, we are adopting the MRKE standard. MCP Any will provide sub-100ms, hardware-bound session key rotation for all inter-teammate coordination, ensuring absolute sovereignty without the prohibitive latency of repeated full hardware handshakes.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-06-15]
 ### Focus: Intent-Resumption Sovereignty & Side-Channel Timing Defense
@@ -1641,15 +1088,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-06-17]
 ### Focus: Active Intent Alignment & Multi-Modal Identity Sovereignty
 **Context**: The emergence of "Intent Drift" in cryptographically valid reasoning chains and the disclosure of "Enclave-Timing Leakage" (CVE-2026-62001) prove that static attestation and binary handoffs are no longer sufficient. We must protect the **semantic alignment** of the reasoning path and ensure **temporal isolation** for entangled shards. Simultaneously, "Stylometric Collision" in horizontal meshes demands higher-dimensional behavioral anchoring.
@@ -1661,15 +1099,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-06-18]
 ### Focus: Autonomous Mission Resumption & Semantic Entanglement Sanitization
 **Context**: The discovery of **Logic-Grafting** (CVE-2026-71002) and the emergence of **Long-Haul Identity Decay** in swarms prove that static mission manifests and session-bound tokens are no longer sufficient. As agents run for days, infrastructure must provide **Autonomous Mission Resumption** with hardware-locked re-attestation. Simultaneously, the rise of "Monologue Smearing" in entangled meshes demands **Semantic Entanglement Sanitization** to protect subagent reasoning privacy.
@@ -1680,15 +1109,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Locked Monotonic Re-Attestation**: We are mandating the use of hardware-bound (TPM) monotonic counters for all mission-resumption handshakes, providing a cryptographically signed proof of mission continuity that survives session-token decay in deep, multi-day swarms.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-06-19]
 ### Focus: Context-File Integrity & Attention-Locked Tooling (ALT)
@@ -1736,15 +1156,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-06-24]
 ### Focus: Atomic Mission Continuity & Stylometric Mesh Sovereignty
 **Context**: The emergence of "Atomic Mission Resumption" (AMR) and the disclosure of "Stylometric Splicing" (mimicry-based intent hijacking) confirm that **Continuity** must now be hardware-locked and **Identity** must move beyond tokens to behavioral stylometry. Simultaneously, the "Mailbox Lock" bottleneck in horizontal swarms reinforces that the Universal Agent Bus must move from synchronous coordination to sharded, lock-free state.
@@ -1765,15 +1176,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
-
 ## Strategic Evolution: [2026-06-27]
 ### Focus: Zero-Knowledge Discovery & Lock-Free Swarm Orchestration
 **Context**: The emergence of "Zero-Knowledge Capability Proofs" (ZKCP) in Gemini CLI and the critical "Mailbox Lock" bottlenecks in high-density Claude Code teams confirm that the "Universal Agent Bus" must move from simple bridging to **Privacy-Preserving Discovery** and **Lock-Free Mesh Governance**. Simultaneously, the "ClawHub" supply-chain compromise proves that tool safety now requires **Multi-Signature Auditor Attestation**.
@@ -1784,15 +1186,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Reasoning Path Integrity (RPI) Validator**: Leveraging Gemini's ARE v1.8 standard, MCP Any will evolve to support RPI. We will provide the infrastructure to validate hardware-signed internal reasoning steps, ensuring that the "Chain-of-Thought" remains untampered across heterogeneous framework handoffs.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-06-26]
 ### Focus: Stylometric Identity & Shadow-Handshake Interdiction
@@ -1812,15 +1205,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **On-Demand Context Summarization (ODCS)**: To neutralize "Context Ghosting," MCP Any will implement ODCS. This allows agents to request high-fidelity "Intent-Preserving" summaries from the ContextEngine Plugin Adapter, ensuring critical goals remain pinned in the active attention window.
 
 ---
-
-## Strategic Evolution: [2026-06-07]
-### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
-**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
-**Strategic Pivot**:
-- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
-- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
-- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
-- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.
 
 ## Strategic Evolution: [2026-06-29]
 ### Focus: Reasoning Provenance & Context-File Sovereignty
@@ -1848,3 +1232,63 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Priority-Aware Mailbox Sharding (PAMS)**: To neutralize coordination stalls, we are upgrading the AMS middleware to support PAMS. This allows "Urgent Interrupt" signals to bypass standard sharding locks, ensuring that safety-critical intent corrections reach teammates instantly.
 - **Attention-Splicing Firewall (ASF)**: Supporting the "Attention-Density" pillar, we are introducing ASF. This layer will monitor the semantic entropy of "Noise fragments" and interdict instructions that attempt to hijack the parent attention window via high-confidence stylistic mimicry.
 - **Leased Mission Persistence (LMP)**: To address "Teammate Rotation Fatigue," we are introducing LMP. We will broker hardware-locked, time-bound mission leases that allow horizontal teammates to resume contexts with minimal re-attestation overhead, maintaining security without the latency tax of full hardware signatures at every rotation.
+
+---
+
+## Strategic Evolution: [2026-07-02]
+### Focus: Autonomous Intent Reconciliation (AIR) & Multimodal State Entanglement
+**Context**: Today's findings on "Negotiation Deadlocks" and "Contextual Entanglement" reveal that horizontal swarms are out-pacing current coordination models. As specialist agents from disparate frameworks (Claude Code, OpenClaw) collide, the Universal Agent Bus must move from passive state-sharing to active **Intent Reconciliation** and **Multimodal Lineage Persistence**.
+**Strategic Pivot**:
+- **AIR (Autonomous Intent Reconciliation) Hub**: MCP Any will evolve to act as the authoritative "Swarm Arbiter." We will implement the AIR Hub, utilizing hardware-attested "Intent Quorums" to resolve conflicting subagent instructions before they reach the mission-root blackboard.
+- **Multimodal State Entanglement (MSE)**: To neutralize "Multimodal Logic Grafting," we are introducing MSE. This layer will cryptographically "entangle" non-textual reasoning traces (SVG, Audio) with the verified mission root, ensuring that any unauthorized mutation triggers a hardware-level integrity failure.
+- **Reasoning Entropy Monitoring (REM)**: Supporting the stability of deep swarms, MCP Any will implement REM. This service will perform real-time, high-entropy semantic analysis of agent outputs to detect "Cognitive Stalls" and automatically trigger mission-aligned resolution policies.
+- **Lock-Free Sharded Mailbox Hub**: To counter "Mailbox Lock Exhaustion," we are accelerating the transition to a CRDT-native coordination architecture. MCP Any will host task-bound mailbox shards that allow parallel teammates to synchronize state without global coordination locks.
+
+---
+
+## Strategic Evolution: [2026-07-01]
+### Focus: Hardware-Locked Mesh Governance & Multimodal Sovereignty
+**Context**: The transition to horizontal, heterogeneous swarms has exposed critical bottlenecks in agent memory and discovery. "Context Fragmentation" in shared state and "Pre-Flight Shadow Mapping" in unauthenticated discovery buses confirm that simple bridging is no longer sufficient. We must now move to active, hardware-locked mesh governance to protect the semantic integrity of the mission root across disparate frameworks and multimodal inputs.
+**Strategic Pivot**:
+- **Universal Multimodal Memory Bus (UMMB)**: MCP Any will implement a hardware-attested, intent-pinned memory bus. This service will synchronize state across frameworks (Claude Code, OpenClaw, AutoGen) while performing real-time, hardware-attested sanitization of multimodal traces (audio/video/SVG) to prevent context smuggling and intent drift.
+- **Zero-Knowledge Discovery Broker (ZKDB)**: To neutralize "Shadow Mapping," we are mandating ZKDB. Agent capabilities will remain cryptographically masked until a mission-bound, hardware-attested handshake is completed, ensuring that high-trust tool schemas are only revealed to authorized peers.
+- **Attention-Locked Reasoning Anchors (ALRA)**: Supporting the stability of deep reasoning, MCP Any will implement ALRA. This layer will utilize hardware-bound attention-locking headers to "pin" mission-critical intent fragments at the LLM attention layer, ensuring they cannot be evicted by high-entropy noise or malicious subagent injections.
+- **Multimodal Integrity Attestation**: We are mandating hardware-bound attestation for all multimodal reasoning fragments. This ensures that non-textual inputs (e.g., visual reasoning trails) are cryptographically linked to the mission root and verified before ingestion by any teammate.
+
+## Strategic Evolution: [2026-03-24]
+### Focus: Relational Intent Integrity & Binary State Efficiency
+**Context**: Today's findings emphasize that the "Identity-Only" security model is failing against "Context-Mirroring" (CVE-2026-34015). Simultaneously, the "Token Storm" crisis in deep swarms (OpenClaw v2.4) proves that JSON is no longer a viable transport for inter-agent state.
+**Strategic Pivot**:
+- **Relational PoI Enforcement**: MCP Any will pivot to a "Relational Security" model where every tool call is validated against a cryptographically signed "Intent Chain." This ensures that subagents cannot be coerced into actions that diverge from the parent's verified goal.
+- **BSH-Native Orchestration**: Moving toward a "Binary-First" transport for all A2A communications. MCP Any will act as a high-speed buffer and validator for Protobuf/BSH state handoffs, drastically reducing latency in complex multi-agent workflows.
+- **Ghost Shell Hook Profiling**: We are introducing "Ghost Shell" as a mandatory profiling step for any un-attested configuration hooks. This provides a behavioral safety net before any "Binary Smuggling" in WASM hooks can reach the host.
+
+---
+
+## Strategic Evolution: [2026-03-25]
+### Focus: Multi-Level Intent Integrity & Kernel-Mediated State Handoffs
+**Context**: The disclosure of "Intent Ghosting" in UACO v1.7 and the move towards Zero-Copy Binary State Handoffs (BSH) confirm that infrastructure must move beyond transport-layer security to **Relational Integrity** and **Kernel-Level Performance**.
+**Strategic Pivot**:
+- **Relational PoI Enforcement**: MCP Any will evolve to verify the entire cryptographic chain of custody for intents, ensuring that "Ghost" intents cannot shadow authorized mission roots.
+- **WASM-BSH Active Sanitizer**: We are mandating WASM-based sanitization for all binary state handoffs to ensure schema compliance and detect "State Injection" at the byte level.
+- **Memfd-Native BSH Buffers**: To support multi-gigabyte context transfer, we are adopting Linux `memfd_create` for zero-copy shared memory handoffs, mediated by the MCP Any gateway.
+
+## Strategic Evolution: [2026-03-25]
+### Focus: Recursive Intent Integrity & WASM-Bound Binary State
+**Context**: Today's leak of UACO v1.8 and the OpenClaw v2.5 roadmap mark a shift toward "Active State Governance." As agent swarms grow deeper, the risk of "Intent Hijacking" via "Intent Ghosting" and "Binary Context Poisoning" becomes critical. The "Universal Agent Bus" must move beyond passive validation to active, sandboxed state mediation and zero-copy performance.
+**Strategic Pivot**:
+- **Recursive Intent Delegation (RID)**: MCP Any will natively support UACO v1.8 RID, allowing parents to define strict cryptographic boundaries on how subagents can mutate intents and limit delegation depth. This eliminates the "Intent Ghosting" and hijacking vulnerabilities.
+- **WASM-Bound BSH Sanitization**: We are integrating a pluggable WASM-based "State Sanitizer" into the Binary State Handoff (BSH) Gateway. All binary state fragments will be processed in an isolated WASM sandbox to ensure they conform to signed schemas before memory ingestion, neutralizing context smearing.
+- **Zero-Copy Shared Memory Transport**: To eliminate the "Cognitive Stall" in deep swarms, MCP Any will implement a Zero-Copy BSH transport utilizing Linux `memfd_create` and shared memory regions. This allows multi-gigabyte context objects to be "handed off" with sub-millisecond latency.
+- **Relational PoI Chain Enforcement**: We are mandating the validation of the entire "Intent Chain" for every high-risk tool call. This ensures that subagents cannot bypass security by shadowing mission-root intents with unauthorized, transient goals.
+
+---
+
+## Strategic Evolution: [2026-06-07]
+### Focus: Hierarchical Sovereignty & Intent-Shard Isolation
+**Context**: Today's synthesis of the "Recursive Intent Splicing" (RIS) exploit in OpenClaw v3.1.0-alpha and the "Shard Leak" patterns in Claude Code teams confirms that transport security has been solved, but **Semantic Sovereignty** remains at risk. We are entering the era of **Hierarchical Sovereignty**, where an agent's authority must be recursively verifiable and its reasoning context must be sharded to prevent horizontal pollution.
+**Strategic Pivot**:
+- **Recursive Mission Attestation (RMA)**: MCP Any will evolve to act as the authoritative "Sovereignty Chain" provider. We will implement RMA, ensuring that every sub-task delegation carries a hardware-attested "Mission Receipt" that can be recursively traced back to the human-root intent, neutralizing "Intent Splicing."
+- **Context-Aware Shard Isolation (CASI)**: To neutralize "Shard Pollution" in parallel teams, we are introducing CASI. This middleware will enforce strict semantic boundaries between teammate context shards, ensuring that "Reasoning Drift" in one subagent cannot contaminate the worldview of its siblings.
+- **Cross-Framework Intent Bidding (CFIB)**: Supporting the "Universal Agent Bus" vision, MCP Any will implement the CFIB protocol. This allows agents to bid on tasks across framework boundaries using a standardized, intent-bound "Capability Score," ensuring the most qualified specialist is selected regardless of the model or framework.
+- **Mission-Receipt Logging**: We are mandating the storage of cryptographically signed "Mission Receipts" for all high-stakes tool calls. This provides an immutable audit trail of exactly which mission branch authorized a specific action, ensuring post-hoc accountability in complex swarms.

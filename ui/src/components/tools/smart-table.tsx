@@ -12,6 +12,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { JsonView } from "@/components/ui/json-view";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SmartTableProps {
@@ -29,6 +31,7 @@ type SortDirection = 'asc' | 'desc' | null;
  */
 export function SmartTable({ data }: SmartTableProps) {
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: SortDirection }>({ key: '', direction: null });
+  const [globalFilter, setGlobalFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Better for tool results default
 
@@ -43,11 +46,24 @@ export function SmartTable({ data }: SmartTableProps) {
     return Array.from(keys);
   }, [data]);
 
+  // Filtering logic
+  const filteredData = useMemo(() => {
+    if (!globalFilter) return data;
+    const lowercasedFilter = globalFilter.toLowerCase();
+
+    return data.filter(item => {
+      return Object.values(item).some(value => {
+        if (value == null) return false;
+        return String(value).toLowerCase().includes(lowercasedFilter);
+      });
+    });
+  }, [data, globalFilter]);
+
   // Sorting logic
   const sortedData = useMemo(() => {
-    if (!sortConfig.key || !sortConfig.direction) return data;
+    if (!sortConfig.key || !sortConfig.direction) return filteredData;
 
-    return [...data].sort((a, b) => {
+    return [...filteredData].sort((a, b) => {
       const aVal = a[sortConfig.key];
       const bVal = b[sortConfig.key];
 
@@ -63,7 +79,7 @@ export function SmartTable({ data }: SmartTableProps) {
       if (aStr > bStr) return sortConfig.direction === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [data, sortConfig]);
+  }, [filteredData, sortConfig]);
 
   // Pagination logic
   const totalPages = Math.ceil(sortedData.length / itemsPerPage);
@@ -170,6 +186,20 @@ export function SmartTable({ data }: SmartTableProps) {
 
   return (
     <div className="flex flex-col space-y-4 h-full">
+        <div className="flex items-center">
+            <div className="relative max-w-sm w-full">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                    placeholder="Search all columns..."
+                    value={globalFilter}
+                    onChange={(e) => {
+                        setGlobalFilter(e.target.value);
+                        setCurrentPage(1); // Reset to first page on search
+                    }}
+                    className="pl-8 h-9"
+                />
+            </div>
+        </div>
         <div className="rounded-lg border border-border/50 bg-card overflow-hidden shadow-sm flex-1 flex flex-col">
             <ScrollArea className="flex-1 w-full relative">
                 <Table>
