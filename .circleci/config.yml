@@ -60,6 +60,7 @@ jobs:
             cd ..
             echo "Running lint with exit code 0"
             bazelisk run //:lint || true
+            exit 0
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
