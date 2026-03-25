@@ -131,6 +131,11 @@
 *   **[P0] Argument-Level Semantic Validator (ALSV)**: Deep-inspection for command arguments to prevent shell-fallback exploits. (Added: 2026-03-24)
 *   **[P0] Task-Claim Integrity Provider**: Hardware-attested tokens for horizontal mesh task claiming. (Added: 2026-03-24)
 
+#### Upcoming (2026-07-07 Evolution)
+*   **[P0] CI/CD Cache Integrity Guard**: Mandatory cryptographic signing and verification for all agent-accessible build caches. (Added: 2026-07-07)
+*   **[P1] Automated Remediation Hub**: Verifiable audit trail service for AI-powered fixes to ensure SSDF compliance. (Added: 2026-07-07)
+*   **[P0] Metadata Sanitization Gateway**: Real-time semantic deconstruction of external metadata to neutralize injection exploits. (Added: 2026-07-07)
+
 #### Upcoming (2026-03-20 Evolution)
 *   **[P0] Hardware-Attested Mission Manifest (HAMM) Provider**: Authoritative service for enforcing TPM-signed capability manifests. (Added: 2026-03-20)
 *   **[P0] Asynchronous Mailbox Sharding (AMS) Middleware**: High-density teammate coordination service with granular mailbox shards. (Added: 2026-03-20)
