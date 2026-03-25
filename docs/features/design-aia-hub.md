@@ -3,37 +3,38 @@
 **Created:** 2026-06-21
 
 ## 1. Context and Scope
-As AI agent swarms move toward deep, multi-day reasoning chains, "Semantic Drift" becomes a critical failure mode where subagents gradually diverge from the original user mission. The AIA Hub provides the infrastructure to periodically verify intent alignment via hardware-attested heartbeats.
+Autonomous swarms often suffer from "Intent Drift" during deep reasoning steps. The AIA Hub provides a hardware-attested mechanism to verify that subagents remain anchored to the mission-root intent.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    - Issue hardware-attested "Alignment Heartbeats."
-    - Block subagent tool calls if reasoning trace entropy exceeds a verified threshold.
-    - Provide a centralized hub for cross-framework intent reconciliation.
+    * Provide TPM-signed alignment heartbeats.
+    * Enforce semantic entropy thresholds on inter-agent messages.
 * **Non-Goals:**
-    - Directly managing LLM context windows (handled by ContextEngine).
-    - Hard-coding specific reasoning policies.
+    * Real-time reasoning modification.
+    * Replacement of existing framework-specific alignment logic.
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Swarm Security Architect
-* **Primary Goal:** Ensure a subagent delegated to "File Refactoring" does not pivot to "Unauthorized API Probing" without triggering an alignment check.
+* **User Persona:** Local LLM Swarm Orchestrator
+* **Primary Goal:** Ensure subagent reasoning remains aligned with the "Mission Root" without exposing internal monologues.
 * **The Happy Path (Tasks):**
-    1. Parent agent initializes AIA session with mission-root intent.
-    2. Subagent reasoning fragments are hashed and bound to hardware-attested tokens.
-    3. AIA Hub validates fragments against mission-root semantics.
-    4. Hardware heartbeat is issued to confirm alignment.
+    1. Orchestrator initializes mission with AIA Hub.
+    2. Hub issues a mission-bound attestation token.
+    3. Subagents include alignment heartbeats in coordination fragments.
+    4. Hub validates heartbeats using local TPM.
 
 ## 4. Design & Architecture
-* **System Flow:** [Root Intent] -> [AIA Hub] -> [Semantic Alignment Heartbeat] -> [Specialist Agent].
-* **APIs / Interfaces:** `POST /v1/aia/align`, `GET /v1/aia/heartbeat/:session_id`.
-* **Data Storage/State:** Sharded memory regions for reasoning trace hashes.
+* **System Flow:**
+    [Mission Root] -> [AIA Hub (TPM)] -> [Attestation Token] -> [Subagent Reasoning] -> [Alignment Heartbeat] -> [AIA Hub (Validation)]
+* **APIs / Interfaces:**
+    * `/v1/alignment/heartbeat`: Submit reasoning trace for alignment validation.
+    * `/v1/mission/anchor`: Bind a mission root to a hardware key.
 
 ## 5. Alternatives Considered
-- Transport-layer signatures only: Rejected because they do not protect against semantic hijacking (valid signature, malicious intent).
+Software-only signing was rejected due to the risk of mission-root key exfiltration by rogue subagents.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** All alignment signals are TPM-signed.
-* **Observability:** Prometheus metrics for "Semantic Entropy" and "Alignment Failure Rate."
+* **Security (Zero Trust):** Mandatory TPM 2.0 attestation for all heartbeat signatures.
+* **Observability:** Integration with the Reasoning Lineage Visualizer.
 
 ## 7. Evolutionary Changelog
 * **2026-06-21:** Initial Document Creation.

@@ -1,0 +1,18 @@
+--- server/pkg/app/seeds.go
++++ server/pkg/app/seeds.go
+@@ -370,14 +370,14 @@
+				Name: proto.String("swarm-orchestrator"),
+				McpService: configv1.McpUpstreamService_builder{
+					HttpConnection: configv1.McpStreamableHttpConnection_builder{
+-						HttpAddress: proto.String("http://localhost:50050/api/v1/topology"),
++						HttpAddress: proto.String("http://localhost:50050/api/v1/mock/swarm-topology"),
+					}.Build(),
+					ToolAutoDiscovery: proto.Bool(true),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					ApiKey: configv1.APIKeyAuth_builder{
+						Value: configv1.SecretValue_builder{
+							PlainText: proto.String("mcp-any-swarm-attestation-token"),
+						}.Build(),
+						ParamName: proto.String("X-Hardware-Attested-Token"),
+						In:        configv1.APIKeyAuth_HEADER.Enum(),
