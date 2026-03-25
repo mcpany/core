@@ -24,6 +24,4 @@
 //   - None.
 package appconsts
 
-package appconsts
-
 var Version = "dev"

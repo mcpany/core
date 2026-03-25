@@ -52,8 +52,6 @@
 //   - triggers relevant error states on failure.
 package memory
 
-package memory
-
 func (s *Store) DeleteServiceTemplate(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

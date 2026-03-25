@@ -41,8 +41,6 @@
 //   - triggers relevant error states on failure.
 package mcpserver
 
-package mcpserver
-
 func (s *RegistrationServer) ValidateService(ctx context.Context, req *v1.ValidateServiceRequest) (*v1.ValidateServiceResponse, error) {
 	if req.GetConfig() == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "config is required")

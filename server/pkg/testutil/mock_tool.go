@@ -40,8 +40,6 @@
 //   - updates relevant subsystem state or network conditions.
 package testutil
 
-package testutil
-
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

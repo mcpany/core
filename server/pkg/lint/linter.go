@@ -5,8 +5,6 @@
 // to detect potential security issues and best practice violations.
 package lint
 
-package lint
-
 import (
 	"context"
 	"fmt"

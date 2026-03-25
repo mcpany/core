@@ -14,6 +14,4 @@
 //   - None.
 package tool
 
-package tool
-
 var ErrToolNotFound = errors.New("unknown tool")

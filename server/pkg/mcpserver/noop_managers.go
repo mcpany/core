@@ -216,6 +216,4 @@
 //   - triggers relevant error states on failure.
 package mcpserver
 
-package mcpserver
-
 func (m *NoOpResourceManager) ClearResourcesForService(_ string) {}

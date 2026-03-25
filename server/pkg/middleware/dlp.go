@@ -16,8 +16,6 @@
 //   - updates relevant subsystem state or network conditions.
 package middleware
 
-package middleware
-
 func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware {
 	redactor := NewRedactor(config, log)
 	if redactor == nil {

@@ -17,8 +17,6 @@
 //   - None.
 package config
 
-package config
-
 type ActionableError struct {
 	Err        error
 	Suggestion string

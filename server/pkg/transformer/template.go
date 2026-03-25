@@ -25,8 +25,6 @@
 //   - triggers relevant error states on failure.
 package transformer
 
-package transformer
-
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
 	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
 	if err != nil {

@@ -17,8 +17,6 @@
 //   - triggers relevant error states on failure.
 package testutil
 
-package testutil
-
 func NewTestPoolManager(t *testing.T) *pool.Manager {
 	t.Helper()
 	pm := pool.NewManager()

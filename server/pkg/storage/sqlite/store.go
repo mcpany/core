@@ -46,8 +46,6 @@
 //   - triggers relevant error states on failure.
 package sqlite
 
-package sqlite
-
 func (s *Store) HasConfigSources() bool {
 	return true
 }

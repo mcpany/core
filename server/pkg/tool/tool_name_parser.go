@@ -15,8 +15,6 @@
 //   - updates relevant subsystem state or network conditions.
 package tool
 
-package tool
-
 func ParseToolName(toolName string) (namespace string, tool string, err error) {
 	namespace, tool, found := strings.Cut(toolName, consts.ToolNameServiceSeparator)
 	if !found {

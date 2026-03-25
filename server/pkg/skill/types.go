@@ -12,8 +12,6 @@
 //   - None.
 package skill
 
-package skill
-
 type Frontmatter struct {
 	Name          string            `yaml:"name" json:"name"`
 	Description   string            `yaml:"description" json:"description"`

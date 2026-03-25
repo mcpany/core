@@ -23,8 +23,6 @@
 //   - None.
 package alerts
 
-package alerts
-
 type Status string
 	// SeverityCritical indicates a critical issue.
 	// SeverityWarning indicates a warning.

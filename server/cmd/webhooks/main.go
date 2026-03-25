@@ -6,8 +6,6 @@
 // text truncation, and pagination.
 package main
 
-package webhooks
-
 import (
 	"bytes"
 	"context"

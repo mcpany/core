@@ -13,8 +13,6 @@
 //   - None.
 package terraform
 
-package terraform
-
 type ResourceMCPServer struct {
 	Name    string
 	Port    int
