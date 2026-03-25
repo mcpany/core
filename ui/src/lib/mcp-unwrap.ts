@@ -10,6 +10,7 @@
  * @param result The raw tool execution result
  * @returns The unwrapped content or the original result if not a recognizable wrapper
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function unwrapMcpResult(result: any): any {
     let content = result;
 
@@ -26,7 +27,7 @@ export function unwrapMcpResult(result: any): any {
                  if (Array.isArray(inner) || (typeof inner === 'object' && inner !== null)) {
                      content = inner;
                  }
-             } catch (e) {
+             } catch (_e) {
                  // stdout is not JSON
              }
          }
@@ -39,6 +40,7 @@ export function unwrapMcpResult(result: any): any {
 
     // Additionally, if the content is an array of MCP Text items, parse the JSON inside text if possible
     if (Array.isArray(content)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const isMcp = content.every((item: any) =>
             typeof item === 'object' && item !== null &&
             (item.type === 'text' || item.type === 'image' || item.type === 'resource')
@@ -52,7 +54,7 @@ export function unwrapMcpResult(result: any): any {
                     if (typeof parsed === 'object' && parsed !== null) {
                         return parsed;
                     }
-                } catch (e) {
+                } catch (_e) {
                     // Not JSON inside text
                 }
             }
@@ -72,6 +74,7 @@ export function unwrapMcpResult(result: any): any {
  * @param obj The object or string to deeply parse
  * @returns The fully expanded object
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function deepParseJson(obj: any): any {
     if (typeof obj === 'string') {
         try {
@@ -89,9 +92,9 @@ export function deepParseJson(obj: any): any {
                      if (typeof innerParsed === 'object' && innerParsed !== null) {
                           return deepParseJson(parsed);
                      }
-                 } catch (e) {}
+                 } catch (_e) {}
             }
-        } catch (e) {
+        } catch (_e) {
             // Not a JSON string
         }
         return obj;
@@ -102,6 +105,7 @@ export function deepParseJson(obj: any): any {
     }
 
     if (typeof obj === 'object' && obj !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result: any = {};
         for (const [key, value] of Object.entries(obj)) {
             result[key] = deepParseJson(value);
