@@ -210,12 +210,8 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
               ),
               TableHead: TableHeader,
               TableBody: TableBody,
-              TableRow: ({
-                item,
-                context,
-                ...props
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              }: any) => (
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              TableRow: ({ item, context, ...props }: any) => (
                 <TableRow
                   {...props}
                   className="cursor-pointer hover:bg-muted/50"
