@@ -137,10 +137,16 @@
 *   **[P0] Mission-Root Budget Enforcer**: Resource management for reasoning effort and token limits based on process-bound agency. (Added: 2026-03-20)
 *   **[P1] A2A Multi-Channel Inbox Bridge**: Secure coordination and translation for handling 20+ messaging platforms simultaneously. (Added: 2026-03-20)
 
+#### Upcoming (2026-07-06 Evolution)
+*   **[P0] Quorum-Bound Summarization (QBS) Hub**: Consensus-broker requiring multi-agent attestation for context compaction to prevent Mission-Root Erasure. (Added: 2026-07-06)
+*   **[P1] Optimistic Summarization Middleware**: Performance-optimizing service for speculative reasoning against pending summaries. (Added: 2026-07-06)
+*   **[P1] Intent-Aware Adaptive Jitter**: Risk-aware side-channel defense scaling jitter based on real-time intent and shard sensitivity. (Added: 2026-07-06)
+*   **[P0] Enclave-local Metadata Attestation (EMA)**: Hardware-enclave bound validation for PSS-compliant shard metadata. (Added: 2026-07-06)
+
 #### Upcoming (2026-07-05 Evolution)
 *   **[P0] Physical Shard Sovereignty (PSS) Provider**: Cryptographically pin context shards to specific hardware Enclave IDs to neutralize shard-hopping. (Added: 2026-07-05)
 *   **[P0] Multi-Modal Stylometric Integrity (MMSI) Validator**: Real-time stylometric analysis for SVG logic diagrams and audio reasoning traces within SBF. (Added: 2026-07-05)
-*   **[P0] Quorum-Bound Summarization (QBS) Hub**: Distributed service requiring multi-agent consensus (Mission-Root + Auditor) on context compaction. (Added: 2026-07-05)
+*   **[P0] Quorum-Bound Summarization (QBS) Hub**: Distributed service requiring multi-agent consensus (Mission-Root + Auditor) on all context compaction events. (Added: 2026-07-05)
 *   **[P1] Adaptive Jitter Profiler**: Performance-optimizing middleware for risk-aware timing variations in enclave handoffs. (Added: 2026-07-05)
 
 #### Upcoming (2026-07-04 Evolution)
@@ -170,6 +176,11 @@
 *   **[P0] Memfd-Bound Zero-Copy Sanitizer**: Native byte-level WASM scanning on kernel-mediated shared memory segments. (Added: 2026-03-25)
 *   **[P0] Hardware-Attested Monotonic Depth-Counters**: TPM-bound constraint enforcement for recursive agent delegations. (Added: 2026-03-25)
 *   **[P1] Optimistic Attestation Gate**: Speculative safety middleware for non-blocking coordination during high-density mesh handoffs. (Added: 2026-03-25)
+
+#### Upcoming (2026-03-25 Iteration 5)
+*   **[P0] Programmatic SDK Bridge**: Authoritative security proxy for SDK-driven agent interactions, enforcing Zero-Trust policies on programmatic tool calls. (Added: 2026-03-25)
+*   **[P1] Persistent Session Sovereignty Hub**: TPM-bound cryptographic attestation for local SQLite session state to prevent unauthorized session resumption. (Added: 2026-03-25)
+*   **[P0] Non-Interactive Mode Security Guard**: Pre-flight authorization engine that validates all potential tool calls against a mission-root manifest for headless automation. (Added: 2026-03-25)
 
 #### Upcoming (2026-06-23 Evolution)
 *   **[P0] Recursive Mission-Root Attestation (RMRA)**: Mandatory hardware-bound re-attestation of sub-process lineage for headless handoffs. (Added: 2026-06-23)
