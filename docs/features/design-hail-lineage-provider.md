@@ -13,7 +13,7 @@ As agent swarms evolve, specialized subagents are increasingly prone to "Logic G
     * Detect and neutralize "Logic Grafting" attacks in real-time.
     * Provide non-repudiable lineage for all reasoning fragments.
 * **Non-Goals:**
-    * Providing long-term archival of all reasoning traces (handled by the Traceability Provider).
+    * Providing long-term archival of all reasoning traces.
     * Blocking instructions without attestation in "Audit-Only" mode.
 
 ## 3. Critical User Journey (CUJ)
@@ -33,10 +33,10 @@ As agent swarms evolve, specialized subagents are increasingly prone to "Logic G
     * `POST /v1/hail/sign`: Sign an instruction fragment.
     * `POST /v1/hail/verify`: Verify a lineage chain.
 * **Data Storage/State:**
-    * Lineage tokens are ephemeral and session-bound, stored in the mission-root enclave.
+    * Lineage tokens are ephemeral and session-bound.
 
 ## 5. Alternatives Considered
-* **JWT-based Lineage:** Rejected due to the risk of credential theft on compromised subagent hosts; hardware-bound signatures are required.
+* **JWT-based Lineage:** Rejected due to the risk of credential theft on compromised hosts.
 
 ## 6. Cross-Cutting Concerns
 * **Security (Zero Trust):** Mandatory hardware-attestation at every hop.
