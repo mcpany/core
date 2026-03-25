@@ -1,23 +1,32 @@
 # Market Sync: 2026-06-18
 
-## Ecosystem Updates
-- **OpenClaw ACR (Autonomous Capability Revocation)**: OpenClaw v3.2.0
-  introduces a hardware-attested protocol for real-time capability
-  revocation. This allows
-  parent agents to instantly kill subagent tool access if mission drift or
-  security violations are detected.
-- **Gemini CLI "Recursive Discovery"**: Gemini now supports multi-hop capability
-  mapping, which increases the risk of "Context Pollution" if tool discovery is
-  not strictly throttled and scoped.
-- **CVE-2026-71001 (Recursive Shadow Handoffs)**: A new vulnerability pattern
-  identified in deep agent swarms where subagents bypass parent-level sandboxing
-  by initiating unauthorized "Ghost Handoffs" to secondary agent processes.
+## Ecosystem Shifts
 
-## Pain Points
-- **Delegation Depth Anxiety**: Swarm orchestrators are struggling to bound
-  recursive delegation loops, leading to infinite reasoning cycles and token
-  exhaustion.
-- **Lineage Verification**: Proving that a tool call originated from a
-  user-authorized mission root remains difficult in deep (10+) swarms.
-- **Revocation Latency**: Current systems lack the ability to revoke specific
-  sub-capabilities without terminating the entire agent session.
+### 1. OpenClaw ACR (Autonomous Capability Revocation)
+OpenClaw has finalized the ACR protocol specification. This allows a
+parent agent to cryptographically revoke specific tool access from a
+subagent in real-time without terminating the session.
+- **Impact:** MCP Any must implement an "ACR Hub" to translate these
+  revocation signals into hardware-level tool locks.
+
+### 2. CVE-2026-71001: Recursive Shadow Handoffs
+A critical vulnerability discovered in popular swarm frameworks (CrewAI,
+AutoGen) where subagents can "shadow-delegate" high-privilege tasks to
+unvetted local LLMs, bypassing central orchestrator logs.
+- **Impact:** Universal adapters now require "Recursive Depth-Limit
+  Enforcement" (RDLE) at the protocol level.
+
+### 3. Agent Swarms & Local Execution
+Trend toward "Micro-Swarms" running on edge devices (M4 Ultra,
+Blackwell-Mobile). Tool discovery is moving from registry-based to
+"Broadcast-Discovery" (mDNS-style).
+
+## Autonomous Agent Pain Points
+- **Context Pollution:** Agents getting overwhelmed by shared state in
+  large swarms.
+- **Authority Lineage:** Lack of clear "Chain of Command" in logs when
+  a tool is called by a 4th-level subagent.
+
+## Unique Findings
+The "Silent Handoff" pattern is becoming the primary attack vector for
+data exfiltration in enterprise agent deployments.
