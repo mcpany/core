@@ -4,6 +4,7 @@
 run:
   timeout: 5m
   tests: false
+  modules-download-mode: readonly
 
 linters:
   enable:
@@ -51,6 +52,8 @@ issues:
       text: "var-naming: avoid meaningless package names"
   skip-files:
     - '.*\.pb\.go$'
+    - '.*\.pb\.gw\.go$'
+    - '.*_test\.go$'
     - lll
     - funlen
     - wsl
