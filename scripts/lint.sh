@@ -26,11 +26,12 @@ echo "    Using linter: $($LINT_BIN --version)"
 
 # Sync workspace
 echo "    Syncing workspace..."
+export GOWORK="${PROJECT_ROOT}/go.work"
 go work sync
 
 CONFIG_PATH="${PROJECT_ROOT}/server/.golangci.yml"
 
-# Lint all modules via go.work from root
+# Lint all modules via workspace from root
 echo "    Linting..."
 "$LINT_BIN" run --timeout 20m --fix --config "$CONFIG_PATH" ./...
 

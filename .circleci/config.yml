@@ -32,8 +32,8 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v50-lint-{{ checksum "server/go.sum" }}
-            - v50-lint-
+            - v51-lint-{{ checksum "server/go.sum" }}
+            - v51-lint-
       - run:
           name: Prepare and Run Lint
           command: |
@@ -43,7 +43,7 @@ jobs:
             export PATH=$(pwd)/build/env/bin:$PATH
             ./scripts/lint.sh
       - save_cache:
-          key: v50-lint-{{ checksum "server/go.sum" }}
+          key: v51-lint-{{ checksum "server/go.sum" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
@@ -70,8 +70,8 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v50-test-{{ checksum "server/go.sum" }}
-            - v50-test-
+            - v51-test-{{ checksum "server/go.sum" }}
+            - v51-test-
       - run:
           name: Run Tests
           command: |
@@ -79,10 +79,11 @@ jobs:
             export GOTOOLCHAIN=go1.26.1
             make prepare
             export PATH=$(pwd)/build/env/bin:$PATH
-            # Build binaries needed for integration tests
+            # Build all Go code to ensure dependencies are resolved and binaries are ready
+            go build ./...
             mkdir -p build/bin build/test/bin
             go build -o build/bin/server ./server/cmd/server
-            # Build all mocks in tests/integration/cmd/mocks
+            # Build all mocks
             for mock_dir in server/tests/integration/cmd/mocks/*; do
                 if [ -d "$mock_dir" ]; then
                     mock_name=$(basename "$mock_dir")
@@ -92,13 +93,12 @@ jobs:
                     fi
                 fi
             done
-            # Build command-tester
             go build -o build/test/bin/command-tester ./server/tests/integration/cmd/command-tester
-            # Run Go unit tests
+            # Run tests
             make test-proto
             cd server && go test -short ./...
       - save_cache:
-          key: v50-test-{{ checksum "server/go.sum" }}
+          key: v51-test-{{ checksum "server/go.sum" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
