@@ -414,13 +414,13 @@ func (m *AuditMiddleware) Close() error {
 // Summary: Updates Write operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - (any): The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
