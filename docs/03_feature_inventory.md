@@ -1,5 +1,18 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-04] Updates
+
+### Proposed Additions
+- **Stylometric Behavioral Firewall (SBF)**: (P0) Authoritative linguistic security service that routes low-confidence fragments through an isolated paraphrasing sandbox.
+- **Distributed Memory Enclave (DME) Broker**: (P0) Hardware-enclave (TPM/SEP) bound coordination service for cross-framework shared memory isolation.
+- **Hardware-Locked Attention Masking (HLAM)**: (P0) Security middleware mandating cryptographic masking of subagent noise fragments at the hardware attention layer.
+- **Monotonic Jitter Injection Provider**: (P0) Security service mandating hardware-attested timing variations for all memory-broker responses to neutralize timing side-channels.
+- **Context Compaction Quorum Hub**: (P1) Distributed coordination service requiring multi-agent consensus on state summarization before mesh-wide sharing.
+
+### Priority Shifts
+- **Zero-Copy Memory Broker (ZCMB)**: (Re-affirmed P0) Evolving into the **DME Broker** to support hardware-enclave isolation.
+- **Stylometric Identity Anchoring (SIA)**: (Re-affirmed P0) Now designated as the primary detection engine for the **Stylometric Behavioral Firewall**.
+
 ## Evolution: [2026-03-25] Updates
 
 ### Proposed Additions
