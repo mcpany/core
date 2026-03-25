@@ -37,6 +37,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-07-06]
+### Focus: Summarization Sovereignty & Performance-Optimized Side-Channel Defense
+**Context**: The official integration of Quorum-Bound Summarization (QBS) in OpenClaw and the introduction of Adaptive Jitter Profiles (AJP) in Gemini CLI reveal that **State Integrity** must now be consensus-driven and **Security Latency** must be risk-aware. As MTTC (Mean Time to Coordinate) becomes the primary performance bottleneck, the "Universal Agent Bus" must move beyond static safety gates to active **Optimistic Summarization** and **Intent-Aware Jitter**.
+**Strategic Pivot**:
+- **Quorum-Bound Summarization (QBS) Hub**: MCP Any will evolve to act as the authoritative "Consensus Broker" for all context compaction events. We will implement the QBS Hub, requiring a multi-agent quorum (Mission-Root + Independent Auditor) before any context fragment is summarized, neutralizing "Mission-Root Erasure" during aggressive token-saving.
+- **Optimistic Summarization Middleware**: Supporting the efficiency of deep meshes, we are introducing Optimistic Summarization. This allows agents to speculatively reason against pending summaries while quorums perform background attestation, with automated rollback on failure, neutralizing the 50ms+ quorum resolution tax.
+- **Intent-Aware Adaptive Jitter**: To optimize for performance, we are evolving the Monotonic Jitter provider to support Intent-Aware profiles. MCP Any will dynamically scale jitter variations (2ms to 20ms) based on the real-time reasoning intent and shard sensitivity, reducing the "Coordination Tax" for low-risk handoffs.
+- **Enclave-local Metadata Attestation (EMA)**: Supporting "Physical Shard Sovereignty," we are mandating EMA for all shard metadata. This provides hardware-enclave (TPM/SEP) bound attestation, ensuring that sharded context fragments remain cryptographically pinned to their authorized mission-root physical boundaries.
+
+---
+
 ## Strategic Evolution: [2026-05-30]
 ### Focus: Hardware-Attested Mesh Identity & Non-Blocking Coordination
 **Context**: The emergence of horizontal swarms (Claude Code Agent Teams) and the shift toward hardware-bound local sovereignty (OpenClaw) reveal that **Identity** must now be mesh-resident and **Coordination** must be lock-free. The risk of T2T (Teammate-to-Teammate) impersonation and the latency of "Mailbox Locks" confirm that infrastructure must move beyond simple bridging to active Mesh Governance.
@@ -1319,3 +1330,23 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Kernel-Resident Active Sanitization**: Upgrading the WASM-BSH gateway to utilize `memfd_create` with read-only mappings. This achieves an 80% reduction in coordination latency while providing deterministic protection against TOCTOU context smearing.
 - **Hardware-Locked Physical Boundaries**: Mandating TPM-bound monotonic depth counters for all delegations. This anchors swarm stability to physical hardware limits, making "Recursive Intent Poisoning" physically impossible.
 - **Speculative Safety Orchestration**: Implementing "Optimistic Attestation" as the default coordination pattern, allowing parallel teammate reasoning to proceed while discovery quorums perform background validation.
+
+---
+
+## Strategic Evolution: [2026-03-25] (Iteration 5)
+### Focus: Programmatic Governance & Persistent Session Sovereignty
+**Context**: The release of the OpenCode SDK and the standardization of SQLite-based session tracking in top-tier agents mark a transition from chat-mediated interactions to **Programmatic Orchestration** and **Long-Term Persistence**. Simultaneously, the demand for **Non-Interactive Mode** confirms that the Universal Agent Bus must now move beyond per-call approvals to **Pre-Flight Manifest Authorization**.
+**Strategic Pivot**:
+- **SDK-Aware Governance Engine**: MCP Any will evolve to act as the authoritative proxy for SDK-driven agent interactions. We will implement mandatory security gating for programmatic tool calls and context injections, ensuring they are subject to the same Zero-Trust policies as human-initiated sessions.
+- **Hardware-Bound Session Sovereignty**: To protect persistent SQLite session state, we are introducing "Session Sovereignty." All local session data must be cryptographically bound to the user's hardware identity (TPM), preventing unauthorized resumption of persistent agent sessions.
+- **Pre-Flight Manifest Authorization (PFMA)**: Supporting "Non-Interactive Mode," MCP Any will implement PFMA. All potential tool calls and subagent delegations must be authorized based on a cryptographically signed mission-root manifest *before* execution begins, enabling safe headless automation.
+- **Programmatic Intent Boundary Enforcement**: Leveraging the OpenCode SDK, we will implement sub-millisecond intent boundary checks that are integrated directly into the agent's programmatic loop, neutralizing intent drift in automated scripts.
+
+## Strategic Evolution: [2026-07-07]
+### Focus: AI-Native CI/CD Protection & Automated Compliance Attestation
+**Context**: The disclosure of the Cline CI/CD cache poisoning exploit and the rise of "AI Insider Threats" reveal that autonomous agents are now being used as vectors for supply chain attacks. As agents increasingly operate within sensitive build pipelines, infrastructure must move beyond simple tool-gating to **Hardware-Attested Cache Integrity** and **Automated Compliance Provenance**.
+**Strategic Pivot**:
+- **CI/CD Cache Integrity Guard (CCIG)**: MCP Any will evolve to act as the authoritative validator for agent-accessible build caches. We will implement CCIG, requiring cryptographic signatures for all cache fragments, ensuring that "Agentic Social Engineering" cannot poison the mission-root supply chain.
+- **Automated Remediation Hub (ARH)**: Supporting the industry pivot toward AI-native security, we are introducing the ARH. This service will provide a verifiable audit trail for AI-powered fix suggestions, ensuring compliance with SSDF (Secure Software Development Framework) standards for autonomous remediation.
+- **Metadata Sanitization Gateway**: To neutralize the "GitHub Triage" exploit pattern, we are mandating real-time semantic sanitization of all agent-ingested external metadata. This layer will strip malicious instructions from issue titles and messages before they reach the reasoning loop.
+- **Intra-Agent Action-Chain Monitoring**: We are implementing "Action-Chain Sovereignty" to detect and block cascading system failures. MCP Any will monitor the complete sequence of automated workflows, revoking capabilities if the chain diverges from the verified mission-root intent.
