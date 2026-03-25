@@ -8,7 +8,6 @@ go_test(
     size = "enormous",
     srcs = ["e2e_test.go"],
     data = [
-        "//proto:ts_proto",
         "//server/cmd/server:server_tarball",
         "//server/tests/integration/cmd/mocks/http_echo_server:http_echo_server_tarball",
         "//ui:ui_tarball",
@@ -20,9 +19,4 @@ go_test(
         "integration",
         "manual",
     ],
-)
-
-go_test(
-    name = "tests_test",
-    srcs = ["e2e_test.go"],
 )

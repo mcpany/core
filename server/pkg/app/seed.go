@@ -14,7 +14,6 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/encoding/protojson"
 )
@@ -30,7 +29,6 @@ type SeedRequest struct {
 	ProfilesRaw    []json.RawMessage `json:"profiles"`
 	UsersRaw       []json.RawMessage `json:"users"`
 	TemplatesRaw   []json.RawMessage `json:"service_templates"`
-	AuditLogsRaw   []json.RawMessage `json:"audit_logs"`
 }
 
 // handleDebugSeed creates a handler to seed the database with data.
@@ -196,22 +194,6 @@ func (a *Application) clearData(ctx context.Context, log *slog.Logger) error {
 	return nil
 }
 
-// seedData writes all the given entities into the database using a retry wrapper.
-//
-// Summary: Persists the parsed models during the seeding process.
-//
-// Parameters:
-//   - ctx (context.Context): Context.
-//   - req (SeedRequest): The seed request containing raw JSON representations of the items.
-//
-// Returns:
-//   - error: An error if seeding any items fail.
-//
-// Errors:
-//   - Returns errors related to JSON parsing or storage persistence.
-//
-// Side Effects:
-//   - Writes entries to Storage and Audit stores.
 func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 	for _, raw := range req.ServicesRaw {
 		s := configv1.UpstreamServiceConfig_builder{}.Build()
@@ -283,50 +265,6 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 		})
 		if err != nil {
 			return fmt.Errorf("failed to save service template %s: %w", t.GetId(), err)
-		}
-	}
-	for _, raw := range req.AuditLogsRaw {
-		var entry struct {
-			Timestamp  string `json:"timestamp"`
-			ToolName   string `json:"tool_name"`
-			UserID     string `json:"user_id"`
-			ProfileID  string `json:"profile_id"`
-			Arguments  string `json:"arguments"`
-			Result     string `json:"result"`
-			Error      string `json:"error"`
-			DurationMs int64  `json:"duration_ms"`
-			TraceID    string `json:"trace_id"`
-			SpanID     string `json:"span_id"`
-		}
-		if err := json.Unmarshal(raw, &entry); err != nil {
-			return fmt.Errorf("invalid json for audit log")
-		}
-
-		t, _ := time.Parse(time.RFC3339, entry.Timestamp)
-		if t.IsZero() {
-			t = time.Now()
-		}
-
-		err := withRetry(ctx, logging.GetLogger(), func() error {
-			if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
-				return a.standardMiddlewares.Audit.Write(ctx, audit.Entry{
-					Timestamp:  t,
-					ToolName:   entry.ToolName,
-					UserID:     entry.UserID,
-					ProfileID:  entry.ProfileID,
-					Arguments:  []byte(entry.Arguments),
-					Result:     entry.Result,
-					Error:      entry.Error,
-					Duration:   fmt.Sprintf("%dms", entry.DurationMs),
-					DurationMs: entry.DurationMs,
-					TraceID:    entry.TraceID,
-					SpanID:     entry.SpanID,
-				})
-			}
-			return fmt.Errorf("audit middleware not initialized")
-		})
-		if err != nil {
-			return fmt.Errorf("failed to save audit log: %w", err)
 		}
 	}
 	return nil

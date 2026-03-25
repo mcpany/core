@@ -177,41 +177,13 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
         }
     ].map((user) => User.toJSON(User.fromJSON(user)));
 
-    const auditLogs = [
-        {
-            timestamp: new Date().toISOString(),
-            tool_name: "process_payment",
-            user_id: "e2e-admin-core",
-            profile_id: "default",
-            arguments: "{\"amount\": 100, \"currency\": \"USD\"}",
-            result: "[{\"id\": \"ch_123\", \"amount\": 100, \"status\": \"succeeded\"}]",
-            error: "",
-            duration_ms: 150,
-            trace_id: "trace-1",
-            span_id: "span-1"
-        },
-        {
-            timestamp: new Date(Date.now() - 100000).toISOString(),
-            tool_name: "get_user",
-            user_id: "e2e-admin-core",
-            profile_id: "default",
-            arguments: "{\"id\": \"user-1\"}",
-            result: "",
-            error: "User not found",
-            duration_ms: 50,
-            trace_id: "trace-2",
-            span_id: "span-2"
-        }
-    ];
-
     const seedRequest = {
         upstream_services: services,
         service_templates: templates,
         users: users,
         credentials: [],
         secrets: [],
-        profiles: [],
-        audit_logs: auditLogs
+        profiles: []
     };
 
     try {
