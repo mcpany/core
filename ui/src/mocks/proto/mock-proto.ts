@@ -3,9 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/**
- * Mock class for GrpcWebImpl used in tests.
- */
 export class GrpcWebImpl { }
 
 /**
