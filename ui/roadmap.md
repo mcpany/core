@@ -678,3 +678,53 @@
 - [ ] **[P0] Priority Mailbox Visualizer**: Real-time monitor for PAMS interrupt signals and coordination bypasses. (Added: 2026-06-30)
 - [ ] **[P0] Attention Entropy Heatmap**: Forensic UI for visualizing noise-to-utility scores and ASF detection alerts. (Added: 2026-06-30)
 - [ ] **[P0] Mission Lease Manager**: Dashboard for tracking LMP token lifetimes and hardware re-attestation status. (Added: 2026-06-30)
+
+#### Upcoming (2026-07-02 Evolution)
+- [ ] **[P0] Intent Reconciliation Hub**: (2026-07-02) Workspace for managing multi-agent instruction quorums and hardware-attested vote resolution.
+- [ ] **[P0] Multimodal Entanglement Auditor**: (2026-07-02) Forensic UI for reviewing cryptographically entangled non-textual shards and lineage alerts.
+- [ ] **[P0] Reasoning Entropy Dashboard**: (2026-07-02) Real-time visualization of swarm reasoning entropy and cognitive stall triggers.
+- [ ] **[P1] CRDT Mailbox Visualizer**: (2026-07-02) High-speed monitor for lock-free teammate synchronization and conflict-free state resolution.
+
+#### Upcoming (2026-07-01 Evolution)
+- [ ] **[P0] Multimodal Memory Bus Monitor**: (2026-07-01) Real-time visualization of intent-pinned state synchronization and multimodal sanitization events.
+- [ ] **[P0] ZK-Discovery Broker Workspace**: (2026-07-01) UI for reviewing masked capability cards and unmasking schemas via mission-handshakes.
+- [ ] **[P0] Attention Anchor Heatmap**: (2026-07-01) Visual tracker for ALRA-pinned intent fragments and attention-density alerts.
+
+#### Upcoming (2026-07-03 Evolution)
+- [ ] **[P0] Zero-Copy Buffer Monitor**: (2026-07-03) Real-time visualization of memory-mapped reasoning shards and physical boundary isolation status.
+- [ ] **[P0] Stylometric Identity Dashboard**: (2026-07-03) Security workspace for visualizing behavioral "voice" matches and mimicry alerts.
+- [ ] **[P0] Multimodal Lineage Tracer**: (2026-07-03) Forensic UI for inspecting hash-chained non-textual fragments and metadata integrity.
+- [ ] **[P0] Attention Reinforcement Console**: (2026-07-03) UI for managing AAE-injected tokens and visualizing mission-root attention strength.
+
+#### Upcoming (2026-03-24 Evolution - v2)
+- [ ] **[P1] Intent Lineage Visualizer**: Real-time graph showing the chain of signed intents across the swarm. (Added: 2026-03-24)
+- [ ] **[P2] BSH Performance Monitor**: Metrics dashboard tracking binary state transfer latency and token savings. (Added: 2026-03-24)
+- [ ] **[P0] Discovery Sandbox Monitor**: Real-time visualization of sandboxed discovery command execution and safety attestation. (Added: 2026-03-24)
+- [ ] **[P0] Teammate Task List Viewer**: High-speed, CRDT-native visualization of the shared task list for horizontal swarms. (Added: 2026-03-24)
+- [ ] **[P0] ALSV Block List Explorer**: UI for reviewing and approving command arguments flagged by the semantic validator. (Added: 2026-03-24)
+
+#### Upcoming (2026-07-05 Evolution)
+- [ ] **[P0] Physical Shard Inspector**: (2026-07-05) Visualize cryptographic pinning of shards to hardware Enclave IDs and PSS status.
+- [ ] **[P0] Multi-Modal Stylometric Monitor**: (2026-07-05) Real-time visualization of behavioral consistency across SVG and Audio reasoning traces.
+- [ ] **[P0] Summarization Quorum Hub**: (2026-07-05) Workspace for monitoring multi-agent consensus on context compaction and "Mission-Root Erasure" alerts.
+- [ ] **[P1] Adaptive Jitter Control**: (2026-07-05) UI for configuring risk-aware jitter profiles and monitoring coordination latency.
+
+#### Upcoming (2026-07-04 Evolution)
+- [ ] **[P0] Behavioral Firewall Dashboard**: (2026-07-04) Visualize stylometric confidence scores and paraphrasing sandbox status.
+- [ ] **[P0] Enclave Isolation Monitor**: (2026-07-04) Real-time visualization of DME-locked memory regions and physical isolation fault alerts.
+- [ ] **[P0] Attention Masking Interface**: (2026-07-04) UI for configuring hardware-locked attention masks for mission-root intents.
+- [ ] **[P1] Context Compaction Quorum Viewer**: (2026-07-04) Visual tracker for summarizer agent consensus and compaction savings.
+
+#### Upcoming (2026-03-25 Evolution)
+- [ ] **[P0] Relational Intent Tracer**: visual debugger for verifying the cryptographic lineage of tool-bound intents back to the mission root. (Added: 2026-03-25)
+- [ ] **[P0] Memfd Shard Inspector**: real-time visualization of shared memory mappings and byte-level sanitization status. (Added: 2026-03-25)
+- [ ] **[P1] Optimistic Attestation Widget**: dashboard indicator for speculatively loaded tool contexts and background verification progress. (Added: 2026-03-25)
+- [ ] **[P0] WASM-BSH Sanitizer Dashboard**: (2026-03-25) UI for managing OpenClaw v2.5 WASM sanitization rules and viewing rejected binary context fragments.
+- [ ] **[P0] Zero-Copy Transport Monitor**: (2026-03-25) Real-time performance metrics for `memfd_create` memory-mapped BSH buffers.
+- [ ] **[P0] RID Lineage Inspector**: (2026-03-25) Security UI for visualizing UACO v1.8 recursive delegation depths and "Intent Ghosting" defense boundaries.
+- [ ] **[P1] Predictive Locking Visualizer**: Gantt-style view of projected Blackboard resource locks based on agent intents. (Added: 2026-03-25)
+
+#### Upcoming (2026-03-25 Iteration 2)
+- [ ] **[P0] Relational Intent Tracer**: Visual debugger for verifying the cryptographic lineage of tool-bound intents back to the mission root. (Added: 2026-03-25)
+- [ ] **[P0] Memfd Shard Inspector**: Real-time visualization of shared memory mappings and byte-level sanitization status. (Added: 2026-03-25)
+- [ ] **[P1] Optimistic Attestation Widget**: Dashboard indicator for speculatively loaded tool contexts and background verification progress. (Added: 2026-03-25)

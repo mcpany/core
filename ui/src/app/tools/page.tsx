@@ -243,7 +243,7 @@ export default function ToolsPage() {
             onToolSelect={openInspector}
           />
           <div className="flex items-center space-x-2">
-            <Select value={groupBy} onValueChange={(v: "service" | "none") => setGroupBy(v)}>
+            <Select value={groupBy} onValueChange={(v: "service" | "category" | "none") => setGroupBy(v)}>
               <SelectTrigger className="w-[180px] backdrop-blur-sm bg-background/50">
                 <Layers className="mr-2 h-4 w-4" />
                 <SelectValue placeholder="Group By" />
