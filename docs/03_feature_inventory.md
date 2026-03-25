@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-06] Updates
+
+### Proposed Additions
+- **Quorum-Bound Summarization (QBS) Hub**: (P0) Distributed coordination service requiring multi-agent consensus before context compaction to prevent mission-root erasure.
+- **Optimistic Summarization Middleware**: (P1) Performance-optimizing service allowing speculative reasoning against pending summaries with automated quorum-failure rollbacks.
+- **Intent-Aware Adaptive Jitter**: (P1) Risk-aware side-channel defense that scales jitter variations based on real-time reasoning intent and shard sensitivity.
+- **Enclave-local Metadata Attestation (EMA) Provider**: (P0) Hardware-bound security service for PSS-compliant shard metadata verification using TPM/SEP enclaves.
+
+### Priority Shifts
+- **Adaptive Jitter Profiler**: (Evolved to Intent-Aware Adaptive Jitter) Now designated as the primary performance optimization for side-channel defense.
+- **Quorum-Bound Summarization (QBS) Hub**: (Re-affirmed P0) Designated as a mandatory requirement for high-density horizontal Agent Teams.
+
 ## Evolution: [2026-07-05] Updates
 
 ### Proposed Additions

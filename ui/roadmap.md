@@ -703,10 +703,16 @@
 - [ ] **[P0] Teammate Task List Viewer**: High-speed, CRDT-native visualization of the shared task list for horizontal swarms. (Added: 2026-03-24)
 - [ ] **[P0] ALSV Block List Explorer**: UI for reviewing and approving command arguments flagged by the semantic validator. (Added: 2026-03-24)
 
+#### Upcoming (2026-07-06 Evolution)
+- [ ] **[P0] Summarization Quorum Hub**: (2026-07-06) UI for monitoring multi-agent attestation on context compaction events.
+- [ ] **[P1] Speculative Reasoning Monitor**: (2026-07-06) Visual tracker for optimistic summarization commits and automated rollbacks.
+- [ ] **[P1] Intent-Aware Jitter Config**: (2026-07-06) Interactive interface for scaling risk-aware jitter profiles based on agent intent.
+- [ ] **[P0] Enclave Metadata Dashboard**: (2026-07-06) Real-time visualization of hardware-attested shard metadata and EMA status.
+
 #### Upcoming (2026-07-05 Evolution)
 - [ ] **[P0] Physical Shard Inspector**: (2026-07-05) Visualize cryptographic pinning of shards to hardware Enclave IDs and PSS status.
 - [ ] **[P0] Multi-Modal Stylometric Monitor**: (2026-07-05) Real-time visualization of behavioral consistency across SVG and Audio reasoning traces.
-- [ ] **[P0] Summarization Quorum Hub**: (2026-07-05) Workspace for monitoring multi-agent consensus on context compaction and "Mission-Root Erasure" alerts.
+- [ ] **[P0] Summarization Quorum Hub**: (2026-07-05) Workspace for monitoring multi-agent consensus on all context compaction events.
 - [ ] **[P1] Adaptive Jitter Control**: (2026-07-05) UI for configuring risk-aware jitter profiles and monitoring coordination latency.
 
 #### Upcoming (2026-07-04 Evolution)
