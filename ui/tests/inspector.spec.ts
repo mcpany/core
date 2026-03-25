@@ -48,6 +48,7 @@ test.describe('Inspector Page', () => {
     // InspectorTable without depending on proxy-level WS tunnelling.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let wsSend: any = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await page.routeWebSocket('**/api/v1/ws/traces', (ws: any) => {
       wsSend = (data: string) => ws.send(data);
     });
