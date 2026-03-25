@@ -8,7 +8,7 @@ package mcpany.config.v1;
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/go_features.proto";
-
+import "proto/bus/bus.proto";
 import "proto/config/v1/auth.proto";
 import "proto/config/v1/call.proto";
 import "proto/config/v1/health_check.proto";

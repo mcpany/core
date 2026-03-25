@@ -31,12 +31,12 @@ export function StepParameters() {
         updateState({ params: newParams });
 
         // Also update config env
+        // TODO: Sync `params` to `config.commandLineService.env` more robustly
+        // For now we just update basic env
         if (config.commandLineService) {
-            const env: Record<string, any> = {};
+            const env: any = {};
             Object.entries(newParams).forEach(([k, v]) => {
-                if (k.trim() !== '') {
-                    env[k] = { plainText: v };
-                }
+                env[k] = { plainText: v };
             });
             updateConfig({
                 commandLineService: {
@@ -58,11 +58,9 @@ export function StepParameters() {
         updateState({ params: newParams });
          // Sync with config
          if (config.commandLineService) {
-            const env: Record<string, any> = {};
+            const env: any = {};
             Object.entries(newParams).forEach(([k, v]) => {
-                if (k.trim() !== '') {
-                    env[k] = { plainText: v };
-                }
+                env[k] = { plainText: v };
             });
             updateConfig({
                 commandLineService: {
