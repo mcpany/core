@@ -15,13 +15,16 @@ type MockPromptManager struct {
 }
 
 // GetPrompt is a mock method.
-func (m *MockPromptManager) GetPrompt(ctx context.Context, id string) (interface{}, error) {
+func (m *MockPromptManager) GetPrompt(ctx context.Context, id string) (any, error) {
 	args := m.Called(ctx, id)
 	return args.Get(0), args.Error(1)
 }
 
 // ListPrompts is a mock method.
-func (m *MockPromptManager) ListPrompts(ctx context.Context) ([]interface{}, error) {
+func (m *MockPromptManager) ListPrompts(ctx context.Context) ([]any, error) {
 	args := m.Called(ctx)
-	return args.Get(0).([]interface{}), args.Error(1)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]any), args.Error(1)
 }

@@ -15,13 +15,16 @@ type MockResourceManager struct {
 }
 
 // GetResource is a mock method.
-func (m *MockResourceManager) GetResource(ctx context.Context, id string) (interface{}, error) {
+func (m *MockResourceManager) GetResource(ctx context.Context, id string) (any, error) {
 	args := m.Called(ctx, id)
 	return args.Get(0), args.Error(1)
 }
 
 // ListResources is a mock method.
-func (m *MockResourceManager) ListResources(ctx context.Context) ([]interface{}, error) {
+func (m *MockResourceManager) ListResources(ctx context.Context) ([]any, error) {
 	args := m.Called(ctx)
-	return args.Get(0).([]interface{}), args.Error(1)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]any), args.Error(1)
 }

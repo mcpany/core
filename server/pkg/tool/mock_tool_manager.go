@@ -15,13 +15,16 @@ type MockToolManager struct {
 }
 
 // CallTool is a mock method.
-func (m *MockToolManager) CallTool(ctx context.Context, name string, args map[string]interface{}) (interface{}, error) {
+func (m *MockToolManager) CallTool(ctx context.Context, name string, args map[string]any) (any, error) {
 	callArgs := m.Called(ctx, name, args)
 	return callArgs.Get(0), callArgs.Error(1)
 }
 
 // ListTools is a mock method.
-func (m *MockToolManager) ListTools(ctx context.Context) ([]interface{}, error) {
+func (m *MockToolManager) ListTools(ctx context.Context) ([]any, error) {
 	callArgs := m.Called(ctx)
-	return callArgs.Get(0).([]interface{}), callArgs.Error(1)
+	if callArgs.Get(0) == nil {
+		return nil, callArgs.Error(1)
+	}
+	return callArgs.Get(0).([]any), callArgs.Error(1)
 }
