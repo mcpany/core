@@ -46,7 +46,7 @@ export function ConfigEditor({ value, onChange, language = "yaml", readOnly = fa
 
         // But we CAN add custom completion providers for YAML!
         const disposable = monaco.languages.registerCompletionItemProvider("yaml", {
-            provideCompletionItems: (model, position) => {
+            provideCompletionItems: (model: any, position: any) => {
                 const word = model.getWordUntilPosition(position);
                 const range = {
                     startLineNumber: position.lineNumber,
