@@ -32,8 +32,8 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v51-lint-{{ checksum "server/go.sum" }}
-            - v51-lint-
+            - v65-lint-{{ checksum "server/go.sum" }}
+            - v65-lint-
       - run:
           name: Prepare and Run Lint
           command: |
@@ -43,7 +43,7 @@ jobs:
             export PATH=$(pwd)/build/env/bin:$PATH
             ./scripts/lint.sh
       - save_cache:
-          key: v51-lint-{{ checksum "server/go.sum" }}
+          key: v65-lint-{{ checksum "server/go.sum" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
@@ -70,8 +70,8 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v51-test-{{ checksum "server/go.sum" }}
-            - v51-test-
+            - v65-test-{{ checksum "server/go.sum" }}
+            - v65-test-
       - run:
           name: Run Tests
           command: |
@@ -93,12 +93,11 @@ jobs:
                     fi
                 fi
             done
-            go build -o build/test/bin/command-tester ./server/tests/integration/cmd/command-tester
             # Run tests
             make test-proto
             cd server && go test -short ./...
       - save_cache:
-          key: v51-test-{{ checksum "server/go.sum" }}
+          key: v65-test-{{ checksum "server/go.sum" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
