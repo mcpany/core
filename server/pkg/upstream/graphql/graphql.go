@@ -89,28 +89,12 @@ const introspectionQuery = `
 `
 
 // Upstream implements the upstream.Upstream interface for GraphQL services.
-//
-// Summary: Represents a Upstream.
 type Upstream struct{}
 
 // NewGraphQLUpstream creates a new GraphQL upstream.
 //
 // Returns:
 //   - upstream.Upstream: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewGraphQLUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -128,20 +112,6 @@ func NewGraphQLUpstream() upstream.Upstream {
 //
 // Errors:
 //   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -169,10 +139,10 @@ type graphQLType struct {
 }
 
 type graphQLTypeWithFields struct {
-	Kind   string                  `json:"kind"`
-	Name   *string                 `json:"name"`
+	Kind   string                 `json:"kind"`
+	Name   *string                `json:"name"`
 	Fields []struct{ Name string } `json:"fields"`
-	OfType *graphQLTypeWithFields  `json:"ofType"`
+	OfType *graphQLTypeWithFields `json:"ofType"`
 }
 
 func getFieldsFromType(t *graphQLTypeWithFields) []struct{ Name string } {
@@ -227,8 +197,6 @@ func convertGraphQLTypeToJSONSchema(t *graphQLType) *structpb.Value {
 }
 
 // Callable implements the Callable interface for GraphQL queries.
-//
-// Summary: Represents a Callable.
 type Callable struct {
 	client        *graphql.Client
 	query         string
@@ -248,20 +216,6 @@ type Callable struct {
 //
 // Errors:
 //   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Call operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -308,20 +262,6 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 //
 // Side Effects:
 //   - None
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (g *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

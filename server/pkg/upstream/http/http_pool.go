@@ -6,8 +6,8 @@ package http //nolint:revive,nolintlint // Package name 'http' is intentional fo
 import (
 	"context"
 	"crypto/tls"
-	"crypto/x509"
 	"fmt"
+	"crypto/x509"
 	"net/http"
 	"os"
 	"time"
@@ -33,20 +33,6 @@ type httpPool struct {
 //
 // Side Effects:
 //   - Closes idle network connections.
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (p *httpPool) Close() error {
 	if err := p.Pool.Close(); err != nil {
 		return err
@@ -76,8 +62,6 @@ func (p *httpPool) Close() error {
 // Side Effects:
 //   - Reads certificate files if mTLS is configured.
 //   - Initializes a new http.Transport and http.Client.
-//
-// Summary: Represents a NewHTTPPool.
 var NewHTTPPool = func(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

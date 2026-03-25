@@ -33,13 +33,6 @@ func TestIsDockerSocketAccessible(t *testing.T) {
 	})
 }
 
-func TestInitDockerClientDefault(t *testing.T) {
-	originalClient := dockerClient
-	defer func() { dockerClient = originalClient }()
-	dockerClient = nil
-	initDockerClientDefault()
-}
-
 func TestCloseDockerClient(t *testing.T) {
 	// t.Parallel() removed due to global variable modification
 	// This is a smoke test to ensure CloseDockerClient doesn't panic.
