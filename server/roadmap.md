@@ -171,6 +171,11 @@
 *   **[P0] Hardware-Attested Monotonic Depth-Counters**: TPM-bound constraint enforcement for recursive agent delegations. (Added: 2026-03-25)
 *   **[P1] Optimistic Attestation Gate**: Speculative safety middleware for non-blocking coordination during high-density mesh handoffs. (Added: 2026-03-25)
 
+#### Upcoming (2026-03-25 Iteration 5)
+*   **[P0] Programmatic SDK Bridge**: Authoritative security proxy for SDK-driven agent interactions, enforcing Zero-Trust policies on programmatic tool calls. (Added: 2026-03-25)
+*   **[P1] Persistent Session Sovereignty Hub**: TPM-bound cryptographic attestation for local SQLite session state to prevent unauthorized session resumption. (Added: 2026-03-25)
+*   **[P0] Non-Interactive Mode Security Guard**: Pre-flight authorization engine that validates all potential tool calls against a mission-root manifest for headless automation. (Added: 2026-03-25)
+
 #### Upcoming (2026-06-23 Evolution)
 *   **[P0] Recursive Mission-Root Attestation (RMRA)**: Mandatory hardware-bound re-attestation of sub-process lineage for headless handoffs. (Added: 2026-06-23)
 *   **[P0] Attention-Density Guard (ADG) v2**: Integration of hardware-attested Attention Masks to prioritize mission-critical fragments. (Added: 2026-06-23)
