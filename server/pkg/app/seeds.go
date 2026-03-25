@@ -370,7 +370,7 @@ func init() {
 				Name: proto.String("swarm-orchestrator"),
 				McpService: configv1.McpUpstreamService_builder{
 					HttpConnection: configv1.McpStreamableHttpConnection_builder{
-						HttpAddress: proto.String("http://localhost:50050/api/v1/topology"),
+						HttpAddress: proto.String("http://localhost:50050/api/v1/mock/swarm-topology"),
 					}.Build(),
 					ToolAutoDiscovery: proto.Bool(true),
 				}.Build(),
