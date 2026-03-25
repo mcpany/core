@@ -47,10 +47,3 @@ Hardware-Attested Boot (TPM) ensures an agent starts in a clean environment, but
 * **2026-04-17:** Initial Document Creation.
 * **2026-04-18:** Optimization for "Resident Persistence Proofs" inspired by Claude Code's latest stability updates. Introducing a "Unified Persistence Broker" pattern to allow swarm-wide sharing of hardware-bound integrity signals, reducing the per-agent attestation tax.
 * **2026-04-19:** Integration with Distributed Trust Leases (LFTA). RIM now acts as the authoritative "Lease Guard," providing the continuous hardware-attestation signals required to maintain LFTA token validity. Detection of any integrity drift (e.g., config hook modification) now triggers an immediate global revocation of all active trust leases.
-
-### Update: 2026-05-02 - Kernel-Bound Intent Attestation (KBIA)
-**Context:** Today's market sync revealed the new "Kernel-Bound Intent Attestation" (KBIA) protocol in OpenClaw v2026.5.2.
-**Architecture Adjustment:**
-* Deprecating user-space policy checks in Section 4.
-* Introducing a "Kernel-Level Intent Hook" for the Resident Integrity Monitor (RIM) that translates KBIA tokens into hardware-bound resource quotas.
-**Security Impact:** Prevents "Intent Smuggling" by binding the agent's semantic intent directly to the host kernel's process isolation and resource monitoring.

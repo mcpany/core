@@ -327,7 +327,3 @@
 - [ ] **[P0] A2A Replay Security Dashboard**: Visualize nonce status and replay attempt alerts in the A2A hub. (Added: 2026-04-22)
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)
 - [ ] **[P1] Encrypted Monologue Explorer**: Secure UI fragment for user-authorized decryption and review of subagent reasoning. (Added: 2026-04-22)
-### Evolution: [2026-05-02] Updates
-*   **Quorum Monitoring Dashboard**: (P0) Real-time visualization of multi-agent voting and quorum status.
-*   **Adaptive Budgeting Telemetry**: (P1) Resource usage vs. intent budget visualization for agent swarms.
-*   **SACH Capability Lease Viewer**: (P0) Secure interface for viewing and revoking inter-agent capability leases.

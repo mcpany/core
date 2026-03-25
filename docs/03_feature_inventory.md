@@ -800,14 +800,3 @@
 ### Priority Shifts
 - **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Now elevated as the primary solution for the "Approval Fatigue" scaling bottleneck.
 - **Pluggable Context Bridge**: (Re-affirmed P0) Expanded to support the new Standardized Context Sidecar Interface.
-
-## Evolution: [2026-05-02] Updates
-
-### Proposed Additions
-- **Kernel-Bound Intent (KBI) Broker**: (P0) A kernel-resident security utility for translating OpenClaw KBIA tokens into MCP Any security policies, binding tool quotas to the agent's semantic intent.
-- **Swarm-Aware Capability Handoff (SACH) Gateway**: (P0) High-performance middleware for the A2A Messaging Hub that manages "Capability Leases," allowing sub-second tool permission delegation within a swarm.
-- **Intent-Scoped Resource Quota (ISRQ) Middleware**: (P1) Extension for the Adaptive Intent Budgeting layer that enforces budget suspensions based on predicted tool-call impact.
-
-### Priority Shifts
-- **Adaptive Intent Budgeting (AIB)**: (Promoted to P0) Critical for aligning with the latest Claude Code and Gemini CLI ISRQ enforcement.
-- **SACH Gateway**: (Promoted to P0) Designated as the primary defense against the newly discovered "Context-Mirroring" identity spoofing exploit.
