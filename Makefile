@@ -11,13 +11,13 @@ prepare:
 	@mkdir -p build/env/bin
 	@mkdir -p build/.cache
 
-lint:
+lint: prepare
 	python3 server/tools/check_ts_doc.py ui/src
 	bazelisk run //:lint
 	bazelisk test //ui:typecheck //ui:lint
 
-test:
+test: prepare
 	bazelisk test //...
 
-build:
+build: prepare
 	bazelisk build //...
