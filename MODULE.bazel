@@ -45,10 +45,6 @@ go_deps.gazelle_override(
     ],
     path = "google.golang.org/genproto/googleapis/api",
 )
-use_repo(
-    go_deps,
-    "org_golang_google_genproto_googleapis_api",
-)
 
 # Add required direct dependencies from go.mod manually or via use_repo
 # For now, let's let Gazelle handle it.
