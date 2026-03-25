@@ -139,14 +139,15 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
         return (
             <div className="flex flex-col gap-4 p-4 border rounded-md bg-muted/10">
                 {mcpContent.map((item, idx) => {
-                    let parsedText = null;
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    let parsedText: any = null;
                     if (item.type === 'text' && item.text) {
                         try {
                             const p = deepParseJson(item.text);
                             if (typeof p === 'object' && p !== null) {
                                 parsedText = p;
                             }
-                        } catch (e) {}
+                        } catch (_e) {}
                     }
                     return (
                         <div key={idx} className="flex flex-col gap-2">
