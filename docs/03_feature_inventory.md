@@ -6,18 +6,6 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
-## Evolution: [2026-06-16] Updates
-
-### Proposed Additions
-- **Entangled State Broker (ESB)**: (P0) Authoritative coordination service for "Entanglement Shards" that are cryptographically bound to the mission-root intent.
-- **Stylometric Mimicry Mitigator (SMM)**: (P0) Security middleware that performs real-time stylometric analysis of inter-agent messages to detect reasoning-path shadowing.
-- **Speculative Branching Guard (SBG)**: (P1) Isolation service for un-executed reasoning paths that prevents speculative attention leakage.
-- **Mesh-Resident Key Exchange (MRKE) Provider**: (P0) Hardware-bound session key rotation service for sub-100ms inter-teammate coordination.
-
-### Priority Shifts
-- **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ESB-compliant** state entanglement.
-- **Stylometric Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving to support the new **Stylometric Mimicry** defense requirements.
-
 ## Evolution: [2026-06-08] Updates
 
 ### Proposed Additions
@@ -1328,23 +1316,11 @@
 ## Evolution: [2026-06-14] Updates
 
 ### Proposed Additions
-- **Structural Metadata Sanitizer (SMS)**: (P0) Advanced security service for the PNTD Provider that performs real-time semantic sanitization of tool descriptions and examples to neutralize SDMI.
-- **Multi-Hop Persistence Relay (MHPR)**: (P0) Performance-optimizing security middleware for the SMI Relay that facilitates hardware-attested trust lease propagation across deep swarms.
-- **Attention-Locked Context Sharding (ALCS)**: (P0) Security extension for the SMS and HAAL providers that cryptographically pins mission-critical fragments to protected attention tiers.
-- **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative gateway for the Discovery Bus that performs hardware-attested validation of all tool capability cards.
+- **Attention-Locked Routing Hub (ALRH)**: (P0) Authoritative attention guard that performs real-time attention-utilization analysis and Attention-Aware Routing (AAR) to dynamically bypass high-entropy specialists.
+- **Hardware-Locked Context Pinning (HLCP)**: (P0) Core security middleware utilizing hardware-bound (TPM) headers to cryptographically "pin" mission-critical intent fragments at the LLM attention layer.
+- **MDRA Attestation Bridge**: (P0) Advanced bridge supporting Gemini's Multi-Dimensional Reasoning Attestation standard, merging hardware, stylometric, and lineage data into a unified proof.
+- **Attention-Aware Discovery Provider**: (P1) Upgrade for the discovery layer that throttles capability visibility based on the parent agent's real-time Attention Availability.
 
 ### Priority Shifts
-- **PNTD Discovery Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SMS** integration to counter metadata-based reasoning hijacking.
-- **Sovereign Mesh Identity (SMI) Relay**: (Re-affirmed P0) Evolving to act as the primary backend for the **Multi-Hop Persistence Relay (MHPR)**.
-
-## Evolution: [2026-06-15] Updates
-
-### Proposed Additions
-- **Intent-Resumption Gateway (IRG)**: (P0) Authoritative resumption broker implementing OpenClaw-compliant "Intent-Resumption Tokens" to eliminate cognitive stall during teammate rotation.
-- **Side-Channel Timing Mitigator (SCTM)**: (P0) Advanced security middleware for the ASLM that injects hardware-attested timing jitter to neutralize shard-collision timing attacks.
-- **Attention-Locked Telemetry Proxy**: (P1) Authoritative telemetry sanitizer for Gemini-compliant reasoning traces, ensuring attention-mapping privacy during RL feedback export.
-- **WASM-Hook Behavioral Profiler**: (P0) Mandatory extension for the SMS that performs sandboxed profiling of AI-generated configuration hooks to counter PR "Logic Bombs."
-
-### Priority Shifts
-- **Atomic Shard Lock-Manager (ASLM)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SCTM** integration to counter timing-based side-channel attacks.
-- **Structural Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving to support the new **WASM-Hook Behavioral Profiling** requirement.
+- **Dynamic Attention Gating (DAG) Middleware**: (Evolved to Attention-Locked Routing Hub) Now designated as the primary mechanism for REE defense and mission-root attention sovereignty.
+- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MDRA-compliant** attestation merging to counter Coordination Drift.
