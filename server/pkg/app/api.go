@@ -564,7 +564,11 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				return
 			}
 			opts := protojson.MarshalOptions{UseProtoNames: true}
-			b, _ := opts.Marshal(svc)
+			b, err := opts.Marshal(svc)
+			if err != nil {
+				http.Error(w, "Failed to marshal", http.StatusInternalServerError)
+				return
+			}
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write(b)
 		case http.MethodPut:
@@ -1007,7 +1011,11 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 				if i > 0 {
 					buf = append(buf, ',')
 				}
-				b, _ := opts.Marshal(s)
+				b, err := opts.Marshal(s)
+				if err != nil {
+					http.Error(w, "Failed to marshal", http.StatusInternalServerError)
+					return
+				}
 				buf = append(buf, b...)
 			}
 			buf = append(buf, ']')
@@ -1083,7 +1091,11 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 			secret.SetValue("[REDACTED]")
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
-			b, _ := opts.Marshal(secret)
+			b, err := opts.Marshal(secret)
+			if err != nil {
+				http.Error(w, "Failed to marshal", http.StatusInternalServerError)
+				return
+			}
 			_, _ = w.Write(b)
 
 		case http.MethodPut:
@@ -1186,7 +1198,11 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 				if i > 0 {
 					buf = append(buf, ',')
 				}
-				b, _ := opts.Marshal(p)
+				b, err := opts.Marshal(p)
+				if err != nil {
+					http.Error(w, "Failed to marshal", http.StatusInternalServerError)
+					return
+				}
 				buf = append(buf, b...)
 			}
 			buf = append(buf, ']')
@@ -1255,7 +1271,11 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 			// Force download? Maybe 'Content-Disposition: attachment; filename="profile.json"'
 			w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.json\"", name))
 			opts := protojson.MarshalOptions{UseProtoNames: true, Multiline: true, Indent: "  "}
-			b, _ := opts.Marshal(exportProfile)
+			b, err := opts.Marshal(exportProfile)
+			if err != nil {
+				http.Error(w, "Failed to marshal", http.StatusInternalServerError)
+				return
+			}
 			_, _ = w.Write(b)
 			return
 		}
@@ -1274,7 +1294,11 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 			}
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
-			b, _ := opts.Marshal(profile)
+			b, err := opts.Marshal(profile)
+			if err != nil {
+				http.Error(w, "Failed to marshal", http.StatusInternalServerError)
+				return
+			}
 			_, _ = w.Write(b)
 
 		case http.MethodPut:
@@ -1335,7 +1359,11 @@ func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc 
 				if i > 0 {
 					buf = append(buf, ',')
 				}
-				b, _ := opts.Marshal(c)
+				b, err := opts.Marshal(c)
+				if err != nil {
+					http.Error(w, "Failed to marshal", http.StatusInternalServerError)
+					return
+				}
 				buf = append(buf, b...)
 			}
 			buf = append(buf, ']')
@@ -1397,7 +1425,11 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 			w.Header().Set("Content-Type", "application/json")
 			w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.json\"", name))
 			opts := protojson.MarshalOptions{UseProtoNames: true, Multiline: true, Indent: "  "}
-			b, _ := opts.Marshal(exportCollection)
+			b, err := opts.Marshal(exportCollection)
+			if err != nil {
+				http.Error(w, "Failed to marshal", http.StatusInternalServerError)
+				return
+			}
 			_, _ = w.Write(b)
 			return
 		}
@@ -1422,7 +1454,11 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 			}
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
-			b, _ := opts.Marshal(collection)
+			b, err := opts.Marshal(collection)
+			if err != nil {
+				http.Error(w, "Failed to marshal", http.StatusInternalServerError)
+				return
+			}
 			_, _ = w.Write(b)
 
 		case http.MethodPut:

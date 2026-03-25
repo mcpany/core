@@ -1,15 +1,43 @@
 diff --git a/server/pkg/app/api.go b/server/pkg/app/api.go
-index ed90cce..0e90956 100644
+index 0e90956..ab24e4c 100644
 --- a/server/pkg/app/api.go
 +++ b/server/pkg/app/api.go
-@@ -1150,8 +1150,8 @@
-	}
-
-	// Log the access (Audit)
--	user, err := auth.UserFromContext(r.Context())
--	if err != nil {
-+	user, ok := auth.UserFromContext(r.Context())
-+	if !ok {
-		user = "unknown"
-	}
-	logging.GetLogger().Info("Secret revealed", "id", id, "user", user)
+@@ -1011,7 +1011,11 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
+				if i > 0 {
+					buf = append(buf, ',')
+				}
+-				b, _ := opts.Marshal(s)
++				b, err := opts.Marshal(s)
++				if err != nil {
++					http.Error(w, "Failed to marshal", http.StatusInternalServerError)
++					return
++				}
+				buf = append(buf, b...)
+			}
+			buf = append(buf, ']')
+@@ -1194,7 +1198,11 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
+				if i > 0 {
+					buf = append(buf, ',')
+				}
+-				b, _ := opts.Marshal(p)
++				b, err := opts.Marshal(p)
++				if err != nil {
++					http.Error(w, "Failed to marshal", http.StatusInternalServerError)
++					return
++				}
+				buf = append(buf, b...)
+			}
+			buf = append(buf, ']')
+@@ -1351,7 +1359,11 @@ func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc
+				if i > 0 {
+					buf = append(buf, ',')
+				}
+-				b, _ := opts.Marshal(c)
++				b, err := opts.Marshal(c)
++				if err != nil {
++					http.Error(w, "Failed to marshal", http.StatusInternalServerError)
++					return
++				}
+				buf = append(buf, b...)
+			}
+			buf = append(buf, ']')
