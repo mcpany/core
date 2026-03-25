@@ -46,8 +46,10 @@ jobs:
           command: |
             # Under CI, ignore golangci-lint failing to resolve bazel proto modules.
             # Real tests will fail anyway if compilation breaks.
-            bazelisk run //:lint || exit 0
-            bazelisk test //ui:lint //ui:typecheck || exit 0
+            set +e
+            bazelisk run //:lint
+            bazelisk test //ui:lint //ui:typecheck
+            exit 0
       - save_cache:
           key: v1-bazel-lint-{{ checksum "MODULE.bazel" }}
           paths:
