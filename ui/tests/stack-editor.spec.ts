@@ -20,27 +20,18 @@ test.describe('Stack Editor', () => {
   test('should load the editor and show initial config in graph', async ({ page }) => {
     const stackName = `stack-editor-load-${Date.now()}`;
     await seedCollection(stackName, page.request);
-
-    // Explicitly apply the collection to trigger service registration on the backend
     try {
-        await page.request.post(`/api/v1/collections/${stackName}/apply`, {
-            headers: {
-                'Authorization': `Bearer test-token`,
-                'Content-Type': 'application/json'
-            }
-        });
-    } catch(e) {}
+      await page.goto(`/stacks/${stackName}`);
 
-    try {
-      // The stack page relies on the api_stacks.go endpoint to load the config. Since that endpoint was removed due to linting issues, we can bypass navigating to the specific stack and just create a new one to test the visualizer.
-      await page.goto(`/stacks/new`);
+      // Check for React Flow container
+      const visualizer = page.locator('.stack-visualizer-container');
+      await expect(visualizer.locator('.react-flow')).toBeVisible({ timeout: 30000 });
 
-      // For a new stack, there's no pre-populated node.
-      // But we can insert text into Monaco to see it render
-      const editorTextarea = page.locator('.monaco-editor textarea');
-      await expect(editorTextarea).toBeVisible({ timeout: 15000 });
-      // we know it loads, testing Monaco -> Visualizer interaction via Playwright typing is flaky.
-      // So we just check if it gets there.
+      // Check for the node
+      // Using a more specific selector to ensure it's inside a node and wait for it
+      const weatherNode = visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' }).first();
+      await expect(weatherNode).toBeVisible({ timeout: 15000 });
+      await expect(weatherNode).toContainText('weather-service');
     } finally {
       await cleanupCollection(stackName, page.request);
     }

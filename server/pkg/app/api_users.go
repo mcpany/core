@@ -165,6 +165,7 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 			return
 		}
 
+		// IDOR Fix: Enforce authorization on all HTTP methods, not just GET.
 		isAdmin := auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin")
 		if currentUserID != id && !isAdmin {
 			http.Error(w, "Forbidden", http.StatusForbidden)
@@ -236,7 +237,12 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 
 			if !isAdmin {
 				// Prevent non-admin users from escalating their privileges by restoring their original roles
-				user.SetRoles(existingUser.GetRoles())
+				// We must clone the slice so that a single shared reference isn't modified underneath us.
+				var copiedRoles []string
+				for _, role := range existingUser.GetRoles() {
+					copiedRoles = append(copiedRoles, role)
+				}
+				user.SetRoles(copiedRoles)
 			}
 
 			if err := hashUserPassword(r.Context(), &user, store, existingUser); err != nil {

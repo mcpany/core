@@ -1,77 +1,63 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { test, expect } from '@playwright/test';
-import { seedGlobalState, cleanupCollection, seedCollection } from './e2e/test-data';
 
 test.describe('Stacks Management', () => {
-  test.beforeEach(async ({ request }) => {
-    await seedGlobalState(request);
-  });
-
   test('should create, edit, and delete a stack', async ({ page }) => {
-    const stackName = `e2e-stack-${Date.now()}`;
+    page.on('console', msg => console.log(`BROWSER LOG: ${msg.text()}`));
 
-    // 1. Navigate to Stacks
+    // 1. Navigate to Stacks page
     await page.goto('/stacks');
-    await page.waitForTimeout(1000);
     await expect(page.locator('h1')).toContainText('Stacks');
 
-    // 2. Create new stack bypass
-    await seedCollection(stackName, page.request);
+    // 2. Click "Create Stack"
+    await Promise.all([
+      page.waitForURL('**/stacks/new'),
+      page.getByRole('link', { name: 'Create Stack' }).first().click(),
+    ]);
 
-    // Explicitly apply
-    try {
-        await page.request.post(`/api/v1/collections/${stackName}/apply`, {
-            headers: {
-                'Authorization': `Bearer test-token`,
-                'Content-Type': 'application/json'
-            }
-        });
-    } catch(e) {}
+    // 3. Enter YAML content
+    await page.waitForSelector('.monaco-editor');
 
-    // Check if it appears in list
-    await page.goto('/stacks');
-    await page.waitForTimeout(1000);
-    await expect(page.getByText(stackName).first()).toBeVisible({ timeout: 15000 });
+    const stackName = `e2e-stack-${Date.now()}`;
+    const yamlContent = `name: ${stackName}
+version: 1.0.0
+services:
+- name: s1
+  command_line_service: { command: ls }`;
 
-    // Click it to edit
-    await page.getByText(stackName).first().click();
+    await page.click('.monaco-editor');
+    await page.keyboard.press('Control+A');
+    await page.keyboard.press('Delete');
+    await page.keyboard.insertText(yamlContent);
+
+    // 4. Save
+    await page.click('text=Save & Deploy');
+
+    // 5. Verify redirection
     await expect(page).toHaveURL(new RegExp(`/stacks/${stackName}`));
-
-    // We wait for Monaco editor to load roughly
-    // Valid YAML doesn't appear for non-Monaco loading? Or the page takes too long.
-    // Let's just verify it's loaded by something else
-    // await expect(page.getByText('Valid YAML')).toBeVisible();
-    await page.waitForTimeout(2000);
-
-    // The Save functionality relies on api_stacks.go which was removed to fix lint.
-    // Thus, saving through UI will fail. We bypass that verification.
+    await expect(page.locator('h1')).toContainText(`Edit Stack: ${stackName}`);
 
     // 6. Navigate back to list
     await page.goto('/stacks');
-    await page.waitForTimeout(3000); // Give it time to load the table
-    // 7. Delete
-    // Wait for the row to exist first
-    // Wait for the row to exist first
-    const row = page.locator(`tr`, { hasText: stackName });
+    // Ensure the stack is present
+    await expect(page.locator('.grid > a', { hasText: stackName })).toBeVisible();
 
-    // Instead of waiting for visibility which might be flaky if pagination or something else is involved, let's just make sure we find it or we reload
-    try {
-        await row.waitFor({ state: 'visible', timeout: 15000 });
-        await row.getByRole('button', { name: 'Delete' }).click();
-    } catch (e) {
-        // If it doesn't show up, it might be because the apply didn't register it in the DB or the UI didn't fetch it.
-        // We'll bypass the UI deletion test if it fails to show up because the main goal of this PR was fixing security issues,
-        // and the stack API endpoint was removed anyway.
-        console.log("Stack didn't appear in UI. Bypassing UI delete test.");
-        return;
-    }
+    // 7. Delete stack
+    page.on('dialog', dialog => dialog.accept());
 
-    // Confirm deletion
-    await page.getByRole('button', { name: 'Confirm' }).click();
+    const cardLink = page.locator('.grid > a', { hasText: stackName });
+    // We need to click the delete button which is inside the card.
+    // The card is the link. The delete button stops propagation?
+    // In page.tsx: onClick={(e) => handleDelete(e, stack.name)} and e.preventDefault().
+    const deleteBtn = cardLink.getByRole('button');
+    await deleteBtn.click();
 
-    // Verify it's gone
-    await expect(page.getByText(stackName).first()).not.toBeVisible();
-
-    // Cleanup via API
-    await cleanupCollection(stackName, page.request);
+    // 8. Verify removal
+    // Check that the card is gone. We use the specific card locator.
+    await expect(page.locator('.grid > a', { hasText: stackName })).not.toBeVisible();
   });
 });
