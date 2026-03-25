@@ -68,7 +68,7 @@ test.describe('Inspector Page', () => {
     // After the POST succeeds, inject the trace into the active WebSocket
     // connection.
     if (wsSend) {
-      wsSend(JSON.stringify(MOCK_TRACE));
+      (wsSend as any)(JSON.stringify(MOCK_TRACE));
     }
 
     // Wait briefly to allow React state to update based on WebSocket message
