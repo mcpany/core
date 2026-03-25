@@ -21,6 +21,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-15]
+### Focus: Relational Intent Integrity & Deadlock-Aware Coordination
+**Context**: The release of OpenClaw v2026.4.0 and Gemini CLI v1.6 confirm that the agent ecosystem is moving toward "Machine-Speed Swarm Coordination." However, this maturity has exposed new vulnerabilities: Recursive Context Splicing (RCS) and "Negotiation Deadlocks." Security must now validate the *linkage* between parent and child missions, while coordination must move beyond simple bidding to active, deadlock-aware arbitration.
+**Strategic Pivot**:
+- **Relational Intent Integrity**: We are moving from per-mission validation to "Relational PoI (Proof-of-Intent)." MCP Any will now cryptographically validate the linkage between parent missions and child task delegations, neutralizing "Recursive Context Splicing" and unauthorized sub-goal injection.
+- **Deadlock-Aware Coordination Arbiter**: Supporting the A2A Messaging Hub, MCP Any will evolve into the authoritative "Auction Arbiter." We will provide the infrastructure to detect and break "Negotiation Deadlocks" in autonomous swarms by enforcing mission-aligned "Fairness Policies" during the UACO bidding phase.
+- **Reasoning-Aware Budgeting (AIB v2)**: Integrating with Gemini CLI v1.6's new headers, MCP Any will implement "Proactive Resource Allocation." This allows the gateway to dynamically adjust token and compute budgets based on the agent's signaled reasoning effort, preventing resource exhaustion in massive parallel teams.
+- **UAB-Native High-Speed Routing**: Following OpenClaw's lead, we are prioritizing UAB v2.5 as our primary internal transport. This reduces translation latency and enables sub-millisecond task handoffs for UAB-native swarms, positioning MCP Any as the high-speed core of the Universal Agent Bus.
+
+---
+
 ## Strategic Evolution: [2026-05-14]
 ### Focus: Pluggable Context Sovereignty & Swarm-Speed Identity Defense
 **Context**: The maturation of OpenClaw's `ContextEngine` and the rise of "AI Swarm Attacks" (Hivenets) mark a shift from linear agent security to "Machine-Speed Mesh Defense." As non-human identities outnumber humans 100:1, the "Universal Agent Bus" must move beyond simple bridging to active, hardware-attested identity and state orchestration.

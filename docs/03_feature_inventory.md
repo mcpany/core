@@ -18,6 +18,18 @@
 - **ContextEngine Lifecycle Adapter**: (Re-affirmed P0) Upgraded to support OpenClaw v2026.4.0's native UAB hooks.
 - **DCA Auction Broker**: (Evolved to Deadlock-Aware Arbiter) Re-prioritized as P0 to address critical swarm-scale coordination failures.
 
+## Evolution: [2026-05-15] Updates
+
+### Proposed Additions
+- **Relational PoI Validator**: (P0) Advanced security middleware that cryptographically validates the mission linkage between parent and child agents, neutralizing Recursive Context Splicing (RCS).
+- **Deadlock-Aware Auction Arbiter**: (P0) Coordination enhancement for the A2A Messaging Hub that identifies circular bidding dependencies and applies "Fairness Policies" to break negotiation deadlocks.
+- **UAB v2.5 Routing Engine**: (P0) High-speed, native transport implementation for the finalized Universal Agent Bus (UAB) v2.5 Task Object schema, minimizing translation latency.
+- **Proactive Resource Allocator (AIB v2)**: (P1) Resource management layer that ingests Gemini CLI v1.6 compute-intensity headers to optimize token and compute budgets for parallel teams.
+
+### Priority Shifts
+- **ContextEngine Lifecycle Adapter**: (Re-affirmed P0) Upgraded to support OpenClaw v2026.4.0's native UAB hooks.
+- **DCA Auction Broker**: (Evolved to Deadlock-Aware Arbiter) Re-prioritized as P0 to address critical swarm-scale coordination failures.
+
 ## Evolution: [2026-05-14] Updates
 
 ### Proposed Additions
