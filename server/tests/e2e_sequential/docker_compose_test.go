@@ -26,7 +26,6 @@ import (
 )
 
 func TestDockerComposeE2E(t *testing.T) {
-	t.Skip("Skipped due to docker-in-docker issues")
 	if os.Getenv("E2E_DOCKER") != "true" {
 		// Auto-detect if we can run it, or just set it to true if we are confident.
 		// For this task, we want to resurrect it.

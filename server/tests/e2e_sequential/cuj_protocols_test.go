@@ -23,7 +23,6 @@ import (
 
 // TestCUJ_Protocols covers CUJs 6-10: HTTP(SSE), External integrations, Errors, etc.
 func TestCUJ_Protocols(t *testing.T) {
-	t.Skip("Skipped due to docker-in-docker issues")
 	rootDir, err := os.Getwd()
 	require.NoError(t, err)
 	if strings.HasSuffix(rootDir, "tests/e2e_sequential") {
