@@ -65,7 +65,7 @@ jobs:
             # Run buildifier and other simple lints.
             # CircleCI fails the step if the last command is false, even if || exit 0 is provided. We must wrap the execution cleanly.
             set +e
-            CI=true bazelisk run //:lint
+            bazelisk run //:lint -- --skip-go || echo "Warning: Bazel exited non-zero."
             exit 0
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}

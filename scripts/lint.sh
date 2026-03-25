@@ -128,30 +128,29 @@ for arg in "$@"; do
     fi
 done
 
-echo "==> Running golangci-lint..."
-if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
-    GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
-fi
-
-if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    # Change to server directory so golangci-lint finds the correct go.mod
-    cd "$PROJECT_ROOT/server"
-    export GO111MODULE=on
-    export GOTOOLCHAIN=auto
-
-    # Determine if we should run golangci-lint (skip in circleci)
-    if [[ "$CI" == "true" || "$CIRCLECI" == "true" || "$SKIP_GO" == "1" ]]; then
-         echo "    Skipping golangci-lint in CI environment (OOM avoidance)."
-    else
-         # Run golangci-lint directly but skip errors, as it keeps OOM'ing in circleci
-         "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
-             ./cmd/... ./pkg/... ./tests/... ../examples/... || true
-         echo "    golangci-lint finished."
-    fi
-    cd "$PROJECT_ROOT"
+if [[ "$SKIP_GO" -eq 1 ]]; then
+    echo "==> Skipping golangci-lint (--skip-go provided)..."
 else
-    echo "    Warning: golangci-lint not found (skipping Go linting)."
-    echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."
+    echo "==> Running golangci-lint..."
+    if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
+        GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
+    fi
+
+    if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
+        # Change to server directory so golangci-lint finds the correct go.mod
+        cd "$PROJECT_ROOT/server"
+        export GO111MODULE=on
+        export GOTOOLCHAIN=auto
+
+        # Run golangci-lint directly but skip errors, as it keeps OOM'ing in circleci
+        "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
+            ./cmd/... ./pkg/... ./tests/... ../examples/... || echo "Warning: golangci-lint exited non-zero (likely OOM)."
+        echo "    golangci-lint finished."
+        cd "$PROJECT_ROOT"
+    else
+        echo "    Warning: golangci-lint not found (skipping Go linting)."
+        echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."
+    fi
 fi
 
 echo "==> Lint complete."
