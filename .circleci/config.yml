@@ -77,7 +77,8 @@ jobs:
             bazel run //:lint
 
             # Explicitly run bazel tests required for linting to pass CI. Avoid --disk_cache OOMs
-            bazel test //server/pkg/lint/... //ui:lint //ui:typecheck --disk_cache=
+            # Limit parallelism to avoid Out-Of-Memory errors on restricted runner instances
+            bazel test //server/pkg/lint/... //ui:lint //ui:typecheck --disk_cache= --jobs=2 --local_ram_resources=2048
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
