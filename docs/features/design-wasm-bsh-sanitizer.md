@@ -51,3 +51,11 @@ MCP Any will implement a **WASM-BSH State Sanitizer** that executes state transf
 
 ## 7. Evolutionary Changelog
 * **2026-03-25:** Initial Document Creation.
+
+### Update: 2026-03-25 - OpenClaw v2.5 WASM-BSH & Zero-Copy Alignment
+**Context:** OpenClaw v2.5 moves toward "Active State Sanitization" to prevent binary context poisoning in deep swarms.
+**Architecture Adjustment:**
+* Integrating the WASM-BSH Sanitizer directly into the high-speed `memfd_create` shared memory transport.
+* Mandating Protobuf-level schema validation within the WASM sandbox before state is mapped into target agent memory.
+* Implementing "Point-in-Time" binary scanning to detect and strip "Context Smearing" payloads at the byte level.
+**Security Impact:** Prevents "Binary State Injection" while maintaining sub-millisecond, zero-copy performance for local agent coordination.
