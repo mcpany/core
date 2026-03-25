@@ -1,6 +1,29 @@
 # Feature Inventory: MCP Any
 
-## Evolution: [2026-03-24] Updates
+## Evolution: [2026-07-04] Updates
+
+### Proposed Additions
+- **Stylometric Behavioral Firewall (SBF)**: (P0) Authoritative linguistic security service that routes low-confidence fragments through an isolated paraphrasing sandbox.
+- **Distributed Memory Enclave (DME) Broker**: (P0) Hardware-enclave (TPM/SEP) bound coordination service for cross-framework shared memory isolation.
+- **Hardware-Locked Attention Masking (HLAM)**: (P0) Security middleware mandating cryptographic masking of subagent noise fragments at the hardware attention layer.
+- **Monotonic Jitter Injection Provider**: (P0) Security service mandating hardware-attested timing variations for all memory-broker responses to neutralize timing side-channels.
+- **Context Compaction Quorum Hub**: (P1) Distributed coordination service requiring multi-agent consensus on state summarization before mesh-wide sharing.
+
+### Priority Shifts
+- **Zero-Copy Memory Broker (ZCMB)**: (Re-affirmed P0) Evolving into the **DME Broker** to support hardware-enclave isolation.
+- **Stylometric Identity Anchoring (SIA)**: (Re-affirmed P0) Now designated as the primary detection engine for the **Stylometric Behavioral Firewall**.
+
+## Evolution: [2026-03-25] Updates
+
+### Proposed Additions
+- **Recursive Intent Delegation (RID) Validator**: (P0) Middleware for enforcing depth-limited intent mutations and cryptographic mission boundaries for UACO v1.8 compliance.
+- **WASM-BSH State Sanitizer**: (P0) Pluggable WASM sandbox for binary context validation and Protobuf schema-based state sanitization to align with OpenClaw v2.5.
+- **Zero-Copy Shared Memory Transport**: (P0) High-performance BSH transport using Linux `memfd_create` to eliminate serialization overhead and "Cognitive Stall" in deep swarms.
+
+### Priority Shifts
+- **Relational PoI Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory mission-root chain verification to counter "Intent Ghosting" vulnerabilities.
+- **Binary State Handoff (BSH) Gateway**: (Re-affirmed P0) Evolving into the **Zero-Copy Transport** architecture with integrated WASM-based "Point-in-Time" binary scanning.
+
 
 ### Proposed Additions
 - **Discovery-Phase Sandbox Middleware**: (P0) A secure, ephemeral execution environment for MCP discovery commands, preventing host-level "Ghost-Execution" exploits (Gemini CLI / OpenClaw CVE defense).
@@ -923,6 +946,19 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+
+## Evolution: [2026-07-03] Updates
+
+### Proposed Additions
+- **Zero-Copy Memory Broker (ZCMB)**: (P0) Authoritative coordination service for hardware-locked, shared memory reasoning buffers.
+- **Stylometric Identity Anchoring (SIA)**: (P0) Behavioral security middleware for the AIR Hub that performs real-time stylometric analysis to detect mimicry.
+- **Multimodal Hash-Chaining (MHC) Provider**: (P0) Security middleware mandating cryptographic hash-chaining for all non-textual reasoning fragments.
+- **Active Attention Enforcer (AAE)**: (P0) Cognitive security extension for the HAAL middleware that dynamically reinforces mission-root anchors.
+- **Intent-Based Priority Mailbox**: (P1) Upgrade for the PAMS middleware allowing mission-root directed prioritization of coordination fragments.
+
+### Priority Shifts
+- **Autonomous Intent Reconciliation (AIR) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SIA** integration to counter stylometric spoofing.
+- **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Evolving into the **Active Attention Enforcer** to counter attention drift.
 
 ---
 
