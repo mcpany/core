@@ -703,10 +703,16 @@
 - [ ] **[P0] Teammate Task List Viewer**: High-speed, CRDT-native visualization of the shared task list for horizontal swarms. (Added: 2026-03-24)
 - [ ] **[P0] ALSV Block List Explorer**: UI for reviewing and approving command arguments flagged by the semantic validator. (Added: 2026-03-24)
 
+#### Upcoming (2026-07-06 Evolution)
+- [ ] **[P0] Summarization Quorum Hub**: (2026-07-06) UI for monitoring multi-agent attestation on context compaction events.
+- [ ] **[P1] Speculative Reasoning Monitor**: (2026-07-06) Visual tracker for optimistic summarization commits and automated rollbacks.
+- [ ] **[P1] Intent-Aware Jitter Config**: (2026-07-06) Interactive interface for scaling risk-aware jitter profiles based on agent intent.
+- [ ] **[P0] Enclave Metadata Dashboard**: (2026-07-06) Real-time visualization of hardware-attested shard metadata and EMA status.
+
 #### Upcoming (2026-07-05 Evolution)
 - [ ] **[P0] Physical Shard Inspector**: (2026-07-05) Visualize cryptographic pinning of shards to hardware Enclave IDs and PSS status.
 - [ ] **[P0] Multi-Modal Stylometric Monitor**: (2026-07-05) Real-time visualization of behavioral consistency across SVG and Audio reasoning traces.
-- [ ] **[P0] Summarization Quorum Hub**: (2026-07-05) Workspace for monitoring multi-agent consensus on context compaction and "Mission-Root Erasure" alerts.
+- [ ] **[P0] Summarization Quorum Hub**: (2026-07-05) Workspace for monitoring multi-agent consensus on all context compaction events.
 - [ ] **[P1] Adaptive Jitter Control**: (2026-07-05) UI for configuring risk-aware jitter profiles and monitoring coordination latency.
 
 #### Upcoming (2026-07-04 Evolution)
@@ -728,3 +734,13 @@
 - [ ] **[P0] Relational Intent Tracer**: Visual debugger for verifying the cryptographic lineage of tool-bound intents back to the mission root. (Added: 2026-03-25)
 - [ ] **[P0] Memfd Shard Inspector**: Real-time visualization of shared memory mappings and byte-level sanitization status. (Added: 2026-03-25)
 - [ ] **[P1] Optimistic Attestation Widget**: Dashboard indicator for speculatively loaded tool contexts and background verification progress. (Added: 2026-03-25)
+
+#### Upcoming (2026-03-25 Iteration 4)
+- [ ] **[P0] Lineage-Bound Scoping Viewer**: Visual debugger for tracking subagent capability restrictions across the intent chain. (Added: 2026-03-25)
+- [ ] **[P0] Zero-Copy BSH Heatmap**: Real-time performance visualization of `memfd` segments and WASM sanitization latency. (Added: 2026-03-25)
+- [ ] **[P0] Hardware Depth-Counter Widget**: Status indicator for TPM-bound monotonic delegation limits. (Added: 2026-03-25)
+
+#### Upcoming (2026-03-25 Iteration 5)
+- [ ] **[P0] Programmatic SDK Monitor**: Real-time visualization of SDK-driven agent interactions and Zero-Trust gate status. (Added: 2026-03-25)
+- [ ] **[P1] Session Sovereignty Dashboard**: UI for monitoring hardware-bound SQLite session state and attestation status. (Added: 2026-03-25)
+- [ ] **[P0] Pre-Flight Manifest Reviewer**: Visual workspace for reviewing and approving cryptographically signed mission-root manifests for non-interactive execution. (Added: 2026-03-25)
