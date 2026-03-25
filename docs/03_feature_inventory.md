@@ -1316,11 +1316,11 @@
 
 ## Evolution: [2026-06-14] Updates
 
-### Proposed Additions (2026-06-14)
+### Proposed Additions
 - **MRA-Backed Lineage Provider**: (P0) Hardware-bound collision-resistant semantic hashes for deep reasoning chains to protect against Identity-Decay.
 - **Side-Channel Immunity Filter**: (P0) Frequency-analysis middleware for SCI to detect hidden coordination noise in out-of-band channels.
 - **HLCH Handshake Gateway**: (P0) Mandate hardware-locked session attestation for all inter-agent coordination fragments.
 
-### Priority Shifts (2026-06-14)
+### Priority Shifts
 - **Shadow Coordination Interceptor (SCI)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Side-Channel Immunity** filtering.
 - **ARI Hub**: (Re-affirmed P0) Integrating with the MRA Provider to enforce hardware-attested reasoning proofs.
