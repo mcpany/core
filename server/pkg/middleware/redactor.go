@@ -25,7 +25,6 @@ var (
 )
 
 // Redactor handles redaction of sensitive data based on configuration.
-//
 // Summary: Component responsible for identifying and masking sensitive information (PII) in data.
 type Redactor struct {
 	customPattern  *regexp.Regexp
@@ -33,9 +32,7 @@ type Redactor struct {
 }
 
 // NewRedactor creates a new Redactor from the given DLP config.
-//
 // Summary: Initializes a new Redactor based on Data Loss Prevention (DLP) configuration.
-//
 // Parameters:
 //   - config: *configv1.DLPConfig. The DLP configuration containing enabled status and custom patterns.
 //   - log: *slog.Logger. Logger for warning about invalid patterns.
@@ -91,9 +88,7 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 }
 
 // RedactJSON redacts sensitive information from a JSON byte slice.
-//
 // Summary: Scans and redacts PII from a JSON-encoded byte slice.
-//
 // Parameters:
 //   - data: []byte. The JSON data to redact.
 //
@@ -155,9 +150,7 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 }
 
 // RedactString redacts sensitive information from a string.
-//
 // Summary: Applies redaction rules to a plain string.
-//
 // Parameters:
 //   - s: string. The input string.
 //
@@ -226,9 +219,7 @@ func (r *Redactor) RedactString(s string) string {
 }
 
 // RedactStruct redacts sensitive information from a map.
-//
 // Summary: Recursively redacts sensitive information from a map (struct representation).
-//
 // Parameters:
 //   - v: map[string]interface{}. The map to redact.
 //
@@ -247,9 +238,7 @@ func (r *Redactor) RedactStruct(v map[string]interface{}) {
 }
 
 // RedactValue redacts sensitive information from a value.
-//
 // Summary: Recursively redacts sensitive information from an arbitrary value (string, map, slice).
-//
 // Parameters:
 //   - val: interface{}. The value to redact.
 //

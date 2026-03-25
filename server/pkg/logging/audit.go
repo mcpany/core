@@ -15,7 +15,6 @@ import (
 )
 
 // AuditHandler is a slog.Handler that exports logs to audit sinks.
-//
 // Summary: Represents a AuditHandler.
 type AuditHandler struct {
 	next   slog.Handler
@@ -24,7 +23,6 @@ type AuditHandler struct {
 }
 
 // NewAuditHandler creates a new AuditHandler.
-//
 // Parameters:
 //   - next (slog.Handler): The next parameter.
 //   - config (*configv1.AuditConfig): The config parameter.
@@ -39,16 +37,9 @@ type AuditHandler struct {
 //   - None
 //
 // Summary: Initializes NewAuditHandler operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewAuditHandler(next slog.Handler, config *configv1.AuditConfig) *AuditHandler {
@@ -96,7 +87,6 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 }
 
 // Enabled reports whether the handler handles records at the given level.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - level (slog.Level): The level parameter.
@@ -111,16 +101,9 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 //   - None
 //
 // Summary: Executes Enabled operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
@@ -128,7 +111,6 @@ func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 }
 
 // Handle handles the Record.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - r (slog.Record): The r parameter.
@@ -143,16 +125,9 @@ func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 //   - None
 //
 // Summary: Executes Handle operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
@@ -166,7 +141,6 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 }
 
 // WithAttrs returns a new generic Handler with the given attributes.
-//
 // Parameters:
 //   - attrs ([]slog.Attr): The attrs parameter.
 //
@@ -180,16 +154,9 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 //   - None
 //
 // Summary: Executes WithAttrs operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
@@ -201,7 +168,6 @@ func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 }
 
 // WithGroup returns a new generic Handler with the given group.
-//
 // Parameters:
 //   - name (string): The name parameter.
 //
@@ -215,16 +181,9 @@ func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 //   - None
 //
 // Summary: Executes WithGroup operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (h *AuditHandler) WithGroup(name string) slog.Handler {
@@ -236,7 +195,6 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 }
 
 // Export sends the log record to the configued sinks.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - r (slog.Record): The r parameter.
@@ -251,16 +209,9 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 //   - None
 //
 // Summary: Executes Export operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (h *AuditHandler) Export(ctx context.Context, r slog.Record) error {

@@ -15,29 +15,23 @@ import (
 )
 
 // Severity indicates the importance of a linting result.
-//
 // Summary: Represents the severity level of a linting result (Error, Warning, Info).
 type Severity int
 
 const (
 	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
-	//
 	// Summary: Defines Error severity.
 	Error Severity = iota
 	// Warning indicates a potential issue or best practice violation that should be addressed.
-	//
 	// Summary: Defines Warning severity.
 	Warning
 	// Info indicates a suggestion or informational message for optimization or clarity.
-	//
 	// Summary: Defines Info severity.
 	Info
 )
 
 // String returns the string representation of the severity.
-//
 // Summary: Converts the Severity value into its human-readable string representation.
-//
 // Returns:
 //   - string: The string representation of the severity (e.g., "ERROR", "WARNING").
 //
@@ -60,7 +54,6 @@ func (s Severity) String() string {
 }
 
 // Result represents a single linting finding.
-//
 // Summary: Encapsulates a single linting finding including its severity, location, and descriptive message.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
@@ -74,9 +67,7 @@ type Result struct {
 }
 
 // String returns the string representation of the result.
-//
 // Summary: Formats the linting result into a single descriptive string.
-//
 // Returns:
 //   - string: A formatted string containing severity, service name, path, and message.
 //
@@ -98,16 +89,13 @@ func (r Result) String() string {
 }
 
 // Linter performs static analysis on the configuration.
-//
 // Summary: A engine for performing static analysis on the server configuration.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
 
 // NewLinter creates a new Linter instance.
-//
 // Summary: Initializes a new Linter instance with the provided server configuration.
-//
 // Parameters:
 //   - cfg (*configv1.McpAnyServerConfig): The server configuration to be analyzed.
 //
@@ -124,9 +112,7 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 }
 
 // Run executes all linting checks on the server configuration.
-//
 // Summary: Executes the full suite of linting checks, including validation, security, and best practice rules.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the linting operation.
 //

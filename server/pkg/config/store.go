@@ -31,67 +31,52 @@ import (
 )
 
 // Engine defines the interface for configuration unmarshaling from different file formats.
-//
 // Summary: Abstraction for parsing configuration files into protobuf messages.
 type Engine interface {
 	// Unmarshal parses the given byte slice and populates the provided proto.Message.
-	//
 	// Summary: Parses bytes into a protobuf message.
-	//
 	// Parameters:
 	//   - b ([]byte): The raw bytes to parse.
 	//   - v (proto.Message): The destination protobuf message.
-	//
 	// Returns:
 	//   - (error): An error if parsing fails.
 	Unmarshal(b []byte, v proto.Message) error
 }
 
 // StructuredEngine defines an interface for engines that can unmarshal directly from a map structure.
-//
 // Summary: Abstraction for parsing configurations from map structures, avoiding double parsing.
 type StructuredEngine interface {
 	Engine
 	// UnmarshalFromMap populates the provided proto.Message from a raw map.
-	//
 	// Summary: Parses a map into a protobuf message.
-	//
 	// Parameters:
 	//   - m (map[string]interface{}): The raw map data.
 	//   - v (proto.Message): The destination protobuf message.
 	//   - originalBytes ([]byte): Optional original bytes for error reporting (line numbers).
-	//
 	// Returns:
 	//   - (error): An error if parsing fails.
 	UnmarshalFromMap(m map[string]interface{}, v proto.Message, originalBytes []byte) error
 }
 
 // ConfigurableEngine defines an interface for engines that support configuration options.
-//
 // Summary: Interface for engines that can be configured (e.g. skip validation).
 type ConfigurableEngine interface {
 	Engine
 	// SetSkipValidation sets whether to skip schema validation.
-	//
 	// Summary: Configures the engine to skip schema validation.
-	//
 	// Parameters:
 	//   - skip (bool): True to skip validation.
 	SetSkipValidation(skip bool)
 
 	// SetIgnoreEnv sets whether to ignore environment variables and other external overrides.
-	//
 	// Summary: Configures the engine to ignore environment variables.
-	//
 	// Parameters:
 	//   - ignore (bool): True to ignore environment variables.
 	SetIgnoreEnv(ignore bool)
 }
 
 // NewEngine returns a configuration engine capable of unmarshaling the format indicated by the file extension.
-//
 // Summary: Factory function to create the appropriate Engine for a given file path.
-//
 // Parameters:
 //   - path (string): The file path used to determine the configuration format.
 //
@@ -125,7 +110,6 @@ type yamlEngine struct {
 }
 
 // SetSkipValidation sets whether to skip schema validation.
-//
 // Parameters:
 //   - skip (bool): The parameter.
 //
@@ -136,16 +120,9 @@ type yamlEngine struct {
 //   - None.
 //
 // Summary: Updates SetSkipValidation operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (e *yamlEngine) SetSkipValidation(skip bool) {
@@ -153,7 +130,6 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 }
 
 // SetIgnoreEnv sets whether to ignore environment variables.
-//
 // Parameters:
 //   - ignore (bool): The parameter.
 //
@@ -164,16 +140,9 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 //   - None.
 //
 // Summary: Updates SetIgnoreEnv operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
@@ -181,7 +150,6 @@ func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 }
 
 // Unmarshal parses a YAML byte slice into a `proto.Message`.
-//
 // Parameters:
 //   - b ([]byte): The parameter.
 //   - v (proto.Message): The parameter.
@@ -196,16 +164,9 @@ func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 //   - None.
 //
 // Summary: Executes Unmarshal operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
@@ -227,7 +188,6 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 }
 
 // UnmarshalFromMap populates the provided proto.Message from a raw map.
-//
 // Parameters:
 //   - yamlMap (map[string]interface{}): The parameter.
 //   - v (proto.Message): The parameter.
@@ -243,16 +203,9 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 //   - None.
 //
 // Summary: Executes UnmarshalFromMap operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (e *yamlEngine) UnmarshalFromMap(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
@@ -360,7 +313,6 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 type textprotoEngine struct{}
 
 // Unmarshal parses a textproto byte slice into a `proto.Message`.
-//
 // Parameters:
 //   - b ([]byte): The parameter.
 //   - v (proto.Message): The parameter.
@@ -375,16 +327,9 @@ type textprotoEngine struct{}
 //   - None.
 //
 // Summary: Executes Unmarshal operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
@@ -395,7 +340,6 @@ func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 type jsonEngine struct{}
 
 // Unmarshal parses a JSON byte slice into a `proto.Message`.
-//
 // Parameters:
 //   - b ([]byte): The parameter.
 //   - v (proto.Message): The parameter.
@@ -410,16 +354,9 @@ type jsonEngine struct{}
 //   - None.
 //
 // Summary: Executes Unmarshal operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
@@ -455,80 +392,61 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 }
 
 // Store defines the interface for loading MCP-X server configurations.
-//
 // Summary: Abstraction for configuration sources.
 type Store interface {
 	// Load retrieves and returns the McpAnyServerConfig.
-	//
 	// Summary: Loads the complete server configuration.
-	//
 	// Parameters:
 	//   - ctx (context.Context): The context for the request.
-	//
 	// Returns:
 	//   - (*configv1.McpAnyServerConfig): The loaded configuration.
 	//   - (error): An error if loading fails.
 	Load(ctx context.Context) (*configv1.McpAnyServerConfig, error)
 
 	// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
-	//
 	// Summary: Checks if the store has any configured sources.
-	//
 	// Returns:
 	//   - (bool): True if sources are configured, false otherwise.
 	HasConfigSources() bool
 }
 
 // ServiceStore extends Store to provide CRUD operations for UpstreamServices.
-//
 // Summary: Interface for stores that support managing individual services.
 type ServiceStore interface {
 	Store
 	// SaveService saves or updates a service configuration.
-	//
 	// Summary: Persists a service configuration.
-	//
 	// Parameters:
 	//   - ctx (context.Context): The context for the request.
 	//   - service (*configv1.UpstreamServiceConfig): The service configuration to save.
-	//
 	// Returns:
 	//   - (error): An error if the operation fails.
 	SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error
 
 	// GetService retrieves a service configuration by name.
-	//
 	// Summary: Retrieves a service configuration.
-	//
 	// Parameters:
 	//   - ctx (context.Context): The context for the request.
 	//   - name (string): The name of the service to retrieve.
-	//
 	// Returns:
 	//   - (*configv1.UpstreamServiceConfig): The service configuration.
 	//   - (error): An error if the service is not found or the operation fails.
 	GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error)
 
 	// ListServices retrieves all stored service configurations.
-	//
 	// Summary: Lists all services.
-	//
 	// Parameters:
 	//   - ctx (context.Context): The context for the request.
-	//
 	// Returns:
 	//   - ([]*configv1.UpstreamServiceConfig): A slice of service configurations.
 	//   - (error): An error if the operation fails.
 	ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 
 	// DeleteService removes a service configuration by name.
-	//
 	// Summary: Deletes a service configuration.
-	//
 	// Parameters:
 	//   - ctx (context.Context): The context for the request.
 	//   - name (string): The name of the service to delete.
-	//
 	// Returns:
 	//   - (error): An error if the operation fails.
 	DeleteService(ctx context.Context, name string) error
@@ -539,9 +457,7 @@ var unknownFieldRegex = regexp.MustCompile(`unknown field "([^"]+)"`)
 const maxExpandRecursionDepth = 100
 
 // expand replaces ${VAR}, $VAR, or ${VAR:default} with environment variables.
-//
 // Summary: Expands environment variables in a byte slice.
-//
 // Parameters:
 //   - b ([]byte): The bytes containing variable references.
 //
@@ -736,7 +652,6 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 }
 
 // FileStore implements the `Store` interface for loading configurations from files.
-//
 // Summary: Loads configurations from the filesystem.
 type FileStore struct {
 	fs               afero.Fs
@@ -747,7 +662,6 @@ type FileStore struct {
 }
 
 // SetSkipValidation configures whether to skip schema validation during loading.
-//
 // Returns:
 //   - None.
 //
@@ -755,16 +669,9 @@ type FileStore struct {
 //   - None.
 //
 // Summary: Updates SetSkipValidation operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (s *FileStore) SetSkipValidation(skip bool) {
@@ -772,7 +679,6 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 }
 
 // SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
-//
 // Returns:
 //   - None.
 //
@@ -780,16 +686,9 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 //   - None.
 //
 // Summary: Updates SetIgnoreMissingEnv operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
@@ -797,9 +696,7 @@ func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 }
 
 // NewFileStore creates a new FileStore with the given filesystem and paths.
-//
 // Summary: Initializes a new FileStore.
-//
 // Parameters:
 //   - fs (afero.Fs): The filesystem to use.
 //   - paths ([]string): The list of paths to scan.
@@ -817,9 +714,7 @@ func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 }
 
 // NewFileStoreWithSkipErrors creates a new FileStore that skips malformed config files.
-//
 // Summary: Initializes a new FileStore that tolerates errors in config files.
-//
 // Parameters:
 //   - fs (afero.Fs): The filesystem to use.
 //   - paths ([]string): The list of paths to scan.
@@ -837,7 +732,6 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 }
 
 // HasConfigSources returns true if the store has configuration paths configured. Side Effects: - None.
-//
 // Parameters:
 //   - None
 //
@@ -851,16 +745,9 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 //   - None
 //
 // Summary: Checks HasConfigSources operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (s *FileStore) HasConfigSources() bool {
@@ -868,9 +755,7 @@ func (s *FileStore) HasConfigSources() bool {
 }
 
 // Load scans the configured paths and merges them into a single configuration.
-//
 // Summary: Loads and merges configurations from all configured paths.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //
@@ -1365,16 +1250,13 @@ func findField(md protoreflect.MessageDescriptor, name string) protoreflect.Fiel
 }
 
 // MultiStore implements the Store interface for loading configurations from multiple stores.
-//
 // Summary: Combines multiple stores into a single logical store.
 type MultiStore struct {
 	stores []Store
 }
 
 // NewMultiStore creates a new MultiStore with the given stores.
-//
 // Summary: Initializes a new MultiStore.
-//
 // Parameters:
 //   - stores: ...Store. The stores to aggregate.
 //
@@ -1391,9 +1273,7 @@ func NewMultiStore(stores ...Store) *MultiStore {
 }
 
 // Load loads configurations from all stores and merges them into a single config.
-//
 // Summary: Loads and merges configurations from all underlying stores.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the request.
 //
@@ -1496,7 +1376,6 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 }
 
 // HasConfigSources returns true if any of the underlying stores have configuration sources. Side Effects: - None.
-//
 // Parameters:
 //   - None
 //
@@ -1510,16 +1389,9 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 //   - None
 //
 // Summary: Checks HasConfigSources operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (ms *MultiStore) HasConfigSources() bool {

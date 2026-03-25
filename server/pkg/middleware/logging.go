@@ -16,10 +16,8 @@ import (
 // LoggingMiddleware creates an MCP middleware that logs information about each
 // incoming request. It records the start and completion of each request,
 // including the duration of the handling.
-//
 // This is useful for debugging and monitoring the flow of requests through the
 // server.
-//
 // Parameters:
 //   - log (*slog.Logger): The logger to be used. If `nil`, the default global logger will be used.
 //
@@ -31,16 +29,9 @@ import (
 //   - Updates metrics.
 //
 // Summary: Executes LoggingMiddleware operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func LoggingMiddleware(log *slog.Logger) mcp.Middleware {

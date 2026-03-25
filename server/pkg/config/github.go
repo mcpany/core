@@ -34,9 +34,7 @@ var (
 
 // GitHub represents a client for interacting with the GitHub API to fetch
 // configuration files or directories.
-//
 // Summary: A client for fetching configuration from GitHub.
-//
 // Fields:
 //   - Owner (string): The owner of the repository (user or organization).
 //   - Repo (string): The repository name.
@@ -56,11 +54,8 @@ type GitHub struct {
 }
 
 // NewGitHub creates a new GitHub client by parsing a GitHub URL.
-//
 // Summary: Creates a new GitHub client from a URL.
-//
 // It supports standard GitHub URLs for repositories, trees, and blobs.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the client creation (unused in this function but kept for signature consistency).
 //   - rawURL (string): The GitHub URL to parse.
@@ -118,7 +113,6 @@ func isGitHubURL(rawURL string) bool {
 }
 
 // ToRawContentURL constructs the raw content URL for the configured GitHub path.
-//
 // Parameters:
 //   - None
 //
@@ -132,16 +126,9 @@ func isGitHubURL(rawURL string) bool {
 //   - None
 //
 // Summary: Executes ToRawContentURL operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (g *GitHub) ToRawContentURL() string {
@@ -149,9 +136,7 @@ func (g *GitHub) ToRawContentURL() string {
 }
 
 // Content represents a file or directory in a GitHub repository.
-//
 // Summary: Metadata for a file or directory in a GitHub repository.
-//
 // Fields:
 //   - Name (string): The name of the file or directory.
 //   - Type (string): The type of content (e.g., "file", "dir").
@@ -165,11 +150,8 @@ type Content struct {
 }
 
 // List fetches the contents of the configured GitHub path.
-//
 // Summary: Lists contents of the configured GitHub path.
-//
 // It handles authentication if provided and returns a list of Content objects.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - auth (*configv1.Authentication): Optional authentication configuration for accessing private repos.

@@ -347,7 +347,6 @@ func TestRunChecks_WebSocket(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	// Convert http:// to ws://
 	wsURL := "ws" + ts.URL[4:]
 
 	config := configv1.McpAnyServerConfig_builder{

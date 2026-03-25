@@ -22,12 +22,9 @@ import (
 )
 
 // GenerateDocumentation generates Markdown documentation for the tools defined in the configuration.
-//
 // Summary: Generates Markdown documentation for configured tools.
-//
 // It iterates through the configured upstream services, registers their tools, and produces a
 // Markdown formatted string describing each tool and its input schema.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the operation.
 //   - cfg (*configv1.McpAnyServerConfig): The server configuration containing upstream service definitions.

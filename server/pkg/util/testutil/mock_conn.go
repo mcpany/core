@@ -12,7 +12,6 @@ import (
 )
 
 // MockClientConn is a mock implementation of grpc.ClientConnInterface for testing.
-//
 // Summary: Represents a MockClientConn.
 type MockClientConn struct {
 	grpc.ClientConnInterface
@@ -21,7 +20,6 @@ type MockClientConn struct {
 }
 
 // NewMockClientConn creates a new mock client connection.
-//
 // Parameters:
 //   - t: The testing instance.
 //
@@ -29,16 +27,9 @@ type MockClientConn struct {
 //   - *MockClientConn: A new mock client connection.
 //
 // Summary: Initializes NewMockClientConn operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewMockClientConn(t *testing.T) *MockClientConn {
@@ -49,22 +40,14 @@ func NewMockClientConn(t *testing.T) *MockClientConn {
 }
 
 // SetClient sets a mock client for a given type.
-//
 // Parameters:
 //   - method: The method to mock.
 //   - client: The mock client implementation.
 //
 // Summary: Updates SetClient operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *MockClientConn) SetClient(method string, client interface{}) {
@@ -72,7 +55,6 @@ func (m *MockClientConn) SetClient(method string, client interface{}) {
 }
 
 // Invoke is a mock implementation of the Invoke method.
-//
 // Parameters:
 //   - ctx: The context for the call.
 //   - method: The method being invoked.
@@ -84,16 +66,9 @@ func (m *MockClientConn) SetClient(method string, client interface{}) {
 //   - error: An error if the invocation fails.
 //
 // Summary: Executes Invoke operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ interface{}, _ ...grpc.CallOption) error {
@@ -102,7 +77,6 @@ func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ in
 }
 
 // NewStream is a mock implementation of the NewStream method.
-//
 // Parameters:
 //   - ctx: The context for the stream.
 //   - desc: The stream description.
@@ -114,16 +88,9 @@ func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ in
 //   - error: An error if the stream creation fails.
 //
 // Summary: Initializes NewStream operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *MockClientConn) NewStream(_ context.Context, _ *grpc.StreamDesc, method string, _ ...grpc.CallOption) (grpc.ClientStream, error) {

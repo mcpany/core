@@ -47,14 +47,12 @@ var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
 
 // DockerTransport implements the mcp.Transport interface to connect to a service
 // running inside a Docker container. It manages the container lifecycle.
-//
 // Summary: Represents a DockerTransport.
 type DockerTransport struct {
 	StdioConfig *configv1.McpStdioConnection
 }
 
 // Connect establishes a connection to the service within the Docker container.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //
@@ -69,16 +67,9 @@ type DockerTransport struct {
 //   - None.
 //
 // Summary: Executes Connect operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
@@ -221,7 +212,6 @@ type dockerConn struct {
 }
 
 // Read decodes a single JSON-RPC message from the container's output stream.
-//
 // Parameters:
 //   - _ (context.Context): The parameter.
 //
@@ -236,16 +226,9 @@ type dockerConn struct {
 //   - None.
 //
 // Summary: Retrieves Read operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
@@ -328,7 +311,6 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 }
 
 // Write encodes and sends a JSON-RPC message to the container's input stream.
-//
 // Parameters:
 //   - _ (context.Context): The parameter.
 //   - msg (jsonrpc.Message): The parameter.
@@ -343,16 +325,9 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 //   - None.
 //
 // Summary: Updates Write operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
@@ -395,7 +370,6 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 }
 
 // Close terminates the connection by closing the underlying ReadWriteCloser.
-//
 // Returns:
 //   - error: An error if the operation fails.
 //
@@ -406,16 +380,9 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 //   - None.
 //
 // Summary: Executes Close operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (c *dockerConn) Close() error {
@@ -423,7 +390,6 @@ func (c *dockerConn) Close() error {
 }
 
 // SessionID returns a static identifier for the Docker transport session.
-//
 // Returns:
 //   - string: The result.
 //
@@ -431,16 +397,9 @@ func (c *dockerConn) Close() error {
 //   - None.
 //
 // Summary: Executes SessionID operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (c *dockerConn) SessionID() string {
@@ -456,7 +415,6 @@ type dockerReadWriteCloser struct {
 }
 
 // Close closes the underlying connection and removes the associated Docker container.
-//
 // Returns:
 //   - error: An error if the operation fails.
 //
@@ -467,16 +425,9 @@ type dockerReadWriteCloser struct {
 //   - None.
 //
 // Summary: Executes Close operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (c *dockerReadWriteCloser) Close() error {
@@ -509,7 +460,6 @@ type slogWriter struct {
 
 // Write takes a byte slice, scans it for lines, and logs each line
 // individually using the configured slog.Logger and level.
-//
 // Parameters:
 //   - p ([]byte): The parameter.
 //
@@ -524,16 +474,9 @@ type slogWriter struct {
 //   - None.
 //
 // Summary: Updates Write operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (s *slogWriter) Write(p []byte) (n int, err error) {
@@ -552,7 +495,6 @@ type tailBuffer struct {
 }
 
 // Write writes data to the buffer, maintaining the size limit.
-//
 // Parameters:
 //   - p ([]byte): The parameter.
 //
@@ -567,16 +509,9 @@ type tailBuffer struct {
 //   - None.
 //
 // Summary: Updates Write operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (b *tailBuffer) Write(p []byte) (n int, err error) {
@@ -592,7 +527,6 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 }
 
 // String returns the buffered data as a string.
-//
 // Returns:
 //   - string: The result.
 //
@@ -600,16 +534,9 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 //   - None.
 //
 // Summary: Executes String operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (b *tailBuffer) String() string {

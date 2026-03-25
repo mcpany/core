@@ -13,7 +13,6 @@ import (
 )
 
 // DebugMiddleware returns a middleware function that logs the full request and response of each MCP method call. This is useful for debugging and understanding the flow of data through the server.
-//
 // Parameters:
 //   - None
 //
@@ -27,16 +26,9 @@ import (
 //   - None
 //
 // Summary: Executes DebugMiddleware operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func DebugMiddleware() mcp.Middleware {

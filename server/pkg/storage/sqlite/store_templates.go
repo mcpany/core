@@ -15,9 +15,7 @@ import (
 // Service Templates
 
 // ListServiceTemplates retrieves all service templates.
-//
 // Summary: Fetches all stored service templates from the database.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the request.
 //
@@ -58,9 +56,7 @@ func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTe
 }
 
 // GetServiceTemplate retrieves a service template by ID.
-//
 // Summary: Fetches a single service template by its unique identifier.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - id: string. The unique identifier of the template.
@@ -94,9 +90,7 @@ func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.Se
 }
 
 // SaveServiceTemplate saves a service template.
-//
 // Summary: Inserts or updates a service template.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - template: *configv1.ServiceTemplate. The template to save.
@@ -139,9 +133,7 @@ func (s *Store) SaveServiceTemplate(ctx context.Context, template *configv1.Serv
 }
 
 // DeleteServiceTemplate deletes a service template by ID.
-//
 // Summary: Removes a service template from the database.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - id: string. The unique identifier of the template to delete.

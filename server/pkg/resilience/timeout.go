@@ -10,16 +10,13 @@ import (
 )
 
 // Timeout implements a timeout policy for operations.
-//
 // Summary: Enforces a maximum duration for operations.
 type Timeout struct {
 	duration *durationpb.Duration
 }
 
 // NewTimeout creates a new Timeout instance with the given duration.
-//
 // Summary: Initializes a new Timeout policy.
-//
 // Parameters:
 //   - duration: *durationpb.Duration. The timeout duration.
 //
@@ -38,9 +35,7 @@ func NewTimeout(duration *durationpb.Duration) *Timeout {
 }
 
 // Execute runs the provided work function with a timeout.
-//
 // Summary: Executes work within a timed context.
-//
 // Parameters:
 //   - ctx: context.Context. The parent context.
 //   - work: func(context.Context) error. The function to execute.

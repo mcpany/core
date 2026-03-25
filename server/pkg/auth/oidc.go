@@ -15,7 +15,6 @@ import (
 )
 
 // OIDCConfig holds the configuration for the OIDC provider.
-//
 // Summary: Represents a OIDCConfig.
 type OIDCConfig struct {
 	Issuer       string
@@ -25,7 +24,6 @@ type OIDCConfig struct {
 }
 
 // OIDCProvider handles OIDC authentication flow.
-//
 // Summary: Represents a OIDCProvider.
 type OIDCProvider struct {
 	config       OIDCConfig
@@ -35,7 +33,6 @@ type OIDCProvider struct {
 }
 
 // NewOIDCProvider creates a new OIDCProvider. ctx is the context for the request. config holds the configuration settings. Returns the result. Returns an error if the operation fails.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - config (OIDCConfig): The config parameter.
@@ -51,16 +48,9 @@ type OIDCProvider struct {
 //   - None
 //
 // Summary: Initializes NewOIDCProvider operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, error) {
@@ -88,7 +78,6 @@ func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, err
 }
 
 // HandleLogin initiates the OIDC login flow. w is the HTTP response writer. r is the HTTP request.
-//
 // Parameters:
 //   - w (http.ResponseWriter): The w parameter.
 //   - r (*http.Request): The r parameter.
@@ -103,16 +92,9 @@ func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, err
 //   - None
 //
 // Summary: Executes HandleLogin operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
@@ -138,7 +120,6 @@ func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleCallback handles the OIDC provider callback. w is the HTTP response writer. r is the HTTP request.
-//
 // Parameters:
 //   - w (http.ResponseWriter): The w parameter.
 //   - r (*http.Request): The r parameter.
@@ -153,16 +134,9 @@ func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
 //   - None
 //
 // Summary: Executes HandleCallback operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (p *OIDCProvider) HandleCallback(w http.ResponseWriter, r *http.Request) {

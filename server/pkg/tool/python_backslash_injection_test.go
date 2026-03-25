@@ -20,12 +20,9 @@ func TestNodeBackslashInjection(t *testing.T) {
 	// Vulnerability: Injecting backslash into a single-quoted string in an interpreter context (Node.js)
 	// allows escaping the closing quote and continuing the string until the next quote,
 	// potentially treating subsequent code/parameters as string content and exposing intervening code.
-	//
 	// Command: node -e "console.log('{{A}}'); console.log('{{B}}')"
-	//
 	// Attack: A="\", B="process.exit(42); //"
 	// Arg: console.log('\'); console.log('process.exit(42); //')
-	//
 	// Parsed as:
 	// console.log(' ... console.log(');
 	// process.exit(42); // ...

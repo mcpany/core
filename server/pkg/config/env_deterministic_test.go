@@ -22,7 +22,6 @@ func TestApplyEnvVarsFromSlice_Determinism(t *testing.T) {
 	// "MCPANY__A" < "MCPANY__A__B" lexicographically.
 	// So "MCPANY__A" is processed first, setting a="val".
 	// Then "MCPANY__A__B" is processed, overwriting a={"b": "val2"}.
-	//
 	// So the expected result is {"a": {"b": "val2"}}.
 
 	expected := map[string]interface{}{

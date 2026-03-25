@@ -13,15 +13,12 @@ import (
 // Message defines the interface that all messages exchanged on the event bus must
 // implement. It provides a standard way to manage correlation IDs for tracking
 // requests and their corresponding responses.
-//
 // Summary: Represents a Message.
 type Message interface {
 	// CorrelationID returns the unique identifier used to correlate messages.
-	//
 	// Returns the result.
 	CorrelationID() string
 	// SetCorrelationID sets the correlation identifier for the message.
-	//
 	// id is the unique identifier.
 	SetCorrelationID(id string)
 }
@@ -29,14 +26,12 @@ type Message interface {
 // BaseMessage provides a default implementation of the Message interface. It
 // includes a correlation ID field (`CID`) and can be embedded in other message
 // structs to provide a common mechanism for message tracking.
-//
 // Summary: Represents a BaseMessage.
 type BaseMessage struct {
 	CID string `json:"cid"`
 }
 
 // CorrelationID returns the correlation ID of the message. This ID is used to associate requests with their corresponding responses in asynchronous workflows.
-//
 // Parameters:
 //   - None
 //
@@ -50,16 +45,9 @@ type BaseMessage struct {
 //   - None
 //
 // Summary: Executes CorrelationID operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *BaseMessage) CorrelationID() string {
@@ -67,7 +55,6 @@ func (m *BaseMessage) CorrelationID() string {
 }
 
 // SetCorrelationID sets the correlation ID for the message. This is typically called by the message publisher to assign a unique ID to a request.
-//
 // Parameters:
 //   - id (string): The id parameter.
 //
@@ -81,16 +68,9 @@ func (m *BaseMessage) CorrelationID() string {
 //   - None
 //
 // Summary: Updates SetCorrelationID operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *BaseMessage) SetCorrelationID(id string) {
@@ -100,7 +80,6 @@ func (m *BaseMessage) SetCorrelationID(id string) {
 // ServiceRegistrationRequest is a message sent to the bus to request the
 // registration of a new upstream service. It contains the service's
 // configuration and the context for the request.
-//
 // Summary: Represents a ServiceRegistrationRequest.
 type ServiceRegistrationRequest struct {
 	BaseMessage
@@ -112,7 +91,6 @@ type ServiceRegistrationRequest struct {
 // ServiceRegistrationRequest. It contains the outcome of the registration
 // process, including the generated service key, a list of any tools that were
 // discovered, or an error if the registration failed.
-//
 // Summary: Represents a ServiceRegistrationResult.
 type ServiceRegistrationResult struct {
 	BaseMessage
@@ -125,7 +103,6 @@ type ServiceRegistrationResult struct {
 // ToolExecutionRequest is a message sent to the bus to request the execution of
 // a specific tool on an upstream service. It includes the name of the tool and
 // its inputs in raw JSON format.
-//
 // Summary: Represents a ToolExecutionRequest.
 type ToolExecutionRequest struct {
 	BaseMessage
@@ -137,7 +114,6 @@ type ToolExecutionRequest struct {
 // ToolExecutionResult is a message published in response to a
 // ToolExecutionRequest. It contains the result of the tool execution, in raw
 // JSON format, or an error if the execution failed.
-//
 // Summary: Represents a ToolExecutionResult.
 type ToolExecutionResult struct {
 	BaseMessage
@@ -147,7 +123,6 @@ type ToolExecutionResult struct {
 
 // ServiceListRequest is a message sent to the bus to request a list of all
 // registered services.
-//
 // Summary: Represents a ServiceListRequest.
 type ServiceListRequest struct {
 	BaseMessage
@@ -155,7 +130,6 @@ type ServiceListRequest struct {
 
 // ServiceListResult is a message published in response to a
 // ServiceListRequest. It contains a list of all registered services.
-//
 // Summary: Represents a ServiceListResult.
 type ServiceListResult struct {
 	BaseMessage
@@ -164,7 +138,6 @@ type ServiceListResult struct {
 }
 
 // ServiceGetRequest is a message sent to the bus to request a specific service.
-//
 // Summary: Represents a ServiceGetRequest.
 type ServiceGetRequest struct {
 	BaseMessage
@@ -172,7 +145,6 @@ type ServiceGetRequest struct {
 }
 
 // ServiceGetResult is a message published in response to a ServiceGetRequest.
-//
 // Summary: Represents a ServiceGetResult.
 type ServiceGetResult struct {
 	BaseMessage

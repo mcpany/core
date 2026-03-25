@@ -16,7 +16,6 @@ import (
 )
 
 // TemplateManager manages the persistence and lifecycle of service templates.
-//
 // Summary: Represents a TemplateManager.
 type TemplateManager struct {
 	mu        sync.RWMutex
@@ -25,9 +24,7 @@ type TemplateManager struct {
 }
 
 // NewTemplateManager creates a new instance of TemplateManager.
-//
 // Summary: Initializes a new TemplateManager.
-//
 // Parameters:
 //   - dataDir: string. The directory where template data is persisted.
 //
@@ -135,9 +132,7 @@ func (tm *TemplateManager) save() error {
 }
 
 // ListTemplates returns a list of all stored templates.
-//
 // Summary: Retrieves all managed templates.
-//
 // Returns:
 //   - []*configv1.UpstreamServiceConfig: A list of templates.
 //
@@ -158,9 +153,7 @@ func (tm *TemplateManager) ListTemplates() []*configv1.UpstreamServiceConfig {
 }
 
 // SaveTemplate saves or updates a template.
-//
 // Summary: Persists a template.
-//
 // Parameters:
 //   - template: *configv1.UpstreamServiceConfig. The template to save.
 //
@@ -198,9 +191,7 @@ func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig
 }
 
 // DeleteTemplate deletes a template by its ID or Name.
-//
 // Summary: Removes a template.
-//
 // Parameters:
 //   - idOrName: string. The ID or Name of the template to delete.
 //

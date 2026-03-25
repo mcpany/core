@@ -18,7 +18,6 @@ import (
 )
 
 // SmartRecoveryMiddleware handles automatic error recovery using LLM.
-//
 // Summary: Represents a SmartRecoveryMiddleware.
 type SmartRecoveryMiddleware struct {
 	config      *configv1.SmartRecoveryConfig
@@ -28,7 +27,6 @@ type SmartRecoveryMiddleware struct {
 }
 
 // NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
-//
 // Parameters:
 //   - config (*configv1.SmartRecoveryConfig): The config parameter.
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
@@ -43,16 +41,9 @@ type SmartRecoveryMiddleware struct {
 //   - None
 //
 // Summary: Initializes NewSmartRecoveryMiddleware operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManager tool.ManagerInterface) *SmartRecoveryMiddleware {
@@ -63,7 +54,6 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 }
 
 // Execute executes the middleware logic.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - req (*tool.ExecutionRequest): The request object.
@@ -80,16 +70,9 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 //   - None
 //
 // Summary: Executes Execute operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {

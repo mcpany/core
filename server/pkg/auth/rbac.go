@@ -11,12 +11,10 @@ import (
 )
 
 // RolesContextKey is the context key for the user roles.
-//
 // Summary: Represents a RolesContextKey.
 const RolesContextKey authContextKey = "user_roles"
 
 // ContextWithRoles returns a new context with the user roles. ctx is the context for the request. roles is the roles. Returns the result.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - roles ([]string): The roles parameter.
@@ -31,16 +29,9 @@ const RolesContextKey authContextKey = "user_roles"
 //   - None
 //
 // Summary: Executes ContextWithRoles operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func ContextWithRoles(ctx context.Context, roles []string) context.Context {
@@ -48,7 +39,6 @@ func ContextWithRoles(ctx context.Context, roles []string) context.Context {
 }
 
 // RolesFromContext returns the user roles from the context. ctx is the context for the request. Returns the result. Returns true if successful.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //
@@ -63,16 +53,9 @@ func ContextWithRoles(ctx context.Context, roles []string) context.Context {
 //   - None
 //
 // Summary: Executes RolesFromContext operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func RolesFromContext(ctx context.Context) ([]string, bool) {
@@ -81,13 +64,11 @@ func RolesFromContext(ctx context.Context) ([]string, bool) {
 }
 
 // RBACEnforcer handles Role-Based Access Control checks.
-//
 // Summary: Represents a RBACEnforcer.
 type RBACEnforcer struct {
 }
 
 // NewRBACEnforcer creates a new RBACEnforcer. Returns the result.
-//
 // Parameters:
 //   - None
 //
@@ -101,16 +82,9 @@ type RBACEnforcer struct {
 //   - None
 //
 // Summary: Initializes NewRBACEnforcer operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewRBACEnforcer() *RBACEnforcer {
@@ -118,7 +92,6 @@ func NewRBACEnforcer() *RBACEnforcer {
 }
 
 // HasRole checks if the given user has the specified role. user is the user. role is the role. Returns true if successful.
-//
 // Parameters:
 //   - user (*configv1.User): The user parameter.
 //   - role (string): The role parameter.
@@ -133,16 +106,9 @@ func NewRBACEnforcer() *RBACEnforcer {
 //   - None
 //
 // Summary: Checks HasRole operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (e *RBACEnforcer) HasRole(user *configv1.User, role string) bool {
@@ -153,7 +119,6 @@ func (e *RBACEnforcer) HasRole(user *configv1.User, role string) bool {
 }
 
 // HasAnyRole checks if the user has at least one of the specified roles. user is the user. roles is the roles. Returns true if successful.
-//
 // Parameters:
 //   - user (*configv1.User): The user parameter.
 //   - roles ([]string): The roles parameter.
@@ -168,16 +133,9 @@ func (e *RBACEnforcer) HasRole(user *configv1.User, role string) bool {
 //   - None
 //
 // Summary: Checks HasAnyRole operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (e *RBACEnforcer) HasAnyRole(user *configv1.User, roles []string) bool {
@@ -193,7 +151,6 @@ func (e *RBACEnforcer) HasAnyRole(user *configv1.User, roles []string) bool {
 }
 
 // HasRoleInContext checks if the context contains the specified role. ctx is the context for the request. role is the role. Returns true if successful.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - role (string): The role parameter.
@@ -208,16 +165,9 @@ func (e *RBACEnforcer) HasAnyRole(user *configv1.User, roles []string) bool {
 //   - None
 //
 // Summary: Checks HasRoleInContext operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (e *RBACEnforcer) HasRoleInContext(ctx context.Context, role string) bool {

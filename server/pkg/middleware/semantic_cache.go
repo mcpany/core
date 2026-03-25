@@ -9,15 +9,12 @@ import (
 )
 
 // EmbeddingProvider defines the interface for fetching text embeddings.
-//
 // Summary: Interface for services that can generate vector embeddings from text.
 type EmbeddingProvider interface {
 	// Embed generates an embedding vector for the given text.
-	//
 	// Parameters:
 	//   - ctx: context.Context. The request context.
 	//   - text: string. The text to embed.
-	//
 	// Returns:
 	//   - []float32: The resulting embedding vector.
 	//   - error: An error if generation fails.
@@ -25,29 +22,24 @@ type EmbeddingProvider interface {
 }
 
 // VectorStore defines the interface for storing and searching vectors.
-//
 // Summary: Interface for storage backends that support vector similarity search.
 type VectorStore interface {
 	// Add adds a new entry to the vector store.
-	//
 	// Parameters:
 	//   - ctx: context.Context. The context for the request.
 	//   - key: string. The unique key for the entry.
 	//   - vector: []float32. The embedding vector.
 	//   - result: any. The associated result data.
 	//   - ttl: time.Duration. The time-to-live for the entry.
-	//
 	// Returns:
 	//   - error: An error if the operation fails.
 	Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error
 
 	// Search searches for the most similar entry in the vector store.
-	//
 	// Parameters:
 	//   - ctx: context.Context. The context for the request.
 	//   - key: string. The key to restrict the search scope.
 	//   - query: []float32. The query embedding vector.
-	//
 	// Returns:
 	//   - any: The best matching result data.
 	//   - float32: The similarity score (0.0 to 1.0).
@@ -55,7 +47,6 @@ type VectorStore interface {
 	Search(ctx context.Context, key string, query []float32) (any, float32, bool)
 
 	// Prune removes expired entries.
-	//
 	// Parameters:
 	//   - ctx: context.Context. The context for the request.
 	//   - key: string. Optional key to restrict pruning scope.
@@ -63,7 +54,6 @@ type VectorStore interface {
 }
 
 // SemanticCache implements a semantic cache using embeddings and cosine similarity.
-//
 // Summary: A cache implementation that uses semantic similarity rather than exact key matching.
 type SemanticCache struct {
 	provider  EmbeddingProvider
@@ -72,9 +62,7 @@ type SemanticCache struct {
 }
 
 // NewSemanticCache creates a new SemanticCache.
-//
 // Summary: Initializes a new SemanticCache.
-//
 // Parameters:
 //   - provider: EmbeddingProvider. The service to generate embeddings.
 //   - store: VectorStore. The storage backend for vectors.
@@ -104,9 +92,7 @@ func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold f
 }
 
 // Get attempts to find a semantically similar cached result.
-//
 // Summary: Retrieves a cached result if a semantically similar entry exists.
-//
 // Parameters:
 //   - ctx: context.Context. The request context.
 //   - key: string. The semantic key or scope.
@@ -138,9 +124,7 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 }
 
 // Set adds a result to the cache using the provided embedding.
-//
 // Summary: Caches a result associated with a specific embedding.
-//
 // Parameters:
 //   - ctx: context.Context. The request context.
 //   - key: string. The semantic key or scope.

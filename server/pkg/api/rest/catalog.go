@@ -11,18 +11,14 @@ import (
 )
 
 // CatalogServer implements the CatalogService API.
-//
 // Summary: Server implementation for the Catalog Service.
-//
 // It handles requests to list available services from the dynamic catalog.
 type CatalogServer struct {
 	manager *catalog.Manager
 }
 
 // NewCatalogServer creates a new CatalogServer.
-//
 // Summary: Initializes a new CatalogServer.
-//
 // Parameters:
 //   - manager (*catalog.Manager): The catalog manager instance.
 //
@@ -41,9 +37,7 @@ func NewCatalogServer(manager *catalog.Manager) *CatalogServer {
 }
 
 // ListServices returns a list of available services in the catalog.
-//
 // Summary: Lists available catalog services.
-//
 // Parameters:
 //   - ctx (context.Context): The request context.
 //   - _ (*apiv1.ListCatalogServicesRequest): The request object (currently unused).

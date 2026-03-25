@@ -15,7 +15,6 @@ import (
 )
 
 // FileAuditStore writes audit logs to a file or stdout.
-//
 // Summary: Audit store implementation that appends newline-delimited JSON (NDJSON) to a file or standard output.
 type FileAuditStore struct {
 	mu   sync.Mutex
@@ -24,9 +23,7 @@ type FileAuditStore struct {
 }
 
 // NewFileAuditStore creates a new FileAuditStore.
-//
 // Summary: Initializes a new FileAuditStore at the specified path, or uses stdout if path is empty.
-//
 // Parameters:
 //   - path (string): The file path for the audit log.
 //
@@ -58,9 +55,7 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 }
 
 // Write writes an audit entry to the file.
-//
 // Summary: Appends a JSON-marshaled audit entry to the configured output file or stdout.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request (unused).
 //   - entry (Entry): The audit entry to be persisted.
@@ -98,9 +93,7 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 }
 
 // Read implements the Store interface.
-//
 // Summary: Not implemented for FileAuditStore.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request (unused).
 //   - filter (Filter): The filter criteria (unused).
@@ -119,9 +112,7 @@ func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 }
 
 // Close closes the file.
-//
 // Summary: Closes the underlying file handle if it was opened during initialization.
-//
 // Returns:
 //   - error: An error if the file handle fails to close.
 //

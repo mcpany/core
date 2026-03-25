@@ -18,9 +18,7 @@ import (
 )
 
 // Manager handles the loading and listing of catalog services.
-//
 // Summary: Manages the service catalog.
-//
 // It scans a specified directory for service configurations and provides access to them.
 type Manager struct {
 	mu          sync.RWMutex
@@ -30,9 +28,7 @@ type Manager struct {
 }
 
 // NewManager creates a new Catalog Manager.
-//
 // Summary: Initializes a new Catalog Manager.
-//
 // Parameters:
 //   - fs: afero.Fs. The filesystem to scan.
 //   - catalogPath: string. The path to the catalog directory.
@@ -53,9 +49,7 @@ func NewManager(fs afero.Fs, catalogPath string) *Manager {
 }
 
 // Load scans the catalog directory and loads all service configurations.
-//
 // Summary: Loads service configurations from the catalog directory.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the operation.
 //
@@ -137,9 +131,7 @@ func (m *Manager) Load(ctx context.Context) error {
 }
 
 // ListServices returns the list of loaded services.
-//
 // Summary: Retrieves the list of loaded services.
-//
 // Parameters:
 //   - _ context.Context: The context (unused).
 //

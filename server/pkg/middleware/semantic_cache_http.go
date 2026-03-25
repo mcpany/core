@@ -17,7 +17,6 @@ import (
 )
 
 // HTTPEmbeddingProvider implements a generic HTTP EmbeddingProvider.
-//
 // Summary: A generic provider that fetches embeddings from an arbitrary HTTP endpoint.
 type HTTPEmbeddingProvider struct {
 	url              string
@@ -28,9 +27,7 @@ type HTTPEmbeddingProvider struct {
 }
 
 // NewHTTPEmbeddingProvider creates a new HTTPEmbeddingProvider.
-//
 // Summary: Initializes a new HTTPEmbeddingProvider with custom request formatting.
-//
 // Parameters:
 //   - url: string. The API endpoint URL.
 //   - headers: map[string]string. Custom HTTP headers to include in the request.
@@ -67,9 +64,7 @@ func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplat
 }
 
 // Embed generates an embedding for the given text.
-//
 // Summary: Generates an embedding by sending a templated HTTP request and extracting the result via JSONPath.
-//
 // Parameters:
 //   - ctx: context.Context. The request context.
 //   - text: string. The input text to embed.

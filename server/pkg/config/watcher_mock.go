@@ -4,7 +4,6 @@
 package config
 
 // MockWatcher is a mock implementation of the Watcher for testing.
-//
 // Summary: Represents a MockWatcher.
 type MockWatcher struct {
 	WatchFunc func(paths []string, reloadFunc func())
@@ -12,7 +11,6 @@ type MockWatcher struct {
 }
 
 // NewMockWatcher creates a new mock watcher.
-//
 // Returns:
 //   - *MockWatcher: The result.
 //
@@ -20,16 +18,9 @@ type MockWatcher struct {
 //   - None.
 //
 // Summary: Initializes NewMockWatcher operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewMockWatcher() *MockWatcher {
@@ -37,7 +28,6 @@ func NewMockWatcher() *MockWatcher {
 }
 
 // Watch mocks the Watch method.
-//
 // Parameters:
 //   - paths ([]string): The parameter.
 //   - reloadFunc (func(): The parameter.
@@ -52,16 +42,9 @@ func NewMockWatcher() *MockWatcher {
 //   - None.
 //
 // Summary: Executes Watch operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
@@ -72,7 +55,6 @@ func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 }
 
 // Close mocks the Close method.
-//
 // Parameters:
 //   - None.
 //
@@ -80,16 +62,9 @@ func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 //   - None.
 //
 // Summary: Executes Close operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *MockWatcher) Close() {

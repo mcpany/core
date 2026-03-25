@@ -6,7 +6,6 @@ package terraform
 
 // ResourceMCPServer represents the configuration schema for an MCP Server resource
 // This would map to hashicorp/terraform-plugin-sdk in a real provider.
-//
 // Summary: Represents a ResourceMCPServer.
 type ResourceMCPServer struct {
 	Name    string
@@ -15,7 +14,6 @@ type ResourceMCPServer struct {
 }
 
 // Schema returns the Terraform schema definition (Mock). Returns the result.
-//
 // Parameters:
 //   - None
 //
@@ -29,16 +27,9 @@ type ResourceMCPServer struct {
 //   - None
 //
 // Summary: Executes Schema operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func Schema() map[string]interface{} {
@@ -64,7 +55,6 @@ func Schema() map[string]interface{} {
 }
 
 // Create mimics the Create operation of a Terraform resource. _ is an unused parameter. Returns an error if the operation fails.
-//
 // Parameters:
 //   - _ (*ResourceMCPServer): The _ parameter.
 //
@@ -78,16 +68,9 @@ func Schema() map[string]interface{} {
 //   - None
 //
 // Summary: Initializes Create operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func Create(_ *ResourceMCPServer) error {
@@ -96,7 +79,6 @@ func Create(_ *ResourceMCPServer) error {
 }
 
 // Read mimics the Read operation. name is the name of the resource. Returns the result. Returns an error if the operation fails.
-//
 // Parameters:
 //   - name (string): The name parameter.
 //
@@ -111,16 +93,9 @@ func Create(_ *ResourceMCPServer) error {
 //   - None
 //
 // Summary: Retrieves Read operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func Read(name string) (*ResourceMCPServer, error) {

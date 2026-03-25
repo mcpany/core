@@ -14,7 +14,6 @@ import (
 )
 
 // OllamaEmbeddingProvider implements EmbeddingProvider for Ollama.
-//
 // Summary: Provides an interface to generate text embeddings using the Ollama API.
 type OllamaEmbeddingProvider struct {
 	baseURL string
@@ -23,9 +22,7 @@ type OllamaEmbeddingProvider struct {
 }
 
 // NewOllamaEmbeddingProvider creates a new OllamaEmbeddingProvider.
-//
 // Summary: Initializes a new provider for Ollama embeddings.
-//
 // Parameters:
 //   - baseURL: string. The base URL of the Ollama API (defaults to "http://localhost:11434" if empty).
 //   - model: string. The name of the embedding model to use (defaults to "nomic-embed-text" if empty).
@@ -62,9 +59,7 @@ type ollamaEmbeddingResponse struct {
 }
 
 // Embed generates an embedding for the given text using Ollama.
-//
 // Summary: Calls the Ollama API to generate a vector embedding for the input text.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the HTTP request.
 //   - text: string. The input text to be embedded.

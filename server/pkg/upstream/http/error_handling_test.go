@@ -173,17 +173,14 @@ func TestHTTPUpstream_ErrorHandling(t *testing.T) {
 		// So if Register passes, loop likely passes.
 		// But maybe we can modify the config object AFTER Register validation but BEFORE the loop?
 		// No, Register calls createAndRegisterHTTPTools immediately.
-		//
 		// Wait, createAndRegisterHTTPTools parses `address` again.
 		// If `Register` does:
 		// uURL, err := url.ParseRequestURI(address)
 		// And `createAndRegisterHTTPTools` does:
 		// baseURL, err := url.Parse(address)
-		//
 		// Are there strings that pass ParseRequestURI but fail Parse?
 		// Probably not.
 		// But we can check if `createAndRegisterHTTPTools` handles `nil` return from `url.Parse` if we were to force it (which we can't easily).
-		//
 		// Actually, we can assume that if `Register` passes, `createAndRegisterHTTPTools`'s parse will likely succeed.
 		// So this branch might be unreachable in practice unless there's a race condition or some very weird URL.
 	})

@@ -83,16 +83,13 @@ var (
 )
 
 // ToolMetricsMiddleware provides detailed metrics for tool executions.
-//
 // Summary: Middleware that records Prometheus metrics for tool execution calls.
 type ToolMetricsMiddleware struct {
 	tokenizer tokenizer.Tokenizer
 }
 
 // NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
-//
 // Summary: Initializes the tool metrics middleware and registers metrics if not already registered.
-//
 // Parameters:
 //   - t: tokenizer.Tokenizer. The tokenizer used to count tokens in tool inputs and outputs.
 //     If nil, a simple default tokenizer is used.
@@ -124,9 +121,7 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 }
 
 // Execute executes the tool metrics middleware.
-//
 // Summary: Wraps tool execution to record latency, size, and token metrics.
-//
 // Parameters:
 //   - ctx: context.Context. The execution context.
 //   - req: *tool.ExecutionRequest. The request containing tool execution details.

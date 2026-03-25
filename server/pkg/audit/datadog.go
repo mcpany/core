@@ -25,7 +25,6 @@ const (
 )
 
 // DatadogAuditStore sends audit logs to Datadog.
-//
 // Summary: Asynchronous audit store that forwards log entries to Datadog's Log Ingestion API.
 type DatadogAuditStore struct {
 	config *configv1.DatadogConfig
@@ -37,9 +36,7 @@ type DatadogAuditStore struct {
 }
 
 // NewDatadogAuditStore creates a new DatadogAuditStore.
-//
 // Summary: Initializes a new DatadogAuditStore with the provided configuration and starts background processing workers.
-//
 // Parameters:
 //   - config (*configv1.DatadogConfig): The Datadog API and site configuration.
 //
@@ -118,9 +115,7 @@ func (e *DatadogAuditStore) worker() {
 }
 
 // Write implements the Store interface.
-//
 // Summary: Enqueues an audit entry for asynchronous transmission to Datadog.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request (unused).
 //   - entry (Entry): The audit entry to be logged.
@@ -188,9 +183,7 @@ func (e *DatadogAuditStore) sendBatch(batch []Entry) {
 }
 
 // Read implements the Store interface.
-//
 // Summary: Not implemented for DatadogAuditStore.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request (unused).
 //   - filter (Filter): Criteria for filtering audit logs (unused).
@@ -209,9 +202,7 @@ func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 }
 
 // Close closes the queue and waits for workers to finish.
-//
 // Summary: Gracefully shuts down the Datadog audit store, flushing any pending batches before exiting.
-//
 // Returns:
 //   - error: Always returns nil.
 //

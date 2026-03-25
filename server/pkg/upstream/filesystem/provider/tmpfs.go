@@ -10,14 +10,12 @@ import (
 )
 
 // TmpfsProvider provides access to a temporary in-memory filesystem.
-//
 // Summary: Represents a TmpfsProvider.
 type TmpfsProvider struct {
 	fs afero.Fs
 }
 
 // NewTmpfsProvider creates a new TmpfsProvider.
-//
 // Returns:
 //   - *TmpfsProvider: The result.
 //
@@ -25,16 +23,9 @@ type TmpfsProvider struct {
 //   - None.
 //
 // Summary: Initializes NewTmpfsProvider operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewTmpfsProvider() *TmpfsProvider {
@@ -44,7 +35,6 @@ func NewTmpfsProvider() *TmpfsProvider {
 }
 
 // GetFs returns the underlying filesystem.
-//
 // Returns:
 //   - afero.Fs: The result.
 //
@@ -52,16 +42,9 @@ func NewTmpfsProvider() *TmpfsProvider {
 //   - None.
 //
 // Summary: Retrieves GetFs operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (p *TmpfsProvider) GetFs() afero.Fs {
@@ -69,7 +52,6 @@ func (p *TmpfsProvider) GetFs() afero.Fs {
 }
 
 // ResolvePath resolves the virtual path to a real path.
-//
 // Parameters:
 //   - virtualPath (string): The parameter.
 //
@@ -84,16 +66,9 @@ func (p *TmpfsProvider) GetFs() afero.Fs {
 //   - None.
 //
 // Summary: Executes ResolvePath operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
@@ -102,7 +77,6 @@ func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 }
 
 // Close closes the provider.
-//
 // Returns:
 //   - error: An error if the operation fails.
 //
@@ -113,16 +87,9 @@ func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 //   - None.
 //
 // Summary: Executes Close operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (p *TmpfsProvider) Close() error {

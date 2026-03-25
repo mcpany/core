@@ -12,7 +12,6 @@ import (
 )
 
 // HydrateFromFile reads the last N lines from the given log file, parses them (assuming JSON format), and populates the global broadcaster's history. This allows the UI to show historical logs upon connection, even after a server restart.
-//
 // Parameters:
 //   - path (string): The path parameter.
 //
@@ -26,16 +25,9 @@ import (
 //   - None
 //
 // Summary: Executes HydrateFromFile operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func HydrateFromFile(path string) error {

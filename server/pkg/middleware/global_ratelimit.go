@@ -25,7 +25,6 @@ import (
 )
 
 // GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
-//
 // Summary: Middleware that enforces global rate limits on MCP requests across the entire server.
 type GlobalRateLimitMiddleware struct {
 	mu     sync.RWMutex
@@ -37,9 +36,7 @@ type GlobalRateLimitMiddleware struct {
 }
 
 // NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
-//
 // Summary: Initializes the global rate limit middleware with the provided configuration.
-//
 // Parameters:
 //   - config: *configv1.RateLimitConfig. The rate limit configuration settings.
 //
@@ -59,9 +56,7 @@ func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateL
 }
 
 // UpdateConfig updates the rate limit configuration safely.
-//
 // Summary: Updates the rate limit configuration at runtime.
-//
 // Parameters:
 //   - config: *configv1.RateLimitConfig. The new configuration settings.
 //
@@ -81,9 +76,7 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 }
 
 // Execute executes the rate limiting middleware.
-//
 // Summary: Intercepts requests and enforces the configured rate limits.
-//
 // Parameters:
 //   - ctx: context.Context. The request context.
 //   - method: string. The MCP method being called.

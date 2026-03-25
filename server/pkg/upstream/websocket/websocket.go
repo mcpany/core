@@ -33,7 +33,6 @@ import (
 // Upstream implements the upstream.Upstream interface for services that
 // are exposed via a WebSocket connection. It manages a connection pool and
 // registers tools based on the service configuration.
-//
 // Summary: Represents a Upstream.
 type Upstream struct {
 	poolManager *pool.Manager
@@ -43,7 +42,6 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //
@@ -57,16 +55,9 @@ type Upstream struct {
 //   - None.
 //
 // Summary: Executes CheckHealth operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
@@ -86,7 +77,6 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 
 // Shutdown gracefully terminates the WebSocket upstream service by shutting down
 // the associated connection pool.
-//
 // Parameters:
 //   - ctx: The context for the shutdown operation.
 //
@@ -94,16 +84,9 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //   - error: An error if the shutdown operation fails, or nil on success.
 //
 // Summary: Executes Shutdown operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
@@ -121,7 +104,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // NewUpstream creates a new instance of WebsocketUpstream.
-//
 // Parameters:
 //   - poolManager: The connection pool manager to be used for managing WebSocket connections.
 //
@@ -129,16 +111,9 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - upstream.Upstream: A new Upstream instance for WebSocket services.
 //
 // Summary: Initializes NewUpstream operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
@@ -150,7 +125,6 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Register processes the configuration for a WebSocket service. It creates a
 // connection pool and registers tools for each call definition specified in the
 // configuration.
-//
 // Parameters:
 //   - ctx: The context for the registration process.
 //   - serviceConfig: The configuration for the upstream service.
@@ -166,16 +140,9 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - error: An error if registration fails.
 //
 // Summary: Executes Register operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) Register(

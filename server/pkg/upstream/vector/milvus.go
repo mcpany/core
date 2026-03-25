@@ -15,7 +15,6 @@ import (
 )
 
 // MilvusClient implements VectorClient for Milvus.
-//
 // Summary: Represents a MilvusClient.
 type MilvusClient struct {
 	config *configv1.MilvusVectorDB
@@ -23,7 +22,6 @@ type MilvusClient struct {
 }
 
 // NewMilvusClient creates a new Milvus client.
-//
 // Parameters:
 //   - config (*configv1.MilvusVectorDB): The parameter.
 //
@@ -38,16 +36,9 @@ type MilvusClient struct {
 //   - None.
 //
 // Summary: Initializes NewMilvusClient operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
@@ -91,7 +82,6 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 }
 
 // Query searches for similar vectors.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - vector ([]float32): The parameter.
@@ -106,16 +96,9 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 //   - None.
 //
 // Summary: Executes Query operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error) {
@@ -230,7 +213,6 @@ func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, 
 }
 
 // Upsert inserts or updates vectors.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - vectors ([]map[string]interface{}): The parameter.
@@ -243,16 +225,9 @@ func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, 
 //   - None.
 //
 // Summary: Executes Upsert operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (c *MilvusClient) Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error) {
@@ -459,7 +434,6 @@ func fillMetadataColumn(col entity.Column, i int, val interface{}) {
 }
 
 // Delete removes vectors.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - ids ([]string): The parameter.
@@ -473,16 +447,9 @@ func fillMetadataColumn(col entity.Column, i int, val interface{}) {
 //   - None.
 //
 // Summary: Executes Delete operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error) {
@@ -544,7 +511,6 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 }
 
 // DescribeIndexStats returns statistics about the index.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - _ (map[string]interface{}): The parameter.
@@ -556,16 +522,9 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 //   - None.
 //
 // Summary: Executes DescribeIndexStats operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (c *MilvusClient) DescribeIndexStats(ctx context.Context, _ map[string]interface{}) (map[string]interface{}, error) {

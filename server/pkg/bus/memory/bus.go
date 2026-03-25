@@ -21,7 +21,6 @@ const (
 // DefaultBus is the default, thread-safe implementation of the Bus interface.
 // It uses channels to deliver messages to subscribers, with each subscriber
 // having its own dedicated goroutine for message processing.
-//
 // Summary: Represents a DefaultBus.
 type DefaultBus[T any] struct {
 	mu             sync.RWMutex
@@ -31,7 +30,6 @@ type DefaultBus[T any] struct {
 }
 
 // New creates and returns a new instance of DefaultBus, which is the default, thread-safe implementation of the Bus interface. It is initialized with the default publish timeout. The type parameter T specifies the type of message that the bus will handle.
-//
 // Parameters:
 //   - None
 //
@@ -45,16 +43,9 @@ type DefaultBus[T any] struct {
 //   - None
 //
 // Summary: Initializes New operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func New[T any]() *DefaultBus[T] {
@@ -67,27 +58,18 @@ func New[T any]() *DefaultBus[T] {
 // Publish sends a message to all handlers subscribed to the specified topic.
 // It sends the message to a channel for each subscriber, where it will be
 // processed by the subscriber's dedicated goroutine.
-//
 // To prevent a slow subscriber from blocking the publisher indefinitely, this
 // call will time out after a configurable duration if a subscriber's channel is
 // full. If a timeout occurs, the message is dropped for that subscriber, and a
 // warning is logged.
-//
 // Parameters:
 //   - topic: The topic to publish the message to.
 //   - msg: The message to be sent.
 //
 // Summary: Executes Publish operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
@@ -125,10 +107,8 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 // goroutine for each subscription to process messages from a buffered channel,
 // ensuring that subscribers handle messages independently and do not block each
 // other.
-//
 // Each subscriber is assigned a unique ID, and its channel is added to the list
 // of subscribers for the given topic.
-//
 // Parameters:
 //   - topic: The topic to subscribe to.
 //   - handler: The function to execute when a message is received.
@@ -136,18 +116,10 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 // Returns an `unsubscribe` function that can be called to remove the
 // subscription. When called, it removes the subscriber from the bus and closes
 // its channel, terminating the associated goroutine.
-//
 // Summary: Executes Subscribe operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
@@ -195,28 +167,18 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 // SubscribeOnce registers a handler for a topic that will be executed only
 // once. After the handler is invoked for the first time, the subscription is
 // automatically removed.
-//
 // This is useful for scenarios where a component needs to wait for a specific
 // event to occur once and then stop listening.
-//
 // Parameters:
 //   - topic: The topic to subscribe to.
 //   - handler: The function to execute.
 //
 // Returns a function that can be used to unsubscribe before the handler is
 // invoked.
-//
 // Summary: Executes SubscribeOnce operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (b *DefaultBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {

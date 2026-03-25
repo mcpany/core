@@ -63,7 +63,6 @@ func TestHTTPTool_Execute_DoubleSlashRootPreservation(t *testing.T) {
 
 	// Handler that asserts the path received
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// We expect the path to be //
 		assert.Equal(t, "//", r.URL.Path)
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status": "ok"}`))

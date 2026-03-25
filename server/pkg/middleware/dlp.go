@@ -12,9 +12,7 @@ import (
 )
 
 // DLPMiddleware creates a middleware that redacts PII from request arguments and result content.
-//
 // Summary: Middleware for Data Loss Prevention (PII redaction).
-//
 // Parameters:
 //   - config (*configv1.DLPConfig): The DLP configuration settings.
 //   - log (*slog.Logger): The logger for reporting errors.

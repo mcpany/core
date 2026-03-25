@@ -17,7 +17,6 @@ import (
 // ConnectionFactory is responsible for creating new gRPC client connections.
 // It can be configured with a custom dialer for testing or special connection
 // scenarios.
-//
 // Summary: Represents a ConnectionFactory.
 type ConnectionFactory struct {
 	dialer func(context.Context, string) (net.Conn, error)
@@ -25,7 +24,6 @@ type ConnectionFactory struct {
 
 // NewConnectionFactory creates and returns a new ConnectionFactory with default
 // settings.
-//
 // Returns:
 //   - *ConnectionFactory: The result.
 //
@@ -33,16 +31,9 @@ type ConnectionFactory struct {
 //   - None.
 //
 // Summary: Initializes NewConnectionFactory operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewConnectionFactory() *ConnectionFactory {
@@ -51,7 +42,6 @@ func NewConnectionFactory() *ConnectionFactory {
 
 // WithDialer sets a custom dialer function for the ConnectionFactory. This is
 // useful for tests that need to mock the network connection.
-//
 // Parameters:
 //   - dialer func(context.Context (string): The parameter.
 //   - (string): The parameter.
@@ -64,16 +54,9 @@ func NewConnectionFactory() *ConnectionFactory {
 //   - None.
 //
 // Summary: Executes WithDialer operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net.Conn, error)) {
@@ -83,7 +66,6 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 // NewConnection establishes a new gRPC client connection to the specified
 // target address. It uses insecure credentials by default. If a custom dialer
 // has been set, it will be used for the connection.
-//
 // Parameters:
 //   - _ (context.Context): The parameter.
 //   - targetAddress (string): The parameter.
@@ -99,16 +81,9 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 //   - None.
 //
 // Summary: Initializes NewConnection operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (f *ConnectionFactory) NewConnection(_ context.Context, targetAddress string) (*grpc.ClientConn, error) {

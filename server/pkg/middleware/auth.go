@@ -16,9 +16,7 @@ import (
 )
 
 // AuthMiddleware creates an MCP middleware for handling authentication.
-//
 // Summary: Creates a middleware that handles credential verification for incoming MCP requests.
-//
 // Parameters:
 //   - authManager (*auth.Manager): The manager responsible for authenticating users.
 //

@@ -15,9 +15,7 @@ import (
 // Service Templates
 
 // ListServiceTemplates retrieves all service templates.
-//
 // Summary: Retrieves all service templates from the PostgreSQL database.
-//
 // Parameters:
 //   - ctx: context.Context. The request context.
 //
@@ -57,9 +55,7 @@ func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTe
 }
 
 // GetServiceTemplate retrieves a service template by ID.
-//
 // Summary: Retrieves a single service template by ID.
-//
 // Parameters:
 //   - ctx: context.Context. The request context.
 //   - id: string. The template ID.
@@ -93,9 +89,7 @@ func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.Se
 }
 
 // SaveServiceTemplate saves a service template.
-//
 // Summary: Inserts or updates a service template in the database.
-//
 // Parameters:
 //   - ctx: context.Context. The request context.
 //   - template: *configv1.ServiceTemplate. The template to save.

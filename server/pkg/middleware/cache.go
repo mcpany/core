@@ -26,7 +26,6 @@ import (
 )
 
 // ProviderFactory is a function that creates an EmbeddingProvider.
-//
 // Summary: Represents a ProviderFactory.
 type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error)
 
@@ -40,7 +39,6 @@ var (
 )
 
 // CachingMiddleware handles caching of tool execution results.
-//
 // Summary: Represents a CachingMiddleware.
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
@@ -52,7 +50,6 @@ type CachingMiddleware struct {
 }
 
 // NewCachingMiddleware creates a new CachingMiddleware. toolManager is the toolManager. Returns the result.
-//
 // Parameters:
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //
@@ -66,16 +63,9 @@ type CachingMiddleware struct {
 //   - None
 //
 // Summary: Initializes NewCachingMiddleware operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
@@ -137,7 +127,6 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 }
 
 // SetProviderFactory allows overriding the default provider factory for testing. factory is the factory.
-//
 // Parameters:
 //   - factory (ProviderFactory): The factory parameter.
 //
@@ -151,16 +140,9 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 //   - None
 //
 // Summary: Updates SetProviderFactory operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
@@ -168,7 +150,6 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 }
 
 // Execute executes the caching middleware. ctx is the context for the request. req is the request object. next is the next. Returns the result. Returns an error if the operation fails.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - req (*tool.ExecutionRequest): The request object.
@@ -185,16 +166,9 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 //   - None
 //
 // Summary: Executes Execute operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
@@ -490,7 +464,6 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 }
 
 // Clear clears the cache. ctx is the context for the request. Returns an error if the operation fails.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //
@@ -504,16 +477,9 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 //   - None
 //
 // Summary: Executes Clear operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *CachingMiddleware) Clear(ctx context.Context) error {

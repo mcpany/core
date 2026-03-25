@@ -16,9 +16,7 @@ const trueVal = "true"
 
 // IsSafeIP checks if the IP address string is safe to connect to,
 // respecting the allowed network resources policy.
-//
 // Summary: Validates an IP address string against security policies.
-//
 // Parameters:
 //   - ipStr: string. The IP address to check.
 //
@@ -46,11 +44,9 @@ var IsSafeIP = func(ipStr string) error {
 // IsSafeURL checks if the URL is safe to connect to.
 // It validates the scheme and resolves the host to ensure it doesn't point to
 // loopback, link-local, private, or multicast addresses.
-//
 // NOTE: This function performs DNS resolution to check the IP.
 // It is susceptible to DNS rebinding attacks if the check is separated from the connection.
 // For critical security, use a custom Dialer that validates the IP after resolution.
-//
 // lookupIPFunc is a variable to allow mocking DNS resolution in tests.
 var lookupIPFunc = func(ctx context.Context, network, host string) ([]net.IP, error) {
 	return net.DefaultResolver.LookupIP(ctx, network, host)
@@ -59,13 +55,10 @@ var lookupIPFunc = func(ctx context.Context, network, host string) ([]net.IP, er
 // IsSafeURL checks if the URL is safe to connect to.
 // It validates the scheme and resolves the host to ensure it doesn't point to
 // loopback, link-local, private, or multicast addresses.
-//
 // Summary: Validates a URL against security policies, including DNS resolution check.
-//
 // NOTE: This function performs DNS resolution to check the IP.
 // It is susceptible to DNS rebinding attacks if the check is separated from the connection.
 // For critical security, use a custom Dialer that validates the IP after resolution.
-//
 // Parameters:
 //   - urlStr: string. The URL to check.
 //
@@ -137,9 +130,7 @@ var IsSafeURL = func(urlStr string) error {
 }
 
 // ValidateIP checks if the IP address is allowed based on the policy.
-//
 // Summary: Internal helper to validate an IP address against forbidden ranges.
-//
 // Parameters:
 //   - ip: net.IP. The IP address to check.
 //   - allowLoopback: bool. Whether to allow loopback addresses.

@@ -272,16 +272,14 @@ func TestHTTPTool_RootDoubleSlash(t *testing.T) {
 			}.Build(),
 		},
 	}.Build()
-	// Note: We use a template that allows us to construct //
 	toolDef := v1.Tool_builder{Name: proto.String("http_tool"), UnderlyingMethodFqn: proto.String("GET http://example.com/{{path}}")}.Build()
 
 	httpTool := helperSetupHTTPTool(t, toolDef, callDef)
 	ctx := context.Background()
 
 	req := &ExecutionRequest{
-		ToolName:   "http_tool",
-		ToolInputs: []byte(`{"path": "/"}`), // Becomes http://example.com//
-		DryRun:     true,
+		ToolName: "http_tool",
+		DryRun:   true,
 	}
 
 	res, err := httpTool.Execute(ctx, req)
@@ -290,7 +288,6 @@ func TestHTTPTool_RootDoubleSlash(t *testing.T) {
 	resMap := res.(map[string]any)["request"].(map[string]any)
 	urlStr := resMap["url"].(string)
 
-	// http://example.com// -> cleaned to http://example.com//
 	assert.Equal(t, "http://example.com//", urlStr)
 }
 

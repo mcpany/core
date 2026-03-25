@@ -15,7 +15,6 @@ import (
 )
 
 // PostgresAuditStore writes audit logs to a PostgreSQL database.
-//
 // Summary: Audit store implementation that persists log entries in a PostgreSQL database with cryptographic hash chaining.
 type PostgresAuditStore struct {
 	db *sql.DB
@@ -23,9 +22,7 @@ type PostgresAuditStore struct {
 }
 
 // NewPostgresAuditStore creates a new PostgresAuditStore.
-//
 // Summary: Initializes a new PostgresAuditStore with the provided DSN and creates the schema if it does not exist.
-//
 // Parameters:
 //   - dsn (string): The PostgreSQL connection string (DSN).
 //
@@ -84,9 +81,7 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 }
 
 // Write writes an audit entry to the database.
-//
 // Summary: Persists a single audit entry with cryptographic hash chaining, ensuring strict sequential consistency via table locking.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - entry (Entry): The audit log entry to be persisted.
@@ -165,9 +160,7 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 }
 
 // Read reads audit entries from the database based on the filter.
-//
 // Summary: Not implemented for PostgresAuditStore.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request (unused).
 //   - filter (Filter): Criteria for filtering audit logs (unused).
@@ -186,9 +179,7 @@ func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) 
 }
 
 // Verify checks the integrity of the audit logs.
-//
 // Summary: Validates the cryptographic hash chain of all entries in the audit_logs table.
-//
 // Parameters:
 //   - None.
 //
@@ -261,9 +252,7 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 }
 
 // Close closes the database connection.
-//
 // Summary: Gracefully closes the connection to the PostgreSQL database.
-//
 // Returns:
 //   - error: An error if the database connection fails to close.
 //

@@ -33,7 +33,6 @@ type sanitizer func(string) (string, error)
 
 // Upstream implements the upstream.Upstream interface for services that
 // communicate over WebRTC data channels.
-//
 // Summary: Represents a Upstream.
 type Upstream struct {
 	poolManager       *pool.Manager
@@ -43,7 +42,6 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //
@@ -57,16 +55,9 @@ type Upstream struct {
 //   - None.
 //
 // Summary: Executes CheckHealth operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
@@ -86,7 +77,6 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 
 // Shutdown is a no-op for the WebRTC upstream, as connections are transient
 // and not managed by a persistent pool.
-//
 // Parameters:
 //   - _ (context.Context): The parameter.
 //
@@ -100,16 +90,9 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //   - None.
 //
 // Summary: Executes Shutdown operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
@@ -124,7 +107,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // NewUpstream creates a new instance of WebrtcUpstream.
-//
 // Parameters:
 //   - poolManager (*pool.Manager): The parameter.
 //
@@ -135,16 +117,9 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - None.
 //
 // Summary: Initializes NewUpstream operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
@@ -155,7 +130,6 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 }
 
 // Register processes the configuration for a WebRTC service, creating and registering tools for each call definition specified in the configuration.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
@@ -177,16 +151,9 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - None
 //
 // Summary: Executes Register operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) Register(

@@ -34,7 +34,6 @@ import (
 // OpenAPIUpstream implements the upstream.Upstream interface for services that
 // are defined by an OpenAPI specification. It parses the spec, discovers the
 // available operations, and registers them as tools.
-//
 // Summary: Represents a OpenAPIUpstream.
 type OpenAPIUpstream struct { //nolint:revive
 	openapiCache *ttlcache.Cache[string, *openapi3.T]
@@ -45,7 +44,6 @@ type OpenAPIUpstream struct { //nolint:revive
 
 // Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based
 // services, this typically means closing any persistent connections.
-//
 // Parameters:
 //   - _ (context.Context): The parameter.
 //
@@ -59,16 +57,9 @@ type OpenAPIUpstream struct { //nolint:revive
 //   - None.
 //
 // Summary: Executes Shutdown operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
@@ -84,7 +75,6 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 
 // NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
 // cache for storing parsed OpenAPI documents to avoid redundant parsing.
-//
 // Returns:
 //   - upstream.Upstream: The result.
 //
@@ -92,16 +82,9 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 //   - None.
 //
 // Summary: Initializes NewOpenAPIUpstream operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewOpenAPIUpstream() upstream.Upstream {
@@ -117,7 +100,6 @@ func NewOpenAPIUpstream() upstream.Upstream {
 }
 
 // Register processes an OpenAPI service configuration. It parses the OpenAPI specification, extracts the operations, converts them into tools, and registers them with the tool manager.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
@@ -139,16 +121,9 @@ func NewOpenAPIUpstream() upstream.Upstream {
 //   - None
 //
 // Summary: Executes Register operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *OpenAPIUpstream) Register(
@@ -332,7 +307,6 @@ type httpClientImpl struct {
 
 // Do sends an HTTP request and returns an HTTP response, fulfilling the
 // client.HTTPClient interface.
-//
 // Parameters:
 //   - req (*http.Request): The parameter.
 //
@@ -347,16 +321,9 @@ type httpClientImpl struct {
 //   - None.
 //
 // Summary: Executes Do operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {

@@ -12,14 +12,12 @@ import (
 )
 
 // MockServiceRegistry is a mock implementation of ServiceRegistryInterface.
-//
 // Summary: Represents a MockServiceRegistry.
 type MockServiceRegistry struct {
 	mock.Mock
 }
 
 // RegisterService registers a new upstream service based on the provided configuration.
-//
 // Parameters:
 //   - ctx (context.Context): The registration context.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the service.
@@ -34,16 +32,9 @@ type MockServiceRegistry struct {
 //   - Records method call for mock.
 //
 // Summary: Executes RegisterService operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
@@ -52,7 +43,6 @@ func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig
 }
 
 // UnregisterService removes a service from the registry.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the unregistration.
 //   - serviceName (string): The name of the service to remove.
@@ -64,16 +54,9 @@ func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig
 //   - Records method call for mock.
 //
 // Summary: Executes UnregisterService operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
@@ -82,7 +65,6 @@ func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName
 }
 
 // GetAllServices returns a list of all currently registered services.
-//
 // Returns:
 //   - []*configv1.UpstreamServiceConfig: A list of all registered service configurations.
 //   - error: An error if retrieval fails.
@@ -91,16 +73,9 @@ func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName
 //   - Records method call for mock.
 //
 // Summary: Retrieves GetAllServices operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
@@ -112,7 +87,6 @@ func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfi
 }
 
 // GetServiceInfo retrieves the metadata for a service by its ID.
-//
 // Parameters:
 //   - serviceID (string): The unique identifier of the service.
 //
@@ -124,16 +98,9 @@ func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfi
 //   - Records method call for mock.
 //
 // Summary: Retrieves GetServiceInfo operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
@@ -145,7 +112,6 @@ func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInf
 }
 
 // GetServiceConfig returns the configuration for a given service ID.
-//
 // Parameters:
 //   - serviceID (string): The unique identifier of the service.
 //
@@ -157,16 +123,9 @@ func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInf
 //   - Records method call for mock.
 //
 // Summary: Retrieves GetServiceConfig operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
@@ -178,7 +137,6 @@ func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 }
 
 // GetServiceError returns the last known registration or health error for a service.
-//
 // Parameters:
 //   - serviceID (string): The unique identifier of the service.
 //
@@ -190,16 +148,9 @@ func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 //   - Records method call for mock.
 //
 // Summary: Retrieves GetServiceError operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {

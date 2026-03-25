@@ -16,7 +16,6 @@ import (
 )
 
 // HTTPRateLimitMiddleware provides global rate limiting for HTTP endpoints.
-//
 // Summary: Middleware for rate limiting HTTP requests based on IP address.
 type HTTPRateLimitMiddleware struct {
 	limiters   *ttlcache.Cache[string, *rate.Limiter]
@@ -26,14 +25,11 @@ type HTTPRateLimitMiddleware struct {
 }
 
 // HTTPRateLimitOption defines a functional option for HTTPRateLimitMiddleware.
-//
 // Summary: Functional option type for configuring the middleware.
 type HTTPRateLimitOption func(*HTTPRateLimitMiddleware)
 
 // WithTrustProxy enables trusting the X-Forwarded-For header.
-//
 // Summary: Configures the middleware to trust the X-Forwarded-For header.
-//
 // Parameters:
 //   - trust: bool. Whether to trust the proxy headers.
 //
@@ -52,9 +48,7 @@ func WithTrustProxy(trust bool) HTTPRateLimitOption {
 }
 
 // NewHTTPRateLimitMiddleware creates a new HTTPRateLimitMiddleware.
-//
 // Summary: Initializes a new HTTP rate limit middleware.
-//
 // Parameters:
 //   - rps: float64. Requests per second allowed per IP.
 //   - burst: int. Maximum burst size allowed per IP.
@@ -91,9 +85,7 @@ func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOpt
 }
 
 // Handler wraps an http.Handler with rate limiting.
-//
 // Summary: Returns a handler that enforces rate limiting.
-//
 // Parameters:
 //   - next: http.Handler. The next handler in the chain.
 //

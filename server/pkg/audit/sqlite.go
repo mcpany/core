@@ -18,7 +18,6 @@ import (
 )
 
 // SQLiteAuditStore writes audit logs to a SQLite database.
-//
 // Summary: Audit store implementation that persists log entries in a local SQLite database with cryptographic hash chaining.
 type SQLiteAuditStore struct {
 	db *sql.DB
@@ -26,9 +25,7 @@ type SQLiteAuditStore struct {
 }
 
 // NewSQLiteAuditStore creates a new SQLiteAuditStore.
-//
 // Summary: Initializes a new SQLiteAuditStore at the specified path, creating the database and schema if they do not exist.
-//
 // Parameters:
 //   - path (string): The file system path to the SQLite database file.
 //
@@ -154,9 +151,7 @@ func ensureColumn(db *sql.DB, colName string) error {
 }
 
 // Write writes an audit entry to the database.
-//
 // Summary: Persists a single audit entry into the SQLite database, calculating a cryptographic hash based on the previous entry.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - entry (Entry): The audit log entry to be written.
@@ -227,9 +222,7 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 }
 
 // Read reads audit entries from the database based on the filter.
-//
 // Summary: Queries the SQLite database for audit log entries that match the provided filter criteria.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - filter (Filter): The search criteria for querying audit logs.
@@ -313,9 +306,7 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 }
 
 // Verify checks the integrity of the audit logs.
-//
 // Summary: Validates the cryptographic integrity of the audit log by recalculating and checking the hash chain.
-//
 // Parameters:
 //   - None.
 //
@@ -376,9 +367,7 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 }
 
 // Close closes the database connection.
-//
 // Summary: Gracefully closes the connection to the SQLite database.
-//
 // Returns:
 //   - error: An error if the database connection fails to close.
 //

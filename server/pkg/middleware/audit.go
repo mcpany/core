@@ -23,7 +23,6 @@ import (
 )
 
 // AuditMiddleware provides audit logging for tool executions.
-//
 // Summary: Middleware for auditing and logging tool execution events.
 type AuditMiddleware struct {
 	mu          sync.RWMutex
@@ -34,9 +33,7 @@ type AuditMiddleware struct {
 }
 
 // NewAuditMiddleware creates a new AuditMiddleware.
-//
 // Summary: Initializes the audit middleware with the provided configuration.
-//
 // Parameters:
 //   - auditConfig (*configv1.AuditConfig): The configuration settings for audit logging.
 //
@@ -99,9 +96,7 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 }
 
 // SetStore sets the audit store.
-//
 // Summary: Configures a custom audit store implementation, primarily for testing.
-//
 // Parameters:
 //   - store (audit.Store): The custom audit store to be used by the middleware.
 //
@@ -117,9 +112,7 @@ func (m *AuditMiddleware) SetStore(store audit.Store) {
 }
 
 // UpdateConfig updates the audit configuration safely.
-//
 // Summary: Updates the middleware configuration and re-initializes the underlying store if necessary.
-//
 // Parameters:
 //   - auditConfig (*configv1.AuditConfig): The new audit configuration to apply.
 //
@@ -174,9 +167,7 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 }
 
 // Execute intercepts tool execution to log audit events.
-//
 // Summary: Intercepts tool execution requests to record input, output, and metadata in the audit log.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - req (*tool.ExecutionRequest): The details of the tool to be executed.
@@ -305,7 +296,6 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 }
 
 // ClearHistory clears the audit history from the broadcaster.
-//
 // Summary: Flushes the in-memory audit event history.
 // Errors:
 //   - None.
@@ -319,9 +309,7 @@ func (m *AuditMiddleware) ClearHistory() {
 }
 
 // SubscribeWithHistory returns a subscription channel and historical audit entries.
-//
 // Summary: Subscribes to real-time audit events and retrieves the current history of events.
-//
 // Parameters:
 //   - None.
 //
@@ -339,9 +327,7 @@ func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 }
 
 // GetHistory returns the current broadcast history.
-//
 // Summary: Retrieves the list of all audit entries currently held in the broadcaster's history.
-//
 // Returns:
 //   - []any: A slice of historical audit entries.
 //
@@ -355,9 +341,7 @@ func (m *AuditMiddleware) GetHistory() []any {
 }
 
 // Unsubscribe removes a subscriber channel.
-//
 // Summary: Stops a specific channel from receiving future audit events.
-//
 // Parameters:
 //   - ch (chan any): The subscriber channel to be removed.
 //
@@ -371,9 +355,7 @@ func (m *AuditMiddleware) Unsubscribe(ch chan any) {
 }
 
 // Read reads audit entries from the underlying store.
-//
 // Summary: Queries the audit store for historical log entries matching the filter.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - filter (audit.Filter): The search criteria for audit logs.
@@ -399,9 +381,7 @@ func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audi
 }
 
 // Close closes the underlying store.
-//
 // Summary: Gracefully shuts down the audit store and its associated resources.
-//
 // Returns:
 //   - error: An error if the close operation fails.
 //
@@ -420,9 +400,7 @@ func (m *AuditMiddleware) Close() error {
 }
 
 // Write writes an audit entry directly to the store.
-//
 // Summary: Directly persists a single audit entry into the configured store.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the operation.
 //   - entry (audit.Entry): The audit log entry to be persisted.

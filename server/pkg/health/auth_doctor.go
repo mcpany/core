@@ -8,9 +8,7 @@ import (
 )
 
 // CheckAuth performs health checks for authentication configuration.
-//
 // Summary: Validates the presence of critical API keys and OAuth configuration.
-//
 // Returns:
 //   - map[string]CheckResult: A map of check names to their results.
 //

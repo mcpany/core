@@ -16,7 +16,6 @@ import (
 )
 
 // Seeder seeds the database with service templates.
-//
 // Summary: Represents a Seeder.
 type Seeder struct {
 	Store       storage.Storage
@@ -24,14 +23,12 @@ type Seeder struct {
 }
 
 // ConfigFile represents the structure of the config.yaml in examples.
-//
 // Summary: Represents a ConfigFile.
 type ConfigFile struct {
 	UpstreamServices []map[string]any `yaml:"upstream_services"`
 }
 
 // Seed walks the examples directory and saves service templates.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //
@@ -45,16 +42,9 @@ type ConfigFile struct {
 //   - None
 //
 // Summary: Executes Seed operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (s *Seeder) Seed(ctx context.Context) error {
@@ -112,7 +102,6 @@ func (s *Seeder) Seed(ctx context.Context) error {
 		// Note: We need to handle potential specific YAML types?
 		// yaml.v3 is usually compatible with json marshaling if types are basic.
 
-		// TODO: This is a simplification. Real implementation might need robust conversion.
 		// For now, we manually construct the Template for popular services we know.
 		// Or deeper: we just store the "ServiceConfig" as part of the template.
 

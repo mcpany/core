@@ -15,9 +15,7 @@ import (
 )
 
 // BindRootFlags binds the global and persistent command-line flags to the Viper configuration registry.
-//
 // Summary: Establishes the connection between Cobra command flags and Viper's configuration management.
-//
 // Parameters:
 //   - cmd (*cobra.Command): The command instance to which the persistent flags will be attached.
 //
@@ -75,9 +73,7 @@ func BindRootFlags(cmd *cobra.Command) {
 }
 
 // BindServerFlags binds server-specific command-line flags to the Viper configuration registry.
-//
 // Summary: Defines flags specific to the server operation, such as port configurations and authentication keys.
-//
 // Parameters:
 //   - cmd (*cobra.Command): The command instance to which the server flags will be attached.
 //
@@ -121,9 +117,7 @@ func BindServerFlags(cmd *cobra.Command) {
 }
 
 // BindFlags binds both root and server-specific command line flags to the Viper configuration registry.
-//
 // Summary: Orchestrates the binding of all necessary root and server-specific flags.
-//
 // Parameters:
 //   - cmd (*cobra.Command): The command instance to which the flags will be attached.
 //

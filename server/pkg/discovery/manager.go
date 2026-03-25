@@ -13,7 +13,6 @@ import (
 )
 
 // ProviderStatus represents the status of a discovery provider.
-//
 // Summary: Represents a ProviderStatus.
 type ProviderStatus struct {
 	Name            string
@@ -24,7 +23,6 @@ type ProviderStatus struct {
 }
 
 // Manager manages auto-discovery providers.
-//
 // Summary: Represents a Manager.
 type Manager struct {
 	providers []Provider
@@ -33,7 +31,6 @@ type Manager struct {
 }
 
 // NewManager creates a new discovery manager.
-//
 // Parameters:
 //   - None
 //
@@ -47,16 +44,9 @@ type Manager struct {
 //   - None
 //
 // Summary: Initializes NewManager operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewManager() *Manager {
@@ -66,7 +56,6 @@ func NewManager() *Manager {
 }
 
 // RegisterProvider registers a new provider.
-//
 // Parameters:
 //   - p (Provider): The p parameter.
 //
@@ -80,16 +69,9 @@ func NewManager() *Manager {
 //   - None
 //
 // Summary: Executes RegisterProvider operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *Manager) RegisterProvider(p Provider) {
@@ -103,7 +85,6 @@ func (m *Manager) RegisterProvider(p Provider) {
 }
 
 // Run runs all registered providers and returns the aggregated discovered services. It also updates the internal status of each provider.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //
@@ -117,16 +98,9 @@ func (m *Manager) RegisterProvider(p Provider) {
 //   - None
 //
 // Summary: Executes Run operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
@@ -177,7 +151,6 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 }
 
 // GetStatuses returns the current status of all providers.
-//
 // Parameters:
 //   - None
 //
@@ -191,16 +164,9 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 //   - None
 //
 // Summary: Retrieves GetStatuses operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *Manager) GetStatuses() []*ProviderStatus {
@@ -219,7 +185,6 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 }
 
 // GetProviderStatus returns the status of a specific provider.
-//
 // Parameters:
 //   - name (string): The name parameter.
 //
@@ -234,16 +199,9 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 //   - None
 //
 // Summary: Retrieves GetProviderStatus operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (m *Manager) GetProviderStatus(name string) (*ProviderStatus, bool) {

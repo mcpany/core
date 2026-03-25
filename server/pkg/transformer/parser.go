@@ -29,7 +29,6 @@ var (
 // plain text) and extract data into a structured map. It uses a configuration
 // map to define the extraction rules for each format, such as JSONPath for
 // JSON, XPath for XML, and regex for plain text.
-//
 // Summary: Generic parser for extracting data from JSON, XML, Text, or using JQ.
 type TextParser struct {
 	transformer *Transformer
@@ -41,9 +40,7 @@ var (
 )
 
 // NewTextParser returns a shared instance of TextParser.
-//
 // Summary: Returns a singleton instance of TextParser.
-//
 // Returns:
 //   - *TextParser: The singleton instance.
 //
@@ -63,9 +60,7 @@ func NewTextParser() *TextParser {
 
 // Transform takes a map of data and a Go template string and returns a byte
 // slice containing the transformed output.
-//
 // Summary: Delegates to the internal Transformer to render templates.
-//
 // Parameters:
 //   - templateStr: string. The Go template.
 //   - data: any. The context data.
@@ -85,9 +80,7 @@ func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 
 // Parse extracts data from an input byte slice based on the specified input
 // type and configuration.
-//
 // Summary: Parses input data according to rules defined in config or query.
-//
 // Parameters:
 //   - inputType: string. One of "json", "xml", "text", "jq".
 //   - input: []byte. The raw input data.

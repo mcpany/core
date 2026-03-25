@@ -13,9 +13,7 @@ import (
 )
 
 // Middleware returns a middleware function to track session activity.
-//
 // Summary: Creates an MCP middleware for tracking and recording session activity metrics.
-//
 // Parameters:
 //   - next: mcp.MethodHandler. The next handler in the chain.
 //

@@ -21,7 +21,6 @@ import (
 )
 
 // Settings defines the global configuration for the application.
-//
 // Summary: Represents a Settings.
 type Settings struct {
 	proto           *configv1.GlobalSettings
@@ -46,9 +45,7 @@ var (
 )
 
 // GlobalSettings returns the singleton instance of the global settings.
-//
 // Summary: Retrieves the global settings singleton.
-//
 // Parameters:
 //   - None.
 //
@@ -70,9 +67,7 @@ func GlobalSettings() *Settings {
 }
 
 // ToProto returns the underlying GlobalSettings protobuf message.
-//
 // Summary: Converts the settings to a protobuf message.
-//
 // Parameters:
 //   - None.
 //
@@ -89,9 +84,7 @@ func (s *Settings) ToProto() *configv1.GlobalSettings {
 }
 
 // Load initializes the global settings from the command line and config files.
-//
 // Summary: Loads configuration from flags and files.
-//
 // Parameters:
 //   - cmd: *cobra.Command. The cobra command containing flags.
 //   - fs: afero.Fs. The file system interface for reading config files.
@@ -199,9 +192,7 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 }
 
 // LogFormat returns the current log format as a protobuf enum.
-//
 // Summary: Retrieves the log format.
-//
 // Parameters:
 //   - None.
 //
@@ -223,9 +214,7 @@ func (s *Settings) LogFormat() configv1.GlobalSettings_LogFormat {
 }
 
 // GRPCPort returns the gRPC port.
-//
 // Summary: Retrieves the gRPC port.
-//
 // Parameters:
 //   - None.
 //
@@ -242,9 +231,7 @@ func (s *Settings) GRPCPort() string {
 }
 
 // MCPListenAddress returns the MCP listen address.
-//
 // Summary: Retrieves the MCP listen address.
-//
 // Parameters:
 //   - None.
 //
@@ -261,9 +248,7 @@ func (s *Settings) MCPListenAddress() string {
 }
 
 // MetricsListenAddress returns the metrics listen address.
-//
 // Summary: Retrieves the metrics listen address.
-//
 // Parameters:
 //   - None.
 //
@@ -280,9 +265,7 @@ func (s *Settings) MetricsListenAddress() string {
 }
 
 // Stdio returns whether stdio mode is enabled.
-//
 // Summary: Checks if stdio mode is enabled.
-//
 // Parameters:
 //   - None.
 //
@@ -299,9 +282,7 @@ func (s *Settings) Stdio() bool {
 }
 
 // ConfigPaths returns the paths to the configuration files.
-//
 // Summary: Retrieves configuration file paths.
-//
 // Parameters:
 //   - None.
 //
@@ -318,9 +299,7 @@ func (s *Settings) ConfigPaths() []string {
 }
 
 // IsDebug returns whether debug mode is enabled.
-//
 // Summary: Checks if debug mode is enabled.
-//
 // Parameters:
 //   - None.
 //
@@ -337,9 +316,7 @@ func (s *Settings) IsDebug() bool {
 }
 
 // LogFile returns the path to the log file.
-//
 // Summary: Retrieves the log file path.
-//
 // Parameters:
 //   - None.
 //
@@ -356,9 +333,7 @@ func (s *Settings) LogFile() string {
 }
 
 // PersistentLog returns the path to the persistent log file used for hydration.
-//
 // Summary: Retrieves the persistent log file path.
-//
 // Parameters:
 //   - None.
 //
@@ -375,9 +350,7 @@ func (s *Settings) PersistentLog() string {
 }
 
 // ShutdownTimeout returns the graceful shutdown timeout.
-//
 // Summary: Retrieves the shutdown timeout.
-//
 // Parameters:
 //   - None.
 //
@@ -394,9 +367,7 @@ func (s *Settings) ShutdownTimeout() time.Duration {
 }
 
 // APIKey returns the API key for the server.
-//
 // Summary: Retrieves the API key.
-//
 // Parameters:
 //   - None.
 //
@@ -416,9 +387,7 @@ func (s *Settings) APIKey() string {
 }
 
 // SetAPIKey sets the Global API key.
-//
 // Summary: Sets the API key.
-//
 // Parameters:
 //   - key: string. The API key.
 //
@@ -436,9 +405,7 @@ func (s *Settings) SetAPIKey(key string) {
 }
 
 // SetMiddlewares sets the middlewares for the global settings.
-//
 // Summary: Sets the middlewares.
-//
 // Parameters:
 //   - middlewares: []*configv1.Middleware. The list of middlewares.
 //
@@ -456,9 +423,7 @@ func (s *Settings) SetMiddlewares(middlewares []*configv1.Middleware) {
 }
 
 // Profiles returns the active profiles.
-//
 // Summary: Retrieves the active profiles.
-//
 // Parameters:
 //   - None.
 //
@@ -481,9 +446,7 @@ func (s *Settings) Profiles() []string {
 }
 
 // LogLevel returns the current log level as a protobuf enum.
-//
 // Summary: Retrieves the log level.
-//
 // Parameters:
 //   - None.
 //
@@ -523,9 +486,7 @@ func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 }
 
 // DBPath returns the path to the SQLite database.
-//
 // Summary: Retrieves the database path.
-//
 // Parameters:
 //   - None.
 //
@@ -542,9 +503,7 @@ func (s *Settings) DBPath() string {
 }
 
 // SetValues returns configuration values to override.
-//
 // Summary: Retrieves configuration override values.
-//
 // Parameters:
 //   - None.
 //
@@ -561,9 +520,7 @@ func (s *Settings) SetValues() []string {
 }
 
 // GetDbDsn returns the database DSN.
-//
 // Summary: Retrieves the database DSN.
-//
 // Parameters:
 //   - None.
 //
@@ -580,9 +537,7 @@ func (s *Settings) GetDbDsn() string {
 }
 
 // GetDbDriver returns the database driver.
-//
 // Summary: Retrieves the database driver.
-//
 // Parameters:
 //   - None.
 //
@@ -599,9 +554,7 @@ func (s *Settings) GetDbDriver() string {
 }
 
 // Middlewares returns the configured middlewares.
-//
 // Summary: Retrieves the configured middlewares.
-//
 // Parameters:
 //   - None.
 //
@@ -618,9 +571,7 @@ func (s *Settings) Middlewares() []*configv1.Middleware {
 }
 
 // GetDlp returns the DLP configuration.
-//
 // Summary: Retrieves the DLP configuration.
-//
 // Parameters:
 //   - None.
 //
@@ -637,9 +588,7 @@ func (s *Settings) GetDlp() *configv1.DLPConfig {
 }
 
 // SetDlp sets the DLP configuration.
-//
 // Summary: Sets the DLP configuration.
-//
 // Parameters:
 //   - dlp: *configv1.DLPConfig. The DLP config.
 //
@@ -657,9 +606,7 @@ func (s *Settings) SetDlp(dlp *configv1.DLPConfig) {
 }
 
 // GetOidc returns the OIDC configuration.
-//
 // Summary: Retrieves the OIDC configuration.
-//
 // Parameters:
 //   - None.
 //
@@ -676,9 +623,7 @@ func (s *Settings) GetOidc() *configv1.OIDCConfig {
 }
 
 // GetProfileDefinitions returns the profile definitions.
-//
 // Summary: Retrieves the profile definitions.
-//
 // Parameters:
 //   - None.
 //
@@ -695,9 +640,7 @@ func (s *Settings) GetProfileDefinitions() []*configv1.ProfileDefinition {
 }
 
 // GithubAPIURL returns the GitHub API URL.
-//
 // Summary: Retrieves the GitHub API URL.
-//
 // Parameters:
 //   - None.
 //

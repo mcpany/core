@@ -55,10 +55,8 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 
 // Upstream implements the upstream.Upstream interface for services that are
 // exposed via standard HTTP endpoints.
-//
 // It handles the registration of tools defined in the service configuration
 // and manages connection pooling for HTTP requests.
-//
 // Summary: Represents a Upstream.
 type Upstream struct {
 	poolManager *pool.Manager
@@ -69,10 +67,8 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
-//
 // It uses a configured health checker if available, or falls back to a basic
 // TCP connection check to the service address.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the health check.
 //
@@ -86,16 +82,9 @@ type Upstream struct {
 //   - May establish a network connection to the service.
 //
 // Summary: Executes CheckHealth operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
@@ -119,7 +108,6 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 
 // Shutdown gracefully terminates the HTTP upstream service by shutting down the
 // associated connection pool.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
@@ -131,16 +119,9 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //   - Deregisters the connection pool.
 //
 // Summary: Executes Shutdown operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
@@ -158,7 +139,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // NewUpstream creates a new instance of Upstream.
-//
 // Parameters:
 //   - poolManager (*pool.Manager): The connection pool manager to be used for managing HTTP connections.
 //
@@ -169,16 +149,9 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - Allocates memory for the Upstream struct.
 //
 // Summary: Initializes NewUpstream operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
@@ -190,7 +163,6 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Register processes the configuration for an HTTP service, creates a connection
 // pool for it, and then creates and registers tools for each call definition
 // specified in the configuration.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the registration process.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
@@ -215,16 +187,9 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - Registers tools and prompts with their respective managers.
 //
 // Summary: Executes Register operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) Register(
@@ -568,7 +533,6 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		// Base: http://host/api, Rel: foo -> http://host/foo (Replaces last segment!)
 		// Base: http://host/api/, Rel: foo -> http://host/api/foo
 		// So if we have a relPath, we MUST ensure base has slash.
-		//
 		// Special case: If endpointURL.Path is exactly "/", we want to treat it as a slash
 		// relative to the base, effectively forcing a trailing slash on the base.
 		// But TrimPrefix(..., "/") makes it empty string.

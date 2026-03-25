@@ -27,7 +27,6 @@ type httpPool struct {
 }
 
 // Close closes the connection pool and the idle connections.
-//
 // Returns:
 //   - error: An error if the pool cannot be closed.
 //
@@ -35,16 +34,9 @@ type httpPool struct {
 //   - Closes idle network connections.
 //
 // Summary: Executes Close operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (p *httpPool) Close() error {
@@ -56,9 +48,7 @@ func (p *httpPool) Close() error {
 }
 
 // NewHTTPPool creates a new connection pool for HTTP clients.
-//
 // It is defined as a variable to allow for easy mocking in tests.
-//
 // Parameters:
 //   - minSize (int): The initial number of clients to create.
 //   - maxSize (int): The maximum number of clients the pool can hold.

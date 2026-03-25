@@ -12,9 +12,7 @@ import (
 
 // RecoveryMiddleware recovers from panics in the handler chain, logs the panic,
 // and returns a generic 500 Internal Server Error response.
-//
 // Summary: Middleware to recover from panics.
-//
 // Parameters:
 //   - next (http.Handler): The next handler in the chain.
 //

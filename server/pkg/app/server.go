@@ -128,9 +128,7 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 }
 
 // RunOptions configuration for starting the MCP Any application.
-//
 // Summary: Options for configuring the application runtime.
-//
 // Fields:
 //   - Ctx: context.Context. The context for the application.
 //   - Fs: afero.Fs. The filesystem interface.
@@ -160,38 +158,29 @@ type RunOptions struct {
 }
 
 // Runner defines the interface for running the application.
-//
 // Summary: Interface for application execution and management.
 type Runner interface {
 	// Run starts the application with the given options.
-	//
 	// Summary: Starts the application.
-	//
 	// Parameters:
 	//   - opts: RunOptions. The configuration for running.
-	//
 	// Returns:
 	//   - error: An error if startup or execution fails.
 	Run(opts RunOptions) error
 
 	// ReloadConfig reloads the application configuration.
-	//
 	// Summary: Triggers a configuration reload.
-	//
 	// Parameters:
 	//   - ctx: context.Context. The context for the operation.
 	//   - fs: afero.Fs. The filesystem.
 	//   - configPaths: []string. Paths to configuration files.
-	//
 	// Returns:
 	//   - error: An error if reload fails.
 	ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error
 }
 
 // Application is the main application struct, holding the dependencies and logic for the MCP Any server.
-//
 // Summary: The main application container.
-//
 // Fields:
 //   - PromptManager: prompt.ManagerInterface. Manages AI prompts.
 //   - ToolManager: tool.ManagerInterface. Manages tools and execution.
@@ -309,9 +298,7 @@ type statsCacheEntry struct {
 }
 
 // NewApplication creates a new Application with default dependencies.
-//
 // Summary: Initializes a new Application instance.
-//
 // Returns:
 //   - (*Application): The initialized application.
 //
@@ -341,9 +328,7 @@ func NewApplication() *Application {
 }
 
 // Run starts the MCP Any server and all its components.
-//
 // Summary: Executes the application.
-//
 // Parameters:
 //   - opts (RunOptions): The runtime options.
 //
@@ -926,9 +911,7 @@ func (a *Application) Run(opts RunOptions) error {
 
 // ReloadConfig reloads the configuration from the given paths and updates the
 // services.
-//
 // Summary: Reloads application configuration from disk/storage.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the reload operation.
 //   - fs (afero.Fs): The filesystem interface for reading configuration files.
@@ -1365,11 +1348,8 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 }
 
 // WaitForStartup waits for the application to be fully initialized.
-//
 // Summary: Waits for application startup completion.
-//
 // It blocks until the startup process is complete or the context is canceled.
-//
 // Parameters:
 //   - ctx (context.Context): The context to wait on.
 //
@@ -1392,7 +1372,6 @@ func (a *Application) WaitForStartup(ctx context.Context) error {
 
 // setup initializes the filesystem for the server. It ensures that a valid
 // afero.Fs is available, returning an error if a nil filesystem is provided.
-//
 // Parameters:
 //   - fs (afero.Fs): The filesystem to be validated.
 //
@@ -1413,7 +1392,6 @@ func setup(fs afero.Fs) (afero.Fs, error) {
 // runStdioMode starts the server in standard I/O mode, which is useful for
 // debugging and simple, single-client scenarios. It uses the standard input
 // and output as the transport layer.
-//
 // Parameters:
 //   - ctx (context.Context): The context for managing the server's lifecycle.
 //   - mcpSrv (*mcpserver.Server): The MCP server instance to run.
@@ -1497,13 +1475,10 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 }
 
 // HealthCheck performs a health check against a running server.
-//
 // Summary: Checks the health of a running server.
-//
 // The function constructs the health check URL from the provided address and
 // sends an HTTP GET request. It expects a 200 OK status code for a successful
 // health check.
-//
 // Parameters:
 //   - out (io.Writer): The writer to which the success message will be written.
 //   - addr (string): The address (host:port) on which the server is running.
@@ -1524,13 +1499,10 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 }
 
 // HealthCheckWithContext performs a health check against a running server with a context.
-//
 // Summary: Checks the health of a running server using a context.
-//
 // The function constructs the health check URL from the provided address and
 // sends an HTTP GET request. It expects a 200 OK status code for a successful
 // health check.
-//
 // Parameters:
 //   - ctx (context.Context): The context for managing the health check's lifecycle.
 //   - out (io.Writer): The writer to which the success message will be written.
@@ -1582,7 +1554,6 @@ func HealthCheckWithContext(
 // runServerMode runs the server in the standard HTTP and gRPC server mode. It
 // starts the HTTP server for JSON-RPC and the gRPC server for service
 // registration, and handles graceful shutdown.
-//
 // Parameters:
 //   - ctx (context.Context): The context for managing the server's lifecycle.
 //   - mcpSrv (*mcpserver.Server): The MCP server instance.
@@ -2570,9 +2541,7 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 }
 
 // HTTPRequestContextMiddleware injects the HTTP request into the context.
-//
 // Summary: Middleware to add HTTP request to context.
-//
 // Parameters:
 //   - next (http.Handler): The next handler.
 //
@@ -2593,7 +2562,6 @@ func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handl
 
 // startGrpcServer starts a gRPC server in a new goroutine. It handles graceful
 // shutdown when the context is canceled.
-//
 // ctx is the context for managing the server's lifecycle.
 // wg is a WaitGroup to signal when the server has shut down.
 // errChan is a channel for reporting errors during startup.
@@ -2675,7 +2643,6 @@ func wrapBindError(err error, serverType, address, flag string) error {
 
 // startHTTPServer starts an HTTP server in a new goroutine. It handles graceful
 // shutdown when the context is canceled.
-//
 // ctx is the context for managing the server's lifecycle.
 // wg is a WaitGroup to signal when the server has shut down.
 // errChan is a channel for reporting errors during startup.

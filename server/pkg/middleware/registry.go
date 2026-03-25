@@ -16,7 +16,6 @@ import (
 )
 
 // Registry manages available middlewares.
-//
 // Summary: Represents a Registry.
 type Registry struct {
 	mu           sync.RWMutex
@@ -25,12 +24,10 @@ type Registry struct {
 }
 
 // Factory is a function that creates a HTTP middleware from configuration.
-//
 // Summary: Represents a Factory.
 type Factory func(config *configv1.Middleware) func(http.Handler) http.Handler
 
 // MCPFactory is a function that creates an MCP middleware from configuration.
-//
 // Summary: Represents a MCPFactory.
 type MCPFactory func(config *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler
 
@@ -42,22 +39,14 @@ var (
 )
 
 // Register registers a HTTP middleware factory.
-//
 // Parameters:
 //   - name (string): The name of the resource.
 //   - factory (Factory): The factory.
 //
 // Summary: Executes Register operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func Register(name string, factory Factory) {
@@ -67,22 +56,14 @@ func Register(name string, factory Factory) {
 }
 
 // RegisterMCP registers an MCP middleware factory.
-//
 // Parameters:
 //   - name (string): The name of the resource.
 //   - factory (MCPFactory): The factory.
 //
 // Summary: Executes RegisterMCP operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func RegisterMCP(name string, factory MCPFactory) {
@@ -92,7 +73,6 @@ func RegisterMCP(name string, factory MCPFactory) {
 }
 
 // GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
-//
 // Parameters:
 //   - configs ([]*configv1.Middleware): The configs.
 //
@@ -100,16 +80,9 @@ func RegisterMCP(name string, factory MCPFactory) {
 //   - ([]func(http.Handler) http.Handler): The result.
 //
 // Summary: Retrieves GetHTTPMiddlewares operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
@@ -136,7 +109,6 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 }
 
 // GetMCPMiddlewares returns a sorted list of MCP middlewares based on configuration.
-//
 // Parameters:
 //   - configs ([]*configv1.Middleware): The configs.
 //
@@ -144,16 +116,9 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 //   - ([]func(mcp.MethodHandler) mcp.MethodHandler): The result.
 //
 // Summary: Retrieves GetMCPMiddlewares operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
@@ -180,7 +145,6 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 }
 
 // StandardMiddlewares holds the standard middlewares that might need to be updated.
-//
 // Summary: Represents a StandardMiddlewares.
 type StandardMiddlewares struct {
 	Audit            *AuditMiddleware
@@ -194,7 +158,6 @@ type StandardMiddlewares struct {
 }
 
 // InitStandardMiddlewares registers standard middlewares.
-//
 // Parameters:
 //   - authManager (*auth.Manager): The authManager.
 //   - toolManager (tool.ManagerInterface): The toolManager.
@@ -211,16 +174,9 @@ type StandardMiddlewares struct {
 //   - (error): An error if the operation fails.
 //
 // Summary: Executes InitStandardMiddlewares operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func InitStandardMiddlewares(

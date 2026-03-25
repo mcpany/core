@@ -16,7 +16,6 @@ import (
 )
 
 // ZipProvider provides access to files within a zip archive.
-//
 // Summary: Represents a ZipProvider.
 type ZipProvider struct {
 	fs     afero.Fs
@@ -24,7 +23,6 @@ type ZipProvider struct {
 }
 
 // NewZipProvider creates a new ZipProvider from the given configuration.
-//
 // Parameters:
 //   - config (*configv1.ZipFs): The parameter.
 //
@@ -39,16 +37,9 @@ type ZipProvider struct {
 //   - None.
 //
 // Summary: Initializes NewZipProvider operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
@@ -82,7 +73,6 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 }
 
 // GetFs returns the underlying filesystem.
-//
 // Returns:
 //   - afero.Fs: The result.
 //
@@ -90,16 +80,9 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 //   - None.
 //
 // Summary: Retrieves GetFs operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (p *ZipProvider) GetFs() afero.Fs {
@@ -107,7 +90,6 @@ func (p *ZipProvider) GetFs() afero.Fs {
 }
 
 // ResolvePath resolves the virtual path to a real path in the zip.
-//
 // Parameters:
 //   - virtualPath (string): The parameter.
 //
@@ -122,16 +104,9 @@ func (p *ZipProvider) GetFs() afero.Fs {
 //   - None.
 //
 // Summary: Executes ResolvePath operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
@@ -140,7 +115,6 @@ func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 }
 
 // Close closes the underlying zip file.
-//
 // Returns:
 //   - error: An error if the operation fails.
 //
@@ -151,16 +125,9 @@ func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 //   - None.
 //
 // Summary: Executes Close operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (p *ZipProvider) Close() error {

@@ -20,7 +20,6 @@ import (
 )
 
 // DoctorRunner runs the doctor command checks.
-//
 // Summary: Component to run system health diagnostics.
 type DoctorRunner struct {
 	Out        io.Writer
@@ -29,9 +28,7 @@ type DoctorRunner struct {
 }
 
 // Run executes the doctor checks.
-//
 // Summary: Runs a series of health checks (config, connectivity, deep health).
-//
 // Parameters:
 //   - cmd: *cobra.Command. The command object.
 //   - _: []string. Unused arguments.
@@ -193,10 +190,8 @@ func (r *DoctorRunner) Run(cmd *cobra.Command, _ []string) error {
 }
 
 // newDoctorCmd creates the doctor command.
-//
 // This command checks the health of the MCP Any configuration and the running server.
 // It performs configuration validation, server connectivity checks, and invokes the server's doctor endpoint.
-//
 // Returns:
 //   - *cobra.Command: The configured doctor command.
 func newDoctorCmd() *cobra.Command {

@@ -10,19 +10,14 @@ import (
 
 // Handler defines the interface for handling webhook requests.
 // Implementations of this interface process incoming webhook events.
-//
 // Summary: Interface for webhook handlers.
 type Handler interface {
 	// Handle processes the webhook request.
-	//
 	// Parameters:
 	//   w: http.ResponseWriter. The HTTP response writer to write the response to.
 	//   r: *http.Request. The HTTP request containing the webhook payload.
-	//
 	// Returns:
-	//
 	//	None.
-	//
 	// Side Effects:
 	//   - Writes the response to the response writer.
 	Handle(w http.ResponseWriter, r *http.Request)
@@ -30,7 +25,6 @@ type Handler interface {
 
 // Registry manages the registration and retrieval of system webhooks.
 // It provides a thread-safe mechanism to store and lookup handlers by name.
-//
 // Summary: Thread-safe registry for webhook handlers.
 type Registry struct {
 	mu    sync.RWMutex
@@ -38,9 +32,7 @@ type Registry struct {
 }
 
 // NewRegistry creates and initializes a new Registry instance.
-//
 // Summary: Creates a new webhook registry.
-//
 // Parameters:
 //   - None.
 //
@@ -60,9 +52,7 @@ func NewRegistry() *Registry {
 
 // Register registers a handler with a specific name.
 // If a handler with the same name already exists, it will be overwritten.
-//
 // Summary: Registers a webhook handler.
-//
 // Parameters:
 //   - name: string. The name/path to register the handler under.
 //   - handler: Handler. The Handler instance to register.
@@ -83,9 +73,7 @@ func (r *Registry) Register(name string, handler Handler) {
 }
 
 // Get retrieves a handler by its name.
-//
 // Summary: Retrieves a webhook handler by name.
-//
 // Parameters:
 //   - name: string. The name of the handler to retrieve.
 //

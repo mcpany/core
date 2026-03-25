@@ -9,9 +9,7 @@ import (
 )
 
 // ActionableError is an error that includes a suggestion for fixing the issue.
-//
 // Summary: An error type that pairs an underlying error with a user-facing suggestion.
-//
 // Fields:
 //   - Err: error. The original error that occurred.
 //   - Suggestion: string. A human-readable suggestion on how to resolve the error.
@@ -21,7 +19,6 @@ type ActionableError struct {
 }
 
 // Error implements the error interface. Side Effects: - None.
-//
 // Parameters:
 //   - None
 //
@@ -35,16 +32,9 @@ type ActionableError struct {
 //   - None
 //
 // Summary: Executes Error operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (e *ActionableError) Error() string {
@@ -52,7 +42,6 @@ func (e *ActionableError) Error() string {
 }
 
 // Unwrap returns the underlying error. Side Effects: - None.
-//
 // Parameters:
 //   - None
 //
@@ -66,16 +55,9 @@ func (e *ActionableError) Error() string {
 //   - None
 //
 // Summary: Executes Unwrap operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (e *ActionableError) Unwrap() error {
@@ -83,12 +65,9 @@ func (e *ActionableError) Unwrap() error {
 }
 
 // WrapActionableError wraps an error with context, preserving ActionableError semantics if present.
-//
 // Summary: Wraps an error with context, preserving ActionableError semantics.
-//
 // If the cause is an ActionableError, it returns a new ActionableError with the context added to the error message.
 // Otherwise, it returns a standard wrapped error.
-//
 // Parameters:
 //   - context (string): The context message to prefix to the error.
 //   - err (error): The error to wrap.

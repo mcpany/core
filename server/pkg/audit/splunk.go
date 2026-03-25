@@ -24,7 +24,6 @@ const (
 )
 
 // SplunkAuditStore sends audit logs to Splunk HTTP Event Collector.
-//
 // Summary: Asynchronous audit store that forwards log entries to Splunk via its HTTP Event Collector (HEC).
 type SplunkAuditStore struct {
 	config *configv1.SplunkConfig
@@ -35,9 +34,7 @@ type SplunkAuditStore struct {
 }
 
 // NewSplunkAuditStore creates a new SplunkAuditStore.
-//
 // Summary: Initializes a new SplunkAuditStore with the provided HEC configuration and starts background workers for processing.
-//
 // Parameters:
 //   - config (*configv1.SplunkConfig): The Splunk HEC and indexing configuration.
 //
@@ -109,9 +106,7 @@ func (e *SplunkAuditStore) worker() {
 }
 
 // Write implements the Store interface.
-//
 // Summary: Enqueues an audit entry for asynchronous transmission to Splunk.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request (unused).
 //   - entry (Entry): The audit log entry to be recorded.
@@ -180,9 +175,7 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 }
 
 // Read implements the Store interface.
-//
 // Summary: Not implemented for SplunkAuditStore.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request (unused).
 //   - filter (Filter): Criteria for filtering audit logs (unused).
@@ -201,9 +194,7 @@ func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 }
 
 // Close closes the queue and waits for workers to finish.
-//
 // Summary: Gracefully shuts down the Splunk audit store, flushing any pending events before exiting.
-//
 // Returns:
 //   - error: Always returns nil.
 //

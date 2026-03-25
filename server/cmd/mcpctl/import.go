@@ -14,9 +14,7 @@ import (
 )
 
 // ClaudeDesktopConfig represents the structure of claude_desktop_config.json.
-//
 // Summary: Configuration format used by Claude Desktop.
-//
 // Fields:
 //   - MCPServers: map[string]MCPServerConfig. A map of server names to their configurations.
 type ClaudeDesktopConfig struct {
@@ -24,9 +22,7 @@ type ClaudeDesktopConfig struct {
 }
 
 // MCPServerConfig represents a single server configuration in Claude Desktop.
-//
 // Summary: Configuration for a single MCP server in Claude Desktop.
-//
 // Fields:
 //   - Command: string. The command to execute to start the server.
 //   - Args: []string. The arguments to pass to the command.
@@ -38,7 +34,6 @@ type MCPServerConfig struct {
 }
 
 // McpAnyConfig represents the target configuration structure for MCP Any.
-//
 // Summary:
 //
 //	Configuration for the MCP Any server.
@@ -50,7 +45,6 @@ type McpAnyConfig struct {
 }
 
 // UpstreamService represents a single upstream service configuration.
-//
 // Summary:
 //
 //	Configuration for a single upstream service.
@@ -64,7 +58,6 @@ type UpstreamService struct {
 }
 
 // McpService defines the configuration for an MCP-based service.
-//
 // Summary:
 //
 //	Configuration for a service using the Model Context Protocol (MCP).
@@ -76,7 +69,6 @@ type McpService struct {
 }
 
 // StdioConnection defines the parameters for connecting to an MCP server via standard I/O.
-//
 // Summary:
 //
 //	Parameters for connecting to an MCP server using standard input/output streams.

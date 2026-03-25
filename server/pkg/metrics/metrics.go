@@ -18,14 +18,11 @@ import (
 )
 
 // Label is an alias for metrics.Label. It represents a key-value pair for labeling metrics.
-//
 // Summary: Represents a metrics label for categorizing observations.
 type Label = metrics.Label
 
 // NewPrometheusSink creates a new Prometheus sink for metrics collection.
-//
 // Summary: Initializes a Prometheus-specific metrics sink.
-//
 // Parameters:
 //   - None.
 //
@@ -45,9 +42,7 @@ func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
 var initOnce sync.Once
 
 // Initialize prepares the metrics system with a Prometheus sink.
-//
 // Summary: Sets up the global metrics infrastructure, including a Prometheus sink and default configuration.
-//
 // Returns:
 //   - error: An error if the global metrics system fails to initialize.
 //
@@ -79,9 +74,7 @@ func Initialize() error {
 }
 
 // Handler returns an http.Handler for the /metrics endpoint.
-//
 // Summary: Retrieves the standard Prometheus HTTP handler for metrics scraping.
-//
 // Returns:
 //   - http.Handler: An HTTP handler configured to serve Prometheus metrics.
 //
@@ -95,9 +88,7 @@ func Handler() http.Handler {
 }
 
 // StartServer starts an HTTP server to expose the metrics.
-//
 // Summary: Launches a dedicated HTTP server for serving application metrics.
-//
 // Parameters:
 //   - addr (string): The network address to listen on (e.g., ":8080").
 //
@@ -135,9 +126,7 @@ func StartServer(addr string) error {
 }
 
 // SetGauge sets the value of a gauge.
-//
 // Summary: Records the current value of a gauge metric.
-//
 // Parameters:
 //   - name (string): The name of the gauge.
 //   - val (float32): The current value to be recorded.
@@ -159,9 +148,7 @@ func SetGauge(name string, val float32, labels ...string) {
 }
 
 // IncrCounter increments a counter.
-//
 // Summary: Increments a counter metric by a specified value.
-//
 // Parameters:
 //   - name ([]string): The hierarchical name of the counter.
 //   - val (float32): The amount by which to increment the counter.
@@ -176,9 +163,7 @@ func IncrCounter(name []string, val float32) {
 }
 
 // IncrCounterWithLabels increments a counter with labels.
-//
 // Summary: Increments a labeled counter metric by a specified value.
-//
 // Parameters:
 //   - name ([]string): The hierarchical name of the counter.
 //   - val (float32): The amount by which to increment the counter.
@@ -194,9 +179,7 @@ func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 }
 
 // MeasureSince measures the time since a given start time and records it.
-//
 // Summary: Records the latency of an operation since the provided start time.
-//
 // Parameters:
 //   - name ([]string): The hierarchical name of the latency metric.
 //   - start (time.Time): The timestamp representing the beginning of the operation.
@@ -211,9 +194,7 @@ func MeasureSince(name []string, start time.Time) {
 }
 
 // MeasureSinceWithLabels measures the time since a given start time and records it with labels.
-//
 // Summary: Records the latency of a labeled operation since the provided start time.
-//
 // Parameters:
 //   - name ([]string): The hierarchical name of the latency metric.
 //   - start (time.Time): The timestamp representing the beginning of the operation.
@@ -229,9 +210,7 @@ func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Lab
 }
 
 // AddSample adds a sample to a histogram/summary.
-//
 // Summary: Records a single value as a sample for a histogram metric.
-//
 // Parameters:
 //   - name ([]string): The hierarchical name of the histogram.
 //   - val (float32): The value to be sampled.
@@ -246,9 +225,7 @@ func AddSample(name []string, val float32) {
 }
 
 // AddSampleWithLabels adds a sample to a histogram/summary with labels.
-//
 // Summary: Records a single labeled value as a sample for a histogram metric.
-//
 // Parameters:
 //   - name ([]string): The hierarchical name of the histogram.
 //   - val (float32): The value to be sampled.

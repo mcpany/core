@@ -59,9 +59,7 @@ var byteBufferPool = sync.Pool{
 }
 
 // GzipCompressionMiddleware returns a middleware that compresses HTTP responses using Gzip.
-//
 // Summary: Middleware that compresses HTTP responses using Gzip if supported by the client.
-//
 // Parameters:
 //   - next: http.Handler. The next handler in the chain.
 //
@@ -120,9 +118,7 @@ type gzipResponseWriter struct {
 }
 
 // Write writes the data to the connection as part of an HTTP reply.
-//
 // Summary: Writes data to the response, buffering until compression threshold is met.
-//
 // Parameters:
 //   - b: []byte. The data to write.
 //
@@ -187,9 +183,7 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 }
 
 // WriteHeader captures the status code.
-//
 // Summary: Captures the status code for later writing.
-//
 // Parameters:
 //   - code: int. The HTTP status code.
 //
@@ -276,7 +270,6 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 }
 
 // Flush ⚡ BOLT: Implemented Flush to support streaming responses (e.g. SSE). Randomized Selection from Top 5 High-Impact Targets Flush implements the http.Flusher interface. Summary: Flushes the compressed stream to the client. Side Effects: - Forces any buffered data to be compressed and sent. - Flushes the underlying response writer.
-//
 // Parameters:
 //   - None
 //
@@ -290,16 +283,9 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 //   - None
 //
 // Summary: Executes Flush operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (w *gzipResponseWriter) Flush() {
@@ -322,7 +308,6 @@ func (w *gzipResponseWriter) Flush() {
 }
 
 // Close closes the gzip writer and returns it to the pool. Summary: Closes the Gzip writer and releases resources. Side Effects: - Closes the active gzip writer. - Returns buffers to the pool. - Ensures all data is flushed to the client.
-//
 // Parameters:
 //   - None
 //
@@ -336,16 +321,9 @@ func (w *gzipResponseWriter) Flush() {
 //   - None
 //
 // Summary: Executes Close operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (w *gzipResponseWriter) Close() {

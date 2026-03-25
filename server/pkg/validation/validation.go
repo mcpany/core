@@ -18,9 +18,7 @@ import (
 
 // IsValidBindAddress checks if a given string is a valid bind address.
 // A valid bind address is in the format "host:port".
-//
 // Summary: Validates a bind address string.
-//
 // Parameters:
 //   - s: string. The address string to validate.
 //
@@ -70,9 +68,7 @@ func IsValidBindAddress(s string) error {
 // path traversal sequences ("../" or "..\\"). This function is crucial for
 // preventing directory traversal attacks, where a malicious actor could
 // otherwise access or manipulate files outside of the intended directory.
-//
 // Summary: Checks for path traversal attempts.
-//
 // Parameters:
 //   - path: string. The path to check.
 //
@@ -105,7 +101,6 @@ var IsSecurePath = func(path string) error {
 
 // IsSecureRelativePath checks if a given file path is secure, relative, and does not contain any
 // path traversal sequences. It strictly disallows absolute paths and drive letters.
-//
 // Summary: Checks if a path is secure and relative.
 var IsSecureRelativePath = func(path string) error {
 	// 1. Basic security check (no ..)
@@ -145,9 +140,7 @@ var (
 )
 
 // SetAllowedPaths sets the list of allowed paths for file operations.
-//
 // Summary: Sets the global allowed paths list.
-//
 // Parameters:
 //   - paths: []string. The list of allowed paths.
 //
@@ -167,7 +160,6 @@ func SetAllowedPaths(paths []string) {
 // - Server configuration files (config.yaml, config.json)
 // - Database files (mcpany.db)
 // - Private keys (id_rsa, id_dsa, *.pem, *.key)
-//
 // Summary: Checks for sensitive file patterns.
 var IsSensitivePath = func(path string) error {
 	base := filepath.Base(path)
@@ -214,7 +206,6 @@ var IsSensitivePath = func(path string) error {
 // IsAllowedPath checks if a given file path is allowed (inside CWD or AllowedPaths)
 // and does not contain any path traversal sequences ("../").
 // It is a variable to allow mocking in tests.
-//
 // Summary: Checks if a path is within allowed directories.
 var IsAllowedPath = func(path string) error {
 	// 1. Basic security check (no .. in the path string itself)
@@ -333,9 +324,7 @@ var allowedOpaqueSchemes = map[string]bool{
 // several checks, including for length, whitespace, the presence of a scheme,
 // and host, considering special cases for schemes like "unix" or "mailto" that
 // do not require a host.
-//
 // Summary: Validates a URL string.
-//
 // Parameters:
 //   - s: string. The URL string.
 //
@@ -356,7 +345,6 @@ func IsValidURL(s string) bool {
 	// This avoids:
 	// 1. strings.Contains (scan)
 	// 2. range loop (UTF-8 decoding)
-	//
 	// ASCII control characters are 0-31 and 127.
 	// Space is 32.
 	// So if b <= 32 || b == 127, it's invalid.
@@ -394,9 +382,7 @@ func IsValidURL(s string) bool {
 // ValidateHTTPServiceDefinition checks the validity of an HttpCallDefinition.
 // It ensures that the endpoint path is specified and correctly formatted, and
 // that a valid HTTP method is set.
-//
 // Summary: Validates an HTTP service definition.
-//
 // Parameters:
 //   - def: *configv1.HttpCallDefinition. The definition to validate.
 //
@@ -432,7 +418,6 @@ func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 }
 
 // FileExists checks if a file exists at the given path.
-//
 // Summary: Checks file existence.
 var FileExists = func(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {

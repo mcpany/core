@@ -29,7 +29,6 @@ type readerInterface interface {
 }
 
 // Bus is a Kafka-backed implementation of the Bus interface.
-//
 // Summary: Represents a Bus.
 type Bus[T any] struct {
 	writer        writerInterface
@@ -40,7 +39,6 @@ type Bus[T any] struct {
 }
 
 // New creates and initializes a new KafkaBus.
-//
 // Parameters:
 //   - config: *bus.KafkaBus. The configuration settings for the Kafka bus.
 //
@@ -49,16 +47,9 @@ type Bus[T any] struct {
 //   - error: An error if no brokers are provided or initialization fails.
 //
 // Summary: Initializes New operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
@@ -84,9 +75,7 @@ func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 }
 
 // Publish sends a message to a Kafka topic.
-//
 // The message is marshaled to JSON and sent to the configured topic prefix + topic.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - topic: string. The topic to publish to.
@@ -96,16 +85,9 @@ func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 //   - error: An error if marshaling or publishing fails.
 //
 // Summary: Executes Publish operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
@@ -125,10 +107,8 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 }
 
 // Subscribe subscribes to a Kafka topic.
-//
 // It starts a goroutine that continuously reads messages from the topic and invokes
 // the provided handler.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the subscription.
 //   - topic: string. The topic to subscribe to.
@@ -138,16 +118,9 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 //   - func(): A function that unsubscribes the handler when called.
 //
 // Summary: Executes Subscribe operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
@@ -225,9 +198,7 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 }
 
 // SubscribeOnce subscribes to a topic for a single message.
-//
 // It ensures that the handler is called only once for the next message received.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the subscription.
 //   - topic: string. The topic to subscribe to.
@@ -237,16 +208,9 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 //   - func(): A function that unsubscribes the handler if called before the message is received.
 //
 // Summary: Executes SubscribeOnce operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
@@ -267,9 +231,7 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 }
 
 // Close closes the Kafka writer.
-//
 // Summary: Closes the Kafka connection.
-//
 // Returns:
 //   - error: An error if closing fails.
 //

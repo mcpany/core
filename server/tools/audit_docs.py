@@ -54,7 +54,7 @@ def check_file(filepath):
 def scan_dir(root_dir):
     count = 0
     for root, dirs, files in os.walk(root_dir):
-        if any(x in root for x in ["vendor", "node_modules", "tests", "test", "examples"]): continue
+        if "vendor" in root or "node_modules" in root: continue
         for file in files:
             if file.endswith('.go') and not file.endswith('_test.go') and not file.endswith('.pb.go') and not file.endswith('.pb.gw.go'):
                 path = os.path.join(root, file)

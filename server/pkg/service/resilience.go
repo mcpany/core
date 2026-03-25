@@ -18,7 +18,6 @@ import (
 )
 
 // UnaryClientInterceptor returns a new unary client interceptor that retries calls. retryConfig is the retryConfig. Returns the result.
-//
 // Parameters:
 //   - retryConfig (*configv1.RetryConfig): The retryConfig parameter.
 //
@@ -32,16 +31,9 @@ import (
 //   - None
 //
 // Summary: Executes UnaryClientInterceptor operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func UnaryClientInterceptor(retryConfig *configv1.RetryConfig) grpc.UnaryClientInterceptor {

@@ -30,10 +30,8 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for filesystem services.
-//
 // It provides tools for interacting with various filesystem backends (local,
 // S3, GCS, etc.) as defined in the service configuration.
-//
 // Summary: Represents a Upstream.
 type Upstream struct {
 	mu      sync.Mutex
@@ -42,7 +40,6 @@ type Upstream struct {
 }
 
 // NewUpstream creates a new instance of FilesystemUpstream.
-//
 // Returns:
 //   - upstream.Upstream: A new instance of the filesystem upstream.
 //
@@ -50,16 +47,9 @@ type Upstream struct {
 //   - None.
 //
 // Summary: Initializes NewUpstream operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewUpstream() upstream.Upstream {
@@ -69,7 +59,6 @@ func NewUpstream() upstream.Upstream {
 }
 
 // Shutdown implements the upstream.Upstream interface.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
@@ -81,16 +70,9 @@ func NewUpstream() upstream.Upstream {
 //   - Closes all registered filesystem providers.
 //
 // Summary: Executes Shutdown operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
@@ -107,7 +89,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // Register processes the configuration for a filesystem service.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the registration process.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
@@ -128,16 +109,9 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - Registers tools with the tool manager.
 //
 // Summary: Executes Register operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) Register(
@@ -256,9 +230,7 @@ type fsCallable struct {
 }
 
 // Call executes the filesystem tool with the provided request arguments.
-//
 // Summary: Executes a filesystem tool.
-//
 // Parameters:
 //   - ctx: context.Context. The execution context.
 //   - req: *tool.ExecutionRequest. The request containing arguments.

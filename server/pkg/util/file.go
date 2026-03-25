@@ -12,9 +12,7 @@ import (
 
 // ReadLastNLines reads the last n lines from a file.
 // It is optimized to read from the end of the file.
-//
 // Summary: Reads the tail of a file.
-//
 // Parameters:
 //   - path: string. The path to the file.
 //   - n: int. The number of lines to read.

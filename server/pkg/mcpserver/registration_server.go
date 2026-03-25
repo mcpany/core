@@ -22,9 +22,7 @@ import (
 )
 
 // RegistrationServer implements the gRPC server for service registration.
-//
 // Summary: Handles gRPC requests for registering and managing upstream services.
-//
 // Side Effects:
 //   - Publishes messages to the event bus.
 //   - Interacts with the authentication manager.
@@ -35,17 +33,13 @@ type RegistrationServer struct {
 }
 
 // NewRegistrationServerHook is a test hook for overriding the creation of a RegistrationServer.
-//
 // Summary: Test hook to override RegistrationServer creation.
-//
 // Side Effects:
 //   - If set, this hook is called instead of the standard constructor logic.
 var NewRegistrationServerHook func(bus interface{}, authManager interface{}) (*RegistrationServer, error)
 
 // NewRegistrationServer creates a new RegistrationServer initialized with the event bus and auth manager.
-//
 // Summary: Initializes a new RegistrationServer instance.
-//
 // Parameters:
 //   - bus: *bus.Provider. The event bus used for communication with workers.
 //   - authManager: *auth.Manager. Manager for handling authentication and OAuth flows.
@@ -71,9 +65,7 @@ func NewRegistrationServer(bus *bus.Provider, authManager *auth.Manager) (*Regis
 }
 
 // ValidateService validates a service configuration by attempting to connect and discover tools.
-//
 // Summary: Validates the provided service configuration by connecting to the upstream service.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - req: *v1.ValidateServiceRequest. The validation request containing the service configuration.
@@ -141,9 +133,7 @@ func (s *RegistrationServer) ValidateService(ctx context.Context, req *v1.Valida
 }
 
 // RegisterService handles a gRPC request to register a new upstream service.
-//
 // Summary: Asynchronously registers a new upstream service via the event bus.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the gRPC call.
 //   - req: *v1.RegisterServiceRequest. The request containing the configuration of the service to be registered.
@@ -226,9 +216,7 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 }
 
 // UnregisterService is not yet implemented.
-//
 // Summary: Handles the unregistration of a service (Not Implemented).
-//
 // Parameters:
 //   - ctx: context.Context. The context for the gRPC call.
 //   - req: *v1.UnregisterServiceRequest. The request containing the service ID to unregister.
@@ -247,9 +235,7 @@ func (s *RegistrationServer) UnregisterService(_ context.Context, _ *v1.Unregist
 }
 
 // InitiateOAuth2Flow initiates an OAuth2 flow for a service or credential.
-//
 // Summary: Initiates the OAuth2 flow by generating an authorization URL.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the gRPC call.
 //   - req: *v1.InitiateOAuth2FlowRequest. The request containing OAuth2 flow details.
@@ -295,9 +281,7 @@ func (s *RegistrationServer) InitiateOAuth2Flow(ctx context.Context, req *v1.Ini
 }
 
 // RegisterTools is not yet implemented.
-//
 // Summary: Registers tools for a service (Not Implemented).
-//
 // Parameters:
 //   - ctx: context.Context. The context for the gRPC call.
 //   - req: *v1.RegisterToolsRequest. The request containing the tools to register.
@@ -316,9 +300,7 @@ func (s *RegistrationServer) RegisterTools(_ context.Context, _ *v1.RegisterTool
 }
 
 // GetServiceStatus is not yet implemented.
-//
 // Summary: Retrieves the status of a service (Not Implemented).
-//
 // Parameters:
 //   - ctx: context.Context. The context for the gRPC call.
 //   - req: *v1.GetServiceStatusRequest. The request containing the service name or ID.
@@ -337,9 +319,7 @@ func (s *RegistrationServer) GetServiceStatus(_ context.Context, _ *v1.GetServic
 }
 
 // GetService retrieves a service by its name.
-//
 // Summary: Retrieves the configuration of a registered service.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the gRPC call.
 //   - req: *v1.GetServiceRequest. The request containing the service name.
@@ -397,9 +377,7 @@ func (s *RegistrationServer) GetService(ctx context.Context, req *v1.GetServiceR
 func (s *RegistrationServer) mustEmbedUnimplementedRegistrationServiceServer() {} //nolint:unused
 
 // ListServices lists all registered services by querying the service registry via the event bus.
-//
 // Summary: Lists all currently registered services.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the gRPC call.
 //   - req: *v1.ListServicesRequest. The request object (empty for now).

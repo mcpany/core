@@ -23,7 +23,6 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for SQL databases.
-//
 // Summary: Represents a Upstream.
 type Upstream struct {
 	db *sql.DB
@@ -31,7 +30,6 @@ type Upstream struct {
 }
 
 // NewUpstream creates a new SQL upstream.
-//
 // Returns:
 //   - *Upstream: The result.
 //
@@ -39,16 +37,9 @@ type Upstream struct {
 //   - None.
 //
 // Summary: Initializes NewUpstream operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewUpstream() *Upstream {
@@ -56,7 +47,6 @@ func NewUpstream() *Upstream {
 }
 
 // Shutdown closes the database connection.
-//
 // Parameters:
 //   - _ (context.Context): The parameter.
 //
@@ -70,16 +60,9 @@ func NewUpstream() *Upstream {
 //   - None.
 //
 // Summary: Executes Shutdown operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
@@ -96,7 +79,6 @@ func ptr(s string) *string {
 }
 
 // Register discovers and registers tools from the SQL configuration. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
@@ -118,16 +100,9 @@ func ptr(s string) *string {
 //   - None
 //
 // Summary: Executes Register operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) Register(

@@ -21,19 +21,16 @@ import (
 )
 
 // ClientFactory is a function that creates a VectorClient.
-//
 // Summary: Represents a ClientFactory.
 type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
 
 // Upstream implements the upstream.Upstream interface for vector database services.
-//
 // Summary: Represents a Upstream.
 type Upstream struct {
 	clientFactory ClientFactory
 }
 
 // NewUpstream creates a new instance of VectorUpstream.
-//
 // Returns:
 //   - upstream.Upstream: The result.
 //
@@ -41,16 +38,9 @@ type Upstream struct {
 //   - None.
 //
 // Summary: Initializes NewUpstream operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewUpstream() upstream.Upstream {
@@ -70,7 +60,6 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 }
 
 // Shutdown implements the upstream.Upstream interface.
-//
 // Parameters:
 //   - _ (context.Context): The parameter.
 //
@@ -84,16 +73,9 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 //   - None.
 //
 // Summary: Executes Shutdown operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
@@ -101,7 +83,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // Register processes the configuration for a vector service. _ is an unused parameter. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
-//
 // Parameters:
 //   - _ (context.Context): The _ parameter.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
@@ -123,16 +104,9 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - None
 //
 // Summary: Executes Register operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) Register(
@@ -235,7 +209,6 @@ type vectorCallable struct {
 // Call executes the vector tool with the given arguments.
 // It accepts a context and an execution request containing arguments,
 // and returns the result of the tool execution or an error.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - req (*tool.ExecutionRequest): The parameter.
@@ -251,16 +224,9 @@ type vectorCallable struct {
 //   - None.
 //
 // Summary: Executes Call operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
@@ -276,7 +242,6 @@ type vectorToolDef struct {
 }
 
 // Client interface for different vector DB implementations.
-//
 // Summary: Represents a Client.
 type Client interface {
 	// Query searches for the nearest vectors in the database.

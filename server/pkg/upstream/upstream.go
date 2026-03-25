@@ -14,31 +14,24 @@ import (
 )
 
 // Upstream defines the standard interface for all backend service integrations.
-//
 // Each implementation of this interface is responsible for discovering and
 // registering its capabilities, such as tools, prompts, and resources, with the
 // appropriate managers.
-//
 // Summary: Represents a Upstream.
 type Upstream interface {
 	// Shutdown gracefully terminates the upstream service.
-	//
 	// Parameters:
 	//   - ctx (context.Context): The context for the request.
-	//
 	// Returns:
 	//   - error: An error if the operation fails.
-	//
 	// Errors:
 	//   - Returns error if shutdown fails.
-	//
 	// Side Effects:
 	//   - Closes network connections and releases resources.
 	Shutdown(ctx context.Context) error
 
 	// Register inspects the upstream service defined by the serviceConfig,
 	// discovers its capabilities, and registers them.
-	//
 	// Parameters:
 	//   - ctx (context.Context): The context for the registration process.
 	//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
@@ -46,16 +39,13 @@ type Upstream interface {
 	//   - promptManager (prompt.ManagerInterface): The manager where discovered prompts will be registered.
 	//   - resourceManager (resource.ManagerInterface): The manager where discovered resources will be registered.
 	//   - isReload (bool): Indicates whether this is an initial registration or a reload.
-	//
 	// Returns:
 	//   - string: A unique service key.
 	//   - []*configv1.ToolDefinition: A list of discovered tool definitions.
 	//   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
 	//   - error: An error if registration fails.
-	//
 	// Errors:
 	//   - Returns error if connection or discovery fails.
-	//
 	// Side Effects:
 	//   - Establishes connection to the upstream service.
 	//   - Populates managers with capabilities.
@@ -71,20 +61,15 @@ type Upstream interface {
 
 // HealthChecker is an optional interface that Upstreams can implement to provide
 // runtime health status.
-//
 // Summary: Represents a HealthChecker.
 type HealthChecker interface {
 	// CheckHealth performs a health check on the upstream service.
-	//
 	// Parameters:
 	//   - ctx (context.Context): The check context.
-	//
 	// Returns:
 	//   - error: nil if healthy, error if unhealthy.
-	//
 	// Errors:
 	//   - Returns error if the service is unhealthy or unreachable.
-	//
 	// Side Effects:
 	//   - May send a heartbeat or ping request to the upstream service.
 	CheckHealth(ctx context.Context) error

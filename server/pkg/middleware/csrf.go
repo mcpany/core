@@ -14,7 +14,6 @@ import (
 )
 
 // CSRFMiddleware protects against Cross-Site Request Forgery attacks.
-//
 // Summary: Middleware that blocks unauthorized cross-origin requests.
 type CSRFMiddleware struct {
 	allowedOrigins map[string]bool
@@ -22,9 +21,7 @@ type CSRFMiddleware struct {
 }
 
 // NewCSRFMiddleware creates a new CSRFMiddleware.
-//
 // Summary: Initializes a new CSRFMiddleware with a list of allowed origins.
-//
 // Parameters:
 //   - allowedOrigins: []string. A list of origin strings (e.g., "https://example.com") allowed to make requests.
 //
@@ -45,9 +42,7 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 }
 
 // Update updates the allowed origins.
-//
 // Summary: Updates the list of allowed origins at runtime.
-//
 // Parameters:
 //   - origins: []string. The new list of allowed origins.
 //
@@ -66,9 +61,7 @@ func (m *CSRFMiddleware) Update(origins []string) {
 }
 
 // Handler returns the HTTP handler.
-//
 // Summary: Returns an HTTP handler that enforces CSRF protection checks.
-//
 // Parameters:
 //   - next: http.Handler. The next handler in the chain.
 //

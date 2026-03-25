@@ -13,9 +13,7 @@ import (
 )
 
 // handleTopology returns an HTTP handler for the topology API.
-//
 // Summary: Returns the current service topology graph.
-//
 // Returns:
 //   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleTopology() http.HandlerFunc {

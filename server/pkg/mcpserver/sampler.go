@@ -12,16 +12,13 @@ import (
 )
 
 // MCPSession wraps an MCP session to provide client interaction capabilities like sampling and roots.
-//
 // Summary: Provides a wrapper around the MCP server session to facilitate client interactions.
 type MCPSession struct {
 	session *mcp.ServerSession
 }
 
 // NewMCPSession creates a new MCPSession.
-//
 // Summary: Initializes a new MCPSession instance.
-//
 // Parameters:
 //   - session: *mcp.ServerSession. The underlying MCP server session.
 //
@@ -38,9 +35,7 @@ func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 }
 
 // NewMCPSampler is a deprecated alias for NewMCPSession.
-//
 // Summary: Creates a new MCPSession (deprecated alias).
-//
 // Parameters:
 //   - session: *mcp.ServerSession. The underlying MCP server session.
 //
@@ -57,9 +52,7 @@ func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 }
 
 // CreateMessage requests a message creation from the client (sampling).
-//
 // Summary: Requests the client to create a message, effectively sampling the LLM.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - params: *mcp.CreateMessageParams. The parameters for the message creation request.
@@ -81,9 +74,7 @@ func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessag
 }
 
 // ListRoots requests the list of roots from the client.
-//
 // Summary: Requests the list of root directories from the client.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the request.
 //

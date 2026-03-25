@@ -37,10 +37,8 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for gRPC services.
-//
 // It uses gRPC reflection to discover services and methods, and creates tools
 // for them. It also manages a connection pool and a cache for reflection data.
-//
 // Summary: Represents a Upstream.
 type Upstream struct {
 	poolManager     *pool.Manager
@@ -52,7 +50,6 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the health check.
 //
@@ -63,16 +60,9 @@ type Upstream struct {
 //   - Performs a health check RPC.
 //
 // Summary: Executes CheckHealth operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
@@ -91,7 +81,6 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 }
 
 // NewUpstream creates a new instance of Upstream.
-//
 // Parameters:
 //   - poolManager (*pool.Manager): The connection pool manager to be used for managing gRPC connections.
 //
@@ -102,16 +91,9 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //   - Starts a background cache cleaner.
 //
 // Summary: Initializes NewUpstream operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
@@ -128,7 +110,6 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 
 // Shutdown gracefully terminates the gRPC upstream service by shutting down the
 // associated connection pool.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
@@ -141,16 +122,9 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - Deregisters the connection pool.
 //
 // Summary: Executes Shutdown operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
@@ -172,7 +146,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // connection pool, uses gRPC reflection to discover the service's protobuf
 // definitions, and then creates and registers tools based on the discovered
 // methods and any MCP annotations.
-//
 // Parameters:
 //   - ctx (context.Context): The registration context.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the service.
@@ -193,16 +166,9 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - Registers tools and prompts.
 //
 // Summary: Executes Register operation.
-//
 // Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
-//
 // Side Effects:
 //   - None.
 func (u *Upstream) Register(

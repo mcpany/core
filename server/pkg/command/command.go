@@ -25,20 +25,16 @@ import (
 )
 
 // Executor is an interface for executing commands.
-//
 // Summary: Represents a Executor.
 type Executor interface {
 	// Execute executes a command and returns the stdout and stderr as streams.
-	//
 	// Summary: Executes a command.
-	//
 	// Parameters:
 	//   - ctx (context.Context): The context for the request.
 	//   - command (string): The command to execute.
 	//   - args ([]string): The arguments for the command.
 	//   - workingDir (string): The working directory for execution.
 	//   - env ([]string): The environment variables.
-	//
 	// Returns:
 	//   - stdout (io.ReadCloser): The standard output stream.
 	//   - stderr (io.ReadCloser): The standard error stream.
@@ -46,16 +42,13 @@ type Executor interface {
 	//   - err (error): An error if the operation fails.
 	Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (stdout, stderr io.ReadCloser, exitCode <-chan int, err error)
 	// ExecuteWithStdIO executes a command and returns the stdin, stdout, and stderr as streams.
-	//
 	// Summary: Executes a command with full I/O streams.
-	//
 	// Parameters:
 	//   - ctx (context.Context): The context for the request.
 	//   - command (string): The command to execute.
 	//   - args ([]string): The arguments for the command.
 	//   - workingDir (string): The working directory for execution.
 	//   - env ([]string): The environment variables.
-	//
 	// Returns:
 	//   - stdin (io.WriteCloser): The standard input stream.
 	//   - stdout (io.ReadCloser): The standard output stream.
@@ -66,9 +59,7 @@ type Executor interface {
 }
 
 // NewExecutor creates a new command executor.
-//
 // Summary: Creates a new command executor (local or docker).
-//
 // Parameters:
 //   - containerEnv (*configv1.ContainerEnvironment): The container environment configuration (if any).
 //
@@ -88,9 +79,7 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 }
 
 // NewLocalExecutor creates a new local command executor.
-//
 // Summary: Creates a new local command executor.
-//
 // Parameters:
 //   - None.
 //
@@ -109,9 +98,7 @@ func NewLocalExecutor() Executor {
 type localExecutor struct{}
 
 // Execute executes a command locally.
-//
 // Summary: Executes a command on the local system.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - command (string): The command to execute.
@@ -176,9 +163,7 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 }
 
 // ExecuteWithStdIO executes a command locally with stdin/stdout/stderr pipes.
-//
 // Summary: Executes a command on the local system with full I/O streams.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - command (string): The command to execute.
@@ -266,9 +251,7 @@ func newDockerExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 }
 
 // Execute executes a command inside a docker container.
-//
 // Summary: Executes a command inside a Docker container.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - command (string): The command to execute.
@@ -405,9 +388,7 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 }
 
 // ExecuteWithStdIO executes a command inside a docker container with stdin/stdout/stderr pipes.
-//
 // Summary: Executes a command inside a Docker container with full I/O streams.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - command (string): The command to execute.
@@ -547,9 +528,7 @@ type closeWriter struct {
 }
 
 // Write writes data to the connection.
-//
 // Summary: Writes data to the underlying connection.
-//
 // Parameters:
 //   - p ([]byte): The data to write.
 //
@@ -567,9 +546,7 @@ func (c *closeWriter) Write(p []byte) (n int, err error) {
 }
 
 // Close closes the write side of the connection.
-//
 // Summary: Closes the write side of the connection.
-//
 // Parameters:
 //   - None.
 //

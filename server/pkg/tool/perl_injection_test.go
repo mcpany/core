@@ -15,7 +15,6 @@ import (
 )
 
 func TestLocalCommandTool_Perl_RCE(t *testing.T) {
-	// This test demonstrates RCE vulnerability in Perl using qx//
 	tool := v1.Tool_builder{Name: proto.String("test-tool-perl")}.Build()
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("perl"),

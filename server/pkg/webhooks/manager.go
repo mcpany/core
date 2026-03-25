@@ -13,9 +13,7 @@ import (
 )
 
 // WebhookConfig represents a configured webhook.
-//
 // Summary: Webhook configuration definition.
-//
 // Fields:
 //   - ID (string): Unique identifier for the webhook.
 //   - URL (string): The destination URL.
@@ -33,7 +31,6 @@ type WebhookConfig struct {
 }
 
 // Manager manages webhooks.
-//
 // Summary: Webhook lifecycle manager.
 type Manager struct {
 	mu         sync.RWMutex
@@ -42,9 +39,7 @@ type Manager struct {
 }
 
 // NewManager creates a new Webhook Manager.
-//
 // Summary: Creates a new Manager.
-//
 // Returns:
 //   - *Manager: A pointer to the newly created Manager.
 //
@@ -61,9 +56,7 @@ func NewManager() *Manager {
 }
 
 // ListWebhooks returns all configured webhooks.
-//
 // Summary: Lists all webhooks.
-//
 // Returns:
 //   - []*WebhookConfig: A list of webhook configurations.
 //
@@ -83,9 +76,7 @@ func (m *Manager) ListWebhooks() []*WebhookConfig {
 }
 
 // AddWebhook adds or updates a webhook.
-//
 // Summary: Adds or updates a webhook.
-//
 // Parameters:
 //   - w (*WebhookConfig): The webhook configuration to add.
 //
@@ -106,9 +97,7 @@ func (m *Manager) AddWebhook(w *WebhookConfig) {
 }
 
 // GetWebhook returns a webhook by ID.
-//
 // Summary: Retrieves a webhook by ID.
-//
 // Parameters:
 //   - id (string): The webhook ID.
 //
@@ -129,9 +118,7 @@ func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
 }
 
 // DeleteWebhook removes a webhook by ID.
-//
 // Summary: Deletes a webhook.
-//
 // Parameters:
 //   - id (string): The webhook ID to delete.
 //
@@ -147,9 +134,7 @@ func (m *Manager) DeleteWebhook(id string) {
 }
 
 // TestWebhook sends a test payload to the webhook URL.
-//
 // Summary: Tests a webhook.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - id (string): The webhook ID to test.

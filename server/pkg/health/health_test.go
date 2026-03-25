@@ -601,7 +601,6 @@ func TestWebSocketHealthCheckBasic(t *testing.T) {
 	)
 	defer mockServer.Close()
 
-	// Convert http:// to ws://
 	wsURL := "ws" + strings.TrimPrefix(mockServer.URL, "http")
 
 	t.Run("WebSocket Service Health Check Success", func(t *testing.T) {

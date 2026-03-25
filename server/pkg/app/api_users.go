@@ -20,9 +20,7 @@ import (
 )
 
 // handleUsers returns an HTTP handler for listing and creating users.
-//
 // Summary: Manages the collection of users.
-//
 // Parameters:
 //   - store: storage.Storage. The storage interface for user persistence.
 //
@@ -140,9 +138,7 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 }
 
 // handleUserDetail returns an HTTP handler for managing a specific user.
-//
 // Summary: Manages a single user resource (get, update, delete).
-//
 // Parameters:
 //   - store: storage.Storage. The storage interface.
 //
@@ -276,9 +272,7 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 }
 
 // hashUserPassword hashes the user's password if it is provided in plain text.
-//
 // Summary: Hashes the user's password or restores the existing hash if redacted.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the operation.
 //   - user: *configv1.User. The user object containing the password to hash.

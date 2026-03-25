@@ -28,7 +28,6 @@ import (
 )
 
 // Server implements the AdminServiceServer interface.
-//
 // Summary: Implements the AdminServiceServer interface for administrative operations.
 type Server struct {
 	pb.UnimplementedAdminServiceServer
@@ -41,9 +40,7 @@ type Server struct {
 }
 
 // NewServer creates a new Admin Server.
-//
 // Summary: Initializes a new Server instance with its required dependencies.
-//
 // Parameters:
 //   - cache (*middleware.CachingMiddleware): The caching middleware for the server.
 //   - toolManager (tool.ManagerInterface): The manager for tool-related operations.
@@ -79,9 +76,7 @@ func NewServer(
 }
 
 // ClearCache clears the server's cache.
-//
 // Summary: Executes the ClearCache operation on the caching middleware.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - _ (*pb.ClearCacheRequest): The request parameters (unused).
@@ -107,9 +102,7 @@ func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.C
 }
 
 // ListServices returns all registered services.
-//
 // Summary: Lists all upstream services managed by the server.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - _ (*pb.ListServicesRequest): The request parameters (unused).
@@ -170,9 +163,7 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 }
 
 // GetService returns a specific service by ID.
-//
 // Summary: Retrieves the configuration and state of a specific upstream service.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - req (*pb.GetServiceRequest): The request containing the service ID.
@@ -230,9 +221,7 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 }
 
 // ListTools returns all registered tools.
-//
 // Summary: Lists all tools available through the server.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - _ (*pb.ListToolsRequest): The request parameters (unused).
@@ -256,9 +245,7 @@ func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListT
 }
 
 // GetTool returns a specific tool by name.
-//
 // Summary: Retrieves the details of a specific tool by its name.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - req (*pb.GetToolRequest): The request containing the tool name.
@@ -281,9 +268,7 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 }
 
 // CreateUser creates a new user in the system.
-//
 // Summary: Registers a new user and persists their credentials.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - req (*pb.CreateUserRequest): The request containing user details and credentials.
@@ -324,9 +309,7 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 }
 
 // GetUser retrieves a user by their ID.
-//
 // Summary: Fetches the details of a specific user.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - req (*pb.GetUserRequest): The request containing the user ID.
@@ -356,9 +339,7 @@ func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUs
 }
 
 // ListUsers lists all users in the system.
-//
 // Summary: Retrieves a list of all registered users.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - _ (*pb.ListUsersRequest): The request parameters (unused).
@@ -389,9 +370,7 @@ func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.Lis
 }
 
 // UpdateUser updates an existing user's details.
-//
 // Summary: Modifies the details and credentials of an existing user.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - req (*pb.UpdateUserRequest): The request containing updated user details.
@@ -432,9 +411,7 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 }
 
 // DeleteUser removes a user from the system by ID.
-//
 // Summary: Deletes a specific user from storage.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - req (*pb.DeleteUserRequest): The request containing the user ID to delete.
@@ -456,9 +433,7 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 }
 
 // GetDiscoveryStatus returns the current status of all auto-discovery providers.
-//
 // Summary: Retrieves operational metrics and status for discovery providers.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - _ (*pb.GetDiscoveryStatusRequest): The request parameters (unused).
@@ -495,9 +470,7 @@ func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusR
 }
 
 // ListAuditLogs returns audit logs matching the specified filter criteria.
-//
 // Summary: Queries and returns historical audit log entries.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - req (*pb.ListAuditLogsRequest): The filter criteria including time range and identifiers.

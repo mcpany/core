@@ -15,7 +15,6 @@ import (
 )
 
 // SkillServiceServer implements the SkillService gRPC interface.
-//
 // Summary: Represents a SkillServiceServer.
 type SkillServiceServer struct {
 	pb.UnimplementedSkillServiceServer
@@ -23,9 +22,7 @@ type SkillServiceServer struct {
 }
 
 // NewSkillServiceServer creates a new SkillServiceServer.
-//
 // Summary: Initializes a new gRPC server for Skill management.
-//
 // Parameters:
 //   - manager: *skill.Manager. The skill manager instance to handle business logic.
 //
@@ -44,9 +41,7 @@ func NewSkillServiceServer(manager *skill.Manager) *SkillServiceServer {
 }
 
 // ListSkills lists all available skills.
-//
 // Summary: Retrieves a list of all skills managed by the server.
-//
 // Parameters:
 //   - ctx: context.Context. The request context.
 //   - req: *pb.ListSkillsRequest. The request object (currently empty).
@@ -77,9 +72,7 @@ func (s *SkillServiceServer) ListSkills(_ context.Context, _ *pb.ListSkillsReque
 }
 
 // GetSkill retrieves a specific skill by name.
-//
 // Summary: Retrieves details of a specific skill.
-//
 // Parameters:
 //   - ctx: context.Context. The request context.
 //   - req: *pb.GetSkillRequest. The request containing the skill name.
@@ -111,9 +104,7 @@ func (s *SkillServiceServer) GetSkill(_ context.Context, req *pb.GetSkillRequest
 }
 
 // CreateSkill creates a new skill.
-//
 // Summary: Creates a new skill from the provided definition.
-//
 // Parameters:
 //   - ctx: context.Context. The request context.
 //   - req: *pb.CreateSkillRequest. The request containing the new skill definition.
@@ -143,9 +134,7 @@ func (s *SkillServiceServer) CreateSkill(_ context.Context, req *pb.CreateSkillR
 }
 
 // UpdateSkill updates an existing skill.
-//
 // Summary: Updates an existing skill definition.
-//
 // Parameters:
 //   - ctx: context.Context. The request context.
 //   - req: *pb.UpdateSkillRequest. The request containing the skill name and new definition.
@@ -180,9 +169,7 @@ func (s *SkillServiceServer) UpdateSkill(_ context.Context, req *pb.UpdateSkillR
 }
 
 // DeleteSkill deletes a skill.
-//
 // Summary: Deletes a skill by name.
-//
 // Parameters:
 //   - ctx: context.Context. The request context.
 //   - req: *pb.DeleteSkillRequest. The request containing the name of the skill to delete.

@@ -26,7 +26,6 @@ type activityEvent struct {
 }
 
 // Manager handles topology state tracking.
-//
 // Summary: Represents a Manager.
 type Manager struct {
 	mu              sync.RWMutex
@@ -40,7 +39,6 @@ type Manager struct {
 }
 
 // SessionStats contains statistics about a topology session.
-//
 // Summary: Represents a SessionStats.
 type SessionStats struct {
 	ID             string
@@ -56,7 +54,6 @@ type SessionStats struct {
 }
 
 // Stats aggregated metrics.
-//
 // Summary: Represents a Stats.
 type Stats struct {
 	TotalRequests int64
@@ -65,7 +62,6 @@ type Stats struct {
 }
 
 // MinuteStats tracks stats for a single minute.
-//
 // Summary: Represents a MinuteStats.
 type MinuteStats struct {
 	Requests     int64
@@ -76,7 +72,6 @@ type MinuteStats struct {
 }
 
 // ServiceTrafficStats tracks stats for a single service in a minute.
-//
 // Summary: Represents a ServiceTrafficStats.
 type ServiceTrafficStats struct {
 	Requests int64
@@ -86,7 +81,6 @@ type ServiceTrafficStats struct {
 }
 
 // TrafficPoint represents a data point for the traffic chart.
-//
 // Summary: Represents a TrafficPoint.
 type TrafficPoint struct {
 	Time    string `json:"time"`
@@ -97,9 +91,7 @@ type TrafficPoint struct {
 }
 
 // NewManager creates a new Topology Manager.
-//
 // Summary: Creates a new Topology Manager instance.
-//
 // Parameters:
 //   - registry (serviceregistry.ServiceRegistryInterface): The service registry interface.
 //   - tm (tool.ManagerInterface): The tool manager interface.
@@ -253,9 +245,7 @@ func (m *Manager) handleActivity(event activityEvent) {
 // RecordActivity updates the session activity.
 // ⚡ BOLT: Offloaded to asynchronous channel to prevent blocking the request path.
 // Randomized Selection from Top 5 High-Impact Targets
-//
 // Summary: Records a new activity event for a session.
-//
 // Parameters:
 //   - sessionID (string): The unique identifier of the session.
 //   - meta (map[string]interface{}): Metadata associated with the activity.
@@ -293,9 +283,7 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 }
 
 // Close stops the background worker.
-//
 // Summary: gracefully shuts down the Topology Manager.
-//
 // Parameters:
 //   - None.
 //
@@ -309,9 +297,7 @@ func (m *Manager) Close() {
 }
 
 // GetStats returns the aggregated stats.
-//
 // Summary: Retrieves aggregated statistics, optionally filtered by service ID.
-//
 // Parameters:
 //   - serviceID (string): The service ID to filter by (optional).
 //
@@ -362,9 +348,7 @@ func (m *Manager) GetStats(serviceID string) Stats {
 
 // GetRecentServiceStats returns the aggregated statistics for a service over a given time window.
 // It uses trafficHistory which stores minute-level stats.
-//
 // Summary: Calculates recent statistics for a service within a time window.
-//
 // Parameters:
 //   - serviceID (string): The service ID to calculate stats for.
 //   - window (time.Duration): The time window to look back.
@@ -420,9 +404,7 @@ func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) 
 }
 
 // GetTrafficHistory returns the traffic history for the last 24 hours.
-//
 // Summary: Retrieves traffic history points for the last hour (minute granularity).
-//
 // Parameters:
 //   - serviceID (string): The service ID to filter by (optional).
 //
@@ -489,9 +471,7 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 
 // SeedTrafficHistory allows seeding the traffic history with external data.
 // This is primarily for testing and debugging purposes.
-//
 // Summary: Seeds the traffic history with provided data points.
-//
 // Parameters:
 //   - points ([]TrafficPoint): The traffic data points to seed.
 //
@@ -559,9 +539,7 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 }
 
 // GetGraph generates the current topology graph.
-//
 // Summary: Constructs the network topology graph.
-//
 // Parameters:
 //   - _ (context.Context): Unused context parameter.
 //

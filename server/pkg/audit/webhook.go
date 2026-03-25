@@ -22,7 +22,6 @@ const (
 )
 
 // WebhookAuditStore sends audit logs to a configured webhook URL.
-//
 // Summary: Asynchronous audit store that forwards log entries to a specified URL via HTTP POST.
 type WebhookAuditStore struct {
 	webhookURL string
@@ -34,9 +33,7 @@ type WebhookAuditStore struct {
 }
 
 // NewWebhookAuditStore creates a new WebhookAuditStore.
-//
 // Summary: Initializes a new WebhookAuditStore with the provided URL and headers, starting background workers for transmission.
-//
 // Parameters:
 //   - webhookURL (string): The target URL to receive audit logs.
 //   - headers (map[string]string): Custom HTTP headers to include in each request.
@@ -105,9 +102,7 @@ func (s *WebhookAuditStore) worker() {
 }
 
 // Write writes an audit entry to the webhook (buffered).
-//
 // Summary: Enqueues an audit entry for asynchronous transmission to the configured webhook.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request (unused).
 //   - entry (Entry): The audit log entry to be recorded.
@@ -165,9 +160,7 @@ func (s *WebhookAuditStore) sendBatch(batch []Entry) {
 }
 
 // Read implements the Store interface.
-//
 // Summary: Not implemented for WebhookAuditStore.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request (unused).
 //   - filter (Filter): Criteria for filtering audit logs (unused).
@@ -186,9 +179,7 @@ func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 }
 
 // Close stops the workers and drains the queue.
-//
 // Summary: Gracefully shuts down the webhook store, flushing any pending batches before exiting.
-//
 // Returns:
 //   - error: Always returns nil.
 //
