@@ -977,6 +977,13 @@
 - **BSH State Buffer**: (P1) High-speed memory-mapped buffer for binary state handoffs between agents to minimize context transfer latency.
 - **Ghost Shell Hook Profiler**: (P0) Instrumented sandbox for behavioral profiling of un-attested configuration hooks, detecting "Binary Smuggling" before host execution.
 
+## Evolution: [2026-03-25] Updates
+
+### Proposed Additions
+- **Cross-Framework Task List Hub**: (P0) Authoritative coordination service for sharded, CRDT-based task lists supporting horizontal teammate collaboration across disparate frameworks.
+- **Reasoning-Aware Vulnerability Shield**: (P0) Semantic security middleware that utilizes local LLM reasoning to scan agent-generated code and tool arguments for vulnerabilities before host commitment.
+- **Detached Installation Sandbox**: (P0) Isolated, zero-trust execution environment for all agent-initiated software installations and VS Code extension logic to neutralize RCE exploits.
+
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.

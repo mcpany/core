@@ -170,6 +170,8 @@
 *   **[P0] Memfd-Bound Zero-Copy Sanitizer**: Native byte-level WASM scanning on kernel-mediated shared memory segments. (Added: 2026-03-25)
 *   **[P0] Hardware-Attested Monotonic Depth-Counters**: TPM-bound constraint enforcement for recursive agent delegations. (Added: 2026-03-25)
 *   **[P1] Optimistic Attestation Gate**: Speculative safety middleware for non-blocking coordination during high-density mesh handoffs. (Added: 2026-03-25)
+*   **[P0] Cross-Framework Task List Hub**: Coordination service for CRDT-based shared task lists across disparate frameworks. (Added: 2026-03-25)
+*   **[P0] Reasoning-Aware Vulnerability Shield**: Semantic scanning of agent-generated code for vulnerabilities using local LLM reasoning. (Added: 2026-03-25)
 
 #### Upcoming (2026-06-23 Evolution)
 *   **[P0] Recursive Mission-Root Attestation (RMRA)**: Mandatory hardware-bound re-attestation of sub-process lineage for headless handoffs. (Added: 2026-06-23)

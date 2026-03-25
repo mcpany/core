@@ -19,3 +19,26 @@ A new vulnerability class, "Intent Ghosting," has been identified in early UACO 
 - **Security**: Intent-mutation boundaries and recursive depth limits are the new security frontier.
 - **Performance**: Zero-copy shared memory is the new benchmark for inter-agent state transfer.
 - **Pain Points**: State-transfer overhead and "Intent Ghosting" are the primary swarm stability risks.
+
+---
+
+## Market Sync: 2026-03-25 (v2)
+
+### Ecosystem Shifts
+
+### OpenAI & OpenClaw Integration
+OpenAI has hired the founder of OpenClaw, signals an intensification in the AI agent race with a focus on "Orchestration over Intelligence." This shift highlights the importance of multi-agent systems and the infrastructure required to manage them.
+
+### Claude Code Security
+Anthropic has released a limited research preview of Claude Code Security. This capability scans codebases for vulnerabilities and suggests patches. Unlike traditional static analysis, it uses reasoning to understand component interactions, which is a significant move towards autonomous security remediation.
+
+### Gemini CLI Vulnerabilities
+Recent disclosures from Cyera Research Labs revealed command and prompt injection vulnerabilities in Gemini CLI. These exploits targeted VS Code extension installation logic and prompt injection vectors, emphasizing the need for robust sandboxing and input validation in agent-driven CLIs.
+
+### Agent Teams Evolution
+Claude Code's "Agent Teams" feature is gaining traction for parallel development. It allows spawning independent teammates that coordinate through a shared task list. This horizontal collaboration model is becoming a standard for complex refactoring and development tasks.
+
+## Pain Points & Security Vulnerabilities
+- **Implicit Trust Risks**: The vulnerability in Gemini CLI proves that bridging user input to model inference and then to system-level actions (like VS Code extensions) remains a high-risk area.
+- **Coordination Bottlenecks**: As agent teams scale, managing the "Shared Task List" without conflicts becomes a primary performance and integrity concern.
+- **Autonomous Patching Risks**: While Claude Code Security is promising, the ability for agents to fix vulnerabilities also means they can potentially be used to exploit them if not properly governed.

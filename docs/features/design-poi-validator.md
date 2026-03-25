@@ -69,3 +69,10 @@ With the rise of "Context-Mirroring" attacks (CVE-2026-34015), it's no longer en
     * Mandatory **Relational PoI Chain** verification for every tool call.
     * Introduction of "Lineage-Bound Scoping" where subagent capabilities are dynamically restricted based on the most restrictive intent in its parentage chain.
     **Security Impact:** Eliminates "Intent Ghosting" by ensuring no unauthorized intent can shadow the mission root.
+
+    ### Update: 2026-03-25 - Orchestration-Centric PoI
+    **Context:** Today's market sync regarding OpenAI's OpenClaw integration and Claude Code's Agent Teams confirms that PoI must move beyond simple tool calls to **Orchestration Actions**.
+    **Architecture Adjustment:**
+    * Extending PoI validation to `Task List Hub` operations (claiming, updating).
+    * Mandating hardware-attested intent signatures for all inter-framework task handoffs.
+    **Security Impact:** Prevents "Orchestration Hijacking" where a compromised agent in one framework attempts to disrupt the task list of a multi-framework mission.

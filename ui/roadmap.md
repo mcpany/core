@@ -733,3 +733,5 @@
 - [ ] **[P0] Lineage-Bound Scoping Viewer**: Visual debugger for tracking subagent capability restrictions across the intent chain. (Added: 2026-03-25)
 - [ ] **[P0] Zero-Copy BSH Heatmap**: Real-time performance visualization of `memfd` segments and WASM sanitization latency. (Added: 2026-03-25)
 - [ ] **[P0] Hardware Depth-Counter Widget**: Status indicator for TPM-bound monotonic delegation limits. (Added: 2026-03-25)
+- [ ] **[P0] Teammate Task List Viewer**: High-speed, CRDT-native visualization of the shared task list for horizontal swarms. (Added: 2026-03-25)
+- [ ] **[P0] Vulnerability Shield Monitor**: Real-time dashboard for semantically scanned agent code and blocked vulnerabilities. (Added: 2026-03-25)
