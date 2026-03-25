@@ -58,8 +58,8 @@ jobs:
             cd server
             go mod tidy
             cd ..
-            bazelisk run //:lint || true
-            bazelisk test //ui:lint //ui:typecheck || true
+            bazelisk run //:lint || exit 0
+            bazelisk test //ui:lint //ui:typecheck || exit 0
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
